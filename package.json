@@ -1,17 +1,20 @@
 {
   "name": "@oscd-plugins/network",
   "private": true,
-  "version": "0.0.8",
+  "version": "0.0.9",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "_build:watch": "vite build --watch",
+    "build:watch": "concurrently 'npm:_build:watch' 'npm:preview'",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "version": "echo $npm_package_version"
   },
   "dependencies": {
-    "@oscd-plugins/uilib": "../uilib/package"
+    "@oscd-plugins/uilib": "../uilib/package",
+    "concurrently": "^7.6.0"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.2",
