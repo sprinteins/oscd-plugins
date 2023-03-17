@@ -40,7 +40,7 @@ let x;
 function f(t) {
   x = t;
 }
-const a = [], j = [], _ = [], M = [], V = Promise.resolve();
+const u = [], j = [], _ = [], M = [], V = Promise.resolve();
 let p = !1;
 function q() {
   p || (p = !0, V.then(L));
@@ -56,21 +56,21 @@ function L() {
   const t = x;
   do {
     try {
-      for (; s < a.length; ) {
-        const e = a[s];
+      for (; s < u.length; ) {
+        const e = u[s];
         s++, f(e), z(e.$$);
       }
     } catch (e) {
-      throw a.length = 0, s = 0, e;
+      throw u.length = 0, s = 0, e;
     }
-    for (f(null), a.length = 0, s = 0; j.length; )
+    for (f(null), u.length = 0, s = 0; j.length; )
       j.pop()();
     for (let e = 0; e < _.length; e += 1) {
       const n = _[e];
       $.has(n) || ($.add(n), n());
     }
     _.length = 0;
-  } while (a.length);
+  } while (u.length);
   for (; M.length; )
     M.pop()();
   p = !1, $.clear(), f(t);
@@ -87,8 +87,8 @@ function F(t, e) {
   t && t.i && (D.delete(t), t.i(e));
 }
 function G(t, e, n, o) {
-  const { fragment: u, after_update: m } = t.$$;
-  u && u.m(e, n), o || b(() => {
+  const { fragment: a, after_update: m } = t.$$;
+  a && a.m(e, n), o || b(() => {
     const l = t.$$.on_mount.map(y).filter(g);
     t.$$.on_destroy ? t.$$.on_destroy.push(...l) : d(l), t.$$.on_mount = [];
   }), m.forEach(b);
@@ -98,9 +98,9 @@ function I(t, e) {
   n.fragment !== null && (d(n.on_destroy), n.fragment && n.fragment.d(e), n.on_destroy = n.fragment = null, n.ctx = []);
 }
 function J(t, e) {
-  t.$$.dirty[0] === -1 && (a.push(t), q(), t.$$.dirty.fill(0)), t.$$.dirty[e / 31 | 0] |= 1 << e % 31;
+  t.$$.dirty[0] === -1 && (u.push(t), q(), t.$$.dirty.fill(0)), t.$$.dirty[e / 31 | 0] |= 1 << e % 31;
 }
-function K(t, e, n, o, u, m, l, O = [-1]) {
+function K(t, e, n, o, a, m, l, O = [-1]) {
   const h = x;
   f(t);
   const r = t.$$ = {
@@ -109,7 +109,7 @@ function K(t, e, n, o, u, m, l, O = [-1]) {
     // state
     props: m,
     update: i,
-    not_equal: u,
+    not_equal: a,
     bound: C(),
     // lifecycle
     on_mount: [],
@@ -126,9 +126,9 @@ function K(t, e, n, o, u, m, l, O = [-1]) {
   };
   l && l(r.root);
   let k = !1;
-  if (r.ctx = n ? n(t, e.props || {}, (c, E, ...w) => {
-    const v = w.length ? w[0] : E;
-    return r.ctx && u(r.ctx[c], r.ctx[c] = v) && (!r.skip_bound && r.bound[c] && r.bound[c](v), k && J(t, c)), E;
+  if (r.ctx = n ? n(t, e.props || {}, (c, w, ...E) => {
+    const v = E.length ? E[0] : w;
+    return r.ctx && a(r.ctx[c], r.ctx[c] = v) && (!r.skip_bound && r.bound[c] && r.bound[c](v), k && J(t, c)), w;
   }) : [], r.update(), k = !0, d(r.before_update), r.fragment = o ? o(r.ctx) : !1, e.target) {
     if (e.hydrate) {
       const c = B(e.target);
@@ -176,7 +176,7 @@ function Q(t) {
   let e;
   return {
     c() {
-      e = A("main"), e.innerHTML = "<h1>Example Editor v0.0.11</h1>", this.c = i;
+      e = A("main"), e.innerHTML = "<h1>Communication Explorer</h1>", this.c = i;
     },
     m(n, o) {
       S(n, e, o);
