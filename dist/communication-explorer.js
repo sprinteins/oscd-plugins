@@ -47457,7 +47457,7 @@ class APn extends D5 {
     this.$$set({ root: x }), Bh();
   }
 }
-customElements.define("tscd-communication-explore-v0", APn);
+customElements.define("tscd-communication-explorer", APn);
 function NPn(F) {
   let x;
   return {
@@ -47528,12 +47528,12 @@ class xPn extends D5 {
   }
 }
 customElements.define("tscd-diffing-tool", xPn);
-const gin = "@oscd-plugins/communication-explorer", pin = "0.0.5";
+const gin = "@oscd-plugins/communication-explorer", pin = "0.0.6";
 function ain(F) {
   let x;
   return {
     c() {
-      x = Pft("tscd-communication-explorer-v0"), qen(
+      x = Pft("tscd-communication-explorer"), qen(
         x,
         "root",
         /*doc*/
