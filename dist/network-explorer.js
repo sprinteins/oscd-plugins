@@ -1,494 +1,277 @@
-function f() {
+function c() {
 }
-function A(t) {
+function C(t) {
   return t();
 }
-function G() {
+function L() {
   return /* @__PURE__ */ Object.create(null);
 }
-function k(t) {
-  t.forEach(A);
+function _(t) {
+  t.forEach(C);
 }
-function j(t) {
+function k(t) {
   return typeof t == "function";
 }
-function ot(t, n) {
-  return t != t ? n == n : t !== n || t && typeof t == "object" || typeof t == "function";
+function B(t, e) {
+  return t != t ? e == e : t !== e || t && typeof t == "object" || typeof t == "function";
 }
-function rt(t) {
+function J(t) {
   return Object.keys(t).length === 0;
 }
-function Y(t, n, e) {
-  t.insertBefore(n, e || null);
+function p(t, e) {
+  t.appendChild(e);
 }
-function Z(t) {
+function w(t, e, n) {
+  t.insertBefore(e, n || null);
+}
+function j(t) {
   t.parentNode && t.parentNode.removeChild(t);
 }
-function ct(t) {
+function $(t) {
   return document.createElement(t);
 }
-function st(t) {
+function K(t) {
+  return document.createTextNode(t);
+}
+function O() {
+  return K(" ");
+}
+function g(t, e, n) {
+  n == null ? t.removeAttribute(e) : t.getAttribute(e) !== n && t.setAttribute(e, n);
+}
+function Q(t) {
   return Array.from(t.childNodes);
 }
-function it(t) {
-  const n = {};
-  for (const e of t)
-    n[e.name] = e.value;
-  return n;
+function I(t) {
+  const e = {};
+  for (const n of t)
+    e[n.name] = n.value;
+  return e;
 }
-let q;
-function y(t) {
-  q = t;
+let N;
+function m(t) {
+  N = t;
 }
-const h = [], J = [], C = [], K = [], ut = Promise.resolve();
-let L = !1;
-function at() {
-  L || (L = !0, ut.then(tt));
+const h = [], P = [], x = [], R = [], U = Promise.resolve();
+let E = !1;
+function W() {
+  E || (E = !0, U.then(V));
 }
-function O(t) {
-  C.push(t);
+function v(t) {
+  x.push(t);
 }
-const N = /* @__PURE__ */ new Set();
+const b = /* @__PURE__ */ new Set();
 let d = 0;
-function tt() {
+function V() {
   if (d !== 0)
     return;
-  const t = q;
+  const t = N;
   do {
     try {
       for (; d < h.length; ) {
-        const n = h[d];
-        d++, y(n), lt(n.$$);
+        const e = h[d];
+        d++, m(e), X(e.$$);
       }
-    } catch (n) {
-      throw h.length = 0, d = 0, n;
+    } catch (e) {
+      throw h.length = 0, d = 0, e;
     }
-    for (y(null), h.length = 0, d = 0; J.length; )
-      J.pop()();
-    for (let n = 0; n < C.length; n += 1) {
-      const e = C[n];
-      N.has(e) || (N.add(e), e());
+    for (m(null), h.length = 0, d = 0; P.length; )
+      P.pop()();
+    for (let e = 0; e < x.length; e += 1) {
+      const n = x[e];
+      b.has(n) || (b.add(n), n());
     }
-    C.length = 0;
+    x.length = 0;
   } while (h.length);
-  for (; K.length; )
-    K.pop()();
-  L = !1, N.clear(), y(t);
+  for (; R.length; )
+    R.pop()();
+  E = !1, b.clear(), m(t);
 }
-function lt(t) {
+function X(t) {
   if (t.fragment !== null) {
-    t.update(), k(t.before_update);
-    const n = t.dirty;
-    t.dirty = [-1], t.fragment && t.fragment.p(t.ctx, n), t.after_update.forEach(O);
+    t.update(), _(t.before_update);
+    const e = t.dirty;
+    t.dirty = [-1], t.fragment && t.fragment.p(t.ctx, e), t.after_update.forEach(v);
   }
 }
-const ft = /* @__PURE__ */ new Set();
-function dt(t, n) {
-  t && t.i && (ft.delete(t), t.i(n));
+const y = /* @__PURE__ */ new Set();
+let Y;
+function q(t, e) {
+  t && t.i && (y.delete(t), t.i(e));
 }
-function ht(t, n, e, r) {
-  const { fragment: i, after_update: l } = t.$$;
-  i && i.m(n, e), r || O(() => {
-    const u = t.$$.on_mount.map(A).filter(j);
-    t.$$.on_destroy ? t.$$.on_destroy.push(...u) : k(u), t.$$.on_mount = [];
-  }), l.forEach(O);
+function Z(t, e, n, o) {
+  if (t && t.o) {
+    if (y.has(t))
+      return;
+    y.add(t), Y.c.push(() => {
+      y.delete(t), o && (n && t.d(1), o());
+    }), t.o(e);
+  } else
+    o && o();
 }
-function mt(t, n) {
-  const e = t.$$;
-  e.fragment !== null && (k(e.on_destroy), e.fragment && e.fragment.d(n), e.on_destroy = e.fragment = null, e.ctx = []);
+function tt(t) {
+  t && t.c();
 }
-function $t(t, n) {
-  t.$$.dirty[0] === -1 && (h.push(t), at(), t.$$.dirty.fill(0)), t.$$.dirty[n / 31 | 0] |= 1 << n % 31;
+function z(t, e, n, o) {
+  const { fragment: u, after_update: l } = t.$$;
+  u && u.m(e, n), o || v(() => {
+    const s = t.$$.on_mount.map(C).filter(k);
+    t.$$.on_destroy ? t.$$.on_destroy.push(...s) : _(s), t.$$.on_mount = [];
+  }), l.forEach(v);
 }
-function pt(t, n, e, r, i, l, u, T = [-1]) {
-  const a = q;
-  y(t);
-  const o = t.$$ = {
+function D(t, e) {
+  const n = t.$$;
+  n.fragment !== null && (_(n.on_destroy), n.fragment && n.fragment.d(e), n.on_destroy = n.fragment = null, n.ctx = []);
+}
+function et(t, e) {
+  t.$$.dirty[0] === -1 && (h.push(t), W(), t.$$.dirty.fill(0)), t.$$.dirty[e / 31 | 0] |= 1 << e % 31;
+}
+function F(t, e, n, o, u, l, s, f = [-1]) {
+  const i = N;
+  m(t);
+  const r = t.$$ = {
     fragment: null,
     ctx: [],
     // state
     props: l,
-    update: f,
-    not_equal: i,
-    bound: G(),
+    update: c,
+    not_equal: u,
+    bound: L(),
     // lifecycle
     on_mount: [],
     on_destroy: [],
     on_disconnect: [],
     before_update: [],
     after_update: [],
-    context: new Map(n.context || (a ? a.$$.context : [])),
+    context: new Map(e.context || (i ? i.$$.context : [])),
     // everything else
-    callbacks: G(),
-    dirty: T,
+    callbacks: L(),
+    dirty: f,
     skip_bound: !1,
-    root: n.target || a.$$.root
+    root: e.target || i.$$.root
   };
-  u && u(o.root);
-  let $ = !1;
-  if (o.ctx = e ? e(t, n.props || {}, (c, p, ...g) => {
-    const _ = g.length ? g[0] : p;
-    return o.ctx && i(o.ctx[c], o.ctx[c] = _) && (!o.skip_bound && o.bound[c] && o.bound[c](_), $ && $t(t, c)), p;
-  }) : [], o.update(), $ = !0, k(o.before_update), o.fragment = r ? r(o.ctx) : !1, n.target) {
-    if (n.hydrate) {
-      const c = st(n.target);
-      o.fragment && o.fragment.l(c), c.forEach(Z);
+  s && s(r.root);
+  let H = !1;
+  if (r.ctx = n ? n(t, e.props || {}, (a, M, ...S) => {
+    const T = S.length ? S[0] : M;
+    return r.ctx && u(r.ctx[a], r.ctx[a] = T) && (!r.skip_bound && r.bound[a] && r.bound[a](T), H && et(t, a)), M;
+  }) : [], r.update(), H = !0, _(r.before_update), r.fragment = o ? o(r.ctx) : !1, e.target) {
+    if (e.hydrate) {
+      const a = Q(e.target);
+      r.fragment && r.fragment.l(a), a.forEach(j);
     } else
-      o.fragment && o.fragment.c();
-    n.intro && dt(t.$$.fragment), ht(t, n.target, n.anchor, n.customElement), tt();
+      r.fragment && r.fragment.c();
+    e.intro && q(t.$$.fragment), z(t, e.target, e.anchor, e.customElement), V();
   }
-  y(a);
+  m(i);
 }
-let nt;
-typeof HTMLElement == "function" && (nt = class extends HTMLElement {
+let A;
+typeof HTMLElement == "function" && (A = class extends HTMLElement {
   constructor() {
     super(), this.attachShadow({ mode: "open" });
   }
   connectedCallback() {
     const { on_mount: t } = this.$$;
-    this.$$.on_disconnect = t.map(A).filter(j);
-    for (const n in this.$$.slotted)
-      this.appendChild(this.$$.slotted[n]);
+    this.$$.on_disconnect = t.map(C).filter(k);
+    for (const e in this.$$.slotted)
+      this.appendChild(this.$$.slotted[e]);
   }
-  attributeChangedCallback(t, n, e) {
-    this[t] = e;
+  attributeChangedCallback(t, e, n) {
+    this[t] = n;
   }
   disconnectedCallback() {
-    k(this.$$.on_disconnect);
+    _(this.$$.on_disconnect);
   }
   $destroy() {
-    mt(this, 1), this.$destroy = f;
+    D(this, 1), this.$destroy = c;
   }
-  $on(t, n) {
-    if (!j(n))
-      return f;
-    const e = this.$$.callbacks[t] || (this.$$.callbacks[t] = []);
-    return e.push(n), () => {
-      const r = e.indexOf(n);
-      r !== -1 && e.splice(r, 1);
+  $on(t, e) {
+    if (!k(e))
+      return c;
+    const n = this.$$.callbacks[t] || (this.$$.callbacks[t] = []);
+    return n.push(e), () => {
+      const o = n.indexOf(e);
+      o !== -1 && n.splice(o, 1);
     };
   }
   $set(t) {
-    this.$$set && !rt(t) && (this.$$.skip_bound = !0, this.$$set(t), this.$$.skip_bound = !1);
+    this.$$set && !J(t) && (this.$$.skip_bound = !0, this.$$set(t), this.$$.skip_bound = !1);
   }
 });
-function s() {
-}
-function B(t) {
-  return t();
-}
-function Q() {
-  return /* @__PURE__ */ Object.create(null);
-}
-function w(t) {
-  t.forEach(B);
-}
-function R(t) {
-  return typeof t == "function";
-}
-function V(t, n) {
-  return t != t ? n == n : t !== n || t && typeof t == "object" || typeof t == "function";
-}
-function gt(t) {
-  return Object.keys(t).length === 0;
-}
-function m(t, n, e) {
-  t.insertBefore(n, e || null);
-}
-function v(t) {
-  t.parentNode && t.parentNode.removeChild(t);
-}
-function W(t) {
-  return document.createElement(t);
-}
-function _t(t) {
-  return Array.from(t.childNodes);
-}
-function z(t) {
-  const n = {};
-  for (const e of t)
-    n[e.name] = e.value;
-  return n;
-}
-let D;
-function x(t) {
-  D = t;
-}
-const b = [], U = [], H = [], X = [], bt = Promise.resolve();
-let I = !1;
-function yt() {
-  I || (I = !0, bt.then(et));
-}
-function P(t) {
-  H.push(t);
-}
-const S = /* @__PURE__ */ new Set();
-let E = 0;
-function et() {
-  const t = D;
-  do {
-    for (; E < b.length; ) {
-      const n = b[E];
-      E++, x(n), xt(n.$$);
-    }
-    for (x(null), b.length = 0, E = 0; U.length; )
-      U.pop()();
-    for (let n = 0; n < H.length; n += 1) {
-      const e = H[n];
-      S.has(e) || (S.add(e), e());
-    }
-    H.length = 0;
-  } while (b.length);
-  for (; X.length; )
-    X.pop()();
-  I = !1, S.clear(), x(t);
-}
-function xt(t) {
-  if (t.fragment !== null) {
-    t.update(), w(t.before_update);
-    const n = t.dirty;
-    t.dirty = [-1], t.fragment && t.fragment.p(t.ctx, n), t.after_update.forEach(P);
-  }
-}
-const kt = /* @__PURE__ */ new Set();
-function wt(t, n) {
-  t && t.i && (kt.delete(t), t.i(n));
-}
-function Et(t, n, e, r) {
-  const { fragment: i, after_update: l } = t.$$;
-  i && i.m(n, e), r || P(() => {
-    const u = t.$$.on_mount.map(B).filter(R);
-    t.$$.on_destroy ? t.$$.on_destroy.push(...u) : w(u), t.$$.on_mount = [];
-  }), l.forEach(P);
-}
-function Ct(t, n) {
-  const e = t.$$;
-  e.fragment !== null && (w(e.on_destroy), e.fragment && e.fragment.d(n), e.on_destroy = e.fragment = null, e.ctx = []);
-}
-function Ht(t, n) {
-  t.$$.dirty[0] === -1 && (b.push(t), yt(), t.$$.dirty.fill(0)), t.$$.dirty[n / 31 | 0] |= 1 << n % 31;
-}
-function F(t, n, e, r, i, l, u, T = [-1]) {
-  const a = D;
-  x(t);
-  const o = t.$$ = {
-    fragment: null,
-    ctx: [],
-    // state
-    props: l,
-    update: s,
-    not_equal: i,
-    bound: Q(),
-    // lifecycle
-    on_mount: [],
-    on_destroy: [],
-    on_disconnect: [],
-    before_update: [],
-    after_update: [],
-    context: new Map(n.context || (a ? a.$$.context : [])),
-    // everything else
-    callbacks: Q(),
-    dirty: T,
-    skip_bound: !1,
-    root: n.target || a.$$.root
-  };
-  u && u(o.root);
-  let $ = !1;
-  if (o.ctx = e ? e(t, n.props || {}, (c, p, ...g) => {
-    const _ = g.length ? g[0] : p;
-    return o.ctx && i(o.ctx[c], o.ctx[c] = _) && (!o.skip_bound && o.bound[c] && o.bound[c](_), $ && Ht(t, c)), p;
-  }) : [], o.update(), $ = !0, w(o.before_update), o.fragment = r ? r(o.ctx) : !1, n.target) {
-    if (n.hydrate) {
-      const c = _t(n.target);
-      o.fragment && o.fragment.l(c), c.forEach(v);
-    } else
-      o.fragment && o.fragment.c();
-    n.intro && wt(t.$$.fragment), Et(t, n.target, n.anchor, n.customElement), et();
-  }
-  x(a);
-}
-let M;
-typeof HTMLElement == "function" && (M = class extends HTMLElement {
-  constructor() {
-    super(), this.attachShadow({ mode: "open" });
-  }
-  connectedCallback() {
-    const { on_mount: t } = this.$$;
-    this.$$.on_disconnect = t.map(B).filter(R);
-    for (const n in this.$$.slotted)
-      this.appendChild(this.$$.slotted[n]);
-  }
-  attributeChangedCallback(t, n, e) {
-    this[t] = e;
-  }
-  disconnectedCallback() {
-    w(this.$$.on_disconnect);
-  }
-  $destroy() {
-    Ct(this, 1), this.$destroy = s;
-  }
-  $on(t, n) {
-    if (!R(n))
-      return s;
-    const e = this.$$.callbacks[t] || (this.$$.callbacks[t] = []);
-    return e.push(n), () => {
-      const r = e.indexOf(n);
-      r !== -1 && e.splice(r, 1);
-    };
-  }
-  $set(t) {
-    this.$$set && !gt(t) && (this.$$.skip_bound = !0, this.$$set(t), this.$$.skip_bound = !1);
-  }
-});
-class vt {
-  constructor() {
-    this.name = "d";
-  }
-}
-function Mt(t) {
-  let n;
+function nt(t) {
+  let e;
   return {
     c() {
-      n = W("communication-explorer"), n.innerHTML = "<h1>Hi I am a communication explorer WC!!!</h1>", this.c = s;
+      e = $("network-explorer"), e.innerHTML = "<h1>Hi I am the network explorer!!!</h1>", this.c = c;
     },
-    m(e, r) {
-      m(e, n, r);
+    m(n, o) {
+      w(n, e, o);
     },
-    p: s,
-    i: s,
-    o: s,
-    d(e) {
-      e && v(n);
+    p: c,
+    i: c,
+    o: c,
+    d(n) {
+      n && j(e);
     }
   };
 }
-function Tt(t) {
-  const n = new vt();
-  return console.log({ b: n }), [];
-}
-class Nt extends M {
-  constructor(n) {
+class G extends A {
+  constructor(e) {
     super(), F(
       this,
       {
         target: this.shadowRoot,
-        props: z(this.attributes),
+        props: I(this.attributes),
         customElement: !0
       },
-      Tt,
-      Mt,
-      V,
+      null,
+      nt,
+      B,
       {},
       null
-    ), n && n.target && m(n.target, this, n.anchor);
+    ), e && e.target && w(e.target, this, e.anchor);
   }
 }
-customElements.define("tscd-communication-explorer", Nt);
-function St(t) {
-  let n;
-  return {
+customElements.define("tscd-network-explorer", G);
+const rt = "@oscd-plugins/network-explorer", ot = "0.0.3";
+function it(t) {
+  let e, n, o, u, l, s, f;
+  return n = new G({}), {
     c() {
-      n = W("network-explorer"), n.innerHTML = "<h1>Hi I am a network explorer!!!</h1>", this.c = s;
+      e = $("main"), tt(n.$$.fragment), o = O(), u = $("input"), l = O(), s = $("input"), this.c = c, g(u, "type", "hidden"), g(u, "name", "package-name"), u.value = rt, g(s, "type", "hidden"), g(s, "name", "package-version"), s.value = ot;
     },
-    m(e, r) {
-      m(e, n, r);
+    m(i, r) {
+      w(i, e, r), z(n, e, null), p(e, o), p(e, u), p(e, l), p(e, s), f = !0;
     },
-    p: s,
-    i: s,
-    o: s,
-    d(e) {
-      e && v(n);
+    p: c,
+    i(i) {
+      f || (q(n.$$.fragment, i), f = !0);
+    },
+    o(i) {
+      Z(n.$$.fragment, i), f = !1;
+    },
+    d(i) {
+      i && j(e), D(n);
     }
   };
 }
-class jt extends M {
-  constructor(n) {
+class ut extends A {
+  constructor(e) {
     super(), F(
       this,
       {
         target: this.shadowRoot,
-        props: z(this.attributes),
+        props: I(this.attributes),
         customElement: !0
       },
       null,
-      St,
-      V,
+      it,
+      B,
       {},
       null
-    ), n && n.target && m(n.target, this, n.anchor);
-  }
-}
-customElements.define("tscd-network-explorer", jt);
-function Lt(t) {
-  let n;
-  return {
-    c() {
-      n = W("diffing-tool"), n.innerHTML = "<h1>Hi I am a diffing tool!!!</h1>", this.c = s;
-    },
-    m(e, r) {
-      m(e, n, r);
-    },
-    p: s,
-    i: s,
-    o: s,
-    d(e) {
-      e && v(n);
-    }
-  };
-}
-class Ot extends M {
-  constructor(n) {
-    super(), F(
-      this,
-      {
-        target: this.shadowRoot,
-        props: z(this.attributes),
-        customElement: !0
-      },
-      null,
-      Lt,
-      V,
-      {},
-      null
-    ), n && n.target && m(n.target, this, n.anchor);
-  }
-}
-customElements.define("tscd-diffing-tool", Ot);
-function Rt(t) {
-  let n;
-  return {
-    c() {
-      n = ct("main"), n.innerHTML = `<h1>Network Explorer</h1> 
-  <tscd-network-explorer></tscd-network-explorer>`, this.c = f;
-    },
-    m(e, r) {
-      Y(e, n, r);
-    },
-    p: f,
-    i: f,
-    o: f,
-    d(e) {
-      e && Z(n);
-    }
-  };
-}
-class It extends nt {
-  constructor(n) {
-    super(), pt(
-      this,
-      {
-        target: this.shadowRoot,
-        props: it(this.attributes),
-        customElement: !0
-      },
-      null,
-      Rt,
-      ot,
-      {},
-      null
-    ), n && n.target && Y(n.target, this, n.anchor);
+    ), e && e.target && w(e.target, this, e.anchor);
   }
 }
 export {
-  It as default
+  ut as default
 };
