@@ -47529,7 +47529,7 @@ function TAe(B) {
   B[2] && Qte();
   return b2 = new oie({}), {
     c() {
-      L = mi("div"), H = mi("div"), V = mi("div"), cn = mi("a"), cn.textContent = "Clear all", te = Tc(), m = mi("div"), Nn = mi("img"), $n = Tc(), ge = mi("label"), oe = mi("span"), oe.textContent = "Show Connections", bt = Tc(), Ct = mi("select"), Rn = mi("option"), Rn.textContent = "Select a Node", us && us.c(), kc = Tc(), Er = mi("hr"), _c = Tc(), yc = mi("div"), ko = mi("label"), cs = mi("input"), Xo = Tc(), J0 = mi("span"), J0.textContent = "Incoming Connection", df = Tc(), Hh = mi("label"), $w = mi("input"), Rj = Tc(), l8 = mi("span"), l8.textContent = "Outgoing Connection", u3 = Tc(), qh && qh.c(), Kj = Tc(), Hj = mi("hr"), qj = Tc(), h8(b2.$$.fragment), md = Tc(), _ = mi("hr"), Gj = Tc(), s3 = mi("h2"), s3.textContent = "Experiments", zj = Tc(), hm = mi("div"), o3 = mi("label"), w2 = mi("input"), Uj = Tc(), a8 = mi("span"), a8.textContent = "Hide irrelevant stuff", Xj = Tc(), Wo = mi("label"), qf = mi("span"), qf.textContent = "IED prefix search:", lm = Tc(), Y0 = mi("input"), Wj = Tc(), am = mi("style"), this.c = Ss, Fi(cn, "class", "clear-all"), Fi(V, "class", "actions"), PSe(Nn.src, Hn = kAe) || Fi(Nn, "src", Hn), Fi(Nn, "alt", "connection selector"), Rn.__value = "", Rn.value = Rn.__value, Rn.disabled = !0, Fi(m, "class", "ied-nodes"), Fi(cs, "type", "checkbox"), Fi($w, "type", "checkbox"), Fi(yc, "class", "connection-type"), Fi(w2, "type", "checkbox"), w2.checked = f3 = /*$selectedIEDNode*/
+      L = mi("div"), H = mi("div"), V = mi("div"), cn = mi("a"), cn.textContent = "Clear all", te = Tc(), m = mi("div"), Nn = mi("img"), $n = Tc(), ge = mi("label"), oe = mi("span"), oe.textContent = "Select an IED", bt = Tc(), Ct = mi("select"), Rn = mi("option"), Rn.textContent = "Select a IED", us && us.c(), kc = Tc(), Er = mi("hr"), _c = Tc(), yc = mi("div"), ko = mi("label"), cs = mi("input"), Xo = Tc(), J0 = mi("span"), J0.textContent = "Incoming Connection", df = Tc(), Hh = mi("label"), $w = mi("input"), Rj = Tc(), l8 = mi("span"), l8.textContent = "Outgoing Connection", u3 = Tc(), qh && qh.c(), Kj = Tc(), Hj = mi("hr"), qj = Tc(), h8(b2.$$.fragment), md = Tc(), _ = mi("hr"), Gj = Tc(), s3 = mi("h2"), s3.textContent = "Experiments", zj = Tc(), hm = mi("div"), o3 = mi("label"), w2 = mi("input"), Uj = Tc(), a8 = mi("span"), a8.textContent = "Hide irrelevant stuff", Xj = Tc(), Wo = mi("label"), qf = mi("span"), qf.textContent = "IED prefix search:", lm = Tc(), Y0 = mi("input"), Wj = Tc(), am = mi("style"), this.c = Ss, Fi(cn, "class", "clear-all"), Fi(V, "class", "actions"), PSe(Nn.src, Hn = kAe) || Fi(Nn, "src", Hn), Fi(Nn, "alt", "connection selector"), Rn.__value = "", Rn.value = Rn.__value, Rn.disabled = !0, Fi(m, "class", "ied-nodes"), Fi(cs, "type", "checkbox"), Fi($w, "type", "checkbox"), Fi(yc, "class", "connection-type"), Fi(w2, "type", "checkbox"), w2.checked = f3 = /*$selectedIEDNode*/
       B[3].hideIrrelevantStuff, Fi(hm, "class", "checkbox-group"), Fi(Y0, "type", "text"), Fi(Y0, "placeholder", "e.g.: XAT"), Y0.value = h3 = /*$selectedIEDNode*/
       B[3].nameFilter, Fi(H, "class", "sidebar-content"), Fi(L, "class", "sidebar sidebar-right");
     },
@@ -47816,7 +47816,7 @@ class hie extends r3 {
   }
 }
 customElements.define("tscd-communication-explorer", hie);
-const IAe = "@oscd-plugins/communication-explorer", PAe = "0.0.11";
+const IAe = "@oscd-plugins/communication-explorer", PAe = "0.0.12";
 function Yte(B) {
   var V;
   let L, H;
