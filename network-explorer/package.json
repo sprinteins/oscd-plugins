@@ -1,12 +1,12 @@
 {
   "name": "@oscd-plugins/network-explorer",
   "private": true,
-  "version": "0.0.8",
+  "version": "0.0.9",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "_build:watch": "vite build --watch",
+    "_build:watch": "NODE_ENV=development vite build --watch",
     "build:watch": "concurrently 'npm:_build:watch' 'npm:preview'",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
