@@ -1,7 +1,7 @@
 {
   "name": "@oscd-plugins/communication-explorer",
   "private": true,
-  "version": "0.0.22",
+  "version": "0.0.23",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,6 +10,7 @@
     "build:watch": "concurrently 'npm:_build:watch' 'npm:preview'",
     "preview": "vite preview --port 61942",
     "check": "svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "npm run check -- --watch",
     "version": "echo $npm_package_version"
   },
   "dependencies": {
