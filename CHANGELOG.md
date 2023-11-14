@@ -6,16 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
 ## Communication Explorer [Unreleased]
+## Type Switcher [Unreleased]
+## Documentation [Unreleased]
+
+---
+
+## Communication Explorer [0.0.30] - 2023-11-14
+
+
+### Changed
+- accordion is now reacting to filtered service types
+
 ### Fixed
 - align filter pills correctly
 - sampled values icon publish is missing
 - caching extracted information to improve performance
 
-## Changed
-- accordion is now reacting to filtered service types
-
-## Type Switcher [Unreleased]
-## Documentation [Unreleased]
 
 ## Communication Explorer [0.0.29] - 2023-07-20
 ### Fixed
