@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "plugins/documentation/**"
 jobs:
   check:
     uses: "./.github/workflows/check_version.yml"
