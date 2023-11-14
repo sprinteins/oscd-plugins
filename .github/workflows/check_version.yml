@@ -1,0 +1,53 @@
+name: "Check Version for Change"
+on:
+  workflow_call:
+    inputs:
+      plugin-name: #e.g.: network
+        required: true
+        type: string
+    outputs:
+      has_change: 
+        value: ${{ jobs.check.outputs.has_change }}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      has_change: ${{ steps.compare.outputs.has_change }}
+    steps:
+      - name: Checkout oscd-plugins.src
+        uses: actions/checkout@v3
+      
+      - name: Retrieve New Version
+        id: new_version
+        run: |
+          cd ./packages/plugins/${{inputs.plugin-name}}
+          echo "version=$(npm pkg get version)" >> "$GITHUB_OUTPUT"
+          
+      - name: Checkout oscd-plugins
+        uses: actions/checkout@v3
+        with:
+          repository: sprinteins/oscd-plugins
+          ref: gh-pages
+
+      - name: Retrieve Old Version
+        id: old_version
+        run: |
+          if test -f "./${{ inputs.plugin-name }}/package.json"; then
+          cd ./${{ inputs.plugin-name }}
+            echo "version=$(npm pkg get version)" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=_" >> "$GITHUB_OUTPUT"
+          fi
+          
+      - name: Compare Versions
+        id: compare
+        run: |
+          echo ${{ steps.old_version.outputs.version }} = ${{steps.new_version.outputs.version}}
+          if [ ${{ steps.old_version.outputs.version }} != ${{steps.new_version.outputs.version}} ]; then
+            echo "change found"
+            echo "has_change=true" >> "$GITHUB_OUTPUT"
+          else 
+            echo "no change detected"
+            echo "has_change=false" >> "$GITHUB_OUTPUT"
+          fi
+      

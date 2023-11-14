@@ -1,0 +1,19 @@
+name: "Plugin: Communication Explorer"
+on:
+  push:
+    branches:
+      - main
+jobs:
+  check:
+    uses: "./.github/workflows/check_version.yml"
+    with:
+      plugin-name: communication-explorer
+  
+  build:
+    needs: [check]
+    if: needs.check.outputs.has_change == 'true'
+    uses: "./.github/workflows/build.yml"
+    with:
+      plugin-name: communication-explorer
+    secrets:
+      PAT_REPO_OSCD_PLUGINS: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}
