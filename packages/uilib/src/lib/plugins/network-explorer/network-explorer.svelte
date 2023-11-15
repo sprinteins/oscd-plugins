@@ -18,6 +18,6 @@
 		display: block;
 		position: relative;
 		font-size: 12px;
-		min-height: 80vh;
+		/* min-height: 80vh; */
 	}
 </style>

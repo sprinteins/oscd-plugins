@@ -132,11 +132,11 @@ import BayContainer from "./bay-container/bay-container.svelte"
 		e.preventDefault()
 	}
 
-	function handleMouseLeave(e: MouseEvent) {
+	function handleMouseLeave() {
 		disableDragging()
 	}
 
-	function handleKeyUp(e: KeyboardEvent) {
+	function handleKeyUp() {
 		disableDragging()
 	}
 	function disableDragging() {

@@ -60,6 +60,7 @@ export class UCNetworkInformation {
 						ip:         ipInfo?.ip ?? "",
 						ipSubnet:   ipInfo?.ipSubnet ?? "",
 						ipGateway:  ipInfo?.ipGateway ?? "",
+						cables: 	   [],
 					})
 				}
 

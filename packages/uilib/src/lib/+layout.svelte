@@ -1,6 +1,7 @@
 <script lang="ts">
   import "$lib/style.css"
   import { page } from "$app/stores"
+  import { Theme } from "./theme"
 
   const modules = import.meta.glob("./(components|plugins)/**/+page.svelte")
   $: paths = Object.keys(modules)
@@ -35,6 +36,7 @@
   <title>OpenSCD Plugin Library (OPL)</title>
 </svelte:head>
 
+<Theme>
 <main>
   <sidebar>
     <nav>
@@ -53,6 +55,7 @@
     <slot />
   </content>
 </main>
+</Theme>
 
 <style>
   main {

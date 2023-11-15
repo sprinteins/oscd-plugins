@@ -1,16 +1,16 @@
 <script>
-    import Theme from "../../../theme/theme.svelte"
+
     export let name = ""
 </script>
 
-<Theme>
-    <example>
-        <div>
-            <h3>{name}</h3>
-        </div>
-        <slot />
-    </example>
-</Theme>
+
+<example>
+    <div>
+        <h3>{name}</h3>
+    </div>
+    <slot />
+</example>
+
 
 <style>
     example {

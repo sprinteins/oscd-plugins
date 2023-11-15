@@ -1,5 +1,5 @@
-import ELK, { type ElkExtendedEdge, type ElkNode } from "elkjs/lib/elk.bundled"
-import type { IEDNetworkInfo, IEDNetworkInfoV3, SubnetworkConnection } from "@oscd-plugins/core"
+import ELK, { type ElkNode } from "elkjs/lib/elk.bundled"
+import type { IEDNetworkInfo, IEDNetworkInfoV3 } from "@oscd-plugins/core"
 import { newIEDNode, type BayNode, type IEDConnection, type IEDNode, type RootNode, type SubnetworkEdge } from "../../../components/diagram"
 
 const defaultConfigs: Partial<Config> = {
@@ -34,12 +34,7 @@ export async function calculateLayoutV2(
 		.map(cable => cable.ieds)
 		.flat()
 	const ieds = [...new Set(iedsWithDuplicates)] // deduping
-	// const iedNames = ieds.map(ied => ied.iedName)
 	
-
-	
-	
-
 	// 
 	// NODDES
 	// 
@@ -68,6 +63,7 @@ export async function calculateLayoutV2(
 			// id:      `${cable.ieds[0].iedName}__${cable.ieds[1].iedName}`,
 			sources: [`ied-${cable.ieds[0].iedName}`],
 			targets: [`ied-${cable.ieds[1].iedName}`],
+			type:    "floating",
 		}
 		// console.log(edge, cable.ieds.map(ied => ied.iedName).join(" + ") )
 
@@ -90,17 +86,18 @@ export async function calculateLayoutV2(
 		id:            "graph-root",
 		layoutOptions: {
 			"elk.algorithm":             "org.eclipse.elk.layered",
+			// "elk.algorithm": "org.eclipse.elk.stress",
 			// "elk.algorithm":             "org.eclipse.elk.force",
 			// "org.eclipse.elk.layered.unnecessaryBendpoints": "true",
 			// "org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment": "RIGHTUP",
-			"org.eclipse.elk.direction": "DOWN",
+			"org.eclipse.elk.direction": "LEFT",
 			
 			// default: 20; a component is when multiple nodes are connected
 			// "org.eclipse.elk.spacing.componentComponent": "20", 
 
 			// "org.eclipse.elk.hierarchyHandling":  "INCLUDE_CHILDREN",
 			// "org.eclipse.elk.layered.mergeEdges": "false",
-			
+			// "org.eclipse.elk.stress.desiredEdgeLength":              "200.0",
 			"org.eclipse.elk.layered.spacing.baseValue":             String(defaultConfigs.spacingBase),
 			"org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": String(defaultConfigs.spacingBetweenNodes),
 		},
@@ -108,7 +105,6 @@ export async function calculateLayoutV2(
 		edges,
 	}
 
-	// // message type information gets lost here
 	const nodes = (await elk.layout(graph)) as RootNode
 
 	return nodes
@@ -151,7 +147,7 @@ function generateBayNodes(iedsByBay: Map<string, IEDNetworkInfo[]>): BayNode[] {
 	const nodes: BayNode[] = []
 
 	for (const [bay, ieds] of iedsByBay.entries()) {
-		const children = ieds.map((ied, index) => ({
+		const children = ieds.map((ied) => ({
 			id:         `ied-${ied.iedName}`,
 			label:      ied.iedName,
 			isRelevant: true,

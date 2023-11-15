@@ -1,5 +1,5 @@
 import { MessageType } from "../scd"
-import type { IEDElement, InputExtRefElement, InputExtRefElementWithDatSet, SCDQueries } from "../scd/scd-query"
+import type { IEDElement, InputExtRefElementWithDatSet, SCDQueries } from "../scd/scd-query"
 
 /** 
  * The name is temporary, rename it if you have a better one

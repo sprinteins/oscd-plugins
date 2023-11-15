@@ -1,10 +1,9 @@
 <script lang="ts">
-import type { IEDNetworkInfoV3 } from "@oscd-plugins/core";
-import { extractIEDInfos, extractIEDInfosWithBay, extractIEDNetworkInfoV2 } from "../layout/get-ieds"
+import { extractIEDInfosWithBay, extractIEDNetworkInfoV2 } from "../layout/get-ieds"
 import { calculateLayout, calculateLayoutV2, type Config } from "../layout/node-layout"
-import Diagram from "./diagram.svelte";
-import { Position, type Edge, type Node } from "@xyflow/svelte";
-import type { RootNode } from "../../../components/diagram";
+import Diagram from "./diagram.svelte"
+import { Position, type Edge, type Node } from "@xyflow/svelte"
+import type { RootNode } from "../../../components/diagram"
 
 
 // 
@@ -19,8 +18,8 @@ const config: Config = {
 	width: 	200,
 	height: 100,
 
-	spacingBase:         0,
-	spacingBetweenNodes: 0,
+	spacingBase:         100,
+	spacingBetweenNodes: 100,
 }
 
 let rootNode: RootNode | undefined = undefined
@@ -50,24 +49,27 @@ async function initInfos(
 				x: child.x!,
 				y: child.y!,
 			},
-			data:{
+			data: {
 				label: child.label,
 			},
-			targetPosition: Position.Top,
-			sourcePosition: Position.Bottom,
+			targetPosition: Position.Right,
+			sourcePosition: Position.Left,
+			// targetPosition: Position.Top,
+			// sourcePosition: Position.Bottom,
 		}
 	})
 
 	edges = rootNode?.edges?.map(edge => {
-			return {
-				id: edge.id,
-				source: edge.sources[0],
-				target: edge.targets[0],
-				type: "smoothstep",
-			}
-	}) ?? [];
+		return {
+			id:     edge.id,
+			source: edge.sources[0],
+			target: edge.targets[0],
+			type:   "smoothstep",
+			// type: "straight",
+		}
+	}) ?? []
 
-	console.log({level:"dev", iedInfos, iedNetworkInfo, rootNode, nodes})
+	console.log({level: "dev", iedInfos, iedNetworkInfo, rootNode, nodes})
 }
 
 
