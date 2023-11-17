@@ -8,10 +8,10 @@ export interface IPInfo {
 }
 
 export interface NetworkInfo {
-	ip: string
-	ipSubnet: string
-	ipGateway: string
-	cables: Cable[]
+	ip:         string
+	ipSubnet:   string
+	ipGateway:  string
+	cables:     Cable[]
 }
 
 export type Cable = string
@@ -100,7 +100,7 @@ export class UCNetworkInformation {
 		const info = connectedAPs.map( (cap) => {
 			return {
 				iedName:     cap.iedName,
-				networkInfo: this.IPInfoFromAPv2(cap.element),
+				networkInfo: this.extractNetworkInfo(cap.element),
 			}
 		})
 		return info
@@ -158,7 +158,7 @@ export class UCNetworkInformation {
 		return ipInfo
 	}
 
-	private IPInfoFromAPv2(apElement: Element): IPInfo {
+	private extractNetworkInfo(apElement: Element): NetworkInfo {
 		
 		const address = this.extractAddressFromAP(apElement)
 		const cables = this.extractCablesFromAP(apElement)
@@ -188,6 +188,7 @@ export class UCNetworkInformation {
 		const cables = cableElements.map(cable => cable.element.innerHTML)
 		return cables
 	}
+
 }
 
 

@@ -1,12 +1,6 @@
 import type { ElkExtendedEdge, ElkNode } from "elkjs"
 import type { IEDCommInfo, MessageType } from "@oscd-plugins/core"
-
-export type IEDNode = Omit<ElkNode, "edges"> & {
-	label: string,
-	isRelevant?: boolean
-	isBayNode?: boolean
-	edges?: IEDConnection[]
-}
+import type { IED } from "../ied"
 
 export function newIEDNode(iedNode: IEDNode): IEDNode {
 	const newIEDNode: IEDNode = {
@@ -15,23 +9,6 @@ export function newIEDNode(iedNode: IEDNode): IEDNode {
 
 	return newIEDNode
 }
-
-// class IEDNode implements Omit<ElkNode, "edges"> {
-// 	public readonly id = ""
-// 	public readonly label = ""
-// 	public readonly isRelevant?: boolean
-// 	public readonly isBayNode?: boolean
-// 	public readonly edges?: IEDConnection[]
-
-// 	constructor(user?: Partial<IEDNode>){
-// 		const new_this: IEDNode = {
-// 			...structuredClone(this),
-// 			...user,
-// 		}
-// 		Object.setPrototypeOf(new_this, IEDNode.prototype)
-// 		return new_this
-// 	}
-// }
 
 export type IEDConnection = ElkExtendedEdge & {
 	isRelevant?: boolean
@@ -54,10 +31,16 @@ export type SubnetworkEdge = ElkExtendedEdge & {
 	isRelevant?: boolean
 }
 
-export type BayNode = Omit<ElkNode, "children"> & {
-	label: string;
-	isBayNode: boolean;
+export type IEDNode = Omit<ElkNode, "edges" | "children"> & {
+	label: string,
+	isRelevant?: boolean
+	isBayNode?: boolean
+	edges?: IEDConnection[]
 	children: IEDNode[]
+}
+
+export type BayNode = Omit<IEDNode, "isBayNode"> & {
+	isBayNode: true;
 }
 
 export function isBayNode(node: IEDNode | BayNode): node is BayNode {

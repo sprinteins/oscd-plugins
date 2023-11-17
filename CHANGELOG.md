@@ -4,13 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Network Explorer [Unreleased]
+
+### Added
+
+- sidebar for details
+- IED type
+- manufacturer
+- IED name
+- IP address
 
 ## Communication Explorer [Unreleased]
 ### Fixed
 - align filter pills correctly
 - sampled values icon publish is missing
 
-## Changed
+### Changed
 - accordion is now reacting to filtered service types
 
 ## Type Switcher [Unreleased]
@@ -21,7 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - align filter pills correctly
 - show sampled value icon
 
-## Added
+### Added
 - add service type filter in accordion view
 
 ## Communication Explorer [0.0.28] - 2023-07-20

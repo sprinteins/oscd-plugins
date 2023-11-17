@@ -1,6 +1,7 @@
 import ELK, { type ElkNode } from "elkjs/lib/elk.bundled"
 import type { IEDNetworkInfo, IEDNetworkInfoV3 } from "@oscd-plugins/core"
 import { newIEDNode, type BayNode, type IEDConnection, type IEDNode, type RootNode, type SubnetworkEdge } from "../../../components/diagram"
+import type { IEDBayMap } from "./get-ieds"
 
 const defaultConfigs: Partial<Config> = {
 	spacingBase:         0,
@@ -18,9 +19,9 @@ export type Config = {
 
 export async function calculateLayoutV2(
 	iedNetworkInfos: IEDNetworkInfoV3[],
+	iedBayMap: IEDBayMap,
 	customConfig: Config,
-// ): Promise<RootNode> {
-) {
+): Promise<RootNode> {
 
 	const config: Config = {
 		...defaultConfigs,
@@ -40,19 +41,54 @@ export async function calculateLayoutV2(
 	// 
 	
 	
-	// const children: IEDNode[] = []
 
-	const children = ieds.map(ied => {
-		const newNode =  newIEDNode({
+	const iedsWithoutBay: IEDNode[] = []
+	const bayNodes: ElkNode[] = []
+	for(const bayName in iedBayMap){
+		const bayNode: BayNode = {
+			id:         `bay-${bayName}`,
+			label: 	    bayName,
+			width:      config.width,
+			height:     config.height+200,
+			isBayNode:  true,
+			children:   [],
+			layoutOptions: {
+				"spacing.baseValue":             String(config.spacingBase),
+				"spacing.nodeNodeBetweenLayers": String(config.spacingBetweenNodes),
+			}
+		}
+		bayNodes.push(bayNode)
+	}
+
+	for(const ied of ieds){
+		const newNode: IEDNode = {
 			id:         `ied-${ied.iedName}`,
 			label:      ied.iedName,
+			isBayNode:  false,
 			isRelevant: true,
 			width:      config.width,
 			height:     config.height,
-			
-		})
-		return newNode
-	})
+			children:   [],
+		}
+		// assign to if can bay
+		const bayName = Object.keys(iedBayMap).find(bayName => iedBayMap[bayName].includes(ied.iedName))
+		const belongsToBay = Boolean(bayName)
+		if(belongsToBay){
+			const bayNode = bayNodes.find(bayNode => bayNode.id === `bay-${bayName}`)
+			if(bayNode){
+				newNode.layoutOptions = {
+					"org.eclipse.elk.direction": "LEFT",
+				}
+				bayNode.children?.push(newNode)
+			}else{
+				console.warn({level:"warn", msg:"no baynode found", bayName })
+			}
+
+		}else {
+			iedsWithoutBay.push(newNode)
+		}
+	}
+
 
 	// const edgesWithDuplicates = cablePairs.map(cable => {
 	const edges = cablePairs.map(cable => {
@@ -76,7 +112,7 @@ export async function calculateLayoutV2(
 	// const difference = edgeIds.filter(x => !dedupedEdgeIds.includes(x))
 	
 
-	console.log({level: "dev", msg: "calculateLayoutV2", cablePairs, ipMap, ieds, edges, children})	
+	console.log({level: "dev", msg: "calculateLayoutV2", cablePairs, ipMap, ieds, edges, bayNodes})	
 
 	const elk = new ELK()
 
@@ -86,11 +122,13 @@ export async function calculateLayoutV2(
 		id:            "graph-root",
 		layoutOptions: {
 			"elk.algorithm":             "org.eclipse.elk.layered",
+			"hierarchyHandling":         "INCLUDE_CHILDREN",
 			// "elk.algorithm": "org.eclipse.elk.stress",
 			// "elk.algorithm":             "org.eclipse.elk.force",
 			// "org.eclipse.elk.layered.unnecessaryBendpoints": "true",
 			// "org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment": "RIGHTUP",
-			"org.eclipse.elk.direction": "LEFT",
+			// "org.eclipse.elk.direction": "LEFT",
+			"org.eclipse.elk.direction": "BOTTOM",
 			
 			// default: 20; a component is when multiple nodes are connected
 			// "org.eclipse.elk.spacing.componentComponent": "20", 
@@ -98,10 +136,10 @@ export async function calculateLayoutV2(
 			// "org.eclipse.elk.hierarchyHandling":  "INCLUDE_CHILDREN",
 			// "org.eclipse.elk.layered.mergeEdges": "false",
 			// "org.eclipse.elk.stress.desiredEdgeLength":              "200.0",
-			"org.eclipse.elk.layered.spacing.baseValue":             String(defaultConfigs.spacingBase),
-			"org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": String(defaultConfigs.spacingBetweenNodes),
+			"org.eclipse.elk.layered.spacing.baseValue":             String(config.spacingBase),
+			"org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": String(config.spacingBetweenNodes),
 		},
-		children,
+		children: [...bayNodes, ...iedsWithoutBay],
 		edges,
 	}
 

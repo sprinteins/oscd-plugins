@@ -33,6 +33,8 @@ import { writable } from "svelte/store"
 	const edges$ = writable<Edge[]>(edges)
 
 	// const connectionLineStyle = "stroke: black; stroke-width: 3;"
+	const bgColor = writable('#1A192B');
+
 
 </script>
 
@@ -44,6 +46,7 @@ import { writable } from "svelte/store"
 		minZoom={0.1} 
 		maxZoom={2.5}
 		{defaultEdgeOptions}
+		style="background: {$bgColor}"
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->
 		<Controls />

@@ -306,8 +306,8 @@ importers:
         specifier: 7.0.0-beta.8
         version: 7.0.0-beta.8(svelte@3.55.0)(typescript@4.9.4)
       '@xyflow/svelte':
-        specifier: ^0.0.26
-        version: 0.0.26(svelte@3.55.0)
+        specifier: ^0.0.27
+        version: 0.0.27(svelte@3.55.0)
       d3-path:
         specifier: ^3.1.0
         version: 3.1.0
@@ -2964,19 +2964,19 @@ packages:
       p-iteration: 1.1.8
     dev: true
 
-  /@xyflow/svelte@0.0.26(svelte@3.55.0):
-    resolution: {integrity: sha512-u3cTMYL27k7JS/N/8lXBXCQs06X14QpCmdmHvLN8XXIHtumoFnlLHkFXhwE9f1RLmN0DHqiv8kwnLEk4ngTqWA==}
+  /@xyflow/svelte@0.0.27(svelte@3.55.0):
+    resolution: {integrity: sha512-c99gnz6vcReKzeJ8MGkOYLlMHarNFw8F9hlWv4zFKg4zuHcOLgBBFUuf+zWxDtYzBELplE+rETQR6EDX0rWLEQ==}
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0
     dependencies:
       '@svelte-put/shortcut': 3.0.0
-      '@xyflow/system': 0.0.9
+      '@xyflow/system': 0.0.10
       classcat: 5.0.4
       svelte: 3.55.0
     dev: false
 
-  /@xyflow/system@0.0.9:
-    resolution: {integrity: sha512-jtn5RaSydScUDetIhT4KNClCnbdQN8c3cpHZvV2iTo7vALx6q+w8G2b2h3jMAqE8hBpavzh9hHYdIDrQMVh+iw==}
+  /@xyflow/system@0.0.10:
+    resolution: {integrity: sha512-Oo283ABVS+LX+AXA13hg/IHBONBw8n0+a0B4vH7rqyzeZOpB0DrBfI9ngZw5T8+Jv5q63ucYmu3R3XVG5VANrQ==}
     dependencies:
       '@types/d3': 7.4.2
       '@types/d3-drag': 3.0.6

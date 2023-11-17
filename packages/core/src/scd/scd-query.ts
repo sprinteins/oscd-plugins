@@ -15,6 +15,27 @@ export class SCDQueries {
 		return this.searchElement<IEDElement>(SCDQueries.SelectorIED, SCDQueries.AttributeListIED, options)
 	}
 
+
+	public static SelectorLNode = "LNode"
+	public static AttributeListLNode: AttributeList<LNodeElement>[] = [
+		"iedName",
+		"ldInst",
+		"lnClass",
+		"lnInst",
+		"lnType",
+		"prefix",
+	]
+	public searchLNodes(options?: CommonOptions): LNodeElement[] {
+		const selector = `LNode`
+		return this.searchElement<LNodeElement>(selector, SCDQueries.AttributeListLNode, options)
+	}
+
+	public static SelectorBay = "Bay"
+	public static AttributeListBay: AttributeList<BayElement>[] = ["name"]
+	public searchBays(options?:CommonOptions): BayElement[]{
+		return this.searchElement<BayElement>(SCDQueries.SelectorBay, SCDQueries.AttributeListBay, options)
+	}
+
 	public getBaysByIEDName(name: string): Set<string> {
 		const root = this.determineRoot()
 		const selector = `SCL Substation VoltageLevel Bay LNode[iedName='${name}']`
@@ -285,6 +306,8 @@ export class SCDQueries {
 	}
 
 	
+
+	
 	// 
 	// Privates
 	// 
@@ -344,6 +367,19 @@ export type EnumTypeElement = SCDElement & {
 export type DOElement = SCDElement & {
 	name: string
 	type: string
+}
+
+export type BayElement = SCDElement & {
+	name: string
+}
+
+export type LNodeElement = SCDElement & {
+	iedName: string
+	ldInst: string
+	lnClass: string
+	lnInst: string
+	lnType: string
+	prefix: string
 }
 
 export type LNodeTypeElement = SCDElement & {
