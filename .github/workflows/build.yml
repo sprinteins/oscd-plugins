@@ -15,7 +15,7 @@ jobs:
     env:
       PAT_TOKEN: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}
     steps:
-      - name: Checkout oscd-plugins.src
+      - name: Checkout oscd-plugins/main
         uses: actions/checkout@v3
         
       - name: Install pnpm

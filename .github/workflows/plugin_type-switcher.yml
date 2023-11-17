@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "plugins/type-switcher/**"
 jobs:
   check:
     uses: "./.github/workflows/check_version.yml"

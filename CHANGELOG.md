@@ -15,15 +15,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - IP address
 
 ## Communication Explorer [Unreleased]
-### Fixed
-- align filter pills correctly
-- sampled values icon publish is missing
+## Type Switcher [Unreleased]
+## Documentation [Unreleased]
+
+---
+
+## Network Explorer [0.0.2] - 2023-11-17
+
+### Added
+
+- IED type (#5)
+
+## Network Explorer [0.0.1] - 2023-11-17
+
+### Added
+
+- sidebar for details
+
+## Communication Explorer [0.0.30] - 2023-11-14
+
 
 ### Changed
 - accordion is now reacting to filtered service types
 
-## Type Switcher [Unreleased]
-## Documentation [Unreleased]
+### Fixed
+- align filter pills correctly
+- sampled values icon publish is missing
+- caching extracted information to improve performance
+
 
 ## Communication Explorer [0.0.29] - 2023-07-20
 ### Fixed
