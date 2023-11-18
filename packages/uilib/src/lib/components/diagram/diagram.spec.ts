@@ -216,7 +216,7 @@ describe("Diagram", () => {
 				// Act
 				// 
 				for( const index of tc.selectIndices ){
-					toggleMultiSelectionOfIED({label: tc.IEDs[index].iedName, id: tc.IEDs[index].iedName})
+					toggleMultiSelectionOfIED({label: tc.IEDs[index].iedName, id: tc.IEDs[index].iedName, children: []})
 				}
 				
 				render(Diagram, { rootNode })

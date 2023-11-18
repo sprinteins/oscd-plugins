@@ -22,8 +22,8 @@ export type IEDConnectionWithCustomValues = IEDConnection & {
 	targetIED: IEDCommInfo
 }
 
-export type RootNode = Omit<ElkNode, "children" | "edges"> & {
-	children: Array<IEDNode | BayNode>,
+export type RootNode<ChildNodes=IEDNode> = Omit<ElkNode, "children" | "edges"> & {
+	children: Array<ChildNodes>,
 	edges?: IEDConnectionWithCustomValues[]
 }
 
@@ -42,6 +42,8 @@ export type IEDNode = Omit<ElkNode, "edges" | "children"> & {
 export type BayNode = Omit<IEDNode, "isBayNode"> & {
 	isBayNode: true;
 }
+
+export type NetworkNode = IEDNode | BayNode
 
 export function isBayNode(node: IEDNode | BayNode): node is BayNode {
 	return Boolean(node.isBayNode)

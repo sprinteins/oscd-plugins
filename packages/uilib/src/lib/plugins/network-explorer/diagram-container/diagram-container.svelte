@@ -1,15 +1,22 @@
 <script lang="ts">
-import { extractIEDInfosWithBay, extractIEDNetworkInfoV2, findAllIEDBays } from "../layout/get-ieds"
-import { calculateLayout, calculateLayoutV2, type Config } from "../layout/node-layout"
+/**
+ * The responsibility of `diagram-container` is to:
+ * 1. gather bays, and the network information if IEDs
+ * 2. calculate the layout of the diagram
+ * 3. render the diagram by converting ELKjs nodes to svelte-flow nodes
+ * 
+*/
+import { extractIEDNetworkInfoV2, findAllIEDBays } from "./ied-network-info"
+import { calculateLayoutV2, type Config } from "./layout-elkjs"
 import Diagram from "./diagram.svelte"
-import { Position, type Edge, type Node } from "@xyflow/svelte"
-import type { RootNode } from "../../../components/diagram"
-
+import type { Edge, Node } from "@xyflow/svelte"
+import { convertElKJSRootNodeToSvelteFlowObjects } from "./elk-svelteflow-converter"
 
 // 
 // INPUT
 // 
 export let root: Element
+$: updateNodesAndEdges(root)
 
 // 
 // CONFIG
@@ -22,102 +29,37 @@ const config: Config = {
 	spacingBetweenNodes: 100,
 }
 
-let rootNode: RootNode | undefined = undefined
-$: initInfos(root)
+// 
+// INTERNAL
+// 
 
 let nodes: Node[] = []
 let edges: Edge[] = []
 
-async function initInfos(
+async function updateNodesAndEdges(
 	root: Element
 ) {
 	if (!root) {
 		console.info({ level: "info", msg: "initInfos: no root" })
 		return []
 	}
-		
-	// const iedInfos = extractIEDInfosWithBay(root)
-	// rootNode = await calculateLayout(iedInfos)
-
 	const iedNetworkInfo = extractIEDNetworkInfoV2(root)
 	const iedBayMap = findAllIEDBays(root)
-	rootNode = await calculateLayoutV2(iedNetworkInfo, iedBayMap, config)
+	const rootNode = await calculateLayoutV2(iedNetworkInfo, iedBayMap, config)
 
-
-	for(const node of rootNode.children){
-		// const targetPosition = node.layoutOptions.
-		const newNode = {
-			...node,
-			position: {
-				x: node.x!,
-				y: node.y!,
-			},
-			data: {
-				label: node.label,
-			},
-			style: `width: ${node.width}px; height: ${node.height}px;`,
-			// targetPosition: Position.Right,
-			// sourcePosition: Position.Left,
-			targetPosition: Position.Top,
-			sourcePosition: Position.Bottom,
-		}
-		nodes.push(newNode)
-
-		const hasChildren = node.children?.length ?? 0 > 0
-		if(hasChildren){
-			for(const subNode of node.children){
-				nodes.push({
-					...subNode,
-					parentNode: newNode.id,
-					position: {
-						x: subNode.x!,
-						y: subNode.y!,
-					},
-					data: {
-						label: subNode.label ?? "",
-					},
-					style: `width: ${subNode.width}px; height: ${subNode.height}px;`,
-					targetPosition: Position.Right,
-					sourcePosition: Position.Left,
-					// targetPosition: Position.Top,
-					// sourcePosition: Position.Bottom,
-				})
-			}
-		}
-			
-	}
-
-
-	edges = rootNode?.edges?.map(edge => {
-		return {
-			id:     edge.id,
-			source: edge.sources[0],
-			target: edge.targets[0],
-			// type:   "smoothstep",
-			// type: "step",
-			// type: "straight",
-			type: "bezier",
-			// animated: true,
-			style: 'stroke: #fff;',
-		}
-	}) ?? []
-
-	console.log({level: "dev", iedBayMap, iedNetworkInfo, rootNode, nodes})
+	const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
+	nodes = resp.nodes
+	edges = resp.edges
 }
-
-
 
 </script>
 
-
 <div class="root">
-	{#if rootNode}
-		{#key nodes}
+	{#if nodes}
 		<Diagram 
 			{nodes} 
 			{edges} 
 		/>	
-		{/key}
 	{/if}
 </div>
 

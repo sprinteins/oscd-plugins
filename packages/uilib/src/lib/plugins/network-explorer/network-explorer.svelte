@@ -17,7 +17,6 @@
 	network-explorer {
 		display: block;
 		position: relative;
-		font-size: 12px;
-		/* min-height: 80vh; */
+		/* font-size: 12px; */
 	}
 </style>

@@ -6,6 +6,7 @@ import { hashElement } from "../xml/hash"
  * The name is temporary, rename it if you have a better one
  * UC = Use Case
  */
+// TODO: rename to UCTypeSwitcher
 export class UCTypeTypeSwitcher {
 
 	constructor(

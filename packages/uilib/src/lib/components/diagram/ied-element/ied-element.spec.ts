@@ -20,6 +20,7 @@ describe("IED", () => {
 			width:      100,
 			height:     100,
 			edges:      [],
+			children:   [],
 		}
 
 
@@ -41,6 +42,7 @@ describe("IED", () => {
 			width:      100,
 			height:     100,
 			edges:      [],
+			children:   [],
 		}
 
 		render(IEDElement, { node })
@@ -62,6 +64,7 @@ describe("IED", () => {
 			width:      100,
 			height:     100,
 			edges:      [],
+			children:   [],
 		}
 
 		render(IEDElement, { node, isSelected: true })

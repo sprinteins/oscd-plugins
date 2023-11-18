@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * This component is not in used
+	 * It serves as an example for a custom node
+	 * with variable number of handles
+	 */
 	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
   
 	type $$Props = NodeProps;
@@ -14,7 +19,7 @@
 	const width = 100-(2*padding)
 	const gap = width/ (nrOfHandle-1)
   
-	function pos(i){
+	function pos(i: number){
 	  return padding+(i*gap)
 	}
   

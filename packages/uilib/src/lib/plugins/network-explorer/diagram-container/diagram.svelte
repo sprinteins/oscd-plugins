@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * This component is responsible to configure SvelteFlow
+	*/
 	import { 
 		type Node, 
 		type Edge,
@@ -10,9 +13,20 @@
 	} from "@xyflow/svelte"
 	import "@xyflow/svelte/dist/style.css"
 	import FloatingEdge from "./floating-edge.svelte"
+	import { writable } from "svelte/store"
 
-import { writable } from "svelte/store"
 
+	// 
+	// INPUT
+	// 
+	export let nodes: Node[] = []
+	$: nodes$.set(nodes)
+	export let edges: Edge[] = []
+	$: edges$.set(edges)
+
+	// 
+	// CONFIG
+	// 
 	const edgeTypes = {
 		floating: FloatingEdge
 	}
@@ -26,9 +40,9 @@ import { writable } from "svelte/store"
 		// }
 	}
 
-	export let nodes: Node[] = []
-	export let edges: Edge[] = []
-	
+	// 
+	// INTERNAL
+	// 
 	const nodes$ = writable<Node[]>(nodes)
 	const edges$ = writable<Edge[]>(edges)
 

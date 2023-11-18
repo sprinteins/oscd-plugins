@@ -8,7 +8,7 @@
 </script>
 
 {#if node}
-	<div class="bay">
+	<div class="bay" data-testid={testid}>
 		<div>
 			{node.label}
 		</div>
