@@ -2,6 +2,7 @@
 	import Theme from "../../theme/theme.svelte"
 	import { DiagramContainer } from "./diagram"
 	import { DiagramController } from "./controller"
+	import { Sidebar } from "./sidebar"
 
 	// 
 	// INPUT
@@ -19,13 +20,14 @@
 		{#key root}
 			<DiagramContainer {controller} {root} />
 		{/key}
-		
+		<Sidebar {controller} />
 	</network-explorer>
 </Theme>
 
 <style>
 	network-explorer {
-		display: block;
+		display: flex;
+ 	 	align-items: stretch;
 		position: relative;
 		/* font-size: 12px; */
 	}

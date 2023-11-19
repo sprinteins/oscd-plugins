@@ -1,4 +1,4 @@
-import type { IEDNetworkInfo, IEDNetworkInfoV3 } from "@oscd-plugins/core"
+import type { IEDNetworkInfoV3 } from "@oscd-plugins/core"
 import { UCNetworkInformation, SCDQueries } from "@oscd-plugins/core"
 
 
