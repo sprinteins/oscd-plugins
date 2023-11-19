@@ -13,16 +13,14 @@
 	} from "@xyflow/svelte"
 	import "@xyflow/svelte/dist/style.css"
 	import FloatingEdge from "./floating-edge.svelte"
-	import { writable } from "svelte/store"
+	import { writable, type Writable } from "svelte/store"
 
 
 	// 
 	// INPUT
 	// 
-	export let nodes: Node[] = []
-	$: nodes$.set(nodes)
-	export let edges: Edge[] = []
-	$: edges$.set(edges)
+	export let nodes: Writable<Node[]>
+	export let edges: Writable<Edge[]>
 
 	// 
 	// CONFIG
@@ -43,8 +41,6 @@
 	// 
 	// INTERNAL
 	// 
-	const nodes$ = writable<Node[]>(nodes)
-	const edges$ = writable<Edge[]>(edges)
 
 	// const connectionLineStyle = "stroke: black; stroke-width: 3;"
 	const bgColor = writable('#1A192B');
@@ -54,8 +50,8 @@
 
 <network-diagram>
 	<SvelteFlow 
-		nodes={nodes$} 
-		edges={edges$} 
+		nodes={nodes} 
+		edges={edges} 
 		fitView 
 		minZoom={0.1} 
 		maxZoom={2.5}

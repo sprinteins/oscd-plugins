@@ -13,10 +13,12 @@ import { generateElkJSLayout, type Config } from "./elkjs-layout-generator"
 import Diagram from "./diagram.svelte"
 import type { Edge, Node } from "@xyflow/svelte"
 import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter"
+import type { DiagramController } from "../controller";
 
 // 
 // INPUT
 // 
+export let controller: DiagramController
 export let root: Element
 $: updateNodesAndEdges(root)
 
@@ -35,9 +37,6 @@ const config: Config = {
 // INTERNAL
 // 
 
-let nodes: Node[] = []
-let edges: Edge[] = []
-
 async function updateNodesAndEdges(
 	root: Element
 ) {
@@ -50,17 +49,17 @@ async function updateNodesAndEdges(
 	const rootNode = await generateElkJSLayout(iedNetworkInfo, iedBayMap, config)
 
 	const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
-	nodes = resp.nodes
-	edges = resp.edges
+	controller.nodes.set(resp.nodes)
+	controller.edges.set(resp.edges)
 }
 
 </script>
 
 <div class="root">
-	{#if nodes}
+	{#if controller}
 		<Diagram 
-			{nodes} 
-			{edges} 
+			nodes={controller.nodes}
+			edges={controller.edges}
 		/>	
 	{/if}
 </div>
