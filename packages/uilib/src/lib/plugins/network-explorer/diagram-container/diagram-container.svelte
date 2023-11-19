@@ -5,12 +5,14 @@
  * 2. calculate the layout of the diagram
  * 3. render the diagram by converting ELKjs nodes to svelte-flow nodes
  * 
+ * > See [network-explorer.tldr](../network-explorer.tldr) for 
+ * > a graphical representation
 */
 import { extractIEDNetworkInfoV2, findAllIEDBays } from "./ied-network-info"
-import { calculateLayoutV2, type Config } from "./layout-elkjs"
+import { generateElkJSLayout, type Config } from "./elkjs-layout-generator"
 import Diagram from "./diagram.svelte"
 import type { Edge, Node } from "@xyflow/svelte"
-import { convertElKJSRootNodeToSvelteFlowObjects } from "./elk-svelteflow-converter"
+import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter"
 
 // 
 // INPUT
@@ -45,7 +47,7 @@ async function updateNodesAndEdges(
 	}
 	const iedNetworkInfo = extractIEDNetworkInfoV2(root)
 	const iedBayMap = findAllIEDBays(root)
-	const rootNode = await calculateLayoutV2(iedNetworkInfo, iedBayMap, config)
+	const rootNode = await generateElkJSLayout(iedNetworkInfo, iedBayMap, config)
 
 	const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
 	nodes = resp.nodes

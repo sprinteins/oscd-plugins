@@ -16,7 +16,7 @@ export type Config = {
 	// heightPerConnection: number,
 }
 
-export async function calculateLayoutV2(
+export async function generateElkJSLayout(
 	iedNetworkInfos: IEDNetworkInfoV3[],
 	iedBayMap: IEDBayMap,
 	customConfig: Config,

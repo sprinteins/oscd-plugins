@@ -61,6 +61,9 @@
 		maxZoom={2.5}
 		{defaultEdgeOptions}
 		style="background: {$bgColor}"
+		snapGrid={[20, 20]}
+		on:nodeclick={e => console.log(e.detail)}
+		on:edgeclick={e => console.log(e.detail)}
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->
 		<Controls />
