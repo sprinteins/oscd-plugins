@@ -8,18 +8,19 @@
  * > See [network-explorer.tldr](../network-explorer.tldr) for 
  * > a graphical representation
 */
-import { extractIEDNetworkInfoV2, findAllIEDBays } from "./ied-network-info"
-import { generateElkJSLayout, type Config } from "./elkjs-layout-generator"
-import Diagram from "./diagram.svelte"
-import type { Edge, Node } from "@xyflow/svelte"
-import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter"
-import type { DiagramController } from "../controller";
-    import type { IEDNetworkInfoV3 } from "@oscd-plugins/core";
+import type { IEDNetworkInfoV3 } from "@oscd-plugins/core";
+import type { Node } from "@xyflow/svelte";
+import type { DiagramStore, SelectedNode } from "../store";
+import Diagram from "./diagram.svelte";
+import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
+import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
+import { extractIEDNetworkInfoV2, findAllIEDBays } from "./ied-network-info";
+import { useNodes } from '@xyflow/svelte';
 
 // 
 // INPUT
 // 
-export let controller: DiagramController
+export let controller: DiagramStore
 export let root: Element
 $: updateNodesAndEdges(root)
 
@@ -31,13 +32,48 @@ const config: Config = {
 	height: 30,
 
 	spacingBase:         10,
-	spacingBetweenNodes: 100,
+	spacingBetweenLaysers: 100,
 }
 
 // 
 // INTERNAL
 // 
 let iedNetworkInfos: IEDNetworkInfoV3[]
+const nodes$ = useNodes();
+$: updateSelectedNode($nodes$)
+
+function updateSelectedNode(nodes: Node[]){
+	const selectedNodes = nodes.filter(n => n.selected)
+	const hasSelectionReset = selectedNodes.length === 0
+	if(hasSelectionReset){
+		controller.selectedNodes.set([])	
+		return
+	}
+	const selectedIEDNetworkInfos = selectedNodes
+		.map(node => iedNetworkInfos.find(ni => ni.iedName === node.data.label))
+		.filter(Boolean)
+		.map(node => {
+			const connectedIEDs = node?.networkInfo.cables
+				.map(cable => {
+					const connectedNode = iedNetworkInfos.find(ni => ni.networkInfo.cables.includes(cable))
+					return connectedNode?.iedName
+				})
+				.filter(Boolean)
+				.filter(iedName => iedName !== node.iedName)as string[]
+				console.log({level:"dev", connectedIEDs})
+
+			return {
+				...node,
+				connectedIEDs
+				
+			} satisfies SelectedNode
+		})
+
+	// We know the array does not have undefined values because
+	// we filtered them out in the previous step
+	// but typescript does not understand that
+	controller.selectedNodes.set(selectedIEDNetworkInfos as IEDNetworkInfoV3[])
+}
 
 async function updateNodesAndEdges(
 	root: Element
@@ -58,7 +94,12 @@ async function updateNodesAndEdges(
 
 function handleNodeClick(node: Node){
 	const iedNetworkInfo = iedNetworkInfos.find(ni => ni.iedName === node.data.label)
-	controller.selectedNode.set(iedNetworkInfo)
+	console.log({level:"dev", msg:"handlenodeclick", iedNetworkInfo})
+	controller.selectedNodes.set(iedNetworkInfo)
+}
+
+function deselect(){
+	controller.selectedNodes.set(undefined)
 }
 
 </script>
@@ -68,22 +109,20 @@ function handleNodeClick(node: Node){
 		<Diagram 
 			nodes={controller.nodes}
 			edges={controller.edges}
-			on:nodeclick={(e) => handleNodeClick(e.detail.node)}
 		/>	
 	{/if}
+			<!-- on:nodeclick={(e) => handleNodeClick(e.detail.node)}
+			on:paneclick={deselect} -->
 </div>
 
 <style>
 	.root {
-		--header-height: 128px;
+		/* --header-height: 128px; */
 		display: grid;
 		grid-template-columns: auto 0;
 		height: calc(100vh - var(--header-height));
 		width: 100%;
 		overflow-x: hidden;
-	}
-	
-	.root.showSidebar {
-		grid-template-columns: auto var(--sidebar-width);
+		flex-grow: 1;
 	}
 </style>

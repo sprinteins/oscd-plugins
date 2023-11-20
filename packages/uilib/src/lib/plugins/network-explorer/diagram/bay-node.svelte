@@ -1,32 +1,31 @@
 <script lang="ts">
-	import type { IEDNode } from "../nodes"
+	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
+  
+	type $$Props = NodeProps;
+	
+	export let data: $$Props['data'];
+  
+	const { label } = data;
+	// $: console.log({level:"dev", data, props: $$props })
+  </script>
+  
+<div class="bay">
+	{label}
+</div>
 
-	// 
-	// INPUT
-	// 
-	export let node: IEDNode
-	export let isSelected = false
-	export let disabled = false
-	export let testid = ""
+  
+  <style>
+	:global(.svelte-flow__node-selectorNode) {
+	  font-size: 12px;
+	  background: #eee;
+	  border: 1px solid #555;
+	  border-radius: 5px;
+	  text-align: center;
+	}
 
-</script>
-
-{#if node}
-	<div
-		class="ied"
-		class:isIrrelevant={!node.isRelevant}
-		class:disabled
-		class:selected={isSelected}
-		data-testid={testid}
-	>
-		{node.label}
-	</div>
-{/if}
-
-<style>
-	.ied {
+	.bay {
 		display: grid;
-		place-items: center;
+		place-items: baseline;
 		height: 100%;
 		width: 100%;
 		cursor: pointer;
@@ -37,24 +36,25 @@
 
 
 		/* TODO: extract colors */
-		background: var(--color-white);
+		/* background: var(--color-white); */
+		background: #f9f7f18a;
 		border: 1px solid var(--color-cyan);
 		box-shadow: inset 0px 0px 6px rgba(77, 93, 99, 0.15);
 		border-radius: 5px;
 	}
 
-	.ied:hover:not(.disabled) {
+	.bay:hover:not(.disabled) {
 		border-style: dashed;
 	}
 
-	.ied.disabled{
+	.bay.disabled{
 		/* TODO: extract colors */
 		background: rgba(252, 246, 229, 0.5);
 		border: 1px solid rgba(42, 161, 152, 0.2);
 		color: rgba(74, 86, 92, 0.7);
 	}
 
-	.ied.selected {
+	.bay.selected {
 		color: var(--color-white);
 		background: var(--color-cyan);
 		border-width: 1px;
@@ -63,7 +63,7 @@
 		box-shadow: inset 0px 0px 6px rgba(77, 93, 99, 0.15);
 	}
 
-	.ied.selected:hover{
+	.bay.selected:hover{
 		border-style: dashed;
 		border-color: var(--color-white);
 
@@ -72,4 +72,4 @@
 	.isIrrelevant {
 		opacity: 0.2;
 	}
-</style>
+  </style>

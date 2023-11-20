@@ -60,6 +60,7 @@ function convertNetworkNode(node: NetworkNode): Node {
 		data: {
 			label: node.label,
 		},
+		type:           node.isBayNode? "bay" : "ied",
 		style:          `width: ${node.width}px; height: ${node.height}px;`,
 		targetPosition: Position.Top,
 		sourcePosition: Position.Bottom,
@@ -75,7 +76,7 @@ function convertEdge(edge: IEDConnectionWithCustomValues): Edge {
 		// type: "step",
 		// type: "straight",
 		type:   "bezier",
-		style:  "stroke: #fff;",
+		style:  "stroke: black;",
 		// animated: true,
 	}
 }

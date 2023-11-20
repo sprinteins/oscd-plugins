@@ -3,9 +3,13 @@ import type { Edge, Node } from "@xyflow/svelte"
 import { writable } from "svelte/store"
 
 
-export class DiagramController {
+export class DiagramStore {
 	public nodes = writable<Node[]>([])
 	public edges = writable<Edge[]>([])
 	
-	public selectedNode = writable<IEDNetworkInfoV3 | undefined>(undefined)
+	public selectedNodes = writable<SelectedNode[]>([])
+}
+
+export type SelectedNode = IEDNetworkInfoV3 & {
+	connectedIEDs: string[]
 }

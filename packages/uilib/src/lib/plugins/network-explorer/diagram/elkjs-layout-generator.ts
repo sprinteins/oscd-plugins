@@ -1,18 +1,18 @@
-import type { IEDNetworkInfo, IEDNetworkInfoV3 } from "@oscd-plugins/core"
+import type { IEDNetworkInfoV3 } from "@oscd-plugins/core"
 import ELK, { type ElkNode } from "elkjs/lib/elk.bundled"
 import type { BayNode, IEDConnection, IEDNode, NetworkNode, RootNode } from "../../../components/diagram"
 import type { IEDBayMap } from "./ied-network-info"
 
 const defaultConfigs: Partial<Config> = {
-	spacingBase:         0,
-	spacingBetweenNodes: 0,
+	spacingBase:           0,
+	spacingBetweenLaysers: 0,
 }
 
 export type Config = {
 	width: number,
 	height: number,
 	spacingBase?: number,
-	spacingBetweenNodes?: number,
+	spacingBetweenLaysers?: number,
 	// heightPerConnection: number,
 }
 
@@ -57,22 +57,26 @@ async function createLayoutWithElk(
 	const graph: ElkNode = {
 		id:            "graph-root",
 		layoutOptions: {
-			"elk.algorithm":             "org.eclipse.elk.layered",
-			"hierarchyHandling":         "INCLUDE_CHILDREN",
+			"elk.algorithm":                     "org.eclipse.elk.layered",
+			"hierarchyHandling":                 "INCLUDE_CHILDREN",
 			// "elk.algorithm": "org.eclipse.elk.stress",
 			// "elk.algorithm":             "org.eclipse.elk.force",
 			// "org.eclipse.elk.layered.unnecessaryBendpoints": "true",
 			// "org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment": "RIGHTUP",
 			// "org.eclipse.elk.direction": "LEFT",
-			"org.eclipse.elk.direction": "BOTTOM",
+			"org.eclipse.elk.direction":         "RIGHT",
+			"org.eclipse.elk.spacing.labelNode": "20",
 
 			// default: 20; a component is when multiple nodes are connected
 			// "org.eclipse.elk.spacing.componentComponent": "20", 
 			// "org.eclipse.elk.hierarchyHandling":  "INCLUDE_CHILDREN",
 			// "org.eclipse.elk.layered.mergeEdges": "false",
 			// "org.eclipse.elk.stress.desiredEdgeLength":              "200.0",
-			"org.eclipse.elk.layered.spacing.baseValue":             String(config.spacingBase),
-			"org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": String(config.spacingBetweenNodes),
+			"org.eclipse.elk.layered.spacing.baseValue":                 String(config.spacingBase),
+			"org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers":     String(config.spacingBetweenLaysers),
+			"org.eclipse.elk.layered.layering.strategy":                 "LONGEST_PATH",
+			"org.eclipse.elk.layered.layering.coffmanGraham.layerBound": "100",
+			"org.eclipse.elk.layered.nodePlacement.strategy":            "BRANDES_KOEPF",
 		},
 		children: [...bayNodes, ...iedsWithoutBay],
 		edges,
@@ -144,21 +148,27 @@ function createBayNode(bayName: string, config: Config): BayNode {
 	return {
 		id:            `bay-${bayName}`,
 		label:         bayName,
-		width:         config.width,
-		height:        config.height + 200,
+		// width:         config.width,
+		// height:        config.height,
 		isBayNode:     true,
 		children:      [],
 		layoutOptions: {
 			"spacing.baseValue":             String(config.spacingBase),
-			"spacing.nodeNodeBetweenLayers": String(config.spacingBetweenNodes),
+			"spacing.nodeNodeBetweenLayers": String(config.spacingBetweenLaysers),
+			"elk.padding":                   "[top=20.0,left=20.0,bottom=20.0]",
 		},
 	}
 }
 
 function createIEDNode(ied: IEDNetworkInfoV3, config: Config): IEDNode {
 	return {
-		id:         `ied-${ied.iedName}`,
-		label:      ied.iedName,
+		id:     `ied-${ied.iedName}`,
+		label:  ied.iedName,
+		labels: [
+			{
+				text: ied.iedName,
+			},
+		],
 		isBayNode:  false,
 		isRelevant: true,
 		width:      config.width,

@@ -63,6 +63,8 @@
     grid-template-columns: 200px 1fr;
     padding: 0;
     margin: 0;
+    height: 100vh;
+    overflow: hidden;
   }
 
   sidebar {
@@ -70,6 +72,7 @@
     border-right: thin gray solid;
     text-align: center;
     padding: 0.5rem 0;
+    overflow: auto;
   }
 
   sidebar ul {

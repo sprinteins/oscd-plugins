@@ -12,8 +12,9 @@
 		MiniMap,
 	} from "@xyflow/svelte"
 	import "@xyflow/svelte/dist/style.css"
-	import FloatingEdge from "./floating-edge.svelte"
-	import { writable, type Writable } from "svelte/store"
+	import IEDNode from "./ied-node.svelte"
+	import BayNode from "./bay-node.svelte"
+    import type { Writable } from "svelte/store";
 
 
 	// 
@@ -25,13 +26,14 @@
 	// 
 	// CONFIG
 	// 
-	const edgeTypes = {
-		floating: FloatingEdge
+	const nodeTypes = {
+		ied: IEDNode,
+		bay: BayNode,
 	}
 
 	const defaultEdgeOptions = {
 		style: "stroke-width: 2; stroke: black;",
-		type:  "floating",
+		// type:  "floating",
 		// markerEnd: {
 		// 	type: MarkerType.ArrowClosed,
 		// 		color: 'black'
@@ -43,7 +45,7 @@
 	// 
 
 	// const connectionLineStyle = "stroke: black; stroke-width: 3;"
-	const bgColor = writable('#1A192B');
+	// const bgColor = writable('#1A192B');
 
 
 </script>
@@ -56,15 +58,17 @@
 		minZoom={0.1} 
 		maxZoom={2.5}
 		{defaultEdgeOptions}
-		style="background: {$bgColor}"
+		{nodeTypes}
 		snapGrid={[20, 20]}
 		on:nodeclick
 		on:edgeclick
+		on:paneclick
+		panOnDrag={false}
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->
 		<Controls />
 		<Background variant={BackgroundVariant.Dots} />
-		<MiniMap />
+		<!-- <MiniMap /> -->
 	</SvelteFlow>
 </network-diagram>
 
@@ -73,8 +77,12 @@
 		display: block;
 		/* height: 100vh; */
 	}
+
+	:global(.svelte-flow__pane){
+		cursor: unset;
+	}
 	
 	:global(.svelte-flow .svelte-flow__node.parent) {
-		background-color: rgba(220, 220, 255, 0.4);
+		/* background-color: rgba(220, 220, 255, 0.4); */
 	}
 	</style>
