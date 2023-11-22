@@ -5,32 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Network Explorer [Unreleased]
-
-### Added
-
-- sidebar for details
-- IED type
-- manufacturer
-- IED name
-- IP address
-
 ## Communication Explorer [Unreleased]
 ## Type Switcher [Unreleased]
 ## Documentation [Unreleased]
 
 ---
 
-## Network Explorer [0.0.2] - 2023-11-17
+## Network Explorer [0.0.1] - 2023-11-22
 
 ### Added
 
-- IED type (#5)
+- new network explorer plugin (#1)
+- layout (#3)
+- IEDs to the network explorer (#2)
+- zoomable and movable diagram
+- display bays and add IEDs to them (#8)
+- select and multiselect IEDs (#15)
+- sidebar for details (#16)
+- show selected IEDs and their details (#6)
+- 
 
-## Network Explorer [0.0.1] - 2023-11-17
-
-### Added
-
-- sidebar for details
 
 ## Communication Explorer [0.0.30] - 2023-11-14
 
