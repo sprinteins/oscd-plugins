@@ -44,35 +44,34 @@ $: updateSelectedNode($nodes$)
 
 function updateSelectedNode(nodes: Node[]){
 	const selectedNodes = nodes.filter(n => n.selected)
-	const hasSelectionReset = selectedNodes.length === 0
-	if(hasSelectionReset){
+	const isSelectionReset = selectedNodes.length === 0
+	if(isSelectionReset){
 		controller.selectedNodes.set([])	
 		return
 	}
+	// TODO: clean up this mess
 	const selectedIEDNetworkInfos = selectedNodes
 		.map(node => iedNetworkInfos.find(ni => ni.iedName === node.data.label))
 		.filter(Boolean)
 		.map(node => {
 			const connectedIEDs = node?.networkInfo.cables
 				.map(cable => {
-					const connectedNode = iedNetworkInfos.find(ni => ni.networkInfo.cables.includes(cable))
-					return connectedNode?.iedName
-				})
+					const connectedNodes = iedNetworkInfos.filter(ni => ni.networkInfo.cables.includes(cable))
+					return connectedNodes?.map(n=> n.iedName)
+				}) 
+				.flat()
+				.filter(iedName => iedName !== node.iedName) // filter out the node itself
 				.filter(Boolean)
-				.filter(iedName => iedName !== node.iedName)as string[]
-				console.log({level:"dev", connectedIEDs})
+				?? []
+
 
 			return {
-				...node,
+				...node, // we filter out undefined values
 				connectedIEDs
-				
 			} satisfies SelectedNode
 		})
 
-	// We know the array does not have undefined values because
-	// we filtered them out in the previous step
-	// but typescript does not understand that
-	controller.selectedNodes.set(selectedIEDNetworkInfos as IEDNetworkInfoV3[])
+	controller.selectedNodes.set( selectedIEDNetworkInfos )
 }
 
 async function updateNodesAndEdges(
@@ -82,6 +81,7 @@ async function updateNodesAndEdges(
 		console.info({ level: "info", msg: "initInfos: no root" })
 		return []
 	}
+	
 	iedNetworkInfos = extractIEDNetworkInfoV2(root)
 	const iedBayMap = findAllIEDBays(root)
 	const rootNode = await generateElkJSLayout(iedNetworkInfos, iedBayMap, config)
@@ -91,16 +91,6 @@ async function updateNodesAndEdges(
 	controller.edges.set(resp.edges)
 }
 
-
-function handleNodeClick(node: Node){
-	const iedNetworkInfo = iedNetworkInfos.find(ni => ni.iedName === node.data.label)
-	console.log({level:"dev", msg:"handlenodeclick", iedNetworkInfo})
-	controller.selectedNodes.set(iedNetworkInfo)
-}
-
-function deselect(){
-	controller.selectedNodes.set(undefined)
-}
 
 </script>
 

@@ -21,7 +21,12 @@
 		"module": "esnext",
 		"target": "esnext"
 	},
-	"exclude": ["vite.config.ts*"]
+	"exclude": [
+		"vite.config.ts*"
+	],
+	"include": [
+		"src/reset.d.ts"
+	]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//
 	// If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes
