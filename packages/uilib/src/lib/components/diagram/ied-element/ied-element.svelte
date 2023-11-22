@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { IEDNode } from "../nodes"
 
-	// Input
+	// 
+	// INPUT
+	// 
 	export let node: IEDNode
 	export let isSelected = false
 	export let disabled = false

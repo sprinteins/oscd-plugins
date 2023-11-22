@@ -15,6 +15,27 @@ export class SCDQueries {
 		return this.searchElement<IEDElement>(SCDQueries.SelectorIED, SCDQueries.AttributeListIED, options)
 	}
 
+
+	public static SelectorLNode = "LNode"
+	public static AttributeListLNode: AttributeList<LNodeElement>[] = [
+		"iedName",
+		"ldInst",
+		"lnClass",
+		"lnInst",
+		"lnType",
+		"prefix",
+	]
+	public searchLNodes(options?: CommonOptions): LNodeElement[] {
+		const selector = `LNode`
+		return this.searchElement<LNodeElement>(selector, SCDQueries.AttributeListLNode, options)
+	}
+
+	public static SelectorBay = "Bay"
+	public static AttributeListBay: AttributeList<BayElement>[] = ["name"]
+	public searchBays(options?:CommonOptions): BayElement[]{
+		return this.searchElement<BayElement>(SCDQueries.SelectorBay, SCDQueries.AttributeListBay, options)
+	}
+
 	public getBaysByIEDName(name: string): Set<string> {
 		const root = this.determineRoot()
 		const selector = `SCL Substation VoltageLevel Bay LNode[iedName='${name}']`
@@ -36,11 +57,15 @@ export class SCDQueries {
 		return connections
 	}
 
-	public getSubnetworksByIEDName(name: string): Set<Element> {
+	public getConnectedAPByIEDName(name: string): Set<Element> {
 		const root = this.determineRoot()
 		const selector = `SCL > Communication > SubNetwork > ConnectedAP[iedName='${name}']`
 
-		const connectedAPs = Array.from(root.querySelectorAll(selector))
+		return new Set(root.querySelectorAll(selector))
+	}
+
+	public getSubnetworksByIEDName(name: string): Set<Element> {
+		const connectedAPs = this.getConnectedAPByIEDName(name)
 		const connections = new Set<Element>
 
 		for (const connectedAP of connectedAPs) {
@@ -219,6 +244,69 @@ export class SCDQueries {
 		return this.searchElement<SCDElement>(selector, [], options)
 	}
 
+
+	public static SelectorConnectedAP = "ConnectedAP"
+	public static AttributeListConnectedAP: AttributeList<ConnectedAPElement>[] = [
+		"apName", 
+		"iedName", 
+		"redProt",
+	]
+	public searchConnectedAPs(options?:CommonOptions): ConnectedAPElement[]{
+		
+		const apElements  = this.searchElement<ConnectedAPElement>(
+			SCDQueries.SelectorConnectedAP,
+			SCDQueries.AttributeListConnectedAP, 
+			options,
+		)
+
+		return apElements
+	}
+	
+	public static SelectorIP = "Address > P[type='IP']"
+	public static AttributeListIP: AttributeList<ConnectedAPIPElement>[] = []
+	public searchConnectedAPIP(options?:CommonOptions): ConnectedAPIPElement | undefined {
+		const ipElements  = this.searchElement<ConnectedAPIPElement>(
+			SCDQueries.SelectorIP, 
+			SCDQueries.AttributeListIP, 
+			options,
+		)
+		const ipElement = ipElements[0]
+		
+		return ipElement
+	}
+	
+	public static SelectorIPSubnet = "Address > P[type='IP-SUBNET']"
+	public static AttributeListIPSubnet: AttributeList<ConnectedAPIPSubnetElement>[] = []
+	public searchConnectedAPIPSubnet(options?:CommonOptions): ConnectedAPIPSubnetElement | undefined {
+		const ipSubnetElements = this.searchElement<ConnectedAPIPSubnetElement>(
+			SCDQueries.SelectorIPSubnet, 
+			SCDQueries.AttributeListIPSubnet, 
+			options,
+		)
+		const ipSubnetElement = ipSubnetElements[0]
+
+		return ipSubnetElement
+	}
+	
+	public static SelectorIPGateway = "Address > P[type='IP-GATEWAY']"
+	public static AttributeListIPGateway: AttributeList<ConnectedAPIPGatewayElement>[] = []
+	public searchConnectedAPIPGateway(options?:CommonOptions): ConnectedAPIPGatewayElement | undefined {
+		const ipGatewayElements  = this.searchElement<ConnectedAPIPGatewayElement>(SCDQueries.SelectorIPGateway, SCDQueries.AttributeListIPGateway, options)
+		const ipGatewayElement = ipGatewayElements[0]
+
+		return ipGatewayElement
+	}
+	
+	public static SelectorCable = "PhysConn[type='Connection'] P[type='Cable']"
+	public static AttributeListCable: AttributeList<ConnectedAPCableElement>[] = []
+	public searchConnectedAPCables(options?:CommonOptions): ConnectedAPCableElement[]{
+		const cableElements  = this.searchElement<ConnectedAPCableElement>(SCDQueries.SelectorCable, SCDQueries.AttributeListCable, options)
+
+		return cableElements
+	}
+
+	
+
 	
 	// 
 	// Privates
@@ -279,6 +367,19 @@ export type EnumTypeElement = SCDElement & {
 export type DOElement = SCDElement & {
 	name: string
 	type: string
+}
+
+export type BayElement = SCDElement & {
+	name: string
+}
+
+export type LNodeElement = SCDElement & {
+	iedName: string
+	ldInst: string
+	lnClass: string
+	lnInst: string
+	lnType: string
+	prefix: string
 }
 
 export type LNodeTypeElement = SCDElement & {
@@ -353,6 +454,18 @@ export type InputExtRefElement = SCDElement & {
 export type InputExtRefElementWithDatSet = InputExtRefElement & {
 	datSet: string
 }
+
+// <ConnectedAP apName="F" iedName="AARSC_CcC_1101" redProt="prp">
+export type ConnectedAPElement = SCDElement & {
+	apName: string
+	iedName: string
+	redProt: string
+}
+
+export type ConnectedAPIPElement = SCDElement
+export type ConnectedAPIPSubnetElement = SCDElement
+export type ConnectedAPIPGatewayElement = SCDElement
+export type ConnectedAPCableElement = SCDElement
 
 export type Optional<T> = T | undefined
 export type AttributeList<T extends SCDElement> = Exclude<keyof T, keyof SCDElement>

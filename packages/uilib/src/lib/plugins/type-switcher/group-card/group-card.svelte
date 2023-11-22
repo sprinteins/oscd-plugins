@@ -26,7 +26,9 @@
       <div class="icon-placeholder">
         <Icons name={icon} size="rect" />
       </div>
-    {:else}{/if}
+    {:else}
+      {null}
+    {/if}
     <ul>
       {#each displayedItems as item}
         <li>{item}</li>

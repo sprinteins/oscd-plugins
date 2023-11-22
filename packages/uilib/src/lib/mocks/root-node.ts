@@ -20,10 +20,10 @@ export async function generateMockRootNode(): Promise<RootNode>{
 	}
 	
 	const children: IEDNode[] = [
-		{id: ID(), width: config.width, height: config.height, label: Label()},
-		{id: ID(), width: config.width, height: config.height, label: Label()},
-		{id: ID(), width: config.width, height: config.height, label: Label()},
-		{id: ID(), width: config.width, height: config.height, label: Label()},
+		{id: ID(), width: config.width, height: config.height, label: Label(), children: []},
+		{id: ID(), width: config.width, height: config.height, label: Label(), children: []},
+		{id: ID(), width: config.width, height: config.height, label: Label(), children: []},
+		{id: ID(), width: config.width, height: config.height, label: Label(), children: []},
 	
 	]
 	

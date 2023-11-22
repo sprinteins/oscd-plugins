@@ -10,6 +10,9 @@ uilib: _install ## Start UI-Lib in dev mode
 communication-explorer: _install ## Start the communication explorer plugin in dev mode
 	pnpm -C ./packages/plugins/communication-explorer run build:watch
 
+network-explorer: _install ## Start the network explorer plugin in dev mode
+	pnpm -C ./packages/plugins/network-explorer run build:watch
+
 documentation: _install ## Start the documentation plugin in dev mode
 	pnpm -C ./packages/plugins/documentation run build:watch
 

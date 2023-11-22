@@ -4,12 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-
+## Network Explorer [Unreleased]
 ## Communication Explorer [Unreleased]
 ## Type Switcher [Unreleased]
 ## Documentation [Unreleased]
 
 ---
+
+## Network Explorer [0.0.1] - 2023-11-22
+
+### Added
+
+- new network explorer plugin (#1)
+- layout (#3)
+- IEDs to the network explorer (#2)
+- zoomable and movable diagram
+- display bays and add IEDs to them (#8)
+- select and multiselect IEDs (#15)
+- sidebar for details (#16)
+- show selected IEDs and their details (#6)
+- 
+
 
 ## Communication Explorer [0.0.30] - 2023-11-14
 
@@ -28,7 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - align filter pills correctly
 - show sampled value icon
 
-## Added
+### Added
 - add service type filter in accordion view
 
 ## Communication Explorer [0.0.28] - 2023-07-20

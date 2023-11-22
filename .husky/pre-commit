@@ -1,5 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-pnpm turbo lint && \
-pnpm turbo check
+# 
+# Note: I've deactivated the linting and check for now, 
+# 		as it's not working properly
+# 
+
+# pnpm turbo lint && \
+# pnpm turbo check

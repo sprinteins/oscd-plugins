@@ -15,6 +15,9 @@
 	import { preferences$, type Preferences  } from "../_store-preferences"
 	import type { IEDCommInfo } from "@oscd-plugins/core"
 	
+	// 
+	// INPUT
+	// 
 	export let root: Element
 	export let showSidebar = true
 	

@@ -1,0 +1,21 @@
+name: "Plugin: Network Explorer"
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "plugins/network-explorer/**"
+jobs:
+  check:
+    uses: "./.github/workflows/check_version.yml"
+    with:
+      plugin-name: network-explorer
+  
+  build:
+    needs: [check]
+    if: needs.check.outputs.has_change == 'true'
+    uses: "./.github/workflows/build.yml"
+    with:
+      plugin-name: network-explorer
+    secrets:
+      PAT_REPO_OSCD_PLUGINS: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}

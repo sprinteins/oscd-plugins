@@ -9,7 +9,7 @@
     	setNameFilter,
     } from "../_store-view-filter/selected-filter-store-functions"
     import ConnectionSelector from "./assets/connection-selector.svg"
-    import type { IEDNode, RootNode } from "../../../components/diagram"
+    import type { BayNode, IEDNode, RootNode } from "../../../components/diagram"
     import { ConnectionTypeFilter } from "./connection-type-filter"
     import { MessageTypeFilter } from "./message-type-filter"
     import ConnectionInformation from "./connection-information/connection-information.svelte"
@@ -29,7 +29,7 @@
     	isIedFiltersDisabled
     )
 
-    let selectedNode: IEDNode | undefined
+    let selectedNode: IEDNode | BayNode | undefined
 
     function handleConnectionDirectionDisabled(
     	filter: SelectedFilter,
@@ -46,7 +46,7 @@
     function setSelectedNode(e: Event) {
     	const target = e.target as HTMLSelectElement
     	selectedNode = rootNode.children.find(
-    		(node) => node.id === target.value
+    		(node: IEDNode | BayNode) => node.id === target.value
     	)
     	if (selectedNode) {
     		selectIEDNode(selectedNode)

@@ -106,3 +106,5 @@ dist
 
 # Github Actions
 _build_
+
+.local*

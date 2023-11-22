@@ -33,6 +33,7 @@ export function generateIEDLayout(
 			height:     config.height,
 			label:      ied.iedName,
 			isRelevant: isRelevant,
+			children:   [],
 		}
 	})
 

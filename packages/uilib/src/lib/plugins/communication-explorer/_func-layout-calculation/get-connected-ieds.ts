@@ -1,5 +1,5 @@
 import type { MessageType } from "@oscd-plugins/core"
-import type { IEDConnection, IEDNode, RootNode } from "../../../components/diagram"
+import type { BayNode, IEDConnection, IEDNode, RootNode } from "../../../components/diagram"
 
 export type ConnectedIEDs = {
 	publishedTo: ConnectedIED[]
@@ -25,7 +25,7 @@ export function getConnectedIEDsByLabel(nodes: RootNode, label?: string): Connec
 
 	// find ied in nodes
 	// enforces that IED labels are unique!
-	const selectedNode = nodes.children.find((node) => node.label == label)
+	const selectedNode = nodes.children.find((node: IEDNode | BayNode) => node.label == label)
 	if (!selectedNode) {
 		return connectedIEDs
 	}
