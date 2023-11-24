@@ -32,7 +32,7 @@
 	}
 
 	const defaultEdgeOptions = {
-		style: "stroke-width: 2; stroke: black;",
+		// style: "stroke-width: 2; stroke: black;",
 		// type:  "floating",
 		// markerEnd: {
 		// 	type: MarkerType.ArrowClosed,
@@ -57,6 +57,7 @@
 		fitView 
 		minZoom={0.1} 
 		maxZoom={2.5}
+		colorMode="light"
 		{defaultEdgeOptions}
 		{nodeTypes}
 		snapGrid={[20, 20]}
