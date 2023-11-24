@@ -76,7 +76,7 @@ function convertEdge(edge: IEDConnectionWithCustomValues): Edge {
 		// type:   "step",
 		// type:   "straight",
 		type:   "bezier",
-		style:  "stroke: black;",
+		// style:  "stroke: black;",
 		// animated: true,
 	}
 }

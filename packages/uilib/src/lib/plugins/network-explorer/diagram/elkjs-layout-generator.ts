@@ -106,6 +106,7 @@ function assignNodeToBay(
 	const belongsToBay = Boolean(bayName)
 	if(!belongsToBay){
 		iedsWithoutBay.push(iedNode)
+		return
 	}
 
 	const bayNode = bayNodes.find(bayNode => bayNode.id === `bay-${bayName}`)
