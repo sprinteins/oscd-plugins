@@ -18,6 +18,10 @@
 			</div>
 		</summary>
 		<div class="accordion-open">
+            <hr class="dashed-line" />
+            <div class="infomation-block">
+                <div>Port: {connectedIed.port}</div>
+            </div>
 			<hr class="seperation-line" />
 			<ul>
 				Connected IED

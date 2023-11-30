@@ -20,13 +20,12 @@ export class UCNetworkInformation {
 	}
 
 	private extractNetworkInfo(apElement: Element): NetworkInfo {
-		
 		const address = this.extractAddressFromAP(apElement)
-		const cables = this.extractCablesFromAP(apElement)
+		const connections = this.extractPhysConnectionsFromAP(apElement)
 
 		return {
 			...address,
-			cables,
+			connections,
 		}
 	}
 
@@ -41,6 +40,21 @@ export class UCNetworkInformation {
 			ipSubnet:  ipSubnet  ?? "",
 			ipGateway: ipGateway ?? "",
 		} satisfies Address
+	}
+
+	private extractPhysConnectionsFromAP(apElement: Element): PhysConnection[] {
+		const connectionElements = this.scdQueries.seachConnectedPhysConnections({root: apElement})
+		const physConnections = connectionElements.map(physConnection => {
+			const cable = this.scdQueries.seachPhysConnectionCable({root: physConnection.element})?.element.innerHTML ?? ""
+			const port = this.scdQueries.seachPhysConnectionPort({root: physConnection.element})?.element.innerHTML ?? ""
+
+			return {
+				cable,
+				port,
+			} satisfies PhysConnection
+		})
+
+		return physConnections
 	}
 
 	private extractCablesFromAP(apElement: Element): Cable[] {
@@ -60,13 +74,18 @@ export interface IPInfo {
 }
 
 export interface NetworkInfo {
-	ip:         string
-	ipSubnet:   string
-	ipGateway:  string
-	cables:     Cable[]
+	ip:          string
+	ipSubnet:    string
+	ipGateway:   string
+	connections: PhysConnection[]
 }
 
 export type Cable = string
+
+export type PhysConnection = {
+	cable: string;
+	port: string;
+}
 
 export interface SubnetworkConnection extends IPInfo {
 	subnetwork: string

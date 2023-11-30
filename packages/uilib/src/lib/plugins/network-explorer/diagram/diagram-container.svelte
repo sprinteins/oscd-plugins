@@ -54,9 +54,10 @@ function updateSelectedNode(nodes: Node[]){
 		.map(node => iedNetworkInfos.find(ni => ni.iedName === node.data.label))
 		.filter(Boolean)
 		.map(node => {
-			const connectedIEDs = node?.networkInfo.cables
+			const connectedIEDs = node?.networkInfo.connections
+				.map(c => c.cable)
 				.map(cable => {
-					const connectedNodes = iedNetworkInfos.filter(ni => ni.networkInfo.cables.includes(cable))
+					const connectedNodes = iedNetworkInfos.filter(ni => ni.networkInfo.connections.map(c => c.cable).includes(cable))
 					return connectedNodes?.map(n=> n.iedName)
 				}) 
 				.flat()

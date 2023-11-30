@@ -10,12 +10,13 @@
     function buildConnectedIeds(selectedNode: SelectedNode): ConnectedIed[] {
         let ieds: ConnectedIed[] = []
 
-        for (let i = 0; i < selectedNode.networkInfo.cables.length; i++) {
+        for (let i = 0; i < selectedNode.networkInfo.connections.length; i++) {
             const iedName = selectedNode.connectedIEDs[i]
-            const cable = selectedNode.networkInfo.cables[i]
+            const connection = selectedNode.networkInfo.connections[i]
 
             ieds.push({
-                cable,
+                cable: connection.cable,
+                port: connection.port,
                 iedName
             })
         }
