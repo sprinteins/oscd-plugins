@@ -130,7 +130,7 @@ type CableList = {label: string, ieds: IEDNetworkInfoV3[]}[]
 function createCableList(iedNetworkInfos: IEDNetworkInfoV3[]): CableList {
 	const cableMap: CableMap = {}
 	for(const iedNetworkInfo of iedNetworkInfos) {
-		for(const cable of iedNetworkInfo.networkInfo.cables){
+		for(const cable of iedNetworkInfo.networkInfo.connections.map(c => c.cable)){
 			if(!cableMap[cable]) {
 				cableMap[cable] = []
 			}

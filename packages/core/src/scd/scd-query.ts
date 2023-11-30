@@ -305,6 +305,25 @@ export class SCDQueries {
 		return cableElements
 	}
 
+	public static SelectorPhysConnection = "PhysConn[type='Connection']"
+	public static AttributeListPhysConnection: AttributeList<ConnectedAPPhyConnectionElement>[] = []
+	public seachConnectedPhysConnections(options?:CommonOptions): ConnectedAPPhyConnectionElement[] {
+		const physConnections = this.searchElement<ConnectedAPPhyConnectionElement>(SCDQueries.SelectorPhysConnection, SCDQueries.AttributeListPhysConnection, options)
+
+		return physConnections
+	}
+
+	public static SelectorPhysConnectionCable = "P[type='Cable']"
+	public seachPhysConnectionCable(options?:CommonOptions): ConnectedAPCableElement | null {
+		return this.searchSingleElement<ConnectedAPCableElement>(SCDQueries.SelectorPhysConnectionCable, SCDQueries.AttributeListCable, options)
+	}
+
+	public static SelectorPhysConnectionPort = "P[type='Port']"
+	public static AttributeListPort: AttributeList<ConnectedAPPortElement>[] = []
+	public seachPhysConnectionPort(options?:CommonOptions): ConnectedAPPortElement | null {
+		return this.searchSingleElement<ConnectedAPPortElement>(SCDQueries.SelectorPhysConnectionPort, SCDQueries.AttributeListPort, options)
+	}
+
 	
 
 	
@@ -337,6 +356,18 @@ export class SCDQueries {
 		}
 
 		return createElement<T>(parentEl, attributeList)
+	}
+
+	private searchSingleElement<T extends SCDElement>(selector: string, attributeList: AttributeList<T>[], options?:CommonOptions): T | null {
+		const root = this.determineRoot(options)
+		const el = root.querySelector(selector)
+
+		if (el === null) {
+			return null
+		}
+
+		const els = createElement<T>(el, attributeList)
+		return els
 	}
 }
 
@@ -466,6 +497,8 @@ export type ConnectedAPIPElement = SCDElement
 export type ConnectedAPIPSubnetElement = SCDElement
 export type ConnectedAPIPGatewayElement = SCDElement
 export type ConnectedAPCableElement = SCDElement
+export type ConnectedAPPortElement = SCDElement
+export type ConnectedAPPhyConnectionElement = SCDElement
 
 export type Optional<T> = T | undefined
 export type AttributeList<T extends SCDElement> = Exclude<keyof T, keyof SCDElement>
