@@ -11,5 +11,7 @@ export class DiagramStore {
 }
 
 export type SelectedNode = IEDNetworkInfoV3 & {
-	connectedIEDs: string[]
+	cableToConnectedIed: {[cable: string]: string}
 }
+
+export const buildCablePortId = (cable: string, port: string): string => `${cable}-${port}`
