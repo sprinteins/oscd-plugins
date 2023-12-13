@@ -11,6 +11,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## Network Explorer [0.0.4] - 2023-12-13
+
+### Fixed
+
+- connected IED name in IED details accordion in sidebar
+
+## Network Explorer [0.0.3] - 2023-11-30
+
+### Added
+
+- port to IED details accordion in sidebar
+
+## Network Explorer [0.0.2] - 2023-11-27
+
+### Added
+
+- cable accordions to IED details in sidebar
+
 ## Network Explorer [0.0.1] - 2023-11-22
 
 ### Added
