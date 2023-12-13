@@ -27,7 +27,7 @@
 				Connected IED
 				<li>
 					<div class="ied-component">
-						{connectedIed.iedName}
+						{connectedIed.iedName || "-"}
 					</div>
 				</li>
 			</ul>

@@ -11,6 +11,7 @@
 import type { IEDNetworkInfoV3 } from "@oscd-plugins/core";
 import type { Node } from "@xyflow/svelte";
 import type { DiagramStore, SelectedNode } from "../store";
+import { buildCablePortId } from "../store"
 import Diagram from "./diagram.svelte";
 import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
 import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
@@ -53,22 +54,33 @@ function updateSelectedNode(nodes: Node[]){
 	const selectedIEDNetworkInfos = selectedNodes
 		.map(node => iedNetworkInfos.find(ni => ni.iedName === node.data.label))
 		.filter(Boolean)
-		.map(node => {
-			const connectedIEDs = node?.networkInfo.connections
-				.map(c => c.cable)
-				.map(cable => {
-					const connectedNodes = iedNetworkInfos.filter(ni => ni.networkInfo.connections.map(c => c.cable).includes(cable))
-					return connectedNodes?.map(n=> n.iedName)
-				}) 
-				.flat()
-				.filter(iedName => iedName !== node.iedName) // filter out the node itself
-				.filter(Boolean)
-				?? []
+		.map(networkInfo => {
+			const cableToConnectedIed: { [cable: string]: string } = {}
+			const connections = networkInfo?.networkInfo.connections ?? []
 
+			for (const connection of connections) {
+				const cable = connection.cable
+				const connectedNodes = iedNetworkInfos.filter(
+					ni => ni.iedName !== networkInfo.iedName &&
+					ni.networkInfo.connections.map(c => c.cable).includes(cable)
+				)
+
+				if (connectedNodes.length > 1) {
+					console.warn(`Found ${connectedNodes.length} connected nodes for cable ${cable}. Connected nodes will be ignored.`)
+					continue;
+				}
+
+				if (connectedNodes.length === 1) {
+					const iedName = connectedNodes[0].iedName
+
+					const cableId = buildCablePortId(cable, connection.port)
+					cableToConnectedIed[cableId] = iedName
+				}
+			}
 
 			return {
-				...node, // we filter out undefined values
-				connectedIEDs
+				...networkInfo, // we filter out undefined values
+				cableToConnectedIed
 			} satisfies SelectedNode
 		})
 
