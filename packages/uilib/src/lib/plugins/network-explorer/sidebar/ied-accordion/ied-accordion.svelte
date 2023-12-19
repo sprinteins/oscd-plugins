@@ -10,9 +10,9 @@
 
     function buildConnectedIeds(selectedNode: SelectedNode): ConnectedIed[] {
         let ieds: ConnectedIed[] = []
+        const connections = selectedNode.networkInfo.connections.slice().sort((a, b) => Number(a.port) - Number(b.port))
 
-        for (let i = 0; i < selectedNode.networkInfo.connections.length; i++) {
-            const connection = selectedNode.networkInfo.connections[i]
+        for (const connection of connections) {
             const cableId = buildCablePortId(connection.cable, connection.port)
             const iedName = selectedNode.cableToConnectedIed[cableId]
 

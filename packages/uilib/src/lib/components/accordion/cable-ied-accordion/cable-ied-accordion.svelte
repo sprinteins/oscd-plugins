@@ -7,35 +7,52 @@
 	export let connectedIed: ConnectedIed
 </script>
 
-<div class="accordion">
-	<details bind:open>
-		<summary style="border-color: var({color})" class="summary">
-			<div class="infoblock-headline">
-				<span class="label">{connectedIed.cable}</span>
-				<div class="icon">
-					<IconArrowDropDown />
-				</div>
-			</div>
-		</summary>
-		<div class="accordion-open">
-            <hr class="dashed-line" />
-            <div class="infomation-block">
-                <div>Port: {connectedIed.port}</div>
+<div class="container">
+    <div class="accordion port">
+        Port {connectedIed.port}
+    </div>
+    <div class="accordion">
+        <details bind:open>
+            <summary style="border-color: var({color})" class="summary">
+                <div class="infoblock-headline">
+                    <span class="label">{connectedIed.cable}</span>
+                    <div class="icon">
+                        <IconArrowDropDown />
+                    </div>
+                </div>
+            </summary>
+            <div class="accordion-open">
+                <!----<hr class="dashed-line" />
+                <div class="infomation-block">
+                    <div>Port: {connectedIed.port}</div>
+                </div>-->
+                <hr class="seperation-line" />
+                <ul>
+                    Connected IED
+                    <li>
+                        <div class="ied-component">
+                            {connectedIed.iedName || "-"}
+                        </div>
+                    </li>
+                </ul>
             </div>
-			<hr class="seperation-line" />
-			<ul>
-				Connected IED
-				<li>
-					<div class="ied-component">
-						{connectedIed.iedName || "-"}
-					</div>
-				</li>
-			</ul>
-		</div>
-	</details>
+        </details>
+    </div>
 </div>
 
 <style lang="scss">
+    div.container {
+        display: flex;
+        gap: 0.5rem;
+    }
+    div.port {
+        width: 30px;
+        min-height: 50px;
+        padding: 2px;
+        writing-mode: vertical-rl;
+        transform: rotate(-180deg);
+        text-align: center;
+    }
     div.accordion {
         .summary {
             padding-left: 0.5rem;
