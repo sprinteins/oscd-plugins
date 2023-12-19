@@ -62,7 +62,6 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        margin-left: 1rem;
     }
 
     ul {

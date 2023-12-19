@@ -52,6 +52,7 @@
         writing-mode: vertical-rl;
         transform: rotate(-180deg);
         text-align: center;
+        background-color: #ede8d7;
     }
     div.accordion {
         .summary {
