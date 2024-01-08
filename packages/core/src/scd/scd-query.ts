@@ -305,6 +305,39 @@ export class SCDQueries {
 		return cableElements
 	}
 
+	public static SelectorGooseAddress = "GSE > Address"
+	public static AttributeListGooseAddress: AttributeList<ConnectedAPGooseAddressElement>[] = []
+	public searchConnectedAPGooseAddresses(options?:CommonOptions): ConnectedAPGooseAddressElement[] {
+		const gooseAddressElements = this.searchElement<ConnectedAPGooseAddressElement>(SCDQueries.SelectorGooseAddress, SCDQueries.AttributeListGooseAddress, options)
+
+		return gooseAddressElements
+	}
+
+	public static SelectorSampledValuesAddress = "SMV > Address"
+	public static AttributeListSampledValuesAddress: AttributeList<ConnectedAPSampledValuesAddressElement>[] = []
+	public searchConnectedAPSampledValuesAddresses(options?:CommonOptions): ConnectedAPSampledValuesAddressElement[] {
+		const gooseAddressElements = this.searchElement<ConnectedAPSampledValuesAddressElement>(SCDQueries.SelectorSampledValuesAddress, SCDQueries.AttributeListSampledValuesAddress, options)
+
+		return gooseAddressElements
+	}
+
+	public static SelectorAddressVLanId = "P[type='VLAN-ID']"
+	public static AttributeListVLanId: AttributeList<AddressVLanIdElement>[] = []
+	public searchAddressVLanId(options?:CommonOptions): AddressVLanIdElement | null {
+		const vLanIdElement = this.searchSingleElement<AddressVLanIdElement>(SCDQueries.SelectorAddressVLanId, SCDQueries.AttributeListVLanId, options)
+
+		return vLanIdElement
+	}
+
+	public static SelectorAddressMacAddress = "P[type='MAC-Address']"
+	public static AttributeListMacAddress: AttributeList<AddressMacAddressElement>[] = []
+	public searchAddressMacAddress(options?:CommonOptions): AddressMacAddressElement | null {
+		const macAddressElement = this.searchSingleElement<AddressMacAddressElement>(SCDQueries.SelectorAddressMacAddress, SCDQueries.AttributeListMacAddress, options)
+
+		return macAddressElement
+	}
+
+
 	public static SelectorPhysConnection = "PhysConn[type='Connection']"
 	public static AttributeListPhysConnection: AttributeList<ConnectedAPPhyConnectionElement>[] = []
 	public seachConnectedPhysConnections(options?:CommonOptions): ConnectedAPPhyConnectionElement[] {
@@ -499,6 +532,11 @@ export type ConnectedAPIPGatewayElement = SCDElement
 export type ConnectedAPCableElement = SCDElement
 export type ConnectedAPPortElement = SCDElement
 export type ConnectedAPPhyConnectionElement = SCDElement
+export type ConnectedAPGooseAddressElement = SCDElement
+export type ConnectedAPSampledValuesAddressElement = SCDElement
+
+export type AddressVLanIdElement = SCDElement
+export type AddressMacAddressElement = SCDElement
 
 export type Optional<T> = T | undefined
 export type AttributeList<T extends SCDElement> = Exclude<keyof T, keyof SCDElement>

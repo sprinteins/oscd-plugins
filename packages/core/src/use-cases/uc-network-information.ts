@@ -1,4 +1,4 @@
-import type { SCDQueries } from "../scd"
+import { MessageType, SCDElement, SCDQueries } from "../scd"
 
 
 export type IEDNetworkInfoV3 = {iedName: string, networkInfo: NetworkInfo}
@@ -22,10 +22,12 @@ export class UCNetworkInformation {
 	private extractNetworkInfo(apElement: Element): NetworkInfo {
 		const address = this.extractAddressFromAP(apElement)
 		const connections = this.extractPhysConnectionsFromAP(apElement)
+		const vLanConnections = this.extractVLanConnectionsFromAP(apElement)
 
 		return {
 			...address,
 			connections,
+			vLanConnections,
 		}
 	}
 
@@ -40,6 +42,37 @@ export class UCNetworkInformation {
 			ipSubnet:  ipSubnet  ?? "",
 			ipGateway: ipGateway ?? "",
 		} satisfies Address
+	}
+
+	private extractVLanConnectionFromAddress(addressElements: SCDElement[], messageType: MessageType): VLanConnection[] {
+		return addressElements.map(addressElement => {
+			const vLanIdElement = this.scdQueries.searchAddressVLanId({ root: addressElement.element })
+			const vLanId = vLanIdElement?.element.innerHTML ?? ""
+
+			const macAddressElement = this.scdQueries.searchAddressMacAddress({ root: addressElement.element })
+			const macAddress = macAddressElement?.element.innerHTML ?? ""
+
+			return {
+				vLanId,
+				macAddress,
+				messageType,
+			}
+		})
+	}
+
+	private extractVLanConnectionsFromAP(apElement: Element): VLanConnection[] {
+		const vLanConnections: VLanConnection[] = []
+
+		// TODO: Add MMS Message Type? What is the selector?
+		const gooseAddresses = this.scdQueries.searchConnectedAPGooseAddresses({root: apElement})
+		const gooseVLanConnections = this.extractVLanConnectionFromAddress(gooseAddresses, MessageType.GOOSE)
+
+		const sampledValuesAddresses = this.scdQueries.searchConnectedAPSampledValuesAddresses({root: apElement})
+		const sampledValuesVLanConnections = this.extractVLanConnectionFromAddress(sampledValuesAddresses, MessageType.SampledValues)
+
+		vLanConnections.push(...gooseVLanConnections, ...sampledValuesVLanConnections)
+
+		return vLanConnections
 	}
 
 	private extractPhysConnectionsFromAP(apElement: Element): PhysConnection[] {
@@ -78,6 +111,7 @@ export interface NetworkInfo {
 	ipSubnet:    string
 	ipGateway:   string
 	connections: PhysConnection[]
+	vLanConnections: VLanConnection[]
 }
 
 export type Cable = string
@@ -85,6 +119,12 @@ export type Cable = string
 export type PhysConnection = {
 	cable: string;
 	port: string;
+}
+
+export type VLanConnection = {
+	vLanId: string;
+	macAddress: string;
+	messageType: MessageType;
 }
 
 export interface SubnetworkConnection extends IPInfo {
