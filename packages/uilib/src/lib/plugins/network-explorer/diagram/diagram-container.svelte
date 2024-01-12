@@ -45,6 +45,7 @@ $: updateSelectedNode($nodes$)
 
 function updateSelectedNode(nodes: Node[]){
 	const selectedNodes = nodes.filter(n => n.selected)
+
 	const isSelectionReset = selectedNodes.length === 0
 	if(isSelectionReset){
 		controller.selectedNodes.set([])	

@@ -8,31 +8,31 @@
 </script>
 
 <div class="accordion">
-	<details bind:open>
-		<summary style="border-color: var({color})" class="summary">
-			<div class="infoblock-headline">
-				<span class="label">{connectedIed.cable}</span>
-				<div class="icon">
-					<IconArrowDropDown />
-				</div>
-			</div>
-		</summary>
-		<div class="accordion-open">
+    <details bind:open>
+        <summary style="border-color: var({color})" class="summary">
+            <div class="infoblock-headline">
+                <span class="label">{connectedIed.cable}</span>
+                <div class="icon">
+                    <IconArrowDropDown />
+                </div>
+            </div>
+        </summary>
+        <div class="accordion-open">
             <hr class="dashed-line" />
             <div class="infomation-block">
                 <div>Port: {connectedIed.port}</div>
             </div>
-			<hr class="seperation-line" />
-			<ul>
-				Connected IED
-				<li>
-					<div class="ied-component">
-						{connectedIed.iedName || "-"}
-					</div>
-				</li>
-			</ul>
-		</div>
-	</details>
+            <hr class="seperation-line" />
+            <ul>
+                Connected IED
+                <li>
+                    <div class="ied-component">
+                        {connectedIed.iedName || "-"}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </details>
 </div>
 
 <style lang="scss">
