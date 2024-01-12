@@ -9,14 +9,14 @@
  * > a graphical representation
 */
 import type { IEDNetworkInfoV3 } from "@oscd-plugins/core";
-import type { Edge, Node } from "@xyflow/svelte";
+import type { Node } from "@xyflow/svelte";
 import type { DiagramStore, SelectedNode } from "../store";
 import { buildCablePortId } from "../store"
 import Diagram from "./diagram.svelte";
 import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
 import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
 import { extractIEDNetworkInfoV2, findAllIEDBays } from "./ied-network-info";
-import { useNodes, useEdges } from '@xyflow/svelte';
+import { useNodes } from '@xyflow/svelte';
 
 // 
 // INPUT
@@ -41,14 +41,10 @@ const config: Config = {
 // 
 let iedNetworkInfos: IEDNetworkInfoV3[]
 const nodes$ = useNodes();
-const edges$ = useEdges();
-$: updateSelectedNode($nodes$, $edges$)
+$: updateSelectedNode($nodes$)
 
-function updateSelectedNode(nodes: Node[], edges: Edge[]){
-	const selectedEdges = edges.filter(e => e.selected)
-	const iedsToSelectFromEdges = new Set(selectedEdges.map(e => [e.source, e.target]).flat())
-	const selectedNodes = nodes.filter(n => n.selected || iedsToSelectFromEdges.has(n.id))
-	selectedNodes.forEach(n => n.selected = true)
+function updateSelectedNode(nodes: Node[]){
+	const selectedNodes = nodes.filter(n => n.selected)
 
 	const isSelectionReset = selectedNodes.length === 0
 	if(isSelectionReset){
