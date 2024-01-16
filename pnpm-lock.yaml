@@ -34,7 +34,7 @@ importers:
         version: 4.9.4
       vite:
         specifier: ^4.1.0
-        version: 4.1.4(@types/node@18.11.18)
+        version: 4.1.4(sass@1.62.0)
 
   packages/core:
     dependencies:
@@ -160,7 +160,7 @@ importers:
         version: 4.9.4
       vite:
         specifier: ^4.1.0
-        version: 4.1.4(@types/node@18.11.18)
+        version: 4.1.4(sass@1.62.0)
 
   packages/plugins/documentation:
     dependencies:
@@ -306,8 +306,8 @@ importers:
         specifier: 7.0.0-beta.8
         version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@xyflow/svelte':
-        specifier: ^0.0.28
-        version: 0.0.28(svelte@3.55.0)
+        specifier: ^0.0.33
+        version: 0.0.33(svelte@3.55.0)
       d3-path:
         specifier: ^3.1.0
         version: 3.1.0
@@ -2230,8 +2230,8 @@ packages:
       - typescript
     dev: false
 
-  /@svelte-put/shortcut@3.0.0:
-    resolution: {integrity: sha512-nZg3pwpTi9wUsvQPlqOzEsxZcF2jmY5j+VBq/20IUjjd2OpM92XqZAga0PCCjE6OuEobOt58UMnC2QZgOvk0tQ==}
+  /@svelte-put/shortcut@3.1.0:
+    resolution: {integrity: sha512-EWMEDkZ0+O3yMhb9yrqe5UYisV9CNRKX6Pl/JW3x62t74CiN+3COu1L9NzZUG0omagc2Z3J14PZNYxs77IC9NA==}
     dev: false
 
   /@sveltejs/adapter-auto@1.0.0(@sveltejs/kit@1.16.3):
@@ -3124,19 +3124,19 @@ packages:
       p-iteration: 1.1.8
     dev: true
 
-  /@xyflow/svelte@0.0.28(svelte@3.55.0):
-    resolution: {integrity: sha512-8mCyjorsHFPnfFvTNhoCs/Cvyyk2v8IZnFqw2zJMBMdL87OD/hMxDY/zbImL6M43paojQzJFb//Rl0aWoJaBxA==}
+  /@xyflow/svelte@0.0.33(svelte@3.55.0):
+    resolution: {integrity: sha512-GBMnkF5AvMwH/NyhhlZWJw5DJn/IyW7s22cEk87UBjtiNLd02GKGrvDBLeWmWMj2QbEQjn3O30o84TXwwXuZyA==}
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0
     dependencies:
-      '@svelte-put/shortcut': 3.0.0
-      '@xyflow/system': 0.0.11
+      '@svelte-put/shortcut': 3.1.0
+      '@xyflow/system': 0.0.14
       classcat: 5.0.4
       svelte: 3.55.0
     dev: false
 
-  /@xyflow/system@0.0.11:
-    resolution: {integrity: sha512-QllVEdguVfRHonf1kuiHTt4nwDuISF7AXY47h2mjSG+99GrRxoUBHfhEiKq9vdJMuZJOCUCtrgLuxDezgw/R3w==}
+  /@xyflow/system@0.0.14:
+    resolution: {integrity: sha512-dmVQujAwZyoSZTr0sQHlgro9pS+RO9AgjT2BDlyB7t/+FYQBgW3FKdTQnVh8/azcdAncWruyiPt9K/h2kpTYrA==}
     dependencies:
       '@types/d3': 7.4.2
       '@types/d3-drag': 3.0.6
