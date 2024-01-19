@@ -2,6 +2,7 @@ import type { IEDNetworkInfoV3 } from "@oscd-plugins/core"
 import ELK, { type ElkNode } from "elkjs/lib/elk.bundled"
 import type { BayNode, IEDConnection, IEDNode, NetworkNode, RootNode } from "../../../components/diagram"
 import type { IEDBayMap } from "./ied-network-info"
+import { createCableId } from "./edge-helper"
 
 const defaultConfigs: Partial<Config> = {
 	spacingBase:           0,
@@ -88,8 +89,10 @@ async function createLayoutWithElk(
 }
 
 function createEdge(cable: { label: string; ieds: IEDNetworkInfoV3[] }) {
+	const id = createCableId(cable.label)
+
 	return {
-		id:      crypto.randomUUID(),
+		id,
 		sources: [`ied-${cable.ieds[0].iedName}`],
 		targets: [`ied-${cable.ieds[1].iedName}`],
 		type:    "floating",

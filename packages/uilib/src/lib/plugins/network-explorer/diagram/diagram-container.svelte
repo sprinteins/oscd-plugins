@@ -97,6 +97,8 @@ async function updateNodesAndEdges(
 	}
 	
 	iedNetworkInfos = extractIEDNetworkInfoV2(root)
+	controller.iedNetworkInfos.set(iedNetworkInfos)
+	console.log(iedNetworkInfos)
 	const iedBayMap = findAllIEDBays(root)
 	const rootNode = await generateElkJSLayout(iedNetworkInfos, iedBayMap, config)
 
@@ -113,6 +115,7 @@ async function updateNodesAndEdges(
 		<Diagram 
 			nodes={controller.nodes}
 			edges={controller.edges}
+			iedNetworkInfos={controller.iedNetworkInfos}
 		/>	
 	{/if}
 			<!-- on:nodeclick={(e) => handleNodeClick(e.detail.node)}

@@ -1,7 +1,11 @@
-import { MessageType, SCDElement, SCDQueries } from "../scd"
+import { ConnectedAPElement, ConnectedAPPhyConnectionElement, MessageType, SCDElement, SCDQueries } from "../scd"
 
 
-export type IEDNetworkInfoV3 = {iedName: string, networkInfo: NetworkInfo}
+export type IEDNetworkInfoV3 = {
+	iedName: string,
+	networkInfo: NetworkInfo,
+	node: ConnectedAPElement
+}
 
 export class UCNetworkInformation {
 	constructor(
@@ -13,6 +17,7 @@ export class UCNetworkInformation {
 		const info = connectedAPs.map( (cap) => {
 			return {
 				iedName:     cap.iedName,
+				node:        cap,
 				networkInfo: this.extractNetworkInfo(cap.element),
 			}
 		})
@@ -84,6 +89,7 @@ export class UCNetworkInformation {
 			return {
 				cable,
 				port,
+				node: physConnection,
 			} satisfies PhysConnection
 		})
 
@@ -119,6 +125,7 @@ export type Cable = string
 export type PhysConnection = {
 	cable: string;
 	port: string;
+	node: ConnectedAPPhyConnectionElement;
 }
 
 export type VLanConnection = {

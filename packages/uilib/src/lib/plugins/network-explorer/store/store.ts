@@ -8,6 +8,8 @@ export class DiagramStore {
 	public edges = writable<Edge[]>([])
 	
 	public selectedNodes = writable<SelectedNode[]>([])
+
+	public iedNetworkInfos = writable<IEDNetworkInfoV3[]>([])
 }
 
 export type SelectedNode = IEDNetworkInfoV3 & {

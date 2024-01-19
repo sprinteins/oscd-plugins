@@ -12,16 +12,23 @@
 		MiniMap,
 	} from "@xyflow/svelte"
 	import "@xyflow/svelte/dist/style.css"
+	import type { IEDNetworkInfoV3, PhysConnection } from "@oscd-plugins/core"
 	import IEDNode from "./ied-node.svelte"
 	import BayNode from "./bay-node.svelte"
     import type { Writable } from "svelte/store";
+	import { extractCableNameFromId } from "./edge-helper"
+	import { getIedNameFromId } from "./ied-helper"
 
+	interface Delete {
+		old: { parent: Element; element: Element };
+	}
 
 	// 
 	// INPUT
 	// 
 	export let nodes: Writable<Node[]>
 	export let edges: Writable<Edge[]>
+	export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
 
 	// 
 	// CONFIG
@@ -47,6 +54,49 @@
 	// const connectionLineStyle = "stroke: black; stroke-width: 3;"
 	// const bgColor = writable('#1A192B');
 
+	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {
+		const { edges } = deleteEvent
+
+		const deletes = edges
+			.map(edge => buildDeletesFromEdge(edge))
+			.flat()
+		
+		console.log(deletes)
+	}
+
+	function buildDeletesFromEdge(edge: Edge): Delete[] {
+		const currentIedNetworkInfos = $iedNetworkInfos
+		const cableName = extractCableNameFromId(edge.id)
+		const iedCableCombinations = [
+			{ iedName: getIedNameFromId(edge.source), cableName },
+			{ iedName: getIedNameFromId(edge.target), cableName },
+		]
+
+		return iedCableCombinations.map(({ iedName, cableName }) => {
+			const ied = currentIedNetworkInfos.find(ied => ied.iedName === iedName)
+
+			if (!ied) {
+				throw Error(`ied ${iedName} not found`)
+			}
+
+			const physConn = ied.networkInfo.connections.find(physConn => physConn.cable === cableName)
+
+			if (!physConn) {
+				throw Error(`cable ${cableName} not found`)
+			}
+
+			return buildDelete(ied, physConn)
+		})
+	}
+
+	function buildDelete(ied: IEDNetworkInfoV3, physConnection: PhysConnection): Delete {
+		return {
+			old: {
+				parent: ied.node.element,
+				element: physConnection.node.element
+			}
+		};
+	}
 
 </script>
 
@@ -64,6 +114,7 @@
 		on:nodeclick
 		on:edgeclick
 		on:paneclick
+		{ ondelete }
 		panOnDrag={false}
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->
