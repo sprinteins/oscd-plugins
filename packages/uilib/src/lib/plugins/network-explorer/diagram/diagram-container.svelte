@@ -17,13 +17,14 @@ import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
 import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
 import { extractIEDNetworkInfoV2, findAllIEDBays } from "./ied-network-info";
 import { useNodes } from '@xyflow/svelte';
+import type { Delete } from "./events";
 
 // 
 // INPUT
 // 
 export let controller: DiagramStore
-export let root: Element
-$: updateNodesAndEdges(root)
+export let doc: Element
+$: updateNodesAndEdges(doc)
 
 // 
 // CONFIG
@@ -39,6 +40,7 @@ const config: Config = {
 // 
 // INTERNAL
 // 
+let root: HTMLElement
 let iedNetworkInfos: IEDNetworkInfoV3[]
 const nodes$ = useNodes();
 $: updateSelectedNode($nodes$)
@@ -98,7 +100,6 @@ async function updateNodesAndEdges(
 	
 	iedNetworkInfos = extractIEDNetworkInfoV2(root)
 	controller.iedNetworkInfos.set(iedNetworkInfos)
-	console.log(iedNetworkInfos)
 	const iedBayMap = findAllIEDBays(root)
 	const rootNode = await generateElkJSLayout(iedNetworkInfos, iedBayMap, config)
 
@@ -107,15 +108,38 @@ async function updateNodesAndEdges(
 	controller.edges.set(resp.edges)
 }
 
+function handleDelete(event: CustomEvent<Delete[]>): void {
+	const deletes = event.detail
+
+	const editorActionEvent = buildEditorActionEvent(deletes)
+	console.log(editorActionEvent)
+	root.dispatchEvent(editorActionEvent)
+}
+
+function buildEditorActionEvent(deletes: Delete[]) {
+	const detail = {
+		action: {
+			actions: deletes
+		}
+	}
+
+	return new CustomEvent("editor-action", {
+		detail,
+		composed: true,
+		bubbles:  true,
+	})
+}
+
 
 </script>
 
-<div class="root">
+<div class="root" bind:this={root}>
 	{#if controller}
 		<Diagram 
 			nodes={controller.nodes}
 			edges={controller.edges}
 			iedNetworkInfos={controller.iedNetworkInfos}
+			on:delete={handleDelete}
 		/>	
 	{/if}
 			<!-- on:nodeclick={(e) => handleNodeClick(e.detail.node)}
