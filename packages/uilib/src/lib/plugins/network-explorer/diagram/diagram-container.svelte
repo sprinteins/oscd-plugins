@@ -8,16 +8,16 @@
  * > See [network-explorer.tldr](../network-explorer.tldr) for 
  * > a graphical representation
 */
-import type { IEDNetworkInfoV3 } from "@oscd-plugins/core";
+import type { IEDNetworkInfoV3, PhysConnection } from "@oscd-plugins/core";
 import type { Node } from "@xyflow/svelte";
 import type { DiagramStore, SelectedNode } from "../store";
 import { buildCablePortId } from "../store"
 import Diagram from "./diagram.svelte";
 import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
 import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
-import { extractIEDNetworkInfoV2, findAllIEDBays } from "./ied-network-info";
+import { extractIEDNetworkInfoV2, findAllIEDBays, extractPhysConnectionCable } from "./ied-network-info";
 import { useNodes } from '@xyflow/svelte';
-import type { Delete } from "./events";
+import type { Delete, Replace } from "./events";
 
 // 
 // INPUT
@@ -108,18 +108,36 @@ async function updateNodesAndEdges(
 	controller.edges.set(resp.edges)
 }
 
-function handleDelete(event: CustomEvent<Delete[]>): void {
-	const deletes = event.detail
+function handleDelete(event: CustomEvent<PhysConnection[]>): void {
+	const emptyCableName = "0"
 
-	const editorActionEvent = buildEditorActionEvent(deletes)
-	console.log(editorActionEvent)
-	root.dispatchEvent(editorActionEvent)
+	const cableReplaces: Replace[] = event.detail.map(physConn => {
+		const cableElement = extractPhysConnectionCable(physConn.node.element)
+
+		if (cableElement === null) {
+			throw new Error(`Element for cable ${physConn.cable} not found`)
+		}
+		
+		const modifiedCable = cableElement.element.cloneNode(true) as Element
+		modifiedCable.innerHTML = emptyCableName
+
+		return {
+			old: { element: cableElement.element },
+			new: { element: modifiedCable },
+		}
+	})
+
+	const replaceEditorAction = buildEditorActionEvent(cableReplaces)
+
+	root.dispatchEvent(replaceEditorAction)
+
+	console.log(replaceEditorAction)
 }
 
-function buildEditorActionEvent(deletes: Delete[]) {
+function buildEditorActionEvent(replaces: Replace[]) {
 	const detail = {
 		action: {
-			actions: deletes
+			actions: replaces
 		}
 	}
 

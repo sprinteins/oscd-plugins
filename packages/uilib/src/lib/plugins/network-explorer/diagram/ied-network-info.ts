@@ -1,4 +1,4 @@
-import type { IEDNetworkInfoV3 } from "@oscd-plugins/core"
+import type { IEDNetworkInfoV3, SCDElement } from "@oscd-plugins/core"
 import { UCNetworkInformation, SCDQueries } from "@oscd-plugins/core"
 
 
@@ -15,6 +15,11 @@ export function extractIEDNetworkInfoV2(root?: Element): IEDNetworkInfoV3[] {
 	return info
 }
 
+export function extractPhysConnectionCable(physConnElement: Element): SCDElement | null {
+	const scdQueries = new SCDQueries(physConnElement)
+	const cableElement = scdQueries.seachPhysConnectionCable()
+	return cableElement
+}
 
 export type IEDBayMap = {[bayName: string]: string[]}
 export function findAllIEDBays(root: Element): IEDBayMap {

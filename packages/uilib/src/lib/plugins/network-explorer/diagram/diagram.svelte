@@ -19,7 +19,6 @@
     import type { Writable } from "svelte/store";
 	import { extractCableNameFromId } from "./edge-helper"
 	import { getIedNameFromId } from "./ied-helper"
-	import type { Delete, DeleteEvent } from "./events"
 
 	// 
 	// INPUT
@@ -56,14 +55,14 @@
 	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {
 		const { edges } = deleteEvent
 
-		const deletes = edges
-			.map(edge => buildDeletesFromEdge(edge))
+		const physConns = edges
+			.map(edge => getPhysConnectionsFromEdge(edge))
 			.flat()
 
-		dispatch("delete", deletes)
+		dispatch("delete", physConns)
 	}
 
-	function buildDeletesFromEdge(edge: Edge): Delete[] {
+	function getPhysConnectionsFromEdge(edge: Edge): PhysConnection[] {
 		const currentIedNetworkInfos = $iedNetworkInfos
 		const cableName = extractCableNameFromId(edge.id)
 		const iedCableCombinations = [
@@ -84,17 +83,8 @@
 				throw Error(`cable ${cableName} not found`)
 			}
 
-			return buildDelete(ied, physConn)
+			return physConn
 		})
-	}
-
-	function buildDelete(ied: IEDNetworkInfoV3, physConnection: PhysConnection): Delete {
-		return {
-			old: {
-				parent: ied.node.element,
-				element: physConnection.node.element
-			}
-		};
 	}
 
 </script>
