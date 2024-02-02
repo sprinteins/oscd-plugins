@@ -1,7 +1,6 @@
 <script lang="ts">
     import { IED } from "../../../../components/ied"
     import type { SelectedNode } from "../../store/index"
-    import { buildCablePortId } from "../../store"
     import type { ConnectedIed } from "../../../../components/accordion/cable-ied-accordion"
     import CableIedAccordion from "../../../../components/accordion/cable-ied-accordion/cable-ied-accordion.svelte";
     export let selectedNode: SelectedNode
@@ -13,13 +12,10 @@
         const connections = selectedNode.networkInfo.connections.slice().sort((a, b) => Number(a.port) - Number(b.port))
 
         for (const connection of connections) {
-            const cableId = buildCablePortId(connection.cable, connection.port)
-            const iedName = selectedNode.cableToConnectedIed[cableId]
-
             ieds.push({
                 cable: connection.cable,
                 port: connection.port,
-                iedName
+                iedName: connection.connectedIed
             })
         }
 

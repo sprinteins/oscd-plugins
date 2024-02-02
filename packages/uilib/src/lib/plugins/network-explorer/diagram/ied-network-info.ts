@@ -12,6 +12,8 @@ export function extractIEDNetworkInfoV2(root?: Element): IEDNetworkInfoV3[] {
 	const uc = new UCNetworkInformation(scdQueries)
 	const info = uc.IEDNetworkInfoV3()
 
+	addConnectedIedToPhysConn(info)
+
 	return info
 }
 
@@ -47,4 +49,27 @@ export function findAllIEDBays(root: Element): IEDBayMap {
 	return iedMapByBay
 }
 
+function addConnectedIedToPhysConn(iedNetworkInfo: IEDNetworkInfoV3[]): void {
+	for (const ied of iedNetworkInfo) {
+		const connections = ied.networkInfo.connections
 
+		for (const connection of connections) {
+			const cable = connection.cable
+			const connectedNodes = iedNetworkInfo.filter(
+				ni => ni.iedName !== ied.iedName &&
+				ni.networkInfo.connections.map(c => c.cable).includes(cable),
+			)
+
+			if (connectedNodes.length > 1) {
+				console.warn(`Found ${connectedNodes.length} connected nodes for cable ${cable}. Connected nodes will be ignored.`)
+				continue
+			}
+
+			if (connectedNodes.length === 1) {
+				const iedName = connectedNodes[0].iedName
+
+				connection.connectedIed = iedName
+			}
+		}
+	}
+}

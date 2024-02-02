@@ -9,15 +9,16 @@
  * > a graphical representation
 */
 import type { IEDNetworkInfoV3, PhysConnection } from "@oscd-plugins/core";
-import type { Node } from "@xyflow/svelte";
+import type { Edge, Node } from "@xyflow/svelte";
 import type { DiagramStore, SelectedNode } from "../store";
-import { buildCablePortId } from "../store"
+import { buildCablePortId, useNewEdges } from "../store"
 import Diagram from "./diagram.svelte";
 import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
 import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
 import { extractIEDNetworkInfoV2, findAllIEDBays, extractPhysConnectionCable } from "./ied-network-info";
-import { useNodes } from '@xyflow/svelte';
+import { useNodes, useEdges } from '@xyflow/svelte';
 import type { Delete, Replace } from "./events";
+import { getIedNameFromId } from "./ied-helper"
 
 // 
 // INPUT
@@ -45,6 +46,23 @@ let iedNetworkInfos: IEDNetworkInfoV3[]
 const nodes$ = useNodes();
 $: updateSelectedNode($nodes$)
 
+const newEdges$ = useNewEdges()
+$: onNewEdges($newEdges$)
+
+function onNewEdges(edges: Edge[]): void {
+	if (!edges) {
+		return
+	}
+
+	const edge = edges[0]
+	const sourceIedName = getIedNameFromId(edge.source)
+	const targetIedName = getIedNameFromId(edge.target)
+	const targetAndSource = iedNetworkInfos.filter(ied => ied.iedName === sourceIedName || ied.iedName === targetIedName)
+	// TODO: Set edge in state and display option in sidebar
+	console.log(edges)
+	console.log(targetAndSource)
+}
+
 function updateSelectedNode(nodes: Node[]){
 	const selectedNodes = nodes.filter(n => n.selected)
 
@@ -53,39 +71,10 @@ function updateSelectedNode(nodes: Node[]){
 		controller.selectedNodes.set([])	
 		return
 	}
-	// TODO: clean up this mess
+
 	const selectedIEDNetworkInfos = selectedNodes
 		.map(node => iedNetworkInfos.find(ni => ni.iedName === node.data.label))
 		.filter(Boolean)
-		.map(networkInfo => {
-			const cableToConnectedIed: { [cable: string]: string } = {}
-			const connections = networkInfo?.networkInfo.connections ?? []
-
-			for (const connection of connections) {
-				const cable = connection.cable
-				const connectedNodes = iedNetworkInfos.filter(
-					ni => ni.iedName !== networkInfo.iedName &&
-					ni.networkInfo.connections.map(c => c.cable).includes(cable)
-				)
-
-				if (connectedNodes.length > 1) {
-					console.warn(`Found ${connectedNodes.length} connected nodes for cable ${cable}. Connected nodes will be ignored.`)
-					continue;
-				}
-
-				if (connectedNodes.length === 1) {
-					const iedName = connectedNodes[0].iedName
-
-					const cableId = buildCablePortId(cable, connection.port)
-					cableToConnectedIed[cableId] = iedName
-				}
-			}
-
-			return {
-				...networkInfo, // we filter out undefined values
-				cableToConnectedIed
-			} satisfies SelectedNode
-		})
 
 	controller.selectedNodes.set( selectedIEDNetworkInfos )
 }
@@ -99,6 +88,7 @@ async function updateNodesAndEdges(
 	}
 	
 	iedNetworkInfos = extractIEDNetworkInfoV2(root)
+	console.log(iedNetworkInfos)
 	controller.iedNetworkInfos.set(iedNetworkInfos)
 	const iedBayMap = findAllIEDBays(root)
 	const rootNode = await generateElkJSLayout(iedNetworkInfos, iedBayMap, config)

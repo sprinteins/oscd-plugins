@@ -89,7 +89,8 @@ export class UCNetworkInformation {
 			return {
 				cable,
 				port,
-				node: physConnection,
+				node:         physConnection,
+				connectedIed: undefined,
 			} satisfies PhysConnection
 		})
 
@@ -125,6 +126,7 @@ export type Cable = string
 export type PhysConnection = {
 	cable: string;
 	port: string;
+	connectedIed?: string;
 	node: ConnectedAPPhyConnectionElement;
 }
 

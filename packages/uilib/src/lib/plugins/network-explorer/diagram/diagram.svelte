@@ -17,8 +17,7 @@
 	import IEDNode from "./ied-node.svelte"
 	import BayNode from "./bay-node.svelte"
     import type { Writable } from "svelte/store";
-	import { extractCableNameFromId } from "./edge-helper"
-	import { getIedNameFromId } from "./ied-helper"
+	import { getPhysConnectionsFromEdge } from "./edge-helper"
 
 	// 
 	// INPUT
@@ -54,39 +53,14 @@
 
 	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {
 		const { edges } = deleteEvent
+		const currentIedNetworkInfos = $iedNetworkInfos
 
 		const physConns = edges
-			.map(edge => getPhysConnectionsFromEdge(edge))
+			.map(edge => getPhysConnectionsFromEdge(edge, currentIedNetworkInfos))
 			.flat()
 
 		dispatch("delete", physConns)
 	}
-
-	function getPhysConnectionsFromEdge(edge: Edge): PhysConnection[] {
-		const currentIedNetworkInfos = $iedNetworkInfos
-		const cableName = extractCableNameFromId(edge.id)
-		const iedCableCombinations = [
-			{ iedName: getIedNameFromId(edge.source), cableName },
-			{ iedName: getIedNameFromId(edge.target), cableName },
-		]
-
-		return iedCableCombinations.map(({ iedName, cableName }) => {
-			const ied = currentIedNetworkInfos.find(ied => ied.iedName === iedName)
-
-			if (!ied) {
-				throw Error(`ied ${iedName} not found`)
-			}
-
-			const physConn = ied.networkInfo.connections.find(physConn => physConn.cable === cableName)
-
-			if (!physConn) {
-				throw Error(`cable ${cableName} not found`)
-			}
-
-			return physConn
-		})
-	}
-
 </script>
 
 <network-diagram>
