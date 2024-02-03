@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { DiagramStore } from "../store";
 /**
  * The responsibility of `diagram-container` is to:
  * 1. gather bays, and the network information if IEDs
@@ -8,111 +9,37 @@
  * > See [network-explorer.tldr](../network-explorer.tldr) for 
  * > a graphical representation
 */
-import type { IEDNetworkInfoV3 } from "@oscd-plugins/core";
-import type { Node } from "@xyflow/svelte";
-import type { DiagramStore, SelectedNode } from "../store";
-import { buildCablePortId } from "../store"
+
 import Diagram from "./diagram.svelte";
-import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
-import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
-import { extractIEDNetworkInfoV2, findAllIEDBays } from "./ied-network-info";
-import { useNodes } from '@xyflow/svelte';
+import { useNodes, type Node as ElkNode } from '@xyflow/svelte';
 
 // 
 // INPUT
 // 
-export let controller: DiagramStore
+export let store: DiagramStore
 export let root: Element
-$: updateNodesAndEdges(root)
+$: store.updateNodesAndEdges(root)
 
 // 
 // CONFIG
 // 
-const config: Config = {
-	width: 	200,
-	height: 30,
-
-	spacingBase:         10,
-	spacingBetweenLaysers: 100,
-}
 
 // 
 // INTERNAL
 // 
-let iedNetworkInfos: IEDNetworkInfoV3[]
 const nodes$ = useNodes();
-$: updateSelectedNode($nodes$)
+$: store.updateSelectedNodes($nodes$)
 
-function updateSelectedNode(nodes: Node[]){
-	const selectedNodes = nodes.filter(n => n.selected)
 
-	const isSelectionReset = selectedNodes.length === 0
-	if(isSelectionReset){
-		controller.selectedNodes.set([])	
-		return
-	}
-	// TODO: clean up this mess
-	const selectedIEDNetworkInfos = selectedNodes
-		.map(node => iedNetworkInfos.find(ni => ni.iedName === node.data.label))
-		.filter(Boolean)
-		.map(networkInfo => {
-			const cableToConnectedIed: { [cable: string]: string } = {}
-			const connections = networkInfo?.networkInfo.connections ?? []
-
-			for (const connection of connections) {
-				const cable = connection.cable
-				const connectedNodes = iedNetworkInfos.filter(
-					ni => ni.iedName !== networkInfo.iedName &&
-					ni.networkInfo.connections.map(c => c.cable).includes(cable)
-				)
-
-				if (connectedNodes.length > 1) {
-					console.warn(`Found ${connectedNodes.length} connected nodes for cable ${cable}. Connected nodes will be ignored.`)
-					continue;
-				}
-
-				if (connectedNodes.length === 1) {
-					const iedName = connectedNodes[0].iedName
-
-					const cableId = buildCablePortId(cable, connection.port)
-					cableToConnectedIed[cableId] = iedName
-				}
-			}
-
-			return {
-				...networkInfo, // we filter out undefined values
-				cableToConnectedIed
-			} satisfies SelectedNode
-		})
-
-	controller.selectedNodes.set( selectedIEDNetworkInfos )
-}
-
-async function updateNodesAndEdges(
-	root: Element
-) {
-	if (!root) {
-		console.info({ level: "info", msg: "initInfos: no root" })
-		return []
-	}
-	
-	iedNetworkInfos = extractIEDNetworkInfoV2(root)
-	const iedBayMap = findAllIEDBays(root)
-	const rootNode = await generateElkJSLayout(iedNetworkInfos, iedBayMap, config)
-
-	const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
-	controller.nodes.set(resp.nodes)
-	controller.edges.set(resp.edges)
-}
 
 
 </script>
 
 <div class="root">
-	{#if controller}
+	{#if store}
 		<Diagram 
-			nodes={controller.nodes}
-			edges={controller.edges}
+			nodes={store.nodes}
+			edges={store.edges}
 		/>	
 	{/if}
 			<!-- on:nodeclick={(e) => handleNodeClick(e.detail.node)}

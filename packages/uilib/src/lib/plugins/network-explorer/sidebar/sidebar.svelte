@@ -2,23 +2,27 @@
     import type { Node } from "@xyflow/svelte";
 	import type { DiagramStore } from "../store"
     import { IEDAccordion } from "./ied-accordion";
+    import { writable } from "svelte/store";
 
 	// 
 	// INPUT
 	// 
-	export let controller: DiagramStore
+	export let store: DiagramStore
 
     //
     // INTERNAL
     //
-    let selectedNodes$ = controller.selectedNodes
+    let selectedNodes$ = store.selectedNodes
 
 </script>
 
 <div class="sidebar sidebar-right">
     <div class="sidebar-content">
         {#each $selectedNodes$ as node }
-            <IEDAccordion selectedNode={node}/>
+            <IEDAccordion
+                selectedIED={node}
+                connectedIEDs={store.findConnectedIEDs(node)}
+            />
         {/each}
     </div>
 </div>

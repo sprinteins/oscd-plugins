@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type {
 		IEDConnectionWithCustomValues,
-		IEDNode,
+		IEDElkNode,
 		RootNode
 	} from "./nodes"
 	import { isBayNode } from "./nodes"
@@ -30,7 +30,7 @@ import BayContainer from "./bay-container/bay-container.svelte"
 	let root: HTMLElement
 
 	const dispatch = createEventDispatcher()
-	function handleIEDClick(e: MouseEvent, node: IEDNode) {
+	function handleIEDClick(e: MouseEvent, node: IEDElkNode) {
 		if (draggingEnabled) {
 			return
 		}
@@ -42,10 +42,10 @@ import BayContainer from "./bay-container/bay-container.svelte"
 
 		dispatchIEDSelect(node)
 	}
-	function dispatchIEDSelect(node: IEDNode) {
+	function dispatchIEDSelect(node: IEDElkNode) {
 		dispatch("iedselect", node)
 	}
-	function dispatchIEDAdditiveSelect(node: IEDNode) {
+	function dispatchIEDAdditiveSelect(node: IEDElkNode) {
 		dispatch("iedadditiveselect", node)
 	}
 
