@@ -10,8 +10,15 @@ export class DiagramStore {
 	public selectedNodes = writable<SelectedNode[]>([])
 
 	public iedNetworkInfos = writable<IEDNetworkInfoV3[]>([])
+
+	public newConnectionBetweenNodes = writable<NewConnectionBetweenNodes>()
 }
 
 export type SelectedNode = IEDNetworkInfoV3
+
+export type NewConnectionBetweenNodes = {
+	source: IEDNetworkInfoV3,
+	target: IEDNetworkInfoV3,
+}
 
 export const buildCablePortId = (cable: string, port: string): string => `${cable}-${port}`
