@@ -2,7 +2,7 @@
     import { IED as IEDElement } from "../../../../components/ied"
     import type { SelectedNode } from "../../store/index"
     import { buildCablePortId } from "../../store"
-    import { type ConnectedIed, CableIEDAccordion } from "../../../../components/accordion/cable-ied-accordion"
+    import { type IEDDetails, CableIEDAccordion } from "../../../../components/accordion/cable-ied-accordion"
     import type { IED } from "../../diagram/networking";
     
     // 
@@ -11,14 +11,15 @@
     export let selectedIED: SelectedNode
     export let connectedIEDs: IED[]
 
-    $: conntedIeds = buildConnectedIeds(selectedIED, connectedIEDs)
 
-    function buildConnectedIeds(selectedIED: SelectedNode, connectedIEDs: IED[]): ConnectedIed[] {
-        let ieds: ConnectedIed[] = []
+    $: iedDetails = buildConnectedIEDDetails(selectedIED, connectedIEDs)
+
+    function buildConnectedIEDDetails(selectedIED: SelectedNode, connectedIEDs: IED[]): IEDDetails[] {
+        let ieds: IEDDetails[] = []
 
         for(const networking of selectedIED.networking){
             const cable = networking.cable
-            const conntectedIED = connectedIEDs.find(
+            const connectedIED = connectedIEDs.find(
                     ied => ied.networking && ied.networking.some(
                         connectedNetworking => connectedNetworking.cable === cable
                     )
@@ -26,7 +27,7 @@
             ieds.push({
                 cable: networking.cable,
                 port: networking.port,
-                iedName: conntectedIED?.name ?? "-", //
+                iedName: connectedIED?.name ?? "-", //
             })
         }
 
@@ -50,11 +51,11 @@
     </div>
     <div class="accordions">
         
-        {#each conntedIeds as connectedIed}
+        {#each iedDetails as details}
             <div class="accordion">
                 <CableIEDAccordion
                         color={'blue'}
-                        {connectedIed}
+                        connectedIED={details}
                     />
             </div>
         {/each}

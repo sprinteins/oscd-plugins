@@ -20,7 +20,7 @@
 	<SvelteFlowProvider>
 	<network-explorer>
 		{#key root}
-			<DiagramContainer {store} {root} />
+			<DiagramContainer {store} doc={root} />
 		{/key}
 		<Sidebar {store} />
 	</network-explorer>

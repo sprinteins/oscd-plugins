@@ -11,17 +11,22 @@
 		Controls,
 		MiniMap,
 	} from "@xyflow/svelte"
+	import { createEventDispatcher } from "svelte/internal"
 	import "@xyflow/svelte/dist/style.css"
+	import type { IEDNetworkInfoV3, Networking, PhysConnection } from "@oscd-plugins/core"
 	import IEDNode from "./ied-node.svelte"
 	import BayNode from "./bay-node.svelte"
     import type { Writable } from "svelte/store";
-
+	import { getPhysConnectionsFromEdge } from "./edge-helper"
+    import type { IED } from "./networking";
 
 	// 
 	// INPUT
 	// 
 	export let nodes: Writable<Node[]>
 	export let edges: Writable<Edge[]>
+	// export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
+	export let ieds: IED[]
 
 	// 
 	// CONFIG
@@ -46,8 +51,18 @@
 
 	// const connectionLineStyle = "stroke: black; stroke-width: 3;"
 	// const bgColor = writable('#1A192B');
+	const dispatch = createEventDispatcher()
 
+	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {
+		const { edges } = deleteEvent
+		const currentIEDs = ieds
 
+		const networkings: Networking[] = edges
+			.map(edge => getPhysConnectionsFromEdge(edge, currentIEDs))
+			.flat()
+
+		dispatch("delete", networkings)
+	}
 </script>
 
 <network-diagram>
@@ -64,6 +79,7 @@
 		on:nodeclick
 		on:edgeclick
 		on:paneclick
+		{ ondelete }
 		panOnDrag={false}
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->

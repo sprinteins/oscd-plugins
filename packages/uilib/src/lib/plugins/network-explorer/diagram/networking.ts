@@ -32,6 +32,9 @@ export function extractIEDs(root?: Element): IED[] {
 }
 
 export function extractIEDNetworkingMap(root?: Element): IEDNetworkingMap {
+	if(!root){
+		throw new Error("extractIEDNetworkingMap: no root")
+	}
 
 	const scdQueries = new SCDQueries(root)
 	const uc = new UCNetworkInformation(scdQueries)
@@ -76,23 +79,23 @@ export function findAllIEDBays(root: Element): BayIEDNameMap {
 }
 
 
-export type CableIEDMap = {[cable: string]: IED[]}
+export type CableNetworkingMap = {[cable: string]: Networking[]}
 
-export function createCableIEDMap(
+export function createCableNetowrkingMap(
 	ieds: IED[],
-): CableIEDMap {
+): CableNetworkingMap {
 
-	const calbeIEDMap: CableIEDMap = {}
+	const cableNetworkingMap: CableNetworkingMap = {}
 	for(const ied of ieds){
 
 		for(const networking of ied.networking){
 			const cable = networking.cable
-			if(!calbeIEDMap[cable]){ calbeIEDMap[cable] = [] }
+			if(!cableNetworkingMap[cable]){ cableNetworkingMap[cable] = [] }
 			
-			calbeIEDMap[cable].push(ied)
+			cableNetworkingMap[cable].push(networking)
 		}
 	}
 		
 
-	return calbeIEDMap
+	return cableNetworkingMap
 }

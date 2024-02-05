@@ -1,6 +1,9 @@
 import ELK, { type ElkNode } from "elkjs/lib/elk.bundled"
 import type { BayElkNode, IEDConnection, IEDElkNode, NetworkNode, RootNode } from "../../../components/diagram"
-import {type BayIEDNameMap, createCableIEDMap, type IED } from "./networking"
+import {type BayIEDNameMap, createCableNetowrkingMap, type IED } from "./networking"
+// import type { IEDBayMap } from "./ied-network-info"
+import { createCableId } from "./edge-helper"
+import { Networking } from "@oscd-plugins/core"
 
 const defaultConfigs: Partial<Config> = {
 	spacingBase:          0,
@@ -25,11 +28,6 @@ export async function generateElkJSLayout(
 		...defaultConfigs,
 		...customConfig,
 	}
-
-	const cableIEDMap = createCableIEDMap(ieds)
-	const iedPairs = Object
-		.values(cableIEDMap)
-		.filter(function isAnExectPair(ieds) { return ieds.length === 2 })
 	
 	const bayElkNodes: BayElkNode[] = Object.keys(bayIedMap).map(bayName => createBayElkNode(bayName, config))
 	const iedElkNodes: IEDElkNode[] = ieds.map(ied =>  createIEDElkNode(ied.name, config))
@@ -37,11 +35,17 @@ export async function generateElkJSLayout(
 	const iedsWithoutBay: IEDElkNode[] = []
 	iedElkNodes.forEach(iedNode => assignNodeToBay(iedNode, bayIedMap, bayElkNodes, iedsWithoutBay) )
 	
-	const edges = iedPairs.map(createEdge)
+	const cableNetworkingMap = createCableNetowrkingMap(ieds)
+	const networkingPairs = Object
+		.values(cableNetworkingMap)
+		.filter(function isAnExectPair(networkingList) { return networkingList.length === 2 })
+
+	const edges = networkingPairs.map(createEdge)
 
 	return await createLayoutWithElk(config, bayElkNodes, iedsWithoutBay, edges)
 	
 }
+
 
 // Need more configuration options of elk.js?
 // 👉 https://www.eclipse.org/elk/reference/algorithms.html 
@@ -85,11 +89,12 @@ async function createLayoutWithElk(
 	return nodes
 }
 
-function createEdge(ieds: IED[]) {
+function createEdge(networkingList: Networking[]) {
+	const id = createCableId(networkingList[0].cable)
 	return {
-		id:      crypto.randomUUID(),
-		sources: [`ied-${ieds[0].name}`],
-		targets: [`ied-${ieds[1].name}`],
+		id:      id,
+		sources: [`ied-${networkingList[0].iedName}`],
+		targets: [`ied-${networkingList[1].iedName}`],
 		type:    "floating",
 	}
 }
