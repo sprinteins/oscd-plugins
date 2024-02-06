@@ -13,5 +13,5 @@ export const useNewEdges = () => {
 }
 
 // TODO: Is this safe enough? What if svelteflow changes the prefix
-const svelteFlowEdgePrefix = "xyflow__edge"
+const svelteFlowEdgePrefix = "xy-edge"
 export const isNewEdge = (edge: Edge): boolean => edge.id.startsWith(svelteFlowEdgePrefix)

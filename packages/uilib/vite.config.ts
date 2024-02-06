@@ -12,5 +12,8 @@ export default defineConfig({
 		environment: "jsdom",
 		setupFiles:  "test.setup.ts",
 	},
+	optimizeDeps: {
+		exclude: ["@smui/select"],
+	},
 })
 

@@ -58,9 +58,21 @@ function onNewEdges(edges: Edge[]): void {
 	const sourceIedName = getIedNameFromId(edge.source)
 	const targetIedName = getIedNameFromId(edge.target)
 	const targetAndSource = iedNetworkInfos.filter(ied => ied.iedName === sourceIedName || ied.iedName === targetIedName)
-	// TODO: Set edge in state and display option in sidebar
-	console.log(edges)
-	console.log(targetAndSource)
+	const sourceIed = targetAndSource.find(ied => ied.iedName === sourceIedName)
+	const targetIed = targetAndSource.find(ied => ied.iedName === targetIedName)
+
+	if (!sourceIed) {
+		throw new Error(`Ied ${sourceIedName} not found`)
+	}
+
+	if (!targetIed) {
+		throw new Error(`Ied ${targetIedName} not found`)
+	}
+
+	controller.newConnectionBetweenNodes.set({
+		source: sourceIed,
+		target: targetIed
+	})
 }
 
 // function updateSelectedNode(nodes: Node[]){
@@ -86,7 +98,7 @@ function onNewEdges(edges: Edge[]): void {
 // 		console.info({ level: "info", msg: "initInfos: no root" })
 // 		return []
 // 	}
-	
+
 // 	iedNetworkInfos = extractIEDNetworkInfoV2(root)
 // 	console.log(iedNetworkInfos)
 // 	controller.iedNetworkInfos.set(iedNetworkInfos)

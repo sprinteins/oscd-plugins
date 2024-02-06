@@ -11,7 +11,8 @@ export class DiagramStore {
 	public ieds: IED[] = []
 	
 	public selectedNodes = writable<SelectedNode[]>([])
-
+  
+  public newConnectionBetweenNodes = writable<NewConnectionBetweenNodes>()
 
 	public async updateNodesAndEdges( root: Element ) {
 		if (!root) {
@@ -65,6 +66,11 @@ export class DiagramStore {
 }
 
 export type SelectedNode = IED
+
+export type NewConnectionBetweenNodes = {
+	source: IEDNetworkInfoV3,
+	target: IEDNetworkInfoV3,
+}
 
 export const buildCablePortId = (cable: string, port: string): string => `${cable}-${port}`
 
