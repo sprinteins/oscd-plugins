@@ -21,8 +21,8 @@
 	let editEventHandler: EditorEventHandler
 	$: editEventHandler = new EditorEventHandler(htmlRoot)
 
-	function onCreateCable(e: CustomEvent<CreateCableEvent>) {
-		editEventHandler.dispatchDeleteCable
+	function onCreateCable(event: CustomEvent<CreateCableEvent>) {
+		editEventHandler.dispatchCreateCable(event.detail)
 	}
 
 	function onDelete(event: CustomEvent<Networking[]>): void {

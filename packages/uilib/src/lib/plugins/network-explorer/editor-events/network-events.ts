@@ -1,13 +1,11 @@
 import type { IED } from "../diagram/networking"
 
+export interface CreateCableIED {
+	ied: IED;
+	port: string;
+}
 export interface CreateCableEvent {
 	cable: string;
-	source: {
-		ied: IED;
-		port: string;
-	};
-	target: {
-		ied: IED;
-		port: string
-	};
+	source: CreateCableIED;
+	target: CreateCableIED;
 }
