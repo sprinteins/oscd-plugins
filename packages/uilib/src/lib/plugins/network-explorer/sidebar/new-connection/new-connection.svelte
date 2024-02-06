@@ -1,8 +1,10 @@
 <script lang="ts">
-	import type { IEDNetworkInfoV3 } from "@oscd-plugins/core"
-	import { IED } from "../../../../components/ied"
-	import { Select } from "../../../../components/select"
+	import { createEventDispatcher } from 'svelte';
+	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
+	import { Button } from "../../../../components/button"
+	import type { IED } from "../../diagram/networking"
 	import type { NewConnectionBetweenNodes } from "../../store/index"
+	import IedPortSelect from "./ied-port-select.svelte"
 
 	// 
 	// INPUT
@@ -12,13 +14,12 @@
 	//
 	// Internal
 	//
-	let newConnectionSource: IEDNetworkInfoV3
-    let newConnectionTarget: IEDNetworkInfoV3
+	const dispatch = createEventDispatcher();
+	let sourceIed: IED
+	let sourceSelectedPort: string
+    let targetIed: IED
+	let targetSelectedPort: string
     let cableName: string
-	let sourceOpenPorts: {label: string}[] = []
-	let targetOpenPorts: {label: string}[] = []
-	let sourceSelectedPort: number
-	let targetSelectedPort: number
 
 	$: onNewConnection(newConnectionBetweenNodes)
 
@@ -28,48 +29,42 @@
             throw new Error('Input newConnectionBetweenNodes may not be null')
         }
 
-        newConnectionSource = newConnectionBetweenNodes.source
-        newConnectionTarget = newConnectionBetweenNodes.target
-
-		sourceOpenPorts = getOpenPorts(newConnectionSource)
-		targetOpenPorts = getOpenPorts(newConnectionTarget)
-
-		sourceSelectedPort = 0
-		targetSelectedPort = 0
+        sourceIed = newConnectionBetweenNodes.source
+        targetIed = newConnectionBetweenNodes.target
 
         cableName = generateCableName()
     }
-
-	function getOpenPorts(ied: IEDNetworkInfoV3): {label: string}[] {
-		return ied.networkInfo.connections
-			.filter(c => !c.connectedIed)
-			.map(c => ({label: `Port ${c.port}, Cable ${c.cable}`}))
-	}
 
 	function generateCableName(): string {
         return crypto.randomUUID().substring(0, 6)
     }
 
-	function handleTargetInputChange(e) {
-		console.log(e)
+	function onSourceSelect(e: CustomEvent<string>) {
+		sourceSelectedPort = e.detail
+	}
+
+	function onTargetSelect(e: CustomEvent<string>) {
+		targetSelectedPort = e.detail
+	}
+
+	function createCable(): void {
+		const sourcePort = sourceSelectedPort || getDefaultPort(sourceIed)
+		const targetPort = targetSelectedPort || getDefaultPort(targetIed)
+
+		// TODO: Dispatch event
+		console.log(`Create with port ${sourcePort} - ${targetPort}`)
+	}
+
+	function getDefaultPort(ied: IED): string {
+		return getNetworkingWithOpenPort(ied)[0].port
 	}
 </script>
 
 <div>
 	<h3>{cableName}</h3>
 
-	<div>
-		<IED label={newConnectionSource.iedName} isSelected={true} isSelectable={false} />
+	<IedPortSelect ied={sourceIed} on:select={onSourceSelect}/>
+	<IedPortSelect ied={targetIed} on:select={onTargetSelect}/>
 
-		<Select
-			on:select={handleTargetInputChange}
-			linkTargetIndex={sourceSelectedPort}
-			items={sourceOpenPorts}
-		>
-			<option value={-1} disabled selected />
-			{#each sourceOpenPorts as port, index}
-				<option value={index}>{port}</option>
-			{/each}
-		</Select>
-	</div>
+	<Button on:click={createCable} testid="create-cable">Create Connection</Button>
 </div>
