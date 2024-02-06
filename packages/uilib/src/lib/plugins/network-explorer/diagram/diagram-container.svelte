@@ -20,11 +20,11 @@ import { buildCablePortId, useNewEdges } from "../store"
 // import Diagram from "./diagram.svelte";
 // import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
 // import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
-import { extractIEDNetworkInfoV2, findAllIEDBays, extractPhysConnectionCable } from "./ied-network-info";
 // import { useNodes, useEdges } from '@xyflow/svelte';
 import type { Delete, Replace } from "./events";
 import { getIedNameFromId } from "./ied-helper"
-    import type { Networking } from "@oscd-plugins/core";
+import type { Networking } from "@oscd-plugins/core";
+import { SCDQueries, UCNetworkInformation } from "@oscd-plugins/core";
 
 // 
 // INPUT
@@ -57,9 +57,10 @@ function onNewEdges(edges: Edge[]): void {
 	const edge = edges[0]
 	const sourceIedName = getIedNameFromId(edge.source)
 	const targetIedName = getIedNameFromId(edge.target)
-	const targetAndSource = iedNetworkInfos.filter(ied => ied.iedName === sourceIedName || ied.iedName === targetIedName)
-	const sourceIed = targetAndSource.find(ied => ied.iedName === sourceIedName)
-	const targetIed = targetAndSource.find(ied => ied.iedName === targetIedName)
+	const ieds = store.ieds
+	const targetAndSource = ieds.filter(ied => ied.name === sourceIedName || ied.name === targetIedName)
+	const sourceIed = targetAndSource.find(ied => ied.name === sourceIedName)
+	const targetIed = targetAndSource.find(ied => ied.name === targetIedName)
 
 	if (!sourceIed) {
 		throw new Error(`Ied ${sourceIedName} not found`)
@@ -69,7 +70,7 @@ function onNewEdges(edges: Edge[]): void {
 		throw new Error(`Ied ${targetIedName} not found`)
 	}
 
-	controller.newConnectionBetweenNodes.set({
+	store.newConnectionBetweenNodes.set({
 		source: sourceIed,
 		target: targetIed
 	})
@@ -114,7 +115,9 @@ function handleDelete(event: CustomEvent<Networking[]>): void {
 	const emptyCableName = "0"
 
 	const cableReplaces: Replace[] = event.detail.map(net => {
-		const cableElement = extractPhysConnectionCable(net._physConnectionElement)
+		// TODO: Clean this mess up
+		const cableElement = new UCNetworkInformation(new SCDQueries(null as any))
+			.extractPhysConnectionCable(net._physConnectionElement)
 
 		if (!cableElement) {
 			throw new Error(`Element for cable ${net.cable} not found`)

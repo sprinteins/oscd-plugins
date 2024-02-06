@@ -3,7 +3,7 @@ import type { BayElkNode, IEDConnection, IEDElkNode, NetworkNode, RootNode } fro
 import {type BayIEDNameMap, createCableNetowrkingMap, type IED } from "./networking"
 // import type { IEDBayMap } from "./ied-network-info"
 import { createCableId } from "./edge-helper"
-import { Networking } from "@oscd-plugins/core"
+import type { Networking } from "@oscd-plugins/core"
 
 const defaultConfigs: Partial<Config> = {
 	spacingBase:          0,

@@ -1,7 +1,7 @@
 import type { Networking } from "@oscd-plugins/core"
 import type { Edge } from "@xyflow/svelte"
 import { getIedNameFromId } from "./ied-helper"
-import { IED } from "./networking"
+import type { IED } from "./networking"
 
 const shortUuidDigits = 6
 
