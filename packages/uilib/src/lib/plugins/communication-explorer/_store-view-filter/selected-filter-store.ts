@@ -1,5 +1,5 @@
 import { writable } from "svelte/store"
-import type { IEDConnectionWithCustomValues, IEDNode } from "../../../components/diagram"
+import type { IEDConnectionWithCustomValues, IEDElkNode } from "../../../components/diagram"
 import { allMessageTypes } from "@oscd-plugins/core"
 
 // TODO: we need API that returns if there is an active selection
@@ -7,7 +7,7 @@ import { allMessageTypes } from "@oscd-plugins/core"
 // There are just too many places where we check and do the same way
 // If the check changes we have to go through all places and change it
 export type SelectedFilter = {
-    selectedIEDs: IEDNode[];
+    selectedIEDs: IEDElkNode[];
 	selectedConnection: IEDConnectionWithCustomValues | undefined;
     incomingConnections: boolean;
     outgoingConnections: boolean;

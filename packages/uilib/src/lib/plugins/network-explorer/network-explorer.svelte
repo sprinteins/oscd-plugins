@@ -13,16 +13,16 @@
 	// 
 	// INTERNAL
 	// 
-	export let controller = new DiagramStore()
+	export let store = new DiagramStore()
 </script>
 
 <Theme>
 	<SvelteFlowProvider>
 	<network-explorer>
 		{#key root}
-			<DiagramContainer {controller} doc={root} />
+			<DiagramContainer {store} doc={root} />
 		{/key}
-		<Sidebar {controller} />
+		<Sidebar {store} />
 	</network-explorer>
 	</SvelteFlowProvider>
 </Theme>

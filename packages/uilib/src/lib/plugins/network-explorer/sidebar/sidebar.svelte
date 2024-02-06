@@ -2,19 +2,19 @@
     import type { Node } from "@xyflow/svelte";
 	import type { DiagramStore, NewConnectionBetweenNodes } from "../store"
     import { IEDAccordion } from "./ied-accordion";
-    import { derived } from "svelte/store";
+    import { writable, derived } from "svelte/store";
     import NewConnection from "./new-connection/new-connection.svelte";
 
 	// 
 	// INPUT
 	// 
-	export let controller: DiagramStore
+	export let store: DiagramStore
 
     //
     // INTERNAL
     //
-    let selectedNodes$ = controller.selectedNodes
-    let newConnectionBetweenNodes$ = controller.newConnectionBetweenNodes
+    let selectedNodes$ = store.selectedNodes
+    let newConnectionBetweenNodes$ = store.newConnectionBetweenNodes
     const showSelectedNodes$ = derived(newConnectionBetweenNodes$, $newConnectionBetweenNodes$ => !$newConnectionBetweenNodes$)
 </script>
 
@@ -22,7 +22,10 @@
     <div class="sidebar-content">
         {#if $showSelectedNodes$}
             {#each $selectedNodes$ as node }
-                <IEDAccordion selectedNode={node}/>
+                <IEDAccordion
+                  selectedIED={node}
+                  connectedIEDs={store.findConnectedIEDs(node)}
+                />
             {/each}
         {:else}
             <NewConnection newConnectionBetweenNodes={$newConnectionBetweenNodes$} />

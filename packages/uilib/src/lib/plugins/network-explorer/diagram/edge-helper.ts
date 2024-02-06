@@ -1,6 +1,7 @@
-import type { IEDNetworkInfoV3, PhysConnection } from "@oscd-plugins/core"
+import type { Networking } from "@oscd-plugins/core"
 import type { Edge } from "@xyflow/svelte"
 import { getIedNameFromId } from "./ied-helper"
+import { IED } from "./networking"
 
 const shortUuidDigits = 6
 
@@ -12,7 +13,9 @@ export function extractCableNameFromId(cableName: string): string {
 	return cableName.substring(shortUuidDigits + 1)
 }
 
-export function getPhysConnectionsFromEdge(edge: Edge, currentIedNetworkInfos: IEDNetworkInfoV3[]): PhysConnection[] {
+// TODO: not used?
+// export function getPhysConnectionsFromEdge(edge: Edge, currentIedNetworkInfos: IEDNetworkInfoV3[]): PhysConnection[] {
+export function getPhysConnectionsFromEdge(edge: Edge, currentIEDs: IED[]): Networking[] {
 	const cableName = extractCableNameFromId(edge.id)
 	const iedCableCombinations = [
 		{ iedName: getIedNameFromId(edge.source), cableName },
@@ -20,18 +23,18 @@ export function getPhysConnectionsFromEdge(edge: Edge, currentIedNetworkInfos: I
 	]
 
 	return iedCableCombinations.map(({ iedName, cableName }) => {
-		const ied = currentIedNetworkInfos.find(ied => ied.iedName === iedName)
+		const ied = currentIEDs.find(ied => ied.name === iedName)
 
 		if (!ied) {
 			throw Error(`ied ${iedName} not found`)
 		}
 
-		const physConn = ied.networkInfo.connections.find(physConn => physConn.cable === cableName)
+		const networking = ied.networking.find(net => net.cable === cableName)
 
-		if (!physConn) {
+		if (!networking) {
 			throw Error(`cable ${cableName} not found`)
 		}
 
-		return physConn
+		return networking
 	})
 }

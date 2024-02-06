@@ -1,9 +1,8 @@
 import type { ElkExtendedEdge, ElkNode } from "elkjs"
 import type { IEDCommInfo, MessageType } from "@oscd-plugins/core"
-import type { IED } from "../ied"
 
-export function newIEDNode(iedNode: IEDNode): IEDNode {
-	const newIEDNode: IEDNode = {
+export function newIEDNode(iedNode: IEDElkNode): IEDElkNode {
+	const newIEDNode: IEDElkNode = {
 		...iedNode,
 	}
 
@@ -22,7 +21,7 @@ export type IEDConnectionWithCustomValues = IEDConnection & {
 	targetIED: IEDCommInfo
 }
 
-export type RootNode<ChildNodes=IEDNode> = Omit<ElkNode, "children" | "edges"> & {
+export type RootNode<ChildNodes=IEDElkNode> = Omit<ElkNode, "children" | "edges"> & {
 	children: Array<ChildNodes>,
 	edges?: IEDConnectionWithCustomValues[]
 }
@@ -31,20 +30,20 @@ export type SubnetworkEdge = ElkExtendedEdge & {
 	isRelevant?: boolean
 }
 
-export type IEDNode = Omit<ElkNode, "edges" | "children"> & {
+export type IEDElkNode = Omit<ElkNode, "edges" | "children"> & {
 	label: string,
 	isRelevant?: boolean
 	isBayNode?: boolean
 	edges?: IEDConnection[]
-	children: IEDNode[]
+	children: IEDElkNode[]
 }
 
-export type BayNode = Omit<IEDNode, "isBayNode"> & {
+export type BayElkNode = Omit<IEDElkNode, "isBayNode"> & {
 	isBayNode: true;
 }
 
-export type NetworkNode = IEDNode | BayNode
+export type NetworkNode = IEDElkNode | BayElkNode
 
-export function isBayNode(node: IEDNode | BayNode): node is BayNode {
+export function isBayNode(node: IEDElkNode | BayElkNode): node is BayElkNode {
 	return Boolean(node.isBayNode)
 }

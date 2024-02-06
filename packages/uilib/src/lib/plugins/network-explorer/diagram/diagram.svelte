@@ -13,18 +13,20 @@
 	} from "@xyflow/svelte"
 	import { createEventDispatcher } from "svelte/internal"
 	import "@xyflow/svelte/dist/style.css"
-	import type { IEDNetworkInfoV3, PhysConnection } from "@oscd-plugins/core"
+	import type { IEDNetworkInfoV3, Networking, PhysConnection } from "@oscd-plugins/core"
 	import IEDNode from "./ied-node.svelte"
 	import BayNode from "./bay-node.svelte"
     import type { Writable } from "svelte/store";
 	import { getPhysConnectionsFromEdge } from "./edge-helper"
+    import type { IED } from "./networking";
 
 	// 
 	// INPUT
 	// 
 	export let nodes: Writable<Node[]>
 	export let edges: Writable<Edge[]>
-	export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
+	// export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
+	export let ieds: IED[]
 
 	// 
 	// CONFIG
@@ -53,13 +55,13 @@
 
 	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {
 		const { edges } = deleteEvent
-		const currentIedNetworkInfos = $iedNetworkInfos
+		const currentIEDs = ieds
 
-		const physConns = edges
-			.map(edge => getPhysConnectionsFromEdge(edge, currentIedNetworkInfos))
+		const networkings: Networking[] = edges
+			.map(edge => getPhysConnectionsFromEdge(edge, currentIEDs))
 			.flat()
 
-		dispatch("delete", physConns)
+		dispatch("delete", networkings)
 	}
 </script>
 

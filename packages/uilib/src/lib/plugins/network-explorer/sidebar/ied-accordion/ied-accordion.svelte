@@ -1,21 +1,33 @@
 <script lang="ts">
-    import { IED } from "../../../../components/ied"
+    import { IED as IEDElement } from "../../../../components/ied"
     import type { SelectedNode } from "../../store/index"
-    import type { ConnectedIed } from "../../../../components/accordion/cable-ied-accordion"
-    import CableIedAccordion from "../../../../components/accordion/cable-ied-accordion/cable-ied-accordion.svelte";
-    export let selectedNode: SelectedNode
+    import { buildCablePortId } from "../../store"
+    import { type IEDDetails, CableIEDAccordion } from "../../../../components/accordion/cable-ied-accordion"
+    import type { IED } from "../../diagram/networking";
+    
+    // 
+    // Inputs
+    // 
+    export let selectedIED: SelectedNode
+    export let connectedIEDs: IED[]
 
-    $: conntedIeds = buildConnectedIeds(selectedNode)
 
-    function buildConnectedIeds(selectedNode: SelectedNode): ConnectedIed[] {
-        let ieds: ConnectedIed[] = []
-        const connections = selectedNode.networkInfo.connections.slice().sort((a, b) => Number(a.port) - Number(b.port))
+    $: iedDetails = buildConnectedIEDDetails(selectedIED, connectedIEDs)
 
-        for (const connection of connections) {
+    function buildConnectedIEDDetails(selectedIED: SelectedNode, connectedIEDs: IED[]): IEDDetails[] {
+        let ieds: IEDDetails[] = []
+
+        for(const networking of selectedIED.networking){
+            const cable = networking.cable
+            const connectedIED = connectedIEDs.find(
+                    ied => ied.networking && ied.networking.some(
+                        connectedNetworking => connectedNetworking.cable === cable
+                    )
+                )
             ieds.push({
-                cable: connection.cable,
-                port: connection.port,
-                iedName: connection.connectedIed
+                cable: networking.cable,
+                port: networking.port,
+                iedName: connectedIED?.name ?? "-", //
             })
         }
 
@@ -26,24 +38,28 @@
 <div>
     <div class="ied">
         <div>
-            <IED label={selectedNode.iedName} isSelected={true} isSelectable={false} />
+            <IEDElement label={selectedIED.name} isSelected={true} isSelectable={false} />
         </div>
 
         <ul class="network-information">
-            <li> <span class="label">IP Address </span> <span class="value"> {selectedNode?.networkInfo.ip}        </span> </li>
-            <li> <span class="label">IP Gateway </span> <span class="value"> {selectedNode?.networkInfo.ipGateway} </span></li>
-            <li> <span class="label">IP Subnet  </span> <span class="value"> {selectedNode?.networkInfo.ipSubnet}  </span></li>
+<!--                 
+            <li> <span class="label">IP Address </span> <span class="value"> {selectedIED?.networkInfo.ip}        </span> </li>
+            <li> <span class="label">IP Gateway </span> <span class="value"> {selectedIED?.networkInfo.ipGateway} </span></li>
+            <li> <span class="label">IP Subnet  </span> <span class="value"> {selectedIED?.networkInfo.ipSubnet}  </span></li>
+            -->
         </ul>
     </div>
     <div class="accordions">
-        {#each conntedIeds as connectedIed}
+        
+        {#each iedDetails as details}
             <div class="accordion">
-                <CableIedAccordion
+                <CableIEDAccordion
                         color={'blue'}
-                        {connectedIed}
+                        connectedIED={details}
                     />
             </div>
         {/each}
+        
     </div>
 </div>
 

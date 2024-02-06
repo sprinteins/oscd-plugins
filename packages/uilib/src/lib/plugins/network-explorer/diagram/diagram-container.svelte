@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { DiagramStore } from "../store";
 /**
  * The responsibility of `diagram-container` is to:
  * 1. gather bays, and the network information if IEDs
@@ -8,43 +9,42 @@
  * > See [network-explorer.tldr](../network-explorer.tldr) for 
  * > a graphical representation
 */
-import type { IEDNetworkInfoV3, PhysConnection } from "@oscd-plugins/core";
-import type { Edge, Node } from "@xyflow/svelte";
-import type { DiagramStore, SelectedNode } from "../store";
-import { buildCablePortId, useNewEdges } from "../store"
+
 import Diagram from "./diagram.svelte";
-import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
-import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
+import { useNodes, type Node as ElkNode } from '@xyflow/svelte';
+
+// import type { IEDNetworkInfoV3, PhysConnection } from "@oscd-plugins/core";
+import type { Edge, Node } from "@xyflow/svelte";
+// import type { DiagramStore, SelectedNode } from "../store";
+import { buildCablePortId, useNewEdges } from "../store"
+// import Diagram from "./diagram.svelte";
+// import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
+// import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
 import { extractIEDNetworkInfoV2, findAllIEDBays, extractPhysConnectionCable } from "./ied-network-info";
-import { useNodes, useEdges } from '@xyflow/svelte';
+// import { useNodes, useEdges } from '@xyflow/svelte';
 import type { Delete, Replace } from "./events";
 import { getIedNameFromId } from "./ied-helper"
+    import type { Networking } from "@oscd-plugins/core";
 
 // 
 // INPUT
 // 
-export let controller: DiagramStore
 export let doc: Element
-$: updateNodesAndEdges(doc)
+export let store: DiagramStore
+$: store.updateNodesAndEdges(doc)
 
 // 
 // CONFIG
 // 
-const config: Config = {
-	width: 	200,
-	height: 30,
-
-	spacingBase:         10,
-	spacingBetweenLaysers: 100,
-}
 
 // 
 // INTERNAL
 // 
 let root: HTMLElement
-let iedNetworkInfos: IEDNetworkInfoV3[]
+// let iedNetworkInfos: IEDNetworkInfoV3[]
 const nodes$ = useNodes();
-$: updateSelectedNode($nodes$)
+$: store.updateSelectedNodes($nodes$)
+
 
 const newEdges$ = useNewEdges()
 $: onNewEdges($newEdges$)
@@ -75,48 +75,49 @@ function onNewEdges(edges: Edge[]): void {
 	})
 }
 
-function updateSelectedNode(nodes: Node[]){
-	const selectedNodes = nodes.filter(n => n.selected)
+// function updateSelectedNode(nodes: Node[]){
+// 	const selectedNodes = nodes.filter(n => n.selected)
 
-	const isSelectionReset = selectedNodes.length === 0
-	if(isSelectionReset){
-		controller.selectedNodes.set([])	
-		return
-	}
+// 	const isSelectionReset = selectedNodes.length === 0
+// 	if(isSelectionReset){
+// 		controller.selectedNodes.set([])	
+// 		return
+// 	}
 
-	const selectedIEDNetworkInfos = selectedNodes
-		.map(node => iedNetworkInfos.find(ni => ni.iedName === node.data.label))
-		.filter(Boolean)
+// 	const selectedIEDNetworkInfos = selectedNodes
+// 		.map(node => iedNetworkInfos.find(ni => ni.iedName === node.data.label))
+// 		.filter(Boolean)
 
-	controller.selectedNodes.set( selectedIEDNetworkInfos )
-}
+// 	controller.selectedNodes.set( selectedIEDNetworkInfos )
+// }
 
-async function updateNodesAndEdges(
-	root: Element
-) {
-	if (!root) {
-		console.info({ level: "info", msg: "initInfos: no root" })
-		return []
-	}
-	
-	iedNetworkInfos = extractIEDNetworkInfoV2(root)
-	controller.iedNetworkInfos.set(iedNetworkInfos)
-	const iedBayMap = findAllIEDBays(root)
-	const rootNode = await generateElkJSLayout(iedNetworkInfos, iedBayMap, config)
+// async function updateNodesAndEdges(
+// 	root: Element
+// ) {
+// 	if (!root) {
+// 		console.info({ level: "info", msg: "initInfos: no root" })
+// 		return []
+// 	}
 
-	const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
-	controller.nodes.set(resp.nodes)
-	controller.edges.set(resp.edges)
-}
+// 	iedNetworkInfos = extractIEDNetworkInfoV2(root)
+// 	console.log(iedNetworkInfos)
+// 	controller.iedNetworkInfos.set(iedNetworkInfos)
+// 	const iedBayMap = findAllIEDBays(root)
+// 	const rootNode = await generateElkJSLayout(iedNetworkInfos, iedBayMap, config)
 
-function handleDelete(event: CustomEvent<PhysConnection[]>): void {
+// 	const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
+// 	controller.nodes.set(resp.nodes)
+// 	controller.edges.set(resp.edges)
+// }
+
+function handleDelete(event: CustomEvent<Networking[]>): void {
 	const emptyCableName = "0"
 
-	const cableReplaces: Replace[] = event.detail.map(physConn => {
-		const cableElement = extractPhysConnectionCable(physConn.node.element)
+	const cableReplaces: Replace[] = event.detail.map(net => {
+		const cableElement = extractPhysConnectionCable(net._physConnectionElement)
 
-		if (cableElement === null) {
-			throw new Error(`Element for cable ${physConn.cable} not found`)
+		if (!cableElement) {
+			throw new Error(`Element for cable ${net.cable} not found`)
 		}
 		
 		const modifiedCable = cableElement.element.cloneNode(true) as Element
@@ -153,12 +154,13 @@ function buildEditorActionEvent(replaces: Replace[]) {
 </script>
 
 <div class="root" bind:this={root}>
-	{#if controller}
+	{#if store}
 		<Diagram 
-			nodes={controller.nodes}
-			edges={controller.edges}
-			iedNetworkInfos={controller.iedNetworkInfos}
+			nodes={store.nodes}
+			edges={store.edges}
+			ieds={store.ieds}
 			on:delete={handleDelete}
+
 		/>	
 	{/if}
 			<!-- on:nodeclick={(e) => handleNodeClick(e.detail.node)}

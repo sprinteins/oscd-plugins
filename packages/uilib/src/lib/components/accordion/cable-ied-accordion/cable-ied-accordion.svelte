@@ -1,17 +1,17 @@
 <script lang="ts">
 	import IconArrowDropDown from "../../icons/icon-arrow-drop-down.svelte"
-	import type { ConnectedIed } from "./models"
+	import type { ConnectedIED } from "./models"
 	
 	export let open = false
 	export let color: string
-	export let connectedIed: ConnectedIed
+	export let connectedIED: ConnectedIED
 </script>
 
 <div class="accordion">
     <details bind:open>
         <summary style="border-color: var({color})" class="summary">
             <div class="infoblock-headline">
-                <span class="label">{connectedIed.cable}</span>
+                <span class="label">{connectedIED.cable}</span>
                 <div class="icon">
                     <IconArrowDropDown />
                 </div>
@@ -20,14 +20,14 @@
         <div class="accordion-open">
             <hr class="dashed-line" />
             <div class="infomation-block">
-                <div>Port: {connectedIed.port}</div>
+                <div>Port: {connectedIED.port}</div>
             </div>
             <hr class="seperation-line" />
             <ul>
                 Connected IED
                 <li>
                     <div class="ied-component">
-                        {connectedIed.iedName || "-"}
+                        {connectedIED.iedName || "-"}
                     </div>
                 </li>
             </ul>
