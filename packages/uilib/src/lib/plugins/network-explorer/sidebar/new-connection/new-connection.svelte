@@ -2,6 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 	import { Button } from "../../../../components/button"
+	import type { CreateCableEvent } from "../../editor-events/network-events"
 	import type { IED } from "../../diagram/networking"
 	import type { NewConnectionBetweenNodes } from "../../store/index"
 	import IedPortSelect from "./ied-port-select.svelte"
@@ -51,8 +52,19 @@
 		const sourcePort = sourceSelectedPort || getDefaultPort(sourceIed)
 		const targetPort = targetSelectedPort || getDefaultPort(targetIed)
 
-		// TODO: Dispatch event
-		console.log(`Create with port ${sourcePort} - ${targetPort}`)
+		const createCableEvent: CreateCableEvent = {
+			cable: cableName,
+			source: {
+				ied: sourceIed,
+				port: sourcePort,
+			},
+			target: {
+				ied: targetIed,
+				port: targetPort,
+			},
+		}
+
+		dispatch("createCable", createCableEvent)
 	}
 
 	function getDefaultPort(ied: IED): string {

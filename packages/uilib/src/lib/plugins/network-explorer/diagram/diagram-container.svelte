@@ -21,7 +21,7 @@ import { buildCablePortId, useNewEdges } from "../store"
 // import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
 // import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
 // import { useNodes, useEdges } from '@xyflow/svelte';
-import type { Delete, Replace } from "./events";
+import type { Delete, Replace } from "../editor-events/editor-events";
 import { getIedNameFromId } from "./ied-helper"
 import type { Networking } from "@oscd-plugins/core";
 import { SCDQueries, UCNetworkInformation } from "@oscd-plugins/core";
@@ -110,50 +110,6 @@ function onNewEdges(edges: Edge[]): void {
 // 	controller.nodes.set(resp.nodes)
 // 	controller.edges.set(resp.edges)
 // }
-
-function handleDelete(event: CustomEvent<Networking[]>): void {
-	const emptyCableName = "0"
-
-	const cableReplaces: Replace[] = event.detail.map(net => {
-		// TODO: Clean this mess up
-		const cableElement = new UCNetworkInformation(new SCDQueries(null as any))
-			.extractPhysConnectionCable(net._physConnectionElement)
-
-		if (!cableElement) {
-			throw new Error(`Element for cable ${net.cable} not found`)
-		}
-		
-		const modifiedCable = cableElement.element.cloneNode(true) as Element
-		modifiedCable.innerHTML = emptyCableName
-
-		return {
-			old: { element: cableElement.element },
-			new: { element: modifiedCable },
-		}
-	})
-
-	const replaceEditorAction = buildEditorActionEvent(cableReplaces)
-
-	root.dispatchEvent(replaceEditorAction)
-
-	console.log(replaceEditorAction)
-}
-
-function buildEditorActionEvent(replaces: Replace[]) {
-	const detail = {
-		action: {
-			actions: replaces
-		}
-	}
-
-	return new CustomEvent("editor-action", {
-		detail,
-		composed: true,
-		bubbles:  true,
-	})
-}
-
-
 </script>
 
 <div class="root" bind:this={root}>
@@ -162,8 +118,7 @@ function buildEditorActionEvent(replaces: Replace[]) {
 			nodes={store.nodes}
 			edges={store.edges}
 			ieds={store.ieds}
-			on:delete={handleDelete}
-
+			on:delete
 		/>	
 	{/if}
 			<!-- on:nodeclick={(e) => handleNodeClick(e.detail.node)}

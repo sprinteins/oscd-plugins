@@ -28,7 +28,7 @@
                 />
             {/each}
         {:else}
-            <NewConnection newConnectionBetweenNodes={$newConnectionBetweenNodes$} />
+            <NewConnection newConnectionBetweenNodes={$newConnectionBetweenNodes$} on:createCable />
         {/if}
     </div>
 </div>
