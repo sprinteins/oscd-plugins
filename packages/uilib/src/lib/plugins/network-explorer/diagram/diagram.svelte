@@ -76,6 +76,7 @@
 	<SvelteFlow 
 		nodes={nodes} 
 		edges={edges} 
+		nodesConnectable={false}
 		fitView 
 		minZoom={0.1} 
 		maxZoom={2.5}

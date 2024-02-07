@@ -3,6 +3,9 @@ import { writable } from "svelte/store"
 import { extractIEDs, findAllIEDBays, type IED } from "../diagram/networking"
 import { type Config, generateElkJSLayout } from "../diagram/elkjs-layout-generator"
 import { convertElKJSRootNodeToSvelteFlowObjects } from "../diagram/elkjs-svelteflow-converter"
+import { getIedNameFromId, hasOpenPort } from "../diagram/ied-helper"
+import { isBayNode } from "../../../components/diagram"
+import type { BayElkNode, IEDElkNode } from "../../../components/diagram"
 
 
 export class DiagramStore {
@@ -26,6 +29,8 @@ export class DiagramStore {
 		const rootNode = await generateElkJSLayout(this.ieds, iedBayMap, config)
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
+		this.setIsConnectedable(resp.nodes)
+		
 		this.nodes.set(resp.nodes)
 		this.edges.set(resp.edges)
 	}
@@ -65,6 +70,29 @@ export class DiagramStore {
 
 	public resetNewConnection(): void {
 		this.newConnectionBetweenNodes.set(null)
+	}
+
+	private setIsConnectedable(nodes: FlowNodes[]): void {
+		for (const node of nodes) {
+			if (this.isNodeConnectable(node as unknown as IEDElkNode | BayElkNode)) {
+				node.connectable = true
+			}
+		}
+	}
+
+	private isNodeConnectable(node: IEDElkNode | BayElkNode): boolean {
+		if (isBayNode(node)) {
+			return false
+		}
+
+		const iedName = getIedNameFromId(node.id)
+		const ied = this.ieds.find(ied => ied.name === iedName)
+
+		if (!ied) {
+			throw new Error(`IED ${iedName} not found`)
+		}
+
+		return hasOpenPort(ied)
 	}
 	
 }

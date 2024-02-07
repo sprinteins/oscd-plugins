@@ -23,6 +23,7 @@
 
 	function onCreateCable(event: CustomEvent<CreateCableEvent>) {
 		editEventHandler.dispatchCreateCable(event.detail)
+		store.resetNewConnection()
 	}
 
 	function onDelete(event: CustomEvent<Networking[]>): void {
