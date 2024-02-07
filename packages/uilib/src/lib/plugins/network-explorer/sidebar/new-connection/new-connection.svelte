@@ -73,7 +73,7 @@
 </script>
 
 <div>
-	<h3>{cableName}</h3>
+	<h3>Cable {cableName}</h3>
 
 	<IedPortSelect ied={sourceIed} on:select={onSourceSelect}/>
 	<IedPortSelect ied={targetIed} on:select={onTargetSelect}/>

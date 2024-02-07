@@ -2,10 +2,10 @@ import type { Networking, SCDElement } from "@oscd-plugins/core"
 import { SCDQueries, UCNetworkInformation } from "@oscd-plugins/core"
 import type { Replace } from "./editor-events"
 import type { CreateCableEvent } from "./network-events"
+import { emptyCableName } from "../constants"
 
 
 export class EditorEventHandler {
-	private readonly emptyCableName = "0"
 	private readonly editorActionName = "editor-action"
 
 	constructor(private readonly root: HTMLElement) {
@@ -51,7 +51,7 @@ export class EditorEventHandler {
 		return networking.map(net => {
 			const cableElement = this.extractPhysConnectionCable(net)
 			const modifiedCable = cableElement.element.cloneNode(true) as Element
-			modifiedCable.innerHTML = this.emptyCableName
+			modifiedCable.innerHTML = emptyCableName
 	
 			return {
 				old: { element: cableElement.element },

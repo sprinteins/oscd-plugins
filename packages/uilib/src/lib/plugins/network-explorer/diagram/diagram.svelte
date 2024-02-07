@@ -10,10 +10,12 @@
 		BackgroundVariant,
 		Controls,
 		MiniMap,
+        type Connection,
 	} from "@xyflow/svelte"
 	import { createEventDispatcher } from "svelte/internal"
 	import "@xyflow/svelte/dist/style.css"
 	import type { IEDNetworkInfoV3, Networking, PhysConnection } from "@oscd-plugins/core"
+	import { getIedNameFromId } from "./ied-helper"
 	import IEDNode from "./ied-node.svelte"
 	import BayNode from "./bay-node.svelte"
     import type { Writable } from "svelte/store";
@@ -63,6 +65,10 @@
 
 		dispatch("delete", networkings)
 	}
+
+	function onconnect(connection: Connection): void {
+		dispatch("connect", connection)
+	}
 </script>
 
 <network-diagram>
@@ -80,6 +86,7 @@
 		on:edgeclick
 		on:paneclick
 		{ ondelete }
+		{ onconnect }
 		panOnDrag={false}
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->

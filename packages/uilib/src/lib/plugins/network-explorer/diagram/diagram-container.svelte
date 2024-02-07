@@ -14,17 +14,13 @@ import Diagram from "./diagram.svelte";
 import { useNodes, type Node as ElkNode } from '@xyflow/svelte';
 
 // import type { IEDNetworkInfoV3, PhysConnection } from "@oscd-plugins/core";
-import type { Edge, Node } from "@xyflow/svelte";
+import type { Connection } from "@xyflow/svelte";
 // import type { DiagramStore, SelectedNode } from "../store";
-import { buildCablePortId, useNewEdges } from "../store"
 // import Diagram from "./diagram.svelte";
 // import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
 // import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
 // import { useNodes, useEdges } from '@xyflow/svelte';
-import type { Delete, Replace } from "../editor-events/editor-events";
 import { getIedNameFromId } from "./ied-helper"
-import type { Networking } from "@oscd-plugins/core";
-import { SCDQueries, UCNetworkInformation } from "@oscd-plugins/core";
 
 // 
 // INPUT
@@ -45,18 +41,10 @@ let root: HTMLElement
 const nodes$ = useNodes();
 $: store.updateSelectedNodes($nodes$)
 
-
-const newEdges$ = useNewEdges()
-$: onNewEdges($newEdges$)
-
-function onNewEdges(edges: Edge[]): void {
-	if (!edges) {
-		return
-	}
-
-	const edge = edges[0]
-	const sourceIedName = getIedNameFromId(edge.source)
-	const targetIedName = getIedNameFromId(edge.target)
+function onconnect(event: CustomEvent<Connection>): void {
+	const { source, target } = event.detail
+	const sourceIedName = getIedNameFromId(source)
+	const targetIedName = getIedNameFromId(target)
 	const ieds = store.ieds
 	const targetAndSource = ieds.filter(ied => ied.name === sourceIedName || ied.name === targetIedName)
 	const sourceIed = targetAndSource.find(ied => ied.name === sourceIedName)
@@ -119,6 +107,7 @@ function onNewEdges(edges: Edge[]): void {
 			edges={store.edges}
 			ieds={store.ieds}
 			on:delete
+			on:connect={onconnect}
 		/>	
 	{/if}
 			<!-- on:nodeclick={(e) => handleNodeClick(e.detail.node)}
