@@ -16,6 +16,10 @@
     let selectedNodes$ = store.selectedNodes
     let newConnectionBetweenNodes$ = store.newConnectionBetweenNodes
     const showSelectedNodes$ = derived(newConnectionBetweenNodes$, $newConnectionBetweenNodes$ => !$newConnectionBetweenNodes$)
+
+    function onCancelNewConnection(): void {
+        store.resetNewConnection()
+    }
 </script>
 
 <div class="sidebar sidebar-right">
@@ -28,7 +32,7 @@
                 />
             {/each}
         {:else}
-            <NewConnection newConnectionBetweenNodes={$newConnectionBetweenNodes$} on:createCable />
+            <NewConnection newConnectionBetweenNodes={$newConnectionBetweenNodes$} on:createCable on:cancel={onCancelNewConnection} />
         {/if}
     </div>
 </div>

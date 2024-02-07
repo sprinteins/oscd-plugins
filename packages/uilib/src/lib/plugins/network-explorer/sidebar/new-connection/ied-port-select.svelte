@@ -47,7 +47,7 @@
 </script>
 
 
-<div>
+<div class="container">
 	<IEDComponent label={ied.name} isSelected={true} isSelectable={false} />
 
 	<Select
@@ -57,3 +57,12 @@
 	>
 	</Select>
 </div>
+
+<style>
+	.container {
+		display: flex;
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 8px;
+	}
+</style>

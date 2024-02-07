@@ -11,6 +11,7 @@
 		Controls,
 		MiniMap,
         type Connection,
+        addEdge,
 	} from "@xyflow/svelte"
 	import { createEventDispatcher } from "svelte/internal"
 	import "@xyflow/svelte/dist/style.css"
@@ -66,7 +67,7 @@
 		dispatch("delete", networkings)
 	}
 
-	function onconnect(connection: Connection): void {
+	function onedgecreate(connection: Connection): void {
 		dispatch("connect", connection)
 	}
 </script>
@@ -86,7 +87,7 @@
 		on:edgeclick
 		on:paneclick
 		{ ondelete }
-		{ onconnect }
+		onedgecreate={ onedgecreate }
 		panOnDrag={false}
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->

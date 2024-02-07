@@ -12,7 +12,7 @@ export class DiagramStore {
 	
 	public selectedNodes = writable<SelectedNode[]>([])
   
-	public newConnectionBetweenNodes = writable<NewConnectionBetweenNodes>()
+	public newConnectionBetweenNodes = writable<NewConnectionBetweenNodes | null>(null)
 
 	public async updateNodesAndEdges( root: Element ) {
 		if (!root) {
@@ -61,6 +61,10 @@ export class DiagramStore {
 		})
 
 		return connectedIEDs
+	}
+
+	public resetNewConnection(): void {
+		this.newConnectionBetweenNodes.set(null)
 	}
 	
 }

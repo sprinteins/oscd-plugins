@@ -10,7 +10,7 @@
 	// 
 	// INPUT
 	// 
-	export let newConnectionBetweenNodes: NewConnectionBetweenNodes
+	export let newConnectionBetweenNodes: NewConnectionBetweenNodes | null
 
 	//
 	// Internal
@@ -24,7 +24,7 @@
 
 	$: onNewConnection(newConnectionBetweenNodes)
 
-	function onNewConnection(newConnectionBetweenNodes: NewConnectionBetweenNodes) {
+	function onNewConnection(newConnectionBetweenNodes: NewConnectionBetweenNodes | null) {
 		console.log(newConnectionBetweenNodes)
         if (!newConnectionBetweenNodes) {
             throw new Error('Input newConnectionBetweenNodes may not be null')
@@ -67,16 +67,31 @@
 		dispatch("createCable", createCableEvent)
 	}
 
+	function cancel(): void {
+		dispatch("cancel")
+	}
+
 	function getDefaultPort(ied: IED): string {
 		return getNetworkingWithOpenPort(ied)[0].port
 	}
 </script>
 
-<div>
+<div class="container">
 	<h3>Cable {cableName}</h3>
 
 	<IedPortSelect ied={sourceIed} on:select={onSourceSelect}/>
 	<IedPortSelect ied={targetIed} on:select={onTargetSelect}/>
 
-	<Button on:click={createCable} testid="create-cable">Create Connection</Button>
+	<div class="actions">
+		<Button on:click={createCable} testid="create-cable">Create</Button>
+		<Button on:click={cancel} type="secondary" testid="cancel-create-cable">Cancel</Button>
+	</div>
 </div>
+
+<style>
+	.container {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+</style>
