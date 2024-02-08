@@ -1,5 +1,5 @@
 import type { Edge, Node as FlowNodes } from "@xyflow/svelte"
-import { writable } from "svelte/store"
+import { writable, get } from "svelte/store"
 import { extractIEDs, findAllIEDBays, type IED } from "../diagram/networking"
 import { type Config, generateElkJSLayout } from "../diagram/elkjs-layout-generator"
 import { convertElKJSRootNodeToSvelteFlowObjects } from "../diagram/elkjs-svelteflow-converter"
@@ -11,22 +11,24 @@ import type { BayElkNode, IEDElkNode } from "../../../components/diagram"
 export class DiagramStore {
 	public nodes = writable<FlowNodes[]>([])
 	public edges = writable<Edge[]>([])
-	public ieds: IED[] = []
+	public ieds = writable<IED[]>([])
 	
 	public selectedNodes = writable<SelectedNode[]>([])
   
 	public newConnectionBetweenNodes = writable<NewConnectionBetweenNodes | null>(null)
 
 	public async updateNodesAndEdges( root: Element ) {
+		console.log('updateNodesAndEdges')
 		if (!root) {
 			console.info({ level: "info", msg: "initInfos: no root" })
 			return []
 		}
 		
 		
-		this.ieds = extractIEDs(root)
+		const ieds = extractIEDs(root)
+		this.ieds.set(ieds)
 		const iedBayMap = findAllIEDBays(root)
-		const rootNode = await generateElkJSLayout(this.ieds, iedBayMap, config)
+		const rootNode = await generateElkJSLayout(ieds, iedBayMap, config)
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
 		this.setIsConnectedable(resp.nodes)
@@ -44,16 +46,18 @@ export class DiagramStore {
 			return
 		}
 
+		const ieds = get(this.ieds)
 		const selectedIEDs = selectedNodes
-			.map( node => this.ieds.find(ied => ied.name === node.data.label) )
+			.map( node => ieds.find(ied => ied.name === node.data.label) )
 			.filter(Boolean) as IED[]
 
 		this.selectedNodes.set(selectedIEDs)
 	}
 
 	public findConnectedIEDs(ied: IED): IED[] {
+		const ieds = get(this.ieds)
 
-		const connectedIEDs = this.ieds.filter( otherIED => {
+		const connectedIEDs = ieds.filter( otherIED => {
 			if(ied === otherIED){ return false }
 
 			const connected = ied.networking.some(iedNetworking => {
@@ -86,7 +90,8 @@ export class DiagramStore {
 		}
 
 		const iedName = getIedNameFromId(node.id)
-		const ied = this.ieds.find(ied => ied.name === iedName)
+		const ieds = get(this.ieds)
+		const ied = ieds.find(ied => ied.name === iedName)
 
 		if (!ied) {
 			throw new Error(`IED ${iedName} not found`)

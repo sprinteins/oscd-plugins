@@ -12,6 +12,7 @@
 	// INPUT
 	// 
 	export let root: Element
+	export let editCount: number
 
 	// 
 	// INTERNAL
@@ -34,9 +35,7 @@
 <Theme>
 	<SvelteFlowProvider>
 	<network-explorer bind:this={htmlRoot}>
-		{#key root}
-			<DiagramContainer {store} doc={root} on:delete={onDelete}/>
-		{/key}
+		<DiagramContainer {store} doc={root} {editCount} on:delete={onDelete}/>
 		<Sidebar {store} on:createCable={onCreateCable} />
 	</network-explorer>
 	</SvelteFlowProvider>

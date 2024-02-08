@@ -10,6 +10,7 @@
  * > a graphical representation
 */
 
+import { get } from "svelte/store"
 import Diagram from "./diagram.svelte";
 import { useNodes, type Node as ElkNode } from '@xyflow/svelte';
 
@@ -26,8 +27,10 @@ import { getIedNameFromId } from "./ied-helper"
 // INPUT
 // 
 export let doc: Element
+export let editCount: number
 export let store: DiagramStore
-$: store.updateNodesAndEdges(doc)
+// $: store.updateNodesAndEdges(doc)
+$: updateOnEditCount(editCount)
 
 // 
 // CONFIG
@@ -37,15 +40,26 @@ $: store.updateNodesAndEdges(doc)
 // INTERNAL
 // 
 let root: HTMLElement
+let _editCount: number
 // let iedNetworkInfos: IEDNetworkInfoV3[]
 const nodes$ = useNodes();
 $: store.updateSelectedNodes($nodes$)
+
+function updateOnEditCount(editCount: number): void {
+	if (editCount === _editCount) {
+		return
+	}
+
+	_editCount = editCount
+	// TODO: Is there a better way than timeout?
+	setTimeout(() => store.updateNodesAndEdges(doc), 0)
+}
 
 function onconnect(event: CustomEvent<Connection>): void {
 	const { source, target } = event.detail
 	const sourceIedName = getIedNameFromId(source)
 	const targetIedName = getIedNameFromId(target)
-	const ieds = store.ieds
+	const ieds = get(store.ieds)
 	const targetAndSource = ieds.filter(ied => ied.name === sourceIedName || ied.name === targetIedName)
 	const sourceIed = targetAndSource.find(ied => ied.name === sourceIedName)
 	const targetIed = targetAndSource.find(ied => ied.name === targetIedName)

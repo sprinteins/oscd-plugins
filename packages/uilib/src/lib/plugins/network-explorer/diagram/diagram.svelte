@@ -29,7 +29,7 @@
 	export let nodes: Writable<Node[]>
 	export let edges: Writable<Edge[]>
 	// export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
-	export let ieds: IED[]
+	export let ieds: Writable<IED[]>
 
 	// 
 	// CONFIG
@@ -58,7 +58,7 @@
 
 	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {
 		const { edges } = deleteEvent
-		const currentIEDs = ieds
+		const currentIEDs = $ieds
 
 		const networkings: Networking[] = edges
 			.map(edge => getPhysConnectionsFromEdge(edge, currentIEDs))
