@@ -25,7 +25,6 @@
 	$: onNewConnection(newConnectionBetweenNodes)
 
 	function onNewConnection(newConnectionBetweenNodes: NewConnectionBetweenNodes | null) {
-		console.log(newConnectionBetweenNodes)
         if (!newConnectionBetweenNodes) {
             throw new Error('Input newConnectionBetweenNodes may not be null')
         }

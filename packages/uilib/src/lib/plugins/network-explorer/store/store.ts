@@ -18,7 +18,6 @@ export class DiagramStore {
 	public newConnectionBetweenNodes = writable<NewConnectionBetweenNodes | null>(null)
 
 	public async updateNodesAndEdges( root: Element ) {
-		console.log('updateNodesAndEdges')
 		if (!root) {
 			console.info({ level: "info", msg: "initInfos: no root" })
 			return []
@@ -38,6 +37,7 @@ export class DiagramStore {
 	}
 
 	public updateSelectedNodes(flowNodes: FlowNodes[]){
+		this.resetNewConnection()
 		const selectedNodes = flowNodes.filter(n => n.selected)
 		
 		const isSelectionReset = selectedNodes.length === 0

@@ -1,8 +1,8 @@
-import type { Networking, SCDElement } from "@oscd-plugins/core"
-import { SCDQueries, UCNetworkInformation } from "@oscd-plugins/core"
+import type { Networking } from "@oscd-plugins/core"
 import type { Replace } from "./editor-events"
 import type { CreateCableEvent } from "./network-events"
 import { emptyCableName } from "../constants"
+import { extractPhysConnectionCable } from "../diagram/networking"
 
 
 export class EditorEventHandler {
@@ -16,7 +16,6 @@ export class EditorEventHandler {
 		const combinedEditorEvent = this.buildEditorActionEvent(replaces)
 
 		this.root.dispatchEvent(combinedEditorEvent)
-		console.log(combinedEditorEvent)
 	}
 
 	public dispatchDeleteCable(networking: Networking[]): void {
@@ -36,7 +35,7 @@ export class EditorEventHandler {
 				throw new Error(`Networking for port ${port} not found in IED ${ied.name}`)
 			}
 
-			const cableElement = this.extractPhysConnectionCable(networking)
+			const cableElement = extractPhysConnectionCable(networking._physConnectionElement, networking)
 			const modifiedCable = cableElement.element.cloneNode(true) as Element
 			modifiedCable.innerHTML = event.cable
 
@@ -49,7 +48,7 @@ export class EditorEventHandler {
 
 	private buildDeleteCableEvents(networking: Networking[]): Replace[] {
 		return networking.map(net => {
-			const cableElement = this.extractPhysConnectionCable(net)
+			const cableElement = extractPhysConnectionCable(net._physConnectionElement, net)
 			const modifiedCable = cableElement.element.cloneNode(true) as Element
 			modifiedCable.innerHTML = emptyCableName
 	
@@ -58,18 +57,6 @@ export class EditorEventHandler {
 				new: { element: modifiedCable },
 			}
 		})
-	}
-
-	private extractPhysConnectionCable(net: Networking): SCDElement {
-		// TODO: Clean this mess up
-		const cableElement = new UCNetworkInformation(new SCDQueries(null as any))
-			.extractPhysConnectionCable(net._physConnectionElement)
-
-		if (!cableElement) {
-			throw new Error(`Element for cable ${net.cable} not found`)
-		}
-
-		return cableElement
 	}
 
 	private buildEditorActionEvent(replaces: Replace[]) {

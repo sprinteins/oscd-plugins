@@ -1,4 +1,4 @@
-import type { Networking } from "@oscd-plugins/core"
+import type { Networking, SCDElement } from "@oscd-plugins/core"
 import { UCNetworkInformation, SCDQueries } from "@oscd-plugins/core"
 
 export type IED = {
@@ -49,6 +49,17 @@ export function extractIEDNetworkingMap(root?: Element): IEDNetworkingMap {
 	}
 	
 	return networkingMap
+}
+
+export function extractPhysConnectionCable(root: Element, net: Networking): SCDElement {
+	const cableElement = new UCNetworkInformation(new SCDQueries(root))
+		.extractPhysConnectionCable(net._physConnectionElement)
+
+	if (!cableElement) {
+		throw new Error(`Element for cable ${net.cable} not found`)
+	}
+
+	return cableElement
 }
 
 

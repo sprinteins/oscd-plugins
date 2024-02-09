@@ -31,6 +31,7 @@ export let editCount: number
 export let store: DiagramStore
 // $: store.updateNodesAndEdges(doc)
 $: updateOnEditCount(editCount)
+$: updateOnDoc(doc)
 
 // 
 // CONFIG
@@ -41,12 +42,22 @@ $: updateOnEditCount(editCount)
 // 
 let root: HTMLElement
 let _editCount: number
+let _doc: Element
 // let iedNetworkInfos: IEDNetworkInfoV3[]
 const nodes$ = useNodes();
 $: store.updateSelectedNodes($nodes$)
 
+function updateOnDoc(doc: Element): void {
+	if (doc === _doc) {
+		return
+	}
+
+	_doc = doc
+	store.updateNodesAndEdges(doc)
+}
+
 function updateOnEditCount(editCount: number): void {
-	if (editCount === _editCount) {
+	if (editCount < 0 || editCount === _editCount) {
 		return
 	}
 
