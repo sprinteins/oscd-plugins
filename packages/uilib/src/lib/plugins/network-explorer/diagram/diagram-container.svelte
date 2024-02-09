@@ -62,7 +62,7 @@ function updateOnEditCount(editCount: number): void {
 	}
 
 	_editCount = editCount
-	// TODO: Is there a better way than timeout?
+	// TODO: We need to wait until the doc has been updated. Is there a better way than timeout?
 	setTimeout(() => store.updateNodesAndEdges(doc), 0)
 }
 

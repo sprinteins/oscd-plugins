@@ -13,8 +13,6 @@ export function extractCableNameFromId(cableName: string): string {
 	return cableName.substring(shortUuidDigits + 1)
 }
 
-// TODO: not used?
-// export function getPhysConnectionsFromEdge(edge: Edge, currentIedNetworkInfos: IEDNetworkInfoV3[]): PhysConnection[] {
 export function getPhysConnectionsFromEdge(edge: Edge, currentIEDs: IED[]): Networking[] {
 	const cableName = extractCableNameFromId(edge.id)
 	const iedCableCombinations = [
