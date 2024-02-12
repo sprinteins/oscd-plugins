@@ -8,12 +8,14 @@
 	interface PortOption {
 		label: string;
 		port: string;
+		cable: string;
 	}
 
 	// 
 	// INPUT
 	// 
 	export let ied: IED
+	export let existingCableName: string | null = null
 
 	//
 	// Internal
@@ -26,15 +28,24 @@
 
 	function onIed(ied: IED): void {
 		openPorts = getOpenPorts(ied)
-		selectedIndex = 0
+		selectedIndex = getSelectedIndex()
+	}
+
+	function getSelectedIndex(): number {
+		if (!existingCableName) {
+			return 0
+		}
+
+		return openPorts.findIndex(p => p.cable === existingCableName)
 	}
 
 	function getOpenPorts(ied: IED): PortOption[] {
-		return getNetworkingWithOpenPort(ied)
+		return getNetworkingWithOpenPort(ied, existingCableName)
 			.map(n => (
 				{
 					label: `Port ${n.port}, ${n.cable}`,
 					port: n.port,
+					cable: n.cable
 				}
 			))
 	}

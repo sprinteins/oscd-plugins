@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Node } from "@xyflow/svelte";
-	import type { DiagramStore, NewConnectionBetweenNodes } from "../store"
+	import type { DiagramStore, ConnectionBetweenNodes } from "../store"
     import { IEDAccordion } from "./ied-accordion";
     import { writable, derived } from "svelte/store";
     import NewConnection from "./new-connection/new-connection.svelte";
@@ -14,10 +14,16 @@
     // INTERNAL
     //
     let selectedNodes$ = store.selectedNodes
-    let newConnectionBetweenNodes$ = store.newConnectionBetweenNodes
-    const showSelectedNodes$ = derived(newConnectionBetweenNodes$, $newConnectionBetweenNodes$ => !$newConnectionBetweenNodes$)
+    let connectionBetweenNodes$ = store.connectionBetweenNodes
+    const showSelectedNodes$ = derived(connectionBetweenNodes$, $newConnectionBetweenNodes$ => !$newConnectionBetweenNodes$)
 
-    function onCancelNewConnection(): void {
+    $: log($connectionBetweenNodes$)
+
+    function log(c) {
+        console.log(c)
+    }
+
+    function onCancelConnection(): void {
         store.resetNewConnection()
     }
 </script>
@@ -32,7 +38,7 @@
                 />
             {/each}
         {:else}
-            <NewConnection newConnectionBetweenNodes={$newConnectionBetweenNodes$} on:createCable on:cancel={onCancelNewConnection} />
+            <NewConnection connectionBetweenNodes={$connectionBetweenNodes$} on:createCable on:cancel={onCancelConnection} />
         {/if}
     </div>
 </div>

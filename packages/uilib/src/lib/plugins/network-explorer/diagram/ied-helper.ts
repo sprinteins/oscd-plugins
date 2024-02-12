@@ -8,8 +8,11 @@ export function getIedNameFromId(iedId: string): string {
 	return iedId.substring(iedPrefix.length)
 }
 
-export function getNetworkingWithOpenPort(ied: IED): Networking[] {
-	return ied.networking.filter(net => !net.connectedNetworking && net.cable === emptyCableName)
+export function getNetworkingWithOpenPort(ied: IED, includeCable: string | null = null): Networking[] {
+	return ied.networking.filter(net => 
+		!net.connectedNetworking && net.cable === emptyCableName ||
+		(includeCable && net.cable === includeCable),
+	)
 }
 
 export function hasOpenPort(ied: IED): boolean {

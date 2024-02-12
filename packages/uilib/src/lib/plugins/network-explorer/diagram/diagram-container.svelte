@@ -15,13 +15,15 @@ import Diagram from "./diagram.svelte";
 import { useNodes, type Node as ElkNode } from '@xyflow/svelte';
 
 // import type { IEDNetworkInfoV3, PhysConnection } from "@oscd-plugins/core";
-import type { Connection } from "@xyflow/svelte";
+import type { Connection, Edge } from "@xyflow/svelte";
 // import type { DiagramStore, SelectedNode } from "../store";
 // import Diagram from "./diagram.svelte";
 // import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
 // import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
 // import { useNodes, useEdges } from '@xyflow/svelte';
 import { getIedNameFromId } from "./ied-helper"
+import { extractCableNameFromId } from "./edge-helper"
+import type { IED } from "./networking";
 
 // 
 // INPUT
@@ -68,6 +70,31 @@ function updateOnEditCount(editCount: number): void {
 
 function onconnect(event: CustomEvent<Connection>): void {
 	const { source, target } = event.detail
+	const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
+
+	store.connectionBetweenNodes.set({
+		isNew: true,
+		source: sourceIed,
+		target: targetIed
+	})
+}
+
+function onedgeclick(event: CustomEvent<{ edge: Edge }>): void {
+	const { edge } = event.detail
+	const { source, target } = edge
+
+	const cableName = extractCableNameFromId(edge.id)
+	const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
+
+	store.connectionBetweenNodes.set({
+		isNew: false,
+		cableName,
+		source: sourceIed,
+		target: targetIed
+	})
+}
+
+function getSourceAndTargetIed(source: string, target: string): { sourceIed: IED, targetIed: IED } {
 	const sourceIedName = getIedNameFromId(source)
 	const targetIedName = getIedNameFromId(target)
 	const ieds = get(store.ieds)
@@ -83,10 +110,7 @@ function onconnect(event: CustomEvent<Connection>): void {
 		throw new Error(`Ied ${targetIedName} not found`)
 	}
 
-	store.newConnectionBetweenNodes.set({
-		source: sourceIed,
-		target: targetIed
-	})
+	return { sourceIed: sourceIed, targetIed: targetIed }
 }
 
 // function updateSelectedNode(nodes: Node[]){
@@ -133,6 +157,7 @@ function onconnect(event: CustomEvent<Connection>): void {
 			ieds={store.ieds}
 			on:delete
 			on:connect={onconnect}
+			on:edgeclick={onedgeclick}
 		/>	
 	{/if}
 			<!-- on:nodeclick={(e) => handleNodeClick(e.detail.node)}

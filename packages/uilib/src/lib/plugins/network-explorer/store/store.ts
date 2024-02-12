@@ -15,7 +15,7 @@ export class DiagramStore {
 	
 	public selectedNodes = writable<SelectedNode[]>([])
   
-	public newConnectionBetweenNodes = writable<NewConnectionBetweenNodes | null>(null)
+	public connectionBetweenNodes = writable<ConnectionBetweenNodes | null>(null)
 
 	public async updateNodesAndEdges( root: Element ) {
 		if (!root) {
@@ -73,7 +73,7 @@ export class DiagramStore {
 	}
 
 	public resetNewConnection(): void {
-		this.newConnectionBetweenNodes.set(null)
+		this.connectionBetweenNodes.set(null)
 	}
 
 	private setIsConnectedable(nodes: FlowNodes[]): void {
@@ -104,7 +104,9 @@ export class DiagramStore {
 
 export type SelectedNode = IED
 
-export type NewConnectionBetweenNodes = {
+export type ConnectionBetweenNodes = {
+	isNew: boolean,
+	cableName?: string,
 	source: IED,
 	target: IED,
 }
