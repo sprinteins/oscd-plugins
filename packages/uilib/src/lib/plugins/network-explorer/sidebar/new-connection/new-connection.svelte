@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 	import { Button } from "../../../../components/button"
-	import type { CreateCableEvent } from "../../editor-events/network-events"
+	import type { CreateCableEvent, UpdateCableEvent } from "../../editor-events/network-events"
 	import type { IED } from "../../diagram/networking"
 	import type { ConnectionBetweenNodes } from "../../store/index"
 	import IedPortSelect from "./ied-port-select.svelte"
@@ -55,8 +55,35 @@
 		if (isNew) {
 			createCable()
 		} else {
-			// TODO
+			updateCable()
 		}
+	}
+
+	function updateCable(): void {
+		if (!existingCableName) {
+			throw new Error(`Existing cable not found during update`)
+		}
+
+		const oldSourcePort = getOldPort(sourceIed, existingCableName)
+		const oldTargetPort = getOldPort(targetIed, existingCableName)
+		const newSourcePort = sourceSelectedPort || oldSourcePort
+		const newTargetPort = targetSelectedPort || oldTargetPort
+
+		const updateCableEvent: UpdateCableEvent = {
+			cable: cableName,
+			source: {
+				ied: sourceIed,
+				oldPort: oldSourcePort,
+				newPort: newSourcePort
+			},
+			target: {
+				ied: targetIed,
+				oldPort: oldTargetPort,
+				newPort: newTargetPort
+			}
+		}
+
+		dispatch("updateCable", updateCableEvent)
 	}
 	
 	function createCable(): void {
@@ -84,6 +111,16 @@
 	
 	function getDefaultPort(ied: IED): string {
 		return getNetworkingWithOpenPort(ied)[0].port
+	}
+
+	function getOldPort(ied: IED, cable: string): string {
+		const port = ied.networking.find(net => net.cable === cable)?.port
+
+		if (!port) {
+			throw new Error(`Port for cable ${cable} in IED ${ied.name} not found`)
+		}
+
+		return port
 	}
 </script>
 

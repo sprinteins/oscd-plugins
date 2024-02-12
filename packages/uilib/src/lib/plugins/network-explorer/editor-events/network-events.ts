@@ -9,3 +9,15 @@ export interface CreateCableEvent {
 	source: CreateCableIED;
 	target: CreateCableIED;
 }
+
+export interface UpdateCableIED {
+	ied: IED;
+	oldPort: string;
+	newPort: string;
+}
+
+export interface UpdateCableEvent {
+	cable: string;
+	source: UpdateCableIED;
+	target: UpdateCableIED;
+}

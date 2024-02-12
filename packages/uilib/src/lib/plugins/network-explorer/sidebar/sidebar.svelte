@@ -17,12 +17,6 @@
     let connectionBetweenNodes$ = store.connectionBetweenNodes
     const showSelectedNodes$ = derived(connectionBetweenNodes$, $newConnectionBetweenNodes$ => !$newConnectionBetweenNodes$)
 
-    $: log($connectionBetweenNodes$)
-
-    function log(c) {
-        console.log(c)
-    }
-
     function onCancelConnection(): void {
         store.resetNewConnection()
     }
@@ -38,7 +32,12 @@
                 />
             {/each}
         {:else}
-            <NewConnection connectionBetweenNodes={$connectionBetweenNodes$} on:createCable on:cancel={onCancelConnection} />
+            <NewConnection
+                connectionBetweenNodes={$connectionBetweenNodes$}
+                on:createCable
+                on:updateCable
+                on:cancel={onCancelConnection}
+            />
         {/if}
     </div>
 </div>

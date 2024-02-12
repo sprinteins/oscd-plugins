@@ -5,7 +5,7 @@
 	import { DiagramContainer } from "./diagram"
 	import { DiagramStore } from "./store"
 	import { Sidebar } from "./sidebar"
-    import type { CreateCableEvent } from "./editor-events/network-events";
+    import type { CreateCableEvent, UpdateCableEvent } from "./editor-events/network-events";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler"
 
 	// 
@@ -27,6 +27,11 @@
 		store.resetNewConnection()
 	}
 
+	function onUpdateCable(event: CustomEvent<UpdateCableEvent>) {
+		editEventHandler.dispatchUpdateCable(event.detail)
+		store.resetNewConnection()
+	}
+
 	function onDelete(event: CustomEvent<Networking[]>): void {
 		editEventHandler.dispatchDeleteCable(event.detail)
 	}
@@ -36,7 +41,7 @@
 	<SvelteFlowProvider>
 	<network-explorer bind:this={htmlRoot}>
 		<DiagramContainer {store} doc={root} {editCount} on:delete={onDelete}/>
-		<Sidebar {store} on:createCable={onCreateCable} />
+		<Sidebar {store} on:createCable={onCreateCable} on:updateCable={onUpdateCable} />
 	</network-explorer>
 	</SvelteFlowProvider>
 </Theme>
