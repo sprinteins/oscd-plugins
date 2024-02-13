@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import Textfield from '@smui/textfield';
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 	import { Button } from "../../../../components/button"
 	import type { CreateCableEvent, UpdateCableEvent } from "../../editor-events/network-events"
@@ -22,7 +23,7 @@
 	let targetSelectedPort: string
 	let cableName: string
 	let isNew: boolean
-	let existingCableName: string | null
+	let existingCableName: string | null | undefined
 	
 	$: onNewConnection(connectionBetweenNodes)
 	
@@ -126,6 +127,8 @@
 
 <div class="container">
 	<h3>Cable {cableName}</h3>
+	<Textfield bind:value={cableName} label="Cable" variant="outlined">
+	</Textfield>
 	
 	<IedPortSelect ied={sourceIed} { existingCableName } on:select={onSourceSelect}/>
 	<IedPortSelect ied={targetIed} { existingCableName } on:select={onTargetSelect}/>

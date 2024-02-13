@@ -43,18 +43,18 @@ export class EditorEventHandler {
 		
 		const sourceAndTarget = [ event.source, event.target ]
 		sourceAndTarget.forEach(({ ied, oldPort, newPort }) => {
-			if (oldPort === newPort) {
-				return
-			}
-
 			const networkingToEmpty = ied.networking.find(net => net.port === oldPort)
 			if (!networkingToEmpty) {
 				throw new Error(`Trying to empty cable for port ${oldPort}, but networking was not found`)
 			}
 
-			const emptyOldPort = this.buildEmptyPortReplace(networkingToEmpty)
+			if (oldPort !== newPort) {
+				const emptyOldPort = this.buildEmptyPortReplace(networkingToEmpty)
+				replaces.push(emptyOldPort)
+			}
+
 			const setNewPort = this.buildSetCableToPortReplace(ied, event.cable, newPort)
-			replaces.push(emptyOldPort, setNewPort)
+			replaces.push(setNewPort)
 		})
 
 		return replaces

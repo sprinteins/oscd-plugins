@@ -305,6 +305,9 @@ importers:
       '@smui/snackbar':
         specifier: 7.0.0-beta.8
         version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/textfield':
+        specifier: 7.0.0-beta.8
+        version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@xyflow/svelte':
         specifier: ^0.0.33
         version: 0.0.33(svelte@3.55.0)
