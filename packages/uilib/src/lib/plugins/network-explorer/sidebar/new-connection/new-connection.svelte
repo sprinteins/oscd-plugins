@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import Textfield from '@smui/textfield';
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 	import { Button } from "../../../../components/button"
+	import { Textfield } from "../../../../components/textfield"
 	import type { CreateCableEvent, UpdateCableEvent } from "../../editor-events/network-events"
 	import type { IED } from "../../diagram/networking"
 	import type { ConnectionBetweenNodes } from "../../store/index"
