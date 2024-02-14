@@ -28,7 +28,6 @@
             {#each $selectedNodes$ as node }
                 <IEDAccordion
                   selectedIED={node}
-                  connectedIEDs={store.findConnectedIEDs(node)}
                 />
             {/each}
         {:else}

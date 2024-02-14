@@ -23,17 +23,26 @@ export class DiagramStore {
 			return []
 		}
 		
-		
 		const ieds = extractIEDs(root)
 		this.ieds.set(ieds)
 		const iedBayMap = findAllIEDBays(root)
 		const rootNode = await generateElkJSLayout(ieds, iedBayMap, config)
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
-		this.setIsConnectedable(resp.nodes)
-		
-		this.nodes.set(resp.nodes)
+
+		const previousNodes = get(this.nodes)
+		const isNodeStructureEquivalent = this.isNodeStructureEquivalent(
+			previousNodes as unknown as (IEDElkNode | BayElkNode)[],
+			resp.nodes as unknown as (IEDElkNode | BayElkNode)[],
+		)
+
+		const shouldRerenderNodes = !isNodeStructureEquivalent
+		if (shouldRerenderNodes) {
+			this.nodes.set(resp.nodes)
+		}
 		this.edges.set(resp.edges)
+
+		this.setIsConnectedable(get(this.nodes))
 	}
 
 	public updateSelectedNodes(flowNodes: FlowNodes[]){
@@ -74,6 +83,43 @@ export class DiagramStore {
 
 	public resetNewConnection(): void {
 		this.connectionBetweenNodes.set(null)
+	}
+
+	private isNodeStructureEquivalent(previousNodes: (IEDElkNode | BayElkNode)[], nodes: (IEDElkNode | BayElkNode)[]): boolean {
+		const previousIEDNodes = previousNodes.filter(n => !isBayNode(n))
+		const IEDNodes = nodes.filter(n => !isBayNode(n))
+		const isIEDStructureEquivalent = this.isIEDStructureEquivalent(previousIEDNodes, IEDNodes)
+
+		const previousBayNodes = previousNodes.filter(n => isBayNode(n)) as BayElkNode[]
+		const bayNodes = nodes.filter(n => isBayNode(n)) as BayElkNode[]
+		const isBayStructureEquivalent = this.isBayStructureEquivalent(previousBayNodes, bayNodes)
+
+		return isIEDStructureEquivalent && isBayStructureEquivalent
+	}
+
+	private isIEDStructureEquivalent(previousIEDs: IEDElkNode[], IEDs: IEDElkNode[]): boolean {
+		const hasSameAmountOfIEDs = previousIEDs.length === IEDs.length
+		if (!hasSameAmountOfIEDs) {
+			return false
+		}
+
+		const IEDNodeSet = new Set(IEDs.map(n => n.id))
+		return previousIEDs.every(n => IEDNodeSet.has(n.id))
+	}
+
+	private isBayStructureEquivalent(previousBays: BayElkNode[], bays: BayElkNode[]): boolean {
+		const hasSameAmountOfBays = previousBays.length === bays.length
+
+		if (!hasSameAmountOfBays) {
+			return false
+		}
+
+		const bayChildrenMap = new Map(bays.map(b => [b.id, new Set(b.children.map(c => c.id))]))
+
+		return previousBays.every(bay => {
+			const children = bayChildrenMap.get(bay.id)
+			return children && bay.children.every(c => children.has(c.id))
+		})
 	}
 
 	private setIsConnectedable(nodes: FlowNodes[]): void {

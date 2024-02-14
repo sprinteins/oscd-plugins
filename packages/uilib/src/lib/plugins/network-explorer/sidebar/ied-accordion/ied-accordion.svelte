@@ -1,33 +1,24 @@
 <script lang="ts">
     import { IED as IEDElement } from "../../../../components/ied"
     import type { SelectedNode } from "../../store/index"
-    import { buildCablePortId } from "../../store"
     import { type IEDDetails, CableIEDAccordion } from "../../../../components/accordion/cable-ied-accordion"
-    import type { IED } from "../../diagram/networking";
     
     // 
     // Inputs
     // 
     export let selectedIED: SelectedNode
-    export let connectedIEDs: IED[]
 
 
-    $: iedDetails = buildConnectedIEDDetails(selectedIED, connectedIEDs)
+    $: iedDetails = buildConnectedIEDDetails(selectedIED)
 
-    function buildConnectedIEDDetails(selectedIED: SelectedNode, connectedIEDs: IED[]): IEDDetails[] {
+    function buildConnectedIEDDetails(selectedIED: SelectedNode): IEDDetails[] {
         let ieds: IEDDetails[] = []
 
         for(const networking of selectedIED.networking){
-            const cable = networking.cable
-            const connectedIED = connectedIEDs.find(
-                    ied => ied.networking && ied.networking.some(
-                        connectedNetworking => connectedNetworking.cable === cable
-                    )
-                )
             ieds.push({
                 cable: networking.cable,
                 port: networking.port,
-                iedName: connectedIED?.name ?? "-", //
+                iedName: networking.connectedNetworking?.iedName ?? "-", //
             })
         }
 
