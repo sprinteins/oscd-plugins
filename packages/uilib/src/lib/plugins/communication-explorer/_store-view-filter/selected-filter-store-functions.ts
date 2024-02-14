@@ -1,9 +1,9 @@
 import { filterState } from "./selected-filter-store"
-import type { IEDConnectionWithCustomValues, IEDNode } from "../../../components/diagram"
+import type { IEDConnectionWithCustomValues, IEDElkNode } from "../../../components/diagram"
 import { MessageType, allMessageTypes } from "@oscd-plugins/core"
 import { get } from "svelte/store"
 
-export function selectIEDNode(node: IEDNode) {
+export function selectIEDNode(node: IEDElkNode) {
 	filterState.update(selectedFilter => {
 		return {
 			...selectedFilter,
@@ -13,13 +13,13 @@ export function selectIEDNode(node: IEDNode) {
 	})
 }
 
-export function toggleMultiSelectionOfIED(node: IEDNode){
+export function toggleMultiSelectionOfIED(node: IEDElkNode){
 	filterState.update(selectedFilter => {
 
 		const selectedIEDs = selectedFilter.selectedIEDs
 		const isAlreadySelected = _isIEDSelected(node, selectedIEDs)
 
-		let newSelectedIEDs: IEDNode[] = []
+		let newSelectedIEDs: IEDElkNode[] = []
 		if(!isAlreadySelected){
 			newSelectedIEDs = [...selectedFilter.selectedIEDs, node]
 		}else{
@@ -154,7 +154,7 @@ export function isIEDSelected(node: {label: string}): boolean {
 	return isSelected
 }
 
-function _isIEDSelected(node: {label: string}, selectedIEDs: IEDNode[]): boolean {
+function _isIEDSelected(node: {label: string}, selectedIEDs: IEDElkNode[]): boolean {
 	return selectedIEDs.some(iedNode => iedNode.label === node.label)
 }
 

@@ -1,24 +1,26 @@
-import type { IEDNetworkInfoV3 } from "@oscd-plugins/core"
 import ELK, { type ElkNode } from "elkjs/lib/elk.bundled"
-import type { BayNode, IEDConnection, IEDNode, NetworkNode, RootNode } from "../../../components/diagram"
-import type { IEDBayMap } from "./ied-network-info"
+import type { BayElkNode, IEDConnection, IEDElkNode, NetworkNode, RootNode } from "../../../components/diagram"
+import {type BayIEDNameMap, createCableNetowrkingMap, type IED } from "./networking"
+// import type { IEDBayMap } from "./ied-network-info"
+import { createCableId } from "./edge-helper"
+import type { Networking } from "@oscd-plugins/core"
 
 const defaultConfigs: Partial<Config> = {
-	spacingBase:           0,
-	spacingBetweenLaysers: 0,
+	spacingBase:          0,
+	spacingBetweenLayers: 0,
 }
 
 export type Config = {
 	width: number,
 	height: number,
 	spacingBase?: number,
-	spacingBetweenLaysers?: number,
+	spacingBetweenLayers?: number,
 	// heightPerConnection: number,
 }
 
 export async function generateElkJSLayout(
-	iedNetworkInfos: IEDNetworkInfoV3[],
-	iedBayMap: IEDBayMap,
+	ieds: IED[],
+	bayIedMap: BayIEDNameMap,
 	customConfig: Config,
 ): Promise<RootNode<NetworkNode>> {
 
@@ -26,31 +28,31 @@ export async function generateElkJSLayout(
 		...defaultConfigs,
 		...customConfig,
 	}
-	const cableList = createCableList(iedNetworkInfos)
-	const cablePairs = cableList.filter(function isAnExectPair(cable) { return cable.ieds.length === 2 })
-	const iedsWithDuplicates = cablePairs
-		.map(cable => cable.ieds)
-		.flat()
-	const ieds = [...new Set(iedsWithDuplicates)] // deduping
 	
-	const bayNodes: BayNode[] = Object.keys(iedBayMap).map(bayName => createBayNode(bayName, config))
-	const iedNodes: IEDNode[] = ieds.map(ied => createIEDNode(ied, config))
+	const bayElkNodes: BayElkNode[] = Object.keys(bayIedMap).map(bayName => createBayElkNode(bayName, config))
+	const iedElkNodes: IEDElkNode[] = ieds.map(ied =>  createIEDElkNode(ied.name, config))
 
-	const iedsWithoutBay: IEDNode[] = []
-	iedNodes.forEach(iedNode => assignNodeToBay(iedNode, iedBayMap, bayNodes, iedsWithoutBay) )
+	const iedsWithoutBay: IEDElkNode[] = []
+	iedElkNodes.forEach(iedNode => assignNodeToBay(iedNode, bayIedMap, bayElkNodes, iedsWithoutBay) )
 	
-	const edges = cablePairs.map(createEdge)
-	
-	return await createLayoutWithElk(config, bayNodes, iedsWithoutBay, edges)
+	const cableNetworkingMap = createCableNetowrkingMap(ieds)
+	const networkingPairs = Object
+		.values(cableNetworkingMap)
+		.filter(function isAnExectPair(networkingList) { return networkingList.length === 2 })
+
+	const edges = networkingPairs.map(createEdge)
+
+	return await createLayoutWithElk(config, bayElkNodes, iedsWithoutBay, edges)
 	
 }
+
 
 // Need more configuration options of elk.js?
 // 👉 https://www.eclipse.org/elk/reference/algorithms.html 
 async function createLayoutWithElk(
 	config: Config, 
-	bayNodes: BayNode[], 
-	iedsWithoutBay: IEDNode[], 
+	bayNodes: BayElkNode[], 
+	iedsWithoutBay: IEDElkNode[], 
 	edges: IEDConnection[],
 ) {
 	const elk = new ELK()
@@ -73,7 +75,7 @@ async function createLayoutWithElk(
 			// "org.eclipse.elk.layered.mergeEdges": "false",
 			// "org.eclipse.elk.stress.desiredEdgeLength":              "200.0",
 			"org.eclipse.elk.layered.spacing.baseValue":                 String(config.spacingBase),
-			"org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers":     String(config.spacingBetweenLaysers),
+			"org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers":     String(config.spacingBetweenLayers),
 			"org.eclipse.elk.layered.layering.strategy":                 "LONGEST_PATH",
 			"org.eclipse.elk.layered.layering.coffmanGraham.layerBound": "100",
 			"org.eclipse.elk.layered.nodePlacement.strategy":            "BRANDES_KOEPF",
@@ -87,20 +89,21 @@ async function createLayoutWithElk(
 	return nodes
 }
 
-function createEdge(cable: { label: string; ieds: IEDNetworkInfoV3[] }) {
+function createEdge(networkingList: Networking[]) {
+	const id = createCableId(networkingList[0].cable)
 	return {
-		id:      crypto.randomUUID(),
-		sources: [`ied-${cable.ieds[0].iedName}`],
-		targets: [`ied-${cable.ieds[1].iedName}`],
+		id:      id,
+		sources: [`ied-${networkingList[0].iedName}`],
+		targets: [`ied-${networkingList[1].iedName}`],
 		type:    "floating",
 	}
 }
 
 function assignNodeToBay(
-	iedNode: IEDNode,
-	iedBayMap: IEDBayMap,
-	bayNodes: BayNode[],
-	iedsWithoutBay: IEDNode[],
+	iedNode: IEDElkNode,
+	iedBayMap: BayIEDNameMap,
+	bayNodes: BayElkNode[],
+	iedsWithoutBay: IEDElkNode[],
 ) {
 	const bayName = Object.keys(iedBayMap).find(bayName => iedBayMap[bayName].includes(iedNode.label))
 	const belongsToBay = Boolean(bayName)
@@ -123,29 +126,7 @@ function assignNodeToBay(
 }
 
 
-
-type CableMap = {[cable: string]: IEDNetworkInfoV3[]}
-type CableList = {label: string, ieds: IEDNetworkInfoV3[]}[]
-
-function createCableList(iedNetworkInfos: IEDNetworkInfoV3[]): CableList {
-	const cableMap: CableMap = {}
-	for(const iedNetworkInfo of iedNetworkInfos) {
-		for(const cable of iedNetworkInfo.networkInfo.connections.map(c => c.cable)){
-			if(!cableMap[cable]) {
-				cableMap[cable] = []
-			}
-			cableMap[cable].push(iedNetworkInfo)
-		}
-	}
-
-	const cableList: CableList = Object
-		.keys(cableMap)
-		.map(cable => ({label: cable, ieds: cableMap[cable]}))
-
-	return cableList
-}
-
-function createBayNode(bayName: string, config: Config): BayNode {
+function createBayElkNode(bayName: string, config: Config): BayElkNode {
 	return {
 		id:            `bay-${bayName}`,
 		label:         bayName,
@@ -155,19 +136,19 @@ function createBayNode(bayName: string, config: Config): BayNode {
 		children:      [],
 		layoutOptions: {
 			"spacing.baseValue":             String(config.spacingBase),
-			"spacing.nodeNodeBetweenLayers": String(config.spacingBetweenLaysers),
+			"spacing.nodeNodeBetweenLayers": String(config.spacingBetweenLayers),
 			"elk.padding":                   "[top=20.0,left=20.0,bottom=20.0]",
 		},
 	}
 }
 
-function createIEDNode(ied: IEDNetworkInfoV3, config: Config): IEDNode {
+function createIEDElkNode(iedName: string, config: Config): IEDElkNode {
 	return {
-		id:     `ied-${ied.iedName}`,
-		label:  ied.iedName,
+		id:     `ied-${iedName}`,
+		label:  iedName,
 		labels: [
 			{
-				text: ied.iedName,
+				text: iedName,
 			},
 		],
 		isBayNode:  false,

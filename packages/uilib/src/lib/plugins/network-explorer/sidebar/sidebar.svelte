@@ -1,25 +1,43 @@
 <script lang="ts">
     import type { Node } from "@xyflow/svelte";
-	import type { DiagramStore } from "../store"
+	import type { DiagramStore, ConnectionBetweenNodes } from "../store"
     import { IEDAccordion } from "./ied-accordion";
+    import { writable, derived } from "svelte/store";
+    import NewConnection from "./new-connection/new-connection.svelte";
 
 	// 
 	// INPUT
 	// 
-	export let controller: DiagramStore
+	export let store: DiagramStore
 
     //
     // INTERNAL
     //
-    let selectedNodes$ = controller.selectedNodes
+    let selectedNodes$ = store.selectedNodes
+    let connectionBetweenNodes$ = store.connectionBetweenNodes
+    const showSelectedNodes$ = derived(connectionBetweenNodes$, $newConnectionBetweenNodes$ => !$newConnectionBetweenNodes$)
 
+    function onCancelConnection(): void {
+        store.resetNewConnection()
+    }
 </script>
 
 <div class="sidebar sidebar-right">
     <div class="sidebar-content">
-        {#each $selectedNodes$ as node }
-            <IEDAccordion selectedNode={node}/>
-        {/each}
+        {#if $showSelectedNodes$}
+            {#each $selectedNodes$ as node }
+                <IEDAccordion
+                  selectedIED={node}
+                />
+            {/each}
+        {:else}
+            <NewConnection
+                connectionBetweenNodes={$connectionBetweenNodes$}
+                on:createCable
+                on:updateCable
+                on:cancel={onCancelConnection}
+            />
+        {/if}
     </div>
 </div>
 

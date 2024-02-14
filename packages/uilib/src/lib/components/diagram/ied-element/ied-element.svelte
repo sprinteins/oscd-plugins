@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { IEDNode } from "../nodes"
+	import type { IEDElkNode } from "../nodes"
 
 	// 
 	// INPUT
 	// 
-	export let node: IEDNode
+	export let node: IEDElkNode
 	export let isSelected = false
 	export let disabled = false
 	export let testid = ""

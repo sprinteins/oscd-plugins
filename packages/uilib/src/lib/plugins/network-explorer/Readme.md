@@ -6,3 +6,6 @@ the devices that are connected with the same cable.
 
 We also group IEDs by bay.
 
+----
+
+-[Naming](./naming.md)

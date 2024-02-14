@@ -26,7 +26,7 @@ export class SCDQueries {
 		"prefix",
 	]
 	public searchLNodes(options?: CommonOptions): LNodeElement[] {
-		const selector = `LNode`
+		const selector = "LNode"
 		return this.searchElement<LNodeElement>(selector, SCDQueries.AttributeListLNode, options)
 	}
 
@@ -356,6 +356,16 @@ export class SCDQueries {
 	public seachPhysConnectionPort(options?:CommonOptions): ConnectedAPPortElement | null {
 		return this.searchSingleElement<ConnectedAPPortElement>(SCDQueries.SelectorPhysConnectionPort, SCDQueries.AttributeListPort, options)
 	}
+	public static SelectorPhysConnectionType = "P[type='Type']"
+	public static AttributeListType: AttributeList<ConnectedAPPortElement>[] = []
+	public seachPhysConnectionType(options?:CommonOptions): ConnectedAPPortElement | null {
+		return this.searchSingleElement<ConnectedAPTypeElement>(SCDQueries.SelectorPhysConnectionType, SCDQueries.AttributeListType, options)
+	}
+	public static SelectorPhysConnectionPlug = "P[type='Plug']"
+	public static AttributeListPlug: AttributeList<ConnectedAPPlugElement>[] = []
+	public seachPhysConnectionPlug(options?:CommonOptions): ConnectedAPPlugElement | null {
+		return this.searchSingleElement<ConnectedAPPlugElement>(SCDQueries.SelectorPhysConnectionPlug, SCDQueries.AttributeListPlug, options)
+	}
 
 	
 
@@ -531,6 +541,8 @@ export type ConnectedAPIPSubnetElement = SCDElement
 export type ConnectedAPIPGatewayElement = SCDElement
 export type ConnectedAPCableElement = SCDElement
 export type ConnectedAPPortElement = SCDElement
+export type ConnectedAPTypeElement = SCDElement
+export type ConnectedAPPlugElement = SCDElement
 export type ConnectedAPPhyConnectionElement = SCDElement
 export type ConnectedAPGooseAddressElement = SCDElement
 export type ConnectedAPSampledValuesAddressElement = SCDElement

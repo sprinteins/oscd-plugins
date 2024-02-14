@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## Network Explorer [0.0.5] - 2024-02-14
+
+### Added
+
+- add, edit and delete physical connections between IEDs (#17, #28)
+
 ## Network Explorer [0.0.4] - 2023-12-13
 
 ### Fixed

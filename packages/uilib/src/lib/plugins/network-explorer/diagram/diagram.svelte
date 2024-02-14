@@ -10,18 +10,26 @@
 		BackgroundVariant,
 		Controls,
 		MiniMap,
+        type Connection,
+        addEdge,
 	} from "@xyflow/svelte"
+	import { createEventDispatcher } from "svelte/internal"
 	import "@xyflow/svelte/dist/style.css"
+	import type { IEDNetworkInfoV3, Networking, PhysConnection } from "@oscd-plugins/core"
+	import { getIedNameFromId } from "./ied-helper"
 	import IEDNode from "./ied-node.svelte"
 	import BayNode from "./bay-node.svelte"
     import type { Writable } from "svelte/store";
-
+	import { getPhysConnectionsFromEdge } from "./edge-helper"
+    import type { IED } from "./networking";
 
 	// 
 	// INPUT
 	// 
 	export let nodes: Writable<Node[]>
 	export let edges: Writable<Edge[]>
+	// export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
+	export let ieds: Writable<IED[]>
 
 	// 
 	// CONFIG
@@ -46,14 +54,29 @@
 
 	// const connectionLineStyle = "stroke: black; stroke-width: 3;"
 	// const bgColor = writable('#1A192B');
+	const dispatch = createEventDispatcher()
 
+	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {
+		const { edges } = deleteEvent
+		const currentIEDs = $ieds
 
+		const networkings: Networking[] = edges
+			.map(edge => getPhysConnectionsFromEdge(edge, currentIEDs))
+			.flat()
+
+		dispatch("delete", networkings)
+	}
+
+	function onedgecreate(connection: Connection): void {
+		dispatch("connect", connection)
+	}
 </script>
 
 <network-diagram>
 	<SvelteFlow 
 		nodes={nodes} 
 		edges={edges} 
+		nodesConnectable={false}
 		fitView 
 		minZoom={0.1} 
 		maxZoom={2.5}
@@ -64,6 +87,8 @@
 		on:nodeclick
 		on:edgeclick
 		on:paneclick
+		{ ondelete }
+		onedgecreate={ onedgecreate }
 		panOnDrag={false}
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->
