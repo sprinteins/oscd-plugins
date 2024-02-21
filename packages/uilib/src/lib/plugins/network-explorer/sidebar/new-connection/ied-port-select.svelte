@@ -61,12 +61,14 @@
 <div class="container">
 	<IEDComponent label={ied.name} isSelected={true} isSelectable={false} />
 
-	<Select
-		on:select={handleSelectionChange}
-		linkTargetIndex={selectedIndex}
-		items={openPorts}
-	>
-	</Select>
+	<div class="select-container">
+		<Select
+			on:select={handleSelectionChange}
+			linkTargetIndex={selectedIndex}
+			items={openPorts}
+		>
+		</Select>
+	</div>
 </div>
 
 <style>
@@ -75,5 +77,10 @@
 		align-items: flex-start;
 		flex-direction: column;
 		gap: 8px;
+	}
+
+	.select-container {
+		width: 100%;
+        padding: 0.5rem 0rem;
 	}
 </style>
