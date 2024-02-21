@@ -31,7 +31,7 @@
 		if (!newConnectionBetweenNodes) {
 			throw new Error('Input newConnectionBetweenNodes may not be null')
 		}
-
+		
 		isNew = newConnectionBetweenNodes.isNew
 		existingCableName = isNew ? null : newConnectionBetweenNodes.cableName
 		sourceIed = newConnectionBetweenNodes.source

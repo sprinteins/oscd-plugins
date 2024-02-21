@@ -36,7 +36,9 @@
 			return 0
 		}
 
-		return openPorts.findIndex(p => p.cable === existingCableName)
+		const portIndex = openPorts.findIndex(p => p.cable === existingCableName)
+
+		return portIndex
 	}
 
 	function getOpenPorts(ied: IED): PortOption[] {
@@ -52,6 +54,7 @@
 
 	function handleSelectionChange(event: CustomEvent<{ index: number }>): void {
 		const selectedPort = openPorts[event.detail.index]
+		if(!selectedPort){ return }
 
 		dispatch("select", selectedPort.port)
 	}
