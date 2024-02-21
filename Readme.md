@@ -6,9 +6,9 @@ This repository contains plugins for the [OpenSCD ↗](https://github.com/opensc
 
 A high-level overview of how the documentation is organized will help you know where to look for certain things:
 
-- [☑ How-Tos](#how-tos) guide you through the steps involved in addressing key problems and use-cases. They are more advanced than tutorials and assume some knowledge of how BZ-Cockpit works.
+- [☑ How-Tos](#how-tos) guide you through the steps involved in addressing key problems and use-cases. They are more advanced than tutorials and assume some knowledge of how the plugins work.
 - [👷 Guides](#guides) describe best practices and principles we follow.
-- [🗃 References](#references) contain technical reference for APIs and other aspects of BZ-Cockpits They describe how it works and how to use it but assume that you have a basic understanding of key concepts.
+- [🗃 References](#references) contain technical reference for APIs and other aspects of the plugins. They describe how it works and how to use it but assume that you have a basic understanding of key concepts.
 - [👩‍🏫 Explanations](#explanations) about the architecture and general design of the project
 
 ## ☑ How-Tos

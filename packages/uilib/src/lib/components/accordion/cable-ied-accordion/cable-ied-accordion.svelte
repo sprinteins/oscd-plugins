@@ -1,17 +1,20 @@
 <script lang="ts">
+    import type { Networking } from "@oscd-plugins/core";
 	import IconArrowDropDown from "../../icons/icon-arrow-drop-down.svelte"
-	import type { ConnectedIED } from "./models"
+    import IedElement from "../../diagram/ied-element/ied-element.svelte";
 	
 	export let open = false
 	export let color: string
-	export let connectedIED: ConnectedIED
+	export let networking: Networking
+
+    $: console.log(networking)
 </script>
 
 <div class="accordion">
     <details bind:open>
         <summary style="border-color: var({color})" class="summary">
             <div class="infoblock-headline">
-                <span class="label">{connectedIED.cable}</span>
+                <span class="label">{networking.port}: {networking.cable}</span>
                 <div class="icon">
                     <IconArrowDropDown />
                 </div>
@@ -20,14 +23,19 @@
         <div class="accordion-open">
             <hr class="dashed-line" />
             <div class="infomation-block">
-                <div>Port: {connectedIED.port}</div>
+                <div>IP</div> <div>{ networking.ipAddress }</div>
+                <div>Gateway</div> <div>{ networking.ipGateway }</div>
+                <div>Subnet</div> <div>{ networking.ipSubnet }</div>
+                <div>Connected AP</div> <div>{ networking.connectedAP }</div>
+                <div>Plug</div> <div>{ networking.plug }</div>
+                <div>Type</div> <div>{ networking.type }</div>
             </div>
             <hr class="seperation-line" />
             <ul>
                 Connected IED
                 <li>
                     <div class="ied-component">
-                        {connectedIED.iedName || "-"}
+                        {networking.connectedNetworking?.iedName || "-"}
                     </div>
                 </li>
             </ul>
@@ -123,8 +131,8 @@
             max-width: 95%;
         }
         .infomation-block {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(2, auto);
             margin-left: 1rem;
         }
     }
