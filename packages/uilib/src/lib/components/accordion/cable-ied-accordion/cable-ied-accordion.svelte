@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { Networking } from "@oscd-plugins/core";
 	import IconArrowDropDown from "../../icons/icon-arrow-drop-down.svelte"
-    import IedElement from "../../diagram/ied-element/ied-element.svelte";
 	
 	export let open = false
 	export let color: string
@@ -14,7 +13,7 @@
     <details bind:open>
         <summary style="border-color: var({color})" class="summary">
             <div class="infoblock-headline">
-                <span class="label">{networking.port}: {networking.cable}</span>
+                <span class="label">Port {networking.port} - {networking.cable}</span>
                 <div class="icon">
                     <IconArrowDropDown />
                 </div>
@@ -22,15 +21,6 @@
         </summary>
         <div class="accordion-open">
             <hr class="dashed-line" />
-            <div class="infomation-block">
-                <div>IP</div> <div>{ networking.ipAddress }</div>
-                <div>Gateway</div> <div>{ networking.ipGateway }</div>
-                <div>Subnet</div> <div>{ networking.ipSubnet }</div>
-                <div>Connected AP</div> <div>{ networking.connectedAP }</div>
-                <div>Plug</div> <div>{ networking.plug }</div>
-                <div>Type</div> <div>{ networking.type }</div>
-            </div>
-            <hr class="seperation-line" />
             <ul>
                 Connected IED
                 <li>
@@ -39,6 +29,15 @@
                     </div>
                 </li>
             </ul>
+            <hr class="seperation-line" />
+            <div class="infomation-block">
+                <div>IP</div> <div>{ networking.ipAddress }</div>
+                <div>Gateway</div> <div>{ networking.ipGateway }</div>
+                <div>Subnet</div> <div>{ networking.ipSubnet }</div>
+                <div>Connected AP</div> <div>{ networking.connectedAP }</div>
+                <div>Plug</div> <div>{ networking.plug }</div>
+                <div>Type</div> <div>{ networking.type }</div>
+            </div>
         </div>
     </details>
 </div>
