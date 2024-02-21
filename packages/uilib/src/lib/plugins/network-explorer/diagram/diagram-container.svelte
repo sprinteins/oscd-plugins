@@ -1,13 +1,13 @@
 <script lang="ts">
-	/**
-	 * The responsibility of `diagram-container` is to:
-	 * 1. gather bays, and the network information if IEDs
-	 * 2. calculate the layout of the diagram
-	 * 3. render the diagram by converting ELKjs nodes to svelte-flow nodes
-	 * 
-	 * > See [network-explorer.tldr](../network-explorer.tldr) for 
-	 * > a graphical representation
-	 */
+/**
+ * The responsibility of `diagram-container` is to:
+ * 1. gather bays, and the network information if IEDs
+ * 2. calculate the layout of the diagram
+ * 3. render the diagram by converting ELKjs nodes to svelte-flow nodes
+ * 
+ * > See [network-explorer.tldr](../network-explorer.tldr) for 
+ * > a graphical representation
+ */
 
 import type { DiagramStore } from "../store";
 import { get } from "svelte/store"
