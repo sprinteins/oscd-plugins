@@ -20,10 +20,12 @@
 <div>
 	<div class="select" class:isFocused>
 		<Select bind:value={linkTargetIndex} on:click={handleFocus}>
-			{#each items as item, index}
-				<Option value={index}
-					><span class="select-option">{item.label}</span></Option
-				>
+			{#each items as item, index (`${index}_${item.label}`)}
+				<Option value={index}>
+					<span class="select-option">
+						{item.label}
+					</span>
+				</Option>
 			{/each}
 		</Select>
 	</div>

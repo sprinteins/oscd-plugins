@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { DiagramStore } from "../store";
 /**
  * The responsibility of `diagram-container` is to:
  * 1. gather bays, and the network information if IEDs
@@ -8,19 +7,14 @@
  * 
  * > See [network-explorer.tldr](../network-explorer.tldr) for 
  * > a graphical representation
-*/
+ */
 
+import type { DiagramStore } from "../store";
 import { get } from "svelte/store"
 import Diagram from "./diagram.svelte";
-import { useNodes, type Node as ElkNode } from '@xyflow/svelte';
+import { useNodes, useEdges, type Node as ElkNode } from '@xyflow/svelte';
 
-// import type { IEDNetworkInfoV3, PhysConnection } from "@oscd-plugins/core";
 import type { Connection, Edge } from "@xyflow/svelte";
-// import type { DiagramStore, SelectedNode } from "../store";
-// import Diagram from "./diagram.svelte";
-// import { generateElkJSLayout, type Config } from "./elkjs-layout-generator";
-// import { convertElKJSRootNodeToSvelteFlowObjects } from "./elkjs-svelteflow-converter";
-// import { useNodes, useEdges } from '@xyflow/svelte';
 import { getIedNameFromId } from "./ied-helper"
 import { extractCableNameFromId } from "./edge-helper"
 import type { IED } from "./networking";
@@ -31,7 +25,6 @@ import type { IED } from "./networking";
 export let doc: Element
 export let editCount: number
 export let store: DiagramStore
-// $: store.updateNodesAndEdges(doc)
 $: updateOnEditCount(editCount)
 $: updateOnDoc(doc)
 
@@ -45,9 +38,12 @@ $: updateOnDoc(doc)
 let root: HTMLElement
 let _editCount: number
 let _doc: Element
-// let iedNetworkInfos: IEDNetworkInfoV3[]
+
 const nodes$ = useNodes();
 $: store.updateSelectedNodes($nodes$)
+
+const edges$ = useEdges();
+$: store.updateSelectedEdges($edges$)
 
 function updateOnDoc(doc: Element): void {
 	if (doc === _doc) {
@@ -64,8 +60,7 @@ function updateOnEditCount(editCount: number): void {
 	}
 
 	_editCount = editCount
-	// TODO: We need to wait until the doc has been updated. Is there a better way than timeout?
-	setTimeout(() => store.updateNodesAndEdges(doc), 0)
+	store.updateNodesAndEdges(doc)
 }
 
 function onconnect(event: CustomEvent<Connection>): void {
@@ -79,20 +74,6 @@ function onconnect(event: CustomEvent<Connection>): void {
 	})
 }
 
-function onedgeclick(event: CustomEvent<{ edge: Edge }>): void {
-	const { edge } = event.detail
-	const { source, target } = edge
-
-	const cableName = extractCableNameFromId(edge.id)
-	const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
-
-	store.connectionBetweenNodes.set({
-		isNew: false,
-		cableName,
-		source: sourceIed,
-		target: targetIed
-	})
-}
 
 function getSourceAndTargetIed(source: string, target: string): { sourceIed: IED, targetIed: IED } {
 	const sourceIedName = getIedNameFromId(source)
@@ -113,40 +94,6 @@ function getSourceAndTargetIed(source: string, target: string): { sourceIed: IED
 	return { sourceIed: sourceIed, targetIed: targetIed }
 }
 
-// function updateSelectedNode(nodes: Node[]){
-// 	const selectedNodes = nodes.filter(n => n.selected)
-
-// 	const isSelectionReset = selectedNodes.length === 0
-// 	if(isSelectionReset){
-// 		controller.selectedNodes.set([])	
-// 		return
-// 	}
-
-// 	const selectedIEDNetworkInfos = selectedNodes
-// 		.map(node => iedNetworkInfos.find(ni => ni.iedName === node.data.label))
-// 		.filter(Boolean)
-
-// 	controller.selectedNodes.set( selectedIEDNetworkInfos )
-// }
-
-// async function updateNodesAndEdges(
-// 	root: Element
-// ) {
-// 	if (!root) {
-// 		console.info({ level: "info", msg: "initInfos: no root" })
-// 		return []
-// 	}
-
-// 	iedNetworkInfos = extractIEDNetworkInfoV2(root)
-// 	console.log(iedNetworkInfos)
-// 	controller.iedNetworkInfos.set(iedNetworkInfos)
-// 	const iedBayMap = findAllIEDBays(root)
-// 	const rootNode = await generateElkJSLayout(iedNetworkInfos, iedBayMap, config)
-
-// 	const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
-// 	controller.nodes.set(resp.nodes)
-// 	controller.edges.set(resp.edges)
-// }
 </script>
 
 <div class="root" bind:this={root}>
@@ -157,11 +104,8 @@ function getSourceAndTargetIed(source: string, target: string): { sourceIed: IED
 			ieds={store.ieds}
 			on:delete
 			on:connect={onconnect}
-			on:edgeclick={onedgeclick}
 		/>	
 	{/if}
-			<!-- on:nodeclick={(e) => handleNodeClick(e.detail.node)}
-			on:paneclick={deselect} -->
 </div>
 
 <style>

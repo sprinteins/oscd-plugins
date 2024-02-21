@@ -6,6 +6,7 @@ import { convertElKJSRootNodeToSvelteFlowObjects } from "../diagram/elkjs-svelte
 import { getIedNameFromId, hasOpenPort } from "../diagram/ied-helper"
 import { isBayNode } from "../../../components/diagram"
 import type { BayElkNode, IEDElkNode } from "../../../components/diagram"
+import { extractCableNameFromId } from "../diagram/edge-helper"
 
 
 export class DiagramStore {
@@ -14,7 +15,7 @@ export class DiagramStore {
 	public ieds = writable<IED[]>([])
 	
 	public selectedNodes = writable<SelectedNode[]>([])
-  
+
 	public connectionBetweenNodes = writable<ConnectionBetweenNodes | null>(null)
 
 	public async updateNodesAndEdges( root: Element ) {
@@ -61,6 +62,43 @@ export class DiagramStore {
 			.filter(Boolean) as IED[]
 
 		this.selectedNodes.set(selectedIEDs)
+	}
+
+	public updateSelectedEdges(edges: Edge[]){
+		const selectedEdges = edges.filter(e => e.selected)
+		
+		const isSelectionReset = selectedEdges.length === 0
+		if(isSelectionReset){
+			this.connectionBetweenNodes.set(null)
+			return
+		}
+
+
+		const selectedEdge = selectedEdges[0]
+		const sourceIedName = getIedNameFromId(selectedEdge.source)
+		const targetIedName = getIedNameFromId(selectedEdge.target)
+
+		const targetAndSource = get(this.ieds).filter(ied => ied.name === sourceIedName || ied.name === targetIedName)
+		const sourceIed = targetAndSource.find(ied => ied.name === sourceIedName)
+		const targetIed = targetAndSource.find(ied => ied.name === targetIedName)
+	
+		if (!sourceIed) {
+			throw new Error(`Ied ${sourceIedName} not found`)
+		}
+	
+		if (!targetIed) {
+			throw new Error(`Ied ${targetIedName} not found`)
+		}
+	
+		const cableName = extractCableNameFromId(selectedEdge.id)
+
+		const newConnectionBetweenNodes: ConnectionBetweenNodes = {
+			isNew:  false,
+			source: sourceIed,
+			target: targetIed,
+			cableName,
+		}
+		this.connectionBetweenNodes.set(newConnectionBetweenNodes)
 	}
 
 	public findConnectedIEDs(ied: IED): IED[] {
