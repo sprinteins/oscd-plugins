@@ -17,6 +17,12 @@ export class DiagramStore {
 	public selectedNodes = writable<SelectedNode[]>([])
 
 	public connectionBetweenNodes = writable<ConnectionBetweenNodes | null>(null)
+	public preSelectedCableName: string | null = null
+
+	public findIEDByName( name: string ): IED | undefined {
+		const ieds = get(this.ieds)
+		return ieds.find(ied => ied.name === name)
+	}
 
 	public async updateNodesAndEdges( root: Element ) {
 		if (!root) {
@@ -30,6 +36,8 @@ export class DiagramStore {
 		const rootNode = await generateElkJSLayout(ieds, iedBayMap, config)
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
+		const edges = this.preSelectEdge(this.preSelectedCableName, resp.edges)
+		this.preSelectedCableName = null
 
 		const previousNodes = get(this.nodes)
 		const isNodeStructureEquivalent = this.isNodeStructureEquivalent(
@@ -41,9 +49,19 @@ export class DiagramStore {
 		if (shouldRerenderNodes) {
 			this.nodes.set(resp.nodes)
 		}
-		this.edges.set(resp.edges)
+		this.edges.set(edges)
 
 		this.setIsConnectedable(get(this.nodes))
+	}
+
+	private preSelectEdge(cableName: string | null, edges: Edge[]): Edge[] {
+		return edges.map(edge => {
+			const isCableMatch = extractCableNameFromId(edge.id) === cableName
+			if (isCableMatch) {
+				edge.selected = true
+			}
+			return edge
+		})
 	}
 
 	public updateSelectedNodes(flowNodes: FlowNodes[]){

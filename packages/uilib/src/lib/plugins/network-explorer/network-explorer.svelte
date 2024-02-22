@@ -19,7 +19,6 @@
 	// 
 	export let store = new DiagramStore()
 	let htmlRoot: HTMLElement
-	let editEventHandler: EditorEventHandler
 	$: editEventHandler = new EditorEventHandler(htmlRoot)
 
 	function onCreateCable(event: CustomEvent<CreateCableEvent>) {

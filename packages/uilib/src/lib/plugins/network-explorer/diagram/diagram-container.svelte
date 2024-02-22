@@ -15,9 +15,10 @@ import Diagram from "./diagram.svelte";
 import { useNodes, useEdges, type Node as ElkNode } from '@xyflow/svelte';
 
 import type { Connection, Edge } from "@xyflow/svelte";
-import { getIedNameFromId } from "./ied-helper"
-import { extractCableNameFromId } from "./edge-helper"
+import { getIedNameFromId, getNetworkingWithOpenPort } from "./ied-helper"
 import type { IED } from "./networking";
+import type { CreateCableEvent } from "../editor-events/network-events";
+import { EditorEventHandler } from "../editor-events/editor-event-handler";
 
 // 
 // INPUT
@@ -38,6 +39,7 @@ $: updateOnDoc(doc)
 let root: HTMLElement
 let _editCount: number
 let _doc: Element
+$: editEventHandler = new EditorEventHandler(root)
 
 const nodes$ = useNodes();
 $: store.updateSelectedNodes($nodes$)
@@ -64,35 +66,50 @@ function updateOnEditCount(editCount: number): void {
 }
 
 function onconnect(event: CustomEvent<Connection>): void {
-	const { source, target } = event.detail
-	const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
+	const sourceIEDName = getIedNameFromId(event.detail.source)
+	const targetIEDName = getIedNameFromId(event.detail.target)
 
-	store.connectionBetweenNodes.set({
-		isNew: true,
-		source: sourceIed,
-		target: targetIed
-	})
-}
+	const sourceIED = store.findIEDByName(sourceIEDName)
+	const targetIED = store.findIEDByName(targetIEDName)
 
-
-function getSourceAndTargetIed(source: string, target: string): { sourceIed: IED, targetIed: IED } {
-	const sourceIedName = getIedNameFromId(source)
-	const targetIedName = getIedNameFromId(target)
-	const ieds = get(store.ieds)
-	const targetAndSource = ieds.filter(ied => ied.name === sourceIedName || ied.name === targetIedName)
-	const sourceIed = targetAndSource.find(ied => ied.name === sourceIedName)
-	const targetIed = targetAndSource.find(ied => ied.name === targetIedName)
-
-	if (!sourceIed) {
-		throw new Error(`Ied ${sourceIedName} not found`)
+	if( !sourceIED || !targetIED ) {
+		throw new Error(`msg='ied not found' sourceIEDName='${sourceIEDName}' targetIEDName='${targetIEDName}''`)
 	}
 
-	if (!targetIed) {
-		throw new Error(`Ied ${targetIedName} not found`)
+
+	const openSourcePort = findFirstOpenPort(sourceIED)
+	const openTargetPort = findFirstOpenPort(targetIED)
+
+	if( !openSourcePort || !openTargetPort ) {
+		console.error({"level":"error", msg:"no free port found", sourceIED, targetIED})
+		throw new Error("msg='no free port found")
 	}
 
-	return { sourceIed: sourceIed, targetIed: targetIed }
+	const cableName = generateCableName()
+	const createEvent: CreateCableEvent = {
+		cable: cableName,
+		source: {
+			ied: sourceIED,
+			port: openSourcePort
+		},
+		target: {
+			ied: targetIED,
+			port: openTargetPort,
+		},
+	}
+	store.preSelectedCableName = cableName
+	editEventHandler.dispatchCreateCable(createEvent)
 }
+
+function generateCableName(): string {
+		return crypto.randomUUID().substring(0, 6)
+	}
+
+
+function findFirstOpenPort(ied: IED): string | undefined {
+	return getNetworkingWithOpenPort(ied)[0]?.port
+}
+
 
 </script>
 
