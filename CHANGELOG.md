@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## Network Explorer [0.0.6] - 2024-02-22
+
+### Added
+
+- add more details to IED in sidebar (#6)
+
 ## Network Explorer [0.0.5] - 2024-02-14
 
 ### Added
