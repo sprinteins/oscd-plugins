@@ -145,4 +145,8 @@
 		flex-direction: column;
 		gap: 16px;
 	}
+
+	.actions {
+		margin-top: 16px;
+	}
 </style>
