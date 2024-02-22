@@ -10,7 +10,6 @@
  */
 
 import type { DiagramStore } from "../store";
-import { get } from "svelte/store"
 import Diagram from "./diagram.svelte";
 import { useNodes, useEdges, type Node as ElkNode } from '@xyflow/svelte';
 

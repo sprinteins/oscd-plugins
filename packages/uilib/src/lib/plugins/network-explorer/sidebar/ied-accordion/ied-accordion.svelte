@@ -1,29 +1,12 @@
 <script lang="ts">
     import { IED as IEDElement } from "../../../../components/ied"
     import type { SelectedNode } from "../../store/index"
-    import { type IEDDetails, CableIEDAccordion } from "../../../../components/accordion/cable-ied-accordion"
+    import { CableIEDAccordion } from "../../../../components/accordion/cable-ied-accordion"
     
     // 
     // Inputs
     // 
     export let selectedIED: SelectedNode
-
-
-    $: iedDetails = buildConnectedIEDDetails(selectedIED)
-
-    function buildConnectedIEDDetails(selectedIED: SelectedNode): IEDDetails[] {
-        let ieds: IEDDetails[] = []
-
-        for(const networking of selectedIED.networking){
-            ieds.push({
-                cable: networking.cable,
-                port: networking.port,
-                iedName: networking.connectedNetworking?.iedName ?? "-", //
-            })
-        }
-
-        return ieds
-    }
 </script>
 
 <div>
@@ -31,22 +14,14 @@
         <div>
             <IEDElement label={selectedIED.name} isSelected={true} isSelectable={false} />
         </div>
-
-        <ul class="network-information">
-<!--                 
-            <li> <span class="label">IP Address </span> <span class="value"> {selectedIED?.networkInfo.ip}        </span> </li>
-            <li> <span class="label">IP Gateway </span> <span class="value"> {selectedIED?.networkInfo.ipGateway} </span></li>
-            <li> <span class="label">IP Subnet  </span> <span class="value"> {selectedIED?.networkInfo.ipSubnet}  </span></li>
-            -->
-        </ul>
     </div>
     <div class="accordions">
         
-        {#each iedDetails as details}
+        {#each selectedIED.networking as networking}
             <div class="accordion">
                 <CableIEDAccordion
                         color={'blue'}
-                        connectedIED={details}
+                        { networking }
                     />
             </div>
         {/each}
