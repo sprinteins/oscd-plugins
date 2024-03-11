@@ -16,6 +16,7 @@
     let selectedNodes$ = store.selectedNodes
     let connectionBetweenNodes$ = store.connectionBetweenNodes
     const showSelectedNodes$ = derived(connectionBetweenNodes$, $newConnectionBetweenNodes$ => !$newConnectionBetweenNodes$)
+    const cableNames$ = derived(store.ieds, $ieds$ => $ieds$.map(ied => ied.networking.map(n => n.cable)).flat())
 
     function onCancelConnection(): void {
         store.resetNewConnection()
@@ -33,6 +34,7 @@
         {:else}
             <NewConnection
                 connectionBetweenNodes={$connectionBetweenNodes$}
+                cableNames={$cableNames$}
                 on:createCable
                 on:updateCable
                 on:cancel={onCancelConnection}
