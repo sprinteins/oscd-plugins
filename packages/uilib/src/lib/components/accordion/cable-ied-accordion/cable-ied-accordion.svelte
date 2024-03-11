@@ -5,8 +5,6 @@
 	export let open = false
 	export let color: string
 	export let networking: Networking
-
-    $: console.log(networking)
 </script>
 
 <div class="accordion">

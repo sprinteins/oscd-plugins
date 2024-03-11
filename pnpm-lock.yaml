@@ -34,7 +34,7 @@ importers:
         version: 4.9.4
       vite:
         specifier: ^4.1.0
-        version: 4.1.4(sass@1.62.0)
+        version: 4.1.4(@types/node@18.11.18)
 
   packages/core:
     dependencies:
@@ -160,7 +160,7 @@ importers:
         version: 4.9.4
       vite:
         specifier: ^4.1.0
-        version: 4.1.4(sass@1.62.0)
+        version: 4.1.4(@types/node@18.11.18)
 
   packages/plugins/documentation:
     dependencies:
@@ -278,6 +278,9 @@ importers:
       '@oscd-plugins/core':
         specifier: ../core
         version: link:../core
+      '@smui-extra/accordion':
+        specifier: 7.0.0-beta.8
+        version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/button':
         specifier: 7.0.0-beta.8
         version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
