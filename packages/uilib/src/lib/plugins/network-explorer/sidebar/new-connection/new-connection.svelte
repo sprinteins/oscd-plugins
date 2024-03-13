@@ -149,16 +149,18 @@
 
 <div class="container">
 	<h3>Cable {cableName}</h3>
-	<Textfield
-		bind:value={cableName}
-		invalid={errors.required || errors.cableNameInUse}
-		on:input={onCableInput}
-		label="Cable"
-		variant="outlined">
-		<HelperText persistent slot="helper">
-			{ errors.required ? "Cablename required" : errors.cableNameInUse ? "Cablename allready in use" : "" }
-		</HelperText>
-	</Textfield>
+	<div class="new-connection-textfield-container">
+		<Textfield
+			bind:value={cableName}
+			invalid={errors.required || errors.cableNameInUse}
+			on:input={onCableInput}
+			label="Cable"
+			variant="outlined">
+			<HelperText persistent slot="helper">
+				{ errors.required ? "Cablename required" : errors.cableNameInUse ? "Cablename allready in use" : "" }
+			</HelperText>
+		</Textfield>
+	</div>
 	
 	<IedPortSelect ied={sourceIed} { existingCableName } on:select={onSourceSelect}/>
 	<IedPortSelect ied={targetIed} { existingCableName } on:select={onTargetSelect}/>
@@ -176,6 +178,15 @@
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
+	}
+
+	.new-connection-textfield-container {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.new-connection-textfield-container :global(.mdc-text-field-helper-text) {
+		color: var(--color-red) !important
 	}
 
 	.actions {
