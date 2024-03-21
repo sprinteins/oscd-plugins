@@ -11,6 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## Network Explorer [0.0.7] - 2024-02-22
+
+### Added
+
+- add validation for cable name (#36)
+- add SCD assumptions to sidebar (#37)
+
 ## Network Explorer [0.0.6] - 2024-02-22
 
 ### Added
