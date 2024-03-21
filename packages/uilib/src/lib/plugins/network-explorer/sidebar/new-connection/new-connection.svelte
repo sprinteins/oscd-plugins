@@ -7,11 +7,13 @@
 	import type { IED } from "../../diagram/networking"
 	import type { ConnectionBetweenNodes } from "../../store/index"
 	import IedPortSelect from "./ied-port-select.svelte"
+	import HelperText from '@smui/textfield/helper-text'
 	
 	// 
 	// INPUT
 	// 
 	export let connectionBetweenNodes: ConnectionBetweenNodes | null
+	export let cableNames: string[]
 	
 	//
 	// Internal
@@ -24,8 +26,11 @@
 	let cableName: string
 	let isNew: boolean
 	let existingCableName: string | null | undefined
+	let cableNameSet: Set<string> = new Set()
+	let errors: { required: boolean, cableNameInUse: boolean } = { required: false, cableNameInUse: false }
 	
 	$: onNewConnection(connectionBetweenNodes)
+	$: onCableNames(cableNames)
 	
 	function onNewConnection(newConnectionBetweenNodes: ConnectionBetweenNodes | null) {
 		if (!newConnectionBetweenNodes) {
@@ -38,6 +43,16 @@
 		targetIed = newConnectionBetweenNodes.target
 		
 		cableName = newConnectionBetweenNodes.cableName ?? generateCableName()
+
+		errors = { required: false, cableNameInUse: false }
+	}
+
+	function onCableNames(cableNames: string[]): void {
+		cableNameSet = new Set(cableNames)
+
+		if (existingCableName) {
+			cableNameSet.delete(existingCableName)
+		}
 	}
 	
 	function generateCableName(): string {
@@ -123,18 +138,37 @@
 
 		return port
 	}
+
+	function onCableInput(): void {
+		const required = !cableName
+		const cableNameInUse = !required && cableNameSet.has(cableName)
+
+		errors = { required, cableNameInUse }
+	}
 </script>
 
 <div class="container">
 	<h3>Cable {cableName}</h3>
-	<Textfield bind:value={cableName} label="Cable" variant="outlined">
-	</Textfield>
+	<div class="new-connection-textfield-container">
+		<Textfield
+			bind:value={cableName}
+			invalid={errors.required || errors.cableNameInUse}
+			on:input={onCableInput}
+			label="Cable"
+			variant="outlined">
+			<HelperText persistent slot="helper">
+				{ errors.required ? "Cablename required" : errors.cableNameInUse ? "Cablename allready in use" : "" }
+			</HelperText>
+		</Textfield>
+	</div>
 	
 	<IedPortSelect ied={sourceIed} { existingCableName } on:select={onSourceSelect}/>
 	<IedPortSelect ied={targetIed} { existingCableName } on:select={onTargetSelect}/>
 	
 	<div class="actions">
-		<Button on:click={confirm} testid="create-cable">{ isNew ? "Create" : "Update" }</Button>
+		<Button on:click={confirm} testid="create-cable" disabled={errors.required || errors.cableNameInUse}>
+			{ isNew ? "Create" : "Update" }
+		</Button>
 		<Button on:click={cancel} type="secondary" testid="cancel-create-cable">Cancel</Button>
 	</div>
 </div>
@@ -144,6 +178,15 @@
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
+	}
+
+	.new-connection-textfield-container {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.new-connection-textfield-container :global(.mdc-text-field-helper-text) {
+		color: var(--color-red) !important
 	}
 
 	.actions {

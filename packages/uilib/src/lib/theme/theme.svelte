@@ -32,6 +32,7 @@
 		--color-beige-3: #f3ecda;
 		--color-beige-4: #fcf6e5;
 		--color-beige-5: #fdfbf2;
+		--color-red: #b00020;
 		--color-pink: #c73c61;
 		--color-pink-30-pc-opacity: #c73c614d;
 		--color-pink-light: #ff40a7;
@@ -93,6 +94,7 @@
 		--mdc-theme-primary: var(--color-cyan);
 		--mdc-typography-button-font-weight: bold;
 		--mdc-theme-surface: var(--color-beige-3);
+		--mdc-theme-error: var(--color-red);
 	}
 
 	:root,
