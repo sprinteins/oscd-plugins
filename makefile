@@ -19,6 +19,9 @@ documentation: _install ## Start the documentation plugin in dev mode
 type-switcher: _install ## Start the type switcher plugin in dev mode
 	pnpm -C ./packages/plugins/type-switcher run build:watch
 
+xp1: _install ## Start the type switcher plugin in dev mode
+	pnpm -C ./packages/plugins/xp1 run build:watch
+
 fix: _install ## Fix eslint errors
 	pnpm turbo fix
 	
