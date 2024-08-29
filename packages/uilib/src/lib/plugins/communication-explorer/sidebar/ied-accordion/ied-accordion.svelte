@@ -4,6 +4,7 @@
     import type { IEDNode, RootNode } from "../../../../components/diagram"
     import { IED } from "../../../../components/ied"
     import { getConnectedIEDsByLabel } from "../../_func-layout-calculation/get-connected-ieds"
+    import { getIEDDetails } from "../../_func-layout-calculation/get-ied-details"
     import {
     	ConnectionTypeDirection,
     	groupRelationsByServiceType,
@@ -18,6 +19,7 @@
     $: relations = getConnectedIEDsByLabel(rootNode, IEDSelection.label)
     $: relationsByServiceType = groupRelationsByServiceType(relations)
     $: serviceTypes = Array.from(relationsByServiceType.entries())
+    $: details = getIEDDetails(rootNode, IEDSelection.label)
 
     const serviceTypeColor: { [key in MessageType | "Unknown"]: string } = {
     	GOOSE:         "--color-message-goose",
@@ -30,6 +32,8 @@
 <div class="ied">
     <IED label={IEDSelection.label} isSelected={true} isSelectable={false} />
 </div>
+<h2>Details</h2>
+<p>{details}</p>
 <div class="accordions">
     {#each serviceTypes as serviceType}
         {@const service = serviceType[1]}

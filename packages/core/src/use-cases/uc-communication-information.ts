@@ -17,12 +17,19 @@ export class UCCommunicationInformation {
 		const commInfos: IEDCommInfo[] = ieds.map(ied => {
 			return {
 				iedName:   ied.name,
+				iedDetails: this.parseDetails(ied.element),
 				// published: this.findPublishedMessages(ied),
 				published: this.findPublishedMessages_V2(ied),
 				received:  this.findReceivedMessages(ied),
 			}
 		})
 		return commInfos
+	}
+
+	private parseDetails(element: Element): string {
+
+		//TODO: parse details properly here
+		return element.innerHTML
 	}
 
 	public IEDCommInfosByBay(): Map<string, IEDCommInfo[]> {
@@ -206,6 +213,7 @@ export type ReportControlInfo = {
 
 export type IEDCommInfo = {
 	iedName: string
+	iedDetails: string //TODO: don't save as string! change to something like LogicalNodes[], DataObjects[] and DataAttributes[] TBD
 	published: PublishedMessage_V2[]
 	received: ReceivedMessage[]
 }
