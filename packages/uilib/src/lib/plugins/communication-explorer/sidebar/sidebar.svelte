@@ -57,6 +57,16 @@
     	const target = e.target as HTMLInputElement
     	setNameFilter(target.value)
     }
+
+    let searchQuery = "";
+    $: filteredNodes = rootNode.children.filter((node) =>
+        node.label.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
+    function handleIEDSearch(e: Event) {
+        const target = e.target as HTMLInputElement;
+        searchQuery = target.value;
+    }
 </script>
 
 <div class="sidebar sidebar-right">
@@ -77,13 +87,18 @@
                     I don't think it adds much user value
                     and it is going to be hard to support
                 -->
+                <input
+                    type="text"
+                    placeholder="Filter IED"
+                    on:input={handleIEDSearch}
+                />
                 <select
                     value={IEDSelectionIDs[0] ?? ""}
                     on:change={setSelectedNode}
                 >
-                    <option value="" disabled>Select a IED</option>
-                    {#if rootNode && rootNode.children && rootNode.children.length >= 0}
-                        {#each rootNode.children as node}
+                    <option value="" disabled>Select an IED</option>
+                    {#if filteredNodes.length > 0}
+                        {#each filteredNodes as node}
                             <option
                                 selected={(IEDSelectionIDs[0] ?? "") ===
                                     node.id}
