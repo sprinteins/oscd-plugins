@@ -67,13 +67,19 @@
         const target = e.target as HTMLInputElement;
         searchQuery = target.value;
     }
+
+    function clearAll() {
+        searchQuery = "";
+        clearSelection();
+    }
+
 </script>
 
 <div class="sidebar sidebar-right">
     <div class="sidebar-content">
         <!-- svelte-ignore a11y-missing-attribute -->
         <div class="actions">
-            <a class="clear-all" on:keypress on:click={clearSelection}>
+            <a class="clear-all" on:keypress on:click={clearAll}>
                 Clear all
             </a>
         </div>
@@ -90,6 +96,7 @@
                 <input
                     type="text"
                     placeholder="Filter IED"
+                    bind:value={searchQuery}
                     on:input={handleIEDSearch}
                 />
                 <select
