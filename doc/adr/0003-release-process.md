@@ -77,3 +77,5 @@ to deploy a "beta-only" environment. But It is not needed at the moment.
 
 - We have to dedicated repository which is easier to reason about
 - No need to take care of all the edge cases of [Option 2](#option-2)
+
+Testing my local git integration, not for merge
