@@ -1,15 +1,9 @@
 <script lang="ts">
 	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import Theme from "../../theme/theme.svelte"
-
-	// 
-	// INPUT
-	// 
+	
 	export let root: Element
 
-	// 
-	// INTERNAL
-	// 
 	let htmlRoot: HTMLElement
 </script>
 
@@ -30,6 +24,5 @@
 		display: flex;
  	 	align-items: stretch;
 		position: relative;
-		/* font-size: 12px; */
 	}
 </style>

@@ -1,3 +1,3 @@
-# TypeDesigner README
+# Type Designer
 
-To be included in the following commits.
+Refer to [TypeDesigner UiLib folder](../../uilib/src/lib/plugins/type-designer/) to see the source code.
