@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { SvelteFlowProvider } from '@xyflow/svelte';
-	import type { Networking } from "@oscd-plugins/core";
 	import Theme from "../../theme/theme.svelte"
 
 	// 
 	// INPUT
 	// 
 	export let root: Element
-	export let editCount: number
 
 	// 
 	// INTERNAL
