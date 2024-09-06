@@ -526,7 +526,7 @@ export type InputExtRefElement = SCDElement & {
 }
 
 export type InputExtRefElementWithDatSet = InputExtRefElement & {
-	datSet: string
+	datSet: string | null
 }
 
 // <ConnectedAP apName="F" iedName="AARSC_CcC_1101" redProt="prp">
