@@ -89,9 +89,9 @@ export class SCDQueries {
 		)
 	}
 
-	public searchGSEControlByIEDNameAndName(iedName: string, cbName: string, options?:CommonOptions): GSEControlElement {
+	public searchGSEControlByName(cbName: string, options?:CommonOptions): GSEControlElement {
 		return this.searchElement<GSEControlElement>(
-			`SCL > IED[name='${iedName}'] GSEControl[name='${cbName}']`,
+			`${SCDQueries.SelectorGSEControl}[name='${cbName}']`,
 			["name", "datSet"],
 			options,
 		)[0]

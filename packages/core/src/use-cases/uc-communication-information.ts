@@ -158,9 +158,8 @@ export class UCCommunicationInformation {
 		const extRefs = inputs.map(input => this.scdQueries.searchExtRef({ root: input.element })).flat()
 
 		const extRefsWithConnectionID = extRefs.map((el) => {
-			const iedName = el.iedName
 			const srcCBName = el.srcCBName
-			const connection = this.scdQueries.searchGSEControlByIEDNameAndName(iedName, srcCBName)
+			const connection = this.scdQueries.searchGSEControlByName(srcCBName, {root: ied.element})
 			const datSet = connection?.datSet
 
 			const newInput: InputExtRefElementWithDatSet = {
