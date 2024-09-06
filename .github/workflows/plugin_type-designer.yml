@@ -1,0 +1,22 @@
+name: "Plugin: Type Designer"
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "plugins/type-designer/**"
+jobs:
+  check:
+    uses: "./.github/workflows/check_version.yml"
+    with:
+      plugin-name: type-designer
+  
+  build:
+    needs: [check]
+    if: needs.check.outputs.has_change == 'true'
+    uses: "./.github/workflows/build.yml"
+    with:
+      plugin-name: type-designer
+    secrets:
+      PAT_REPO_OSCD_PLUGINS: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}
