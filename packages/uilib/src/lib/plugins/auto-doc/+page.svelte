@@ -10,6 +10,6 @@
 	) as unknown as Element
 </script>
 
-<Example name="Auto Doc">
+<Example name="AutoDoc">
 	<AutoDoc root={doc} />
 </Example>

@@ -1,22 +1,22 @@
-name: "Plugin: I/O Center"
+name: "Plugin: AutoDoc"
 on:
   workflow_dispatch:
   push:
     branches:
       - main
     paths:
-      - "plugins/io-center/**"
+      - "plugins/auto-doc/**"
 jobs:
   check:
     uses: "./.github/workflows/check_version.yml"
     with:
-      plugin-name: io-center
+      plugin-name: auto-doc
 
   build:
     needs: [check]
     if: needs.check.outputs.has_change == 'true'
     uses: "./.github/workflows/build.yml"
     with:
-      plugin-name: io-center
+      plugin-name: auto-doc
     secrets:
       PAT_REPO_OSCD_PLUGINS: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}

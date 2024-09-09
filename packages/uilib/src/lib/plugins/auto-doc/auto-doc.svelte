@@ -8,7 +8,7 @@
 
 <Theme>
 	<type-designer bind:this={htmlRoot}>
-		<p>Auto Doc</p>
+		<p>AutoDoc</p>
 	</type-designer>
 </Theme>
 

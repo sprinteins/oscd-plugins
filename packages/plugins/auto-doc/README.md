@@ -1,3 +1,3 @@
-# Auto Doc
+# AutoDoc
 
-Refer to [Auto Doc UiLib folder](../../uilib/src/lib/plugins/io-center/) to see the source code.
+Refer to [AutoDoc UiLib folder](../../uilib/src/lib/plugins/auto-doc/) to see the source code.
