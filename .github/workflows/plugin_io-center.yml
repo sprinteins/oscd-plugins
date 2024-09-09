@@ -1,0 +1,22 @@
+name: "Plugin: I/O Center"
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "plugins/io-center/**"
+jobs:
+  check:
+    uses: "./.github/workflows/check_version.yml"
+    with:
+      plugin-name: io-center
+
+  build:
+    needs: [check]
+    if: needs.check.outputs.has_change == 'true'
+    uses: "./.github/workflows/build.yml"
+    with:
+      plugin-name: io-center
+    secrets:
+      PAT_REPO_OSCD_PLUGINS: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}
