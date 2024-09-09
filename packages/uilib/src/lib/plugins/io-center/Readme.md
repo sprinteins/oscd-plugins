@@ -1,6 +1,6 @@
 # I/O Center
 
-Description incoming
+Assignment / mapping of signals Dido, trip and control matrix.
 
 ----
 
