@@ -7,16 +7,16 @@
 </script>
 
 <Theme>
-	<type-designer bind:this={htmlRoot}>
+	<io-center bind:this={htmlRoot}>
 		<p>I/O Center</p>
-	</type-designer>
+	</io-center>
 </Theme>
 
 <style>
 	:root, :host {
 		--header-height: 128px;
 	}
-	type-designer {
+	io-center {
 		height: calc(100vh - var(--header-height));;
 		display: flex;
  	 	align-items: stretch;
