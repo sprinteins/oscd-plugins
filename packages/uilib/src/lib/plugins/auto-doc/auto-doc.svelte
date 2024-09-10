@@ -7,16 +7,16 @@
 </script>
 
 <Theme>
-	<type-designer bind:this={htmlRoot}>
+	<auto-doc bind:this={htmlRoot}>
 		<p>AutoDoc</p>
-	</type-designer>
+	</auto-doc>
 </Theme>
 
 <style>
 	:root, :host {
 		--header-height: 128px;
 	}
-	type-designer {
+	auto-doc {
 		height: calc(100vh - var(--header-height));;
 		display: flex;
  	 	align-items: stretch;
