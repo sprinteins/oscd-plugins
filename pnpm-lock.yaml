@@ -233,6 +233,43 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1(vite@4.3.1(@types/node@18.11.18)(sass@1.62.0))
 
+  packages/plugins/io-center:
+    dependencies:
+      '@oscd-plugins/uilib':
+        specifier: ../../uilib
+        version: link:../../uilib
+      concurrently:
+        specifier: ^7.6.0
+        version: 7.6.0
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: ^3.1.1
+        version: 3.1.2(svelte@4.2.19)(vite@5.4.3(@types/node@18.11.18)(sass@1.62.0))
+      '@tsconfig/svelte':
+        specifier: ^5.0.4
+        version: 5.0.4
+      sass:
+        specifier: ^1.61.0
+        version: 1.62.0
+      svelte:
+        specifier: ^4.2.18
+        version: 4.2.19
+      svelte-check:
+        specifier: ^3.8.5
+        version: 3.8.6(postcss@8.4.45)(sass@1.62.0)(svelte@4.2.19)
+      tslib:
+        specifier: ^2.6.3
+        version: 2.7.0
+      typescript:
+        specifier: ^5.5.3
+        version: 5.5.4
+      vite:
+        specifier: ^5.4.1
+        version: 5.4.3(@types/node@18.11.18)(sass@1.62.0)
+      vite-plugin-css-injected-by-js:
+        specifier: ^3.1.1
+        version: 3.1.1(vite@5.4.3(@types/node@18.11.18)(sass@1.62.0))
+
   packages/plugins/network-explorer:
     dependencies:
       '@oscd-plugins/uilib':
