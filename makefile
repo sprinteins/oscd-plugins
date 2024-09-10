@@ -25,6 +25,9 @@ type-designer: _install ## Start the type designer plugin in dev mode
 io-center: _install ## Start the I/O center plugin in dev mode
 	pnpm -C ./packages/plugins/io-center run build:watch
 
+auto-doc: _install ## Start the AutoDoc plugin in dev mode
+	pnpm -C ./packages/plugins/auto-doc run build:watch
+
 fix: _install ## Fix eslint errors
 	pnpm turbo fix
 	
