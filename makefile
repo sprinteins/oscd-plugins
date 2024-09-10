@@ -22,6 +22,9 @@ type-switcher: _install ## Start the type switcher plugin in dev mode
 type-designer: _install ## Start the type designer plugin in dev mode
 	pnpm -C ./packages/plugins/type-designer run build:watch
 
+auto-doc: _install ## Start the AutoDoc plugin in dev mode
+	pnpm -C ./packages/plugins/auto-doc run build:watch
+
 fix: _install ## Fix eslint errors
 	pnpm turbo fix
 	
