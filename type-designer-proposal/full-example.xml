@@ -1,0 +1,27 @@
+<SCL>
+	<OtherStuff>...</OtherStuff>
+	<DataTypeTemplates>
+		<Private name="TBD">
+			<BayType description="BusBar">
+				<IED name="Protection A" type="IED_protection_type" />
+				<IED name="Protection B" type="IED_protection_type" />
+				<IED name="Measurement B" type="IED_measurement_type" />
+			<BayType>
+			<IEDType id="IED_protection_type">
+				<LDevice name="Supervision" type="LDevice_supervision" />
+				<LDevice name="ProtInputs" type="LDevice_protection_inputs" />
+			</IEDType>
+			<IEDType id="IED_measurement_type">
+				<LDevice name="ProtInputs" type="LDevice_protection_inputs" />
+			</IEDType>
+			<LDeviceType id="LDevice_supervision">
+				<LN0 desc="ComSupervision_GOOSE/LLN0/LLN0" inst="" lnClass="LLN0" lnType="SIPROTEC5_LNType_LLN0_LDevice_Generic">
+				</LN0>
+			</LDeviceType>
+			<LDeviceType id="LDevice_protection_inputs">
+				<LN0 desc="Ln1_AnalogueDis_OC_SOTF/LLN0" inst="" lnClass="LLN0" lnType="SIPROTEC5_LNType_LLN0_LDevice_Generic">
+				</LN0>
+			</LDeviceType>
+		</Private>
+	</DataTypeTemplates>
+</SCL>
