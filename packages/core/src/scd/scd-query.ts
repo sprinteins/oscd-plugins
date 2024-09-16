@@ -217,6 +217,15 @@ export class SCDQueries {
 		return this.searchElement<LNodeTypeElement>(SCDQueries.SelectorLNodeType, ["id", "lnClass"], options)
 	}
 
+	public static SelectorLDeviceType = "LDeviceType"
+	public searchLDeviceType(options?:CommonOptions): LDeviceTypeElement[]{
+		return this.searchElement<LDeviceTypeElement>(SCDQueries.SelectorLDeviceType, ["id", "desc", "inst"], options)
+	}
+
+	// TODO Bay
+	// TODO Spannungsspegel
+	// TODO IED
+
 	public static SelectorReportControl = "ReportControl"
 	public searchReportControls(options?:CommonOptions): ReportControlElement[]{
 		return this.searchElement<ReportControlElement>(SCDQueries.SelectorReportControl, ["rptID", "name", "datSet"], options)
@@ -459,6 +468,12 @@ export type LNodeElement = SCDElement & {
 export type LNodeTypeElement = SCDElement & {
 	id: string
 	lnClass: string
+}
+
+export type LDeviceTypeElement = SCDElement & {
+	id: string
+	desc: string
+	inst: string
 }
 
 export type CommonOptions = {
