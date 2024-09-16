@@ -398,6 +398,9 @@ importers:
       '@smui/button':
         specifier: 7.0.0-beta.8
         version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/card':
+        specifier: 7.0.0-beta.8
+        version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/checkbox':
         specifier: 7.0.0-beta.8
         version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
