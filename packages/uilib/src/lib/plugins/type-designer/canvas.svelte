@@ -1,6 +1,7 @@
 <script lang="ts">
     import  { type BayElkNode, type IEDElkNode } from "../../components/diagram"
     import { SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
+    import Bay from "./components/bay.svelte";
 
 	export let root: Element
 	export let showSidebar = true
@@ -27,15 +28,7 @@
 <div class="root" class:showSidebar>
 	{#if root}
 		{#each logicalDevices as device (device.id)}
-			<div>
-				{device.id}
-			</div>
-			<div>
-				{device.desc}
-			</div>
-			<div>
-				{device.inst}
-			</div>
+			<Bay id={device.id} desc={device.desc} inst={device.inst} />
 		{/each}
 	{:else}
 		<p>No root</p>
@@ -43,16 +36,4 @@
 </div>
 
 <style>
-	.root {
-		--header-height: 128px;
-		display: grid;
-		grid-template-columns: auto 0;
-		height: calc(100vh - var(--header-height));
-		width: 100%;
-		overflow-x: hidden;
-	}
-	
-	.root.showSidebar {
-		grid-template-columns: auto var(--sidebar-width);
-	}
 </style>
