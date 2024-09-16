@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import Theme from "../../theme/theme.svelte"
+    import Canvas from './canvas.svelte';
 	
 	export let root: Element
 
@@ -10,7 +11,7 @@
 <Theme>
 	<SvelteFlowProvider>
 	<type-designer bind:this={htmlRoot}>
-		<p>Type Designer - Hello</p>
+		<Canvas {root} />
 	</type-designer>
 	</SvelteFlowProvider>
 </Theme>
