@@ -1,6 +1,6 @@
 <script lang="ts">
-    import  { type BayElkNode, type IEDElkNode } from "../../components/diagram"
-    import { type BayTypeElement, type IEDTypeElement, type LDeviceTypeElement, SCDQueries, UCTypeDesigner, type VoltageLevelTypeElement } from "@oscd-plugins/core";
+	import { type TypeCluster } from "./types";
+    import { SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
     import Bay from "./components/bay.svelte";
     import AddComponentControls from "./components/add-component-controls.svelte";
 
@@ -13,31 +13,19 @@
 	let bays = ucci.findAllBays()
 	let ieds = ucci.findAllIEDs()
 	let voltageLevels = ucci.findAllVoltageLevels()
-
-	const typeDesigner: TypeDesigner = {
+	const typeCluster: TypeCluster = {
 		logicalDevices,
 		bays,
 		ieds,
 		voltageLevels
 	}
-
-	// TODO name?
-	type TypeDesigner = {
-		logicalDevices: LDeviceTypeElement[]
-		bays: BayTypeElement[]
-		ieds: IEDTypeElement[]
-		voltageLevels: VoltageLevelTypeElement[]
-	}
 </script>
 
 <div class="root" class:showSidebar>
 	{#if root}
-		<Bay {typeDesigner} />
+		<Bay {typeCluster} />
 		<AddComponentControls />
 	{:else}
 		<p>No root</p>
 	{/if}
 </div>
-
-<style>
-</style>

@@ -3,27 +3,32 @@
     import Card, {
         Content,
     } from '@smui/card';
+    import { type TypeCluster } from '../types';
 
-    // TODO remove 4 lines
-    export let typeDesigner: {
-		logicalDevices: LDeviceTypeElement[]
-		bays: BayTypeElement[]
-		ieds: IEDTypeElement[]
-		voltageLevels: VoltageLevelTypeElement[]
-	}
+    export let typeCluster: TypeCluster;
+
+    function formatComponentName(name: string): string {
+        if (name.endsWith('s')) {
+            name = name.slice(0, -1);
+        }
+        name = name.split(/(?=[A-Z])/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        return name;
+    }
 </script>
 
 <bay>
     <div class="card-container">
-        {#each Object.values(typeDesigner) as componentArray, componentIndex (componentIndex)}
+        {#each Object.values(typeCluster) as componentArray, componentIndex (componentIndex)}
             {#each componentArray as component (component.id)}
                 <Card>
                     <Content>
-                        {Object.keys(typeDesigner)[componentIndex]} #{component.id}
+                        {formatComponentName(Object.keys(typeCluster)[componentIndex])} #{component.id}
                         <br>
                         {#each Object.entries(component) as [key, value]}
-                            {key}: {value}
-                            <br>
+                            {#if typeof value !== 'object'}
+                                {key}: {value}
+                                <br>
+                            {/if}
                         {/each}
                     </Content>
                 </Card>
