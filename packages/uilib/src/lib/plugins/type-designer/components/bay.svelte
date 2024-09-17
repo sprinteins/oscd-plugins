@@ -1,4 +1,6 @@
 <script lang="ts">
+    // TODO name not bay, needs to be generic
+
     import { type BayTypeElement, type IEDTypeElement, type LDeviceTypeElement, type VoltageLevelTypeElement } from '@oscd-plugins/core';
     import Card, {
         Content,
