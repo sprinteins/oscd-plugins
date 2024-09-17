@@ -25,7 +25,7 @@
                         {formatComponentName(Object.keys(typeCluster)[componentIndex])} #{component.id}
                         <br>
                         {#each Object.entries(component) as [key, value]}
-                            {#if typeof value !== 'object'}
+                            {#if typeof value !== 'object' && value}
                                 {key}: {value}
                                 <br>
                             {/if}
