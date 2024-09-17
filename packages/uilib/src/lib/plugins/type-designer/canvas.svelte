@@ -3,9 +3,13 @@
     import { SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
     import Bay from "./components/bay.svelte";
     import AddComponentControls from "./components/add-component-controls.svelte";
+	import { EditorEventHandler } from "./editor-events/editor-event-handler";
+    import { type CreateBayEvent } from "./editor-events/event-types";
 
+	export let dataTemplates: Element
 	export let root: Element
 	export let showSidebar = true
+	let htmlRoot: HTMLElement
 	
 	const scdQueries = new SCDQueries(root)
 	const ucci = new UCTypeDesigner(scdQueries)
@@ -19,12 +23,21 @@
 		ieds,
 		voltageLevels
 	}
+
+	let editEventHandler: EditorEventHandler
+	$: editEventHandler = new EditorEventHandler(htmlRoot, dataTemplates)
+
+	// TODO doesnt belong here, dev version
+	function onCreateBay(event: CustomEvent<CreateBayEvent>) {
+		console.log("onCreateBay", JSON.stringify(event))
+		editEventHandler.dispatchCreateBay(event.detail)
+	}
 </script>
 
-<div class="root" class:showSidebar>
+<div class="root" class:showSidebar bind:this={htmlRoot}>
 	{#if root}
 		<Bay {typeCluster} />
-		<AddComponentControls />
+		<AddComponentControls onClick={onCreateBay} />
 	{:else}
 		<p>No root</p>
 	{/if}

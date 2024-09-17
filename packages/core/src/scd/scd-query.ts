@@ -212,6 +212,11 @@ export class SCDQueries {
 		return this.searchElement<DOElement>(selector, ["name", "type"], options)
 	}
 
+	public static SelectorDataTypeTemplates = "DataTypeTemplates"
+	public searchDataTypeTemplates(options?:CommonOptions): DataTypeTemplates{
+		return this.searchSingleElement<DataTypeTemplates>(SCDQueries.SelectorLNodeType, [], options)!
+	}
+
 	public static SelectorLNodeType = "LNodeType"
 	public searchLNodeTypes(options?:CommonOptions): LNodeTypeElement[]{
 		return this.searchElement<LNodeTypeElement>(SCDQueries.SelectorLNodeType, ["id", "lnClass"], options)
@@ -476,6 +481,9 @@ export type LNodeElement = SCDElement & {
 	lnInst: string
 	lnType: string
 	prefix: string
+}
+
+export type DataTypeTemplates = SCDElement & {
 }
 
 export type LNodeTypeElement = SCDElement & {
