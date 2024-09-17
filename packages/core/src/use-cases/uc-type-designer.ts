@@ -16,4 +16,16 @@ export class UCTypeDesigner {
 		return this.scdQueries.searchLDeviceType();
 	}
 
+	public findAllBays(){
+		return this.scdQueries.searchBayType();
+	}
+
+	public findAllIEDs(){
+		return this.scdQueries.searchIEDType();
+	}
+
+	public findAllVoltageLevels(){
+		return this.scdQueries.searchVoltageLevelType();
+	}
+
 }

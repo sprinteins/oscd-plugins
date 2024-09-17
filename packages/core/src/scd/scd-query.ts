@@ -222,9 +222,22 @@ export class SCDQueries {
 		return this.searchElement<LDeviceTypeElement>(SCDQueries.SelectorLDeviceType, ["id", "desc", "inst"], options)
 	}
 
-	// TODO Bay
-	// TODO Spannungsspegel
-	// TODO IED
+	public static SelectorBayType = "BayType"
+	public searchBayType(options?:CommonOptions): BayTypeElement[]{
+		return this.searchElement<BayTypeElement>(SCDQueries.SelectorBayType, ["id", "name", "desc"], options)
+	}
+
+	public static SelectorIEDType = "IEDType"
+	public searchIEDType(options?:CommonOptions): IEDTypeElement[]{
+		return this.searchElement<IEDTypeElement>(SCDQueries.SelectorIEDType, ["id", "name", "desc",
+			"originalSclRevision", "originalSclVersion", "configVersion", "owner", "manufacturer", "type"], options)
+	}
+
+	public static SelectorVoltageLevelType = "VoltageLevelType"
+	public searchVoltageLevelType(options?:CommonOptions): VoltageLevelTypeElement[]{
+		return this.searchElement<VoltageLevelTypeElement>(SCDQueries.SelectorVoltageLevelType, ["id", "name", "desc",
+			"nomFreq", "numPhases"], options)
+	}
 
 	public static SelectorReportControl = "ReportControl"
 	public searchReportControls(options?:CommonOptions): ReportControlElement[]{
@@ -474,6 +487,32 @@ export type LDeviceTypeElement = SCDElement & {
 	id: string
 	desc: string
 	inst: string
+}
+
+export type BayTypeElement = SCDElement & {
+	id: string
+	name: string
+	desc: string
+}
+
+export type IEDTypeElement = SCDElement & {
+	id: string
+	name: string
+	originalSclRevision: string
+	originalSclVersion: string
+	owner: string
+	configVersion: string
+	desc: string
+	manufacturer: string
+	type: string
+}
+
+export type VoltageLevelTypeElement = SCDElement & {
+	id: string
+	name: string
+	desc: string
+	nomFreq: string
+	numPhases: string
 }
 
 export type CommonOptions = {
