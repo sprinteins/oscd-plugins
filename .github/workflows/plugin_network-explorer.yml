@@ -18,5 +18,3 @@ jobs:
     uses: "./.github/workflows/build.yml"
     with:
       plugin-name: network-explorer
-    secrets:
-      PAT_REPO_OSCD_PLUGINS: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}

@@ -5,15 +5,10 @@ on:
       plugin-name: #e.g.: network
         required: true
         type: string
-    #secrets:
-    #PAT_REPO_OSCD_PLUGINS:
-    #required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      PAT_TOKEN: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}
     steps:
       - name: Checkout oscd-plugins/main
         uses: actions/checkout@v3
@@ -73,13 +68,8 @@ jobs:
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/package.json $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
-          #git config --unset-all http.https://github.com/.extraheader
-          #git config --local user.email "actions@github.com"
-          #git config --local user.name "GitHub Actions"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "Update file"
-          # git push https://tamasrusz:$PAT_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:build/${{ inputs.plugin-name }}
-          # git push https://tamasrusz:$PAT_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:gh-pages
           git push https://x-access-token:$GH_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:gh-pages
