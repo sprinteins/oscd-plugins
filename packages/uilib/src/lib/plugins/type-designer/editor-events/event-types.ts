@@ -1,4 +1,4 @@
-import { BayTypeElement, IEDTypeElement } from "@oscd-plugins/core";
+import { BayTypeElement } from "@oscd-plugins/core";
 
 export interface CreateBayEvent {
     bay: BayTypeElement;

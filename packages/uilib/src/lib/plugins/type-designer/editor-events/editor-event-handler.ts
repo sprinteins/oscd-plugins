@@ -1,9 +1,8 @@
 import type { BayTypeElement } from "@oscd-plugins/core"
-import { CreateBayEvent, DeleteBayEvent } from "./event-types"
+import { CreateBayEvent } from "./event-types"
 import { type Create, type Delete } from "./editor-events"
 
 export class EditorEventHandler {
-    // binded htmlroot
     private readonly editorActionName = "editor-action"
 
     constructor(private readonly root: HTMLElement, private readonly dataTemplates: Element) {
@@ -13,10 +12,11 @@ export class EditorEventHandler {
         const replaces = this.buildCreateBayEvents(event)
         const combinedEditorEvent = this.buildEditorActionEvent(replaces)
 
+        // TODO wird unter dem namen "bay" gespeichert, erwartet BayType, case sensitive
         this.root.dispatchEvent(combinedEditorEvent)
     }
 
-    // TODO
+    // TODO 19.09
     // public dispatchDeleteBay(event: DeleteBayEvent): void {
     //     const deletes = this.buildDeleteBayEvents(event)
     //     const combinedEditorEvent = this.buildEditorActionEvent(deletes)
@@ -38,14 +38,15 @@ export class EditorEventHandler {
     //     }]
     // }
 
+    // TODO bay is type BayTypeElement - wrong, contains element, two types for the same node?
     private buildNewBay(bay: BayTypeElement): Element {
-        const newBay = document.createElement('Bay');
-        newBay.setAttribute('id', "kajsdhlfksanjkjlf");
-        newBay.setAttribute('name', "new");
-        newBay.setAttribute('desc', "bay");
+        const newBay = document.createElement('div');
+        newBay.setAttribute('id', bay.id);
+        newBay.setAttribute('name', bay.name);
+        newBay.setAttribute('desc', bay.desc);
         return newBay;
     }
-    
+
     private buildEditorActionEvent(actions: (Create | Delete)[]) {
         const detail = {
             action: {
