@@ -6,8 +6,8 @@ on:
         required: true
         type: string
     secrets:
-      PAT_REPO_OSCD_PLUGINS:
-        required: true
+      #PAT_REPO_OSCD_PLUGINS:
+      #required: true
 
 jobs:
   build:
@@ -65,6 +65,8 @@ jobs:
           path: _build_
 
       - name: Add built files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd $GITHUB_WORKSPACE/_build_
           mkdir -p $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}
@@ -80,4 +82,4 @@ jobs:
           git commit -m "Update file"
           # git push https://tamasrusz:$PAT_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:build/${{ inputs.plugin-name }}
           # git push https://tamasrusz:$PAT_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:gh-pages
-          git push HEAD:gh-pages
+          git push https://x-access-token:$GH_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:gh-pages
