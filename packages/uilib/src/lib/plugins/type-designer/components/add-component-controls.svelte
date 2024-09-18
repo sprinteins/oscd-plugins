@@ -3,14 +3,14 @@
 
   export let onClick: (event: CustomEvent) => void;
 
-  let Bay = {
+  let bay = {
     id: "234",
     name: "dummy",
     desc: "pre-defined dummy, if you see me, the feature works",
   }
 
   let createBayEvent = new CustomEvent('CreateBayEvent', {
-    detail: { Bay },
+    detail: { bay },
     bubbles: true,
     composed: true
   });
