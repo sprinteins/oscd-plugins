@@ -1,32 +1,24 @@
 <script lang="ts">
   import Button from "@smui/button";
-  import { type CreateBayEvent } from "../editor-events/event-types";
-    import { type BayTypeElement } from "@oscd-plugins/core";
 
   export let onClick: (event: CustomEvent) => void;
 
-  let dummy = {
-    id: "1",
-    name: "something",
-    desc: "new"
+  let Bay = {
+    id: "234",
+    name: "dummy",
+    desc: "pre-defined dummy, if you see me, the feature works",
   }
 
   let createBayEvent = new CustomEvent('CreateBayEvent', {
-    detail: {
-      ...dummy
-    },
+    detail: { Bay },
     bubbles: true,
     composed: true
-});
-
-  function onClickNothing() {
-    console.log("onClick");
-  }
+  });
 </script>
 
 <div class="container">
   <Button on:click={() => onClick(createBayEvent)}>Add LN</Button>
-  <Button on:click={onClickNothing}>Add LD</Button>
+  <Button on:click={() => console.log("here")}>Add LD</Button>
   <Button>Add IED</Button>
   <Button>Add Bay</Button>
 </div>

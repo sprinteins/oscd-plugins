@@ -29,7 +29,7 @@
 
 	// TODO doesnt belong here, dev version
 	function onCreateBay(event: CustomEvent<CreateBayEvent>) {
-		console.log("onCreateBay", JSON.stringify(event))
+		console.log("onCreateBay:", event.detail.bay.name)
 		editEventHandler.dispatchCreateBay(event.detail)
 	}
 </script>

@@ -1,5 +1,3 @@
-// TODO derived usw überlegen
-
 export interface Create {
 	new: { parent: Element, element: Element };
     derived?: boolean;
