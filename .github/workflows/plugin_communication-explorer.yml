@@ -19,5 +19,5 @@ jobs:
     uses: "./.github/workflows/build.yml"
     with:
       plugin-name: communication-explorer
-    secrets:
-      PAT_REPO_OSCD_PLUGINS: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}
+    #secrets:
+    #PAT_REPO_OSCD_PLUGINS: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}
