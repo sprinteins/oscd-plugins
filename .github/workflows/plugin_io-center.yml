@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "plugins/io-center/**"
+      - "packages/plugins/io-center/**"
 jobs:
   check:
     uses: "./.github/workflows/check_version.yml"
