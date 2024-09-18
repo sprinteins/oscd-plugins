@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - fix/github_actions_authentication
     paths:
       - "packages/plugins/communication-explorer/**"
 jobs:
