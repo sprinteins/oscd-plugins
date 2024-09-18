@@ -4,14 +4,15 @@ on:
   push:
     branches:
       - main
+      - fix/github_actions_trigger
     paths:
-      - "plugins/communication-explorer/**"
+      - "packages/plugins/communication-explorer/**"
 jobs:
   check:
     uses: "./.github/workflows/check_version.yml"
     with:
       plugin-name: communication-explorer
-  
+
   build:
     needs: [check]
     if: needs.check.outputs.has_change == 'true'
