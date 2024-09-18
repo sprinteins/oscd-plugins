@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout oscd-plugins/main
         uses: actions/checkout@v3
-        
+
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         id: pnpm-install
@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      
+
       - name: Setup pnpm cache
         uses: actions/cache@v3
         with:
@@ -40,11 +40,11 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install Dependencies
-        run: pnpm install 
+        run: pnpm install
 
       - name: Run Tests
         run: (cd ./packages/uilib ; npm run test)
-        
+
       - name: Build Plugin
         run: pnpm -C ./packages/plugins/${{ inputs.plugin-name }} run build
 
@@ -53,10 +53,10 @@ jobs:
         run: |
           cd ./packages/plugins/${{inputs.plugin-name}}
           echo "version=$(npm pkg get version)" >> "$GITHUB_OUTPUT"
-     
+
       - name: Prep-Build
         run: mkdir _build_ && cd _build_
-       
+
       - name: Checkout oscd-plugins
         uses: actions/checkout@v3
         with:
@@ -71,10 +71,13 @@ jobs:
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/package.json $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
-          git config --unset-all http.https://github.com/.extraheader
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
+          #git config --unset-all http.https://github.com/.extraheader
+          #git config --local user.email "actions@github.com"
+          #git config --local user.name "GitHub Actions"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "Update file"
           # git push https://tamasrusz:$PAT_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:build/${{ inputs.plugin-name }}
-          git push https://tamasrusz:$PAT_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:gh-pages
+          # git push https://tamasrusz:$PAT_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:gh-pages
+          git push HEAD:gh-pages
