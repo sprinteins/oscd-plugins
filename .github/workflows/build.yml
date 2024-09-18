@@ -5,9 +5,9 @@ on:
       plugin-name: #e.g.: network
         required: true
         type: string
-    secrets:
-      #PAT_REPO_OSCD_PLUGINS:
-      #required: true
+    #secrets:
+    #PAT_REPO_OSCD_PLUGINS:
+    #required: true
 
 jobs:
   build:
