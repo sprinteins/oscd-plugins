@@ -1,3 +1,5 @@
+import { BayType, DataTypeTemplates, IEDType, LDeviceType, SubstationType, VoltageLevelType } from "../../../uilib/src/lib/plugins/type-designer/types/nodes"
+
 export class SCDQueries {
 	constructor(
 		private readonly root: Element,
@@ -212,14 +214,11 @@ export class SCDQueries {
 		return this.searchElement<DOElement>(selector, ["name", "type"], options)
 	}
 
-	public static SelectorDataTypeTemplates = "DataTypeTemplates"
-	public searchDataTypeTemplates(options?:CommonOptions): DataTypeTemplates{
-		return this.searchSingleElement<DataTypeTemplates>(SCDQueries.SelectorLNodeType, [], options)!
-	}
+	// TODO sub
 
-	public static SelectorLNodeType = "LNodeType"
-	public searchLNodeTypes(options?:CommonOptions): LNodeTypeElement[]{
-		return this.searchElement<LNodeTypeElement>(SCDQueries.SelectorLNodeType, ["id", "lnClass"], options)
+	public static SelectorDataTypeTemplates = "DataTypeTemplates"
+	public searchDataTypeTemplates(options?:CommonOptions): DataTypeTemplatesElement{
+		return this.searchSingleElement<DataTypeTemplatesElement>(SCDQueries.SelectorDataTypeTemplates, [], options)!
 	}
 
 	public static SelectorLDeviceType = "LDeviceType"
@@ -242,6 +241,11 @@ export class SCDQueries {
 	public searchVoltageLevelType(options?:CommonOptions): VoltageLevelTypeElement[]{
 		return this.searchElement<VoltageLevelTypeElement>(SCDQueries.SelectorVoltageLevelType, ["id", "name", "desc",
 			"nomFreq", "numPhases"], options)
+	}
+
+	public static SelectorSubstationType = "SubstationType"
+	public searchSubstationType(options?:CommonOptions): SubstationTypeElement[]{
+		return this.searchElement<SubstationTypeElement>(SCDQueries.SelectorSubstationType, ["id", "name", "desc"], options)
 	}
 
 	public static SelectorReportControl = "ReportControl"
@@ -483,45 +487,17 @@ export type LNodeElement = SCDElement & {
 	prefix: string
 }
 
-export type DataTypeTemplates = SCDElement & {
-}
+export type DataTypeTemplatesElement = DataTypeTemplates & SCDElement
 
-export type LNodeTypeElement = SCDElement & {
-	id: string
-	lnClass: string
-}
+export type LDeviceTypeElement = LDeviceType & SCDElement
 
-export type LDeviceTypeElement = SCDElement & {
-	id: string
-	desc: string
-	inst: string
-}
+export type BayTypeElement = BayType & SCDElement
 
-export type BayTypeElement = SCDElement & {
-	id: string
-	name: string
-	desc: string
-}
+export type IEDTypeElement = IEDType & SCDElement
 
-export type IEDTypeElement = SCDElement & {
-	id: string
-	name: string
-	originalSclRevision: string
-	originalSclVersion: string
-	owner: string
-	configVersion: string
-	desc: string
-	manufacturer: string
-	type: string
-}
+export type VoltageLevelTypeElement = VoltageLevelType & SCDElement
 
-export type VoltageLevelTypeElement = SCDElement & {
-	id: string
-	name: string
-	desc: string
-	nomFreq: string
-	numPhases: string
-}
+export type SubstationTypeElement = SubstationType & SCDElement
 
 export type CommonOptions = {
 	root?: Element

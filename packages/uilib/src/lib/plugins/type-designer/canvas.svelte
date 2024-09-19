@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { type TypeCluster } from "./types";
-    import { type DataTypeTemplates, SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
+    import { type DataTypeTemplatesElement, SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
     import AddComponentControls from "./components/add-component-controls.svelte";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler";
-    import { type CreateBayEvent } from "./editor-events/event-types";
     import { Node } from "./components";
 
 	// TODO aufraeumen in store packen
@@ -39,12 +38,6 @@
 			voltageLevels
 		}
 	}
-
-	// TODO doesnt belong here, dev version
-	function onCreateBay(event: CustomEvent<CreateBayEvent>) {
-		console.log("onCreateBay:", event.detail.bay.name)
-		editEventHandler.dispatchCreateBay(event.detail)
-	}
 </script>
 
 <div class="root" class:showSidebar bind:this={htmlRoot}>
@@ -60,7 +53,7 @@
 				{/each}
 			{/each}
 		</div>
-		<AddComponentControls onClick={onCreateBay} />
+		<AddComponentControls {editEventHandler} />
 	{:else}
 		<p>No root</p>
 	{/if}
