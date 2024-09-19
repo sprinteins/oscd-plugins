@@ -4,7 +4,7 @@
     import AddComponentControls from "./components/add-component-controls.svelte";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler";
     import { type CreateBayEvent } from "./editor-events/event-types";
-    import Node from "./components/node.svelte";
+    import { Node } from "./components";
 
 	// TODO aufraeumen in store packen
 

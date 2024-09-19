@@ -1,14 +1,15 @@
 <script lang="ts">
   import Button from "@smui/button";
+  import { ldNodeName, IEDNodeName, vlNodeName, bayNodeName, substationNodeName } from '../constants/type-names';
 
   export let onClick: (event: CustomEvent) => void;
 
   const buttons = [
-    { name: "Add LD", onClick: () => onClick(createBayEvent) },
-    { name: "Add IED", onClick: () => console.log("onAddIed") },
-    { name: "Add Voltage Level", onClick: () => console.log("onAddVL") },
-    { name: "Add Bay", onClick: () => console.log("onAddBay") },
-    { name: "Add Substation", onClick: () => console.log("onAddSub") }
+    { name: ldNodeName, onClick: () => onClick(createBayEvent) },
+    { name: IEDNodeName, onClick: () => console.log("onAddIed") },
+    { name: vlNodeName, onClick: () => console.log("onAddVL") },
+    { name: bayNodeName, onClick: () => console.log("onAddBay") },
+    { name: substationNodeName, onClick: () => console.log("onAddSub") }
   ];
 
   let bay = {
