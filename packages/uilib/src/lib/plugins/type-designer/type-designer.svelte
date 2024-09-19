@@ -2,7 +2,7 @@
 	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import Theme from "../../theme/theme.svelte"
     import Canvas from './canvas.svelte';
-    import { type DataTypeTemplates, SCDQueries } from '@oscd-plugins/core';
+    import { type DataTypeTemplatesElement, SCDQueries } from '@oscd-plugins/core';
 	
 	// TODO 20.09
 	export let doc: Element // - unavaialble
@@ -18,7 +18,7 @@
 	let _editCount: number
 
 	let scdQueries = new SCDQueries(root)
-	let dataTemplates: DataTypeTemplates = scdQueries.searchDataTypeTemplates()
+	let dataTemplates: DataTypeTemplatesElement = scdQueries.searchDataTypeTemplates()
 
 	function onDocUpdate(doc: Element): void {
 		console.log("[!] onDocUpdate")
