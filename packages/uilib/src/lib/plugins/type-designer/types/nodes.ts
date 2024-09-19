@@ -1,40 +1,34 @@
-export type DataTypeTemplates = {
+interface BaseNode {
+    id: string;
+    desc: string;
 }
 
-export type LDeviceType = {
-	id: string
-	desc: string
-	inst: string
+export interface DataTypeTemplates {}
+
+export interface LDeviceType extends BaseNode {
+    inst: string;
 }
 
-export type BayType = {
-	id: string
-	name: string
-	desc: string
+export interface BayType extends BaseNode {
+    name: string;
 }
 
-export type IEDType = {
-	id: string
-	name: string
-	originalSclRevision: string
-	originalSclVersion: string
-	owner: string
-	configVersion: string
-	desc: string
-	manufacturer: string
-	type: string
+export interface IEDType extends BaseNode {
+    name: string;
+    originalSclRevision: string;
+    originalSclVersion: string;
+    owner: string;
+    configVersion: string;
+    manufacturer: string;
+    type: string;
 }
 
-export type VoltageLevelType = {
-	id: string
-	name: string
-	desc: string
-	nomFreq: string
-	numPhases: string
+export interface VoltageLevelType extends BaseNode {
+    name: string;
+    nomFreq: string;
+    numPhases: string;
 }
 
-export type SubstationType = {
-    id: string
-    name: string
-    desc: string
+export interface SubstationType extends BaseNode {
+    name: string;
 }

@@ -10,15 +10,14 @@
 	// SCD
 	export let root: Element
 
-	$: onDocUpdate(doc)
-	$: updateOnEditCount(editCount)
-
 	let htmlRoot: HTMLElement
 	let _doc: Element
 	let _editCount: number
-
 	let scdQueries = new SCDQueries(root)
 	let dataTemplates: DataTypeTemplatesElement = scdQueries.searchDataTypeTemplates()
+
+	$: onDocUpdate(doc)
+	$: updateOnEditCount(editCount)
 
 	function onDocUpdate(doc: Element): void {
 		console.log("[!] onDocUpdate")
