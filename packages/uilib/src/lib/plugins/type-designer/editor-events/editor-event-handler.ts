@@ -10,12 +10,11 @@ export class EditorEventHandler {
     constructor(private readonly root: HTMLElement, private readonly dataTemplates: Element) {
     }
 
+    // TODO wird in allen dispatchCreate* unter dem namen "bay" (oder ld usw.) gespeichert, erwartet BayType, case sensitive
     public dispatchCreateBay(event: CreateBayEvent): void {
-        // TODO wird unter dem namen "bay" gespeichert, erwartet BayType, case sensitive
         this.dispatchCreate(event, bayNodeName);
     }
 
-    // TODO z.15 gilt für alle dispatchCreate*
     public dispatchCreateSubstation(event: CreateSubstationEvent): void {
         this.dispatchCreate(event, substationNodeName);
     }
