@@ -18,7 +18,7 @@
 	let _editCount: number
 
 	let scdQueries = new SCDQueries(root)
-	let dataTemplates: DataTypeTemplates
+	let dataTemplates: DataTypeTemplates = scdQueries.searchDataTypeTemplates()
 
 	function onDocUpdate(doc: Element): void {
 		console.log("[!] onDocUpdate")
@@ -38,14 +38,13 @@
 		dataTemplates = scdQueries.searchDataTypeTemplates()
 	}
 
-	// TODO z.48 <Canvas dataTemplates={dataTemplates.element} {root} />
 </script>
 
 
 <Theme>
 	<SvelteFlowProvider>
 		<type-designer bind:this={htmlRoot}>
-			<Canvas dataTemplates={undefined} {root} />
+			<Canvas dataTemplates={dataTemplates.element} {root} />
 		</type-designer>
 	</SvelteFlowProvider>
 </Theme>

@@ -1,17 +1,18 @@
 <script lang="ts">
-    import Card, {
-        Content,
-    } from '@smui/card';
+    import Card, { Content } from "@smui/card";
 
     export let componentData: { [key: string]: any }[];
     export let componentName: string;
     export let componentId: string;
 
     function formatComponentName(name: string): string {
-        if (name.endsWith('s')) {
+        if (name.endsWith("s")) {
             name = name.slice(0, -1);
         }
-        name = name.split(/(?=[A-Z])/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        name = name
+            .split(/(?=[A-Z])/)
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
         return name;
     }
 </script>
@@ -19,11 +20,11 @@
 <Card>
     <Content>
         {formatComponentName(componentName)} #{componentId}
-        <br>
+        <br />
         {#each componentData as { key, value }}
-            {#if typeof value !== 'object' && value}
+            {#if typeof value !== "object" && value}
                 {key}: {value}
-                <br>
+                <br />
             {/if}
         {/each}
     </Content>

@@ -1,6 +1,8 @@
-import type { BayTypeElement } from "@oscd-plugins/core"
+import type { BayTypeElement, IEDTypeElement, LDeviceTypeElement, VoltageLevelTypeElement } from "@oscd-plugins/core"
 import { CreateBayEvent } from "./event-types"
 import { type Create, type Delete } from "./editor-events"
+import { Node } from "../components"
+import { bayNodeName } from "../constants/type-names"
 
 export class EditorEventHandler {
     private readonly editorActionName = "editor-action"
@@ -9,7 +11,7 @@ export class EditorEventHandler {
     }
 
     public dispatchCreateBay(event: CreateBayEvent): void {
-        const newBay = this.buildNewBay(event.bay);
+        const newBay = this.buildNewNode(event.bay, bayNodeName);
         const replaces = this.buildCreateBayEvents(newBay)
         const combinedEditorEvent = this.buildEditorActionEvent(replaces)
 
@@ -24,13 +26,6 @@ export class EditorEventHandler {
 
     //     this.root.dispatchEvent(combinedEditorEvent)
     // }
-
-    private buildCreateBayEvents(newBay: Element): Create[] {
-        return [{
-            new: { parent: this.dataTemplates, element: newBay },
-        }]
-    }
-
     // private buildDeleteBayEvents(event: DeleteBayEvent): Delete[] {
     //     const bayToRemove = this.findBayInScd(event.bay.id)
     //     return [{
@@ -38,13 +33,26 @@ export class EditorEventHandler {
     //     }]
     // }
 
+    private buildCreateBayEvents(newBay: Element): Create[] {
+        return [{
+            new: { parent: this.dataTemplates, element: newBay },
+        }]
+    }
+
     // TODO bay is type BayTypeElement - wrong, contains element, two types for the same node?
-    private buildNewBay(bay: BayTypeElement): Element {
-        const newBay = document.createElement('div');
-        newBay.setAttribute('id', bay.id);
-        newBay.setAttribute('name', bay.name);
-        newBay.setAttribute('desc', bay.desc);
-        return newBay;
+    private buildNewNode(node: BayTypeElement | IEDTypeElement | LDeviceTypeElement | VoltageLevelTypeElement, nodeName: string): HTMLElement {
+        const container = document.createElement('div');
+    
+        new Node({
+            target: container,
+            props: {
+                componentData: Object.entries(node).map(([key, value]) => ({ key, value })),
+                componentName: nodeName,
+                componentId: node.id,
+            }
+        });
+    
+        return container;
     }
 
     private buildEditorActionEvent(actions: (Create | Delete)[]) {
