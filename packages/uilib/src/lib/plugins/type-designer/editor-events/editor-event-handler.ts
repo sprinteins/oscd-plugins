@@ -1,4 +1,3 @@
-import type { BayTypeElement, IEDTypeElement, LDeviceTypeElement, VoltageLevelTypeElement } from "@oscd-plugins/core"
 import { CreateBayEvent, CreateIEDEvent, CreateLDeviceEvent, CreateSubstationEvent, CreateVoltageLevelEvent } from "./event-types"
 import { type Create, type Delete } from "./editor-events"
 import { Node } from "../components"
@@ -12,44 +11,31 @@ export class EditorEventHandler {
     }
 
     public dispatchCreateBay(event: CreateBayEvent): void {
-        const newBay = this.buildNewNode(event.type, bayNodeName);
-        const replaces = this.buildCreateEvents(newBay)
-        const combinedEditorEvent = this.buildEditorActionEvent(replaces)
-
         // TODO wird unter dem namen "bay" gespeichert, erwartet BayType, case sensitive
-        this.root.dispatchEvent(combinedEditorEvent)
+        this.dispatchCreate(event, bayNodeName);
     }
 
-    // TODO z.19 gilt für alle dispatchCreate*
+    // TODO z.15 gilt für alle dispatchCreate*
     public dispatchCreateSubstation(event: CreateSubstationEvent): void {
-        const newSubstation = this.buildNewNode(event.type, substationNodeName);
-        const replaces = this.buildCreateEvents(newSubstation);
-        const combinedEditorEvent = this.buildEditorActionEvent(replaces);
-
-        this.root.dispatchEvent(combinedEditorEvent);
+        this.dispatchCreate(event, substationNodeName);
     }
 
     public dispatchCreateLDevice(event: CreateLDeviceEvent): void {
-        const newLDevice = this.buildNewNode(event.type, ldNodeName);
-        const replaces = this.buildCreateEvents(newLDevice);
-        const combinedEditorEvent = this.buildEditorActionEvent(replaces);
-
-        this.root.dispatchEvent(combinedEditorEvent);
+        this.dispatchCreate(event, ldNodeName);
     }
 
-    public dispatchCreateIED(event: CreateIEDEvent): void {
-        const newIED = this.buildNewNode(event.type, IEDNodeName);
-        const replaces = this.buildCreateEvents(newIED);
-        const combinedEditorEvent = this.buildEditorActionEvent(replaces);
-
-        this.root.dispatchEvent(combinedEditorEvent);
+    public dispatchCreateIED(event: CreateLDeviceEvent): void {
+        this.dispatchCreate(event, IEDNodeName);
     }
 
-    public dispatchCreateVoltageLevel(event: CreateVoltageLevelEvent): void {
-        const newVoltageLevel = this.buildNewNode(event.type, vlNodeName);
-        const replaces = this.buildCreateEvents(newVoltageLevel);
-        const combinedEditorEvent = this.buildEditorActionEvent(replaces);
+    public dispatchCreateVoltageLevel(event: CreateLDeviceEvent): void {
+        this.dispatchCreate(event, vlNodeName);
+    }
 
+    private dispatchCreate(event: CreateBayEvent | CreateIEDEvent | CreateVoltageLevelEvent | CreateLDeviceEvent | CreateSubstationEvent, nodeName: string): void {
+        const newNode = this.buildNewNode(event.type, nodeName);
+        const replaces = this.buildCreateEvents(newNode);
+        const combinedEditorEvent = this.buildEditorActionEvent(replaces);
         this.root.dispatchEvent(combinedEditorEvent);
     }
 
@@ -59,10 +45,8 @@ export class EditorEventHandler {
         }];
     }
 
-    // TODO bay is type BayTypeElement - wrong, contains element, two types for the same node?
     private buildNewNode(node: BayType | IEDType | LDeviceType | VoltageLevelType, nodeName: string): HTMLElement {
         const container = document.createElement('div');
-    
         new Node({
             target: container,
             props: {

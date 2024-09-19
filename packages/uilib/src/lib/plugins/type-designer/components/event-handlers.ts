@@ -41,7 +41,7 @@ type EventTypes =
     | CreateVoltageLevelEvent;
 
 // looks shady, my inspiration - https://stackoverflow.com/questions/60067100/why-is-the-infer-keyword-needed-in-typescript
-// TODO refactor
+// TODO keep?
 type EventDetail<T> = T extends { bay: infer U } ? U :
                       T extends { substation: infer U } ? U :
                       T extends { lDevice: infer U } ? U :
@@ -73,7 +73,5 @@ export function handleCreateEvent<T extends EventTypes>(eventType: string, detai
         case 'CreateVoltageLevelEvent':
             onCreateVoltageLevel(event as CustomEvent<CreateVoltageLevelEvent>, editEventHandler);
             break;
-        default:
-            throw new Error(`Unknown event type: ${eventType}`);
     }
 }

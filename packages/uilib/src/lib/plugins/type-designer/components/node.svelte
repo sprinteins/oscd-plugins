@@ -5,6 +5,7 @@
     export let componentName: string;
     export let componentId: string;
 
+    // TODO 20.09 muss weg
     function formatComponentName(name: string): string {
         if (name.endsWith("s")) {
             name = name.slice(0, -1);

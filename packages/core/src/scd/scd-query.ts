@@ -498,15 +498,10 @@ export type LNodeTypeElement = SCDElement & {
 }
 
 export type DataTypeTemplatesElement = DataTypeTemplates & SCDElement
-
 export type LDeviceTypeElement = LDeviceType & SCDElement
-
 export type BayTypeElement = BayType & SCDElement
-
 export type IEDTypeElement = IEDType & SCDElement
-
 export type VoltageLevelTypeElement = VoltageLevelType & SCDElement
-
 export type SubstationTypeElement = SubstationType & SCDElement
 
 export type CommonOptions = {

@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { type TypeCluster } from "./types";
-    import { SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
     import AddComponentControls from "./components/add-component-controls.svelte";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler";
     import { Node } from "./components";
-
-	// TODO aufraeumen in store packen
+	import { onDataTemplatesUpdate } from "./canvas-store"
 
 	export let dataTemplates: Element
 	export let root: Element
@@ -16,29 +14,7 @@
 	let editEventHandler: EditorEventHandler
 
 	$: editEventHandler = new EditorEventHandler(htmlRoot, dataTemplates)
-	$: onDataTemplatesUpdate(dataTemplates)
-
-	function onDataTemplatesUpdate(dataTemplates: Element) {
-		console.log("[!] onDataTemplatesUpdate")
-		updateCluster(root)
-	}
-
-	function updateCluster(root: Element) {
-		const scdQueries = new SCDQueries(root)
-		const ucci = new UCTypeDesigner(scdQueries)
-		let logicalDevices = ucci.findAllLogicalDevices()
-		let bays = ucci.findAllBays()
-		let ieds = ucci.findAllIEDs()
-		let voltageLevels = ucci.findAllVoltageLevels()
-		let substations = ucci.findAllSubstations()
-		typeCluster = {
-			logicalDevices,
-			bays,
-			ieds,
-			voltageLevels,
-			substations,
-		}
-	}
+	$: typeCluster = onDataTemplatesUpdate(root, dataTemplates)
 </script>
 
 <div class="root" class:showSidebar bind:this={htmlRoot}>
