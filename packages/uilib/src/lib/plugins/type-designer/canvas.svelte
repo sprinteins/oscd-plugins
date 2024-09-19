@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { type TypeCluster } from "./types";
-    import { type DataTypeTemplatesElement, SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
+    import { SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
     import AddComponentControls from "./components/add-component-controls.svelte";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler";
     import { Node } from "./components";
 
 	// TODO aufraeumen in store packen
 
-	// TODO undefined weg
-	export let dataTemplates: Element | undefined
+	export let dataTemplates: Element
 	export let root: Element
 	export let showSidebar = true
 
@@ -31,11 +30,13 @@
 		let bays = ucci.findAllBays()
 		let ieds = ucci.findAllIEDs()
 		let voltageLevels = ucci.findAllVoltageLevels()
+		let substations = ucci.findAllSubstations()
 		typeCluster = {
 			logicalDevices,
 			bays,
 			ieds,
-			voltageLevels
+			voltageLevels,
+			substations,
 		}
 	}
 </script>

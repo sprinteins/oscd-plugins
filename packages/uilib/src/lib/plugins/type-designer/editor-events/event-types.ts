@@ -2,41 +2,41 @@ import { BayType } from "../types";
 import { IEDType, LDeviceType, SubstationType, VoltageLevelType } from "../types/nodes";
 
 export interface CreateBayEvent {
-    bay: BayType;
+    type: BayType;
 }
 
 export interface DeleteBayEvent {
-    bay: BayType;
+    type: BayType;
 }
 
 export interface CreateSubstationEvent {
-    substation: SubstationType;
+    type: SubstationType;
 }
 
 export interface DeleteSubstationEvent {
-    substation: SubstationType;
+    type: SubstationType;
 }
 
 export interface CreateLDeviceEvent {
-    lDevice: LDeviceType;
+    type: LDeviceType;
 }
 
 export interface DeleteLDeviceEvent {
-    lDevice: LDeviceType;
+    type: LDeviceType;
 }
 
 export interface CreateIEDEvent {
-    ied: IEDType;
+    type: IEDType;
 }
 
 export interface DeleteIEDEvent {
-    ied: IEDType;
+    type: IEDType;
 }
 
 export interface CreateVoltageLevelEvent {
-    vLevel: VoltageLevelType;
+    type: VoltageLevelType;
 }
 
 export interface DeleteVoltageLevelEvent {
-    vLevel: VoltageLevelType;
+    type: VoltageLevelType;
 }

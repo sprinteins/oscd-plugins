@@ -2,46 +2,74 @@
   import Button from "@smui/button";
   import { ldNodeName, IEDNodeName, vlNodeName, bayNodeName, substationNodeName } from '../constants/type-names';
   import { EditorEventHandler } from "../editor-events/editor-event-handler";
-  import { onCreateBay, onCreateIED, onCreateLDevice, onCreateSubstation, onCreateVoltageLevel } from "./event-handlers"
+  import { fieldConfig } from "./field-config";
+  import { handleCreateEvent } from './event-handlers';
+  import type { IEDType, LDeviceType, VoltageLevelType } from "../types";
+  import type { BayType, SubstationType } from "../types/nodes";
 
   export let editEventHandler: EditorEventHandler
 
+  type FormData = BayType
+                  | SubstationType
+                  | LDeviceType
+                  | IEDType
+                  | VoltageLevelType
+                  | null
+
+  let showFields = false
+  let entityType: string
+  // TODO something like react hook form?
+  let formData: FormData = null
+
+  function handleButtonClick(type: string) {
+    console.log("handleButtonClick");
+    entityType = type;
+    showFields = true;
+    formData = null
+  }
+
+  function handleInputChange(event) {
+    console.log("handleInputChange");
+    if (formData === null) {
+      formData = {} as FormData;
+    }
+    const target = event.target as HTMLInputElement;
+    formData[target.name] = target.value;
+  }
+
+  function handleCreate() {
+    console.log("handleCreate");
+    if (!formData || Object.keys(formData).length === 0) {
+      console.log("[!] create fehlgeschlagen");
+      return;
+    }
+    console.log("[before] handleCreateEvent");
+    handleCreateEvent(entityType, formData, editEventHandler);
+    console.log("[after] handleCreateEvent");
+    showFields = false;
+    formData = null
+    console.log("[exit] handleCreate");
+  }
+
   const buttons = [
-    // { name: ldNodeName, onClick: () => onCreateLDevice(createLDEvent, editEventHandler) },
-    // { name: IEDNodeName, onClick: () => onCreateIED(createBayEvent, editEventHandler) },
-    // { name: vlNodeName, onClick: () => onCreateVoltageLevel(createVolEvent, editEventHandler) },
-    { name: bayNodeName, onClick: () => onCreateBay(createBayEvent, editEventHandler) },
-    { name: substationNodeName, onClick: () => onCreateSubstation(createSubEvent, editEventHandler) }
-  ];
-
-  // TODO remove mocks, use real
-
-  let bay = {
-    id: "234",
-    name: "dummy",
-    desc: "pre-defined dummy, if you see me, the feature works",
-  }
-
-  let createBayEvent = new CustomEvent('CreateBayEvent', {
-    detail: { bay },
-    bubbles: true,
-    composed: true
-  });
-
-  let substation = {
-    id: "234",
-    name: "sub",
-    desc: "pre-defined substation dummy, if you see me, the feature works",
-  }
-
-  let createSubEvent = new CustomEvent('CreateSubstationEvent', {
-    detail: { substation },
-    bubbles: true,
-    composed: true
-  });
+    { name: ldNodeName, onClick: () => handleButtonClick('CreateLDeviceEvent') },
+    { name: IEDNodeName, onClick: () => handleButtonClick('CreateIEDEvent') },
+    { name: vlNodeName, onClick: () => handleButtonClick('CreateBayEvent') },
+    { name: bayNodeName, onClick: () => handleButtonClick('CreateVoltageLevelEvent') },
+    { name: substationNodeName, onClick: () => handleButtonClick('CreateSubstationEvent') },
+  ]
 </script>
 
 <div class="container">
+  {#if showFields}
+    <div class="input-fields">
+      {#each fieldConfig[entityType] as field}
+        <label for={field.name}>{field.label}:</label>
+        <input type={field.type} id={field.name} name={field.name} on:input={handleInputChange} />
+      {/each}
+      <Button on:click={handleCreate}>Create {entityType.replace('Create', '').replace('Event', '')}</Button>
+    </div>
+  {/if}
   {#each buttons as { name, onClick }}
     <Button on:click={onClick}>{name}</Button>
   {/each}
