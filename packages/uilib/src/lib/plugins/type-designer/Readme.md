@@ -2,8 +2,8 @@
 
 ## TODO (Remove before merge)
 
-- [ ] wird unter dem namen "bay" gespeichert, erwartet BayType, case sensitive
-- [ ] update 19.09 - dispatcher stopped saving changes into the scd file
+- [ ] ~~wird unter dem namen "bay" gespeichert, erwartet BayType, case sensitive~~
+- [ ] update 19.09 - dispatcher saves nodes under <div> tag
 - [ ] something like react hook form?
 - [ ] bay is type BayTypeElement - wrong, contains element, two types for the same node?
 - [ ] File structure. A lot of functionality is scattered and not where it should be. Expected on 20.09

@@ -22,14 +22,12 @@
   let formData: FormData = null
 
   function handleButtonClick(type: string) {
-    console.log("handleButtonClick");
     entityType = type;
     showFields = true;
     formData = null
   }
 
   function handleInputChange(event) {
-    console.log("handleInputChange");
     if (formData === null) {
       formData = {} as FormData;
     }
@@ -37,18 +35,14 @@
     formData[target.name] = target.value;
   }
 
-  function handleCreate() {
-    console.log("handleCreate");
+  function handleSubmit() {
     if (!formData || Object.keys(formData).length === 0) {
       console.log("[!] create fehlgeschlagen");
       return;
     }
-    console.log("[before] handleCreateEvent");
     handleCreateEvent(entityType, formData, editEventHandler);
-    console.log("[after] handleCreateEvent");
     showFields = false;
     formData = null
-    console.log("[exit] handleCreate");
   }
 
   const buttons = [
@@ -67,7 +61,7 @@
         <label for={field.name}>{field.label}:</label>
         <input type={field.type} id={field.name} name={field.name} on:input={handleInputChange} />
       {/each}
-      <Button on:click={handleCreate}>Create {entityType.replace('Create', '').replace('Event', '')}</Button>
+      <Button on:click={handleSubmit}>Create {entityType.replace('Create', '').replace('Event', '')}</Button>
     </div>
   {/if}
   {#each buttons as { name, onClick }}
