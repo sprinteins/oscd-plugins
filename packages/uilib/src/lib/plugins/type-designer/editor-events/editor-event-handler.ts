@@ -12,7 +12,7 @@ export class EditorEventHandler {
     }
 
     public dispatchCreateBay(event: CreateBayEvent): void {
-        const newBay = this.buildNewNode(event.bay, bayNodeName);
+        const newBay = this.buildNewNode(event.type, bayNodeName);
         const replaces = this.buildCreateEvents(newBay)
         const combinedEditorEvent = this.buildEditorActionEvent(replaces)
 
@@ -22,7 +22,7 @@ export class EditorEventHandler {
 
     // TODO z.19 gilt für alle dispatchCreate*
     public dispatchCreateSubstation(event: CreateSubstationEvent): void {
-        const newSubstation = this.buildNewNode(event.substation, substationNodeName);
+        const newSubstation = this.buildNewNode(event.type, substationNodeName);
         const replaces = this.buildCreateEvents(newSubstation);
         const combinedEditorEvent = this.buildEditorActionEvent(replaces);
 
@@ -30,7 +30,7 @@ export class EditorEventHandler {
     }
 
     public dispatchCreateLDevice(event: CreateLDeviceEvent): void {
-        const newLDevice = this.buildNewNode(event.lDevice, ldNodeName);
+        const newLDevice = this.buildNewNode(event.type, ldNodeName);
         const replaces = this.buildCreateEvents(newLDevice);
         const combinedEditorEvent = this.buildEditorActionEvent(replaces);
 
@@ -38,7 +38,7 @@ export class EditorEventHandler {
     }
 
     public dispatchCreateIED(event: CreateIEDEvent): void {
-        const newIED = this.buildNewNode(event.ied, IEDNodeName);
+        const newIED = this.buildNewNode(event.type, IEDNodeName);
         const replaces = this.buildCreateEvents(newIED);
         const combinedEditorEvent = this.buildEditorActionEvent(replaces);
 
@@ -46,7 +46,7 @@ export class EditorEventHandler {
     }
 
     public dispatchCreateVoltageLevel(event: CreateVoltageLevelEvent): void {
-        const newVoltageLevel = this.buildNewNode(event.vLevel, vlNodeName);
+        const newVoltageLevel = this.buildNewNode(event.type, vlNodeName);
         const replaces = this.buildCreateEvents(newVoltageLevel);
         const combinedEditorEvent = this.buildEditorActionEvent(replaces);
 

@@ -1,6 +1,4 @@
-import type { SCDElement, IdentifiableElement } from "../scd/scd-query"
 import type { SCDQueries } from "../scd/scd-query"
-import { hashElement } from "../xml/hash"
 
 /** 
  * The name is temporary, rename it if you have a better one
@@ -26,6 +24,10 @@ export class UCTypeDesigner {
 
 	public findAllVoltageLevels(){
 		return this.scdQueries.searchVoltageLevelType();
+	}
+
+	public findAllSubstations(){
+		return this.scdQueries.searchSubstationType();
 	}
 
 }
