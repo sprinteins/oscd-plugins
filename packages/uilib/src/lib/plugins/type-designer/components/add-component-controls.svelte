@@ -3,6 +3,14 @@
 
   export let onClick: (event: CustomEvent) => void;
 
+  const buttons = [
+    { name: "Add LD", onClick: () => onClick(createBayEvent) },
+    { name: "Add IED", onClick: () => console.log("onAddIed") },
+    { name: "Add Voltage Level", onClick: () => console.log("onAddVL") },
+    { name: "Add Bay", onClick: () => console.log("onAddBay") },
+    { name: "Add Substation", onClick: () => console.log("onAddSub") }
+  ];
+
   let bay = {
     id: "234",
     name: "dummy",
@@ -17,10 +25,9 @@
 </script>
 
 <div class="container">
-  <Button on:click={() => onClick(createBayEvent)}>Add LN</Button>
-  <Button on:click={() => console.log("here")}>Add LD</Button>
-  <Button>Add IED</Button>
-  <Button>Add Bay</Button>
+  {#each buttons as { name, onClick }}
+    <Button on:click={onClick}>{name}</Button>
+  {/each}
 </div>
 
 <style>
