@@ -1,5 +1,4 @@
 // event-handlers.ts
-import { ldNodeName } from "../constants/type-names";
 import { EditorEventHandler } from "../editor-events/editor-event-handler";
 import { 
     type CreateBayEvent, 
@@ -51,7 +50,8 @@ type EventDetail<T> = T extends { bay: infer U } ? U :
 
 export function handleCreateEvent<T extends EventTypes>(eventType: string, detail: EventDetail<T>, editEventHandler: EditorEventHandler) {
     const event = new CustomEvent<T>(eventType, {
-        detail: detail as T,
+        // TODO ts beschwert sich
+        detail: { type: detail as T },
         bubbles: true,
         composed: true
     });
@@ -64,14 +64,8 @@ export function handleCreateEvent<T extends EventTypes>(eventType: string, detai
             onCreateSubstation(event as CustomEvent<CreateSubstationEvent>, editEventHandler);
             break;
         case 'CreateLDeviceEvent':
-            // TODO ohne force property spread gehts nicht
-            console.log("[enter] LDEvent", event.detail);
-            const random = new CustomEvent<CreateLDeviceEvent>(eventType, {
-                detail: { type: { inst: event.detail.inst, desc: event.detail.desc, id: event.detail.id } },
-                bubbles: true,
-                composed: true
-            });
-            onCreateLDevice(random as CustomEvent<CreateLDeviceEvent>, editEventHandler);
+            console.log("[enter] LDEvent", event.detail.type.inst);
+            onCreateLDevice(event as CustomEvent<CreateLDeviceEvent>, editEventHandler);
             break;
         case 'CreateIEDEvent':
             onCreateIED(event as CustomEvent<CreateIEDEvent>, editEventHandler);
