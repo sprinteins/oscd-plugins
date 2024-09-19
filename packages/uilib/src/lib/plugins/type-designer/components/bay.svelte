@@ -1,7 +1,5 @@
 <script lang="ts">
     // TODO name not bay, needs to be generic
-
-    import { type BayTypeElement, type IEDTypeElement, type LDeviceTypeElement, type VoltageLevelTypeElement } from '@oscd-plugins/core';
     import Card, {
         Content,
     } from '@smui/card';
@@ -22,6 +20,7 @@
     <div class="card-container">
         {#each Object.values(typeCluster) as componentArray, componentIndex (componentIndex)}
             {#each componentArray as component (component.id)}
+                <!-- <RenderComponent {component} {componentIndex} /> -->
                 <Card>
                     <Content>
                         {formatComponentName(Object.keys(typeCluster)[componentIndex])} #{component.id}

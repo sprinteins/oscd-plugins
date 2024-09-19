@@ -9,7 +9,8 @@ export class EditorEventHandler {
     }
 
     public dispatchCreateBay(event: CreateBayEvent): void {
-        const replaces = this.buildCreateBayEvents(event)
+        const newBay = this.buildNewBay(event.bay);
+        const replaces = this.buildCreateBayEvents(newBay)
         const combinedEditorEvent = this.buildEditorActionEvent(replaces)
 
         // TODO wird unter dem namen "bay" gespeichert, erwartet BayType, case sensitive
@@ -24,8 +25,7 @@ export class EditorEventHandler {
     //     this.root.dispatchEvent(combinedEditorEvent)
     // }
 
-    private buildCreateBayEvents(event: CreateBayEvent): Create[] {
-        const newBay = this.buildNewBay(event.bay)
+    private buildCreateBayEvents(newBay: Element): Create[] {
         return [{
             new: { parent: this.dataTemplates, element: newBay },
         }]

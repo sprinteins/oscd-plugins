@@ -1,31 +1,44 @@
 <script lang="ts">
 	import { type TypeCluster } from "./types";
-    import { SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
+    import { type DataTypeTemplates, SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
     import Bay from "./components/bay.svelte";
     import AddComponentControls from "./components/add-component-controls.svelte";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler";
     import { type CreateBayEvent } from "./editor-events/event-types";
 
-	export let dataTemplates: Element
+	// TODO aufraeumen in store packen
+
+	// TODO undefined weg
+	export let dataTemplates: Element | undefined
 	export let root: Element
 	export let showSidebar = true
+
 	let htmlRoot: HTMLElement
-	
-	const scdQueries = new SCDQueries(root)
-	const ucci = new UCTypeDesigner(scdQueries)
-	let logicalDevices = ucci.findAllLogicalDevices()
-	let bays = ucci.findAllBays()
-	let ieds = ucci.findAllIEDs()
-	let voltageLevels = ucci.findAllVoltageLevels()
-	const typeCluster: TypeCluster = {
-		logicalDevices,
-		bays,
-		ieds,
-		voltageLevels
+	let typeCluster: TypeCluster
+	let editEventHandler: EditorEventHandler
+
+	$: editEventHandler = new EditorEventHandler(htmlRoot, dataTemplates)
+	$: onDataTemplatesUpdate(dataTemplates)
+
+	function onDataTemplatesUpdate(dataTemplates: Element) {
+		console.log("[!] onDataTemplatesUpdate")
+		updateCluster(root)
 	}
 
-	let editEventHandler: EditorEventHandler
-	$: editEventHandler = new EditorEventHandler(htmlRoot, dataTemplates)
+	function updateCluster(root: Element) {
+		const scdQueries = new SCDQueries(root)
+		const ucci = new UCTypeDesigner(scdQueries)
+		let logicalDevices = ucci.findAllLogicalDevices()
+		let bays = ucci.findAllBays()
+		let ieds = ucci.findAllIEDs()
+		let voltageLevels = ucci.findAllVoltageLevels()
+		typeCluster = {
+			logicalDevices,
+			bays,
+			ieds,
+			voltageLevels
+		}
+	}
 
 	// TODO doesnt belong here, dev version
 	function onCreateBay(event: CustomEvent<CreateBayEvent>) {
