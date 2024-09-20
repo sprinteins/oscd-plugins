@@ -1,10 +1,10 @@
 <script lang="ts">
   import Button from "@smui/button";
-  import { ldNodeName, IEDNodeName, vlNodeName, bayNodeName, substationNodeName } from '../constants/type-names';
-  import { EditorEventHandler } from "../editor-events/editor-event-handler";
+  import { ldNodeName, IEDNodeName, vlNodeName, bayNodeName, substationNodeName } from '../../constants/type-names';
+  import { EditorEventHandler } from "../../editor-events/editor-event-handler";
   import { fieldConfig } from "./field-config";
   import { handleCreateEvent } from './event-handlers';
-  import type { IEDType, LDeviceType, VoltageLevelType, BayType, SubstationType } from "../types"
+  import type { IEDType, LDeviceType, VoltageLevelType, BayType, SubstationType } from "../../types"
 
   export let editEventHandler: EditorEventHandler
 

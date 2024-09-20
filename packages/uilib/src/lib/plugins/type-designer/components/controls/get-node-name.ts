@@ -1,4 +1,4 @@
-import { BayType, IEDType, LDeviceType, SubstationType, VoltageLevelType } from "../types"
+import { BayType, IEDType, LDeviceType, SubstationType, VoltageLevelType } from "../../types"
 
 export function getNodeName(node: BayType | IEDType | LDeviceType | VoltageLevelType | SubstationType): string {
     if ('inst' in node) return 'LDeviceType';

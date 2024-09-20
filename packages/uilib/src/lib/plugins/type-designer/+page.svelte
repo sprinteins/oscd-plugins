@@ -8,8 +8,9 @@
 		xmlStr,
 		"text/xml"
 	) as unknown as Element
+	const editCount = -1
 </script>
 
 <Example name="Type Designer">
-	<TypeDesigner root={doc} />
+	<TypeDesigner root={doc} {editCount} />
 </Example>

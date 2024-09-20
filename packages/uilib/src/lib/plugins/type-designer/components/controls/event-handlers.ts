@@ -1,12 +1,12 @@
 // event-handlers.ts
-import { EditorEventHandler } from "../editor-events/editor-event-handler";
+import { EditorEventHandler } from "../../editor-events/editor-event-handler";
 import { 
     type CreateBayEvent, 
     type CreateSubstationEvent, 
     type CreateLDeviceEvent, 
     type CreateIEDEvent, 
     type CreateVoltageLevelEvent 
-} from "../editor-events/event-types";
+} from "../../editor-events/event-types";
 
 export function onCreateBay(event: CustomEvent<CreateBayEvent>, editEventHandler: EditorEventHandler) {
     console.log("onCreateBay:", event.detail.type.name);

@@ -30,7 +30,6 @@ export class EditorEventHandler {
     }
 
     private dispatchCreate(event: CreateBayEvent | CreateIEDEvent | CreateVoltageLevelEvent | CreateLDeviceEvent | CreateSubstationEvent): void {
-        console.log(`[!] onCreate:`, event); 
         const newNode = this.buildNewNode(event.type);
         const replaces = this.buildCreateEvents(newNode);
         const combinedEditorEvent = this.buildEditorActionEvent(replaces);

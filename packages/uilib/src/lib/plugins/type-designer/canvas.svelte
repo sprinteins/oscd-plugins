@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { type TypeCluster } from "./types";
-    import AddComponentControls from "./components/add-component-controls.svelte";
+    import Controls from "./components/controls/controls.svelte"
 	import { EditorEventHandler } from "./editor-events/editor-event-handler";
     import { getNodeName, Node } from "./components";
 	import { onDataTemplatesUpdate } from "./canvas-store"
@@ -30,7 +30,7 @@
 				{/each}
 			{/each}
 		</div>
-		<AddComponentControls {editEventHandler} />
+		<Controls {editEventHandler} />
 	{:else}
 		<p>No root</p>
 	{/if}
