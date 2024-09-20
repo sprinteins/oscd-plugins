@@ -1,2 +1,2 @@
 export { type TypeCluster } from "./type-cluster"
-export { type DataTypeTemplates, type LDeviceType, type BayType, type IEDType, type VoltageLevelType } from "./nodes"
+export type { DataTypeTemplates, LDeviceType, BayType, IEDType, VoltageLevelType, SubstationType } from "./nodes"

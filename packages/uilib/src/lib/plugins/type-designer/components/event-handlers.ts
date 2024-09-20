@@ -40,8 +40,7 @@ type EventTypes =
     | CreateIEDEvent
     | CreateVoltageLevelEvent;
 
-// looks shady, my inspiration - https://stackoverflow.com/questions/60067100/why-is-the-infer-keyword-needed-in-typescript
-// TODO keep?
+// my inspiration - https://stackoverflow.com/questions/60067100/why-is-the-infer-keyword-needed-in-typescript
 type EventDetail<T> = T extends { bay: infer U } ? U :
                       T extends { substation: infer U } ? U :
                       T extends { lDevice: infer U } ? U :
