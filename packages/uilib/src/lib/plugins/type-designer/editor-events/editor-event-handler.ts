@@ -1,9 +1,7 @@
 import { CreateBayEvent, CreateIEDEvent, CreateLDeviceEvent, CreateSubstationEvent, CreateVoltageLevelEvent } from "./event-types"
-import { type Create, type Delete } from "./editor-events"
-import { Node } from "../components"
-import { bayNodeName, IEDNodeName, ldNodeName, substationNodeName, vlNodeName } from "../constants/type-names"
-import { BayType, IEDType, LDeviceType, VoltageLevelType } from "../types"
-import { SubstationType } from "../types/nodes"
+import type { Create, Delete } from "./editor-events"
+import type { BayType, IEDType, LDeviceType, VoltageLevelType, SubstationType } from "../types"
+import { getNodeName } from "../components";
 
 export class EditorEventHandler {
     private readonly editorActionName = "editor-action"
@@ -11,7 +9,6 @@ export class EditorEventHandler {
     constructor(private readonly root: HTMLElement, private readonly dataTemplates: Element) {
     }
 
-    // TODO wird in allen dispatchCreate* unter dem namen "bay" (oder ld usw.) gespeichert, erwartet BayType, case sensitive
     public dispatchCreateBay(event: CreateBayEvent): void {
         this.dispatchCreate(event);
     }
@@ -47,7 +44,7 @@ export class EditorEventHandler {
     }
 
     private buildNewNode(node: BayType | IEDType | LDeviceType | VoltageLevelType | SubstationType): Element {
-        const nodeName = this.getNodeName(node);
+        const nodeName = getNodeName(node);
         const xmlString = this.createXmlString(nodeName, node);
         const parser = new DOMParser();
         const doc = parser.parseFromString(xmlString, "application/xml");
@@ -59,14 +56,6 @@ export class EditorEventHandler {
             .map(([key, value]) => `${key}="${value}"`)
             .join(" ");
         return `<${nodeName} ${attributes}></${nodeName}>`;
-    }
-
-    private getNodeName(node: BayType | IEDType | LDeviceType | VoltageLevelType | SubstationType): string {
-        if ('inst' in node) return 'LDeviceType';
-        if ('manufacturer' in node) return 'IEDType';
-        if ('nomFreq' in node) return 'VoltageLevelType';
-        if ('name' in node && 'desc' in node) return 'BayType';
-        return 'SubstationType';
     }
 
     private buildEditorActionEvent(actions: (Create | Delete)[]): CustomEvent {

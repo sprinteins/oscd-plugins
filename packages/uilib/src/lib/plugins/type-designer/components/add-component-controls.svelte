@@ -4,8 +4,7 @@
   import { EditorEventHandler } from "../editor-events/editor-event-handler";
   import { fieldConfig } from "./field-config";
   import { handleCreateEvent } from './event-handlers';
-  import type { IEDType, LDeviceType, VoltageLevelType } from "../types";
-  import type { BayType, SubstationType } from "../types/nodes";
+  import type { IEDType, LDeviceType, VoltageLevelType, BayType, SubstationType } from "../types"
 
   export let editEventHandler: EditorEventHandler
 

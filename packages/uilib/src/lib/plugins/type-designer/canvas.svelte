@@ -2,7 +2,7 @@
 	import { type TypeCluster } from "./types";
     import AddComponentControls from "./components/add-component-controls.svelte";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler";
-    import { Node } from "./components";
+    import { getNodeName, Node } from "./components";
 	import { onDataTemplatesUpdate } from "./canvas-store"
 
 	export let dataTemplates: Element
@@ -24,7 +24,7 @@
 				{#each componentArray as component (component.id)}
 					<Node
 						componentData={Object.entries(component).map(([key, value]) => ({ key, value }))}
-						componentName={componentName}
+						componentName={getNodeName(component)}
 						componentId={component.id}
 					/>
 				{/each}
