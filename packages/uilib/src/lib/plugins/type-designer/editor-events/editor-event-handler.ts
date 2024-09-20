@@ -3,6 +3,7 @@ import { type Create, type Delete } from "./editor-events"
 import { Node } from "../components"
 import { bayNodeName, IEDNodeName, ldNodeName, substationNodeName, vlNodeName } from "../constants/type-names"
 import { BayType, IEDType, LDeviceType, VoltageLevelType } from "../types"
+import { SubstationType } from "../types/nodes"
 
 export class EditorEventHandler {
     private readonly editorActionName = "editor-action"
@@ -12,27 +13,28 @@ export class EditorEventHandler {
 
     // TODO wird in allen dispatchCreate* unter dem namen "bay" (oder ld usw.) gespeichert, erwartet BayType, case sensitive
     public dispatchCreateBay(event: CreateBayEvent): void {
-        this.dispatchCreate(event, bayNodeName);
+        this.dispatchCreate(event);
     }
 
     public dispatchCreateSubstation(event: CreateSubstationEvent): void {
-        this.dispatchCreate(event, substationNodeName);
+        this.dispatchCreate(event);
     }
 
     public dispatchCreateLDevice(event: CreateLDeviceEvent): void {
-        this.dispatchCreate(event, ldNodeName);
+        this.dispatchCreate(event);
     }
 
     public dispatchCreateIED(event: CreateLDeviceEvent): void {
-        this.dispatchCreate(event, IEDNodeName);
+        this.dispatchCreate(event);
     }
 
     public dispatchCreateVoltageLevel(event: CreateLDeviceEvent): void {
-        this.dispatchCreate(event, vlNodeName);
+        this.dispatchCreate(event);
     }
 
-    private dispatchCreate(event: CreateBayEvent | CreateIEDEvent | CreateVoltageLevelEvent | CreateLDeviceEvent | CreateSubstationEvent, nodeName: string): void {
-        const newNode = this.buildNewNode(event.type, nodeName);
+    private dispatchCreate(event: CreateBayEvent | CreateIEDEvent | CreateVoltageLevelEvent | CreateLDeviceEvent | CreateSubstationEvent): void {
+        console.log(`[!] onCreate:`, event); 
+        const newNode = this.buildNewNode(event.type);
         const replaces = this.buildCreateEvents(newNode);
         const combinedEditorEvent = this.buildEditorActionEvent(replaces);
         this.root.dispatchEvent(combinedEditorEvent);
@@ -44,32 +46,41 @@ export class EditorEventHandler {
         }];
     }
 
-    private buildNewNode(node: BayType | IEDType | LDeviceType | VoltageLevelType, nodeName: string): HTMLElement {
-        const container = document.createElement('div');
-        new Node({
-            target: container,
-            props: {
-                componentData: Object.entries(node).map(([key, value]) => ({ key, value })),
-                componentName: nodeName,
-                componentId: node.id,
-            }
-        });
-    
-        return container;
+    private buildNewNode(node: BayType | IEDType | LDeviceType | VoltageLevelType | SubstationType): Element {
+        const nodeName = this.getNodeName(node);
+        const xmlString = this.createXmlString(nodeName, node);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xmlString, "application/xml");
+        return doc.documentElement;
     }
 
-    private buildEditorActionEvent(actions: (Create | Delete)[]) {
+    private createXmlString(nodeName: string, node: BayType | IEDType | LDeviceType | VoltageLevelType | SubstationType): string {
+        const attributes = Object.entries(node)
+            .map(([key, value]) => `${key}="${value}"`)
+            .join(" ");
+        return `<${nodeName} ${attributes}></${nodeName}>`;
+    }
+
+    private getNodeName(node: BayType | IEDType | LDeviceType | VoltageLevelType | SubstationType): string {
+        if ('inst' in node) return 'LDeviceType';
+        if ('manufacturer' in node) return 'IEDType';
+        if ('nomFreq' in node) return 'VoltageLevelType';
+        if ('name' in node && 'desc' in node) return 'BayType';
+        return 'SubstationType';
+    }
+
+    private buildEditorActionEvent(actions: (Create | Delete)[]): CustomEvent {
         const detail = {
             action: {
                 actions: actions,
             },
-        }
+        };
     
         return new CustomEvent(this.editorActionName, {
             detail,
             composed: true,
-            bubbles:  true,
-        })
+            bubbles: true,
+        });
     }
 
     // TODO out of #61 scope - contact Illia when implementation is needed

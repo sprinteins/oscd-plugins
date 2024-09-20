@@ -2,6 +2,7 @@
 
 ## TODO (Remove before merge)
 
+- [ ] onDataTemplatesUpdate x11-12
 - [ ] ~~wird in allen dispatchCreate* unter dem namen "bay" (oder ld usw.) gespeichert, erwartet BayType, case sensitive~~
 - [ ] update 19.09 - dispatcher saves nodes under <div> tag
 - [ ] something like react hook form?

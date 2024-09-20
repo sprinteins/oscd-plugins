@@ -4,16 +4,12 @@
   import { TypeDesigner } from "@oscd-plugins/uilib/src/lib/plugins/type-designer";
   import * as pckg from "../package.json";
 
-  // TODO 20.09 - not passed
-  // <Plugin> was created without expected prop 'root'
-  // <Plugin> was created without expected prop 'editCount'
-  export let doc: XMLDocument
-  export let editCount: number
-  export let root: Element
+  export let doc: XMLDocument;
+	export let editCount: number
 </script>
 
 {#if doc}
-  <TypeDesigner doc={root} {editCount} root={doc?.documentElement} />
+  <TypeDesigner {editCount} root={doc?.documentElement} />
 {/if}
 
 <input type="hidden" name="package-name" value={pckg.name} />

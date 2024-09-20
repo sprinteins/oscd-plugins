@@ -4,10 +4,7 @@
     import Canvas from './canvas.svelte';
     import { type DataTypeTemplatesElement, SCDQueries } from '@oscd-plugins/core';
 	
-	// TODO 20.09
-	export let doc: Element // - unavaialble
-	export let editCount: number // - unavaialble
-	// SCD
+	export let editCount: number
 	export let root: Element
 
 	let htmlRoot: HTMLElement
@@ -16,14 +13,14 @@
 	let scdQueries = new SCDQueries(root)
 	let dataTemplates: DataTypeTemplatesElement = scdQueries.searchDataTypeTemplates()
 
-	$: onDocUpdate(doc)
+	$: onDocUpdate(root)
 	$: updateOnEditCount(editCount)
 
 	function onDocUpdate(doc: Element): void {
-		console.log("[!] onDocUpdate")
 		if (doc === _doc) {
 			return
 		}
+		console.log("[!] onDocUpdate")
 		_doc = doc
 		scdQueries = new SCDQueries(root)
 		dataTemplates = scdQueries.searchDataTypeTemplates()
@@ -33,6 +30,7 @@
 		if (editCount < 0 || editCount === _editCount) {
 			return
 		}
+		console.log("[!] onUpdateCount", editCount)
 		_editCount = editCount
 		dataTemplates = scdQueries.searchDataTypeTemplates()
 	}

@@ -18,7 +18,6 @@
 
   let showFields = false
   let entityType: string
-  // TODO something like react hook form?
   let formData: FormData = null
 
   function handleButtonClick(type: string) {
