@@ -9,8 +9,7 @@ import { extractPhysConnectionCable } from "../diagram/networking"
 export class EditorEventHandler {
 	private readonly editorActionName = "editor-action"
 
-	constructor(private readonly root: HTMLElement) {
-	}
+	constructor(private readonly root: HTMLElement) {}
 
 	public dispatchCreateCable(event: CreateCableEvent): void {
 		const replaces = this.buildCreateCableEvents(event)
