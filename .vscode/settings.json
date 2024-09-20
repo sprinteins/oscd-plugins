@@ -1,3 +1,9 @@
 {
-    "editor.insertSpaces": false
+	"editor.tabSize": 2, // Set the number of spaces per tab
+	"editor.insertSpaces": false, // Use tabs for indentation
+	"editor.formatOnSave": true, // Automatically format the document on save
+	"editor.defaultFormatter": null, // Use the built-in formatter
+	// Svelte settings
+	"svelte.plugin.svelte.format.enable": true, // Enable Svelte formatting
+	"svelte.plugin.svelte.format.config.singleQuote": true, // Use single quotes
 }
