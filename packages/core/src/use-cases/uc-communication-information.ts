@@ -20,7 +20,7 @@ export class UCCommunicationInformation {
 				iedDetails: this.parseDetails(ied.element),
 				// published: this.findPublishedMessages(ied),
 				published: this.findPublishedMessages_V2(ied),
-				received:  this.findReceivedMessages(ied),
+				received:  this.findReceivedMessages(ied, ieds),
 			}
 		})
 		return commInfos
@@ -160,14 +160,24 @@ export class UCCommunicationInformation {
 	// 	return published
 	// }
 
-	private findReceivedMessages(ied: IEDElement ): ReceivedMessage[] {
+	private findReceivedMessages(ied: IEDElement, allIeds: IEDElement[]): ReceivedMessage[] {
 		const inputs = this.scdQueries.searchInputs({ root: ied.element })
 		const extRefs = inputs.map(input => this.scdQueries.searchExtRef({ root: input.element })).flat()
 
 		const extRefsWithConnectionID = extRefs.map((el) => {
-			const iedName = el.iedName
 			const srcCBName = el.srcCBName
-			const connection = this.scdQueries.searchGSEControlByIEDNameAndName(iedName, srcCBName)
+			const iedName = el.iedName
+			const parentIed = allIeds.find(i => i.name === iedName)
+
+			if (!parentIed) {
+				const newInput: InputExtRefElementWithDatSet = {
+					...el,
+					datSet: null,
+				}
+				return newInput
+			}
+
+			const connection = this.scdQueries.searchGSEControlByName(srcCBName, {root: parentIed?.element})
 			const datSet = connection?.datSet
 
 			const newInput: InputExtRefElementWithDatSet = {
