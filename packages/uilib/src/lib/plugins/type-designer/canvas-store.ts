@@ -2,7 +2,6 @@ import { SCDQueries, UCTypeDesigner } from "@oscd-plugins/core";
 import type { TypeCluster } from "./types";
 
 export function onDataTemplatesUpdate(root: Element, dataTemplates: Element): TypeCluster {
-    console.log("[!] onDataTemplatesUpdate")
     return updateCluster(root)
 }
 

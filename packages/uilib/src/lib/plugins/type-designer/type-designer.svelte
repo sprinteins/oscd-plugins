@@ -20,7 +20,6 @@
 		if (doc === _doc) {
 			return
 		}
-		console.log("[!] onDocUpdate")
 		_doc = doc
 		scdQueries = new SCDQueries(root)
 		dataTemplates = scdQueries.searchDataTypeTemplates()
@@ -30,7 +29,6 @@
 		if (editCount < 0 || editCount === _editCount) {
 			return
 		}
-		console.log("[!] onUpdateCount", editCount)
 		_editCount = editCount
 		dataTemplates = scdQueries.searchDataTypeTemplates()
 	}
