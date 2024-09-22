@@ -26,10 +26,43 @@ export class UCCommunicationInformation {
 		return commInfos
 	}
 
-	private parseDetails(element: Element): string {
+	private parseDetails(element: Element): string[] {
 
-		//TODO: parse details properly here
-		return element.innerHTML
+		//this is very simple and naive parsing and subject to change
+		//TODO: verify how exactly logical nodes, data attributes and data objects can be layed out 
+		let result = ["", "", ""]
+
+		const parser = new DOMParser()
+		const doc = parser.parseFromString(element.outerHTML, "text/xml")
+		
+		//these values were blindly taken from a test file as examples
+		result[0] = this.parseNodes(doc, ["LN", "LN0"])
+		result[1] = this.parseNodes(doc, ["DO", "DOI"])
+		result[2] = this.parseNodes(doc, ["DA", "FCDA"])
+		
+		return result
+	}
+
+	private parseNodes(doc: Document, nodeTypes: string[]): string {
+		let result = ""
+
+		for (var nodeType of nodeTypes) {
+		
+			const nodes = doc.getElementsByTagName(nodeType);
+			for (var node of nodes) {
+		
+				result += node.localName + " ("
+				for (var attribute of node.attributes) {
+		
+					result += attribute.name
+					if (attribute.value) {
+						result += "=" + attribute.value + " "
+					}
+				}
+				result +=")<br>"
+			}
+		}
+		return result
 	}
 
 	public IEDCommInfosByBay(): Map<string, IEDCommInfo[]> {
@@ -223,7 +256,7 @@ export type ReportControlInfo = {
 
 export type IEDCommInfo = {
 	iedName: string
-	iedDetails: string //TODO: don't save as string! change to something like LogicalNodes[], DataObjects[] and DataAttributes[] TBD
+	iedDetails: string[]
 	published: PublishedMessage_V2[]
 	received: ReceivedMessage[]
 }
