@@ -34,6 +34,7 @@ export function generateIEDLayout(
 			label:      ied.iedName,
 			isRelevant: isRelevant,
 			children:   [],
+			details:	ied.iedDetails
 		}
 	})
 

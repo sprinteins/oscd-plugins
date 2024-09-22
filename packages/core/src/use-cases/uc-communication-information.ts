@@ -17,12 +17,52 @@ export class UCCommunicationInformation {
 		const commInfos: IEDCommInfo[] = ieds.map(ied => {
 			return {
 				iedName:   ied.name,
+				iedDetails: this.parseDetails(ied.element),
 				// published: this.findPublishedMessages(ied),
 				published: this.findPublishedMessages_V2(ied),
 				received:  this.findReceivedMessages(ied, ieds),
 			}
 		})
 		return commInfos
+	}
+
+	private parseDetails(element: Element): string[] {
+
+		//this is very simple and naive parsing and subject to change
+		//TODO: verify how exactly logical nodes, data attributes and data objects can be layed out 
+		let result = ["", "", ""]
+
+		const parser = new DOMParser()
+		const doc = parser.parseFromString(element.outerHTML, "text/xml")
+		
+		//these values were blindly taken from a test file as examples
+		result[0] = this.parseNodes(doc, ["LN", "LN0"])
+		result[1] = this.parseNodes(doc, ["DO", "DOI"])
+		result[2] = this.parseNodes(doc, ["DA", "FCDA"])
+		
+		return result
+	}
+
+	private parseNodes(doc: Document, nodeTypes: string[]): string {
+		let result = ""
+
+		for (var nodeType of nodeTypes) {
+		
+			const nodes = doc.getElementsByTagName(nodeType);
+			for (var node of nodes) {
+		
+				result += node.localName + " ("
+				for (var attribute of node.attributes) {
+		
+					result += attribute.name
+					if (attribute.value) {
+						result += "=" + attribute.value + " "
+					}
+				}
+				result +=")<br>"
+			}
+		}
+		return result
 	}
 
 	public IEDCommInfosByBay(): Map<string, IEDCommInfo[]> {
@@ -216,6 +256,7 @@ export type ReportControlInfo = {
 
 export type IEDCommInfo = {
 	iedName: string
+	iedDetails: string[]
 	published: PublishedMessage_V2[]
 	received: ReceivedMessage[]
 }
