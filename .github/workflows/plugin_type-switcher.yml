@@ -5,18 +5,16 @@ on:
     branches:
       - main
     paths:
-      - "plugins/type-switcher/**"
+      - "packages/plugins/type-switcher/**"
 jobs:
   check:
     uses: "./.github/workflows/check_version.yml"
     with:
       plugin-name: type-switcher
-  
+
   build:
     needs: [check]
     if: needs.check.outputs.has_change == 'true'
     uses: "./.github/workflows/build.yml"
     with:
       plugin-name: type-switcher
-    secrets:
-      PAT_REPO_OSCD_PLUGINS: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}

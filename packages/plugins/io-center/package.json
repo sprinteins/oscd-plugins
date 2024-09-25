@@ -1,14 +1,14 @@
 {
-  "name": "@oscd-plugins/communication-explorer",
+  "name": "@oscd-plugins/io-center",
   "private": true,
-  "version": "0.0.31",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "_build:watch": "NODE_ENV=development vite build --watch",
     "build:watch": "concurrently 'npm:_build:watch' 'npm:preview'",
-    "preview": "vite preview --port 61942",
+    "preview": "vite preview --port 55909",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "npm run check -- --watch",
     "version": "echo $npm_package_version"
@@ -18,14 +18,14 @@
     "concurrently": "^7.6.0"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^2.0.2",
-    "@tsconfig/svelte": "^3.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "@tsconfig/svelte": "^5.0.4",
     "sass": "^1.61.0",
-    "svelte": "^3.55.1",
-    "svelte-check": "^2.10.3",
-    "tslib": "^2.5.0",
-    "typescript": "^4.9.3",
-    "vite": "^4.1.0",
+    "svelte": "^4.2.18",
+    "svelte-check": "^3.8.5",
+    "tslib": "^2.6.3",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1",
     "vite-plugin-css-injected-by-js": "^3.1.1"
   }
 }

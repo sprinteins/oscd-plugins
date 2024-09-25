@@ -19,6 +19,15 @@ documentation: _install ## Start the documentation plugin in dev mode
 type-switcher: _install ## Start the type switcher plugin in dev mode
 	pnpm -C ./packages/plugins/type-switcher run build:watch
 
+type-designer: _install ## Start the type designer plugin in dev mode
+	pnpm -C ./packages/plugins/type-designer run build:watch
+
+io-center: _install ## Start the I/O center plugin in dev mode
+	pnpm -C ./packages/plugins/io-center run build:watch
+
+auto-doc: _install ## Start the AutoDoc plugin in dev mode
+	pnpm -C ./packages/plugins/auto-doc run build:watch
+
 fix: _install ## Fix eslint errors
 	pnpm turbo fix
 	

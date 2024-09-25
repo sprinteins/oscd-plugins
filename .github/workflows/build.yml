@@ -5,19 +5,14 @@ on:
       plugin-name: #e.g.: network
         required: true
         type: string
-    secrets:
-      PAT_REPO_OSCD_PLUGINS:
-        required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      PAT_TOKEN: ${{ secrets.PAT_REPO_OSCD_PLUGINS }}
     steps:
       - name: Checkout oscd-plugins/main
         uses: actions/checkout@v3
-        
+
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         id: pnpm-install
@@ -30,7 +25,7 @@ jobs:
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      
+
       - name: Setup pnpm cache
         uses: actions/cache@v3
         with:
@@ -40,11 +35,11 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install Dependencies
-        run: pnpm install 
+        run: pnpm install
 
       - name: Run Tests
         run: (cd ./packages/uilib ; npm run test)
-        
+
       - name: Build Plugin
         run: pnpm -C ./packages/plugins/${{ inputs.plugin-name }} run build
 
@@ -53,10 +48,10 @@ jobs:
         run: |
           cd ./packages/plugins/${{inputs.plugin-name}}
           echo "version=$(npm pkg get version)" >> "$GITHUB_OUTPUT"
-     
+
       - name: Prep-Build
         run: mkdir _build_ && cd _build_
-       
+
       - name: Checkout oscd-plugins
         uses: actions/checkout@v3
         with:
@@ -65,16 +60,16 @@ jobs:
           path: _build_
 
       - name: Add built files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd $GITHUB_WORKSPACE/_build_
           mkdir -p $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/package.json $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
-          git config --unset-all http.https://github.com/.extraheader
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "Update file"
-          # git push https://tamasrusz:$PAT_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:build/${{ inputs.plugin-name }}
-          git push https://tamasrusz:$PAT_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:gh-pages
+          git push https://x-access-token:$GH_TOKEN@github.com/sprinteins/oscd-plugins.git HEAD:gh-pages

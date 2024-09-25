@@ -1,20 +1,20 @@
-name: "Plugin: Communication Explorer"
+name: "Plugin: I/O Center"
 on:
   workflow_dispatch:
   push:
     branches:
       - main
     paths:
-      - "packages/plugins/communication-explorer/**"
+      - "packages/plugins/io-center/**"
 jobs:
   check:
     uses: "./.github/workflows/check_version.yml"
     with:
-      plugin-name: communication-explorer
+      plugin-name: io-center
 
   build:
     needs: [check]
     if: needs.check.outputs.has_change == 'true'
     uses: "./.github/workflows/build.yml"
     with:
-      plugin-name: communication-explorer
+      plugin-name: io-center
