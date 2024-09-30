@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { TypeDesigner } from "."
-	import { xmlStr } from "../../../test-files/simple_v5"
-	import { Example } from "../../components/internal"
+	import TypeDesignerPlugin from './type-designer-plugin.svelte';
+	import { xmlStr } from '../../../test-files/simple_v5';
+	import { Example } from '../../components/internal';
 
-	const parser = new DOMParser()
+	const parser = new DOMParser();
 	const doc = parser.parseFromString(
 		xmlStr,
-		"text/xml"
-	) as unknown as Element
-	const editCount = -1
+		'text/xml',
+	) as unknown as XMLDocument;
 </script>
 
 <Example name="Type Designer">
-	<TypeDesigner root={doc} {editCount} />
+	<!-- <TypeDesignerPlugin xmlDocument={doc} {editCount} /> -->
+	<TypeDesignerPlugin xmlDocument={doc} />
 </Example>
