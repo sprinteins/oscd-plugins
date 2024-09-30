@@ -1,5 +1,0 @@
-export const ldNodeName = "Logical Device"
-export const IEDNodeName = "IED"
-export const vlNodeName = "Voltage Level"
-export const bayNodeName = "Bay"
-export const substationNodeName = "Substation"
