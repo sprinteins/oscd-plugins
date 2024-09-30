@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { xmlStr } from "../../testfiles/simple_v5"
-import { SCDQueries } from "../scd"
+import { SCDQueries } from "../scd-queries"
 import { UCTypeTypeSwitcher } from "./uc-type-type-switcher"
 
 describe("UC: Type Type Switcher", () => {
@@ -17,7 +17,7 @@ describe("UC: Type Type Switcher", () => {
 		// Act
 		// 
 		const duplicateTypes = await uc.findDuplicateDataObjectTypes()
-		console.log({leve: "test", duplicateTypes})
+		console.log({ leve: "test", duplicateTypes })
 
 		// 
 		// Assert
