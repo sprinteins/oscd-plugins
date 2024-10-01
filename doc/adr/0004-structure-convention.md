@@ -24,14 +24,16 @@ To maintain consistency across the codebase, we will adopt a clear and concise n
 - Directories: `data-type-templates`
 - Files: `queries.data-type-templates.ts`
 
+It goes the same way for `service` or `utility` files : `service.data-type-templates.ts`
+
 ### Type Declaration Files
 
-Type declaration files are special TypeScript files that end with the `.d.ts` extension. These files are used exclusively for declaring types and do not contain any executable code. By using `.d.ts` files, we ensure that type definitions are centralized, easily accessible, and separate from implementation code.
+Type declaration files are special TypeScript files that end with the `.d.ts` extension. These files are used exclusively for declaring types and do not contain any executable code. By using `.d.ts` files, we ensure that type definitions are centralized, easily accessible, and separate from implementation code. These files should remains next to the domain, like the others.
 
 #### Examples
 
-- `types.ata-type-templates.d.ts`: Contains type definitions related to data type templates.
-- `types.scd-queries.d.ts`: Contains type definitions related to SCD queries.
+- `types.data-type-templates.d.ts`: Contains type definitions related to data type templates. (inside the `data-type-templates` folder)
+- `types.scd-queries.d.ts`: Contains type definitions related to SCD queries. (inside the `scd-queries` folder)
 
 This approach promotes better type management and reduces redundancy, contributing to a more organized and maintainable codebase.
 
