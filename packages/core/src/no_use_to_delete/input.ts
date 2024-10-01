@@ -1,11 +1,11 @@
-import { InputExtRef } from "scd/input-extref"
+import { InputExtRef } from "./input-extref"
 
-export class Input{
+export class Input {
 
-	public readonly iedName: string 	   = ""
+	public readonly iedName: string = ""
 	public readonly extRefs: InputExtRef[] = []
 
-	constructor(input?: Partial<Input>){
+	constructor(input?: Partial<Input>) {
 		const newThis: Input = {
 			...this,
 			...input,
