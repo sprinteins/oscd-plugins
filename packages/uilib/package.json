@@ -14,9 +14,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "npm run test:watch -- --run",
 		"test:watch": "vitest",
-		"coverage": "npm run test:watch -- --run --coverage",
-		"lint": "eslint .",
-		"fix": "eslint . --fix --quiet"
+		"coverage": "npm run test:watch -- --run --coverage"
 	},
 	"dependencies": {
 		"@material/typography": "^14.0.0",
