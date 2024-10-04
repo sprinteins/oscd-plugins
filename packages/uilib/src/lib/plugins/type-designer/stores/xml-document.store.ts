@@ -1,11 +1,11 @@
 // SVELTE
-import { writable, get } from 'svelte/store';
+import { writable, get } from 'svelte/store'
 // OPENSCD
-import { createElement, newActionEvent } from '@oscd-plugins/core';
+import { createElement, newActionEvent } from '@oscd-plugins/core'
 // STORES
-import { dataTypeTemplatesStore, elementTypeContainerStore } from './index';
+import { dataTypeTemplatesStore } from './index'
 // TYPES
-import type { DataTypeTemplates } from '@oscd-plugins/core';
+import type { DataTypeTemplates } from '@oscd-plugins/core'
 
 // STATE
 const xmlDocument = writable<XMLDocument>()
@@ -15,19 +15,27 @@ function init(newXMLDocument: XMLDocument) {
 	xmlDocument.set(newXMLDocument)
 }
 
-function addElementToXmlDocument(newElementTagName: DataTypeTemplates.AllowedTag, elementAttributes: Record<string, string | null>) {
+function addElementToXmlDocument(
+	newElementTagName: DataTypeTemplates.AllowedTag,
+	elementAttributes: Record<string, string | null>,
+	pluginHtmlContext: HTMLElement
+) {
 	const { dataTypeTemplatesRootElement } = dataTypeTemplatesStore
-	const { elementTypeContainerContext } = elementTypeContainerStore
 
-	const newElement = createElement(get(xmlDocument), newElementTagName, elementAttributes)
+	const newElement = createElement(
+		get(xmlDocument),
+		newElementTagName,
+		elementAttributes
+	)
 	const event = newActionEvent({
-		new: { parent: get(dataTypeTemplatesRootElement).element, element: newElement },
+		new: {
+			parent: get(dataTypeTemplatesRootElement).element,
+			element: newElement
+		}
 	})
 
-	get(elementTypeContainerContext).dispatchEvent(event)
+	pluginHtmlContext.dispatchEvent(event)
 }
-
-
 
 export const xmlDocumentStore = {
 	//state

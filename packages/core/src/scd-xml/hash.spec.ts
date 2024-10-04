@@ -1,26 +1,26 @@
-import { describe, expect, it } from "vitest"
-import { hash } from "./hash"
-import { describeElement } from "./describers"
+import { describe, expect, it } from 'vitest'
+import { hash } from './hash'
+import { describeElement } from './describers'
 
-describe("Hashing", () => {
-	describe("Different Element Types", () => {
+describe('Hashing', () => {
+	describe('Different Element Types', () => {
 		type XMLTypeDescription = {
-			tagName:   string,
-			testCases: TestCase[],
+			tagName: string
+			testCases: TestCase[]
 		}
 		type TestCase = {
-			desc:           string,
-			element1:       string,
-			element2:       string,
-			differentHash?: boolean,
+			desc: string
+			element1: string
+			element2: string
+			differentHash?: boolean
 		}
 
 		const xmlTypeDescriptions: XMLTypeDescription[] = [
 			{
-				tagName:   "EnumType",
+				tagName: 'EnumType',
 				testCases: [
 					{
-						desc:     "same element",
+						desc: 'same element',
 						element1: `
 						<EnumType id="Dummy_ctlModel">
 							<EnumVal ord="0">status-only</EnumVal>
@@ -32,10 +32,10 @@ describe("Hashing", () => {
 							<EnumVal ord="0">status-only</EnumVal>
 							<EnumVal ord="1">direct-with-normal-security</EnumVal>
 							<EnumVal ord="2">sbo-with-normal-security</EnumVal>
-						</EnumType>`,
+						</EnumType>`
 					},
 					{
-						desc:     "same children but different child order does not matter",
+						desc: 'same children but different child order does not matter',
 						element1: `
 						<EnumType id="Dummy_ctlModel">
 							<EnumVal ord="0">status-only</EnumVal>
@@ -47,12 +47,12 @@ describe("Hashing", () => {
 							<EnumVal ord="0">status-only</EnumVal>
 							<EnumVal ord="2">sbo-with-normal-security</EnumVal>
 							<EnumVal ord="1">direct-with-normal-security</EnumVal>
-						</EnumType>`,
+						</EnumType>`
 					},
 					{
-						desc:          "different number of children produces different hash",
+						desc: 'different number of children produces different hash',
 						differentHash: true,
-						element1:      `
+						element1: `
 						<EnumType id="Dummy_ctlModel">
 							<EnumVal ord="0">status-only_1</EnumVal>
 							<EnumVal ord="1">direct-with-normal-security</EnumVal>
@@ -63,12 +63,12 @@ describe("Hashing", () => {
 							<EnumVal ord="0">status-only_2</EnumVal>
 							<EnumVal ord="1">direct-with-normal-security</EnumVal>
 							<EnumVal ord="2">sbo-with-normal-security</EnumVal>
-						</EnumType>`,
+						</EnumType>`
 					},
 					{
-						desc:          "same number but different children produces different hash",
+						desc: 'same number but different children produces different hash',
 						differentHash: true,
-						element1:      `
+						element1: `
 						<EnumType id="Dummy_ctlModel">
 							<EnumVal ord="0">status-only_1</EnumVal>
 							<EnumVal ord="1">direct-with-normal-security</EnumVal>
@@ -79,15 +79,15 @@ describe("Hashing", () => {
 							<EnumVal ord="0">status-only_2</EnumVal>
 							<EnumVal ord="1">direct-with-normal-security</EnumVal>
 							<EnumVal ord="2">sbo-with-normal-security</EnumVal>
-						</EnumType>`,
-					},
-				],
+						</EnumType>`
+					}
+				]
 			},
 			{
-				tagName:   "DAType",
+				tagName: 'DAType',
 				testCases: [
 					{
-						desc:     "exact same element",
+						desc: 'exact same element',
 						element1: `
 						<DAType id="Dummy.LPHD1.Sim.SBOw">
 							<BDA name="ctlVal" bType="BOOLEAN"/>
@@ -99,10 +99,10 @@ describe("Hashing", () => {
 							<BDA name="ctlVal" bType="BOOLEAN"/>
 							<BDA name="origin" bType="Struct" type="Dummy_origin"/>
 							<BDA name="ctlNum" bType="INT8U"/>
-						</DAType>`,
+						</DAType>`
 					},
 					{
-						desc:     "same children, different order",
+						desc: 'same children, different order',
 						element1: `
 						<DAType id="Dummy.LPHD1.Sim.SBOw">
 							<BDA name="ctlVal" bType="BOOLEAN"/>
@@ -114,12 +114,12 @@ describe("Hashing", () => {
 							<BDA name="ctlVal" bType="BOOLEAN"/>
 							<BDA name="origin" bType="Struct" type="Dummy_origin"/>
 							<BDA name="ctlNum" bType="INT8U"/>
-						</DAType>`,
+						</DAType>`
 					},
 					{
-						desc:          "different number of children produces different hash",
+						desc: 'different number of children produces different hash',
 						differentHash: true,
-						element1:      `
+						element1: `
 						<DAType id="Dummy.LPHD1.Sim.SBOw">
 							<BDA name="ctlVal" bType="BOOLEAN"/>
 							<BDA name="origin" bType="Struct" type="Dummy_origin"/>
@@ -131,12 +131,12 @@ describe("Hashing", () => {
 							<BDA name="origin" bType="Struct" type="Dummy_origin"/>
 							<BDA name="ctlNum" bType="INT8U"/>
 							<BDA name="Test" bType="BOOLEAN"/>
-						</DAType>`,
+						</DAType>`
 					},
 					{
-						desc:          "same number of children but different ones produces different hash",
+						desc: 'same number of children but different ones produces different hash',
 						differentHash: true,
-						element1:      `
+						element1: `
 						<DAType id="Dummy.LPHD1.Sim.SBOw">
 							<BDA name="ctlVal" bType="BOOLEAN"/>
 							<BDA name="origin" bType="Struct" type="Dummy_origin"/>
@@ -147,10 +147,10 @@ describe("Hashing", () => {
 							<BDA name="ctlVal" bType="BOOLEAN"/>
 							<BDA name="origin" bType="Struct" type="Dummy_origin"/>
 							<BDA name="Test" bType="BOOLEAN"/>
-						</DAType>`,
+						</DAType>`
 					},
 					{
-						desc:     "the order of BDAs' attributes does not matter",
+						desc: "the order of BDAs' attributes does not matter",
 						element1: `
 						<DAType id="Dummy.LPHD1.Sim.SBOw">
 							<BDA 
@@ -172,15 +172,15 @@ describe("Hashing", () => {
 								dupd="5"
 								type="3" 
 							/>
-						</DAType>`,
-					},
-				],
+						</DAType>`
+					}
+				]
 			},
 			{
-				tagName:   "DOType",
+				tagName: 'DOType',
 				testCases: [
 					{
-						desc:     "exact same element",
+						desc: 'exact same element',
 						element1: `
 						<DOType cdc="SAV" id="DummySAV">
 							<DA fc="MX" name="instMag" bType="Struct" type="AnalogueValue_i"/>
@@ -192,10 +192,10 @@ describe("Hashing", () => {
 							<DA fc="MX" name="instMag" bType="Struct" type="AnalogueValue_i"/>
 							<DA fc="MX" qchg="true" name="q" bType="Quality"/>
 							<DA fc="CF" name="sVC" bType="Struct" type="ScaledValueConfig"/>
-						</DOType>`,
+						</DOType>`
 					},
 					{
-						desc:     "same children, different order",
+						desc: 'same children, different order',
 						element1: `
 						<DOType cdc="SAV" id="DummySAV">
 							<DA fc="MX" name="instMag" bType="Struct" type="AnalogueValue_i"/>
@@ -207,7 +207,7 @@ describe("Hashing", () => {
 							<DA fc="CF" name="sVC" bType="Struct" type="ScaledValueConfig"/>
 							<DA fc="MX" name="instMag" bType="Struct" type="AnalogueValue_i"/>
 							<DA fc="MX" qchg="true" name="q" bType="Quality"/>
-						</DOType>`,
+						</DOType>`
 					},
 					// TODO: currently the <Val> element is ignored by the hash function
 					// and therefore the hash of the following two elements is the same.
@@ -229,9 +229,9 @@ describe("Hashing", () => {
 					// 	</DOType>`,
 					// },
 					{
-						desc:          "different number of children produces different hash",
+						desc: 'different number of children produces different hash',
 						differentHash: true,
-						element1:      `
+						element1: `
 						<DOType cdc="SAV" id="DummySAV">
 							<DA fc="MX" name="instMag" bType="Struct" type="AnalogueValue_i"/>
 							<DA fc="MX" qchg="true" name="q" bType="Quality"/>
@@ -243,12 +243,12 @@ describe("Hashing", () => {
 							<DA fc="MX" qchg="true" name="q" bType="Quality"/>
 							<DA fc="CF" name="sVC" bType="Struct" type="ScaledValueConfig"/>
 							<DA fc="CO" name="SBO" bType="ObjRef"/>
-						</DOType>`,
+						</DOType>`
 					},
 					{
-						desc:          "same number of children but different ones produces different hash",
+						desc: 'same number of children but different ones produces different hash',
 						differentHash: true,
-						element1:      `
+						element1: `
 						<DOType cdc="SAV" id="DummySAV">
 							<DA fc="MX" name="instMag" bType="Struct" type="AnalogueValue_i"/>
 							<DA fc="MX" qchg="true" name="q" bType="Quality"/>
@@ -259,10 +259,10 @@ describe("Hashing", () => {
 							<DA fc="CF" name="sVC" bType="Struct" type="ScaledValueConfig"/>
 							<DA fc="MX" name="instMag" bType="Struct" type="AnalogueValue_i"/>
 							<DA fc="CO" name="SBO" bType="ObjRef"/>
-						</DOType>`,
+						</DOType>`
 					},
 					{
-						desc:     "the order of DAs' attributes does not matter",
+						desc: "the order of DAs' attributes does not matter",
 						element1: `
 						<DOType cdc="SAV" id="DummySAV">
 							<DA 
@@ -286,15 +286,15 @@ describe("Hashing", () => {
 								name="1"
 								dchg="5"
 							/>
-						</DOType>`,
-					},
-				],
+						</DOType>`
+					}
+				]
 			},
 			{
-				tagName:   "LNodeType",
+				tagName: 'LNodeType',
 				testCases: [
 					{
-						desc:     "exact same element",
+						desc: 'exact same element',
 						element1: `
 						<LNodeType lnClass="LLN0" id="Dummy.LLN0">
 							<DO name="Mod" type="Dummy.LLN0.Mod"/>
@@ -306,10 +306,10 @@ describe("Hashing", () => {
 							<DO name="Mod" type="Dummy.LLN0.Mod"/>
 							<DO name="ExtendedMod" type="Dummy.LLN0.ExtendedMod"/>
 							<DO name="Beh" type="Dummy.LLN0.Beh"/>
-						</LNodeType>`,
+						</LNodeType>`
 					},
 					{
-						desc:     "same children, different order",
+						desc: 'same children, different order',
 						element1: `
 						<LNodeType lnClass="LLN0" id="Dummy.LLN0">
 							<DO name="Mod" type="Dummy.LLN0.Mod"/>
@@ -321,12 +321,12 @@ describe("Hashing", () => {
 							<DO name="Beh" type="Dummy.LLN0.Beh"/>
 							<DO name="Mod" type="Dummy.LLN0.Mod"/>
 							<DO name="ExtendedMod" type="Dummy.LLN0.ExtendedMod"/>
-						</LNodeType>`,
+						</LNodeType>`
 					},
 					{
-						desc:          "different number of children produces different hash",
+						desc: 'different number of children produces different hash',
 						differentHash: true,
-						element1:      `
+						element1: `
 						<LNodeType lnClass="LLN0" id="Dummy.LLN0">
 							<DO name="Mod" type="Dummy.LLN0.Mod"/>
 							<DO name="ExtendedMod" type="Dummy.LLN0.ExtendedMod"/>
@@ -338,12 +338,12 @@ describe("Hashing", () => {
 							<DO name="Mod" type="Dummy.LLN0.Mod"/>
 							<DO name="ExtendedMod" type="Dummy.LLN0.ExtendedMod"/>	
 							<DO name="Proxy" type="Dummy.SPS"/>
-						</LNodeType>`,
+						</LNodeType>`
 					},
 					{
-						desc:          "same number of children but different ones produces different hash",
+						desc: 'same number of children but different ones produces different hash',
 						differentHash: true,
-						element1:      `
+						element1: `
 						<LNodeType lnClass="LLN0" id="Dummy.LLN0">
 							<DO name="Mod" type="Dummy.LLN0.Mod"/>
 							<DO name="ExtendedMod" type="Dummy.LLN0.ExtendedMod"/>
@@ -354,10 +354,10 @@ describe("Hashing", () => {
 							<DO name="Mod" type="Dummy.LLN0.Mod"/>
 							<DO name="ExtendedMod" type="Dummy.LLN0.ExtendedMod"/>
 							<DO name="Proxy" type="Dummy.SPS"/>
-						</LNodeType>`,
+						</LNodeType>`
 					},
 					{
-						desc:     "the order of DOs' attributes does not matter",
+						desc: "the order of DOs' attributes does not matter",
 						element1: `
 						<DOType cdc="SAV" id="DummySAV">
 							<DO 
@@ -373,15 +373,15 @@ describe("Hashing", () => {
 								transient="3"
 								name="1" 
 							/>
-						</DOType>`,
-					},
-				],
-			},
+						</DOType>`
+					}
+				]
+			}
 		]
 
 		xmlTypeDescriptions.forEach(describeFeature)
 
-		function describeFeature(xmlDesc: XMLTypeDescription){
+		function describeFeature(xmlDesc: XMLTypeDescription) {
 			describe(xmlDesc.tagName, () => {
 				xmlDesc.testCases.forEach(testFeature)
 			})
@@ -392,25 +392,28 @@ describe("Hashing", () => {
 				// Arrange
 				// parse xml
 				const parser = new DOMParser()
-				const xml1 = parser.parseFromString(tc.element1, "application/xml")
-				const xml2 = parser.parseFromString(tc.element2, "application/xml")
-				
+				const xml1 = parser.parseFromString(
+					tc.element1,
+					'application/xml'
+				)
+				const xml2 = parser.parseFromString(
+					tc.element2,
+					'application/xml'
+				)
+
 				// Act
 				const desc1 = describeElement(xml1.documentElement)
 				const desc2 = describeElement(xml2.documentElement)
 				const hash1 = await hash(JSON.stringify(desc1))
 				const hash2 = await hash(JSON.stringify(desc2))
-				
+
 				// Assert
-				if(tc.differentHash) {
+				if (tc.differentHash) {
 					expect(hash1).not.toEqual(hash2)
-				}else{
-					expect(hash1).toEqual(hash2)	
+				} else {
+					expect(hash1).toEqual(hash2)
 				}
 			})
 		}
-
-		
 	}) // Different Element Types
-
 }) // Hashing

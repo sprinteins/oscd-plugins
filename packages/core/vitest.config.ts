@@ -1,12 +1,11 @@
-import { defineConfig } from "vitest/config"
-
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
 	test: {
 		browser: {
-			enabled:  true,
+			enabled: true,
 			headless: false,
-			name:     "chrome",
-		},
-	},
+			name: 'chrome'
+		}
+	}
 })

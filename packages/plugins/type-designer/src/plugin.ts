@@ -1,23 +1,22 @@
 import Plugin from './plugin.svelte'
-import * as pkg from "../package.json";
+import * as pkg from '../package.json'
 
 export default class NewPlugin extends HTMLElement {
-
 	private plugin: Plugin
 
 	connectedCallback() {
-		this.attachShadow({ mode: "open" });
+		this.attachShadow({ mode: 'open' })
 		this.plugin = new Plugin({
 			target: this.shadowRoot,
 			props: {
-				doc: this._doc,
+				doc: this._doc
 				// editCount: -1
 			}
-		});
+		})
 
-		const style = document.createElement("style");
-		style.innerHTML = globalThis.pluginStyle[pkg.name];
-		this.shadowRoot!.appendChild(style);
+		const style = document.createElement('style')
+		style.innerHTML = globalThis.pluginStyle[pkg.name]
+		this.shadowRoot!.appendChild(style)
 	}
 
 	private _doc: XMLDocument
@@ -36,5 +35,4 @@ export default class NewPlugin extends HTMLElement {
 	// 	}
 	// 	this.plugin.$set({ editCount: newCount })
 	// }
-
 }

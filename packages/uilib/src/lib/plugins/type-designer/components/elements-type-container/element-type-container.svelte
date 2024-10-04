@@ -1,29 +1,17 @@
+{#if $xmlDocument}
+	<ToolBar />
+{:else}
+	<p>No xml document loaded</p>
+{/if}
+
 <script lang="ts">
-	import { onMount } from 'svelte';
-	// COMPONENTS
-	import AddElementType from './add-element-type.svelte';
-	// STORES
-	import { xmlDocumentStore, elementTypeContainerStore } from '../../stores';
+// COMPONENTS
+import ToolBar from './tool-bar.svelte'
+// STORES
+import { xmlDocumentStore } from '../../stores'
 
-	//refs
-	let elementTypeContainerContext: HTMLElement;
-
-	//stores
-	const { xmlDocument } = xmlDocumentStore;
-
-	//==== HOOKS ====//
-	onMount(function () {
-		elementTypeContainerStore.setContext(elementTypeContainerContext);
-	});
+//stores
+const { xmlDocument } = xmlDocumentStore
 </script>
 
-<div class="root" bind:this={elementTypeContainerContext}>
-	{#if $xmlDocument}
-		<AddElementType />
-	{:else}
-		<p>No xml document loaded</p>
-	{/if}
-</div>
 
-<style>
-</style>

@@ -5,7 +5,6 @@
 // SEE SOURCE  https://github.com/openscd/open-scd/blob/main/packages/xml/src/foundation.ts		//
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 /**
  * @since 0.0.1
  *
@@ -20,11 +19,11 @@ export function createElement(
 	tag: string,
 	attrs: Record<string, string | null>
 ): Element {
-	const element = doc.createElementNS(doc.documentElement.namespaceURI, tag);
+	const element = doc.createElementNS(doc.documentElement.namespaceURI, tag)
 	Object.entries(attrs)
 		.filter(([_, value]) => value !== null)
-		.forEach(([name, value]) => element.setAttribute(name, value!));
-	return element;
+		.forEach(([name, value]) => element.setAttribute(name, value!))
+	return element
 }
 
 /**
@@ -39,22 +38,22 @@ export function cloneElement(
 	element: Element,
 	attrs: Record<string, string | null>
 ): Element {
-	const newElement = <Element>element.cloneNode(false);
+	const newElement = <Element>element.cloneNode(false)
 	Object.entries(attrs).forEach(([name, value]) => {
-		if (value === null) newElement.removeAttribute(name);
-		else newElement.setAttribute(name, value);
-	});
-	return newElement;
+		if (value === null) newElement.removeAttribute(name)
+		else newElement.setAttribute(name, value)
+	})
+	return newElement
 }
 
 export function getChildElementsByTagName(
 	element: Element | null | undefined,
 	tag: string | null | undefined
 ): Element[] {
-	if (!element || !tag) return [];
+	if (!element || !tag) return []
 	return Array.from(element.children).filter(
-		element => element.tagName === tag
-	);
+		(element) => element.tagName === tag
+	)
 }
 
 /**
@@ -65,15 +64,15 @@ export function getChildElementsByTagName(
  */
 export function formatXml(xml: string, tab?: string): string {
 	let formatted = '',
-		indent = '';
+		indent = ''
 
-	if (!tab) tab = '\t';
+	if (!tab) tab = '\t'
 	xml.split(/>\s*</).forEach(function (node) {
-		if (node.match(/^\/\w/)) indent = indent.substring(tab!.length);
-		formatted += indent + '<' + node + '>\r\n';
-		if (node.match(/^<?\w[^>]*[^/]$/)) indent += tab;
-	});
-	return formatted.substring(1, formatted.length - 3);
+		if (node.match(/^\/\w/)) indent = indent.substring(tab!.length)
+		formatted += indent + '<' + node + '>\r\n'
+		if (node.match(/^<?\w[^>]*[^/]$/)) indent += tab
+	})
+	return formatted.substring(1, formatted.length - 3)
 }
 
 export function getUniqueElementName(
@@ -81,9 +80,9 @@ export function getUniqueElementName(
 	tagName: string,
 	iteration = 1
 ): string {
-	const newName = 'new' + tagName + iteration;
-	const child = parent.querySelector(`:scope > ${tagName}[name="${newName}"]`);
+	const newName = 'new' + tagName + iteration
+	const child = parent.querySelector(`:scope > ${tagName}[name="${newName}"]`)
 
-	if (!child) return newName;
-	else return getUniqueElementName(parent, tagName, ++iteration);
+	if (!child) return newName
+	else return getUniqueElementName(parent, tagName, ++iteration)
 }

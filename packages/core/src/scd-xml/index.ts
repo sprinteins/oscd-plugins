@@ -1,1 +1,1 @@
-export * from "./foundation"
+export * from './foundation'

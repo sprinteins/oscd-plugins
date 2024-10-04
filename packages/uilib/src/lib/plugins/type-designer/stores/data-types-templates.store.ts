@@ -1,33 +1,28 @@
-import { writable, get } from 'svelte/store';
+import { writable, get } from 'svelte/store'
 // CORE
-import { UCTypeDesigner } from '@oscd-plugins/core';
+import { DataTypeTemplatesService } from '@oscd-plugins/core'
 // TYPES
-import type { DataTypeTemplates } from '@oscd-plugins/core';
+import type { DataTypeTemplates } from '@oscd-plugins/core'
 
 //==== STATE
-const rootElement = writable<DataTypeTemplates.RootElement>()
-const subElements = writable<DataTypeTemplates.SubElements>()
+const rootElement = writable<DataTypeTemplates.RootElement | null>(null)
+const subElements = writable<DataTypeTemplates.SubElements | null>(null)
 
-const treeStructure = writable<DataTypeTemplates.ElementsTreeStructure>()
-
-//==== PRIVATE ACTIONS 
-function setTreeStructure(newXmlDocument: Element) {
-	const typeDesigner = new UCTypeDesigner(newXmlDocument)
-	const newTreeStructure = typeDesigner.getElementTypeTreeStructure()
-
-	treeStructure.set(newTreeStructure)
-}
+//==== PRIVATE ACTIONS
 
 function setRootElement(newXmlDocument: Element) {
-	const typeDesigner = new UCTypeDesigner(newXmlDocument)
+	const typeDesigner = new DataTypeTemplatesService(newXmlDocument)
 	const newRootElement = typeDesigner.findDataTypesElement()
 
 	rootElement.set(newRootElement)
 }
 
 function setSubElements(newXmlDocument: Element) {
-	const typeDesigner = new UCTypeDesigner(newXmlDocument)
-	const newSubElements = typeDesigner.findTypeDesignerElements({ root: get(rootElement).element })
+	const typeDesigner = new DataTypeTemplatesService(newXmlDocument)
+
+	const newSubElements = typeDesigner.findTypeDesignerElements({
+		root: get(rootElement)?.element
+	})
 
 	subElements.set(newSubElements)
 }
@@ -36,15 +31,12 @@ function setSubElements(newXmlDocument: Element) {
 function init(newXmlDocument: Element) {
 	setRootElement(newXmlDocument)
 	setSubElements(newXmlDocument)
-	setTreeStructure(newXmlDocument)
 }
-
 
 export const dataTypeTemplatesStore = {
 	//state
 	dataTypeTemplatesRootElement: rootElement,
 	dataTypeTemplatesSubElements: subElements,
-	dataTypeTemplatesTreeStructure: treeStructure,
 	//actions
 	init
 }

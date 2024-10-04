@@ -1,13 +1,13 @@
 export const enum MessageType {
-	GOOSE = "GOOSE",
-	MMS = "MMS",
-	SampledValues = "SampledValues",
-	Unknown = "Unknown",
+	GOOSE = 'GOOSE',
+	MMS = 'MMS',
+	SampledValues = 'SampledValues',
+	Unknown = 'Unknown'
 }
 
 export const allMessageTypes = [
 	MessageType.GOOSE,
 	MessageType.MMS,
 	MessageType.SampledValues,
-	MessageType.Unknown,
+	MessageType.Unknown
 ] as const

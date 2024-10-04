@@ -1,5 +1,5 @@
 // CONSTANTS
-import { ELEMENT_NAMES } from "../constants/element.constant"
+import { ELEMENT_NAMES } from '../constants/element.constant'
 
 //====== SCD QUERIES
 
@@ -11,12 +11,14 @@ export type CommonOptions = {
 	root?: Element
 }
 export type Optional<T> = T | undefined
-export type AttributeList<T extends SCDBaseElement> = Exclude<keyof T, keyof SCDBaseElement>
+export type AttributeList<T extends SCDBaseElement> = Exclude<
+	keyof T,
+	keyof SCDBaseElement
+>
 
-
-//====== SCD ELEMENTS 
+//====== SCD ELEMENTS
 export type AllowedElements = keyof typeof ELEMENT_NAMES
-export type AllowedElementNames = typeof ELEMENT_NAMES[AllowedElements]
+export type AllowedElementNames = (typeof ELEMENT_NAMES)[AllowedElements]
 
 export type SubstationElementAttributes = {
 	id: string
@@ -29,8 +31,8 @@ export type VoltageLevelElementAttributes = {
 	id: string
 	desc: string
 	name: string
-	nomFreq: string;
-	numPhases: string;
+	nomFreq: string
+	numPhases: string
 }
 export type VoltageLevelElement = SCDBaseElement & VoltageLevelElementAttributes
 
@@ -45,12 +47,12 @@ export type IEDElementAttributes = {
 	id: string
 	desc: string
 	name: string
-	originalSclRevision: string;
-	originalSclVersion: string;
-	owner: string;
-	configVersion: string;
-	manufacturer: string;
-	type: string;
+	originalSclRevision: string
+	originalSclVersion: string
+	owner: string
+	configVersion: string
+	manufacturer: string
+	type: string
 }
 export type IEDElement = SCDBaseElement & IEDElementAttributes
 
@@ -60,4 +62,3 @@ export type LDeviceElementAttributes = {
 	inst: string
 }
 export type LDeviceElement = SCDBaseElement & LDeviceElementAttributes
-

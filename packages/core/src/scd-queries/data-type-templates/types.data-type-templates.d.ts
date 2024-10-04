@@ -7,14 +7,21 @@ import type {
 	VoltageLevelElement,
 	BayElement,
 	IEDElement,
-	LDeviceElement,
-} from "../types.scd-queries"
+	LDeviceElement
+} from '../types.scd-queries'
 
 export namespace DataTypeTemplates {
+	type TreeOrder =
+		| `${number}`
+		| `${number}.${number}`
+		| `${number}.${number}.${number}`
 
-	type TreeOrder = `${number}` | `${number}.${number}` | `${number}.${number}.${number}`;
-
-	export type AllowedTag = "SubstationType" | "VoltageLevelType" | "BayType" | "IEDType" | "LDeviceType"
+	export type AllowedTag =
+		| 'SubstationType'
+		| 'VoltageLevelType'
+		| 'BayType'
+		| 'IEDType'
+		| 'LDeviceType'
 
 	export type RootElement = SCDBaseElement
 	export type SubElements = {
@@ -25,11 +32,13 @@ export namespace DataTypeTemplates {
 		logicalDevices: LDeviceElement[]
 	}
 
-	export type ElementsTreeStructure = Record<AllowedElements, {
-		elementName: AllowedElementNames
-		treeOrder: TreeOrder
-		tagName: DataTypeTemplates.Tag
-		children: DataTypeTemplates.Tag[]
-	}>;
+	export type ElementsTreeStructure = Record<
+		AllowedElements,
+		{
+			elementName: AllowedElementNames
+			treeOrder: TreeOrder
+			tagName: DataTypeTemplates.Tag
+			children: DataTypeTemplates.Tag[]
+		}
+	>
 }
-
