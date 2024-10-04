@@ -27,14 +27,48 @@ function addElementToXmlDocument(
 		newElementTagName,
 		elementAttributes
 	)
+
+	const parent =
+		get(dataTypeTemplatesRootElement)?.element ??
+		createDataTypeTemplateElement(pluginHtmlContext)
+
+	return createAndDispatchActionEvent(parent, newElement, pluginHtmlContext)
+}
+
+function createAndDispatchActionEvent(
+	parent: Element,
+	element: Element,
+	pluginHtmlContext: HTMLElement
+) {
 	const event = newActionEvent({
 		new: {
-			parent: get(dataTypeTemplatesRootElement).element,
-			element: newElement
+			parent,
+			element
 		}
 	})
 
 	pluginHtmlContext.dispatchEvent(event)
+}
+
+function createDataTypeTemplateElement(
+	pluginHtmlContext: HTMLElement
+): Element {
+	const newDataTypeTemplatesElement = createElement(
+		get(xmlDocument),
+		'DataTypeTemplates',
+		{}
+	)
+	dataTypeTemplatesStore.dataTypeTemplatesRootElement.set({
+		element: newDataTypeTemplatesElement
+	})
+
+	createAndDispatchActionEvent(
+		get(xmlDocument).documentElement,
+		newDataTypeTemplatesElement,
+		pluginHtmlContext
+	)
+
+	return newDataTypeTemplatesElement
 }
 
 export const xmlDocumentStore = {

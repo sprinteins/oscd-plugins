@@ -1,4 +1,4 @@
-import { SCDElement, SCDQueries } from '../scd-queries'
+import type { SCDElement, SCDQueries } from '../scd-queries'
 
 export type IEDNetworkInfoV3 = { iedName: string; networkInfo: Networking }
 

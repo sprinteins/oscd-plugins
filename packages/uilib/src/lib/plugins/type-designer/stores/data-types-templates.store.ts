@@ -6,7 +6,7 @@ import type { DataTypeTemplates } from '@oscd-plugins/core'
 
 //==== STATE
 const rootElement = writable<DataTypeTemplates.RootElement | null>(null)
-const subElements = writable<DataTypeTemplates.SubElements | null>(null)
+const subElements = writable<DataTypeTemplates.SubElements>()
 
 //==== PRIVATE ACTIONS
 

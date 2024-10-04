@@ -1,5 +1,5 @@
 // CONSTANTS
-import { ELEMENT_NAMES } from '../constants/element.constant'
+import type { ELEMENT_NAMES } from '../constants/element.constant'
 
 //====== SCD QUERIES
 

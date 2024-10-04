@@ -1,5 +1,7 @@
 import { expect, suite, test } from 'vitest'
-import { GSEElement, SCDQueries } from './scd-query'
+import { SCDQueries } from './scd-query'
+// TYPES
+import type { GSEElement } from './scd-query'
 
 suite('SCD Queries', () => {
 	suite('GSE Queries', () => {

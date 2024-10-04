@@ -20,44 +20,6 @@ export class DataTypeTemplatesQueries extends SCDQueries {
 		}
 	}
 
-	public static dataTypesTemplatesTree: DataTypeTemplates.ElementsTreeStructure =
-		{
-			substation: {
-				elementName: ELEMENT_NAMES.substation,
-				treeOrder: '1',
-				tagName: 'SubstationType',
-				children: ['voltageLevel']
-			},
-			voltageLevel: {
-				elementName: ELEMENT_NAMES.voltageLevel,
-				treeOrder: '1.1',
-				tagName: 'VoltageLevelType',
-				children: ['bay']
-			},
-			bay: {
-				elementName: ELEMENT_NAMES.bay,
-				treeOrder: '1.1.1',
-				tagName: 'BayType',
-				children: []
-			},
-			ied: {
-				elementName: ELEMENT_NAMES.ied,
-				treeOrder: '2',
-				tagName: 'IEDType',
-				children: ['lDevice']
-			},
-			lDevice: {
-				elementName: ELEMENT_NAMES.lDevice,
-				treeOrder: '2.1',
-				tagName: 'LDeviceType',
-				children: []
-			}
-		}
-
-	public getElementTypeTreeStructure(): DataTypeTemplates.ElementsTreeStructure {
-		return DataTypeTemplatesQueries.dataTypesTemplatesTree
-	}
-
 	public static SelectorDataTypeTemplates = 'DataTypeTemplates'
 	public searchDataTypeTemplates(): DataTypeTemplates.RootElement | null {
 		return this.searchSingleElement<DataTypeTemplates.RootElement>(
