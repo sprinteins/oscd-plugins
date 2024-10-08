@@ -14,14 +14,14 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "npm run test:watch -- --run",
 		"test:watch": "vitest",
-		"coverage": "npm run test:watch -- --run --coverage",
-		"lint": "eslint .",
-		"fix": "eslint . --fix --quiet"
+		"coverage": "npm run test:watch -- --run --coverage"
 	},
 	"dependencies": {
 		"@material/typography": "^14.0.0",
 		"@oscd-plugins/core": "../core",
+		"@smui-extra/accordion": "7.0.0-beta.8",
 		"@smui/button": "7.0.0-beta.8",
+		"@smui/card": "7.0.0-beta.8",
 		"@smui/checkbox": "7.0.0-beta.8",
 		"@smui/chips": "7.0.0-beta.8",
 		"@smui/common": "7.0.0-beta.8",
@@ -31,7 +31,6 @@
 		"@smui/select": "7.0.0-beta.8",
 		"@smui/snackbar": "7.0.0-beta.8",
 		"@smui/textfield": "7.0.0-beta.8",
-		"@smui-extra/accordion": "7.0.0-beta.8",
 		"@xyflow/svelte": "^0.0.33",
 		"d3-path": "^3.1.0",
 		"elkjs": "^0.8.2",

@@ -1,3 +1,9 @@
+# apple
+.DS_Store
+
+# vscode
+.vscode/settings.json
+
 # Logs
 logs
 *.log
