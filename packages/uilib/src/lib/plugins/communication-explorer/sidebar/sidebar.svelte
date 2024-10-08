@@ -105,14 +105,21 @@
                     value={IEDSelectionIDs[0] ?? ""}
                     on:change={setSelectedNode}
                 >
-                    <option value="" disabled>Select an IED</option>
+                    <option value="" disabled>
+                        {#if searchQuery === ""}
+                            Select an IED
+                        {:else}
+                            {filteredNodes.length} IED(s) found
+                        {/if}
+                    </option>
                     {#if filteredNodes.length > 0}
                         {#each filteredNodes as node}
                             <option
                                 selected={(IEDSelectionIDs[0] ?? "") ===
                                     node.id}
                                 value={node.id}
-                                >{node.label}
+                            >
+                                {node.label}
                             </option>
                         {/each}
                     {/if}
