@@ -1,30 +1,40 @@
-:host {
-	--mdc-theme-primary: #006a64; /* primary */
-	--mdc-theme-secondary: #565992; /* secondary */
-	--mdc-theme-background: #f4fbf9; /* background */
-	--mdc-theme-surface: #fff9eb; /* surface */
-	--mdc-theme-error: #904a44; /* error */
-	--mdc-theme-on-primary: #ffffff; /* onPrimary */
-	--mdc-theme-on-secondary: #ffffff; /* onSecondary */
-	--mdc-theme-on-surface: #1d1c13; /* onSurface */
-	--mdc-theme-on-error: #ffffff; /* onError */
-	--mdc-theme-text-primary-on-background: rgba(0, 0, 0, 0.87);
-	--mdc-theme-text-secondary-on-background: rgba(0, 0, 0, 0.54);
-	--mdc-theme-text-hint-on-background: rgba(0, 0, 0, 0.38);
-	--mdc-theme-text-disabled-on-background: rgba(0, 0, 0, 0.38);
-	--mdc-theme-text-icon-on-background: rgba(0, 0, 0, 0.38);
-	--mdc-theme-text-primary-on-light: rgba(0, 0, 0, 0.87);
-	--mdc-theme-text-secondary-on-light: rgba(0, 0, 0, 0.54);
-	--mdc-theme-text-hint-on-light: rgba(0, 0, 0, 0.38);
-	--mdc-theme-text-disabled-on-light: rgba(0, 0, 0, 0.38);
-	--mdc-theme-text-icon-on-light: rgba(0, 0, 0, 0.38);
-	--mdc-theme-text-primary-on-dark: white;
-	--mdc-theme-text-secondary-on-dark: rgba(255, 255, 255, 0.7);
-	--mdc-theme-text-hint-on-dark: rgba(255, 255, 255, 0.5);
-	--mdc-theme-text-disabled-on-dark: rgba(255, 255, 255, 0.5);
-	--mdc-theme-text-icon-on-dark: rgba(255, 255, 255, 0.5);
+/* ====== HOST ROOT ====== */
+:host > tscd-theme, :host > header {
+	--mdc-theme-primary: #006A64;
+  --mdc-theme-secondary: #565992;
+  --mdc-theme-background: #F4FBF9;
+  --mdc-theme-surface: #FFF9EB;
+  --mdc-theme-error: #904A44;
+  --mdc-theme-on-primary: #FFFFFF;
+  --mdc-theme-on-secondary: #FFFFFF;
+  --mdc-theme-on-surface: #1D1C13;
+  --mdc-theme-on-error: #FFFFFF;
+  --mdc-theme-text-primary-on-background: rgba(22, 29, 28, 0.87);
+  --mdc-theme-text-secondary-on-background: rgba(22, 29, 28, 0.54);
+  --mdc-theme-text-hint-on-background: rgba(22, 29, 28, 0.38);
+  --mdc-theme-text-disabled-on-background: rgba(22, 29, 28, 0.38);
+  --mdc-theme-text-icon-on-background: rgba(22, 29, 28, 0.38);
+  --mdc-theme-text-primary-on-light: rgba(22, 29, 28, 0.87);
+  --mdc-theme-text-secondary-on-light: rgba(22, 29, 28, 0.54);
+  --mdc-theme-text-hint-on-light: rgba(22, 29, 28, 0.38);
+  --mdc-theme-text-disabled-on-light: rgba(22, 29, 28, 0.38);
+  --mdc-theme-text-icon-on-light: rgba(22, 29, 28, 0.38);
+  --mdc-theme-text-primary-on-dark: #DDE4E2;
+  --mdc-theme-text-secondary-on-dark: rgba(221, 228, 226, 0.7);
+  --mdc-theme-text-hint-on-dark: rgba(221, 228, 226, 0.5);
+  --mdc-theme-text-disabled-on-dark: rgba(221, 228, 226, 0.5);
+  --mdc-theme-text-icon-on-dark: rgba(221, 228, 226, 0.5);
+}
+
+tscd-theme {
+	/* OPEN SCD INSTANCE HEADER */
+	--header-height: 112px;
 
 	font-family: 'Roboto', sans-serif;
+	height: calc(100vh - var(--header-height));
+	display: flex;
+	align-items: stretch;
+	position: relative;
 }
 
 /* ====== UTILITY CLASSES ====== */

@@ -3,9 +3,8 @@
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
-	"main": "src/plugin.ts",
 	"scripts": {
-		"dev": "vite --mode NOT_INTEGRATED",
+		"dev": "vite --mode STAND_ALONE",
 		"build": "vite build",
 		"_build:watch": "NODE_ENV=development vite build --watch",
 		"build:watch": "concurrently 'npm:_build:watch' 'npm:preview'",

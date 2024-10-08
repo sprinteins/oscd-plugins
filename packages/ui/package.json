@@ -20,6 +20,11 @@
 		"vite": "^5.4.8"
 	},
 	"dependencies": {
+		"@oscd-plugins/core": "workspace:^",
+		"@smui/button": "^7.0.0",
+		"@smui/icon-button": "7.0.0-beta.8",
+		"@smui/top-app-bar": "^7.0.0",
+		"normalize.css": "^8.0.1",
 		"svelte-material-ui": "^7.0.0"
 	}
 }

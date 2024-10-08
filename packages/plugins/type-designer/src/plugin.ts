@@ -32,21 +32,14 @@ export default class NewPlugin extends HTMLElement {
 	}
 }
 
-if (import.meta.env.MODE === 'NOT_INTEGRATED') {
+if (import.meta.env.MODE === 'STAND_ALONE') {
 	customElements.define('type-designer-plugin', NewPlugin)
 
 	// Create an instance of the custom element and add it to the DOM
 	const pluginElement = document.createElement('type-designer-plugin')
 	document.body.appendChild(pluginElement)
+
+	// Document events to simulate the OPENSCD instance actions
+	//document.addEventListener('oscd-open', this.handleOpenDoc);
+
 }
-
-// 	customElements.define('type-designer-plugin', NewPlugin)
-// 	const pluginElement = document.getElementById('plugin')
-// 	const newDoc =
-// 	pluginElement.xmlDocument = newDoc
-// }
-// const target = import.meta.env.DEV ? document.getElementById('plugin') : this.shadowRoot
-
-// const plugin = new Plugin({
-// 	target: document.body,
-// })

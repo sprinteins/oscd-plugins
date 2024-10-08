@@ -1,1 +1,1 @@
-export * from './menu-bar'
+export { default as DevMenuBar} from './menu-bar.svelte'

@@ -33,6 +33,7 @@ export default defineConfig({
 			formats: ['es'],
 			fileName: 'index'
 		},
+		modulePreload: true,
 		sourcemap: isDevelopment ? 'inline' : false
 	}
 })
