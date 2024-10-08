@@ -37,7 +37,7 @@
 // COMPONENTS
 import Button from '@smui/button'
 // STORES
-import { xmlDocumentStore } from '../../stores'
+import { xmlDocumentStore } from '@/stores'
 // CONSTANTS
 import { ELEMENT_NAMES } from '@oscd-plugins/core'
 // TYPES
