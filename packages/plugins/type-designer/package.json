@@ -3,8 +3,9 @@
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
+	"main": "src/plugin.ts",
 	"scripts": {
-		"dev": "vite",
+		"dev": "vite --mode NOT_INTEGRATED",
 		"build": "vite build",
 		"_build:watch": "NODE_ENV=development vite build --watch",
 		"build:watch": "concurrently 'npm:_build:watch' 'npm:preview'",
@@ -14,7 +15,10 @@
 		"version": "echo $npm_package_version"
 	},
 	"dependencies": {
+		"@oscd-plugins/core": "workspace:^",
+		"@oscd-plugins/ui": "workspace:^",
 		"@oscd-plugins/uilib": "workspace:^",
+		"@smui/button": "7.0.0",
 		"concurrently": "^7.6.0"
 	},
 	"devDependencies": {

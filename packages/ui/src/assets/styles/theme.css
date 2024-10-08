@@ -1,0 +1,71 @@
+:host {
+	--mdc-theme-primary: #006a64; /* primary */
+	--mdc-theme-secondary: #565992; /* secondary */
+	--mdc-theme-background: #f4fbf9; /* background */
+	--mdc-theme-surface: #fff9eb; /* surface */
+	--mdc-theme-error: #904a44; /* error */
+	--mdc-theme-on-primary: #ffffff; /* onPrimary */
+	--mdc-theme-on-secondary: #ffffff; /* onSecondary */
+	--mdc-theme-on-surface: #1d1c13; /* onSurface */
+	--mdc-theme-on-error: #ffffff; /* onError */
+	--mdc-theme-text-primary-on-background: rgba(0, 0, 0, 0.87);
+	--mdc-theme-text-secondary-on-background: rgba(0, 0, 0, 0.54);
+	--mdc-theme-text-hint-on-background: rgba(0, 0, 0, 0.38);
+	--mdc-theme-text-disabled-on-background: rgba(0, 0, 0, 0.38);
+	--mdc-theme-text-icon-on-background: rgba(0, 0, 0, 0.38);
+	--mdc-theme-text-primary-on-light: rgba(0, 0, 0, 0.87);
+	--mdc-theme-text-secondary-on-light: rgba(0, 0, 0, 0.54);
+	--mdc-theme-text-hint-on-light: rgba(0, 0, 0, 0.38);
+	--mdc-theme-text-disabled-on-light: rgba(0, 0, 0, 0.38);
+	--mdc-theme-text-icon-on-light: rgba(0, 0, 0, 0.38);
+	--mdc-theme-text-primary-on-dark: white;
+	--mdc-theme-text-secondary-on-dark: rgba(255, 255, 255, 0.7);
+	--mdc-theme-text-hint-on-dark: rgba(255, 255, 255, 0.5);
+	--mdc-theme-text-disabled-on-dark: rgba(255, 255, 255, 0.5);
+	--mdc-theme-text-icon-on-dark: rgba(255, 255, 255, 0.5);
+
+	font-family: 'Roboto', sans-serif;
+}
+
+/* ====== UTILITY CLASSES ====== */
+
+/* ====== FONTS */
+.roboto-mono {
+	font-family: 'Roboto Mono', monospace;
+}
+
+.font-thin {
+  font-weight: 100;
+}
+
+.font-extra-light {
+  font-weight: 200;
+}
+
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semi-bold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-extra-bold {
+  font-weight: 800;
+}
+
+.font-black {
+  font-weight: 900;
+}

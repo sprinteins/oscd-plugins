@@ -1,38 +1,52 @@
 import Plugin from './plugin.svelte'
-import * as pkg from '../package.json'
 
 export default class NewPlugin extends HTMLElement {
 	private plugin: Plugin
+	private _doc: XMLDocument
+
+	constructor() {
+		super()
+	}
 
 	connectedCallback() {
-		this.attachShadow({ mode: 'open' })
+		const shadowRoot = this.attachShadow({ mode: 'open' })
+
 		this.plugin = new Plugin({
-			target: this.shadowRoot,
+			target: shadowRoot,
 			props: {
-				doc: this._doc
-				// editCount: -1
+				xmlDocument:
+					this._doc ||
+					new DOMParser().parseFromString(
+						'<SCL></SCL>',
+						'application/xml'
+					)
 			}
 		})
-
-		const style = document.createElement('style')
-		style.innerHTML = globalThis.pluginStyle[pkg.name]
-		this.shadowRoot!.appendChild(style)
 	}
 
-	private _doc: XMLDocument
 	public set doc(newDoc: XMLDocument) {
 		this._doc = newDoc
-		if (!this.plugin) {
-			return
-		}
+		if (!this.plugin) return
 
-		this.plugin.$set({ doc: newDoc })
+		this.plugin.$set({ xmlDocument: newDoc })
 	}
-
-	// public set editCount(newCount: number) {
-	// 	if (!this.plugin) {
-	// 		return
-	// 	}
-	// 	this.plugin.$set({ editCount: newCount })
-	// }
 }
+
+if (import.meta.env.MODE === 'NOT_INTEGRATED') {
+	customElements.define('type-designer-plugin', NewPlugin)
+
+	// Create an instance of the custom element and add it to the DOM
+	const pluginElement = document.createElement('type-designer-plugin')
+	document.body.appendChild(pluginElement)
+}
+
+// 	customElements.define('type-designer-plugin', NewPlugin)
+// 	const pluginElement = document.getElementById('plugin')
+// 	const newDoc =
+// 	pluginElement.xmlDocument = newDoc
+// }
+// const target = import.meta.env.DEV ? document.getElementById('plugin') : this.shadowRoot
+
+// const plugin = new Plugin({
+// 	target: document.body,
+// })
