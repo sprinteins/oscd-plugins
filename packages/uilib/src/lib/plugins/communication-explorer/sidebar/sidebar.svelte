@@ -34,13 +34,14 @@
     function handleConnectionDirectionDisabled(
     	filter: SelectedFilter,
     	iedFilterDisabled: boolean
-    ): boolean {
+    ): boolean {        
     	if (iedFilterDisabled) return true
 
+        searchQuery = ""
     	const selectedIEDs = filter?.selectedIEDs
     	const selectedCon = filter?.selectedConnection?.id
 
-    	return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
+        return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
     }
 
     function setSelectedNode(e: Event) {
@@ -64,6 +65,7 @@
     );
 
     function handleIEDSearch(e: Event) {
+        IEDSelectionIDs = [""]; 
         const target = e.target as HTMLInputElement;
         searchQuery = target.value;
     }
