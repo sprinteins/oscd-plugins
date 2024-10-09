@@ -1,14 +1,8 @@
-/* Css is not fully integrated after the migratoin yet, all classes related to the type-designer are stored here until a possible solution found */
-
 .columns-container {
 	display: flex;
 	gap: 1rem;
 	justify-content: space-between;
-	padding: 1rem;
-	box-sizing: border-box;
-	height: 100vh;
 	width: 100vw;
-	overflow: hidden;
 }
 
 .column {
@@ -34,36 +28,36 @@
 	height: 100%;
 	overflow: auto;
 	padding-bottom: 1rem; /* Add padding at the bottom to prevent overlap */
-  }
-
-.hide-button {
-	position: absolute;
-	top: 0.5rem;
-	right: 0.5rem;
-	background: transparent;
-	border: none;
-	cursor: pointer;
-}
-
-.hide-button .material-icons {
-	font-size: 1.25rem;
-	color: #888;
-}
-
-.hide-button:hover .material-icons {
-	color: #000;
 }
 
 .column-header {
+	display: flex;
+	justify-content: space-between; /* Space between title and close button */
+	align-items: center; /* Center vertically */
 	padding: 0.5rem;
 	border-bottom: 1px solid #ddd;
 	border-radius: 8px 8px 0 0;
 	flex-shrink: 0;
 }
 
+.hide-button {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 0; /* Remove padding to minimize hitbox */
+	width: 24px; /* Fixed width */
+	height: 24px; /* Fixed height */
+	display: flex; /* Aligns text vertically and horizontally */
+	justify-content: center;
+	align-items: center;
+}
+
+.hide-button:hover {
+	color: #000; /* Change color on hover */
+}
+
 .card {
 	padding: 1rem;
-	background-color: #fff;
 	background-color: #f5f5f5;
 	border-radius: 4px;
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -71,33 +65,43 @@
 	flex-shrink: 0;
 }
 
-
-  
-  .add-button-container {
-	display: flex; /* Use flex to center the button */
+.add-button-container {
+	display: flex;
 	justify-content: center; /* Center horizontally */
 	margin-top: auto; /* Push the button to the end of the column */
-	padding: 0.5rem 0; /* Optional padding */
-  }
+	padding: 0; /* Remove padding to avoid affecting width */
+}
 
 button.add-button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0.5rem 1rem; /* Padding for the button */
+	padding: 0.5rem; /* Padding for the button */
 	background-color: #007bff;
 	color: white;
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
 	font-size: 1rem; /* Font size */
-	width: calc(100% - 2rem); /* Full width minus padding */
-	max-width: 200px; /* Optional max width */
-  }
-  
-  button.add-button:hover {
+	width: 100%; /* Full width of the column */
+	position: relative; /* Position relative for z-index */
+	z-index: 1; /* Ensure it is on top of other elements */
+}
+
+button.add-button:hover {
 	background-color: #0056b3;
-  }
+}
+
+.collapsed-column {
+	height: 30px; /* Set a fixed height for the collapsed column */
+	display: flex;
+	align-items: center; /* Center text vertically */
+	justify-content: center; /* Center text horizontally */
+	background-color: #f0f0f0; /* Background color for the collapsed state */
+	border: 1px solid #ccc; /* Optional: border around collapsed column */
+	border-radius: 4px; /* Optional: rounded corners */
+	cursor: pointer; /* Change cursor to pointer to indicate it can be clicked */
+}
 
 @media (max-width: 768px) {
 	.columns-container {

@@ -11,6 +11,10 @@
     items: string[];
   };
 
+  type ColumnElement = {
+    element: string[];
+  }
+
   let columns: Column[] = [
     { name: ELEMENT_NAMES.bay, visible: true, items: [ELEMENT_NAMES.bay] },
     { name: ELEMENT_NAMES.ied, visible: true, items: [ELEMENT_NAMES.ied] },
@@ -49,30 +53,28 @@
 <div class="columns-container">
   {#each columns as column, index}
     <Paper class="column">
-      <IconButton
-        class="hide-button"
-        on:click={() => toggleColumnVisibility(index)}
-      >
-        <Icon class="material-icons">close</Icon>
-      </IconButton>
+      <div class="column-header">
+        <h3>{column.name}</h3>
+        <Button class="hide-button" on:click={() => toggleColumnVisibility(index)}>
+          X
+        </Button>
+      </div>
       <div class="column-content">
         {#if column.visible}
           <Paper>
-            <div class="column-header">
-              <h3>{column.name}</h3>
-            </div>
             {#each column.items as item}
               <Card class="card">{item}</Card>
             {/each}
             <div class="add-button-container">
-              <Button
-                class="add-button"
-                on:click={() => addItemToColumn(index)}
-              >
-                <Icon class="material-icons">Add new</Icon>
-              </Button>
+              <button class="add-button" on:click={() => addItemToColumn(index)}>
+                Add new
+              </button>
             </div>
           </Paper>
+        {:else}
+          <div class="collapsed-column" on:click={() => toggleColumnVisibility(index)}>
+            <h3>{column.name}</h3>
+          </div>
         {/if}
       </div>
     </Paper>
