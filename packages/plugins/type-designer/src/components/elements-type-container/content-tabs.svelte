@@ -14,7 +14,7 @@
               <h3>{column.name}</h3>
             </div>
             {#each column.items as item}
-              <Card>{item}</Card>
+              <Card class="card">{item}</Card>
             {/each}
             <Button on:click={() => addItemToColumn(index)}>
               <Icon class="material-icons">Add new</Icon>
