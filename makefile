@@ -28,6 +28,9 @@ io-center: _install ## Start the I/O center plugin in dev mode
 auto-doc: _install ## Start the AutoDoc plugin in dev mode
 	pnpm -C ./packages/plugins/auto-doc run build:watch
 
+plugin-store: _install ## Start the PluginStore plugin in dev mode
+	pnpm -C ./packages/plugins/plugin-store run build:watch
+
 fix: _install ## Fix eslint errors
 	pnpm turbo fix
 	
