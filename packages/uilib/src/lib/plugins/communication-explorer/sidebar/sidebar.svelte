@@ -90,11 +90,6 @@
             <img src={ConnectionSelector} alt="connection selector" />
             <label>
                 <span>Select an IED</span>
-                <!-- 
-                    TODO: we should remove this select
-                    I don't think it adds much user value
-                    and it is going to be hard to support
-                -->
                 <input
                     type="text"
                     placeholder="Filter IED"
