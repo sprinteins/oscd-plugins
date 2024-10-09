@@ -33,7 +33,8 @@
 	justify-content: space-between;
 	height: 100%;
 	overflow: auto;
-}
+	padding-bottom: 1rem; /* Add padding at the bottom to prevent overlap */
+  }
 
 .hide-button {
 	position: absolute;
@@ -63,36 +64,40 @@
 .card {
 	padding: 1rem;
 	background-color: #fff;
+	background-color: #f5f5f5;
 	border-radius: 4px;
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	margin-bottom: 1rem;
 	flex-shrink: 0;
 }
 
+
+  
+  .add-button-container {
+	display: flex; /* Use flex to center the button */
+	justify-content: center; /* Center horizontally */
+	margin-top: auto; /* Push the button to the end of the column */
+	padding: 0.5rem 0; /* Optional padding */
+  }
+
 button.add-button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0.5rem 1rem;
+	padding: 0.5rem 1rem; /* Padding for the button */
 	background-color: #007bff;
 	color: white;
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
-	font-size: 1rem;
-	position: absolute;
-	bottom: 1rem;
-	left: 50%;
-	transform: translate(-50%, 0);
-	text-align: center;
-	white-space: nowrap;
-	width: calc(100% - 2rem);
-	max-width: 200px;
-}
-
-button.add-button:hover {
+	font-size: 1rem; /* Font size */
+	width: calc(100% - 2rem); /* Full width minus padding */
+	max-width: 200px; /* Optional max width */
+  }
+  
+  button.add-button:hover {
 	background-color: #0056b3;
-}
+  }
 
 @media (max-width: 768px) {
 	.columns-container {
@@ -104,15 +109,4 @@ button.add-button:hover {
 		max-width: none;
 		height: auto;
 	}
-}
-
-.container {
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-	gap: 8px;
-	padding: 16px;
 }

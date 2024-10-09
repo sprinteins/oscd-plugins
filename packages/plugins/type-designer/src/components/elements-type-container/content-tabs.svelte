@@ -1,31 +1,3 @@
-<div class="columns-container">
-  {#each columns as column, index}
-    <Paper class="column">
-      <IconButton
-        class="hide-button"
-        on:click={() => toggleColumnVisibility(index)}
-      >
-        <Icon class="material-icons">close</Icon>
-      </IconButton>
-      <div class="column-content">
-        {#if column.visible}
-          <Paper>
-            <div class="column-header">
-              <h3>{column.name}</h3>
-            </div>
-            {#each column.items as item}
-              <Card class="card">{item}</Card>
-            {/each}
-            <Button on:click={() => addItemToColumn(index)}>
-              <Icon class="material-icons">Add new</Icon>
-            </Button>
-          </Paper>
-        {/if}
-      </div>
-    </Paper>
-  {/each}
-</div>
-
 <script lang="ts">
   import IconButton, { Icon } from "@smui/icon-button";
   import Card from "@smui/card";
@@ -73,3 +45,36 @@
     );
   }
 </script>
+
+<div class="columns-container">
+  {#each columns as column, index}
+    <Paper class="column">
+      <IconButton
+        class="hide-button"
+        on:click={() => toggleColumnVisibility(index)}
+      >
+        <Icon class="material-icons">close</Icon>
+      </IconButton>
+      <div class="column-content">
+        {#if column.visible}
+          <Paper>
+            <div class="column-header">
+              <h3>{column.name}</h3>
+            </div>
+            {#each column.items as item}
+              <Card class="card">{item}</Card>
+            {/each}
+            <div class="add-button-container">
+              <Button
+                class="add-button"
+                on:click={() => addItemToColumn(index)}
+              >
+                <Icon class="material-icons">Add new</Icon>
+              </Button>
+            </div>
+          </Paper>
+        {/if}
+      </div>
+    </Paper>
+  {/each}
+</div>
