@@ -1,0 +1,43 @@
+.columns-container {
+	display: flex;
+	height: 100vh;
+}
+
+.column {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	margin: 0 8px;
+	overflow-x: auto;
+}
+
+.column-header {
+	padding: 8px;
+}
+
+.hide-button {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+}
+
+.column-content {
+	flex: 1;
+	padding: 16px;
+}
+
+.toggle-buttons {
+	margin-bottom: 16px;
+}
+
+.container {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 8px;
+	padding: 16px;
+}
