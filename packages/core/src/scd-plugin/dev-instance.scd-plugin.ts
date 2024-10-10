@@ -1,3 +1,5 @@
+// UTILS
+import { serializeXmlDocument } from '../scd-xml'
 // TYPES
 import type { PluginInstance } from './instance.scd-plugin'
 
@@ -11,19 +13,15 @@ export function devPluginInstance(pluginClass: CustomElementConstructor) {
 	document.body.appendChild(pluginElement)
 
 	// Document events to simulate the OPENSCD instance actions
-	document.addEventListener('open-doc', handleUpdateDoc as EventListener)
+	document.addEventListener('open-doc', handleOpenDoc as EventListener)
 	document.addEventListener('save-doc', handleSaveDoc as EventListener)
-	//document.addEventListener('editor-action', handleUpdateDoc as EventListener)
+	document.addEventListener('editor-action', handleCreateDoc as EventListener)
 
-	function handleUpdateDoc(event: CustomEvent) {
+	function handleOpenDoc(event: CustomEvent) {
 		pluginElement.doc = event.detail.doc
 		pluginElement.docName = event.detail.docName
 	}
 
-	/**
-	 * This code comes from the original open-scd project
-	 * https://github.com/openscd/open-scd/blob/main/packages/plugins/src/menu/SaveProject.ts
-	 */
 	function handleSaveDoc() {
 		const xmlString = serializeXmlDocument(pluginElement.doc)
 
@@ -38,13 +36,11 @@ export function devPluginInstance(pluginClass: CustomElementConstructor) {
 		URL.revokeObjectURL(url)
 	}
 
-	function serializeXmlDocument(doc: XMLDocument): string {
-		const serializer = new XMLSerializer()
-		const xmlString = serializer.serializeToString(doc)
-		const xmlStringRoot = '<?xml version="1.0" encoding="UTF-8"?>'
-		return xmlString.startsWith('<?xml')
-			? xmlString
-			: // biome-ignore lint/style/useTemplate: using templates literal would make the code less readable
-				xmlStringRoot + '\n' + xmlString
+	function handleCreateDoc(event: CustomEvent) {
+		const { action } = event.detail
+		action.new.parent.insertBefore(
+			action.new.element,
+			action.new.reference ?? null
+		)
 	}
 }
