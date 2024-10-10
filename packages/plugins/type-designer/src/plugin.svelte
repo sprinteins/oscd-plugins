@@ -1,15 +1,44 @@
-<svelte:options tag={null} />
+<!-- 
+ This is needed to convert our component into a web component
+ empty tag lets openscd name the component with a specific hash
+-->
+<svelte:options customElement={null} />
+<!-- Link tags are allowed at root of a shadow dom -->
+<link rel="stylesheet" href={pluginCss} />
+<!-- Plugin logs -->
+<input type="hidden" name="package-name" value={jsonPackage.name} />
+<input type="hidden" name="package-version" value={jsonPackage.version} />
 
-<script lang="ts">
-import { TypeDesignerPlugin } from '@oscd-plugins/uilib'
-import * as pckg from '../package.json'
-
-export let doc: XMLDocument
-</script>
-
-{#if doc}
-	<TypeDesignerPlugin xmlDocument={doc} />
+{#if xmlDocument}
+<MaterialTheme>
+	<type-designer bind:this={htmlRoot}>
+		<ElementsTypeContainer />
+	</type-designer>
+</MaterialTheme>
 {/if}
 
-<input type="hidden" name="package-name" value={pckg.name} />
-<input type="hidden" name="package-version" value={pckg.version} />
+<script lang="ts">
+// STYLES
+import pluginUrl from './style.css?url'
+// COMPONENTS
+import { MaterialTheme } from '@oscd-plugins/ui'
+import { ElementsTypeContainer } from './components'
+// PACKAGE
+import jsonPackage from '../package.json'
+// STORES
+import { dataTypeTemplatesStore, xmlDocumentStore } from './stores'
+
+const baseURL = new URL(import.meta.url)
+const pluginCss = new URL(pluginUrl, baseURL).href
+
+//==== INITIALIZATION ====//
+//props
+export let xmlDocument: XMLDocument
+// refs
+let htmlRoot: HTMLElement
+
+//==== REACTIVITY ====//
+
+$: xmlDocumentStore.init(xmlDocument)
+$: dataTypeTemplatesStore.init(xmlDocument.documentElement)
+</script>
