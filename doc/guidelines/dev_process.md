@@ -13,7 +13,12 @@ We are following the [trunk-based development rules](https://trunkbaseddevelopme
 ## Sprint Backlog
 
 * When you are assigned to an issue from the Sprint Backlog, please do the following:
-	* Create a ney branch following the
+	* Create a new branch following this convention:
+		* `{type}/{scope}/{feature-name}` with :
+			* `type`: `fix` | `feat`
+			* `scope`: plugin name | `monorepo`
+			* `feature-name`: name of the feature (corresponding to the US)
+			* ie: `feat/type-designer/board-colums`
 	* Create a draft pull request
 	* Assign one or more reviewers
 	* Commit your changes

@@ -1,11 +1,8 @@
 # Code Style
 
-## Formatting
+## Formatting & Linting
 
-Do not use prettier for formatting, we use basic styling for now (which are defined in the [project settings](/.vscode/settings.json) for VSCode):
-* tabs is used for indentation
-* tabulation size = two spaces
-* default formatting for svelte file is active (+ enforce single quotes as default)
+We use [BiomeJS](https://biomejs.dev/) at the root of the project, you can find a [vscode extension](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) to use it.
 
 ## Programming
 
