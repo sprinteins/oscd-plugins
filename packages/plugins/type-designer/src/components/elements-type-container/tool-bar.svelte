@@ -20,24 +20,11 @@
 	{/each}
 </div>
 
-<style>
-	.container {
-		position: fixed;
-		bottom: 0;
-		right: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		gap: 8px;
-		padding: 16px;
-	}
-</style>
-
 <script lang="ts">
 // COMPONENTS
 import Button from '@smui/button'
 // STORES
-import { xmlDocumentStore } from '../../stores'
+import { xmlDocumentStore } from '@/stores'
 // CONSTANTS
 import { ELEMENT_NAMES } from '@oscd-plugins/core'
 // TYPES
@@ -138,3 +125,16 @@ function addElement() {
 	showFields = false
 }
 </script>
+
+<style>
+	.container {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 8px;
+		padding: 16px;
+	}
+</style>
