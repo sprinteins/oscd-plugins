@@ -13,7 +13,7 @@
 
   type ColumnElement = {
     element: string[];
-  }
+  };
 
   let columns: Column[] = [
     { name: ELEMENT_NAMES.bay, visible: true, items: [ELEMENT_NAMES.bay] },
@@ -44,9 +44,13 @@
   function addItemToColumn(index: number) {
     columns = columns.map((column, i) =>
       i === index
-        ? { ...column, items: [...column.items, column.name] }
+        ? { ...column, items: [...column.items, `${column.name} ${column.items.length + 1}`] }
         : column,
     );
+  }
+
+  function handleCardClick(item: string) {
+    console.log("Clicked:", item);
   }
 </script>
 
@@ -54,27 +58,30 @@
   {#each columns as column, index}
     <Paper class="column">
       <div class="column-header">
-        <h3>{column.name}</h3>
-        <Button class="hide-button" on:click={() => toggleColumnVisibility(index)}>
-          X
-        </Button>
+        {#if column.visible}
+          <h3>{column.name}</h3>
+        {:else}
+          <h3>{column.name} (hidden)</h3>
+        {/if}
+        <Button on:click={() => toggleColumnVisibility(index)}>X</Button>
       </div>
       <div class="column-content">
         {#if column.visible}
           <Paper>
             {#each column.items as item}
-              <Card class="card">{item}</Card>
+              <Card class="card" on:click={() => handleCardClick(item)}>
+                {item}
+                <div class="rhombus-icon"></div>
+              </Card>
             {/each}
-            <div class="add-button-container">
-              <button class="add-button" on:click={() => addItemToColumn(index)}>
-                Add new
-              </button>
-            </div>
           </Paper>
-        {:else}
-          <div class="collapsed-column" on:click={() => toggleColumnVisibility(index)}>
-            <h3>{column.name}</h3>
-          </div>
+        {/if}
+      </div>
+      <div class="add-button-container">
+        {#if column.visible}
+          <Button class="add-button" on:click={() => addItemToColumn(index)}>
+            + add {column.name}
+          </Button>
         {/if}
       </div>
     </Paper>

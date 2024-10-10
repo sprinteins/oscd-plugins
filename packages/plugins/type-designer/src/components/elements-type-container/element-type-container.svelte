@@ -1,5 +1,5 @@
 {#if $xmlDocument}
-	<ToolBar />
+	<!-- <ToolBar /> -->
 	<ContentTabs />
 {:else}
 	<p>No xml document loaded</p>

@@ -303,6 +303,9 @@ importers:
       '@smui/card':
         specifier: 7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
+      '@smui/icon-button':
+        specifier: 7.0.0
+        version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       '@smui/layout-grid':
         specifier: 7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
@@ -6146,7 +6149,7 @@ snapshots:
       '@material/card': 14.0.0
       '@smui/button': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/icon-button': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/icon-button': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
@@ -6267,7 +6270,7 @@ snapshots:
       '@material/dom': 14.0.0
       '@smui/checkbox': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/icon-button': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/icon-button': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/select': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
@@ -6764,7 +6767,7 @@ snapshots:
       '@material/snackbar': 14.0.0
       '@smui/button': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/icon-button': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/icon-button': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
@@ -10153,7 +10156,7 @@ snapshots:
       '@smui/fab': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/floating-label': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/form-field': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/icon-button': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/icon-button': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/image-list': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/layout-grid': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/line-ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
