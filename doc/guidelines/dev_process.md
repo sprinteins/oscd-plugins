@@ -21,3 +21,7 @@ We are following the [trunk-based development rules](https://trunkbaseddevelopme
 * When the issue is mature enough, mark your pull request as ready.
 
 * Once the reviewer has validated the pull request, you are allowed to merge into main and delete the created branch.
+
+## Changelog
+
+Before each iteration, a changelog should list the last changes and the upcoming feature, as described by [keepachangelog](https://keepachangelog.com/en/1.1.0/) 
