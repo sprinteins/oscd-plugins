@@ -9,7 +9,7 @@ export let doc: XMLDocument
 </script>
 
 {#if doc}
-    <PluginStore root={doc?.documentElement} />
+<PluginStore root={doc?.documentElement} />
 {/if}
 
 <input type="hidden" name="package-name" value={pckg.name} />

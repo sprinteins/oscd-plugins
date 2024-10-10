@@ -1,9 +1,9 @@
 <script lang="ts">
-    import Theme from "../../theme/theme.svelte";
+import Theme from '../../theme/theme.svelte'
 
-    export let root: Element;
+export let root: Element
 
-    let htmlRoot: HTMLElement;
+let htmlRoot: HTMLElement
 </script>
 
 <Theme>
