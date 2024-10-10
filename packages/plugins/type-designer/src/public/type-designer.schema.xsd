@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           targetNamespace="http://www.iec.ch/61850/2003/SCL"
+           xmlns="http://www.iec.ch/61850/2003/SCL"
+           xmlns:td="http://localhost:53515/type-designer.template.xsd"
+           elementFormDefault="qualified">
+
+    <!-- Root element -->
+    <xs:element name="SCL">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Header" type="Header-XSDType" minOccurs="0"/>
+                <xs:element name="DataTypeTemplates" type="DataTypeTemplates-XSDType" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="version" type="xs:string" use="optional"/>
+            <xs:attribute name="revision" type="xs:string" use="optional"/>
+            <xs:attribute name="release" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Header element -->
+    <xs:complexType name="Header-XSDType">
+        <xs:attribute name="id" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <!-- DataTypeTemplates element -->
+    <xs:complexType name="DataTypeTemplates-XSDType">
+        <xs:sequence>
+            <xs:element name="Private" type="Private-XSDType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Private element -->
+    <xs:complexType name="Private-XSDType">
+        <xs:sequence>
+            <xs:element name="SubstationTypesRoot" type="td:SubstationTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="VoltageLevelTypesRoot" type="td:VoltageLevelTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="BayTypesRoot" type="td:BayTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="IEDTypesRoot" type="td:IEDTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LogicalDeviceTypesRoot" type="td:LogicalDeviceTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LogicalNodeTypesRoot" type="td:LogicalNodeTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- SubstationTypesRoot element -->
+    <xs:complexType name="SubstationTypesRoot-XSDType">
+        <xs:sequence>
+            <xs:element name="SubstationType" type="td:SubstationType-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- SubstationType element -->
+    <xs:complexType name="SubstationType-XSDType">
+        <xs:sequence>
+            <xs:element name="VoltageLevelTypeRef" type="td:VoltageLevelTypeRe-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- VoltageLevelTypeRef element -->
+    <xs:complexType name="VoltageLevelTypeRef-XSDType">
+        <!-- Define attributes and elements for VoltageLevelTypeRef here -->
+    </xs:complexType>
+
+    <!-- VoltageLevelTypesRoot element -->
+    <xs:complexType name="VoltageLevelTypesRoot-XSDType">
+        <xs:sequence>
+            <xs:element name="VoltageLevelType" type="td:VoltageLevelType-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- VoltageLevelType element -->
+    <xs:complexType name="VoltageLevelType-XSDType">
+        <xs:sequence>
+            <xs:element name="BayTypeRef" type="td:BayTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- BayTypeRef element -->
+    <xs:complexType name="BayTypeRef-XSDType">
+        <!-- Define attributes and elements for BayTypeRef here -->
+    </xs:complexType>
+
+    <!-- BayTypesRoot element -->
+    <xs:complexType name="BayTypesRoot-XSDType">
+        <xs:sequence>
+            <xs:element name="BayType" type="td:BayType-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- BayType element -->
+    <xs:complexType name="BayType-XSDType">
+        <xs:sequence>
+            <xs:element name="IEDTypeRef" type="td:IEDTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- IEDTypeRef element -->
+    <xs:complexType name="IEDTypeRef-XSDType">
+        <!-- Define attributes and elements for IEDTypeRef here -->
+    </xs:complexType>
+
+    <!-- IEDTypesRoot element -->
+    <xs:complexType name="IEDTypesRoot-XSDType">
+        <xs:sequence>
+            <xs:element name="IEDType" type="td:IEDType-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- IEDType element -->
+    <xs:complexType name="IEDType-XSDType">
+        <xs:sequence>
+            <xs:element name="LogicalDeviceTypeRef" type="td:LogicalDeviceTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- LogicalDeviceTypeRef element -->
+    <xs:complexType name="LogicalDeviceTypeRef-XSDType">
+        <!-- Define attributes and elements for LogicalDeviceTypeRef here -->
+    </xs:complexType>
+
+    <!-- LogicalDeviceTypesRoot element -->
+    <xs:complexType name="LogicalDeviceTypesRoot-XSDType">
+        <xs:sequence>
+            <xs:element name="LogicalDeviceType" type="td:LogicalDeviceType-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- LogicalDeviceType element -->
+    <xs:complexType name="LogicalDeviceType-XSDType">
+        <xs:sequence>
+            <xs:element name="LogicalNodeTypeRef" type="td:LogicalNodeTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- LogicalNodeTypeRef element -->
+    <xs:complexType name="LogicalNodeTypeRef-XSDType">
+        <!-- Define attributes and elements for LogicalNodeTypeRef here -->
+    </xs:complexType>
+
+    <!-- LogicalNodeTypesRoot element -->
+    <xs:complexType name="LogicalNodeTypesRoot-XSDType">
+        <xs:sequence>
+            <xs:element name="LogicalNodeType" type="td:LogicalNodeType-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- LogicalNodeType element -->
+    <xs:complexType name="LogicalNodeType-XSDType">
+        <!-- Define attributes and elements for LogicalNodeType here -->
+    </xs:complexType>
+
+</xs:schema>
