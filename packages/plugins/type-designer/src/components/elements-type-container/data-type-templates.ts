@@ -11,3 +11,4 @@ export type BayType = DataTypeTemplate & BayElementAttributes
 export type IEDType = DataTypeTemplate & IEDElementAttributes;
 export type VoltageLevelType = DataTypeTemplate & VoltageLevelElementAttributes;
 export type SubstationType = DataTypeTemplate & SubstationElementAttributes;
+export type DataTypeTemplates = LDeviceType | BayType | IEDType | VoltageLevelType | SubstationType;
