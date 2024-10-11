@@ -1,3 +1,5 @@
 # AutoDoc
 
+The AutoDoc Plugin is a standalone plugin that allows users to create structured document templates. Users can dynamically add custom elements such as headers, paragraphs (with a rich text editor), and images to their templates. Additionally, the plugin will parse scd files programmatically to generate elements such as Network Hardware Configuration, & Function Overview to name a few, which in turn will be displayed in the frontend for the user to pick and configure. The completed template, including the added elements, will be stored locally in the scd file. Users can create templates from scratch or load pre-existing templates for further customization. Furthermore, users can generate documents from existing templates.
+
 Refer to [AutoDoc UiLib folder](../../uilib/src/lib/plugins/auto-doc/) to see the source code.
