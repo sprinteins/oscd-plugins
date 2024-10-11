@@ -1,37 +1,34 @@
 <script lang="ts">
-  import IconButton, { Icon } from "@smui/icon-button";
   import Card from "@smui/card";
   import Paper from "@smui/paper";
   import { ELEMENT_NAMES } from "@oscd-plugins/core";
   import Button from "@smui/button";
+  import type { DataTypeTemplate } from "./data-type-templates";
+    import { createNewItem } from "./create-new-item";
 
   type Column = {
     name: string;
     visible: boolean;
-    items: string[];
-  };
-
-  type ColumnElement = {
-    element: string[];
+    items: DataTypeTemplate[];
   };
 
   let columns: Column[] = [
-    { name: ELEMENT_NAMES.bay, visible: true, items: [ELEMENT_NAMES.bay] },
-    { name: ELEMENT_NAMES.ied, visible: true, items: [ELEMENT_NAMES.ied] },
+    { name: ELEMENT_NAMES.bay, visible: true, items: [] },
+    { name: ELEMENT_NAMES.ied, visible: true, items: [] },
     {
       name: ELEMENT_NAMES.substation,
       visible: true,
-      items: [ELEMENT_NAMES.substation],
+      items: [],
     },
     {
       name: ELEMENT_NAMES.lDevice,
       visible: true,
-      items: [ELEMENT_NAMES.lDevice],
+      items: [],
     },
     {
       name: ELEMENT_NAMES.voltageLevel,
       visible: true,
-      items: [ELEMENT_NAMES.voltageLevel],
+      items: [],
     },
   ];
 
@@ -42,11 +39,15 @@
   }
 
   function addItemToColumn(index: number) {
-    columns = columns.map((column, i) =>
-      i === index
-        ? { ...column, items: [...column.items, `${column.name} ${column.items.length + 1}`] }
-        : column,
-    );
+    const column = columns[index];
+    const itemCount = column.items.length;
+    const newItem = createNewItem(column.name, itemCount);
+
+    if (newItem) {
+      columns = columns.map((col, i) =>
+        i === index ? { ...col, items: [...col.items, newItem] } : col,
+      );
+    }
   }
 
   function handleCardClick(item: string) {
@@ -69,8 +70,8 @@
         {#if column.visible}
           <Paper>
             {#each column.items as item}
-              <Card class="card" on:click={() => handleCardClick(item)}>
-                {item}
+              <Card class="card" on:click={() => handleCardClick(JSON.stringify(item))}>
+                {item.name}
                 <div class="rhombus-icon"></div>
               </Card>
             {/each}
