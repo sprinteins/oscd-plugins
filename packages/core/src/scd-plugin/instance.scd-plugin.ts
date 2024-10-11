@@ -1,3 +1,5 @@
+import { pluginTag } from './utils.scd-plugin'
+
 // TYPES
 import type { SvelteComponent, ComponentType } from 'svelte'
 
@@ -24,7 +26,8 @@ export class PluginInstance extends HTMLElement {
 		this.pluginInstance = new this.pluginComponent({
 			target: this.localShadowRoot,
 			props: {
-				xmlDocument: this.localDoc
+				xmlDocument: this.localDoc,
+				pluginHostElement: this
 			}
 		})
 	}
