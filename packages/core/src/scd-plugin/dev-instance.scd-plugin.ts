@@ -15,7 +15,7 @@ export function devPluginInstance(pluginClass: CustomElementConstructor) {
 	// Document events to simulate the OPENSCD instance actions
 	document.addEventListener('open-doc', handleOpenDoc as EventListener)
 	document.addEventListener('save-doc', handleSaveDoc as EventListener)
-	document.addEventListener('editor-action', handleCreateDoc as EventListener)
+	document.addEventListener('editor-action', handleEdition as EventListener)
 
 	function handleOpenDoc(event: CustomEvent) {
 		pluginElement.doc = event.detail.doc
@@ -36,7 +36,8 @@ export function devPluginInstance(pluginClass: CustomElementConstructor) {
 		URL.revokeObjectURL(url)
 	}
 
-	function handleCreateDoc(event: CustomEvent) {
+	// for now handling only creation
+	function handleEdition(event: CustomEvent) {
 		const { action } = event.detail
 		action.new.parent.insertBefore(
 			action.new.element,
