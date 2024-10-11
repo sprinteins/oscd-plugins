@@ -1,9 +1,10 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// DO NOT MODIFY THIS FILE DIRECTLY !	MAKE A PR TO MODIFY THE CORE LIBRARY.																	//
-// AS FOR NOW THE OPENSCD EVENTS PACKAGE IS NOT PUBLISHED																										//
-// WE USE A COPY OF ITS CORE EDITOR FUNCTIONALITIES	- THIS IS THE V1 MARK AS DEPRECATED BUT STILL IN USE		//
-// SEE SOURCE  https://github.com/openscd/open-scd/blob/main/packages/core/foundation/deprecated/editor.ts	//
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// DO NOT MODIFY THIS FILE DIRECTLY !	MAKE A PR TO MODIFY THE CORE LIBRARY.
+// AS FOR NOW THE OPENSCD EVENTS PACKAGE IS NOT PUBLISHED
+// WE USE A COPY OF ITS CORE EDITOR FUNCTIONALITIES	- THIS IS THE V1 MARK AS DEPRECATED BUT STILL IN USE
+// SEE SOURCE  https://github.com/openscd/open-scd/blob/main/packages/core/foundation/deprecated/editor.ts
+// THIS FILE IS IGNORED BY BIOME
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export type Initiator = 'user' | 'system' | 'undo' | 'redo' | string
 

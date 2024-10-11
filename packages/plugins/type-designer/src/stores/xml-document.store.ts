@@ -1,24 +1,22 @@
 // SVELTE
 import { writable, get } from 'svelte/store'
 // OPENSCD
-import { createElement, newActionEvent } from '@oscd-plugins/core'
+import { createElement } from '@oscd-plugins/core'
 // STORES
-import { dataTypeTemplatesStore } from './index'
+import { dataTypeTemplatesStore, pluginStore, eventStore } from './index'
 // TYPES
 import type { DataTypeTemplates } from '@oscd-plugins/core'
 
-// STATE
-const xmlDocument = writable<XMLDocument>()
+//====== STORES ======//
+const { xmlDocument } = pluginStore
 
-// ACTIONS
-function init(newXMLDocument: XMLDocument) {
-	xmlDocument.set(newXMLDocument)
-}
+//====== STATE ======//
+
+//====== ACTIONS ======//
 
 function addElementToXmlDocument(
 	newElementTagName: DataTypeTemplates.AllowedTag,
-	elementAttributes: Record<string, string | null>,
-	pluginHtmlContext: HTMLElement
+	elementAttributes: Record<string, string | null>
 ) {
 	const { dataTypeTemplatesRootElement } = dataTypeTemplatesStore
 
@@ -30,29 +28,12 @@ function addElementToXmlDocument(
 
 	const parent =
 		get(dataTypeTemplatesRootElement)?.element ??
-		createDataTypeTemplateElement(pluginHtmlContext)
+		createDataTypeTemplateElement()
 
-	return createAndDispatchActionEvent(parent, newElement, pluginHtmlContext)
+	return eventStore.createAndDispatchActionEvent(parent, newElement)
 }
 
-function createAndDispatchActionEvent(
-	parent: Element,
-	element: Element,
-	pluginHtmlContext: HTMLElement
-) {
-	const event = newActionEvent({
-		new: {
-			parent,
-			element
-		}
-	})
-
-	pluginHtmlContext.dispatchEvent(event)
-}
-
-function createDataTypeTemplateElement(
-	pluginHtmlContext: HTMLElement
-): Element {
+function createDataTypeTemplateElement(): Element {
 	const newDataTypeTemplatesElement = createElement(
 		get(xmlDocument),
 		'DataTypeTemplates',
@@ -62,10 +43,9 @@ function createDataTypeTemplateElement(
 		element: newDataTypeTemplatesElement
 	})
 
-	createAndDispatchActionEvent(
+	eventStore.createAndDispatchActionEvent(
 		get(xmlDocument).documentElement,
-		newDataTypeTemplatesElement,
-		pluginHtmlContext
+		newDataTypeTemplatesElement
 	)
 
 	return newDataTypeTemplatesElement
@@ -75,6 +55,5 @@ export const xmlDocumentStore = {
 	//state
 	xmlDocument,
 	//actions
-	init,
 	addElementToXmlDocument
 }

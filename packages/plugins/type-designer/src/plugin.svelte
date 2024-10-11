@@ -23,15 +23,19 @@ import { ElementsTypeContainer } from './components'
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES
-import { dataTypeTemplatesStore, xmlDocumentStore } from './stores'
+import { dataTypeTemplatesStore, pluginStore } from './stores'
 
 //==== INITIALIZATION ====//
 //props
 export let xmlDocument: XMLDocument
+export let pluginHostElement: Element
 
 //==== REACTIVITY ====//
 
-$: xmlDocumentStore.init(xmlDocument)
+$: pluginStore.init({
+	newXMLDocument: xmlDocument,
+	newPluginHostElement: pluginHostElement
+})
 $: dataTypeTemplatesStore.init(xmlDocument.documentElement)
 </script>
 	
