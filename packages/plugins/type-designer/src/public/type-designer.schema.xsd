@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-           targetNamespace="http://www.iec.ch/61850/2003/SCL"
-           xmlns="http://www.iec.ch/61850/2003/SCL"
-           xmlns:td="http://localhost:53515/type-designer.template.xsd"
-           elementFormDefault="qualified">
+	<xs:schema
+		xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		targetNamespace="http://www.iec.ch/61850/2003/SCL"
+		xmlns="http://www.iec.ch/61850/2003/SCL"
+		xmlns:td="$(TYPE_DESIGNER_XSD_URL)"
+		elementFormDefault="qualified"
+	>
 
     <!-- Root element -->
     <xs:element name="SCL">
@@ -33,13 +35,14 @@
     <!-- Private element -->
     <xs:complexType name="Private-XSDType">
         <xs:sequence>
-            <xs:element name="SubstationTypesRoot" type="td:SubstationTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="VoltageLevelTypesRoot" type="td:VoltageLevelTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="BayTypesRoot" type="td:BayTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="IEDTypesRoot" type="td:IEDTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="LogicalDeviceTypesRoot" type="td:LogicalDeviceTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="LogicalNodeTypesRoot" type="td:LogicalNodeTypesRoot-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="SubstationTypesRoot" type="td:SubstationTypesRoot-XSDType" />
+            <xs:element name="VoltageLevelTypesRoot" type="td:VoltageLevelTypesRoot-XSDType" />
+            <xs:element name="BayTypesRoot" type="td:BayTypesRoot-XSDType" />
+            <xs:element name="IEDTypesRoot" type="td:IEDTypesRoot-XSDType" />
+            <xs:element name="LogicalDeviceTypesRoot" type="td:LogicalDeviceTypesRoot-XSDType" />
+            <xs:element name="LogicalNodeTypesRoot" type="td:LogicalNodeTypesRoot-XSDType" />
         </xs:sequence>
+				<xs:attribute name="name" type="xs:string" fixed="Type designer Plugin"/>
     </xs:complexType>
 
     <!-- SubstationTypesRoot element -->
@@ -47,6 +50,9 @@
         <xs:sequence>
             <xs:element name="SubstationType" type="td:SubstationType-XSDType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
+				<xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="desc" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- SubstationType element -->
@@ -58,7 +64,7 @@
 
     <!-- VoltageLevelTypeRef element -->
     <xs:complexType name="VoltageLevelTypeRef-XSDType">
-        <!-- Define attributes and elements for VoltageLevelTypeRef here -->
+        <xs:attribute name="to" type="xs:string" use="required"/>
     </xs:complexType>
 
     <!-- VoltageLevelTypesRoot element -->
@@ -73,11 +79,17 @@
         <xs:sequence>
             <xs:element name="BayTypeRef" type="td:BayTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
+				<xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="desc" type="xs:string" use="optional"/>
+        <xs:attribute name="voltage" type="xs:string" use="optional"/>
+        <xs:attribute name="stages" type="xs:string" use="optional"/>
+        <xs:attribute name="frequency" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- BayTypeRef element -->
     <xs:complexType name="BayTypeRef-XSDType">
-        <!-- Define attributes and elements for BayTypeRef here -->
+        <xs:attribute name="to" type="xs:string" use="required"/>
     </xs:complexType>
 
     <!-- BayTypesRoot element -->
@@ -92,11 +104,15 @@
         <xs:sequence>
             <xs:element name="IEDTypeRef" type="td:IEDTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
+				<xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="desc" type="xs:string" use="optional"/>
+        <xs:attribute name="type" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- IEDTypeRef element -->
     <xs:complexType name="IEDTypeRef-XSDType">
-        <!-- Define attributes and elements for IEDTypeRef here -->
+        <xs:attribute name="to" type="xs:string" use="required"/>
     </xs:complexType>
 
     <!-- IEDTypesRoot element -->
@@ -111,11 +127,15 @@
         <xs:sequence>
             <xs:element name="LogicalDeviceTypeRef" type="td:LogicalDeviceTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
+				<xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="desc" type="xs:string" use="optional"/>
+        <xs:attribute name="type" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- LogicalDeviceTypeRef element -->
     <xs:complexType name="LogicalDeviceTypeRef-XSDType">
-        <!-- Define attributes and elements for LogicalDeviceTypeRef here -->
+        <xs:attribute name="to" type="xs:string" use="required"/>
     </xs:complexType>
 
     <!-- LogicalDeviceTypesRoot element -->
@@ -130,11 +150,16 @@
         <xs:sequence>
             <xs:element name="LogicalNodeTypeRef" type="td:LogicalNodeTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
+				<xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="desc" type="xs:string" use="optional"/>
+        <xs:attribute name="function" type="xs:string" use="optional"/>
+        <xs:attribute name="stage" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- LogicalNodeTypeRef element -->
     <xs:complexType name="LogicalNodeTypeRef-XSDType">
-        <!-- Define attributes and elements for LogicalNodeTypeRef here -->
+        <xs:attribute name="to" type="xs:string" use="required"/>
     </xs:complexType>
 
     <!-- LogicalNodeTypesRoot element -->
@@ -146,7 +171,9 @@
 
     <!-- LogicalNodeType element -->
     <xs:complexType name="LogicalNodeType-XSDType">
-        <!-- Define attributes and elements for LogicalNodeType here -->
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="desc" type="xs:string" use="optional"/>
     </xs:complexType>
 
 </xs:schema>
