@@ -1,8 +1,8 @@
 <script lang="ts">
   import Card from "@smui/card";
   import Paper from "@smui/paper";
-  import { ELEMENT_NAMES } from "@oscd-plugins/core";
   import Button from "@smui/button";
+  import { ELEMENT_NAMES } from "@oscd-plugins/core";
   import type { DataTypeTemplate } from "./data-type-templates";
     import { createNewItem } from "./create-new-item";
 
