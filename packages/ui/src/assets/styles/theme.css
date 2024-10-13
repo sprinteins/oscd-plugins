@@ -29,7 +29,7 @@
 
 tscd-theme {
 	/* OPEN SCD INSTANCE HEADER */
-	--header-height: 112px;
+	--header-height: 50px;
 
 	font-family: "Roboto", sans-serif;
 	height: calc(100vh - var(--header-height));
