@@ -89,6 +89,44 @@
         <div class="ied-nodes">
             <img src={ConnectionSelector} alt="connection selector" />
             <label>
+                <span>Select an Bay</span>
+                <input
+                    type="text"
+                    placeholder="Filter Bay"
+                    bind:value={searchQuery}
+                    on:input={handleIEDSearch}
+                />
+                <select
+                    value={IEDSelectionIDs[0] ?? ""}
+                    on:change={setSelectedNode}
+                >
+                    <option value="" disabled>
+                        {#if searchQuery === ""}
+                            Select an Bay
+                        {:else}
+                            {filteredNodes.length} Bay(s) found
+                        {/if}
+                    </option>
+                    {#if filteredNodes.length > 0}
+                        {#each filteredNodes as node}
+                            <option
+                                selected={(IEDSelectionIDs[0] ?? "") ===
+                                    node.id}
+                                value={node.id}
+                            >
+                                {node.label}
+                            </option>
+                        {/each}
+                    {/if}
+                </select>
+            </label>
+        </div>
+
+        <hr class="seperation-line" />
+
+        <div class="ied-nodes">
+            <img src={ConnectionSelector} alt="connection selector" />
+            <label>
                 <span>Select an IED</span>
                 <input
                     type="text"
