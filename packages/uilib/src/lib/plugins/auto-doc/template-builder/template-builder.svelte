@@ -4,7 +4,7 @@
   import TextElement from "../elements/text/text-element.svelte";
 
 
-  let elements : Element[]= []
+  let elements : Element[] = []
 
   type Element = {
     id: string,
@@ -28,19 +28,30 @@
   }
 
 
+  function removeElement(id: string){
+    elements = elements.filter(e => e.id !== id);
+  }
+
+
 </script>
 
 <document-builder>
 
-  <div class="elements-list">
+  <div class="elements-container">
     {#each elements as element (element.id)}
-      {#if element.type === 'heading'}
-        <!-- <HeadingElement bind:content={element.data} /> -->
-      {:else if element.type === 'text'}
-        <TextElement bind:content={element.content} />
-      {:else if element.type === 'image'}
-        <ImageElement bind:src={element.content} />
-      {/if}
+      <div class="elements-list">
+        {#if element.type === 'heading'}
+          <!-- <HeadingElement bind:content={element.data} /> -->
+        {:else if element.type === 'text'}
+          <TextElement bind:content={element.content} />
+        {:else if element.type === 'image'}
+          <ImageElement bind:src={element.content} />
+        {/if}
+      </div>
+
+      <div>
+        <button on:click={()=> removeElement(element.id)}>remove</button>
+      </div>
     {/each}
   </div>
 
@@ -52,15 +63,21 @@
 </document-builder>
 
 <style>
-  .elements-list,
+  .elements-container{
+    display: grid;
+    grid-template-columns: 94% 5%;
+    gap: 1rem
+  }
+
+  .elements-list{
+    display: flex;
+    flex-direction: column;
+  }
+
   .add-buttons{
+		margin-top: 2rem;
     display: flex;
 		gap: 1rem;
 	}
-  
-  .elements-list{
-    flex-direction: column;
-    
-  }
   
 </style>
