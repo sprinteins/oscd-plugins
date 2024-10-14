@@ -1,21 +1,19 @@
 {#if $xmlDocument}
-	<ContentTabs {scdQueries} />
+	<ContentTabs {service} />
 {:else}
 	<p>No xml document loaded</p>
 {/if}
 
 <script lang="ts">
-	import { DataTypeTemplatesQueries } from "@oscd-plugins/core";
+	import { DataTypeTemplatesService } from "@oscd-plugins/core";
 
 	// STORES
 	import { xmlDocumentStore } from "../../stores";
-	import ContentTabs from "./content-tabs.svelte";
+	import ContentTabs from "./columns.svelte";
 	import { get } from "svelte/store";
 
 	//stores
 	const { xmlDocument } = xmlDocumentStore;
 
-	const scdQueries = new DataTypeTemplatesQueries(
-		get(xmlDocument).documentElement,
-	);
+	const service = new DataTypeTemplatesService(get(xmlDocument).documentElement);
 </script>
