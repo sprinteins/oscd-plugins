@@ -1,14 +1,17 @@
 <script lang="ts">
 import Theme from '../../theme/theme.svelte'
-//import { TemplateResult } from 'lit-element'
 import { Checkbox } from '../../components/checkbox/'
 import Textfield from '@smui/textfield'
 import Button, { Group, GroupItem, Label, Icon } from '@smui/button'
+import Menu from '@smui/menu'
+import List, { Item, Separator, Text } from '@smui/list'
 import IconArrowDropDown from '../../components/icons/icon-arrow-drop-down.svelte'
 import Snackbar from '@smui/snackbar'
 export let root: Element
 
 let htmlRoot: HTMLElement
+
+// #region Plugin
 
 type PluginKind = 'editor' | 'menu' | 'validator'
 const menuPosition = ['top', 'middle', 'bottom'] as const
@@ -42,19 +45,30 @@ function storePlugins(plugins: Array<Plugin>) {
 	localStorage.setItem('plugins', JSON.stringify(plugins.map(withoutContent)))
 }
 
-function managePlugin(plugin: Plugin, enabled: boolean) {
+// Enables/disables plugin by toggling the "installed" property.
+function togglePluginState(plugin: Plugin, isEnabled: boolean) {
 	const currentPlugins = storedPlugins()
-	currentPlugins.find((it) => it.name === plugin.name).installed = enabled
+	currentPlugins.find((it) => it.name === plugin.name).installed = isEnabled
 	storePlugins(currentPlugins)
 	plugins = currentPlugins
-
-	if (enabled) installedSnackbar.open()
-	else uninstalledSnackbar.open()
+	plugin.installed = isEnabled
+	notificationSnackbar.open()
 }
+
+// Completely removes plugin from local browser cache.
+function uninstallPlugin(plugin: Plugin) {
+	const currentPlugins = storedPlugins()
+	const updatedPlugins = currentPlugins.filter(
+		(it) => it.name !== plugin.name
+	)
+	storePlugins(updatedPlugins)
+	plugins = updatedPlugins
+}
+
+let plugins = storedPlugins()
 
 let showOnlyInstalled = false
 let searchFilter = ''
-let plugins = storedPlugins()
 
 $: filteredPlugins = plugins
 	.filter(
@@ -63,11 +77,25 @@ $: filteredPlugins = plugins
 	.filter((plugin) =>
 		plugin.name.toLowerCase().includes(searchFilter.toLowerCase())
 	)
+	.filter((plugin) => plugin.name !== 'PluginStore')
 
-let installedSnackbar: Snackbar
-let uninstalledSnackbar: Snackbar
+// #endregion
 
-//let manageMenu: Menu
+// #region UI
+let notificationSnackbar: Snackbar
+
+let currentPluginAnchor: Element
+let menus: Menu[]
+$: menus = filteredPlugins.map(() => null)
+$: menuStates = filteredPlugins.map(() => false)
+
+function openPluginMenu(e, index: number) {
+	currentPluginAnchor = e.currentTarget
+	menuStates = menuStates.map(() => false)
+	menuStates[index] = true
+}
+
+// #endregion
 </script>
 
 <Theme>
@@ -80,25 +108,44 @@ let uninstalledSnackbar: Snackbar
             bind:value={searchFilter}
             />
         </plugin-store-toolbar>
-        <plugin-store-items>
-            {#each filteredPlugins as plugin}
+        <plugin-store-items> 
+            {#each filteredPlugins as plugin, index}
             <plugin-store-item>
                 <plugin-store-item--title>{plugin.name}</plugin-store-item--title>
                 {#if plugin.installed } 
                 <Group variant="raised">
-                <Button on:click={() => managePlugin(plugin, false)} variant="outlined">
-                    <Label>Enabled</Label>
-                </Button>
-                <div use:GroupItem>
-                     <Button on:click={() => console.log("clicked")} variant="outlined" style="min-width: 18px;">
-                         <IconArrowDropDown />
-                     </Button> 
-                </div>
+                    {#if plugin.official}
+                        <Button on:click={() => togglePluginState(plugin, false) } variant="outlined" style="min-width: 148px;">
+                            <Label>Disable</Label>
+                        </Button>
+                    {:else}
+                        <Button on:click={() => togglePluginState(plugin, false)} variant="outlined" style="min-width: 102px;">
+                            <Label>Disable</Label>
+                        </Button>
+                        <div use:GroupItem>
+                            <Button on:click={(e) => openPluginMenu(e, index)} variant="outlined" style="min-width: 18px;">
+                                <IconArrowDropDown />
+                            </Button> 
+                            <Menu bind:this={menus[index]} anchorElement={currentPluginAnchor} open={menuStates[index]}>
+                                <List>
+                                    <Item on:SMUI:action={() => uninstallPlugin(plugin) }>
+                                        <Text>Uninstall</Text>
+                                    </Item>
+                                </List>
+                            </Menu>
+                        </div>
+                    {/if}
                 </Group>
                 {:else}
-                <Button on:click={() => managePlugin(plugin, true) } variant="raised" style="min-width:148px;">
-                    <Label>Install</Label>
-                </Button>
+                    {#if plugin.official}
+                    <Button on:click={() => togglePluginState(plugin, true) } variant="raised" style="min-width: 148px;">
+                        <Label>Enable</Label>
+                    </Button>
+                    {:else}
+                    <Button on:click={() => togglePluginState(plugin, true) } variant="raised" style="min-width: 148px;">
+                        <Label>Install</Label>
+                    </Button>
+                    {/if}
                 {/if}
             </plugin-store-item> 
             {/each}
@@ -106,11 +153,8 @@ let uninstalledSnackbar: Snackbar
             <p>No plugins found.</p>
             {/if}
         </plugin-store-items>
-        <Snackbar bind:this={installedSnackbar}>
-            <Label>Installed plugin. Refresh page to see changes.</Label>
-        </Snackbar>
-        <Snackbar bind:this={uninstalledSnackbar}>
-            <Label>Uninstalled plugin.</Label>
+        <Snackbar bind:this={notificationSnackbar}>
+            <Label>Refresh page to see changes.</Label>
         </Snackbar>
     </plugin-store>
 </Theme>
