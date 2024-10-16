@@ -6,9 +6,11 @@
 
   let elements : Element[] = []
 
+  type ElementType = "text" | "image" | "heading"
+
   type Element = {
     id: string,
-    type: "image" | "text" | "heading"
+    type: ElementType
     content: string | undefined
   }
 
@@ -17,7 +19,7 @@
     return `${crypto.randomUUID()}|${(Math.random() * 50)}`
   }
 
-  function addElement(type: "image" | "text" | "heading"){
+  function addElement(type: ElementType){
     const newElement : Element = {
       id: generateRandomId(),
       type: type,
