@@ -9,21 +9,24 @@ export default defineConfig({
 	plugins: [
 		svelte(),
 		cssInjectedByJsPlugin({
-            styleId: process.env.npm_package_name,
-            injectCodeFunction: function injectCodeCustomRunTimeFunction(cssCode: string, options: any) {
-                if(!globalThis.pluginStyle){
-                    globalThis.pluginStyle = {}
-                }
-                globalThis.pluginStyle[options.styleId] = cssCode
-            }
-        }),
+			styleId: process.env.npm_package_name,
+			injectCodeFunction: function injectCodeCustomRunTimeFunction(
+				cssCode: string,
+				options: any
+			) {
+				if (!globalThis.pluginStyle) {
+					globalThis.pluginStyle = {}
+				}
+				globalThis.pluginStyle[options.styleId] = cssCode
+			}
+		})
 	],
-	build:{
-		lib:{
-			entry: "src/plugin.ts",
+	build: {
+		lib: {
+			entry: 'src/plugin.ts',
 			formats: ['es'],
-			fileName: "index",
+			fileName: 'index'
 		},
-		sourcemap: isDevelopment ? "inline" : false,
+		sourcemap: isDevelopment ? 'inline' : false
 	}
 })

@@ -1,1 +1,1 @@
-export { default as TypeDesigner } from "./type-designer.svelte"
+export { default as TypeDesignerPlugin } from './type-designer-plugin.svelte'
