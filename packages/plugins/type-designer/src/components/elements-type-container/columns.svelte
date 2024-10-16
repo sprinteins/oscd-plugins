@@ -16,6 +16,8 @@
     type DataTypeTemplatesService,
   } from "@oscd-plugins/core";
     import ContentCard from "./content-card.svelte";
+    import IconWrapper from "@oscd-plugins/ui/src/components/icons/icon-wrapper.svelte";
+    import IconButton from "@smui/icon-button";
 
   export let service: DataTypeTemplatesService;
 
@@ -58,7 +60,9 @@
         {:else}
           <h2>{column.name} (hidden)</h2>
         {/if}
-        <Button on:click={() => toggleColumnVisibility(index)}>X</Button>
+        <IconButton on:click={() => toggleColumnVisibility(index)}>
+          <IconWrapper icon={column.visible ? "visibility" : "visibility_off"} fillColor="rgb(81, 159, 152)" />
+        </IconButton>
       </div>
       <ContentCard column={column} />
       <div class="add-button-container">
