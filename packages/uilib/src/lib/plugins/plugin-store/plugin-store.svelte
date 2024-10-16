@@ -98,6 +98,10 @@ function openPluginMenu(e, index: number) {
 	menuStates[index] = true
 }
 
+function alternateRowColors(index: number) {
+	return `background: rgba(0, 0, 0, ${index % 2 === 0 ? '0' : '0.03'});`
+}
+
 // #endregion
 </script>
 
@@ -125,7 +129,7 @@ aria-describedby="plugin-store-content">
         </plugin-store-toolbar>
         <plugin-store-items> 
             {#each filteredPlugins as plugin, index}
-            <plugin-store-item style={`background: rgba(0, 0, 0, ${index % 2 === 0 ? "0" : "0.03"});`}>
+            <plugin-store-item style={alternateRowColors(index)}>
                 <plugin-store-item-meta>
                 <span style="font-size: 0.85rem;">Author</span>
                 <span><strong>{plugin.name}</strong></span>
