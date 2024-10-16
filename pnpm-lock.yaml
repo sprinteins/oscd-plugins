@@ -310,6 +310,43 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1(vite@4.3.1(@types/node@18.11.18)(sass@1.62.0))
 
+  packages/plugins/plugin-store:
+    dependencies:
+      '@oscd-plugins/uilib':
+        specifier: ../../uilib
+        version: link:../../uilib
+      concurrently:
+        specifier: ^7.6.0
+        version: 7.6.0
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: ^3.1.1
+        version: 3.1.2(svelte@4.2.19)(vite@5.4.3(@types/node@18.11.18)(sass@1.62.0))
+      '@tsconfig/svelte':
+        specifier: ^5.0.4
+        version: 5.0.4
+      sass:
+        specifier: ^1.61.0
+        version: 1.62.0
+      svelte:
+        specifier: ^4.2.18
+        version: 4.2.19
+      svelte-check:
+        specifier: ^3.8.5
+        version: 3.8.6(postcss@8.4.45)(sass@1.62.0)(svelte@4.2.19)
+      tslib:
+        specifier: ^2.6.3
+        version: 2.7.0
+      typescript:
+        specifier: ^5.5.3
+        version: 5.5.4
+      vite:
+        specifier: ^5.4.1
+        version: 5.4.3(@types/node@18.11.18)(sass@1.62.0)
+      vite-plugin-css-injected-by-js:
+        specifier: ^3.1.1
+        version: 3.1.1(vite@5.4.3(@types/node@18.11.18)(sass@1.62.0))
+
   packages/plugins/type-designer:
     dependencies:
       '@oscd-plugins/uilib':
@@ -410,12 +447,18 @@ importers:
       '@smui/common':
         specifier: 7.0.0-beta.8
         version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/dialog':
+        specifier: ^7.0.0
+        version: 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/icon-button':
         specifier: 7.0.0-beta.8
         version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/list':
         specifier: 7.0.0-beta.8
         version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/menu':
+        specifier: ^7.0.0
+        version: 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/segmented-button':
         specifier: 7.0.0-beta.8
         version: 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
@@ -479,7 +522,7 @@ importers:
         version: 6.11.0(eslint@8.31.0)(typescript@5.2.2)
       '@vitest/coverage-c8':
         specifier: ^0.30.1
-        version: 0.30.1(vitest@0.30.1(@vitest/ui@0.30.1)(jsdom@21.1.1)(sass@1.62.0))
+        version: 0.30.1(vitest@0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2)))
       '@vitest/ui':
         specifier: ^0.30.1
         version: 0.30.1
@@ -497,7 +540,7 @@ importers:
         version: 3.55.0
       svelte-check:
         specifier: ^3.0.1
-        version: 3.0.4(postcss@8.4.21)(sass@1.62.0)(svelte@3.55.0)
+        version: 3.0.4(postcss@8.4.45)(sass@1.62.0)(svelte@3.55.0)
       tslib:
         specifier: ^2.4.1
         version: 2.4.1
@@ -512,7 +555,7 @@ importers:
         version: 1.0.9
       vitest:
         specifier: ^0.30.1
-        version: 0.30.1(@vitest/ui@0.30.1)(jsdom@21.1.1)(sass@1.62.0)
+        version: 0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2))
 
 packages:
 
@@ -1400,14 +1443,17 @@ packages:
   '@smui/circular-progress@7.0.0-beta.8':
     resolution: {integrity: sha512-oKBilgNqkJalG+nv6L12/3YHGJKz9LsFHhxhNzbv2M0Yen+MQZCf5hVTsRhdRTfhpHJBvqXDqiZ8Ec2Gs5oXRA==}
 
+  '@smui/common@7.0.0':
+    resolution: {integrity: sha512-/JUf25KMIDLFNfiuMSMs2g7dEZZFUnDJDxpbT3FlGEY/HKoEf0W9GnbmIOzPje1wxW9ajKHN2SIYDPx9so1vnw==}
+
   '@smui/common@7.0.0-beta.8':
     resolution: {integrity: sha512-IeU7KqE+EcvEm3fkEKuvHY2MkNJm1hpl1sHlnVWFSrS8D1+NypwpuQWnOPDgLYRq/5zhm8ZCDkvX1G1ZiXUC7A==}
 
   '@smui/data-table@7.0.0-beta.8':
     resolution: {integrity: sha512-sBmgQccJ4qasqbYIJD6fldu486lGPW38uLDgukjXDOuB9185f2pdgUhltCbP+sz+svHZDg/QXn0qEA4nks1Tbw==}
 
-  '@smui/dialog@7.0.0-beta.8':
-    resolution: {integrity: sha512-BTUgj8ZKe9xQU1/kfgyZDtxf3kHtog3/2dTiYCm9M1fJAqc5tUXS+SaWI+XoD/F9g2dm9JKBCp3e5nnNoAv0vQ==}
+  '@smui/dialog@7.0.0':
+    resolution: {integrity: sha512-F6lxwiGoc9ga0btsnpMWIYXPUXAKS0Ewa3CQH9HUPumqCzImTIlsGWL8fiAP3feVjRK+InRSaryZz0eJFZLo/A==}
 
   '@smui/drawer@7.0.0-beta.8':
     resolution: {integrity: sha512-YLUzRd9x5wXhAyzWR2SvojgSG3tjdtWFj7mC5W6GYfqdMe3J+qIfWfVh/ytgzaUPcR9sNPorD4AbxVh6psoK9w==}
@@ -1436,14 +1482,20 @@ packages:
   '@smui/linear-progress@7.0.0-beta.8':
     resolution: {integrity: sha512-2S5QrzdeRVmepnDqVdMdjpDb+wxtxZW3CrYbfu2lnGF74QznPT1SyuTLTkY+czoTLc7Qc3nJ+gBkxga+vBbonA==}
 
+  '@smui/list@7.0.0':
+    resolution: {integrity: sha512-kZnpfbkFtIs9vZCr2xxDTO5Dcdj6WAtGa+82sN5zGg6hC5q8KMGKOxNIFdTz2hw5a6Bg//Zg2mK5AB4tVM4LBw==}
+
   '@smui/list@7.0.0-beta.8':
     resolution: {integrity: sha512-Rh2rpKDgaxzCdqcWZkkrRP+kPyu7Owwbkk8waG06BG9bFyCfov8i1Ai2MQkz6QFG/CVX6fi+rapvWhQaafSsOg==}
+
+  '@smui/menu-surface@7.0.0':
+    resolution: {integrity: sha512-KnPgCjtk3Gqo3fU+wOz7vKr1kRkCeOlrn2i4yAdW2cWoL/3HAmDWrHy/mpnG+vr2RfLK6Tw30V9L5PpFhKgrSQ==}
 
   '@smui/menu-surface@7.0.0-beta.8':
     resolution: {integrity: sha512-VrdxJD1OyXVrho/BYfykc5pwENkPjpFS3nhTuYZLnPQiAPVKzI2JXMfDOCcB5yKwS5DcBnz36ICWngZ93wCXjQ==}
 
-  '@smui/menu@7.0.0-beta.8':
-    resolution: {integrity: sha512-n3yRf/F5pc2Rpu73OufoFDlv/IX4pWM7Espn1uUfVSXsWIG52Or7+br1piJHooeK8zxz22mko0eYisjhQosdSQ==}
+  '@smui/menu@7.0.0':
+    resolution: {integrity: sha512-3l24nZlW7WdNdVy8i/UT71UPZXdql+0GkRpI5Wy/GsZc2pOCSd1IWWkoiEqX00c5uTCfqX2S25mnKiOdvzKBwg==}
 
   '@smui/notched-outline@7.0.0-beta.8':
     resolution: {integrity: sha512-L0r3VPPOaPTiWMfLeX+8vy0zyZ80ALa02RWPPQ4KPoboaYU1WZ9+t7mtxsDexA6CZub8I2ZfybanxDJIT+5xBQ==}
@@ -1453,6 +1505,9 @@ packages:
 
   '@smui/radio@7.0.0-beta.8':
     resolution: {integrity: sha512-dN7lG+5kuLLXz3Fghl+M+yzCyEsi0tnAzx8oP33wLkj+/frOFL34i5o4sDHaoSrQaBABVt2YZVCRBg5oPtzwLg==}
+
+  '@smui/ripple@7.0.0':
+    resolution: {integrity: sha512-N42jqgLOleOj3fU1BnkTPbjtWpisp8x9oUgF32SDkVh48ih8J8+/xQ1W5g28WrNDErjSu9G4DTcYN6BJYOng3Q==}
 
   '@smui/ripple@7.0.0-beta.8':
     resolution: {integrity: sha512-f762Wi8ESc6rRDhsmm2WUtEjAmaUB3BlYwMJ9kgOODxIxdk4kaoflUzgJemeLwohsnGfvP+o0cGxR8DM9BE3nA==}
@@ -2745,6 +2800,7 @@ packages:
   eslint@8.31.0:
     resolution: {integrity: sha512-0tQQEVdmPZ1UtUKXjX7EMm9BlgJ08G90IhWh0PKDCb3ZLsgAOHI8fYSIzYVZej92zsgq+ft0FGsxhJ3xo2tbuA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   esm-env@1.0.0:
@@ -4204,6 +4260,12 @@ packages:
     resolution: {integrity: sha512-Sxo9gtpc3dYWuFQ8fruZG+M+I6OZMIvOxxKjt48Lr8jD6Kr9cNf1Hf/yHUDEgDwQdRbAzn5y0FL9xk8Dx5v9lg==}
     peerDependencies:
       svelte: ^3.55
+      typescript: ^4.9.4 || ^5.0.0
+
+  svelte2tsx@0.7.21:
+    resolution: {integrity: sha512-cdYR5gYBK0Ys3/jzGu9yfW9oxGLtLAnxcKtS7oJy2pjLhLLYSZcWeeeuaY9SMULwlqMZ1HfngGH3n5VdquRC3Q==}
+    peerDependencies:
+      svelte: ^3.55 || ^4.0.0-next.0 || ^4.0 || ^5.0.0-next.0
       typescript: ^4.9.4 || ^5.0.0
 
   svelte@3.55.0:
@@ -5783,7 +5845,7 @@ snapshots:
     dependencies:
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/list': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/menu': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/menu': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/menu-surface': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/textfield': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
@@ -5882,6 +5944,14 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/common@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/dom': 14.0.0
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/common@7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)':
     dependencies:
       '@material/dom': 14.0.0
@@ -5904,13 +5974,13 @@ snapshots:
       - svelte
       - typescript
 
-  '@smui/dialog@7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)':
+  '@smui/dialog@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
     dependencies:
       '@material/button': 14.0.0
       '@material/dialog': 14.0.0
       '@material/dom': 14.0.0
-      '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -6003,6 +6073,18 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/list@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/dom': 14.0.0
+      '@material/feature-targeting': 14.0.0
+      '@material/list': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/list@7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)':
     dependencies:
       '@material/dom': 14.0.0
@@ -6011,6 +6093,16 @@ snapshots:
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
+  '@smui/menu-surface@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/animation': 14.0.0
+      '@material/menu-surface': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -6025,14 +6117,14 @@ snapshots:
       - svelte
       - typescript
 
-  '@smui/menu@7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)':
+  '@smui/menu@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
     dependencies:
       '@material/dom': 14.0.0
       '@material/menu': 14.0.0
-      '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/list': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/menu-surface': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/list': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/menu-surface': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -6070,6 +6162,16 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/ripple@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/dom': 14.0.0
+      '@material/ripple': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/ripple@7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)':
     dependencies:
       '@material/dom': 14.0.0
@@ -6101,7 +6203,7 @@ snapshots:
       '@smui/floating-label': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/line-ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/list': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/menu': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/menu': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/menu-surface': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/notched-outline': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
@@ -6768,12 +6870,23 @@ snapshots:
       sirv: 2.0.2
       vitest: 0.29.7(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@4.9.4))
 
-  '@vitest/coverage-c8@0.30.1(vitest@0.30.1(@vitest/ui@0.30.1)(jsdom@21.1.1)(sass@1.62.0))':
+  '@vitest/browser@0.29.7(vitest@0.30.1)':
+    dependencies:
+      '@vitest/runner': 0.29.7
+      local-pkg: 0.4.2
+      mlly: 1.2.0
+      modern-node-polyfills: 0.1.0
+      rollup-plugin-node-polyfills: 0.2.1
+      sirv: 2.0.2
+      vitest: 0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2))
+    optional: true
+
+  '@vitest/coverage-c8@0.30.1(vitest@0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2)))':
     dependencies:
       c8: 7.13.0
       picocolors: 1.0.0
       std-env: 3.3.2
-      vitest: 0.30.1(@vitest/ui@0.30.1)(jsdom@21.1.1)(sass@1.62.0)
+      vitest: 0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2))
 
   '@vitest/expect@0.29.7':
     dependencies:
@@ -7416,6 +7529,30 @@ snapshots:
       - supports-color
       - typescript
       - utf-8-validate
+
+  devtools@8.6.6(typescript@5.2.2):
+    dependencies:
+      '@types/node': 18.11.18
+      '@wdio/config': 8.6.6
+      '@wdio/logger': 8.6.6
+      '@wdio/protocols': 8.6.6
+      '@wdio/types': 8.4.0
+      '@wdio/utils': 8.6.6
+      chrome-launcher: 0.15.1
+      edge-paths: 3.0.5
+      import-meta-resolve: 2.2.1
+      puppeteer-core: 19.7.5(typescript@5.2.2)
+      query-selector-shadow-dom: 1.0.1
+      ua-parser-js: 1.0.34
+      uuid: 9.0.0
+      which: 3.0.0
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
+    optional: true
 
   diff@5.1.0: {}
 
@@ -8810,6 +8947,28 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  puppeteer-core@19.7.5(typescript@5.2.2):
+    dependencies:
+      chromium-bidi: 0.4.5(devtools-protocol@0.0.1094867)
+      cross-fetch: 3.1.5
+      debug: 4.3.4
+      devtools-protocol: 0.0.1094867
+      extract-zip: 2.0.1
+      https-proxy-agent: 5.0.1
+      proxy-from-env: 1.1.0
+      rimraf: 4.4.0
+      tar-fs: 2.1.1
+      unbzip2-stream: 1.4.3
+      ws: 8.12.1
+    optionalDependencies:
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - utf-8-validate
+    optional: true
+
   query-selector-shadow-dom@1.0.1: {}
 
   querystringify@2.2.0: {}
@@ -9196,7 +9355,7 @@ snapshots:
       - stylus
       - sugarss
 
-  svelte-check@3.0.4(postcss@8.4.21)(sass@1.62.0)(svelte@3.55.0):
+  svelte-check@3.0.4(postcss@8.4.45)(sass@1.62.0)(svelte@3.55.0):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.17
       chokidar: 3.5.3
@@ -9205,7 +9364,7 @@ snapshots:
       picocolors: 1.0.0
       sade: 1.8.1
       svelte: 3.55.0
-      svelte-preprocess: 5.0.1(postcss@8.4.21)(sass@1.62.0)(svelte@3.55.0)(typescript@4.9.4)
+      svelte-preprocess: 5.0.1(postcss@8.4.45)(sass@1.62.0)(svelte@3.55.0)(typescript@4.9.4)
       typescript: 4.9.4
     transitivePeerDependencies:
       - '@babel/core'
@@ -9264,7 +9423,7 @@ snapshots:
       '@smui/circular-progress': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/data-table': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/dialog': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/dialog': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/drawer': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/fab': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/floating-label': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
@@ -9275,7 +9434,7 @@ snapshots:
       '@smui/line-ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/linear-progress': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/list': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/menu': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/menu': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/menu-surface': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/notched-outline': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/paper': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
@@ -9312,7 +9471,7 @@ snapshots:
       sass: 1.62.0
       typescript: 4.9.4
 
-  svelte-preprocess@5.0.1(postcss@8.4.21)(sass@1.62.0)(svelte@3.55.0)(typescript@4.9.4):
+  svelte-preprocess@5.0.1(postcss@8.4.45)(sass@1.62.0)(svelte@3.55.0)(typescript@4.9.4):
     dependencies:
       '@types/pug': 2.0.6
       '@types/sass': 1.43.1
@@ -9322,7 +9481,7 @@ snapshots:
       strip-indent: 3.0.0
       svelte: 3.55.0
     optionalDependencies:
-      postcss: 8.4.21
+      postcss: 8.4.45
       sass: 1.62.0
       typescript: 4.9.4
 
@@ -9347,6 +9506,13 @@ snapshots:
       typescript: 5.2.2
 
   svelte2tsx@0.6.14(svelte@3.55.0)(typescript@5.2.2):
+    dependencies:
+      dedent-js: 1.0.1
+      pascal-case: 3.1.2
+      svelte: 3.55.0
+      typescript: 5.2.2
+
+  svelte2tsx@0.7.21(svelte@3.55.0)(typescript@5.2.2):
     dependencies:
       dedent-js: 1.0.1
       pascal-case: 3.1.2
@@ -9709,7 +9875,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@0.30.1(@vitest/ui@0.30.1)(jsdom@21.1.1)(sass@1.62.0):
+  vitest@0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2)):
     dependencies:
       '@types/chai': 4.3.4
       '@types/chai-subset': 1.3.3
@@ -9738,8 +9904,12 @@ snapshots:
       vite-node: 0.30.1(@types/node@18.11.18)(sass@1.62.0)
       why-is-node-running: 2.2.2
     optionalDependencies:
+      '@vitest/browser': 0.29.7(vitest@0.30.1)
       '@vitest/ui': 0.30.1
+      happy-dom: 8.9.0
       jsdom: 21.1.1
+      safaridriver: 0.0.4
+      webdriverio: 8.6.7(typescript@5.2.2)
     transitivePeerDependencies:
       - less
       - sass
@@ -9802,6 +9972,41 @@ snapshots:
       - supports-color
       - typescript
       - utf-8-validate
+
+  webdriverio@8.6.7(typescript@5.2.2):
+    dependencies:
+      '@types/node': 18.11.18
+      '@wdio/config': 8.6.6
+      '@wdio/logger': 8.6.6
+      '@wdio/protocols': 8.6.6
+      '@wdio/repl': 8.6.6
+      '@wdio/types': 8.4.0
+      '@wdio/utils': 8.6.6
+      archiver: 5.3.1
+      aria-query: 5.1.3
+      css-shorthand-properties: 1.1.1
+      css-value: 0.0.1
+      devtools: 8.6.6(typescript@5.2.2)
+      devtools-protocol: 0.0.1119014
+      grapheme-splitter: 1.0.4
+      import-meta-resolve: 2.2.1
+      is-plain-obj: 4.1.0
+      lodash.clonedeep: 4.5.0
+      lodash.zip: 4.2.0
+      minimatch: 7.4.2
+      puppeteer-core: 19.7.5(typescript@5.2.2)
+      query-selector-shadow-dom: 1.0.1
+      resq: 1.11.0
+      rgb2hex: 0.2.5
+      serialize-error: 8.1.0
+      webdriver: 8.6.6
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
+    optional: true
 
   webidl-conversions@3.0.1: {}
 
