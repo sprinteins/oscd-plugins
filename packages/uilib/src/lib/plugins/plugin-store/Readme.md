@@ -4,4 +4,3 @@ Install, delete and search all plugins in one convenient place.
 
 ----
 
-- [Naming](./naming.md)
