@@ -80,6 +80,7 @@ $: filteredPlugins = plugins
 		plugin.name.toLowerCase().includes(searchFilter.toLowerCase())
 	)
 	.filter((plugin) => plugin.name !== 'PluginStore')
+.filter((plugin) => plugin.name !== 'Plugin Store')
 
 // #endregion
 
