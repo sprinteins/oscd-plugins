@@ -22,11 +22,11 @@
   const typeCluster = service.findTypeDesignerElements();
 
   let columns: Column[] = [
+    { name: ELEMENT_NAMES.substation, visible: true, items: typeCluster.substations },
+    { name: ELEMENT_NAMES.voltageLevel, visible: true, items: typeCluster.voltageLevels },
     { name: ELEMENT_NAMES.bay, visible: true, items: typeCluster.bays },
     { name: ELEMENT_NAMES.ied, visible: true, items: typeCluster.ieds },
-    { name: ELEMENT_NAMES.substation, visible: true, items: typeCluster.substations },
     { name: ELEMENT_NAMES.lDevice, visible: true, items: typeCluster.logicalDevices },
-    { name: ELEMENT_NAMES.voltageLevel, visible: true, items: typeCluster.voltageLevels },
     { name: ELEMENT_NAMES.lNode, visible: true, items: [] },
   ];
 
@@ -62,7 +62,7 @@
       </div>
       <ContentCard column={column} />
       <div class="add-button-container">
-        {#if column.visible}
+        {#if column.visible && column.name !== ELEMENT_NAMES.lNode}
           <Button class="add-button" on:click={() => addItemToColumn(index)}>
             + add {column.name}
           </Button>
