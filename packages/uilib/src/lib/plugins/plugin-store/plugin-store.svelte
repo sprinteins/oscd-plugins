@@ -183,7 +183,7 @@ aria-describedby="plugin-store-content">
 </Theme>
 </Content>
 <Actions>
-    <Button action="reject">
+    <Button action="reject" on:click={() => location.reload()}>
         <Label>Restart</Label>
     </Button>
     <Button action="accept">
