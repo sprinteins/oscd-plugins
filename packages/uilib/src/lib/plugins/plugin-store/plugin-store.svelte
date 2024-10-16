@@ -2,14 +2,16 @@
 import Theme from '../../theme/theme.svelte'
 import { Checkbox } from '../../components/checkbox/'
 import Textfield from '@smui/textfield'
-import Button, { Group, GroupItem, Label, Icon } from '@smui/button'
+import Button, { Group, GroupItem, Label } from '@smui/button'
 import Menu from '@smui/menu'
-import List, { Item, Separator, Text } from '@smui/list'
+import IconButton from '@smui/icon-button'
+import Dialog, { Header, Title, Content, Actions } from '@smui/dialog'
+import List, { Item, Text } from '@smui/list'
 import IconArrowDropDown from '../../components/icons/icon-arrow-drop-down.svelte'
+import IconClose from '../../components/icons/icon-close.svelte'
 import Snackbar from '@smui/snackbar'
-export let root: Element
 
-let htmlRoot: HTMLElement
+export let isOpen: boolean
 
 // #region Plugin
 
@@ -98,8 +100,20 @@ function openPluginMenu(e, index: number) {
 // #endregion
 </script>
 
+<Dialog bind:open={isOpen} 
+fullscreen
+surface$style="width: 850px; max-width: calc(100vw - 32px);"
+aria-labelledby="plugin-store-title" 
+aria-describedby="plugin-store-content">
+<Header>
+    <Title id="plugin-store-title">Plugin Store</Title>
+    <IconButton class="material-icons" action="close">
+        <IconClose/>
+    </IconButton>
+</Header>
+<Content id="plugin-store-content">
 <Theme>
-    <plugin-store bind:this={htmlRoot}>
+    <plugin-store>
         <plugin-store-toolbar>
             <Checkbox label="Only Installed" bind:checked={showOnlyInstalled}/>
             <Textfield
@@ -158,6 +172,16 @@ function openPluginMenu(e, index: number) {
         </Snackbar>
     </plugin-store>
 </Theme>
+</Content>
+<Actions>
+    <Button action="reject">
+        <Label>Restart</Label>
+    </Button>
+    <Button action="accept">
+        <Label>Close</Label>
+    </Button>
+</Actions>
+</Dialog>
 
 <style>
     :root,

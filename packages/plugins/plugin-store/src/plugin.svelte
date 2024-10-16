@@ -4,13 +4,14 @@
 import { PluginStore } from '@oscd-plugins/uilib/src/lib/plugins/plugin-store'
 import * as pckg from '../package.json'
 
-// Inputs
-export let doc: XMLDocument
+let isOpen = false
+
+export async function run() {
+	isOpen = true
+}
 </script>
 
-{#if doc}
-<PluginStore root={doc?.documentElement} />
-{/if}
+<PluginStore bind:isOpen={isOpen}/> 
 
 <input type="hidden" name="package-name" value={pckg.name} />
 <input type="hidden" name="package-version" value={pckg.version} />

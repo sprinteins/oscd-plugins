@@ -8,8 +8,7 @@ export default class NewPlugin extends HTMLElement {
 	connectedCallback() {
 		this.attachShadow({ mode: 'open' })
 		this.plugin = new Plugin({
-			target: this.shadowRoot,
-			props: { doc: this._doc }
+			target: this.shadowRoot
 		})
 
 		const style = document.createElement('style')
@@ -17,13 +16,7 @@ export default class NewPlugin extends HTMLElement {
 		this.shadowRoot.appendChild(style)
 	}
 
-	private _doc: XMLDocument
-	public set doc(newDoc: XMLDocument) {
-		this._doc = newDoc
-		if (!this.plugin) {
-			return
-		}
-
-		this.plugin.$set({ doc: newDoc })
+	public run() {
+		return this.plugin.run()
 	}
 }
