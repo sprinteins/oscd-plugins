@@ -80,7 +80,7 @@ $: filteredPlugins = plugins
 		plugin.name.toLowerCase().includes(searchFilter.toLowerCase())
 	)
 	.filter((plugin) => plugin.name !== 'PluginStore')
-.filter((plugin) => plugin.name !== 'Plugin Store')
+	.filter((plugin) => plugin.name !== 'Plugin Store')
 
 // #endregion
 
@@ -125,8 +125,12 @@ aria-describedby="plugin-store-content">
         </plugin-store-toolbar>
         <plugin-store-items> 
             {#each filteredPlugins as plugin, index}
-            <plugin-store-item>
-                <plugin-store-item--title>{plugin.name}</plugin-store-item--title>
+            <plugin-store-item style={`background: rgba(0, 0, 0, ${index % 2 === 0 ? "0" : "0.03"});`}>
+                <plugin-store-item-meta>
+                <span style="font-size: 0.85rem;">Author</span>
+                <span><strong>{plugin.name}</strong></span>
+                <span style="font-size: 0.85rem;">https://sprinteins.github.io/plugins/{plugin.name.split(" ").join("-").toLowerCase()}/index.js</span>
+                </plugin-store-item-meta>
                 {#if plugin.installed } 
                 <Group variant="raised">
                     {#if plugin.official}
@@ -195,7 +199,6 @@ aria-describedby="plugin-store-content">
         flex-direction: column;
         align-items: stretch;
         position: relative;
-        padding: 0 1rem;
     }
     plugin-store-toolbar {
         display: flex;
@@ -206,15 +209,19 @@ aria-describedby="plugin-store-content">
     plugin-store-items {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
         padding: 1rem 0;
     }
     plugin-store-item {
         display: flex;
         justify-content: space-between;
         place-items: center;
+        padding: 20px 24px;
+        margin: 0 -24px;
     }
-    plugin-store-item--title{
-       font-size: 1rem; 
+    plugin-store-item-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
     }
+    
 </style>
