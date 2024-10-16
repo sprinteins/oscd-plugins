@@ -140,7 +140,7 @@ aria-describedby="plugin-store-content">
                             <Button on:click={(e) => openPluginMenu(e, index)} variant="outlined" style="min-width: 18px;">
                                 <IconArrowDropDown />
                             </Button> 
-                            <Menu bind:this={menus[index]} anchorElement={currentPluginAnchor} open={menuStates[index]}>
+                            <Menu bind:this={menus[index]} anchorElement={currentPluginAnchor} open={menuStates[index]} anchorCorner="BOTTOM_LEFT" style="left: -70px">
                                 <List>
                                     <Item on:SMUI:action={() => uninstallPlugin(plugin) }>
                                         <Text>Uninstall</Text>
