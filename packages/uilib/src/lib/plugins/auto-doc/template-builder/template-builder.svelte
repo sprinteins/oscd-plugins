@@ -14,7 +14,7 @@
 
 
   function generateRandomId(){
-    return Math.random().toString(16).slice(2)
+    return `${crypto.randomUUID()}|${(Math.random() * 50)}`
   }
 
   function addElement(type: "image" | "text" | "heading"){
