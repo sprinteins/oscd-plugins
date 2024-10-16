@@ -17,8 +17,10 @@
 		"storybook": "pnpm --filter @oscd-plugins/ui storybook",
 		"//====== PLUGIN STAND ALONE MODE ======//": "",
 		"dev:type-designer": "pnpm --filter @oscd-plugins/type-designer dev",
+		"dev:auto-doc": "pnpm --filter @oscd-plugins/auto-doc dev",
 		"//====== PLUGIN INTEGRATED MODE ======//": "",
-		"dev:integrated:type-designer": "pnpm --filter @oscd-plugins/type-designer build:watch"
+		"dev:integrated:type-designer": "pnpm --filter @oscd-plugins/type-designer build:watch",
+		"dev:integrated:auto-doc": "pnpm --filter @oscd-plugins/auto-doc build:watch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.2",

@@ -1,16 +1,40 @@
-<svelte:options tag={null} />
 
-<script lang="ts">
-  import { AutoDoc } from "@oscd-plugins/uilib/src/lib/plugins/auto-doc";
-  import * as pckg from "../package.json";
+<!-- 
+ This is needed to convert our component into a web component
+ empty tag lets openscd name the component with a specific hash
+-->
+<svelte:options customElement={null} />
+<!-- Plugin logs -->
+<input type="hidden" name="package-name" value={jsonPackage.name} />
+<input type="hidden" name="package-version" value={jsonPackage.version} />
 
-  // Inputs
-  export let doc: XMLDocument;
-</script>
-
-{#if doc}
-  <AutoDoc root={doc?.documentElement} />
+{#if xmlDocument}
+<MaterialTheme>
+	<auto-doc>
+		<ElementsTypeContainer />
+	</auto-doc>
+</MaterialTheme>
 {/if}
 
-<input type="hidden" name="package-name" value={pckg.name} />
-<input type="hidden" name="package-version" value={pckg.version} />
+<script lang="ts">
+// COMPONENTS
+import { MaterialTheme } from '@oscd-plugins/ui'
+import { ElementsTypeContainer } from './components'
+// PACKAGE
+import jsonPackage from '../package.json'
+// STORES
+import { pluginStore } from './stores'
+
+//==== INITIALIZATION ====//
+//props
+export let xmlDocument: XMLDocument
+export let pluginHostElement: Element
+
+//==== REACTIVITY ====//
+
+$: pluginStore.init({
+	newXMLDocument: xmlDocument,
+	newPluginHostElement: pluginHostElement
+})
+</script>
+	
