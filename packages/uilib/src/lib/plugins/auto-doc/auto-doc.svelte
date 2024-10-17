@@ -40,6 +40,7 @@
 		width: 100%;
 		justify-items: center;
 		background-color: antiquewhite;
+		overflow-y: auto;
 	}
 
 	.template-title{

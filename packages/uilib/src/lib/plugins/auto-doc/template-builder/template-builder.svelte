@@ -2,6 +2,7 @@
 
   import ImageElement from "../elements/image/image-element.svelte";
   import TextElement from "../elements/text/text-element.svelte";
+  import HeadingElement from "../elements/heading/heading-element.svelte";
 
 
   let elements : Element[] = []
@@ -43,7 +44,7 @@
     {#each elements as element (element.id)}
       <div class="elements-list">
         {#if element.type === 'heading'}
-          <!-- <HeadingElement bind:content={element.data} /> -->
+          <HeadingElement bind:content={element.content} />
         {:else if element.type === 'text'}
           <TextElement bind:content={element.content} />
         {:else if element.type === 'image'}
@@ -55,11 +56,13 @@
         <button on:click={()=> removeElement(element.id)}>remove</button>
       </div>
     {/each}
+    
   </div>
 
   <div class="add-buttons">
     <button on:click={() => addElement('text')}>Add Text</button>
     <button on:click={() => addElement('image')}>Add Image</button>
+    <button on:click={() => addElement('heading')}>Add Heading</button>
   </div>
 
 </document-builder>
