@@ -31,7 +31,7 @@
 <article class="columns-container" id="type-designer-columns">
   {#if columnsStore}
     {#each $columnsStore as column, index}
-      <Paper class="column">
+      <Paper class={`column-${column.visible ? "expanded" : "collapsed"}`}>
         <div class="column-header">
           {#if column.visible}
             <h2>{column.name}</h2>
@@ -81,7 +81,7 @@
     box-sizing: border-box;
   }
 
-  #type-designer-columns :global(.column) {
+  #type-designer-columns :global(.column-expanded) {
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -90,10 +90,31 @@
     width: 100%;
   }
 
+  #type-designer-columns :global(.column-collapsed) {
+    width: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   #type-designer-columns :global(.column-header) {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem;
+  }
+
+  #type-designer-columns :global(.column-collapsed .column-header) {
+    width: 2rem;
+    height: 100%;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding: 0rem;
+  }
+
+  #type-designer-columns :global(.column-collapsed h2) {
+    transform: rotate(-90deg);
+    transform-origin: center;
+    width: max-content;
   }
 
   #type-designer-columns :global(.content) {
