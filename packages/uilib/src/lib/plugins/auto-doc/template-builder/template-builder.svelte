@@ -7,8 +7,15 @@
 
   let elements : Element[] = []
 
-  type ElementType = "text" | "image" | "heading"
 
+  let isAccordionOpen = false
+
+  enum ElementType {
+    TEXT = "Text",
+    IMAGE = "Image",
+    HEADING = "Heading",
+  } 
+  
   type Element = {
     id: string,
     type: ElementType
@@ -43,11 +50,11 @@
   <div class="elements-container">
     {#each elements as element (element.id)}
       <div class="elements-list">
-        {#if element.type === 'heading'}
+        {#if element.type === ElementType.HEADING}
           <HeadingElement bind:content={element.content} />
-        {:else if element.type === 'text'}
+        {:else if element.type === ElementType.TEXT}
           <TextElement bind:content={element.content} />
-        {:else if element.type === 'image'}
+        {:else if element.type === ElementType.IMAGE}
           <ImageElement bind:src={element.content} />
         {/if}
       </div>
@@ -58,16 +65,22 @@
     {/each}
     
   </div>
+  
+  <footer>
+    <button on:click={()=> isAccordionOpen = !isAccordionOpen}>Add element</button>
+    {#if isAccordionOpen}
+      <div class="add-buttons">
+        {#each Object.values(ElementType) as type }
+        <button on:click={() => addElement(type)}>{type}</button>
+        {/each}
+      </div>
+    {/if}
+  </footer>
 
-  <div class="add-buttons">
-    <button on:click={() => addElement('text')}>Add Text</button>
-    <button on:click={() => addElement('image')}>Add Image</button>
-    <button on:click={() => addElement('heading')}>Add Heading</button>
-  </div>
 
 </document-builder>
 
-<style>
+<style lang="scss">
   .elements-container{
     display: grid;
     grid-template-columns: 94% 5%;
@@ -83,6 +96,19 @@
 		margin-top: 2rem;
     display: flex;
 		gap: 1rem;
+
+   
 	}
+
+  footer{
+		margin-top: 2rem;
+
+    button{
+      padding: .5em;
+      cursor: pointer;
+    }
+  }
   
 </style>
+
+
