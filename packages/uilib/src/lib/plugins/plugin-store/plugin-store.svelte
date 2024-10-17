@@ -74,15 +74,15 @@ async function fetchExternalPlugins() {
 	const externalPluginsMockup: Plugin[] = [
 		{
 			name: 'Type Designer',
-			author: 'Illia Solovei',
-			src: 'https://sprinteins.github.io/plugins/type-designer/index.js',
+			author: 'SprintEins',
+			src: 'https://sprinteins.github.io/oscd-plugins/type-designer/index.js',
 			kind: 'editor',
 			installed: false
 		},
 		{
 			name: 'Auto Doc',
-			author: 'Sergio Alvarenga',
-			src: 'https://sprinteins.github.io/plugins/auto-doc/index.js',
+			author: 'SprintEins',
+			src: 'https://sprinteins.github.io/osdc-plugins/auto-doc/index.js',
 			kind: 'editor',
 			installed: false
 		}
@@ -129,7 +129,7 @@ function alternateRowColors(index: number) {
 }
 
 function getPluginAuthor(plugin: Plugin) {
-	return plugin.official ? ' ' : plugin.author
+	return plugin.official ? 'Built-in' : plugin.author
 }
 
 function getPluginSource(plugin: Plugin) {
