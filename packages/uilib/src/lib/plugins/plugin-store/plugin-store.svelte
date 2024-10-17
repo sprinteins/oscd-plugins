@@ -21,6 +21,7 @@ type MenuPosition = (typeof menuPosition)[number]
 
 type Plugin = {
 	name: string
+	author?: string
 	src: string
 	icon?: string
 	kind: PluginKind
@@ -52,7 +53,7 @@ function togglePluginState(plugin: Plugin, isEnabled: boolean) {
 	const currentPlugins = storedPlugins()
 	currentPlugins.find((it) => it.name === plugin.name).installed = isEnabled
 	storePlugins(currentPlugins)
-	plugins = currentPlugins
+	officialPlugins = currentPlugins
 	plugin.installed = isEnabled
 	notificationSnackbar.open()
 }
@@ -64,14 +65,39 @@ function uninstallPlugin(plugin: Plugin) {
 		(it) => it.name !== plugin.name
 	)
 	storePlugins(updatedPlugins)
-	plugins = updatedPlugins
+	officialPlugins = updatedPlugins
 }
 
-let plugins = storedPlugins()
+let externalPlugins: Plugin[] = []
+
+async function fetchExternalPlugins() {
+	const externalPluginsMockup: Plugin[] = [
+		{
+			name: 'Type Designer',
+			author: 'Illia Solovei',
+			src: 'https://sprinteins.github.io/plugins/type-designer/index.js',
+			kind: 'editor',
+			installed: false
+		},
+		{
+			name: 'Auto Doc',
+			author: 'Sergio Alvarenga',
+			src: 'https://sprinteins.github.io/plugins/auto-doc/index.js',
+			kind: 'editor',
+			installed: false
+		}
+	]
+
+	externalPlugins = externalPluginsMockup
+}
+
+fetchExternalPlugins()
 
 let showOnlyInstalled = false
 let searchFilter = ''
 
+let officialPlugins = storedPlugins()
+$: plugins = officialPlugins.concat(externalPlugins)
 $: filteredPlugins = plugins
 	.filter(
 		(plugin) => !showOnlyInstalled || plugin.installed === showOnlyInstalled
@@ -100,6 +126,14 @@ function openPluginMenu(e, index: number) {
 
 function alternateRowColors(index: number) {
 	return `background: rgba(0, 0, 0, ${index % 2 === 0 ? '0' : '0.03'});`
+}
+
+function getPluginAuthor(plugin: Plugin) {
+	return plugin.official ? ' ' : plugin.author
+}
+
+function getPluginSource(plugin: Plugin) {
+	return plugin.src
 }
 
 // #endregion
@@ -131,9 +165,9 @@ aria-describedby="plugin-store-content">
             {#each filteredPlugins as plugin, index}
             <plugin-store-item style={alternateRowColors(index)}>
                 <plugin-store-item-meta>
-                <span style="font-size: 0.85rem;">Author</span>
+                <span style="font-size: 0.85rem;">{getPluginAuthor(plugin)}</span>
                 <span><strong>{plugin.name}</strong></span>
-                <span style="font-size: 0.85rem;">https://sprinteins.github.io/plugins/{plugin.name.split(" ").join("-").toLowerCase()}/index.js</span>
+                <span style="font-size: 0.85rem;">{getPluginSource(plugin)}</span>
                 </plugin-store-item-meta>
                 {#if plugin.installed } 
                 <Group variant="raised">
