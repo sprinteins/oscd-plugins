@@ -1,20 +1,13 @@
 
-<!-- 
- This is needed to convert our component into a web component
- empty tag lets openscd name the component with a specific hash
--->
-<svelte:options customElement={null} />
 <!-- Plugin logs -->
 <input type="hidden" name="package-name" value={jsonPackage.name} />
 <input type="hidden" name="package-version" value={jsonPackage.version} />
 
-{#if xmlDocument}
-<MaterialTheme>
+<MaterialTheme pluginType={pluginType}>
 	<type-designer>
 		<ElementsTypeContainer />
 	</type-designer>
 </MaterialTheme>
-{/if}
 
 <script lang="ts">
 // COMPONENTS
@@ -24,11 +17,14 @@ import { ElementsTypeContainer } from './components'
 import jsonPackage from '../package.json'
 // STORES
 import { dataTypeTemplatesStore, pluginStore } from './stores'
+// TYPES
+import type { PluginType } from '@oscd-plugins/core'
 
 //==== INITIALIZATION ====//
 //props
-export let xmlDocument: XMLDocument
+export let xmlDocument: XMLDocument | undefined = undefined
 export let pluginHostElement: Element
+export let pluginType: PluginType = 'editor'
 
 //==== REACTIVITY ====//
 
@@ -36,6 +32,6 @@ $: pluginStore.init({
 	newXMLDocument: xmlDocument,
 	newPluginHostElement: pluginHostElement
 })
-$: dataTypeTemplatesStore.init(xmlDocument.documentElement)
+$: dataTypeTemplatesStore.init(xmlDocument?.documentElement)
 </script>
 	

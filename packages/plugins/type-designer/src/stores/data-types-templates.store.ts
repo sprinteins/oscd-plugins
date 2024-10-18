@@ -28,7 +28,8 @@ function setSubElements(newXmlDocument: Element) {
 }
 
 //==== INITIALIZATION
-function init(newXmlDocument: Element) {
+function init(newXmlDocument: Element | undefined) {
+	if (!newXmlDocument) return
 	setRootElement(newXmlDocument)
 	setSubElements(newXmlDocument)
 }
