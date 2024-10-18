@@ -89,7 +89,7 @@
         <div class="add-button-container">
           {#if column.visible && column.name !== ELEMENT_NAMES.lNode}
             <Button class="add-button" on:click={() => addItemToColumn(index)}>
-              + Create {column.name}
+              New {column.name}
             </Button>
           {/if}
         </div>
@@ -103,6 +103,8 @@
     gap: 1rem;
     justify-content: space-between;
     padding: 1rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
     height: 100%;
     overflow: hidden;
     position: relative;
@@ -121,6 +123,7 @@
   #type-designer-columns :global(.column-header) {
     display: flex;
     justify-content: space-between;
+    margin-left: 1rem;
     padding: 0.5rem;
   }
 
@@ -151,6 +154,7 @@
     border: none;
     font-size: 1rem;
     text-transform: none;
+    height: 44px;
   }
 
   #type-designer-columns :global(.collapsed-column) {
