@@ -3,7 +3,7 @@ import { writable, get } from 'svelte/store'
 // OPENSCD
 import { createElement } from '@oscd-plugins/core'
 // STORES
-import { pluginStore, eventStore } from './index'
+import { dataTypeTemplatesStore, pluginStore, eventStore } from './index'
 // TYPES
 import type { DataTypeTemplates } from '@oscd-plugins/core'
 
@@ -18,6 +18,7 @@ function addElementToXmlDocument(
 	newElementTagName: DataTypeTemplates.AllowedTag,
 	elementAttributes: Record<string, string | null>
 ) {
+	const { dataTypeTemplatesRootElement } = dataTypeTemplatesStore
 
 	const newElement = createElement(
 		get(xmlDocument),
@@ -26,6 +27,7 @@ function addElementToXmlDocument(
 	)
 
 	const parent =
+		get(dataTypeTemplatesRootElement)?.element ??
 		createDataTypeTemplateElement()
 
 	return eventStore.createAndDispatchActionEvent(parent, newElement)
@@ -37,6 +39,9 @@ function createDataTypeTemplateElement(): Element {
 		'DataTypeTemplates',
 		{}
 	)
+	dataTypeTemplatesStore.dataTypeTemplatesRootElement.set({
+		element: newDataTypeTemplatesElement
+	})
 
 	eventStore.createAndDispatchActionEvent(
 		get(xmlDocument).documentElement,

@@ -1,7 +1,8 @@
 import Plugin from './plugin.svelte'
-import { createPluginInstanceClass } from '@oscd-plugins/core'
+import { createPluginInstance } from '@oscd-plugins/core'
 
-export default createPluginInstanceClass(
-	import.meta.env.MODE === 'STAND_ALONE',
-	Plugin
-)
+export default createPluginInstance({
+	pluginType: 'editor',
+	isStandAlone: import.meta.env.MODE === 'STAND_ALONE',
+	pluginComponent: Plugin
+})
