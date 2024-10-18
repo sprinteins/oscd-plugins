@@ -89,7 +89,7 @@
         <div class="add-button-container">
           {#if column.visible && column.name !== ELEMENT_NAMES.lNode}
             <Button class="add-button" on:click={() => addItemToColumn(index)}>
-              + add {column.name}
+              + Create {column.name}
             </Button>
           {/if}
         </div>
