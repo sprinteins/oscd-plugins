@@ -15,7 +15,7 @@ export default function menuPluginInstance(
 
 	//====== PROPERTIES ======//
 
-	MenuPlugin.prototype.pluginInstance = null
+	MenuPlugin.prototype.pluginInstance = undefined
 
 	//====== METHODS ======//
 

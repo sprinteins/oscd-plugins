@@ -15,7 +15,7 @@ export default function editorPluginInstance(
 
 	//====== PROPERTIES ======//
 
-	EditorPlugin.prototype.pluginInstance = null
+	EditorPlugin.prototype.pluginInstance = undefined
 	EditorPlugin.prototype.localDoc = undefined
 	EditorPlugin.prototype.localDocName = undefined
 
