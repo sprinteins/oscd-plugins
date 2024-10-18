@@ -1,0 +1,42 @@
+{
+  "name": "@oscd-plugins/ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^1.9.0",
+    "@storybook/addon-essentials": "^8.3.5",
+    "@storybook/addon-interactions": "^8.3.5",
+    "@storybook/addon-links": "^8.3.5",
+    "@storybook/addon-svelte-csf": "^4.1.7",
+    "@storybook/blocks": "^8.3.5",
+    "@storybook/svelte": "^8.3.5",
+    "@storybook/svelte-vite": "^8.3.5",
+    "@storybook/test": "^8.3.5",
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@tsconfig/svelte": "^5.0.4",
+    "storybook": "^8.3.5",
+    "svelte": "^4.2.19",
+    "svelte-check": "^4.0.4",
+    "tslib": "^2.7.0",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.8"
+  },
+  "dependencies": {
+    "@oscd-plugins/core": "workspace:^",
+    "@smui/button": "^7.0.0",
+    "@smui/icon-button": "7.0.0",
+    "@smui/top-app-bar": "^7.0.0",
+    "normalize.css": "^8.0.1",
+    "svelte-material-ui": "^7.0.0"
+  }
+}

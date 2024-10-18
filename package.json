@@ -1,30 +1,29 @@
 {
-	"name": "@oscd-plugins/network",
+	"name": "@oscd-plugins/monorepo",
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "vite --mode=DEV",
-		"build": "vite build",
-		"preview": "vite preview",
-		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"//====== FORMAT & LINT ======//": "",
 		"biome:check": "biome check .",
 		"biome:fix": "biome check . --write",
 		"//====== PREPARE ======//": "",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"//====== LAUNCHING SCRIPTS ======//": "",
+		"storybook": "pnpm --filter @oscd-plugins/ui storybook",
+		"//====== LOCAL DEPENDENCIES INSTALL ======//": "",
+		"install:core": "pnpm --filter @oscd-plugins/core i",
+		"install:ui": "pnpm --filter @oscd-plugins/ui i",
+		"//====== PLUGIN INSTALL ======//": "",
+		"install:type-designer": "pnpm install:core && pnpm install:ui && pnpm --filter @oscd-plugins/type-designer i",
+		"//====== PLUGIN STAND ALONE MODE ======//": "",
+		"dev:type-designer": "pnpm install:type-designer && pnpm --filter @oscd-plugins/type-designer dev",
+		"//====== PLUGIN INTEGRATED MODE ======//": "",
+		"dev:integrated:type-designer": "pnpm install:type-designer && pnpm --filter @oscd-plugins/type-designer build:watch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.2",
-		"@sveltejs/vite-plugin-svelte": "^2.0.2",
-		"@tsconfig/svelte": "^3.0.0",
-		"husky": "^8.0.3",
-		"svelte": "^3.55.1",
-		"svelte-check": "^2.10.3",
-		"tslib": "^2.5.0",
-		"turbo": "^1.8.3",
-		"typescript": "^4.9.3",
-		"vite": "^4.1.0"
+		"husky": "^8.0.3"
 	},
 	"packageManager": "pnpm@9.10.0+sha512.73a29afa36a0d092ece5271de5177ecbf8318d454ecd701343131b8ebc0c1a91c487da46ab77c8e596d6acf1461e3594ced4becedf8921b074fbd8653ed7051c"
 }
