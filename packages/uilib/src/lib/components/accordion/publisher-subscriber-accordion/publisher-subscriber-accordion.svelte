@@ -11,16 +11,24 @@
     export let color: string
     export let connectionDirection: ConnectionTypeDirection
 
-    $: affectedIEDs = affectedIEDObjects.map((el) => {
-    	return el.node
-    })
+    $: affectedSubscriberIEDs = affectedIEDObjects
+        .filter(
+            (el) => el.connectionDirection === ConnectionTypeDirection.INCOMING,
+        )
+        .map((el) => el.node);
+
+    $: affectedPublisherIEDs = affectedIEDObjects
+        .filter(
+            (el) => el.connectionDirection === ConnectionTypeDirection.OUTGOING,
+        )
+        .map((el) => el.node);
 
     $: iconName = calcIconName(serviceType, connectionDirection)
 
     function calcIconName(serviceType: string, connectionDirection: ConnectionTypeDirection): OpenSCDIconNames {
     	let serviceTypeShort = ""
     	let serviceTypeDirection = ""
-        
+
     	if (serviceType === "GOOSE") 
     		serviceTypeShort = "goose"
     	else if (serviceType === "SampledValues")
@@ -30,7 +38,7 @@
     	else
     		serviceTypeShort = "undefined"
 
-    	if (connectionDirection === ConnectionTypeDirection.INCOMING) 
+        if (connectionDirection === ConnectionTypeDirection.INCOMING)
     		serviceTypeDirection = "Incoming"
     	else 
     		serviceTypeDirection = "Outgoing"
@@ -60,19 +68,34 @@
             </div>
 
             <hr class="seperation-line" />
-            {#if affectedIEDs.length > 0}
-                <ul>
-                    Subscribers
-                    {#each affectedIEDs as ied}
-                        <li>
-                            <div class="ied-component">
-                                {ied.label}
-                            </div>
-                        </li>
-                    {/each}
-                </ul>
-            {:else}
+            {#if affectedSubscriberIEDs.length + affectedPublisherIEDs.length == 0}
                 <p>No items found</p>
+            {:else}
+                {#if affectedSubscriberIEDs.length > 0}
+                    <ul>
+                        Subscribers
+                        {#each affectedSubscriberIEDs as ied}
+                            <li>
+                                <div class="ied-component">
+                                    {ied.label}
+                                </div>
+                            </li>
+                        {/each}
+                    </ul>
+                {/if}
+
+                {#if affectedPublisherIEDs.length > 0}
+                    <ul>
+                        Publishers
+                        {#each affectedPublisherIEDs as ied}
+                            <li>
+                                <div class="ied-component">
+                                    {ied.label}
+                                </div>
+                            </li>
+                        {/each}
+                    </ul>
+                {/if}
             {/if}
         </div>
     </details>
