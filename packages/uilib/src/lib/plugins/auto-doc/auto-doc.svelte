@@ -5,20 +5,12 @@
 	
 	export let root: Element
 
-	let htmlRoot: HTMLElement
-
-	let title : string
-	let description : string
-  
+	let htmlRoot: HTMLElement  
 </script>
 
 <Theme>
 	<auto-doc bind:this={htmlRoot}>
 		<main class="container">
-			<div class="template-title">
-				<input type="text" bind:value={title} placeholder="Name of the template">
-				<input type="text" bind:value={description} placeholder="add description of the template">
-			</div>
 			<TemplateBuilder/>
 		</main>
 	</auto-doc>
@@ -39,26 +31,6 @@
 		padding: 2em;
 		width: 100%;
 		justify-items: center;
-		background-color: antiquewhite;
 		overflow-y: auto;
 	}
-
-	.template-title{
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-	.template-title{
-		margin-bottom: 2rem;
-		input{
-			font-size: 2rem;
-			padding: .7em;
-			border: none;
-
-			&:nth-child(even){
-				font-size: 1.5rem;
-			}
-		}
-	}
-
 </style>
