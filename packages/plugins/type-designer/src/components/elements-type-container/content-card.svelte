@@ -4,17 +4,14 @@
 
     export let elementType: DataTypeTemplates[];
 
-    function handleCardClick(item: string) {
+    function handleCardClick(item: DataTypeTemplates) {
         console.log("Clicked:", item);
     }
 </script>
 
 <section id="type-designer-card">
     {#each elementType as elementType}
-        <Card
-            class="card"
-            on:click={() => handleCardClick(JSON.stringify(elementType))}
-        >
+        <Card class="card" on:click={() => handleCardClick(elementType)}>
             {elementType.name}
             <div class="rhombus-icon"></div>
         </Card>
@@ -24,7 +21,6 @@
 <style>
     #type-designer-card :global(.card) {
         padding: 1rem;
-        background-color: #f5f5f5;
         border-radius: 4px;
         margin-bottom: 1rem;
         flex-shrink: 0;

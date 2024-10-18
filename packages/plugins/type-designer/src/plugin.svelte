@@ -6,7 +6,6 @@
 
 <script lang="ts">
 	// STYLES
-	// TODO
 	// import pluginUrl from './style.css?url'
 	// COMPONENTS
 	import { MaterialTheme } from "@oscd-plugins/ui";
@@ -17,7 +16,6 @@
 	import { dataTypeTemplatesStore, pluginStore } from "./stores";
 
 	const baseURL = new URL(import.meta.url);
-	// TODO
 	// const pluginCss = new URL(pluginUrl, baseURL).href
 
 	//==== INITIALIZATION ====//
@@ -35,7 +33,6 @@
 </script>
 
 <!-- Link tags are allowed at root of a shadow dom -->
-// TODO
 <!-- <link rel="stylesheet" href={pluginCss} /> -->
 <!-- Plugin logs -->
 <input type="hidden" name="package-name" value={jsonPackage.name} />
