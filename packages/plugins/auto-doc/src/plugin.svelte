@@ -1,16 +1,41 @@
-<svelte:options tag={null} />
+
+<!-- Plugin logs -->
+<input type="hidden" name="package-name" value={jsonPackage.name} />
+<input type="hidden" name="package-version" value={jsonPackage.version} />
+
+<!-- {#if xmlDocument} -->
+<MaterialTheme>
+	<auto-doc>
+		<ElementsTypeContainer />
+	</auto-doc>
+</MaterialTheme>
+<!-- {/if} -->
 
 <script lang="ts">
-  import { AutoDoc } from "@oscd-plugins/uilib/src/lib/plugins/auto-doc";
-  import * as pckg from "../package.json";
+// COMPONENTS
+import { MaterialTheme } from '@oscd-plugins/ui'
+import { ElementsTypeContainer } from './components'
+// PACKAGE
+import jsonPackage from '../package.json'
+// STORES
+import { pluginStore, dataTypeTemplatesStore } from './stores'
 
-  // Inputs
-  export let doc: XMLDocument;
+import type { PluginType } from '@oscd-plugins/core'
+
+//==== INITIALIZATION ====//
+//props
+export let xmlDocument: XMLDocument
+export let pluginHostElement: Element
+export let pluginType: PluginType = 'editor'
+
+//==== REACTIVITY ====//
+
+$: pluginStore.init({
+	newXMLDocument: xmlDocument,
+	newPluginHostElement: pluginHostElement
+})
+
+$: dataTypeTemplatesStore.init(xmlDocument?.documentElement)
+
 </script>
-
-{#if doc}
-  <AutoDoc root={doc?.documentElement} />
-{/if}
-
-<input type="hidden" name="package-name" value={pckg.name} />
-<input type="hidden" name="package-version" value={pckg.version} />
+	
