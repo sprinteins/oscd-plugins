@@ -3,13 +3,12 @@
 <input type="hidden" name="package-name" value={jsonPackage.name} />
 <input type="hidden" name="package-version" value={jsonPackage.version} />
 
-<!-- {#if xmlDocument} -->
-<MaterialTheme>
+
+<MaterialTheme pluginType={pluginType}>
 	<auto-doc>
 		<ElementsTypeContainer />
 	</auto-doc>
 </MaterialTheme>
-<!-- {/if} -->
 
 <script lang="ts">
 // COMPONENTS
@@ -19,12 +18,12 @@ import { ElementsTypeContainer } from './components'
 import jsonPackage from '../package.json'
 // STORES
 import { pluginStore, dataTypeTemplatesStore } from './stores'
-
+// TYPES
 import type { PluginType } from '@oscd-plugins/core'
 
 //==== INITIALIZATION ====//
 //props
-export let xmlDocument: XMLDocument
+export let xmlDocument: XMLDocument | undefined = undefined
 export let pluginHostElement: Element
 export let pluginType: PluginType = 'editor'
 
