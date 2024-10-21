@@ -4,7 +4,7 @@
 <link rel="stylesheet" href={svelteMaterialUiCss} />
 
 {#if isStandAloneMode}
-	<DevMenuBar />
+	<DevMenuBar pluginType={pluginType}/>
 	{/if}
 <tscd-theme>
 	<slot />
@@ -18,8 +18,15 @@ import themeUrl from '../../assets/styles/theme.css?url'
 import svelteMaterialUiUrl from 'svelte-material-ui/bare.css?url'
 // DEV COMPONENTS
 import { DevMenuBar } from '../../components/dev'
+// TYPES
+import type { PluginType } from '@oscd-plugins/core'
 
-//====== STYLES ======//
+//====== INITIALIZATION ======//
+
+// props
+export let pluginType: PluginType | undefined = undefined
+
+// styles
 const baseURL = new URL(import.meta.url)
 const fontCss = new URL(fontsUrl, baseURL).href
 const themeCss = new URL(themeUrl, baseURL).href

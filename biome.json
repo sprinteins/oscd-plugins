@@ -53,7 +53,15 @@
 	},
 	"overrides": [
 		{
-			"include": ["*.svelte"]
+			"include": ["*.svelte"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useConst": "off",
+						"useImportType": "off"
+					}
+				}
+			}
 		}
 	]
 }
