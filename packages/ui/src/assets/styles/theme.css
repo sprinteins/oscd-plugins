@@ -1,4 +1,6 @@
 /* ====== HOST ROOT ====== */
+#storybook-docs,
+#storybook-root,
 :host > tscd-theme,
 :host > header {
 	--mdc-theme-primary: #2aa198;
@@ -25,18 +27,8 @@
 	--mdc-theme-text-hint-on-dark: rgba(221, 228, 226, 0.5);
 	--mdc-theme-text-disabled-on-dark: rgba(221, 228, 226, 0.5);
 	--mdc-theme-text-icon-on-dark: rgba(221, 228, 226, 0.5);
-}
-
-tscd-theme {
-	/* OPEN SCD INSTANCE HEADER */
-	--header-height: 112px;
-
-	font-family: "Roboto", sans-serif;
-	height: calc(100vh - var(--header-height));
-	display: flex;
-	align-items: stretch;
-	position: relative;
-	background-color: var(--mdc-theme-background);
+	--mdc-ripple-left: 10px;
+	--mdc-ripple-top: 10px;
 }
 
 /* ====== UTILITY CLASSES ====== */
