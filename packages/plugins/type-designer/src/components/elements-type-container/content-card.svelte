@@ -2,7 +2,7 @@
     import Card from "@smui/card";
     import type { DataTypeTemplates } from "./data-type-templates";
 
-    export let elementType: DataTypeTemplates[];
+    export let elementType: DataTypeTemplates;
 
     function handleCardClick(item: DataTypeTemplates) {
         console.log("Clicked:", item);
