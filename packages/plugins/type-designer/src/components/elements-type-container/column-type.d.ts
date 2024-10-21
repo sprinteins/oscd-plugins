@@ -1,4 +1,4 @@
-import type { DataTypeTemplates } from "./data-type-templates"
+import type { DataTypeTemplates } from './data-type-templates'
 
 export type Column = {
 	name: string

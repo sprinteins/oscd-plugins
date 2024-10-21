@@ -4,47 +4,47 @@ import type {
 	IEDType,
 	LDeviceType,
 	SubstationType,
-	VoltageLevelType,
-} from "./data-type-templates";
+	VoltageLevelType
+} from './data-type-templates'
 
 export function createNewItem(
 	columnName: string,
-	itemCount: number,
+	itemCount: number
 ): DataTypeTemplate | null {
-	const newId = (itemCount + 1).toString();
+	const newId = (itemCount + 1).toString()
 
 	switch (columnName) {
-		case "Voltage Level":
+		case 'Voltage Level':
 			return {
 				id: newId,
-				name: `Voltage Level ${newId}`,
-			} as VoltageLevelType;
+				name: `Voltage Level ${newId}`
+			} as VoltageLevelType
 
-		case "IED":
+		case 'IED':
 			return {
 				id: newId,
-				name: `IED ${newId}`,
-			} as IEDType;
+				name: `IED ${newId}`
+			} as IEDType
 
-		case "Bay":
+		case 'Bay':
 			return {
 				id: newId,
-				name: `Bay ${newId}`,
-			} as BayType;
+				name: `Bay ${newId}`
+			} as BayType
 
-		case "Substation":
+		case 'Substation':
 			return {
 				id: newId,
-				name: `Substation ${newId}`,
-			} as SubstationType;
+				name: `Substation ${newId}`
+			} as SubstationType
 
-		case "Logical Device":
+		case 'Logical Device':
 			return {
 				id: newId,
-				name: `Logical Device ${newId}`,
-			} as LDeviceType;
+				name: `Logical Device ${newId}`
+			} as LDeviceType
 
 		default:
-			return null;
+			return null
 	}
 }
