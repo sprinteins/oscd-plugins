@@ -6,39 +6,72 @@
     type Template = {
         name: string,
         description: string,
-        lastEdited: string,       
+        lastEdited: Date,       
     }
   
     let allTemplates : Template[] = [
       {
-        name: 'Broom',
-        description: 'A wooden handled broom.',
-        lastEdited: "yesterday",
+        name: 'Template1',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda, asperiores accusamus quis sapiente sequi facilis?',
+        lastEdited: new Date(),
       },
       {
-        name: 'Dust Pan',
-        description: 'A plastic dust pan.',
-        lastEdited: "yesterday"
+        name: 'Template256',
+        description: 'A simple description',
+        lastEdited: new Date()
       },
       {
-        name: 'Mop',
-        description: 'A strong, durable mop.',
-        lastEdited: "yesterday",
+        name: 'CYK_Template',
+        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
+        lastEdited: new Date("foo"),
       },
       {
-        name: 'Horse',
-        description: "She's got some miles on her.",
-        lastEdited: "yesterday",
+        name: 'I surely have quite a long title name.',
+        description: "Lorem ipsum dolor sit amet consectetur.",
+        lastEdited: new Date(),
       },
       {
-        name: 'Bucket',
-        description: 'A metal bucket.',
-        lastEdited: "yesterday",
+        name: 'AUOBHBT Template',
+        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta placeat itaque minus praesentium sequi deleniti voluptatibus dicta!',
+        lastEdited: new Date(),
       },
     ];
     let selectedTemplates : Template[] = [];
 
     $: totalSelected = selectedTemplates.length
+
+function isInvalidDate(date: Date){
+    return isNaN(date.getTime());
+}
+
+function formatDate(date: Date, defaultString: string = "-"): string{
+    if(isInvalidDate(date)){ return defaultString;}
+
+    return `${getDD_MM_YYYYFromDate(date)}, ${getHH_MM_FromDate(date)}`;
+}
+
+function getHH_MM_FromDate(date: Date,): string{
+
+    const timeOptions: Intl.DateTimeFormatOptions = { 
+        hour: "numeric",
+        minute: "2-digit"
+    };
+
+    const extractedHH_MM = new Intl.DateTimeFormat("en-US", timeOptions).format(date)
+    return extractedHH_MM;
+}
+function getDD_MM_YYYYFromDate(date: Date): string{
+    const dateOptions: Intl.DateTimeFormatOptions = { 
+        month:   "2-digit" as const, 
+        day:     "2-digit" as const,
+        year:    "numeric" as const,
+    };
+
+    const DD_MM_YYYY = new Date(date).toLocaleDateString("de-DE", dateOptions); 
+    return DD_MM_YYYY;
+}
+
+
 
   </script>
 
@@ -49,6 +82,8 @@
             {totalSelected} items selected
         {/if}
     </p>
+    
+    
     <DataTable style="width: 100%">
         <Head>
           <Row>
@@ -72,7 +107,7 @@
                 />
                 </Cell>
                 <Cell>{template.name}</Cell>
-                <Cell>{template.lastEdited}</Cell>
+                <Cell>{formatDate(template.lastEdited)}</Cell>
                 <Cell>{template.description}</Cell>
                 <Cell>
                 <div class="action-btns">
