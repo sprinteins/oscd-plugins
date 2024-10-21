@@ -34,4 +34,3 @@ $: pluginStore.init({
 })
 $: dataTypeTemplatesStore.init(xmlDocument?.documentElement)
 </script>
-	
