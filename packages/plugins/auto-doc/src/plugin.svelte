@@ -6,14 +6,15 @@
 
 <MaterialTheme pluginType={pluginType}>
 	<auto-doc>
-		<ElementsTypeContainer />
+		<!-- <ElementsTypeContainer /> -->
+		 <Table/>
 	</auto-doc>
 </MaterialTheme>
 
 <script lang="ts">
 // COMPONENTS
 import { MaterialTheme } from '@oscd-plugins/ui'
-import { ElementsTypeContainer } from './components'
+import { ElementsTypeContainer, Table } from './components'
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES

@@ -7,6 +7,7 @@
 <script lang="ts">
 // COMPONENTS
 import ToolBar from './tool-bar.svelte'
+
 // STORES
 import { xmlDocumentStore } from '../../stores'
 

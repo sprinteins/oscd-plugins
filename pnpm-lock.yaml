@@ -90,6 +90,12 @@ importers:
       '@smui/button':
         specifier: 7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
+      '@smui/checkbox':
+        specifier: 7.0.0-beta.8
+        version: 7.0.0-beta.8(svelte@4.2.19)(typescript@5.5.4)
+      '@smui/data-table':
+        specifier: ^7.0.0
+        version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       concurrently:
         specifier: ^7.6.0
         version: 7.6.0
@@ -1530,9 +1536,6 @@ packages:
 
   '@smui/data-table@7.0.0':
     resolution: {integrity: sha512-ZpAdnovoi5g0ya6oitMfPWttsiF9u2N9WyZtY5BYfxNU3famCmM8Wbtno8pF0sZ5tNueEw1Xn8A1BI+KNKBPyA==}
-
-  '@smui/data-table@7.0.0-beta.8':
-    resolution: {integrity: sha512-sBmgQccJ4qasqbYIJD6fldu486lGPW38uLDgukjXDOuB9185f2pdgUhltCbP+sz+svHZDg/QXn0qEA4nks1Tbw==}
 
   '@smui/dialog@7.0.0':
     resolution: {integrity: sha512-F6lxwiGoc9ga0btsnpMWIYXPUXAKS0Ewa3CQH9HUPumqCzImTIlsGWL8fiAP3feVjRK+InRSaryZz0eJFZLo/A==}
@@ -7061,6 +7064,16 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/checkbox@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/checkbox': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/checkbox@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
     dependencies:
       '@material/checkbox': 14.0.0
@@ -7075,8 +7088,18 @@ snapshots:
     dependencies:
       '@material/checkbox': 14.0.0
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
+  '@smui/checkbox@7.0.0-beta.8(svelte@4.2.19)(typescript@5.5.4)':
+    dependencies:
+      '@material/checkbox': 14.0.0
+      '@smui/common': 7.0.0-beta.8(svelte@4.2.19)(typescript@5.5.4)
+      '@smui/ripple': 7.0.0(svelte@4.2.19)(typescript@5.5.4)
+      svelte2tsx: 0.6.14(svelte@4.2.19)(typescript@5.5.4)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -7147,6 +7170,28 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/common@7.0.0-beta.8(svelte@4.2.19)(typescript@5.5.4)':
+    dependencies:
+      '@material/dom': 14.0.0
+      svelte2tsx: 0.6.14(svelte@4.2.19)(typescript@5.5.4)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
+  '@smui/data-table@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/data-table': 14.0.0
+      '@material/dom': 14.0.0
+      '@smui/checkbox': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/icon-button': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/select': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/data-table@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
     dependencies:
       '@material/data-table': 14.0.0
@@ -7157,20 +7202,6 @@ snapshots:
       '@smui/ripple': 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       '@smui/select': 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       svelte2tsx: 0.7.21(svelte@4.2.19)(typescript@5.5.4)
-    transitivePeerDependencies:
-      - svelte
-      - typescript
-
-  '@smui/data-table@7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)':
-    dependencies:
-      '@material/data-table': 14.0.0
-      '@material/dom': 14.0.0
-      '@smui/checkbox': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/icon-button': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/select': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -7239,6 +7270,15 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/floating-label@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/floating-label': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/floating-label@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
     dependencies:
       '@material/floating-label': 14.0.0
@@ -7275,6 +7315,17 @@ snapshots:
       '@material/rtl': 14.0.0
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
+  '@smui/icon-button@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/density': 14.0.0
+      '@material/icon-button': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -7337,6 +7388,15 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/line-ripple@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/line-ripple': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/line-ripple@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
     dependencies:
       '@material/line-ripple': 14.0.0
@@ -7373,6 +7433,18 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/list@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/dom': 14.0.0
+      '@material/feature-targeting': 14.0.0
+      '@material/list': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/list@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
     dependencies:
       '@material/dom': 14.0.0
@@ -7397,6 +7469,16 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/menu-surface@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/animation': 14.0.0
+      '@material/menu-surface': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/menu-surface@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
     dependencies:
       '@material/animation': 14.0.0
@@ -7413,6 +7495,18 @@ snapshots:
       '@material/menu-surface': 14.0.0
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
+  '@smui/menu@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/dom': 14.0.0
+      '@material/menu': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/list': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/menu-surface': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -7437,6 +7531,16 @@ snapshots:
       '@smui/list': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/menu-surface': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
+  '@smui/notched-outline@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/notched-outline': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/floating-label': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -7555,6 +7659,26 @@ snapshots:
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
+  '@smui/select@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/feature-targeting': 14.0.0
+      '@material/ripple': 14.0.0
+      '@material/rtl': 14.0.0
+      '@material/select': 14.0.0
+      '@material/theme': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/floating-label': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/line-ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/list': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/menu': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/menu-surface': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/notched-outline': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -11989,7 +12113,7 @@ snapshots:
       '@smui/chips': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/circular-progress': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/data-table': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/data-table': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/dialog': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/drawer': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/fab': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
@@ -12078,6 +12202,13 @@ snapshots:
       pascal-case: 3.1.2
       svelte: 3.55.0
       typescript: 5.2.2
+
+  svelte2tsx@0.6.14(svelte@4.2.19)(typescript@5.5.4):
+    dependencies:
+      dedent-js: 1.0.1
+      pascal-case: 3.1.2
+      svelte: 4.2.19
+      typescript: 5.5.4
 
   svelte2tsx@0.7.21(svelte@3.55.0)(typescript@5.2.2):
     dependencies:
