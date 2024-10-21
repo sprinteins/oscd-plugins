@@ -18,9 +18,9 @@ function setRootElement(newXmlDocument: Element) {
 }
 
 function setSubElements(newXmlDocument: Element) {
-	const typeDesigner = new DataTypeTemplatesService(newXmlDocument)
+	const autoDoc = new DataTypeTemplatesService(newXmlDocument)
 
-	const newSubElements = typeDesigner.findTypeDesignerElements({
+	const newSubElements = autoDoc.findTypeDesignerElements({
 		root: get(rootElement)?.element
 	})
 
@@ -28,7 +28,8 @@ function setSubElements(newXmlDocument: Element) {
 }
 
 //==== INITIALIZATION
-function init(newXmlDocument: Element) {
+function init(newXmlDocument: Element | undefined) {
+	if (!newXmlDocument) return
 	setRootElement(newXmlDocument)
 	setSubElements(newXmlDocument)
 }

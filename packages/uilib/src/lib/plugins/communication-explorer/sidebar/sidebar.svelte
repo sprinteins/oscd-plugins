@@ -34,13 +34,14 @@
     function handleConnectionDirectionDisabled(
     	filter: SelectedFilter,
     	iedFilterDisabled: boolean
-    ): boolean {
+    ): boolean {        
     	if (iedFilterDisabled) return true
 
+        searchQuery = ""
     	const selectedIEDs = filter?.selectedIEDs
     	const selectedCon = filter?.selectedConnection?.id
 
-    	return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
+        return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
     }
 
     function setSelectedNode(e: Event) {
@@ -57,13 +58,30 @@
     	const target = e.target as HTMLInputElement
     	setNameFilter(target.value)
     }
+
+    let searchQuery = "";
+    $: filteredNodes = rootNode.children.filter((node) =>
+        node.label.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
+    function handleIEDSearch(e: Event) {
+        IEDSelectionIDs = [""]; 
+        const target = e.target as HTMLInputElement;
+        searchQuery = target.value;
+    }
+
+    function clearAll() {
+        searchQuery = "";
+        clearSelection();
+    }
+
 </script>
 
 <div class="sidebar sidebar-right">
     <div class="sidebar-content">
         <!-- svelte-ignore a11y-missing-attribute -->
         <div class="actions">
-            <a class="clear-all" on:keypress on:click={clearSelection}>
+            <a class="clear-all" on:keypress on:click={clearAll}>
                 Clear all
             </a>
         </div>
@@ -72,23 +90,31 @@
             <img src={ConnectionSelector} alt="connection selector" />
             <label>
                 <span>Select an IED</span>
-                <!-- 
-                    TODO: we should remove this select
-                    I don't think it adds much user value
-                    and it is going to be hard to support
-                -->
+                <input
+                    type="text"
+                    placeholder="Filter IED"
+                    bind:value={searchQuery}
+                    on:input={handleIEDSearch}
+                />
                 <select
                     value={IEDSelectionIDs[0] ?? ""}
                     on:change={setSelectedNode}
                 >
-                    <option value="" disabled>Select a IED</option>
-                    {#if rootNode && rootNode.children && rootNode.children.length >= 0}
-                        {#each rootNode.children as node}
+                    <option value="" disabled>
+                        {#if searchQuery === ""}
+                            Select an IED
+                        {:else}
+                            {filteredNodes.length} IED(s) found
+                        {/if}
+                    </option>
+                    {#if filteredNodes.length > 0}
+                        {#each filteredNodes as node}
                             <option
                                 selected={(IEDSelectionIDs[0] ?? "") ===
                                     node.id}
                                 value={node.id}
-                                >{node.label}
+                            >
+                                {node.label}
                             </option>
                         {/each}
                     {/if}

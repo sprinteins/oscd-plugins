@@ -564,7 +564,7 @@ importers:
         version: 6.11.0(eslint@8.31.0)(typescript@5.2.2)
       '@vitest/coverage-c8':
         specifier: ^0.30.1
-        version: 0.30.1(vitest@0.30.1)
+        version: 0.30.1(vitest@0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2)))
       '@vitest/ui':
         specifier: ^0.30.1
         version: 0.30.1
@@ -3464,11 +3464,13 @@ packages:
   eslint@8.31.0:
     resolution: {integrity: sha512-0tQQEVdmPZ1UtUKXjX7EMm9BlgJ08G90IhWh0PKDCb3ZLsgAOHI8fYSIzYVZej92zsgq+ft0FGsxhJ3xo2tbuA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   eslint@8.4.1:
     resolution: {integrity: sha512-TxU/p7LB1KxQ6+7aztTnO7K0i+h0tDi81YRY9VzB6Id71kNz+fFYnf5HD5UOQmxkzcoa0TlVZf9dpMtUv0GpWg==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   esm-env@1.0.0:
@@ -8905,7 +8907,7 @@ snapshots:
       vitest: 0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(playwright@1.48.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2))
     optional: true
 
-  '@vitest/coverage-c8@0.30.1(vitest@0.30.1)':
+  '@vitest/coverage-c8@0.30.1(vitest@0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2)))':
     dependencies:
       c8: 7.13.0
       picocolors: 1.0.0

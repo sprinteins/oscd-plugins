@@ -7,6 +7,7 @@
 			<Title>Dev Menu Bar</Title>
 		</Section>
 		<Section align="end" toolbar>
+			{#if pluginType && pluginType === 'editor'}
 			<IconButton on:click={handleUpload} style="margin-right: .5rem;">
 				<IconWrapper icon="upload_file"/>
 				<input type="file" bind:this={fileInput} style="display: none" on:change={handleFileChange} accept=".scd" name="xmlDocument" />
@@ -14,6 +15,7 @@
 			<IconButton on:click={handleDownload}>
 				<IconWrapper icon="download"/>
 			</IconButton>
+			{/if}
 		</Section>
 	</Row>
 </TopAppBar>
@@ -26,9 +28,15 @@ import TopAppBar, { Row, Section, Title } from '@smui/top-app-bar'
 import IconButton from '@smui/icon-button'
 // COMPONENTS
 import { IconWrapper } from '../icons'
+// TYPES
+import type { PluginType } from '@oscd-plugins/core'
 
 //====== INITIALIZATION ======//
 
+// props
+export let pluginType: PluginType | undefined = undefined
+
+// local variables
 let fileInput: HTMLInputElement
 
 //====== FUNCTIONS ======//
