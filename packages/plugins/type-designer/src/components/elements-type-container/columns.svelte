@@ -1,45 +1,32 @@
-<script context="module" lang="ts">
-  export type Column = {
-    name: string;
-    visible: boolean;
-    items: DataTypeTemplates[];
-  };
-</script>
-
 <script lang="ts">
   import Paper, { Content } from "@smui/paper";
   import Button from "@smui/button";
-  import type { DataTypeTemplates } from "./data-type-templates";
   import { createNewItem } from "./create-new-item";
-  import {
-    ELEMENT_NAMES,
-    type DataTypeTemplatesService,
-  } from "@oscd-plugins/core";
+  import { ELEMENT_NAMES, type DataTypeTemplates } from "@oscd-plugins/core";
   import ContentCard from "./content-card.svelte";
   import IconWrapper from "@oscd-plugins/ui/src/components/icons/icon-wrapper.svelte";
   import IconButton from "@smui/icon-button";
+  import type { Column } from "./column-type";
 
-  export let service: DataTypeTemplatesService;
-
-  const typeCluster = service.findTypeDesignerElements();
+  export let dataTypeTemplates: DataTypeTemplates.SubElements;
 
   let columns: Column[] = [
     {
       name: ELEMENT_NAMES.substation,
       visible: true,
-      items: typeCluster.substations,
+      items: dataTypeTemplates.substations,
     },
     {
       name: ELEMENT_NAMES.voltageLevel,
       visible: true,
-      items: typeCluster.voltageLevels,
+      items: dataTypeTemplates.voltageLevels,
     },
-    { name: ELEMENT_NAMES.bay, visible: true, items: typeCluster.bays },
-    { name: ELEMENT_NAMES.ied, visible: true, items: typeCluster.ieds },
+    { name: ELEMENT_NAMES.bay, visible: true, items: dataTypeTemplates.bays },
+    { name: ELEMENT_NAMES.ied, visible: true, items: dataTypeTemplates.ieds },
     {
       name: ELEMENT_NAMES.lDevice,
       visible: true,
-      items: typeCluster.logicalDevices,
+      items: dataTypeTemplates.logicalDevices,
     },
     { name: ELEMENT_NAMES.lNode, visible: true, items: [] },
   ];
@@ -63,14 +50,15 @@
   }
 </script>
 
-<article class="columns-container" id="type-designer-columns">
-    {#each columns as column, index}
-      <Paper class="column">
+<div class="columns-container" id="type-designer-columns">
+  {#each columns as column, index}
+    <Paper class="column-container">
+      <article class="column">
         <div class="column-header">
           {#if column.visible}
-            <h2>{column.name}</h2>
+            <h1>{column.name}</h1>
           {:else}
-            <h2>{column.name} (hidden)</h2>
+            <h1>{column.name} (hidden)</h1>
           {/if}
           <IconButton on:click={() => toggleColumnVisibility(index)}>
             <IconWrapper
@@ -93,9 +81,10 @@
             </Button>
           {/if}
         </div>
-      </Paper>
-    {/each}
-</article>
+      </article>
+    </Paper>
+  {/each}
+</div>
 
 <style>
   .columns-container {
@@ -111,13 +100,18 @@
     box-sizing: border-box;
   }
 
-  #type-designer-columns :global(.column) {
+  #type-designer-columns :global(.column-container) {
     padding: 0;
-    display: flex;
-    flex-direction: column;
     border: 1px solid rgb(81, 159, 152);
     transition: all 0.3s ease-in-out;
     width: 100%;
+    height: 100%;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   #type-designer-columns :global(.column-header) {

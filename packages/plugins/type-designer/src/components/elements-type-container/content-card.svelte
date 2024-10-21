@@ -9,14 +9,14 @@
     }
 </script>
 
-<section id="type-designer-card">
-    {#each elementType as elementType}
+{#each elementType as elementType}
+    <section id="type-designer-card">
         <Card class="card" on:click={() => handleCardClick(elementType)}>
             {elementType.name}
             <div class="rhombus-icon"></div>
         </Card>
-    {/each}
-</section>
+    </section>
+{/each}
 
 <style>
     #type-designer-card :global(.card) {
