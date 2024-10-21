@@ -70,7 +70,9 @@
         {#if column.visible}
           <Content class="content">
             <div class="element-types">
-              <ContentCard elementType={column.items} />
+              {#each elementType as elementType}
+                <ContentCard elementType={column.items} />
+              {/each}
             </div>
           </Content>
         {/if}
