@@ -3,6 +3,5 @@ export const ELEMENT_NAMES = {
 	voltageLevel: 'Voltage Level',
 	bay: 'Bay',
 	ied: 'IED',
-	lDevice: 'Logical Device',
-	lNode: 'Logical Node'
+	lDevice: 'Logical Device'
 } as const

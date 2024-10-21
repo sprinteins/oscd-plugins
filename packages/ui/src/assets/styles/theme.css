@@ -29,11 +29,12 @@
 
 tscd-theme {
 	/* OPEN SCD INSTANCE HEADER */
-	--header-height: 128px;
+	--header-height: 112px;
 
 	font-family: "Roboto", sans-serif;
 	height: calc(100vh - var(--header-height));
-	display: block;
+	display: flex;
+	align-items: stretch;
 	position: relative;
 	background-color: var(--mdc-theme-background);
 }

@@ -3,11 +3,11 @@ import type {
 	SCDBaseElement,
 	AllowedElements,
 	AllowedElementNames,
-	SubstationElementAttributes,
-	VoltageLevelElementAttributes,
-	BayElementAttributes,
-	IEDElementAttributes,
-	LDeviceElementAttributes
+	SubstationElement,
+	VoltageLevelElement,
+	BayElement,
+	IEDElement,
+	LDeviceElement
 } from '../types.scd-queries'
 
 export namespace DataTypeTemplates {
@@ -25,11 +25,11 @@ export namespace DataTypeTemplates {
 
 	export type RootElement = SCDBaseElement
 	export type SubElements = {
-		substations: SubstationElementAttributes[]
-		voltageLevels: VoltageLevelElementAttributes[]
-		bays: BayElementAttributes[]
-		ieds: IEDElementAttributes[]
-		logicalDevices: LDeviceElementAttributes[]
+		substations: SubstationElement[]
+		voltageLevels: VoltageLevelElement[]
+		bays: BayElement[]
+		ieds: IEDElement[]
+		logicalDevices: LDeviceElement[]
 	}
 
 	export type ElementsTreeStructure = Record<
