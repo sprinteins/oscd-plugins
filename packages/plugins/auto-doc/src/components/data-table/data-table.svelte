@@ -13,22 +13,22 @@
       {
         name: 'Template1',
         description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda, asperiores accusamus quis sapiente sequi facilis?',
-        lastEdited: new Date(),
+        lastEdited: new Date("2024-10-15T08:38:00"),
       },
       {
         name: 'Template256',
         description: 'A simple description',
-        lastEdited: new Date()
+        lastEdited: new Date("2024-10-10T13:24:00")
       },
       {
         name: 'CYK_Template',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
+        description: 'I have an invalid Date ',
         lastEdited: new Date("foo"),
       },
       {
         name: 'I surely have quite a long title name.',
         description: "Lorem ipsum dolor sit amet consectetur.",
-        lastEdited: new Date(),
+        lastEdited: new Date("2024-10-20T10:55:32"),
       },
       {
         name: 'AUOBHBT Template',
@@ -129,7 +129,7 @@ function getDD_MM_YYYYFromDate(date: Date): string{
 
   
 
-<style>
+<style lang="scss">
 
     .total-selected{
         /* border: 1px solid red; */
@@ -138,8 +138,13 @@ function getDD_MM_YYYYFromDate(date: Date): string{
     .table-container{
        min-width: 1600px;
     }
-    .table-container :global(.mdc-data-table__table-container){
-        /* background-color: red; */
+    .table-container{
+
+        & :global(.mdc-data-table__table-container),
+        :global(.mdc-data-table__header-cell)
+        {
+            background-color: rgba(255,255,255);
+        }
     }
    
 </style>
