@@ -1,9 +1,9 @@
 <script context="module" lang="ts">
-  export type Column = {
-    name: string;
-    visible: boolean;
-    items: DataTypeTemplates[];
-  };
+export type Column = {
+	name: string
+	visible: boolean
+	items: DataTypeTemplates[]
+}
 </script>
 
 <script lang="ts">
@@ -34,12 +34,13 @@
       <Paper class={`column-${column.visible ? "expanded" : "collapsed"}`}>
         <div class="column-header">
           {#if column.visible}
-            <h2>{column.name}</h2>
+            <h1>{column.name}</h1>
           {:else}
-            <h2>{column.name} (hidden)</h2>
+            <h1>{column.name} (hidden)</h1>
           {/if}
           <IconButton
             on:click={() => columnsStore.toggleColumnVisibility(index)}
+						class="icon-visibility"
           >
             <IconWrapper
               icon={column.visible ? "visibility" : "visibility_off"}
@@ -54,16 +55,18 @@
             </div>
           </Content>
         {/if}
-        <div class="add-button-container">
-          {#if column.visible && column.name !== ELEMENT_NAMES.lNode}
-            <Button
-              class="add-button"
-              on:click={() => columnsStore.addItemToColumn(index)}
-            >
-              + add {column.name}
-            </Button>
-          {/if}
-        </div>
+        
+				{#if column.visible && column.name !== ELEMENT_NAMES.lNode}
+				<div class="add-button-container">
+					<Button
+						class="add-button"
+						on:click={() => columnsStore.addItemToColumn(index)}
+					>
+						+ add {column.name}
+					</Button>
+				</div>
+				{/if}
+
       </Paper>
     {/each}
   {/if}
@@ -73,7 +76,6 @@
   .columns-container {
     display: flex;
     gap: 1rem;
-    justify-content: space-between;
     padding: 1rem;
     height: 100%;
     overflow: hidden;
@@ -91,30 +93,43 @@
   }
 
   #type-designer-columns :global(.column-collapsed) {
-    width: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+		display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
   }
 
   #type-designer-columns :global(.column-header) {
     display: flex;
     justify-content: space-between;
-    padding: 0.5rem;
+		align-items: center;
+		padding: 0 1rem;
   }
 
   #type-designer-columns :global(.column-collapsed .column-header) {
-    width: 2rem;
-    height: 100%;
-    flex-direction: column-reverse;
-    align-items: center;
-    padding: 0rem;
+		padding: revert;
+		position: relative;
+		display: flex;
+		height: 100%;
+		flex-direction: column;
+		align-items: center;
   }
 
-  #type-designer-columns :global(.column-collapsed h2) {
-    transform: rotate(-90deg);
-    transform-origin: center;
-    width: max-content;
+	h1 {
+		width: max-content;
+	}
+
+  #type-designer-columns :global(.column-collapsed h1) {
+		transform-origin: 0 0;
+		transform: rotate(-90deg);
+		line-height: revert !important;
+		position: absolute;
+		bottom: -1.5rem;
+		left: .75rem;
+		margin: 0;
+  }
+
+	#type-designer-columns :global(.icon-visibility) {
+    margin-top: .25rem;
   }
 
   #type-designer-columns :global(.content) {
@@ -157,16 +172,6 @@
     cursor: pointer;
   }
 
-  #type-designer-columns :global(.rhombus-icon) {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 8px;
-    height: 8px;
-    background-color: rgb(81, 159, 152);
-    transform: rotate(45deg);
-  }
-
   @media (max-width: 768px) {
     .columns-container {
       flex-direction: column;
@@ -177,5 +182,29 @@
       max-width: none;
       height: auto;
     }
+
+		/* COLUMNS COLLAPSE */
+
+
+		#type-designer-columns :global(.column-collapsed .column-header) {
+			padding: inherit;
+			position: relative;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			width: 100%;
+		}
+
+		#type-designer-columns :global(.column-collapsed h1) {
+			transform-origin: 0 0;
+			transform: rotate(0deg);
+			line-height: revert !important;
+			position: revert;
+			margin: revert;
+		}
+
+		#type-designer-columns :global(.icon-visibility) {
+    margin-top: revert;
+  }
   }
 </style>
