@@ -1,7 +1,9 @@
 <script lang="ts">
     import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
     import Checkbox from '@smui/checkbox';
-    import Button from "../../../../../uilib/src/lib/components/button/button.svelte"
+    import  IconWrapper from '../../../../../ui/src/components/icons/icon-wrapper.svelte'
+    import IconButton from '@smui/icon-button'
+
 
     type Template = {
         name: string,
@@ -76,7 +78,15 @@ function getDD_MM_YYYYFromDate(date: Date): string{
   </script>
 
 
-<div class="table-container">
+<div class="template-controls">
+    <button class="btn-pill btn-pill-primary"> + Add template</button>
+
+    <button class="btn-pill btn-pill-outlined">Export Documents</button>
+    <button class="btn-pill btn-pill-outlined">Filter</button>
+</div>
+
+
+<main class="table-container">
     <p class="total-selected">
         {#if selectedTemplates.length > 0}
             {totalSelected} items selected
@@ -93,7 +103,7 @@ function getDD_MM_YYYYFromDate(date: Date): string{
             <Cell class="big">Name</Cell>
             <Cell>Last Edited</Cell>
             <Cell>Description</Cell>
-            <Cell>Actions</Cell>
+            <Cell></Cell>
           </Row>
         </Head>
         <Body>
@@ -111,17 +121,25 @@ function getDD_MM_YYYYFromDate(date: Date): string{
                 <Cell>{template.description}</Cell>
                 <Cell>
                 <div class="action-btns">
-                    <button>Edit</button>
-                    <button>Delete</button>
-                    <button>Duplicate</button>
-                    <button>Download</button>
+                    <IconButton>
+                        <IconWrapper icon="edit" fillColor="black"/>
+                    </IconButton>
+                    <IconButton>
+                        <IconWrapper icon="delete" fillColor="black"/>
+                    </IconButton>
+                    <IconButton>
+                        <IconWrapper icon="content_copy" fillColor="black"/>
+                    </IconButton>
+                    <IconButton>
+                        <IconWrapper icon="download" fillColor="black"/>
+                    </IconButton>
                 </div>
                 </Cell>
             </Row>
             {/each}
         </Body>
     </DataTable>
-</div>
+</main>
 
 
 
@@ -130,6 +148,8 @@ function getDD_MM_YYYYFromDate(date: Date): string{
   
 
 <style lang="scss">
+    $clr-purple: #6C71C3;
+    $clr-purple-15: #494fbf;
 
     .total-selected{
         /* border: 1px solid red; */
@@ -144,6 +164,37 @@ function getDD_MM_YYYYFromDate(date: Date): string{
         :global(.mdc-data-table__header-cell)
         {
             background-color: rgba(255,255,255);
+        }
+    }
+
+    .template-controls{
+        margin: 1rem 0 0 1rem;
+        .btn-pill{
+            padding: 0.5em 1em;
+            border-radius: 1em;
+            cursor: pointer;
+        }
+
+        .btn-pill-outlined{
+            background-color: transparent;
+            border-color: $clr-purple;
+            color: $clr-purple;
+
+
+            &:hover{
+                background-color: $clr-purple;
+                color: white;
+            }
+        }
+
+        .btn-pill-primary{
+            background-color: $clr-purple;
+            color: white;
+
+            &:hover{
+                background-color:$clr-purple-15;
+                color: white;
+            }
         }
     }
    
