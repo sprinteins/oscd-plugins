@@ -58,6 +58,7 @@ export type IEDElement = SCDBaseElement & IEDElementAttributes
 
 export type LDeviceElementAttributes = {
 	id: string
+	name: string
 	desc: string
 	inst: string
 }
