@@ -78,33 +78,32 @@ function getDD_MM_YYYYFromDate(date: Date): string{
   </script>
 
 
-<div class="template-controls">
+<header class="template-controls">
     <button class="btn-pill btn-pill-primary"> + Add template</button>
 
     <button class="btn-pill btn-pill-outlined">Export Documents</button>
     <button class="btn-pill btn-pill-outlined">Filter</button>
-</div>
 
-
-<main class="table-container">
-    <p class="total-selected">
+    <span class="total-selected">
         {#if selectedTemplates.length > 0}
             {totalSelected} items selected
         {/if}
-    </p>
-    
-    
-    <DataTable style="width: 100%">
+    </span>
+</header>
+
+
+<main class="table-container">      
+    <DataTable>
         <Head>
-          <Row>
+            <Row>
             <Cell checkbox>
-              <Checkbox />
+                <Checkbox />
             </Cell>
             <Cell class="big">Name</Cell>
             <Cell>Last Edited</Cell>
             <Cell>Description</Cell>
             <Cell></Cell>
-          </Row>
+            </Row>
         </Head>
         <Body>
             {#each allTemplates as template (template.name)}
@@ -152,11 +151,13 @@ function getDD_MM_YYYYFromDate(date: Date): string{
     $clr-purple-15: #494fbf;
 
     .total-selected{
-        /* border: 1px solid red; */
         min-height: 1.25rem;
     }
     .table-container{
-       min-width: 1600px;
+       width: 100%;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
     }
     .table-container{
 
@@ -168,7 +169,7 @@ function getDD_MM_YYYYFromDate(date: Date): string{
     }
 
     .template-controls{
-        margin: 1rem 0 0 1rem;
+        margin: 1rem 0 1rem 1rem;
         .btn-pill{
             padding: 0.5em 1em;
             border-radius: 1em;
@@ -195,6 +196,12 @@ function getDD_MM_YYYYFromDate(date: Date): string{
                 background-color:$clr-purple-15;
                 color: white;
             }
+        }
+
+
+        span{
+            display: inline-block;
+            margin-left: inherit;
         }
     }
    

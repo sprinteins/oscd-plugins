@@ -5,7 +5,7 @@
 
 
 <MaterialTheme pluginType={pluginType}>
-	<auto-doc>
+	<auto-doc class="auto-doc">
 		<!-- <ElementsTypeContainer /> -->
 		 <Table/>
 	</auto-doc>
@@ -38,4 +38,13 @@ $: pluginStore.init({
 $: dataTypeTemplatesStore.init(xmlDocument?.documentElement)
 
 </script>
+
+
+
+<style>
+	.auto-doc{
+		width: 100%;
+	}
+	
+</style>
 	
