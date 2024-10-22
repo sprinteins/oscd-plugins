@@ -54,7 +54,6 @@ $: if (mode.isStandAlone) import('normalize.css/normalize.css')
 $: cssFixedStyles['header-height'] = setHeaderHeight(mode)
 $: cssFixedStyles['global-height'] = setGlobalHeight(mode)
 $: cssFixedStyles['global-background-color'] = setGlobalBackgroundColor(mode)
-// dynamic inline styles
 $: cssDynamicStyles = setInlineStyles(cssFixedStyles)
 
 //====== FUNCTIONS ======//

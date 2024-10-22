@@ -27,7 +27,6 @@ const cssFixedStyles = {
 
 $: iconColor = setColor(color)
 $: cssFixedStyles['button-size'] = setButtonSize(size)
-// dynamic inline styles
 $: cssDynamicStyles = setInlineStyles(cssFixedStyles)
 
 //====== FUNCTIONS ======//

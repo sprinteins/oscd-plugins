@@ -24,7 +24,6 @@ const cssFixedStyles = {
 
 $: draw = getIcon(icon)
 $: cssFixedStyles['svg-padding'] = setPadding(isCustomIconButton)
-// dynamic inline styles
 $: cssDynamicStyles = setInlineStyles(cssFixedStyles)
 
 //====== FUNCTIONS ======//
