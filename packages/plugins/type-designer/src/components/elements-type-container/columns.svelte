@@ -1,59 +1,65 @@
 <script lang="ts">
-// CONSTANTS
-import { ELEMENT_NAMES } from '@oscd-plugins/core'
-// SMUI COMPONENTS
-import IconButton from '@smui/icon-button'
-import Paper, { Content } from '@smui/paper'
-import Button from '@smui/button'
-// UI COMPONENTS
-import { IconWrapper } from '@oscd-plugins/ui'
-// LOCAL COMPONENTS
-import ContentCard from './content-card.svelte'
-// STORES
-import { columnsStore } from '../../stores/columns.store'
+  // CONSTANTS
+  import { ELEMENT_NAMES } from "@oscd-plugins/core";
+  // SMUI COMPONENTS
+  import IconButton from "@smui/icon-button";
+  import Paper, { Content } from "@smui/paper";
+  import Button from "@smui/button";
+  // UI COMPONENTS
+  import { IconWrapper } from "@oscd-plugins/ui";
+  // LOCAL COMPONENTS
+  import ContentCard from "./content-card.svelte";
+  // STORES
+  import { columnsStore } from "../../stores/columns.store";
 
-//====== INITIALIZATION ======//
-const { columns } = columnsStore
+  //====== INITIALIZATION ======//
+  const { columns } = columnsStore;
+  columnsStore.loadDataFromSCD();
 </script>
 
 <div class="columns-container" id="type-designer-columns">
-	{#if $columns}
-		{#each $columns as column, index}
-			<Paper class="column-container">
-				<article class="column">
-					<div class="column-header">
-						{#if column.visible}
-							<h1>{column.name}</h1>
-						{:else}
-							<h1>{column.name} (hidden)</h1>
-						{/if}
-						<IconButton on:click={() => columnsStore.toggleColumnVisibility(index)}>
-							<IconWrapper
-								icon={column.visible ? "visibility" : "visibility_off"}
-								fillColor="rgb(81, 159, 152)"
-							/>
-						</IconButton>
-					</div>
-					{#if column.visible}
-						<Content class="content">
-							<div class="element-types">
-								{#each column.items as elementType}
-									<ContentCard {elementType} />
-								{/each}
-							</div>
-						</Content>
-					{/if}
-					<div class="add-button-container">
-						{#if column.visible && column.name !== ELEMENT_NAMES.lNode}
-							<Button class="add-button" on:click={() => columnsStore.addItemToColumn(index)}>
-								New {column.name}
-							</Button>
-						{/if}
-					</div>
-				</article>
-			</Paper>
-		{/each}
-	{/if}
+  {#if $columns}
+    {#each $columns as column, index}
+      <Paper class="column-container">
+        <article class="column">
+          <div class="column-header">
+            {#if column.visible}
+              <h1>{column.name}</h1>
+            {:else}
+              <h1>{column.name} (hidden)</h1>
+            {/if}
+            <IconButton
+              on:click={() => columnsStore.toggleColumnVisibility(index)}
+            >
+              <IconWrapper
+                icon={column.visible ? "visibility" : "visibility_off"}
+                fillColor="rgb(81, 159, 152)"
+              />
+            </IconButton>
+          </div>
+          {#if column.visible}
+            <Content class="content">
+              <div class="element-types">
+                {#each column.items as elementType}
+                  <ContentCard {elementType} />
+                {/each}
+              </div>
+            </Content>
+          {/if}
+          <div class="add-button-container">
+            {#if column.visible && column.name !== ELEMENT_NAMES.lNode}
+              <Button
+                class="add-button"
+                on:click={() => columnsStore.addItemToColumn(index)}
+              >
+                New {column.name}
+              </Button>
+            {/if}
+          </div>
+        </article>
+      </Paper>
+    {/each}
+  {/if}
 </div>
 
 <style>

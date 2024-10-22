@@ -1,9 +1,6 @@
 import { writable, get } from 'svelte/store'
-// CONSTANTS
 import { ELEMENT_NAMES } from '@oscd-plugins/core'
-// STORES
 import { dataTypeTemplatesStore } from './data-types-templates.store'
-// TYPES
 import type {
 	Column,
 	BayType,
@@ -14,51 +11,21 @@ import type {
 	VoltageLevelType
 } from './columns-type.store'
 
-//==== FOREIGN STORES
-
-const dataTypeTemplatesSubElements = get(
-	dataTypeTemplatesStore.dataTypeTemplatesSubElements
-)
-//==== INIT STATE
-
 const initialColumns: Column[] = [
-	{
-		name: ELEMENT_NAMES.substation,
-		visible: true,
-		items: dataTypeTemplatesSubElements?.substations || []
-	},
-	{
-		name: ELEMENT_NAMES.voltageLevel,
-		visible: true,
-		items: dataTypeTemplatesSubElements?.voltageLevels || []
-	},
-	{
-		name: ELEMENT_NAMES.bay,
-		visible: true,
-		items: dataTypeTemplatesSubElements?.bays || []
-	},
-	{
-		name: ELEMENT_NAMES.ied,
-		visible: true,
-		items: dataTypeTemplatesSubElements?.ieds || []
-	},
-	{
-		name: ELEMENT_NAMES.lDevice,
-		visible: true,
-		items: dataTypeTemplatesSubElements?.logicalDevices || []
-	},
+	{ name: ELEMENT_NAMES.substation, visible: true, items: [] },
+	{ name: ELEMENT_NAMES.voltageLevel, visible: true, items: [] },
+	{ name: ELEMENT_NAMES.bay, visible: true, items: [] },
+	{ name: ELEMENT_NAMES.ied, visible: true, items: [] },
+	{ name: ELEMENT_NAMES.lDevice, visible: true, items: [] },
 	{ name: ELEMENT_NAMES.lNode, visible: true, items: [] }
 ]
 
-//==== STATE
 const columns = writable<Column[]>(initialColumns)
 
-//==== PRIVATE ACTIONS
-
-const toggleColumnVisibility = (index: number) => {
+function toggleColumnVisibility(currentColumnIndex: number) {
 	columns.update((columns) =>
 		columns.map((column, i) =>
-			i === index ? { ...column, visible: !column.visible } : column
+			i === currentColumnIndex ? { ...column, visible: !column.visible } : column
 		)
 	)
 }
@@ -105,15 +72,15 @@ function createNewItem(
 	}
 }
 
-const addItemToColumn = (index: number) => {
+function addItemToColumn(currentColumnIndex: number) {
 	columns.update((columns) => {
-		const column = columns[index]
+		const column = columns[currentColumnIndex]
 		const itemCount = column.items.length
 		const newItem = createNewItem(column.name, itemCount)
 
 		if (newItem) {
 			return columns.map((col, i) =>
-				i === index ? { ...col, items: [...col.items, newItem] } : col
+				i === currentColumnIndex ? { ...col, items: [...col.items, newItem] } : col
 			)
 		}
 
@@ -121,10 +88,44 @@ const addItemToColumn = (index: number) => {
 	})
 }
 
+async function loadDataFromSCD() {
+	const dataTypeTemplatesSubElements = get(
+		dataTypeTemplatesStore.dataTypeTemplatesSubElements
+	)
+
+	columns.update(() => [
+		{
+			name: ELEMENT_NAMES.substation,
+			visible: true,
+			items: dataTypeTemplatesSubElements?.substations || []
+		},
+		{
+			name: ELEMENT_NAMES.voltageLevel,
+			visible: true,
+			items: dataTypeTemplatesSubElements?.voltageLevels || []
+		},
+		{
+			name: ELEMENT_NAMES.bay,
+			visible: true,
+			items: dataTypeTemplatesSubElements?.bays || []
+		},
+		{
+			name: ELEMENT_NAMES.ied,
+			visible: true,
+			items: dataTypeTemplatesSubElements?.ieds || []
+		},
+		{
+			name: ELEMENT_NAMES.lDevice,
+			visible: true,
+			items: dataTypeTemplatesSubElements?.logicalDevices || []
+		},
+		{ name: ELEMENT_NAMES.lNode, visible: true, items: [] }
+	])
+}
+
 export const columnsStore = {
-	//state
 	columns,
-	//actions
 	toggleColumnVisibility,
-	addItemToColumn
+	addItemToColumn,
+	loadDataFromSCD
 }
