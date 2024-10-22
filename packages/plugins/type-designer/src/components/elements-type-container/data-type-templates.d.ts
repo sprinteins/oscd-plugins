@@ -11,15 +11,15 @@ export type DataTypeTemplate = {
 	name: string
 	desc: string
 }
-
-export type LDeviceType = DataTypeTemplate & LDeviceElementAttributes
+export type SubstationType = DataTypeTemplate & SubstationElementAttributes
+export type VoltageLevelType = DataTypeTemplate & VoltageLevelElementAttributes
 export type BayType = DataTypeTemplate & BayElementAttributes
 export type IEDType = DataTypeTemplate & IEDElementAttributes
-export type VoltageLevelType = DataTypeTemplate & VoltageLevelElementAttributes
-export type SubstationType = DataTypeTemplate & SubstationElementAttributes
+export type LDeviceType = DataTypeTemplate & LDeviceElementAttributes
+
 export type DataTypeTemplates =
-	| LDeviceType
+	| SubstationType
+	| VoltageLevelType
 	| BayType
 	| IEDType
-	| VoltageLevelType
-	| SubstationType
+	| LDeviceType

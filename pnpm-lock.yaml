@@ -552,7 +552,7 @@ importers:
         version: 6.11.0(eslint@8.31.0)(typescript@5.2.2)
       '@vitest/coverage-c8':
         specifier: ^0.30.1
-        version: 0.30.1(vitest@0.30.1(@vitest/ui@0.30.1)(jsdom@21.1.1)(sass@1.62.0))
+        version: 0.30.1(vitest@0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2)))
       '@vitest/ui':
         specifier: ^0.30.1
         version: 0.30.1
@@ -570,7 +570,7 @@ importers:
         version: 3.55.0
       svelte-check:
         specifier: ^3.0.1
-        version: 3.0.4(postcss@8.4.21)(sass@1.62.0)(svelte@3.55.0)
+        version: 3.0.4(postcss@8.4.45)(sass@1.62.0)(svelte@3.55.0)
       tslib:
         specifier: ^2.4.1
         version: 2.4.1
@@ -585,7 +585,7 @@ importers:
         version: 1.0.9
       vitest:
         specifier: ^0.30.1
-        version: 0.30.1(@vitest/ui@0.30.1)(jsdom@21.1.1)(sass@1.62.0)
+        version: 0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2))
 
 packages:
 
@@ -8795,12 +8795,23 @@ snapshots:
       sirv: 2.0.2
       vitest: 0.29.7(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@4.9.4))
 
-  '@vitest/coverage-c8@0.30.1(vitest@0.30.1(@vitest/ui@0.30.1)(jsdom@21.1.1)(sass@1.62.0))':
+  '@vitest/browser@0.29.7(vitest@0.30.1)':
+    dependencies:
+      '@vitest/runner': 0.29.7
+      local-pkg: 0.4.2
+      mlly: 1.2.0
+      modern-node-polyfills: 0.1.0
+      rollup-plugin-node-polyfills: 0.2.1
+      sirv: 2.0.2
+      vitest: 0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2))
+    optional: true
+
+  '@vitest/coverage-c8@0.30.1(vitest@0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2)))':
     dependencies:
       c8: 7.13.0
       picocolors: 1.0.0
       std-env: 3.3.2
-      vitest: 0.30.1(@vitest/ui@0.30.1)(jsdom@21.1.1)(sass@1.62.0)
+      vitest: 0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2))
 
   '@vitest/expect@0.29.7':
     dependencies:
@@ -9574,6 +9585,30 @@ snapshots:
       - supports-color
       - typescript
       - utf-8-validate
+
+  devtools@8.6.6(typescript@5.2.2):
+    dependencies:
+      '@types/node': 18.11.18
+      '@wdio/config': 8.6.6
+      '@wdio/logger': 8.6.6
+      '@wdio/protocols': 8.6.6
+      '@wdio/types': 8.4.0
+      '@wdio/utils': 8.6.6
+      chrome-launcher: 0.15.1
+      edge-paths: 3.0.5
+      import-meta-resolve: 2.2.1
+      puppeteer-core: 19.7.5(typescript@5.2.2)
+      query-selector-shadow-dom: 1.0.1
+      ua-parser-js: 1.0.34
+      uuid: 9.0.0
+      which: 3.0.0
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
+    optional: true
 
   diff@5.1.0: {}
 
@@ -11845,7 +11880,7 @@ snapshots:
       - stylus
       - sugarss
 
-  svelte-check@3.0.4(postcss@8.4.21)(sass@1.62.0)(svelte@3.55.0):
+  svelte-check@3.0.4(postcss@8.4.45)(sass@1.62.0)(svelte@3.55.0):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.17
       chokidar: 3.5.3
@@ -11854,7 +11889,7 @@ snapshots:
       picocolors: 1.0.0
       sade: 1.8.1
       svelte: 3.55.0
-      svelte-preprocess: 5.0.1(postcss@8.4.21)(sass@1.62.0)(svelte@3.55.0)(typescript@4.9.4)
+      svelte-preprocess: 5.0.1(postcss@8.4.45)(sass@1.62.0)(svelte@3.55.0)(typescript@4.9.4)
       typescript: 4.9.4
     transitivePeerDependencies:
       - '@babel/core'
@@ -12021,7 +12056,7 @@ snapshots:
       sass: 1.62.0
       typescript: 4.9.4
 
-  svelte-preprocess@5.0.1(postcss@8.4.21)(sass@1.62.0)(svelte@3.55.0)(typescript@4.9.4):
+  svelte-preprocess@5.0.1(postcss@8.4.45)(sass@1.62.0)(svelte@3.55.0)(typescript@4.9.4):
     dependencies:
       '@types/pug': 2.0.6
       '@types/sass': 1.43.1
@@ -12031,7 +12066,7 @@ snapshots:
       strip-indent: 3.0.0
       svelte: 3.55.0
     optionalDependencies:
-      postcss: 8.4.21
+      postcss: 8.4.45
       sass: 1.62.0
       typescript: 4.9.4
 
@@ -12486,7 +12521,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@0.30.1(@vitest/ui@0.30.1)(jsdom@21.1.1)(sass@1.62.0):
+  vitest@0.30.1(@vitest/browser@0.29.7)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.1)(safaridriver@0.0.4)(sass@1.62.0)(webdriverio@8.6.7(typescript@5.2.2)):
     dependencies:
       '@types/chai': 4.3.4
       '@types/chai-subset': 1.3.3
@@ -12515,8 +12550,12 @@ snapshots:
       vite-node: 0.30.1(@types/node@18.11.18)(sass@1.62.0)
       why-is-node-running: 2.2.2
     optionalDependencies:
+      '@vitest/browser': 0.29.7(vitest@0.30.1)
       '@vitest/ui': 0.30.1
+      happy-dom: 8.9.0
       jsdom: 21.1.1
+      safaridriver: 0.0.4
+      webdriverio: 8.6.7(typescript@5.2.2)
     transitivePeerDependencies:
       - less
       - sass
@@ -12579,6 +12618,41 @@ snapshots:
       - supports-color
       - typescript
       - utf-8-validate
+
+  webdriverio@8.6.7(typescript@5.2.2):
+    dependencies:
+      '@types/node': 18.11.18
+      '@wdio/config': 8.6.6
+      '@wdio/logger': 8.6.6
+      '@wdio/protocols': 8.6.6
+      '@wdio/repl': 8.6.6
+      '@wdio/types': 8.4.0
+      '@wdio/utils': 8.6.6
+      archiver: 5.3.1
+      aria-query: 5.1.3
+      css-shorthand-properties: 1.1.1
+      css-value: 0.0.1
+      devtools: 8.6.6(typescript@5.2.2)
+      devtools-protocol: 0.0.1119014
+      grapheme-splitter: 1.0.4
+      import-meta-resolve: 2.2.1
+      is-plain-obj: 4.1.0
+      lodash.clonedeep: 4.5.0
+      lodash.zip: 4.2.0
+      minimatch: 7.4.2
+      puppeteer-core: 19.7.5(typescript@5.2.2)
+      query-selector-shadow-dom: 1.0.1
+      resq: 1.11.0
+      rgb2hex: 0.2.5
+      serialize-error: 8.1.0
+      webdriver: 8.6.6
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
+    optional: true
 
   webidl-conversions@3.0.1: {}
 

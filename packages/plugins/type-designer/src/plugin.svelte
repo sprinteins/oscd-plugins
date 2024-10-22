@@ -5,7 +5,11 @@
 
 <MaterialTheme pluginType={pluginType}>
 	<type-designer>
-		<ElementsTypeContainer />
+		{#if xmlDocument}
+				<ElementsTypeContainer />
+		{:else}
+			<p>No xml document loaded</p>
+		{/if}
 	</type-designer>
 </MaterialTheme>
 

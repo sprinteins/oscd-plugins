@@ -18,16 +18,16 @@ export class DataTypeTemplatesService {
 		options?: CommonOptions
 	): DataTypeTemplates.SubElements {
 		return {
-			logicalDevices:
-				this.dataTypeTemplatesQueries.searchLDeviceElements(options),
-			bays: this.dataTypeTemplatesQueries.searchBayElements(options),
-			ieds: this.dataTypeTemplatesQueries.searchIEDElements(options),
+			substations:
+				this.dataTypeTemplatesQueries.searchSubstationElements(options),
 			voltageLevels:
 				this.dataTypeTemplatesQueries.searchVoltageLevelElements(
 					options
 				),
-			substations:
-				this.dataTypeTemplatesQueries.searchSubstationElements(options)
+			bays: this.dataTypeTemplatesQueries.searchBayElements(options),
+			ieds: this.dataTypeTemplatesQueries.searchIEDElements(options),
+			logicalDevices:
+				this.dataTypeTemplatesQueries.searchLDeviceElements(options)
 		}
 	}
 }

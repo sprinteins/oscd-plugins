@@ -1,53 +1,72 @@
 <script lang="ts">
-  import Paper, { Content } from "@smui/paper";
-  import Button from "@smui/button";
-  import { createNewItem } from "./create-new-item";
-  import { ELEMENT_NAMES, type DataTypeTemplates } from "@oscd-plugins/core";
-  import ContentCard from "./content-card.svelte";
-  import IconWrapper from "@oscd-plugins/ui/src/components/icons/icon-wrapper.svelte";
-  import IconButton from "@smui/icon-button";
-  import type { Column } from "./column-type";
+// CONSTANTS
+import { ELEMENT_NAMES } from '@oscd-plugins/core'
+// SMUI COMPONENTS
+import IconButton from '@smui/icon-button'
+import Paper, { Content } from '@smui/paper'
+import Button from '@smui/button'
+// UI COMPONENTS
+import { IconWrapper } from '@oscd-plugins/ui'
+// LOCAL COMPONENTS
+import ContentCard from './content-card.svelte'
+import { createNewItem } from './create-new-item'
+// STORES
+import { dataTypeTemplatesStore } from '../../stores'
+// TYPES
+import type { Column } from './column-type'
 
-  export let dataTypeTemplates: DataTypeTemplates.SubElements;
+//====== INITIALIZATION ======//
 
-  let columns: Column[] = [
-    {
-      name: ELEMENT_NAMES.substation,
-      visible: true,
-      items: dataTypeTemplates.substations,
-    },
-    {
-      name: ELEMENT_NAMES.voltageLevel,
-      visible: true,
-      items: dataTypeTemplates.voltageLevels,
-    },
-    { name: ELEMENT_NAMES.bay, visible: true, items: dataTypeTemplates.bays },
-    { name: ELEMENT_NAMES.ied, visible: true, items: dataTypeTemplates.ieds },
-    {
-      name: ELEMENT_NAMES.lDevice,
-      visible: true,
-      items: dataTypeTemplates.logicalDevices,
-    },
-    { name: ELEMENT_NAMES.lNode, visible: true, items: [] },
-  ];
+// stores
+const { dataTypeTemplatesSubElements } = dataTypeTemplatesStore
 
-  function toggleColumnVisibility(index: number) {
-    columns = columns.map((column, i) =>
-      i === index ? { ...column, visible: !column.visible } : column,
-    );
-  }
+// local variables
+let columns: Column[] = [
+	{
+		name: ELEMENT_NAMES.substation,
+		visible: true,
+		items: $dataTypeTemplatesSubElements.substations
+	},
+	{
+		name: ELEMENT_NAMES.voltageLevel,
+		visible: true,
+		items: $dataTypeTemplatesSubElements.voltageLevels
+	},
+	{
+		name: ELEMENT_NAMES.bay,
+		visible: true,
+		items: $dataTypeTemplatesSubElements.bays
+	},
+	{
+		name: ELEMENT_NAMES.ied,
+		visible: true,
+		items: $dataTypeTemplatesSubElements.ieds
+	},
+	{
+		name: ELEMENT_NAMES.lDevice,
+		visible: true,
+		items: $dataTypeTemplatesSubElements.logicalDevices
+	},
+	{ name: ELEMENT_NAMES.lNode, visible: true, items: [] }
+]
 
-  function addItemToColumn(index: number) {
-    const column = columns[index];
-    const itemCount = column.items.length;
-    const newItem = createNewItem(column.name, itemCount);
+function toggleColumnVisibility(index: number) {
+	columns = columns.map((column, i) =>
+		i === index ? { ...column, visible: !column.visible } : column
+	)
+}
 
-    if (newItem) {
-      columns = columns.map((col, i) =>
-        i === index ? { ...col, items: [...col.items, newItem] } : col,
-      );
-    }
-  }
+function addItemToColumn(index: number) {
+	const column = columns[index]
+	const itemCount = column.items.length
+	const newItem = createNewItem(column.name, itemCount)
+
+	if (newItem) {
+		columns = columns.map((col, i) =>
+			i === index ? { ...col, items: [...col.items, newItem] } : col
+		)
+	}
+}
 </script>
 
 <div class="columns-container" id="type-designer-columns">
