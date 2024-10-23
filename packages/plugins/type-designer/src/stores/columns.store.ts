@@ -1,6 +1,9 @@
 import { writable, get } from 'svelte/store'
+// CONSTANTS
 import { ELEMENT_NAMES } from '@oscd-plugins/core'
+// STORES
 import { dataTypeTemplatesStore } from './data-types-templates.store'
+// TYPES
 import type {
 	Column,
 	BayType,
