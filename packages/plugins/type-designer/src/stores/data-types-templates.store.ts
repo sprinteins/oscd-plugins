@@ -27,22 +27,12 @@ function setSubElements(
 	return newSubElements
 }
 
-// TODO
-// function setSubRefElements(service: DataTypeTemplatesService, subElements: DataTypeTemplates.SubElements) {
-// 	const newSubElements = service.findTypeDesignerElements({
-// 		root:
-// 	})
-
-// 	subElements.set(newSubElements)
-// }
-
 //==== INITIALIZATION
 function init(newXmlDocument: Element | undefined) {
 	if (!newXmlDocument) return
 	const service = new DataTypeTemplatesService(newXmlDocument)
 	setRootElement(service)
-	const subElements = setSubElements(service)
-	// setSubRefElements(service, subElements)
+	setSubElements(service)
 }
 
 export const dataTypeTemplatesStore = {
