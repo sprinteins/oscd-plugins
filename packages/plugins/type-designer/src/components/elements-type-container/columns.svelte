@@ -14,6 +14,7 @@ import { columnsStore } from '../../stores/columns.store'
 
 //====== INITIALIZATION ======//
 const { columns } = columnsStore
+columnsStore.loadDataFromSCD()
 </script>
 
 <div class="columns-container" id="type-designer-columns">
