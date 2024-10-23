@@ -1,20 +1,20 @@
 <script lang="ts">
 // CONSTANTS
-import { ELEMENT_NAMES } from '@oscd-plugins/core'
+import { ELEMENT_NAMES } from "@oscd-plugins/core";
 // SMUI COMPONENTS
-import IconButton from '@smui/icon-button'
-import Paper, { Content } from '@smui/paper'
-import Button from '@smui/button'
+import IconButton, { Icon } from "@smui/icon-button";
+import Paper, { Content } from "@smui/paper";
+import Button from "@smui/button";
 // UI COMPONENTS
-import { IconWrapper } from '@oscd-plugins/ui'
+import { IconWrapper } from "@oscd-plugins/ui";
 // LOCAL COMPONENTS
-import ContentCard from './content-card.svelte'
+import ContentCard from "./content-card.svelte";
 // STORES
-import { columnsStore } from '../../stores/columns.store'
+import { columnsStore } from "../../stores/columns.store";
 
 //====== INITIALIZATION ======//
-const { columns } = columnsStore
-columnsStore.loadDataFromSCD()
+const { columns } = columnsStore;
+columnsStore.loadDataFromSCD();
 </script>
 
 <div class="columns-container" id="type-designer-columns">
@@ -39,7 +39,18 @@ columnsStore.loadDataFromSCD()
 						<Content class="content">
 							<div class="element-types">
 								{#each column.items as elementType}
+									<IconWrapper
+										icon={column.visible ? "chevron_right" : "visibility_off"}
+										fillColor="rgb(81, 159, 152)"
+									/>
 									<ContentCard {elementType} />
+									{#if elementType.refElements && column.expanded}
+										{#each elementType.refElements as refType}
+											<div class="ref-element">
+												<ContentCard elementType={refType} />
+											</div>
+										{/each}
+									{/if}
 								{/each}
 							</div>
 						</Content>
@@ -127,6 +138,10 @@ columnsStore.loadDataFromSCD()
 	.element-types {
 		overflow-y: auto;
 		padding: 0.5rem;
+	}
+
+	.ref-element {
+		margin-left: 16px;
 	}
 
 	.add-button-container {

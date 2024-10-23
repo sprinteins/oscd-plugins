@@ -1,37 +1,38 @@
-import { writable, get } from 'svelte/store'
+import { writable, get } from "svelte/store";
 // CORE
-import { DataTypeTemplatesService } from '@oscd-plugins/core'
+import { DataTypeTemplatesService } from "@oscd-plugins/core";
 // TYPES
-import type { DataTypeTemplates } from '@oscd-plugins/core'
+import type { DataTypeTemplates } from "@oscd-plugins/core";
 
 //==== STATE
-const rootElement = writable<DataTypeTemplates.RootElement | null>(null)
-const subElements = writable<DataTypeTemplates.SubElements>()
+const rootElement = writable<DataTypeTemplates.RootElement | null>(null);
+const subElements = writable<DataTypeTemplates.SubElements>();
 
 //==== PRIVATE ACTIONS
 
-function setRootElement(newXmlDocument: Element) {
-	const typeDesigner = new DataTypeTemplatesService(newXmlDocument)
-	const newRootElement = typeDesigner.findDataTypesElement()
+function setRootElement(service: DataTypeTemplatesService) {
+	const newRootElement = service.findDataTypesElement();
 
-	rootElement.set(newRootElement)
+	rootElement.set(newRootElement);
 }
 
-function setSubElements(newXmlDocument: Element) {
-	const typeDesigner = new DataTypeTemplatesService(newXmlDocument)
+function setSubElements(
+	service: DataTypeTemplatesService,
+): DataTypeTemplates.SubElements {
+	const newSubElements = service.findTypeDesignerElements({
+		root: get(rootElement)?.element,
+	});
 
-	const newSubElements = typeDesigner.findTypeDesignerElements({
-		root: get(rootElement)?.element
-	})
-
-	subElements.set(newSubElements)
+	subElements.set(newSubElements);
+	return newSubElements;
 }
 
 //==== INITIALIZATION
 function init(newXmlDocument: Element | undefined) {
-	if (!newXmlDocument) return
-	setRootElement(newXmlDocument)
-	setSubElements(newXmlDocument)
+	if (!newXmlDocument) return;
+	const service = new DataTypeTemplatesService(newXmlDocument);
+	setRootElement(service);
+	setSubElements(service);
 }
 
 export const dataTypeTemplatesStore = {
@@ -39,5 +40,5 @@ export const dataTypeTemplatesStore = {
 	dataTypeTemplatesRootElement: rootElement,
 	dataTypeTemplatesSubElements: subElements,
 	//actions
-	init
-}
+	init,
+};

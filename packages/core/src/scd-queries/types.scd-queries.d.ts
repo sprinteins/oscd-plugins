@@ -1,5 +1,6 @@
 // CONSTANTS
 import type { ELEMENT_NAMES } from '../constants/element.constant'
+import type { LNodeElement } from './scd-query'
 
 //====== SCD QUERIES
 
@@ -20,46 +21,50 @@ export type AttributeList<T extends SCDBaseElement> = Exclude<
 export type AllowedElements = keyof typeof ELEMENT_NAMES
 export type AllowedElementNames = (typeof ELEMENT_NAMES)[AllowedElements]
 
-export type SubstationElementAttributes = {
+export type DataTypeTemplate = {
 	id: string
-	desc: string
 	name: string
+	desc: string
+	refElements: RefElements[]
+}
+
+export type SubstationElementAttributes = DataTypeTemplate & {
+	refElements: VoltageLevelElement[]
 }
 export type SubstationElement = SCDBaseElement & SubstationElementAttributes
 
-export type VoltageLevelElementAttributes = {
-	id: string
-	desc: string
-	name: string
+export type VoltageLevelElementAttributes = DataTypeTemplate & {
 	nomFreq: string
 	numPhases: string
+	refElements: BayElement[]
 }
 export type VoltageLevelElement = SCDBaseElement & VoltageLevelElementAttributes
 
-export type BayElementAttributes = {
-	id: string
-	desc: string
-	name: string
+export type BayElementAttributes = DataTypeTemplate & {
+	refElements: IEDElement[]
 }
 export type BayElement = SCDBaseElement & BayElementAttributes
 
-export type IEDElementAttributes = {
-	id: string
-	desc: string
-	name: string
+export type IEDElementAttributes = DataTypeTemplate & {
 	originalSclRevision: string
 	originalSclVersion: string
 	owner: string
 	configVersion: string
 	manufacturer: string
 	type: string
+	refElements: LDeviceElement[]
 }
 export type IEDElement = SCDBaseElement & IEDElementAttributes
 
-export type LDeviceElementAttributes = {
-	id: string
-	name: string
-	desc: string
+export type LDeviceElementAttributes = DataTypeTemplate & {
 	inst: string
+	refElements: LNodeElement[]
 }
 export type LDeviceElement = SCDBaseElement & LDeviceElementAttributes
+
+export type RefElements =
+	| VoltageLevelElement
+	| BayElement
+	| IEDElement
+	| LDeviceElement
+	| LNodeElement

@@ -1,8 +1,8 @@
-import { writable, get } from 'svelte/store'
+import { writable, get } from "svelte/store";
 // CONSTANTS
-import { ELEMENT_NAMES } from '@oscd-plugins/core'
+import { ELEMENT_NAMES } from "@oscd-plugins/core";
 // STORES
-import { dataTypeTemplatesStore } from './data-types-templates.store'
+import { dataTypeTemplatesStore } from "./data-types-templates.store";
 // TYPES
 import type {
 	Column,
@@ -11,8 +11,8 @@ import type {
 	IEDType,
 	LDeviceType,
 	SubstationType,
-	VoltageLevelType
-} from './columns-type.store'
+	VoltageLevelType,
+} from "./columns-type.store";
 
 const initialColumns: Column[] = [
 	{ name: ELEMENT_NAMES.substation, visible: true, items: [] },
@@ -20,115 +20,119 @@ const initialColumns: Column[] = [
 	{ name: ELEMENT_NAMES.bay, visible: true, items: [] },
 	{ name: ELEMENT_NAMES.ied, visible: true, items: [] },
 	{ name: ELEMENT_NAMES.lDevice, visible: true, items: [] },
-	{ name: ELEMENT_NAMES.lNode, visible: true, items: [] }
-]
+	{ name: ELEMENT_NAMES.lNode, visible: true, items: [] },
+];
 
-const columns = writable<Column[]>(initialColumns)
+const columns = writable<Column[]>(initialColumns);
 
 function toggleColumnVisibility(currentColumnIndex: number) {
 	columns.update((columns) =>
 		columns.map((column, i) =>
-			i === currentColumnIndex ? { ...column, visible: !column.visible } : column
-		)
-	)
+			i === currentColumnIndex
+				? { ...column, visible: !column.visible }
+				: column,
+		),
+	);
 }
 
 function createNewItem(
 	columnName: string,
-	itemCount: number
+	itemCount: number,
 ): DataTypeTemplate | null {
-	const newId = (itemCount + 1).toString()
+	const newId = (itemCount + 1).toString();
 
 	switch (columnName) {
-		case 'Voltage Level':
+		case "Voltage Level":
 			return {
 				id: newId,
-				name: `Voltage Level ${newId}`
-			} as VoltageLevelType
+				name: `Voltage Level ${newId}`,
+			} as VoltageLevelType;
 
-		case 'IED':
+		case "IED":
 			return {
 				id: newId,
-				name: `IED ${newId}`
-			} as IEDType
+				name: `IED ${newId}`,
+			} as IEDType;
 
-		case 'Bay':
+		case "Bay":
 			return {
 				id: newId,
-				name: `Bay ${newId}`
-			} as BayType
+				name: `Bay ${newId}`,
+			} as BayType;
 
-		case 'Substation':
+		case "Substation":
 			return {
 				id: newId,
-				name: `Substation ${newId}`
-			} as SubstationType
+				name: `Substation ${newId}`,
+			} as SubstationType;
 
-		case 'Logical Device':
+		case "Logical Device":
 			return {
 				id: newId,
-				name: `Logical Device ${newId}`
-			} as LDeviceType
+				name: `Logical Device ${newId}`,
+			} as LDeviceType;
 
 		default:
-			return null
+			return null;
 	}
 }
 
 function addItemToColumn(currentColumnIndex: number) {
 	columns.update((columns) => {
-		const column = columns[currentColumnIndex]
-		const itemCount = column.items.length
-		const newItem = createNewItem(column.name, itemCount)
+		const column = columns[currentColumnIndex];
+		const itemCount = column.items.length;
+		const newItem = createNewItem(column.name, itemCount);
 
 		if (newItem) {
 			return columns.map((col, i) =>
-				i === currentColumnIndex ? { ...col, items: [...col.items, newItem] } : col
-			)
+				i === currentColumnIndex
+					? { ...col, items: [...col.items, newItem] }
+					: col,
+			);
 		}
 
-		return columns
-	})
+		return columns;
+	});
 }
 
 async function loadDataFromSCD() {
 	const dataTypeTemplatesSubElements = get(
-		dataTypeTemplatesStore.dataTypeTemplatesSubElements
-	)
+		dataTypeTemplatesStore.dataTypeTemplatesSubElements,
+	);
 
 	columns.update(() => [
 		{
 			name: ELEMENT_NAMES.substation,
 			visible: true,
-			items: dataTypeTemplatesSubElements?.substations || []
+			items: dataTypeTemplatesSubElements?.substations  || [],
 		},
 		{
 			name: ELEMENT_NAMES.voltageLevel,
 			visible: true,
-			items: dataTypeTemplatesSubElements?.voltageLevels || []
+			items: dataTypeTemplatesSubElements?.voltageLevels || [],
 		},
 		{
 			name: ELEMENT_NAMES.bay,
 			visible: true,
-			items: dataTypeTemplatesSubElements?.bays || []
+			items: dataTypeTemplatesSubElements?.bays || [],
 		},
 		{
 			name: ELEMENT_NAMES.ied,
 			visible: true,
-			items: dataTypeTemplatesSubElements?.ieds || []
+			items: dataTypeTemplatesSubElements?.ieds || [],
 		},
 		{
 			name: ELEMENT_NAMES.lDevice,
 			visible: true,
-			items: dataTypeTemplatesSubElements?.logicalDevices || []
+			items: dataTypeTemplatesSubElements?.logicalDevices || [],
 		},
-		{ name: ELEMENT_NAMES.lNode, visible: true, items: [] }
-	])
+		{ name: ELEMENT_NAMES.lNode, visible: true, items: [] },
+	]);
 }
 
 export const columnsStore = {
 	columns,
 	toggleColumnVisibility,
 	addItemToColumn,
-	loadDataFromSCD
-}
+	loadDataFromSCD,
+};
