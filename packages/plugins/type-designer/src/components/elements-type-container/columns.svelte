@@ -1,20 +1,20 @@
 <script lang="ts">
-  // CONSTANTS
-  import { ELEMENT_NAMES } from "@oscd-plugins/core";
-  // SMUI COMPONENTS
-  import IconButton from "@smui/icon-button";
-  import Paper, { Content } from "@smui/paper";
-  import Button from "@smui/button";
-  // UI COMPONENTS
-  import { IconWrapper } from "@oscd-plugins/ui";
-  // LOCAL COMPONENTS
-  import ContentCard from "./content-card.svelte";
-  // STORES
-  import { columnsStore } from "../../stores/columns.store";
+// CONSTANTS
+import { ELEMENT_NAMES } from '@oscd-plugins/core'
+// SMUI COMPONENTS
+import IconButton from '@smui/icon-button'
+import Paper, { Content } from '@smui/paper'
+import Button from '@smui/button'
+// UI COMPONENTS
+import { IconWrapper } from '@oscd-plugins/ui'
+// LOCAL COMPONENTS
+import ContentCard from './content-card.svelte'
+// STORES
+import { columnsStore } from '../../stores/columns.store'
 
-  //====== INITIALIZATION ======//
-  const { columns } = columnsStore;
-  columnsStore.loadDataFromSCD();
+//====== INITIALIZATION ======//
+const { columns } = columnsStore
+columnsStore.loadDataFromSCD()
 </script>
 
 <div class="columns-container" id="type-designer-columns">
