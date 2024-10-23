@@ -9,102 +9,57 @@ import Button from '@smui/button'
 import { IconWrapper } from '@oscd-plugins/ui'
 // LOCAL COMPONENTS
 import ContentCard from './content-card.svelte'
-import { createNewItem } from './create-new-item'
 // STORES
-import { dataTypeTemplatesStore } from '../../stores'
-// TYPES
-import type { Column } from './column-type'
+import { columnsStore } from '../../stores/columns.store'
 
 //====== INITIALIZATION ======//
-
-// stores
-const { dataTypeTemplatesSubElements } = dataTypeTemplatesStore
-
-// local variables
-let columns: Column[] = [
-	{
-		name: ELEMENT_NAMES.substation,
-		visible: true,
-		items: $dataTypeTemplatesSubElements.substations
-	},
-	{
-		name: ELEMENT_NAMES.voltageLevel,
-		visible: true,
-		items: $dataTypeTemplatesSubElements.voltageLevels
-	},
-	{
-		name: ELEMENT_NAMES.bay,
-		visible: true,
-		items: $dataTypeTemplatesSubElements.bays
-	},
-	{
-		name: ELEMENT_NAMES.ied,
-		visible: true,
-		items: $dataTypeTemplatesSubElements.ieds
-	},
-	{
-		name: ELEMENT_NAMES.lDevice,
-		visible: true,
-		items: $dataTypeTemplatesSubElements.logicalDevices
-	},
-	{ name: ELEMENT_NAMES.lNode, visible: true, items: [] }
-]
-
-function toggleColumnVisibility(index: number) {
-	columns = columns.map((column, i) =>
-		i === index ? { ...column, visible: !column.visible } : column
-	)
-}
-
-function addItemToColumn(index: number) {
-	const column = columns[index]
-	const itemCount = column.items.length
-	const newItem = createNewItem(column.name, itemCount)
-
-	if (newItem) {
-		columns = columns.map((col, i) =>
-			i === index ? { ...col, items: [...col.items, newItem] } : col
-		)
-	}
-}
+const { columns } = columnsStore
+columnsStore.loadDataFromSCD()
 </script>
 
 <div class="columns-container" id="type-designer-columns">
-  {#each columns as column, index}
-    <Paper class="column-container">
-      <article class="column">
-        <div class="column-header">
+  {#if $columns}
+    {#each $columns as column, index}
+      <Paper class="column-container">
+        <article class="column">
+          <div class="column-header">
+            {#if column.visible}
+              <h1>{column.name}</h1>
+            {:else}
+              <h1>{column.name} (hidden)</h1>
+            {/if}
+            <IconButton
+              on:click={() => columnsStore.toggleColumnVisibility(index)}
+            >
+              <IconWrapper
+                icon={column.visible ? "visibility" : "visibility_off"}
+                fillColor="rgb(81, 159, 152)"
+              />
+            </IconButton>
+          </div>
           {#if column.visible}
-            <h1>{column.name}</h1>
-          {:else}
-            <h1>{column.name} (hidden)</h1>
+            <Content class="content">
+              <div class="element-types">
+                {#each column.items as elementType}
+                  <ContentCard {elementType} />
+                {/each}
+              </div>
+            </Content>
           {/if}
-          <IconButton on:click={() => toggleColumnVisibility(index)}>
-            <IconWrapper
-              icon={column.visible ? "visibility" : "visibility_off"}
-              fillColor="rgb(81, 159, 152)"
-            />
-          </IconButton>
-        </div>
-        {#if column.visible}
-          <Content class="content">
-            <div class="element-types">
-              {#each column.items as elementType}
-                <ContentCard {elementType} />
-              {/each}
-            </div>
-          </Content>
-        {/if}
-        <div class="add-button-container">
-          {#if column.visible && column.name !== ELEMENT_NAMES.lNode}
-            <Button class="add-button" on:click={() => addItemToColumn(index)}>
-              New {column.name}
-            </Button>
-          {/if}
-        </div>
-      </article>
-    </Paper>
-  {/each}
+          <div class="add-button-container">
+            {#if column.visible && column.name !== ELEMENT_NAMES.lNode}
+              <Button
+                class="add-button"
+                on:click={() => columnsStore.addItemToColumn(index)}
+              >
+                New {column.name}
+              </Button>
+            {/if}
+          </div>
+        </article>
+      </Paper>
+    {/each}
+  {/if}
 </div>
 
 <style>
