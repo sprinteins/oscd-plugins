@@ -69,21 +69,49 @@ export class DataTypeTemplatesQueries extends SCDQueries {
 	public searchVoltageLevelElements(
 		options?: CommonOptions
 	): VoltageLevelElement[] {
-		return this.searchElements<VoltageLevelElement>(
+		const voltageLevels = this.searchElements<VoltageLevelElement>(
 			DataTypeTemplatesQueries.SelectorVoltageLevelType,
 			['id', 'name', 'desc', 'nomFreq', 'numPhases'],
 			options
 		)
+
+		return voltageLevels.map((voltageLevel) => {
+			const bays = Array.from(
+				voltageLevel.element.querySelectorAll(
+					DataTypeTemplatesQueries.SelectorBayType
+				)
+			).map((bayElem) =>
+				this.createElement<BayElement>(bayElem, ['id', 'name', 'desc'])
+			)
+			return { ...voltageLevel, refElements: bays }
+		})
 	}
 
 	public static SelectorSubstationType = 'SubstationType'
 	public searchSubstationElements(
 		options?: CommonOptions
 	): SubstationElement[] {
-		return this.searchElements<SubstationElement>(
+		const substations = this.searchElements<SubstationElement>(
 			DataTypeTemplatesQueries.SelectorSubstationType,
 			['id', 'name', 'desc'],
 			options
 		)
+
+		return substations.map((substation) => {
+			const voltageLevels = Array.from(
+				substation.element.querySelectorAll(
+					DataTypeTemplatesQueries.SelectorVoltageLevelType
+				)
+			).map((voltageLevelEl) =>
+				this.createElement<VoltageLevelElement>(voltageLevelEl, [
+					'id',
+					'name',
+					'desc',
+					'nomFreq',
+					'numPhases'
+				])
+			)
+			return { ...substation, refElements: voltageLevels }
+		})
 	}
 }
