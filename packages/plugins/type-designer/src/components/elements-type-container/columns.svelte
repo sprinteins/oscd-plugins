@@ -2,7 +2,7 @@
 // CONSTANTS
 import { ELEMENT_NAMES } from "@oscd-plugins/core";
 // SMUI COMPONENTS
-import IconButton from "@smui/icon-button";
+import IconButton, { Icon } from "@smui/icon-button";
 import Paper, { Content } from "@smui/paper";
 import Button from "@smui/button";
 // UI COMPONENTS
@@ -39,8 +39,12 @@ columnsStore.loadDataFromSCD();
 						<Content class="content">
 							<div class="element-types">
 								{#each column.items as elementType}
+									<IconWrapper
+										icon={column.visible ? "chevron_right" : "visibility_off"}
+										fillColor="rgb(81, 159, 152)"
+									/>
 									<ContentCard {elementType} />
-									{#if elementType.refElements}
+									{#if elementType.refElements && column.expanded}
 										{#each elementType.refElements as refType}
 											<div class="ref-element">
 												<ContentCard elementType={refType} />

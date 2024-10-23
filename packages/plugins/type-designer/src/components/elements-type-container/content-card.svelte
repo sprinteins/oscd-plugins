@@ -1,12 +1,13 @@
 <script lang="ts">
-    import Card from "@smui/card";
-    import type { DataTypeTemplates } from "./data-type-templates";
+import Card from "@smui/card";
+import type { DataTypeTemplates } from "./data-type-templates";
+import { IconWrapper } from "@oscd-plugins/ui";
 
-    export let elementType: DataTypeTemplates;
+export let elementType: DataTypeTemplates;
 
-    function handleCardClick(item: DataTypeTemplates) {
-        console.log("Clicked:", item);
-    }
+function handleCardClick(item: DataTypeTemplates) {
+	console.log("Clicked:", item);
+}
 </script>
 
 <section id="type-designer-card">
