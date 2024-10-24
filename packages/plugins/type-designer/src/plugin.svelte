@@ -8,7 +8,9 @@
 		{#if xmlDocument}
 				<ElementsTypeContainer />
 		{:else}
-			<p>No xml document loaded</p>
+			<div class="no-content">
+				<p>No xml document loaded</p>
+			</div>
 		{/if}
 	</type-designer>
 </MaterialTheme>
@@ -20,7 +22,7 @@ import { ElementsTypeContainer } from './components'
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES
-import { dataTypeTemplatesStore, pluginStore } from './stores'
+import { pluginStore, dataTypeTemplatesStore } from './stores'
 // TYPES
 import type { PluginType } from '@oscd-plugins/core'
 
@@ -29,12 +31,39 @@ import type { PluginType } from '@oscd-plugins/core'
 export let xmlDocument: XMLDocument | undefined = undefined
 export let pluginHostElement: Element
 export let pluginType: PluginType = 'editor'
+export let editCount: number
 
 //==== REACTIVITY ====//
 
-$: pluginStore.init({
-	newXMLDocument: xmlDocument,
+$: triggerUpdate({
+	updateTrigger: editCount,
+	newXmlDocument: xmlDocument,
 	newPluginHostElement: pluginHostElement
 })
-$: dataTypeTemplatesStore.init(xmlDocument?.documentElement)
+//====== FUNCTIONS =====//
+
+async function triggerUpdate({
+	updateTrigger, // is not used but should be passed to the function to trigger reactivity
+	newXmlDocument,
+	newPluginHostElement
+}: {
+	updateTrigger: number
+	newXmlDocument: XMLDocument | undefined
+	newPluginHostElement: Element
+}) {
+	await pluginStore.init({
+		newXmlDocument,
+		newPluginHostElement
+	})
+	dataTypeTemplatesStore.init(xmlDocument)
+}
 </script>
+
+<style>
+.no-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+</style>
