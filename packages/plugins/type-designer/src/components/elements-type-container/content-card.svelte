@@ -1,17 +1,24 @@
 <script lang="ts">
-    import Card from "@smui/card";
-    import type { DataTypeTemplates } from "./data-type-templates";
+// SMUI COMPONENTS
+import Card from '@smui/card'
+// TYPES
+import type { BaseElementStandardAttributes } from '@oscd-plugins/core'
+//====== INITIALIZATION ======//
 
-    export let elementType: DataTypeTemplates;
+// props
+export let name: string
+export let elementType: BaseElementStandardAttributes
 
-    function handleCardClick(item: DataTypeTemplates) {
-        console.log("Clicked:", item);
-    }
+//====== FUNCTIONS ======//
+
+function handleCardClick(elementType: BaseElementStandardAttributes) {
+	console.log('Clicked:', elementType)
+}
 </script>
 
 <section id="type-designer-card">
     <Card class="card" on:click={() => handleCardClick(elementType)}>
-        {elementType.name}
+        {name}
         <div class="rhombus-icon"></div>
     </Card>
 </section>
@@ -25,4 +32,14 @@
         border: 1px solid #ccc;
         cursor: pointer;
     }
+		
+		.rhombus-icon {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 8px;
+    height: 8px;
+    background-color: rgb(81, 159, 152);
+    transform: rotate(45deg);
+  }
 </style>

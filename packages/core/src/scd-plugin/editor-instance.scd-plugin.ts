@@ -18,6 +18,7 @@ export default function editorPluginInstance(
 	EditorPlugin.prototype.pluginInstance = undefined
 	EditorPlugin.prototype.localDoc = undefined
 	EditorPlugin.prototype.localDocName = undefined
+	EditorPlugin.prototype.localEditCount = -1
 
 	//====== METHODS ======//
 
@@ -42,6 +43,18 @@ export default function editorPluginInstance(
 		}
 	})
 
+	Object.defineProperty(EditorPlugin.prototype, 'editCount', {
+		get: function editCount() {
+			return this.localEditCount
+		},
+		set: function doc(newEditCount: number) {
+			this.localEditCount = newEditCount
+			if (!this.pluginInstance) return
+
+			this.pluginInstance.$set({ editCount: newEditCount })
+		}
+	})
+
 	//====== LIFECYCLE METHODS ======//
 
 	EditorPlugin.prototype.connectedCallback = function () {
@@ -49,7 +62,8 @@ export default function editorPluginInstance(
 			target: this.attachShadow({ mode: 'open' }),
 			props: {
 				xmlDocument: this.localDoc,
-				pluginHostElement: this
+				pluginHostElement: this,
+				editCount: this.localEditCount
 			}
 		})
 	}

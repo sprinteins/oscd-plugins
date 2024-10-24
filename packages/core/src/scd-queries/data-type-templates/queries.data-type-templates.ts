@@ -1,25 +1,18 @@
 import { SCDQueries } from '../scd-queries'
-// CONSTANTS
-import { ELEMENT_NAMES } from '../../constants/element.constant'
 // TYPES
 import type {
 	CommonOptions,
-	LDeviceElement,
+	PrivateElement,
+	SubstationElement,
+	VoltageLevelElement,
 	BayElement,
 	IEDElement,
-	VoltageLevelElement,
-	SubstationElement
+	LDeviceElement,
+	LNodeElement
 } from '../types.scd-queries'
 import type { DataTypeTemplates } from './types.data-type-templates'
 
 export class DataTypeTemplatesQueries extends SCDQueries {
-	constructor(root: Element) {
-		super(root)
-		if (!ELEMENT_NAMES) {
-			throw new Error('ELEMENT_NAMES is not initialized')
-		}
-	}
-
 	public static SelectorDataTypeTemplates = 'DataTypeTemplates'
 	public searchDataTypeTemplates(): DataTypeTemplates.RootElement | null {
 		return this.searchSingleElement<DataTypeTemplates.RootElement>(
@@ -28,17 +21,40 @@ export class DataTypeTemplatesQueries extends SCDQueries {
 		)
 	}
 
-	public static SelectorLDeviceType = 'LDeviceType'
-	public searchLDeviceElements(options?: CommonOptions): LDeviceElement[] {
-		return this.searchElements<LDeviceElement>(
-			DataTypeTemplatesQueries.SelectorLDeviceType,
-			['id', 'desc', 'inst'],
+	public searchPrivateElement(
+		selector: `[type="${string}"]`,
+		options?: CommonOptions
+	): PrivateElement | null {
+		return (
+			this.searchElements<PrivateElement>(selector, [], options)[0] ||
+			null
+		)
+	}
+
+	public static SelectorSubstationType = 'SubstationType'
+	public searchSubstationTypeElements(
+		options?: CommonOptions
+	): SubstationElement[] {
+		return this.searchElements<SubstationElement>(
+			DataTypeTemplatesQueries.SelectorSubstationType,
+			['id', 'name', 'desc'],
+			options
+		)
+	}
+
+	public static SelectorVoltageLevelType = 'VoltageLevelType'
+	public searchVoltageLevelTypeElements(
+		options?: CommonOptions
+	): VoltageLevelElement[] {
+		return this.searchElements<VoltageLevelElement>(
+			DataTypeTemplatesQueries.SelectorVoltageLevelType,
+			['id', 'name', 'desc', 'nomFreq', 'numPhases'],
 			options
 		)
 	}
 
 	public static SelectorBayType = 'BayType'
-	public searchBayElements(options?: CommonOptions): BayElement[] {
+	public searchBayTypeElements(options?: CommonOptions): BayElement[] {
 		return this.searchElements<BayElement>(
 			DataTypeTemplatesQueries.SelectorBayType,
 			['id', 'name', 'desc'],
@@ -47,7 +63,7 @@ export class DataTypeTemplatesQueries extends SCDQueries {
 	}
 
 	public static SelectorIEDType = 'IEDType'
-	public searchIEDElements(options?: CommonOptions): IEDElement[] {
+	public searchIEDTypeElements(options?: CommonOptions): IEDElement[] {
 		return this.searchElements<IEDElement>(
 			DataTypeTemplatesQueries.SelectorIEDType,
 			[
@@ -65,24 +81,22 @@ export class DataTypeTemplatesQueries extends SCDQueries {
 		)
 	}
 
-	public static SelectorVoltageLevelType = 'VoltageLevelType'
-	public searchVoltageLevelElements(
+	public static SelectorLDeviceType = 'LDeviceType'
+	public searchLDeviceTypeElements(
 		options?: CommonOptions
-	): VoltageLevelElement[] {
-		return this.searchElements<VoltageLevelElement>(
-			DataTypeTemplatesQueries.SelectorVoltageLevelType,
-			['id', 'name', 'desc', 'nomFreq', 'numPhases'],
+	): LDeviceElement[] {
+		return this.searchElements<LDeviceElement>(
+			DataTypeTemplatesQueries.SelectorLDeviceType,
+			['id', 'desc', 'inst'],
 			options
 		)
 	}
 
-	public static SelectorSubstationType = 'SubstationType'
-	public searchSubstationElements(
-		options?: CommonOptions
-	): SubstationElement[] {
-		return this.searchElements<SubstationElement>(
-			DataTypeTemplatesQueries.SelectorSubstationType,
-			['id', 'name', 'desc'],
+	public static SelectorLNodeType = 'LNodeType'
+	public searchLNodeTypeElements(options?: CommonOptions): LNodeElement[] {
+		return this.searchElements<LNodeElement>(
+			DataTypeTemplatesQueries.SelectorLNodeType,
+			['id', 'name', 'desc', 'lnClass'],
 			options
 		)
 	}

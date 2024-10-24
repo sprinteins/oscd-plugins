@@ -1,44 +1,39 @@
+// CONSTANTS
+import type { SCD_ELEMENTS } from '../constants/element.constant'
 // TYPES
 import type {
 	SCDBaseElement,
 	AllowedElements,
-	AllowedElementNames,
-	SubstationElementAttributes,
-	VoltageLevelElementAttributes,
-	BayElementAttributes,
-	IEDElementAttributes,
-	LDeviceElementAttributes
+	SubstationElement,
+	VoltageLevelElement,
+	BayElement,
+	IEDElement,
+	LDeviceElement,
+	lNodeElement
 } from '../types.scd-queries'
 
 export namespace DataTypeTemplates {
-	type TreeOrder =
-		| `${number}`
-		| `${number}.${number}`
-		| `${number}.${number}.${number}`
+	export type AllowedElementsTypeTags =
+		(typeof SCD_ELEMENTS)[AllowedElements]['type']['tag']
+	export type AllowedElementsTypeRefTags = Exclude<
+		(typeof SCD_ELEMENTS)[AllowedElements]['typeRef']['tag'],
+		undefined
+	>
 
-	export type AllowedTag =
-		| 'SubstationType'
-		| 'VoltageLevelType'
-		| 'BayType'
-		| 'IEDType'
-		| 'LDeviceType'
+	export type AllowedTags =
+		| 'DataTypeTemplates'
+		| 'Private'
+		| AllowedElementsTypeTags
+		| AllowedElementsTypeRefTags
 
 	export type RootElement = SCDBaseElement
-	export type SubElements = {
-		substations: SubstationElementAttributes[]
-		voltageLevels: VoltageLevelElementAttributes[]
-		bays: BayElementAttributes[]
-		ieds: IEDElementAttributes[]
-		logicalDevices: LDeviceElementAttributes[]
-	}
 
-	export type ElementsTreeStructure = Record<
-		AllowedElements,
-		{
-			elementName: AllowedElementNames
-			treeOrder: TreeOrder
-			tagName: DataTypeTemplates.Tag
-			children: DataTypeTemplates.Tag[]
-		}
-	>
+	export type TypeElements = {
+		substationTypes: SubstationElement[]
+		voltageLevelTypes: VoltageLevelElement[]
+		bayTypes: BayElement[]
+		iedTypes: IEDElement[]
+		lDeviceTypes: LDeviceElement[]
+		lNodeTypes: lNodeElement[]
+	}
 }

@@ -1,4 +1,4 @@
-<IconButton size="button" style={cssDynamicStyles} on:click >
+<IconButton size="button" style={cssDynamicStyles} on:click class={className}>
 	<IconWrapper icon={icon} fillColor={iconColor} isCustomIconButton={true}/>
 </IconButton>
 
@@ -17,6 +17,8 @@ import type { AvailableIcon } from '../icons/types.icon'
 export let icon: AvailableIcon
 export let size: 'small' | 'medium' | 'large' = 'medium'
 export let color: string | 'primary' | 'secondary' = 'primary'
+let className = ''
+export { className as class }
 
 // local variables
 const cssFixedStyles = {
