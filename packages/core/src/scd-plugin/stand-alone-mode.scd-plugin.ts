@@ -67,5 +67,6 @@ function emulateOpenSCDInstanceEditionActions(
 			action.new.element,
 			action.new.reference ?? null
 		)
+		pluginElement.editCount++
 	}
 }
