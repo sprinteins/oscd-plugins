@@ -40,12 +40,4 @@ $: dataTypeTemplatesStore.init(xmlDocument?.documentElement)
 
 </script>
 
-
-
-<style>
-	.auto-doc{
-		width: 100%;
-	}
-	
-</style>
 	

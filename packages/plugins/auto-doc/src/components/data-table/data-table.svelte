@@ -110,7 +110,6 @@
         :global(.mdc-data-table__header-cell)
         {
             background-color: rgba(255,255,255);
-            // border-radius: 30px;
         }
 
         & :global(.mdc-data-table__table-container),
