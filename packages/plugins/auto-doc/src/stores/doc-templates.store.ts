@@ -100,6 +100,13 @@ function addDocumentTemplate(description: string): string | null {
     return generatedId;
 }
 
+function editDocumentTemplateDescription(docTemplateId: string, newDescription: string) {
+    const docTemplate = getDocumentTemplate(docTemplateId);
+    if (docTemplate) {
+        docTemplate.setAttribute('description', newDescription);
+    }
+}
+
 function addBlockToDocumentTemplate(docTemplate: Element, content: string, type: string, position: number) {
     const generatedId = uuidv4();
     const xmlDoc = get(xmlDocument);
@@ -116,6 +123,13 @@ function addBlockToDocumentTemplate(docTemplate: Element, content: string, type:
     insertBlockAtPosition(docTemplate, blockElement, position);
 
     return generatedId;
+}
+
+function editBlockContentOfDocumentTemplate(docTemplate: Element, blockId: string, content: string) {
+    const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
+    if (blockElement) {
+        blockElement.textContent = content;
+    }
 }
 
 function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, position: number) {
@@ -186,6 +200,8 @@ export const docTemplatesStore = {
     getBlockOfDocumentTemplate,
     getAllBlocksOfDocumentTemplate,
     moveBlockInDocumentTemplate,
+    editDocumentTemplateDescription,
+    editBlockContentOfDocumentTemplate,
     deleteDocumentTemplate,
     deleteBlockFromDocumentTemplate,
     duplicateDocumentTemplate

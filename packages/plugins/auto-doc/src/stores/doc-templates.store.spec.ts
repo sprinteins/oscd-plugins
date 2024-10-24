@@ -352,7 +352,56 @@ describe('DocumentTemplateStore', () => {
 			expect(duplicatedBlocks?.[index]?.getAttribute('id')).not.toBe(block.getAttribute('id'));
 		});
 	});
+
+	it('should edit the content of a "Block" element within a "DocumentTemplate"', () => {
+		// Arrange
+		const description = 'Test Description';
+		const generatedId = docTemplatesStore.addDocumentTemplate(description);
+		if (!generatedId) {
+			throw new Error('adding DocumentTemplate failed');
+		}
+		const docDef = docTemplatesStore.getDocumentTemplate(generatedId);
+		if (!docDef) {
+			throw new Error('DocumentTemplate not found');
+		}
+		const initialContent = 'Initial block content';
+		const updatedContent = 'Updated block content';
+		const type = "standard";
+		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, initialContent, type, 0);
+	
+		// Act
+		docTemplatesStore.editBlockContentOfDocumentTemplate(docDef, blockId, updatedContent);
+	
+		// Assert
+		const blockElement = docDef.querySelector(`Block[id="${blockId}"]`);
+		expect(blockElement).not.toBeNull();
+		expect(blockElement?.textContent).toBe(updatedContent);
+	});
+	
+	it('should edit the description of a "DocumentTemplate" element', () => {
+		// Arrange
+		const initialDescription = 'Initial Description';
+		const updatedDescription = 'Updated Description';
+		const generatedId = docTemplatesStore.addDocumentTemplate(initialDescription);
+		if (!generatedId) {
+			throw new Error('adding DocumentTemplate failed');
+		}
+		const docDef = docTemplatesStore.getDocumentTemplate(generatedId);
+		if (!docDef) {
+			throw new Error('DocumentTemplate not found');
+		}
+	
+		// Act
+		docTemplatesStore.editDocumentTemplateDescription(generatedId, updatedDescription);
+	
+		// Assert
+		const updatedDocDef = docTemplatesStore.getDocumentTemplate(generatedId);
+		expect(updatedDocDef).not.toBeNull();
+		expect(updatedDocDef?.getAttribute('description')).toBe(updatedDescription);
+	});
 });
+
+
 
 function getAllBlockElements(DocumentTemplate: Element): Element[] {
 	return Array.from(DocumentTemplate.children).filter(child => 
