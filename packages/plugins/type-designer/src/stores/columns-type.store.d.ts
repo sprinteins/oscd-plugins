@@ -23,3 +23,9 @@ export type DataTypeTemplates =
 	| BayType
 	| IEDType
 	| LDeviceType
+
+export type Column = {
+	name: string
+	visible: boolean
+	items: DataTypeTemplates[]
+}
