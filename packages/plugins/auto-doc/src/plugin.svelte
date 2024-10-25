@@ -7,7 +7,7 @@
 <MaterialTheme pluginType={pluginType}>
 	<auto-doc class="auto-doc">
 		<!-- <ElementsTypeContainer /> -->
-		 <TemplateOverview/>
+		 <TemplateCreation/>
 	</auto-doc>
 </MaterialTheme>
 
@@ -15,7 +15,7 @@
 // COMPONENTS
 import { MaterialTheme } from '@oscd-plugins/ui'
 import { ElementsTypeContainer } from './components'
-import {TemplateOverview} from "@/pages"
+import {TemplateOverview, TemplateCreation} from "@/pages"
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES
@@ -40,4 +40,9 @@ $: dataTypeTemplatesStore.init(xmlDocument?.documentElement)
 
 </script>
 
-	
+
+<style>
+	.auto-doc{
+		width: 100%;
+	}
+</style>
