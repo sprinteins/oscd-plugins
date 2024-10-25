@@ -1,14 +1,6 @@
-<script lang="ts" context="module">
-
-    export type Template = {
-        name: string,
-        description: string,
-        lastEdited: Date,       
-    }
-</script>
-
 <script lang="ts">
-    import {Table} from '@/components'
+    import {Table} from '@/components';
+    import type {Template} from "./types.template-overview";
 
     let allTemplates : Template[] = [
         {
@@ -36,10 +28,10 @@
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta placeat itaque minus praesentium sequi deleniti voluptatibus dicta!',
             lastEdited: new Date(),
         },
-    ]    
+    ];    
 </script>
 
-<main class="tamplate-overview">
+<main class="template-overview">
     <header class="template-controls">
         <button class="btn-pill btn-pill-primary"> + Add template</button>
         <button class="btn-pill btn-pill-outlined">Export Documents</button>
@@ -56,7 +48,7 @@
     $clr-purple: #6C71C3;
     $clr-purple-15: #494fbf;
 
-    .tamplate-overview{
+    .template-overview{
         padding: 2rem;
     }
     .template-controls{
