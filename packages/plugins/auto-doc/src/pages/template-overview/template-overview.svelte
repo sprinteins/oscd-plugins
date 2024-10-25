@@ -1,14 +1,8 @@
-<script lang="ts" context="module">
-
-    export type Template = {
-        name: string,
-        description: string,
-        lastEdited: Date,       
-    }
-</script>
-
 <script lang="ts">
-    import {Table} from '@/components'
+    import {Table} from '@/components';
+    import type {Template} from "./types.template-overview";
+    import Button from "@smui/button"
+
 
     let allTemplates : Template[] = [
         {
@@ -36,14 +30,13 @@
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta placeat itaque minus praesentium sequi deleniti voluptatibus dicta!',
             lastEdited: new Date(),
         },
-    ]    
+    ];    
 </script>
 
-<main class="tamplate-overview">
+<main class="template-overview">
     <header class="template-controls">
-        <button class="btn-pill btn-pill-primary"> + Add template</button>
-        <button class="btn-pill btn-pill-outlined">Export Documents</button>
-        <button class="btn-pill btn-pill-outlined">Filter</button>
+        <Button variant="raised" class="btn-pill btn-pill-primary" > + Add template</Button>
+        <Button variant="outlined" class="btn-pill btn-pill-outlined">Export Documents</Button>
     </header>
 
     <Table allTemplates={allTemplates}/>
@@ -53,40 +46,35 @@
 
 <style lang="scss">
 
-    $clr-purple: #6C71C3;
-    $clr-purple-15: #494fbf;
+    $clr-secondary: var(--mdc-theme-secondary);
+    $clr-secondary-15: #494fbfcd;
 
-    .tamplate-overview{
+    .template-overview{
         padding: 2rem;
     }
     .template-controls{
-            margin: 0 0 1rem 1rem;
-            .btn-pill{
-                padding: 0.5em 1em;
-                border-radius: 1em;
+        margin: 0 0 1rem 1rem;
+        & :global(.btn-pill){
+                border-radius: 2em;
                 cursor: pointer;
-            }
+                border-color: $clr-secondary;
+        }
 
-            .btn-pill-outlined{
-                background-color: transparent;
-                border-color: $clr-purple;
-                color: $clr-purple;
-
-
-                &:hover{
-                    background-color: $clr-purple;
-                    color: white;
-                }
-            }
-
-            .btn-pill-primary{
-                background-color: $clr-purple;
+        & :global(.btn-pill-outlined){
+            color: $clr-secondary;
+            &:hover{
+                background-color: $clr-secondary;
                 color: white;
-
-                &:hover{
-                    background-color:$clr-purple-15;
-                    color: white;
-                }
             }
         }
+
+        & :global(.btn-pill-primary){
+            background-color: $clr-secondary;
+            color: white;
+
+            &:hover{
+                background-color:$clr-secondary-15;
+            }
+        }
+    }
 </style>

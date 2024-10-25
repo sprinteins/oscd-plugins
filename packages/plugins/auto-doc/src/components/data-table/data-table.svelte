@@ -1,16 +1,18 @@
 <script lang="ts">
     import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
     import Checkbox from '@smui/checkbox';
-    import  IconWrapper from '../../../../../ui/src/components/icons/icon-wrapper.svelte'
-    import IconButton from '@smui/icon-button'
-    import { type Template} from "@/pages/template-overview/template-overview.svelte"
+    import  {IconWrapper} from '@oscd-plugins/ui';
+    import IconButton from '@smui/icon-button';
+    import type {Template} from "@/pages/template-overview/types.template-overview";
+    import {CustomIconButton} from "@oscd-plugins/ui/src/components"
+
 
 
     export let allTemplates : Template[];
 
     let selectedTemplates : Template[] = [];
 
-
+0
     function isInvalidDate(date: Date){
         return isNaN(date.getTime());
     }
@@ -28,7 +30,7 @@
             minute: "2-digit"
         };
 
-        const extractedHH_MM = new Intl.DateTimeFormat("en-US", timeOptions).format(date)
+        const extractedHH_MM = new Intl.DateTimeFormat("en-US", timeOptions).format(date);
         return extractedHH_MM;
     }
     function getDD_MM_YYYYFromDate(date: Date): string{
@@ -74,18 +76,10 @@
                 <Cell>{template.description}</Cell>
                 <Cell>
                 <div class="action-btns">
-                    <IconButton>
-                        <IconWrapper icon="edit" fillColor="black"/>
-                    </IconButton>
-                    <IconButton>
-                        <IconWrapper icon="delete" fillColor="black"/>
-                    </IconButton>
-                    <IconButton>
-                        <IconWrapper icon="content_copy" fillColor="black"/>
-                    </IconButton>
-                    <IconButton>
-                        <IconWrapper icon="download" fillColor="black"/>
-                    </IconButton>
+                    <CustomIconButton icon="edit" color="black"/>
+                    <CustomIconButton icon="delete" color="black"/>
+                    <CustomIconButton icon="content_copy" color="black"/>
+                    <CustomIconButton icon="download" color="black"/>
                 </div>
                 </Cell>
             </Row>
@@ -95,9 +89,6 @@
 </div>
 
 <style lang="scss">
-    .total-selected{
-        min-height: 1.25rem;
-    }
     .table-container{
        width: 100%;
        display: flex;
@@ -117,9 +108,4 @@
             border-radius: 10px;
          }
     }
-    span{
-        display: inline-block;
-        margin-left: inherit;
-    }
-   
 </style>
