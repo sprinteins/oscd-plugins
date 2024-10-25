@@ -1,0 +1,30 @@
+
+import { Meta, Title, IconGallery, IconItem, Controls, Primary, Story } from '@storybook/blocks';
+import * as IconWrapperStories from './icon-wrapper.stories.svelte';
+
+import IconWrapper from './icon-wrapper.svelte';
+
+<Meta of={IconWrapperStories}/>
+ 
+ # Icon Wrapper
+ 
+ ## Gallery
+ 
+<IconGallery>
+  <IconItem name="download">
+    <Story of={IconWrapperStories.Download} />
+  </IconItem>
+	<IconItem name="upload_file">
+    <Story of={IconWrapperStories.UploadFile} />
+  </IconItem>
+</IconGallery>
+ 
+## Sanbox
+
+<Primary />
+ 
+## Props
+ 
+<Controls />
+ 
+
