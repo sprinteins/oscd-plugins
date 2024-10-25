@@ -13,7 +13,7 @@ import ContentCard from "./content-card.svelte";
 import { columnsStore } from "../../stores/columns.store";
 import { dndzone } from "svelte-dnd-action";
 import { flip } from "svelte/animate";
-import type { Column, DataTypeTemplates } from "@/stores/columns-type.store";
+import type { DataTypeTemplates } from "@/stores/columns-type.store";
 
 //====== INITIALIZATION ======//
 const { columns } = columnsStore;
@@ -26,12 +26,7 @@ interface DndEvent<T> {
 }
 
 const flipDurationMs = 200;
-function handleDndConsiderColumns(e: DndEvent<Column>) {
-	$columns = e.detail.items;
-}
-function handleDndFinalizeColumns(e: DndEvent<Column>) {
-	$columns = e.detail.items;
-}
+
 function handleDndConsiderCards(cid: number, e: DndEvent<DataTypeTemplates>) {
 	const colIdx = $columns.findIndex((c) => c.id === cid);
 	$columns[colIdx].items = e.detail.items;
@@ -46,12 +41,8 @@ function handleDndFinalizeCards(cid: number, e: DndEvent<DataTypeTemplates>) {
 
 <div class="columns-container" id="type-designer-columns">
 	{#if $columns}
-		<section use:dndzone={{items:$columns, flipDurationMs, type:'columns'}} 
-		         on:consider={handleDndConsiderColumns} 
-		         on:finalize={handleDndFinalizeColumns}>
 			{#each $columns as column, index (column.id)}
-				<div class="column-container {`column-container--${column.visible ? "expanded" : "collapsed"}`}" animate:flip="{{duration: flipDurationMs}}">
-					<Paper>
+					<Paper class="column-container {`column-container--${column.visible ? "expanded" : "collapsed"}`}">
 						<article class="column">
 							<div class="column-header">
 								{#if column.visible}
@@ -68,14 +59,17 @@ function handleDndFinalizeCards(cid: number, e: DndEvent<DataTypeTemplates>) {
 							</div>
 							
 							{#if column.visible}
-								<div class="content" use:dndzone={{items:column.items, flipDurationMs}}
+								<div use:dndzone={{items:column.items, flipDurationMs}}
 								     on:consider={(e) => handleDndConsiderCards(column.id, e)} 
 								     on:finalize={(e) => handleDndFinalizeCards(column.id, e)}>
 									
 									{#each column.items as elementType (elementType.id)}
-										<div class="element-types" animate:flip="{{duration: flipDurationMs}}">
+										<div class="content" animate:flip="{{duration: flipDurationMs}}">
+
 											<Content class="content">
-												<ContentCard {elementType} />
+												<div class="element-types">
+													<ContentCard {elementType} />
+												</div>
 											</Content>
 										</div>
 									{/each}
@@ -91,9 +85,7 @@ function handleDndFinalizeCards(cid: number, e: DndEvent<DataTypeTemplates>) {
 							{/if}
 						</article>
 					</Paper>
-				</div>
 			{/each}
-		</section>
 	{/if}
 </div>
 
