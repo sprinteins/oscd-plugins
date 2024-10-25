@@ -25,6 +25,7 @@ export type DataTypeTemplates =
 	| LDeviceType
 
 export type Column = {
+	id: number
 	name: string
 	visible: boolean
 	items: DataTypeTemplates[]
