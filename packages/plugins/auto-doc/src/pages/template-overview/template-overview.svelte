@@ -46,8 +46,8 @@
 
 <style lang="scss">
 
-    $clr-purple: #6C71C3;
-    $clr-purple-15: #494fbf;
+    $clr-secondary: var(--mdc-theme-secondary);
+    $clr-secondary-15: #494fbfcd;
 
     .template-overview{
         padding: 2rem;
@@ -57,23 +57,23 @@
         & :global(.btn-pill){
                 border-radius: 2em;
                 cursor: pointer;
-                border-color: $clr-purple;
+                border-color: $clr-secondary;
         }
 
         & :global(.btn-pill-outlined){
-            color: $clr-purple;
+            color: $clr-secondary;
             &:hover{
-                background-color: $clr-purple;
+                background-color: $clr-secondary;
                 color: white;
             }
         }
 
         & :global(.btn-pill-primary){
-            background-color: $clr-purple;
+            background-color: $clr-secondary;
             color: white;
 
             &:hover{
-                background-color:$clr-purple-15;
+                background-color:$clr-secondary-15;
             }
         }
     }
