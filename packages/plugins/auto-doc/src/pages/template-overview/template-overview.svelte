@@ -1,6 +1,8 @@
 <script lang="ts">
     import {Table} from '@/components';
     import type {Template} from "./types.template-overview";
+    import Button from "@smui/button"
+
 
     let allTemplates : Template[] = [
         {
@@ -33,9 +35,8 @@
 
 <main class="template-overview">
     <header class="template-controls">
-        <button class="btn-pill btn-pill-primary"> + Add template</button>
-        <button class="btn-pill btn-pill-outlined">Export Documents</button>
-        <button class="btn-pill btn-pill-outlined">Filter</button>
+        <Button variant="raised" class="btn-pill btn-pill-primary" > + Add template</Button>
+        <Button variant="outlined" class="btn-pill btn-pill-outlined">Export Documents</Button>
     </header>
 
     <Table allTemplates={allTemplates}/>
@@ -52,33 +53,28 @@
         padding: 2rem;
     }
     .template-controls{
-            margin: 0 0 1rem 1rem;
-            .btn-pill{
-                padding: 0.5em 1em;
-                border-radius: 1em;
+        margin: 0 0 1rem 1rem;
+        & :global(.btn-pill){
+                border-radius: 2em;
                 cursor: pointer;
-            }
-
-            .btn-pill-outlined{
-                background-color: transparent;
                 border-color: $clr-purple;
-                color: $clr-purple;
+        }
 
-
-                &:hover{
-                    background-color: $clr-purple;
-                    color: white;
-                }
-            }
-
-            .btn-pill-primary{
+        & :global(.btn-pill-outlined){
+            color: $clr-purple;
+            &:hover{
                 background-color: $clr-purple;
                 color: white;
-
-                &:hover{
-                    background-color:$clr-purple-15;
-                    color: white;
-                }
             }
         }
+
+        & :global(.btn-pill-primary){
+            background-color: $clr-purple;
+            color: white;
+
+            &:hover{
+                background-color:$clr-purple-15;
+            }
+        }
+    }
 </style>

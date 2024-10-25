@@ -4,6 +4,8 @@
     import  {IconWrapper} from '@oscd-plugins/ui';
     import IconButton from '@smui/icon-button';
     import type {Template} from "@/pages/template-overview/types.template-overview";
+    import {CustomIconButton} from "@oscd-plugins/ui/src/components"
+
 
 
     export let allTemplates : Template[];
@@ -12,8 +14,6 @@
 
 0
     function isInvalidDate(date: Date){
-        const test = date.getTime()
-        console.log("🚀 ~ isInvalidDate ~ test:", typeof test)
         return isNaN(date.getTime());
     }
 
@@ -76,18 +76,10 @@
                 <Cell>{template.description}</Cell>
                 <Cell>
                 <div class="action-btns">
-                    <IconButton>
-                        <IconWrapper icon="edit" fillColor="black"/>
-                    </IconButton>
-                    <IconButton>
-                        <IconWrapper icon="delete" fillColor="black"/>
-                    </IconButton>
-                    <IconButton>
-                        <IconWrapper icon="content_copy" fillColor="black"/>
-                    </IconButton>
-                    <IconButton>
-                        <IconWrapper icon="download" fillColor="black"/>
-                    </IconButton>
+                    <CustomIconButton icon="edit" color="black"/>
+                    <CustomIconButton icon="delete" color="black"/>
+                    <CustomIconButton icon="content_copy" color="black"/>
+                    <CustomIconButton icon="download" color="black"/>
                 </div>
                 </Cell>
             </Row>
