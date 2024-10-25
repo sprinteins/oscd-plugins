@@ -2,21 +2,20 @@
 // CONSTANTS
 import { SCD_ELEMENTS } from '@oscd-plugins/core'
 // SMUI COMPONENTS
-import IconButton from '@smui/icon-button'
 import Paper, { Content } from '@smui/paper'
 import Button from '@smui/button'
 // UI COMPONENTS
-import { IconWrapper, CustomIconButton } from '@oscd-plugins/ui'
+import { CustomIconButton } from '@oscd-plugins/ui'
 // LOCAL COMPONENTS
-import ContentCard from './content-card.svelte'
+import ContentCard from '@/components/content-card.svelte'
 // STORES
-import { columnsStore } from '../../stores/columns.store'
-import { dataTypeTemplatesStore } from '@/stores'
+import { elementsTypesStore } from '@/stores/elements-types.store'
+import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
 // TYPES
 import type { Entries } from '@oscd-plugins/core'
 
 //====== INITIALIZATION ======//
-const { columns } = columnsStore
+const { columns } = elementsTypesStore
 
 $: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
 </script>
@@ -35,7 +34,7 @@ $: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
 						<CustomIconButton
 							class="visibility-button"
 							icon={column.visible ? "visibility" : "visibility_off"}
-							on:click={() => columnsStore.toggleColumnVisibility(key)}
+							on:click={() => elementsTypesStore.toggleColumnVisibility(key)}
 						/>
           </div>
           {#if column.visible}

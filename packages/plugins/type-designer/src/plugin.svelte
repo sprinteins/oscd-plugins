@@ -18,11 +18,12 @@
 <script lang="ts">
 // COMPONENTS
 import { MaterialTheme } from '@oscd-plugins/ui'
-import { ElementsTypeContainer } from './components'
+import ElementsTypeContainer from '@/views/elements-type-container.svelte'
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES
-import { pluginStore, dataTypeTemplatesStore } from './stores'
+import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
+import { pluginStore } from '@/stores/plugin.store'
 // TYPES
 import type { PluginType } from '@oscd-plugins/core'
 

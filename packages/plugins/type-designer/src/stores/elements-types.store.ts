@@ -61,7 +61,7 @@ function toggleColumnVisibility(columnKey: keyof typeof SCD_ELEMENTS) {
 	}))
 }
 
-export const columnsStore = {
+export const elementsTypesStore = {
 	columns,
 	toggleColumnVisibility
 }
