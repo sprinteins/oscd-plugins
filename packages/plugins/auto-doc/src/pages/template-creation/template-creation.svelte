@@ -9,7 +9,7 @@
 <div class="template-creation-container">
     <header class="header">
         <div class="template-metadata">
-            <CustomIconButton icon="edit" color="black"/>
+            <CustomIconButton icon="arrow_back" color="black"/>
             <span>untitled document</span>
         </div>
         <div class="template-options">
