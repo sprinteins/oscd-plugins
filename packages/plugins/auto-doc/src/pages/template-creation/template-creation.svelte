@@ -1,6 +1,8 @@
 <script>
     import Button from "@smui/button"
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
+    import {TemplateBuider} from '@/components';
+
 
 
 
@@ -20,6 +22,10 @@
             <Button variant="raised">Export</Button>
         </header>
     </div>
+
+    <main class="template-builder-container">
+        <TemplateBuider/>
+    </main>
 </div>
 
 
@@ -27,8 +33,10 @@
 
 <style lang="scss">
 
-    .template-creation-container{
-      
+    main.template-builder-container{
+      margin-top: 3rem;
+      display: flex;
+      justify-content: center;
     }
 
     .header-conteiner{
