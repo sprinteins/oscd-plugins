@@ -1,8 +1,6 @@
 <script lang="ts">
     import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
     import Checkbox from '@smui/checkbox';
-    import  {IconWrapper} from '@oscd-plugins/ui';
-    import IconButton from '@smui/icon-button';
     import type {Template} from "@/pages/template-overview/types.template-overview";
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
 
