@@ -1,7 +1,7 @@
 <script>
     import Button from "@smui/button"
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-    import {TemplateBuider} from '@/components';
+    import {TemplateBuilder} from '@/components';
 
 
 
@@ -24,7 +24,7 @@
     </div>
 
     <main class="template-builder-container">
-        <TemplateBuider/>
+        <TemplateBuilder/>
     </main>
 </div>
 
