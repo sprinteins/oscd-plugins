@@ -1,11 +1,20 @@
 // UTILS
 import { serializeXmlDocument } from '../scd-xml'
+// OPENSCD
+import {
+	isMove,
+	isCreate,
+	isDelete,
+	isReplace,
+	isUpdate
+} from '../scd-events-v1'
 // TYPES
 import type {
 	PluginConstructor,
 	EditorPluginInstance,
 	PluginType
 } from './types.scd-plugin'
+import type { Create, Delete, Move, Replace, Update } from '../scd-events-v1'
 
 export default function standAloneMode(
 	pluginInstance: PluginConstructor,
@@ -35,7 +44,8 @@ function emulateOpenSCDInstanceEditionActions(
 
 	document.addEventListener('open-doc', handleOpenDoc as EventListener)
 	document.addEventListener('save-doc', handleSaveDoc as EventListener)
-	document.addEventListener('editor-action', handleEdition as EventListener)
+	// We only handle simple actions for now
+	document.addEventListener('editor-action', onSimpleAction as EventListener)
 
 	//====== EVENTS HANDLERS ======//
 
@@ -59,14 +69,43 @@ function emulateOpenSCDInstanceEditionActions(
 		URL.revokeObjectURL(url)
 	}
 
-	// for now handling only creation
-	// see https://github.com/openscd/open-scd/blob/main/packages/openscd/src/Editing.ts
-	function handleEdition(event: CustomEvent) {
+	//====== EDIT ACTIONS ======//
+	function onSimpleAction(event: CustomEvent) {
 		const { action } = event.detail
+		if (isMove(action)) return onMove(action as Move)
+		if (isCreate(action)) return onCreate(action as Create)
+		if (isDelete(action)) return onDelete(action as Delete)
+		if (isReplace(action)) return onReplace(action as Replace)
+		if (isUpdate(action)) return onUpdate(action as Update)
+	}
+
+	function onMove(action: Move) {
+		console.warn('TODO onCreate', action)
+	}
+
+	function onCreate(action: Create) {
 		action.new.parent.insertBefore(
 			action.new.element,
 			action.new.reference ?? null
 		)
+		pluginElement.editCount++
+	}
+
+	function onDelete(action: Delete) {
+		console.warn('TODO onDelete', action)
+	}
+
+	function onReplace(action: Replace) {
+		console.warn('TODO onReplace', action)
+	}
+
+	function onUpdate(action: Update) {
+		for (const attribute of action.element.attributes) {
+			action.element.removeAttributeNode(attribute)
+		}
+		for (const [key, value] of Object.entries(action.newAttributes)) {
+			action.element.setAttribute(key, value ?? '')
+		}
 		pluginElement.editCount++
 	}
 }
