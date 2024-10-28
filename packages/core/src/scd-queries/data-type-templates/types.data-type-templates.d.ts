@@ -36,4 +36,12 @@ export namespace DataTypeTemplates {
 		lDeviceTypes: LDeviceElement[]
 		lNodeTypes: lNodeElement[]
 	}
+
+	export type TypeElement =
+		| SubstationElement
+		| VoltageLevelElement
+		| BayElement
+		| IEDElement
+		| LDeviceElement
+		| lNodeElement
 }
