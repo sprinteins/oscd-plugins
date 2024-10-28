@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { writable, type Writable, get } from 'svelte/store';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { writable, type Writable } from 'svelte/store';
 import { pluginStore } from './index';
 import { placeholderStore } from './placeholder.store';
 

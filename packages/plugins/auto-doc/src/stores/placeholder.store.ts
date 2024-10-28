@@ -10,7 +10,7 @@ const { xmlDocument } = pluginStore
 //==== PRIVATE ACTIONS
 const namespaceResolver = (prefix: string | null): string | null => {
     const namespaces: { [key: string]: string } = {
-        '': 'http://www.iec.ch/61850/2003/SCL',
+        'default': 'http://www.iec.ch/61850/2003/SCL',
         'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
         'sxy': 'http://www.iec.ch/61850/2003/SCLcoordinates'
     };
@@ -19,6 +19,11 @@ const namespaceResolver = (prefix: string | null): string | null => {
 };
 
 //==== PUBLIC ACTIONS
+// Example usage
+// fillPlaceholder(
+//     "This is a {{//default:IED[1]/@manufacturer}} and {{//default:IED/default:Services/@name}}."
+// );
+// Don't forget to add the namespace in the XPath expression
 function fillPlaceholder(markdownText: string): string {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -48,7 +53,7 @@ function fillPlaceholder(markdownText: string): string {
             return value;
         } catch (error) {
             console.error(`Error evaluating XPath ${placeholder}:`, error);
-            return 'Error';
+            return 'Error evaluating XPath';
         }
     });
 }
