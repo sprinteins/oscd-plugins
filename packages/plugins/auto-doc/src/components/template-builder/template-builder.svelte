@@ -1,9 +1,11 @@
 <script>
     import Button, {Label} from "@smui/button"
+    import {IconWrapper} from "@oscd-plugins/ui"
+    import TextElement from "../elements/text-element/text-element.svelte";
+    import ElementWrapper from "../element-wrapper/element-wrapper.svelte"
 
     let isElementsChoiceVisible = false
 
-    import {IconWrapper} from "@oscd-plugins/ui"
 
 </script>
 
@@ -13,6 +15,12 @@
 <div class="template-builder">
     <div class="card">
 
+        <div class="elements-list">
+            <ElementWrapper>
+                <TextElement/>
+            </ElementWrapper>
+        </div>
+
         <footer >
             <Button on:click={()=> isElementsChoiceVisible = !isElementsChoiceVisible}>
                 <IconWrapper icon="add" fillColor="#2aa198"/>
@@ -20,8 +28,6 @@
                     add element 
                 </Label> 
             </Button>
-
-
             <div class="elements-container">
                 {#if isElementsChoiceVisible}
                     <Button variant="outlined">Text</Button>
@@ -37,7 +43,7 @@
 <style>
 
     .template-builder{
-        width: 60%;
+        width: 70%;
     }
     .card{
         background-color: white;
@@ -45,6 +51,11 @@
         overflow-y: auto;
         border-radius: .5rem;
         padding: 1.5rem;
+    }
+
+    .elements-list{
+        display: flex;
+        flex-direction: column;
     }
 
     footer{
