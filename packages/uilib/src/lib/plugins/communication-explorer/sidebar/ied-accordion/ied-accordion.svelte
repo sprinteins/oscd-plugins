@@ -27,12 +27,15 @@
     	SampledValues: "--color-message-sampledvalues",
     	Unknown:       "--color-message-unknown",
     }
+
+    let detailsCollapsed = true;
 </script>
 
 <div class="ied">
     <IED label={IEDSelection.label} isSelected={true} isSelectable={false} />
 </div>
 {#if details.length == 3}
+    <div class={detailsCollapsed ? 'details_collapsed' : ''}>
     {#if details[0] != ""}
         <h3>Logical Nodes</h3>
         <p>{@html details[0]}</p>
@@ -45,8 +48,13 @@
         <h3>Data Attributes</h3>
         <p>{@html details[2]}</p>
     {/if}
+    </div>
+    <button class="expand_button" on:click={() => detailsCollapsed = !detailsCollapsed}>
+        {detailsCollapsed ? 'Show more' : 'Show less'}
+    </button>
 {/if}
-<div class="accordions">
+
+<div>
     {#each serviceTypes as serviceType}
         {@const service = serviceType[1]}
         {@const type = service[0].serviceType}
@@ -75,12 +83,29 @@
 
 <style lang="scss">
     .ied {
-        margin-bottom: 1rem;
     }
     .accordions {
         display: flex;
         flex-direction: column;
         gap: 1rem;
         margin-left: 1rem;
+    }
+    .details_collapsed {
+        overflow: hidden;
+        max-height: 100px;
+    }
+    .expand_button {
+        background: none;
+        border: none;
+        color: #305CDE;
+        cursor: pointer;
+        margin-bottom: 1rem;
+        padding-left: 0;
+    }
+    .expand_button:focus {
+        outline: none;
+    }
+    .expand_button:hover {
+        text-decoration: underline;
     }
 </style>
