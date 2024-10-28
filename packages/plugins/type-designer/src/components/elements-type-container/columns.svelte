@@ -25,17 +25,45 @@ interface DndEvent<T> {
 	};
 }
 
+let dragOriginId: number | null = null;
+let activeDragColumn: number | null = null;
+
 const flipDurationMs = 200;
 
 function handleDndConsiderCards(cid: number, e: DndEvent<DataTypeTemplates>) {
+	if (dragOriginId === null) {
+		dragOriginId = cid;
+	}
+
 	const colIdx = $columns.findIndex((c) => c.id === cid);
-	$columns[colIdx].items = e.detail.items;
-	$columns = [...$columns];
+	activeDragColumn = cid;
+
+	if (dragOriginId === colIdx || dragOriginId - 1 === colIdx) {
+		$columns[colIdx].items = e.detail.items;
+		$columns = [...$columns];
+	}
+	console.log("CONSIDER, origin ID: ", dragOriginId);
 }
+
 function handleDndFinalizeCards(cid: number, e: DndEvent<DataTypeTemplates>) {
+	if (dragOriginId === null) {
+		return;
+	}
+
 	const colIdx = $columns.findIndex((c) => c.id === cid);
-	$columns[colIdx].items = e.detail.items;
+
+	if (dragOriginId === colIdx || dragOriginId - 1 === colIdx) {
+		$columns[colIdx].items = e.detail.items;
+	} else {
+		const items = $columns[dragOriginId].items;
+		$columns[dragOriginId].items = items;
+		console.warn("Invalid drop - reverting to original items (Dev state: erasing the element)");
+	}
+
 	$columns = [...$columns];
+	dragOriginId = null;
+	activeDragColumn = null;
+	console.log("FINALIZE, reset origin ID");
 }
 </script>
 
@@ -60,20 +88,20 @@ function handleDndFinalizeCards(cid: number, e: DndEvent<DataTypeTemplates>) {
 							
 							{#if column.visible}
 								<div use:dndzone={{items:column.items, flipDurationMs}}
-								     on:consider={(e) => handleDndConsiderCards(column.id, e)} 
-								     on:finalize={(e) => handleDndFinalizeCards(column.id, e)}>
-									
-									{#each column.items as elementType (elementType.id)}
-										<div class="content" animate:flip="{{duration: flipDurationMs}}">
-
-											<Content class="content">
-												<div class="element-types">
-													<ContentCard {elementType} />
-												</div>
-											</Content>
-										</div>
-									{/each}
-								</div>
+									on:consider={(e) => handleDndConsiderCards(column.id, e)} 
+									on:finalize={(e) => handleDndFinalizeCards(column.id, e)}
+									class="dnd-zone"
+									class:active-drop-zone={activeDragColumn === column.id}>
+								{#each column.items as elementType (elementType.id)}
+									<div class="content" animate:flip="{{duration: flipDurationMs}}">
+										<Content class="content">
+											<div class="element-types">
+												<ContentCard {elementType} />
+											</div>
+										</Content>
+									</div>
+								{/each}
+							</div>
 							{/if}
 
 							{#if column.visible && column.name !== ELEMENT_NAMES.lNode}
@@ -173,6 +201,24 @@ function handleDndFinalizeCards(cid: number, e: DndEvent<DataTypeTemplates>) {
 		text-transform: none;
 		height: 44px;
 	}
+
+	.dnd-zone {
+        min-height: 200px;
+        transition: all 0.2s ease;
+    }
+
+    .dnd-zone:empty {
+        border-color: #ccc;
+    }
+
+	:global(.dropzone) {
+        outline: none !important;
+    }
+	
+	.active-drop-zone {
+        background-color: rgba(255, 0, 0, 0.1);
+        border-color: red;
+    }
 
 	@media (max-width: 768px) {
 		.columns-container {
