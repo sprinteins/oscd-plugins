@@ -4,7 +4,7 @@ import { createElement } from '@oscd-plugins/core'
 // SVELTE
 import { writable, get } from 'svelte/store'
 // STORES
-import { pluginStore } from './index'
+import { pluginStore, eventStore } from './index'
 
 //====== STORES ======//
 const { xmlDocument } = pluginStore
@@ -33,6 +33,7 @@ function createPrivateArea(xmlDocument: Document): Element {
     const newPrivateArea = createElement(xmlDocument, 'Private', { type: 'AUTO_DOC' });
     rootElement.appendChild(newPrivateArea);
 
+    eventStore.createAndDispatchActionEvent(rootElement, newPrivateArea);
     return newPrivateArea;
 }
 
@@ -94,6 +95,7 @@ function addDocumentTemplate(description: string): string | null {
             description: description
         });
         currentPrivateArea.appendChild(newDocDef);
+        eventStore.createAndDispatchActionEvent(currentPrivateArea, newDocDef);
         generatedId = id;
     }
 
@@ -104,6 +106,7 @@ function editDocumentTemplateDescription(docTemplateId: string, newDescription: 
     const docTemplate = getDocumentTemplate(docTemplateId);
     if (docTemplate) {
         docTemplate.setAttribute('description', newDescription);
+        eventStore.updateAndDispatchActionEvent(docTemplate, { description: newDescription });
     }
 }
 
@@ -121,6 +124,8 @@ function addBlockToDocumentTemplate(docTemplate: Element, content: string, type:
     docTemplate.appendChild(blockElement);
 
     insertBlockAtPosition(docTemplate, blockElement, position);
+    eventStore.createAndDispatchActionEvent(docTemplate, blockElement);
+    eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockElement, position);
 
     return generatedId;
 }
@@ -129,6 +134,7 @@ function editBlockContentOfDocumentTemplate(docTemplate: Element, blockId: strin
     const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockElement) {
         blockElement.textContent = content;
+        eventStore.updateAndDispatchActionEvent(blockElement, { content: content });
     }
 }
 
@@ -136,13 +142,14 @@ function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, posi
     const blockIdElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockIdElement) {
         insertBlockAtPosition(docTemplate, blockIdElement, position);
+        eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockIdElement, position);
     }
 }
 
 function deleteBlockFromDocumentTemplate(docTemplate: Element, blockId: string) {
-    // Find the block element in DocumentTemplate and remove it
     const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockElement && blockElement.parentNode === docTemplate) {
+        eventStore.deleteAndDispatchActionEvent(docTemplate, blockElement);
         docTemplate.removeChild(blockElement);
     }
 }
@@ -152,6 +159,7 @@ function deleteDocumentTemplate(docTemplateId: string) {
     if (currentPrivateArea) {
         const docTemplate = getDocumentTemplate(docTemplateId);
         if (docTemplate) {
+            eventStore.deleteAndDispatchActionEvent(currentPrivateArea, docTemplate);
             currentPrivateArea.removeChild(docTemplate);
         }
     }
@@ -172,13 +180,13 @@ function duplicateDocumentTemplate(docTemplateId: string, newDescription: string
             newDocTemplate.setAttribute('date', new Date().toISOString());
             newDocTemplate.setAttribute('description', newDescription);
 
-            // Update the ids of the cloned Blocks
             const blocks = newDocTemplate.querySelectorAll('Block');
             for (const block of blocks) {
                 block.setAttribute('id', uuidv4());
             }
 
             currentPrivateArea.appendChild(newDocTemplate);
+            eventStore.createAndDispatchActionEvent(currentPrivateArea, newDocTemplate);
         }
     }
 }
