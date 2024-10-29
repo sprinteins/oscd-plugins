@@ -1,8 +1,10 @@
 <script lang="ts">
     import { onDestroy } from 'svelte';
+
+    type Position = 'top' | 'right' | 'bottom' | 'left'
   
     export let text = ''; 
-    export let position = 'top'; 
+    export let position: Position = 'top'; 
     export let delayInMS = 500; 
   
     let isTooltipVisible = false;
@@ -28,6 +30,7 @@
         class="tooltip-container"
         on:mouseenter={showTooltip}
         on:mouseleave={hideTooltip}
+        role="tooltip"
     >
         <slot></slot>
 

@@ -1,8 +1,7 @@
 <script lang="ts">
     import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
     import Checkbox from '@smui/checkbox';
-    import  {IconWrapper} from '@oscd-plugins/ui';
-    import IconButton from '@smui/icon-button';
+    import {Tooltip} from "@/components"
     import type {Template} from "@/pages/template-overview/types.template-overview";
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
 
@@ -76,10 +75,18 @@
                 <Cell>{template.description}</Cell>
                 <Cell>
                 <div class="action-btns">
-                    <CustomIconButton icon="edit" color="black"/>
-                    <CustomIconButton icon="delete" color="black"/>
-                    <CustomIconButton icon="content_copy" color="black"/>
-                    <CustomIconButton icon="download" color="black"/>
+                    <Tooltip text="Edit">
+                        <CustomIconButton icon="edit" color="black"/>
+                    </Tooltip>
+                    <Tooltip text="Delete">
+                        <CustomIconButton icon="delete" color="black"/>
+                    </Tooltip>
+                    <Tooltip text="Duplicate">
+                        <CustomIconButton icon="content_copy" color="black"/>
+                    </Tooltip>
+                    <Tooltip text="Download" position="left">
+                        <CustomIconButton icon="download" color="black"/>
+                    </Tooltip>
                 </div>
                 </Cell>
             </Row>
@@ -106,6 +113,10 @@
         & :global(.mdc-data-table__table-container),
          :global(.mdc-data-table){
             border-radius: 10px;
-         }
+        }
+
+        & :global(.mdc-data-table__cell){
+            overflow-y: visible;
+        }
     }
 </style>
