@@ -1,10 +1,10 @@
 <script lang="ts">
     import { onDestroy } from 'svelte';
+    import type {TooltipPosition} from "./types.tooltip"
 
-    type Position = 'top' | 'right' | 'bottom' | 'left'
   
     export let text = ''; 
-    export let position: Position = 'top'; 
+    export let position: TooltipPosition = 'top'; 
     export let delayInMS = 500; 
   
     let isTooltipVisible = false;
