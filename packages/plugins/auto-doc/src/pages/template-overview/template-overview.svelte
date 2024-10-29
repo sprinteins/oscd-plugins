@@ -1,7 +1,8 @@
 <script lang="ts">
     import {Table} from '@/components';
     import type {Template} from "./types.template-overview";
-    import Button from "@smui/button"
+    import Button, {Label} from "@smui/button"
+    import {IconWrapper} from "@oscd-plugins/ui"
 
 
     let allTemplates : Template[] = [
@@ -35,8 +36,11 @@
 
 <main class="template-overview">
     <header class="template-controls">
-        <Button variant="raised" class="btn-pill btn-pill-primary" > + Add template</Button>
-        <Button variant="outlined" class="btn-pill btn-pill-outlined">Export Documents</Button>
+        <Button variant="raised" class="btn-pill btn-pill-primary" > 
+            <IconWrapper icon="add"/>
+           <Label>Add template</Label> 
+        </Button>
+        <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button>
     </header>
 
     <Table allTemplates={allTemplates}/>
