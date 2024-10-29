@@ -68,4 +68,97 @@ describe('placeholders', () => {
 
         expect(result).toBe("This is a N/A test.");
     });
+    
+    it('should fill table with corresponding XML values', () => {
+        const input: PlaceholderTable = {
+            tableColumns:
+                [
+                {columnTitle: "IED Manufactorer", placeholder: "//IED/@manufacturer"},
+                {columnTitle: "Service Name", placeholder: "//IED/Services/@name"}
+                ]
+        }
+
+        const result = placeholderStore.fillTableWithPlaceholders(input);
+        console.log(result);
+        const expected = `
+            | IED Manufactorer | Service Name |
+            | --- | --- |
+            | Anon | XX |
+            | Anon2 | XX2 |`.replace(/^\s+/gm, '');
+
+        console.log(expected);
+
+        expect(result).toBe(expected);
+    });
+
+    it('should handle empty table columns', () => {
+        const input: PlaceholderTable = {
+            tableColumns: []
+        };
+
+        const result = placeholderStore.fillTableWithPlaceholders(input);
+        const expected = "|  |\n|  |\n|  |";
+
+        expect(result).toBe(expected);
+    });
+
+    it('should handle table with single column', () => {
+        const input: PlaceholderTable = {
+            tableColumns: [
+                { columnTitle: "IED Manufacturer", placeholder: "//IED/@manufacturer" }
+            ]
+        };
+
+        const result = placeholderStore.fillTableWithPlaceholders(input);
+        const expected = `
+            | IED Manufacturer |
+            | --- |
+            | Anon |
+            | Anon2 |`.replace(/^\s+/gm, '');
+
+        expect(result).toBe(expected);
+    });
+
+    it('should handle table with missing XML values', () => {
+        const input: PlaceholderTable = {
+            tableColumns: [
+                { columnTitle: "Non Existent", placeholder: "//NonExistentElement/@nonExistentAttribute" }
+            ]
+        };
+
+        const result = placeholderStore.fillTableWithPlaceholders(input);
+        const expected = `
+            | Non Existent |
+            | --- |
+            | N/A |`.replace(/^\s+/gm, '');
+
+        expect(result).toBe(expected);
+    });
+
+    it('should handle table with mixed existing and non-existing XML values', () => {
+        const input: PlaceholderTable = {
+            tableColumns: [
+                { columnTitle: "IED Manufacturer", placeholder: "//IED/@manufacturer" },
+                { columnTitle: "Non Existent", placeholder: "//NonExistentElement/@nonExistentAttribute" }
+            ]
+        };
+
+        const result = placeholderStore.fillTableWithPlaceholders(input);
+        const expected = `
+            | IED Manufacturer | Non Existent |
+            | --- | --- |
+            | Anon | N/A |
+            | Anon2 |  |`.replace(/^\s+/gm, '');
+
+        expect(result).toBe(expected);
+    });
 });
+
+type Placeholder = string;
+interface ColumnWithPlaceholder {
+    columnTitle: string;
+    placeholder: Placeholder;
+}
+interface PlaceholderTable {
+    tableColumns: ColumnWithPlaceholder[];
+}

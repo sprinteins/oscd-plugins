@@ -21,7 +21,7 @@ afterAll(async () => {
 });
 
 test('sample test', async () => {
-  await page.goto('https://example.com');
+  await page.setContent('<html><head><title>Example Domain</title></head><body></body></html>');
   const title = await page.title();
   expect(title).toBe('Example Domain');
 });

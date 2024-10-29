@@ -7,6 +7,16 @@ import { pluginStore } from './index'
 //====== STORES ======//
 const { xmlDocument } = pluginStore
 
+//====== TYPES ======//
+type Placeholder = string;
+interface ColumnWithPlaceholder {
+    columnTitle: string;
+    placeholder: Placeholder;
+}
+interface PlaceholderTable {
+    tableColumns: ColumnWithPlaceholder[];
+}
+
 //==== PRIVATE ACTIONS
 const namespaceResolver = (prefix: string | null): string | null => {
     const namespaces: { [key: string]: string } = {
@@ -58,7 +68,24 @@ function fillPlaceholder(markdownText: string): string {
     });
 }
 
+function fillTableWithPlaceholders(table: PlaceholderTable): string {
+
+        const headers = table.tableColumns.map(col => col.columnTitle).join(' | ');
+        const separator = table.tableColumns.map(() => '---').join(' | ');
+        const rowsArray = table.tableColumns.map(col => {
+            const filledPlaceholder = fillPlaceholder(`{{${col.placeholder}}}`);
+            return filledPlaceholder.split(', ');
+        });
+
+        const numRows = Math.max(...rowsArray.map(arr => arr.length));
+        const rows = Array.from({ length: numRows }, (_, rowIndex) => {
+            return rowsArray.map(colArray => colArray[rowIndex] || '').join(' | ');
+        }).join(' |\n| ');
+
+        return `| ${headers} |\n| ${separator} |\n| ${rows} |`;
+}
 export const placeholderStore = {
     // actions
-    fillPlaceholder
-}
+    fillPlaceholder,
+    fillTableWithPlaceholders
+};
