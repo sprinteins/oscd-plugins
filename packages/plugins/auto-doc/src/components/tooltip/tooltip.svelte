@@ -8,7 +8,7 @@
     export let delayInMS = 500; 
   
     let isTooltipVisible = false;
-    let timeoutId: number;
+    let timeoutId: ReturnType<typeof setTimeout>;
   
     const showTooltip = () => {
       timeoutId = setTimeout(() => {
