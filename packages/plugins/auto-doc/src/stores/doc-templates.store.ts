@@ -13,21 +13,21 @@ const { xmlDocument } = pluginStore
 const autoDocArea = writable<Element | null>(null);
 
 //==== PRIVATE ACTIONS
-function setPrivateArea() {
+function setAutoDocArea() {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
     }
-    const newPrivateArea = createPrivateArea(xmlDoc);
-    autoDocArea.set(newPrivateArea);
+    const newAutoDocArea = createAutoDocArea(xmlDoc);
+    autoDocArea.set(newAutoDocArea);
 
 }
 
-function createPrivateArea(xmlDocument: Document): Element {
+function createAutoDocArea(xmlDocument: Document): Element {
     const rootElement = xmlDocument.documentElement;
-    const existingPrivateArea = rootElement.querySelector('Private[type="AUTO_DOC"]');
-    if (existingPrivateArea) {
-        return existingPrivateArea;
+    const existingAutoDocArea = rootElement.querySelector('Private[type="AUTO_DOC"]');
+    if (existingAutoDocArea) {
+        return existingAutoDocArea;
     }
 
     const newPrivateArea = createElement(xmlDocument, 'Private', { type: 'AUTO_DOC' });
@@ -78,7 +78,7 @@ function getBlockOfDocumentTemplate(docTemplateId: string, blockId: string) {
     return null;
 }
 
-function addDocumentTemplate(description: string): string | null {
+function addDocumentTemplate(title: string, description: string): string | null {
     let generatedId: string | null = null;
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -92,6 +92,7 @@ function addDocumentTemplate(description: string): string | null {
         const newDocDef = createElement(xmlDoc, 'DocumentTemplate', {
             id: id,
             date: new Date().toISOString(),
+            title: title,
             description: description
         });
         currentPrivateArea.appendChild(newDocDef);
@@ -102,11 +103,21 @@ function addDocumentTemplate(description: string): string | null {
     return generatedId;
 }
 
-function editDocumentTemplateDescription(docTemplateId: string, newDescription: string) {
+function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle?: string, newDescription?: string) {
     const docTemplate = getDocumentTemplate(docTemplateId);
     if (docTemplate) {
-        docTemplate.setAttribute('description', newDescription);
-        eventStore.updateAndDispatchActionEvent(docTemplate, { description: newDescription });
+        const updates: { title?: string; description?: string } = {};
+        if (newTitle) {
+            docTemplate.setAttribute('title', newTitle);
+            updates.title = newTitle;
+        }
+        if (newDescription) {
+            docTemplate.setAttribute('description', newDescription);
+            updates.description = newDescription;
+        }
+        if (Object.keys(updates).length > 0) {
+            eventStore.updateAndDispatchActionEvent(docTemplate, updates);
+        }
     }
 }
 
@@ -165,7 +176,7 @@ function deleteDocumentTemplate(docTemplateId: string) {
     }
 }
 
-function duplicateDocumentTemplate(docTemplateId: string, newDescription: string) {
+function duplicateDocumentTemplate(docTemplateId: string, newTitle: string, newDescription: string) {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
@@ -178,6 +189,7 @@ function duplicateDocumentTemplate(docTemplateId: string, newDescription: string
             const newDocTemplate = docTemplate.cloneNode(true) as Element;
             newDocTemplate.setAttribute('id', uuidv4());
             newDocTemplate.setAttribute('date', new Date().toISOString());
+            newDocTemplate.setAttribute('title', newTitle);
             newDocTemplate.setAttribute('description', newDescription);
 
             const blocks = newDocTemplate.querySelectorAll('Block');
@@ -193,7 +205,7 @@ function duplicateDocumentTemplate(docTemplateId: string, newDescription: string
 
 //==== INITIALIZATION
 function init() {
-    setPrivateArea();
+    setAutoDocArea();
 }
 
 export const docTemplatesStore = {
@@ -208,7 +220,7 @@ export const docTemplatesStore = {
     getBlockOfDocumentTemplate,
     getAllBlocksOfDocumentTemplate,
     moveBlockInDocumentTemplate,
-    editDocumentTemplateDescription,
+    editDocumentTemplateTitleAndDescription,
     editBlockContentOfDocumentTemplate,
     deleteDocumentTemplate,
     deleteBlockFromDocumentTemplate,
