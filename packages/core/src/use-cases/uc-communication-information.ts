@@ -29,14 +29,13 @@ export class UCCommunicationInformation {
 
 	private parseDetails(element: Element): string[] {
 
-		//this is very simple and naive parsing and subject to change
-		//TODO: verify how exactly logical nodes, data attributes and data objects can be layed out 
 		let result = ["", "", ""]
 
 		const parser = new DOMParser()
 		const doc = parser.parseFromString(element.outerHTML, "text/xml")
 		
-		//these values were blindly taken from a test file as examples
+		//for now, we are only looking for these specific strings when looking for logical nodes,
+		//data objects and data attributes. maybe this can be expanded in the future
 		result[0] = this.parseNodes(doc, ["LN", "LN0"])
 		result[1] = this.parseNodes(doc, ["DO", "DOI"])
 		result[2] = this.parseNodes(doc, ["DA", "FCDA"])
