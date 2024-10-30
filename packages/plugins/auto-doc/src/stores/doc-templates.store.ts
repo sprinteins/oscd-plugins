@@ -4,7 +4,7 @@ import { createElement } from '@oscd-plugins/core'
 // SVELTE
 import { writable, get } from 'svelte/store'
 // STORES
-import { pluginStore } from './index'
+import { pluginStore, eventStore } from './index'
 
 //====== STORES ======//
 const { xmlDocument } = pluginStore
@@ -13,26 +13,27 @@ const { xmlDocument } = pluginStore
 const autoDocArea = writable<Element | null>(null);
 
 //==== PRIVATE ACTIONS
-function setPrivateArea() {
+function setAutoDocArea() {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
     }
-    const newPrivateArea = createPrivateArea(xmlDoc);
-    autoDocArea.set(newPrivateArea);
+    const newAutoDocArea = createAutoDocArea(xmlDoc);
+    autoDocArea.set(newAutoDocArea);
 
 }
 
-function createPrivateArea(xmlDocument: Document): Element {
+function createAutoDocArea(xmlDocument: Document): Element {
     const rootElement = xmlDocument.documentElement;
-    const existingPrivateArea = rootElement.querySelector('Private[type="AUTO_DOC"]');
-    if (existingPrivateArea) {
-        return existingPrivateArea;
+    const existingAutoDocArea = rootElement.querySelector('Private[type="AUTO_DOC"]');
+    if (existingAutoDocArea) {
+        return existingAutoDocArea;
     }
 
     const newPrivateArea = createElement(xmlDocument, 'Private', { type: 'AUTO_DOC' });
     rootElement.appendChild(newPrivateArea);
 
+    eventStore.createAndDispatchActionEvent(rootElement, newPrivateArea);
     return newPrivateArea;
 }
 
@@ -77,7 +78,7 @@ function getBlockOfDocumentTemplate(docTemplateId: string, blockId: string) {
     return null;
 }
 
-function addDocumentTemplate(description: string): string | null {
+function addDocumentTemplate(title: string, description: string): string | null {
     let generatedId: string | null = null;
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -91,19 +92,32 @@ function addDocumentTemplate(description: string): string | null {
         const newDocDef = createElement(xmlDoc, 'DocumentTemplate', {
             id: id,
             date: new Date().toISOString(),
+            title: title,
             description: description
         });
         currentPrivateArea.appendChild(newDocDef);
+        eventStore.createAndDispatchActionEvent(currentPrivateArea, newDocDef);
         generatedId = id;
     }
 
     return generatedId;
 }
 
-function editDocumentTemplateDescription(docTemplateId: string, newDescription: string) {
+function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle?: string, newDescription?: string) {
     const docTemplate = getDocumentTemplate(docTemplateId);
     if (docTemplate) {
-        docTemplate.setAttribute('description', newDescription);
+        const updates: { title?: string; description?: string } = {};
+        if (newTitle) {
+            docTemplate.setAttribute('title', newTitle);
+            updates.title = newTitle;
+        }
+        if (newDescription) {
+            docTemplate.setAttribute('description', newDescription);
+            updates.description = newDescription;
+        }
+        if (Object.keys(updates).length > 0) {
+            eventStore.updateAndDispatchActionEvent(docTemplate, updates);
+        }
     }
 }
 
@@ -121,6 +135,8 @@ function addBlockToDocumentTemplate(docTemplate: Element, content: string, type:
     docTemplate.appendChild(blockElement);
 
     insertBlockAtPosition(docTemplate, blockElement, position);
+    eventStore.createAndDispatchActionEvent(docTemplate, blockElement);
+    eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockElement, position);
 
     return generatedId;
 }
@@ -129,6 +145,7 @@ function editBlockContentOfDocumentTemplate(docTemplate: Element, blockId: strin
     const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockElement) {
         blockElement.textContent = content;
+        eventStore.updateAndDispatchActionEvent(blockElement, { content: content });
     }
 }
 
@@ -136,13 +153,14 @@ function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, posi
     const blockIdElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockIdElement) {
         insertBlockAtPosition(docTemplate, blockIdElement, position);
+        eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockIdElement, position);
     }
 }
 
 function deleteBlockFromDocumentTemplate(docTemplate: Element, blockId: string) {
-    // Find the block element in DocumentTemplate and remove it
     const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockElement && blockElement.parentNode === docTemplate) {
+        eventStore.deleteAndDispatchActionEvent(docTemplate, blockElement);
         docTemplate.removeChild(blockElement);
     }
 }
@@ -152,12 +170,13 @@ function deleteDocumentTemplate(docTemplateId: string) {
     if (currentPrivateArea) {
         const docTemplate = getDocumentTemplate(docTemplateId);
         if (docTemplate) {
+            eventStore.deleteAndDispatchActionEvent(currentPrivateArea, docTemplate);
             currentPrivateArea.removeChild(docTemplate);
         }
     }
 }
 
-function duplicateDocumentTemplate(docTemplateId: string, newDescription: string) {
+function duplicateDocumentTemplate(docTemplateId: string, newTitle: string, newDescription: string) {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
@@ -170,22 +189,23 @@ function duplicateDocumentTemplate(docTemplateId: string, newDescription: string
             const newDocTemplate = docTemplate.cloneNode(true) as Element;
             newDocTemplate.setAttribute('id', uuidv4());
             newDocTemplate.setAttribute('date', new Date().toISOString());
+            newDocTemplate.setAttribute('title', newTitle);
             newDocTemplate.setAttribute('description', newDescription);
 
-            // Update the ids of the cloned Blocks
             const blocks = newDocTemplate.querySelectorAll('Block');
             for (const block of blocks) {
                 block.setAttribute('id', uuidv4());
             }
 
             currentPrivateArea.appendChild(newDocTemplate);
+            eventStore.createAndDispatchActionEvent(currentPrivateArea, newDocTemplate);
         }
     }
 }
 
 //==== INITIALIZATION
 function init() {
-    setPrivateArea();
+    setAutoDocArea();
 }
 
 export const docTemplatesStore = {
@@ -200,7 +220,7 @@ export const docTemplatesStore = {
     getBlockOfDocumentTemplate,
     getAllBlocksOfDocumentTemplate,
     moveBlockInDocumentTemplate,
-    editDocumentTemplateDescription,
+    editDocumentTemplateTitleAndDescription,
     editBlockContentOfDocumentTemplate,
     deleteDocumentTemplate,
     deleteBlockFromDocumentTemplate,

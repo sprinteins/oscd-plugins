@@ -8,13 +8,11 @@
 		</Section>
 		<Section align="end" toolbar>
 			{#if pluginType && pluginType === 'editor'}
-			<IconButton on:click={handleUpload} style="margin-right: .5rem;">
-				<IconWrapper icon="upload_file"/>
-				<input type="file" bind:this={fileInput} style="display: none" on:change={handleFileChange} accept=".scd" name="xmlDocument" />
-			</IconButton>
-			<IconButton on:click={handleDownload}>
-				<IconWrapper icon="download"/>
-			</IconButton>
+				<div class="editor-buttons">
+					<CustomIconButton icon="upload_file" color="white" on:click={handleUpload}/>
+					<input type="file" bind:this={fileInput} style="display: none" on:change={handleFileChange} accept=".scd" name="xmlDocument" />
+					<CustomIconButton icon="download" color="white" on:click={handleDownload}/>
+				</div>
 			{/if}
 		</Section>
 	</Row>
@@ -25,9 +23,8 @@
 import { newOpenDocEvent } from '@oscd-plugins/core'
 // MUI COMPONENTS
 import TopAppBar, { Row, Section, Title } from '@smui/top-app-bar'
-import IconButton from '@smui/icon-button'
 // COMPONENTS
-import { IconWrapper } from '../icons'
+import { CustomIconButton } from '..'
 // TYPES
 import type { PluginType } from '@oscd-plugins/core'
 
@@ -61,3 +58,10 @@ function handleDownload() {
 	document.dispatchEvent(new Event('save-doc'))
 }
 </script>
+
+<style>
+	.editor-buttons {
+		display: flex;
+		gap: .5rem;
+	}
+</style>
