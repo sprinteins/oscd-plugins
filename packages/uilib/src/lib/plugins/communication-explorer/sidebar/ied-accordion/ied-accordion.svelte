@@ -38,15 +38,15 @@
     <div class={detailsCollapsed ? 'details_collapsed' : ''}>
     {#if details[0] != ""}
         <h3>Logical Nodes</h3>
-        <p>{@html details[0]}</p>
+        <p class="details">{@html details[0]}</p>
     {/if}
     {#if details[1] != ""}
         <h3>Data Objects</h3>
-        <p>{@html details[1]}</p>
+        <p class="details">{@html details[1]}</p>
     {/if}
     {#if details[2] != ""}
         <h3>Data Attributes</h3>
-        <p>{@html details[2]}</p>
+        <p class="details">{@html details[2]}</p>
     {/if}
     </div>
     <button class="expand_button" on:click={() => detailsCollapsed = !detailsCollapsed}>
@@ -107,5 +107,8 @@
     }
     .expand_button:hover {
         text-decoration: underline;
+    }
+    .details:last-of-type {
+        margin-bottom: 0;
     }
 </style>
