@@ -19,9 +19,12 @@ function addElementToXmlDocument(
 	elementAttributes: Record<string, string | null>
 ) {
 	const { dataTypeTemplatesRootElement } = dataTypeTemplatesStore
-
+	const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
 	const newElement = createElement(
-		get(xmlDocument),
+		xmlDoc,
 		newElementTagName,
 		elementAttributes
 	)
@@ -34,8 +37,12 @@ function addElementToXmlDocument(
 }
 
 function createDataTypeTemplateElement(): Element {
+	const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
 	const newDataTypeTemplatesElement = createElement(
-		get(xmlDocument),
+		xmlDoc,
 		'DataTypeTemplates',
 		{}
 	)
@@ -44,7 +51,7 @@ function createDataTypeTemplateElement(): Element {
 	})
 
 	eventStore.createAndDispatchActionEvent(
-		get(xmlDocument).documentElement,
+		xmlDoc.documentElement,
 		newDataTypeTemplatesElement
 	)
 
