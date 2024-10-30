@@ -22,7 +22,7 @@
             lastEdited: new Date("foo"),
         },
         {
-            name: 'I surely have quite a long title name.',
+            name: 'I surely have quite a long title name. sit amet consectetur adipisicing elit. Soluta placeat itaque minus',
             description: "Lorem ipsum dolor sit amet consectetur.",
             lastEdited: new Date("2024-10-20T10:55:32"),
         },

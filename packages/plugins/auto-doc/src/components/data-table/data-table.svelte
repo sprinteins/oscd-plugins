@@ -16,7 +16,7 @@
         return isNaN(date.getTime());
     }
 
-    function formatDate(date: Date, defaultString: string = "-"): string{
+    function formatDate(date: Date, defaultString = "-"): string{
         if(isInvalidDate(date)){ return defaultString;}
 
         return `${getDD_MM_YYYYFromDate(date)}, ${getHH_MM_FromDate(date)}`;
@@ -70,11 +70,12 @@
                             valueKey={template.name}
                         />
                     </Cell>
-                    <Cell>{template.name}</Cell>
+                    <Cell>
+                        <Truncate text={template.name} maxChars={40} tooltipPosition="top"/>
+                    </Cell>
                     <Cell>{formatDate(template.lastEdited)}</Cell>
                     <Cell>
                         <Truncate text={template.description} maxChars={120} tooltipPosition="top"/>
-                        <!-- {template.description} -->
                     </Cell>
                     <Cell>
                     <div class="action-btns">

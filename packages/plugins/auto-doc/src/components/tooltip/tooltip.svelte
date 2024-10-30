@@ -59,6 +59,8 @@
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 0.2s ease, transform 0.2s ease;
+      max-width: 500px;
+      text-wrap: auto;
     }
   
     .tooltip.top {
