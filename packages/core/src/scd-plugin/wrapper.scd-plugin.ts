@@ -1,7 +1,7 @@
 import editorPluginInstance from './editor-instance.scd-plugin'
 import menuPluginInstance from './menu-instance.scd-plugin'
 import validatorPluginInstance from './validator-instance.scd-plugin'
-import standAloneMode from './stand-alone-mode.scd-plugin'
+import standAloneMode from './stand-alone-mode'
 // TYPES
 import type { SvelteComponent, ComponentType } from 'svelte'
 import type { PluginType } from './types.scd-plugin'
