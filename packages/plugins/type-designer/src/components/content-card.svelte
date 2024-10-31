@@ -17,18 +17,29 @@ export let name: string
 export let typeElement: DataTypeTemplates.TypeElement
 export let currentColumn: keyof typeof SCD_ELEMENTS
 
+// store
+const { drawer } = drawerStore
+
 //====== FUNCTIONS ======//
 
 function handleCardClick() {
-	drawerStore.switchDrawer({
-		title: name,
-		description: typeElement.desc,
+	const payload = {
+		title: 'Edit type',
+		description: `#${typeElement.id}`,
 		component: DrawerContent,
 		componentProps: {
 			typeElement,
 			currentColumn
 		}
-	})
+	}
+
+	if (
+		$drawer.componentProps?.typeElement.id &&
+		$drawer.componentProps?.typeElement.id !== typeElement.id
+	)
+		return drawerStore.handleOpenDrawer(payload)
+
+	return drawerStore.handleSwitchDrawer(payload)
 }
 </script>
 
