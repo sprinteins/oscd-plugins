@@ -6,61 +6,128 @@ import Paper, { Content } from '@smui/paper'
 import Button from '@smui/button'
 // UI COMPONENTS
 import { CustomIconButton } from '@oscd-plugins/ui'
-// LOCAL COMPONENTS
-import ContentCard from '@/components/content-card.svelte'
 // STORES
 import { elementsTypesStore } from '@/stores/elements-types.store'
 import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
 // TYPES
 import type { Entries } from '@oscd-plugins/core'
+import type { DataTypeTemplates } from '@/types/data-type-templates'
+
+// DNDZONE
+import { dndzone } from 'svelte-dnd-action'
+import { flip } from 'svelte/animate'
+import ContentCard from '@/components/content-card.svelte'
 
 //====== INITIALIZATION ======//
 const { columns } = elementsTypesStore
 
 $: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
+
+interface DndEvent<T> {
+	detail: {
+		items: T[]
+	}
+}
+
+let dragOriginId: string | null = null
+let activeDragColumn: string | null = null
+
+const flipDurationMs = 200
+
+function handleDndConsiderCards(
+	cid: string,
+	e: CustomEvent<DndEvent<DataTypeTemplates>>
+) {
+	if (dragOriginId === null) {
+		dragOriginId = cid
+	}
+
+	activeDragColumn = cid
+
+	// Note: You might want to implement specific drag logic here
+	console.log('CONSIDER, origin ID: ', dragOriginId)
+}
+
+function handleDndFinalizeCards(
+	cid: string,
+	e: CustomEvent<DndEvent<DataTypeTemplates>>
+) {
+	if (dragOriginId === null) {
+		return
+	}
+
+	// Reset drag state
+	dragOriginId = null
+	activeDragColumn = null
+	console.log('FINALIZE, reset origin ID')
+}
 </script>
 
 <div class="columns-container" id="type-designer-columns">
-  {#if $columns}
-    {#each columnsEntries as [ key, column ]}
-      <Paper class="column-container {`column-container--${column.visible ? "expanded" : "collapsed"}`}">
-        <article class="column">
-          <div class="column-header">
-            {#if column.visible}
-              <h1>{column.name}</h1>
-            {:else}
-              <h1>{column.name} (hidden)</h1>
-            {/if}
-						<CustomIconButton
-							class="visibility-button"
-							icon={column.visible ? "visibility" : "visibility_off"}
-							on:click={() => elementsTypesStore.toggleColumnVisibility(key)}
-						/>
-          </div>
-          {#if column.visible}
-            <Content class="content">
-              <div class="element-types">
-                {#each column.types as typeElement, index}
-                  <ContentCard name={ typeElement.name || SCD_ELEMENTS[key].type.baseName + ( index +1) }  currentColumn={key} {typeElement} />
-                {/each}
-              </div>
-            </Content>
-          {/if}
-					{#if column.visible && column.name !== SCD_ELEMENTS.lNode.element.name}
-						<div class="add-button-container">
-						<Button
-								class="add-button"
-								on:click={() => dataTypeTemplatesStore.addNewType(key)}
-							>
-								New {column.name}
-							</Button>
+	{#if $columns}
+	  {#each columnsEntries as [ key, column ]}
+				<Paper 
+					class="column-container {`column-container--${column.visible ? 'expanded' : 'collapsed'}`}"
+				>
+					<article class="column">
+						<div class="column-header">
+							{#if column.visible}
+								<h1>{column.name}</h1>
+							{:else}
+								<h1>{column.name} (hidden)</h1>
+							{/if}
+							<CustomIconButton
+								class="visibility-button"
+								icon={column.visible ? "visibility" : "visibility_off"}
+								on:click={() => elementsTypesStore.toggleColumnVisibility(key)}
+							/>
 						</div>
-					{/if}
-        </article>
-      </Paper>
-    {/each}
-  {/if}
-</div>
+	
+						{#if column.visible}
+							<div 
+								use:dndzone={{
+									items: column.types, 
+									flipDurationMs
+								}}
+								on:consider={(e) => handleDndConsiderCards(key, e)} 
+								on:finalize={(e) => handleDndFinalizeCards(key, e)}
+								class="dnd-zone"
+								class:active-drop-zone={activeDragColumn === key}
+							>
+								{#each column.types as typeElement (typeElement.id)}
+									<div 
+										class="content" 
+										animate:flip="{{duration: flipDurationMs}}"
+									>
+										<Content class="content">
+											<div class="element-types">
+												<ContentCard
+													name={typeElement.name || `${SCD_ELEMENTS[key].type.baseName}${column.types.indexOf(typeElement) + 1}`}
+													currentColumn={key} 
+													{typeElement} 
+												/>
+											</div>
+										</Content>
+									</div>
+								{/each}
+							</div>
+						{/if}
+	
+						{#if column.visible && column.name !== SCD_ELEMENTS.lNode.element.name}
+							<div class="add-button-container">
+								<Button
+									class="add-button"
+									on:click={() => dataTypeTemplatesStore.addNewType(key)}
+								>
+									New {column.name}
+								</Button>
+							</div>
+						{/if}
+					</article>
+				</Paper>
+			{/each}
+		{/if}
+	</div>
 
 <style>
 	.columns-container {
@@ -154,6 +221,24 @@ $: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
 		text-transform: none;
 		height: 44px;
 	}
+
+	#type-designer-columns :global(.dnd-zone) {
+        min-height: 200px;
+        transition: all 0.2s ease;
+    }
+
+    #type-designer-columns :global(.dnd-zone:empty) {
+        border-color: #ccc;
+    }
+
+	:global(.dropzone) {
+        outline: none !important;
+    }
+	
+	#type-designer-columns :global(.active-drop-zone) {
+        background-color: rgba(255, 0, 0, 0.1);
+        border-color: red;
+    }
 
 	@media (max-width: 768px) {
 		.columns-container {
