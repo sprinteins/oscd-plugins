@@ -126,7 +126,7 @@ function addNewType(columnKey: keyof typeof SCD_ELEMENTS) {
 		? get(typeElements)[insertElementBefore][0]?.element
 		: undefined
 
-	const newElement = pluginStore.addElementToXmlDocument({
+	pluginStore.addElementToXmlDocument({
 		parentElement: currentPrivateElement,
 		newElementTagName: SCD_ELEMENTS[columnKey].type.tag,
 		namespace: 'td',
