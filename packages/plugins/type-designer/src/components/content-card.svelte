@@ -24,7 +24,7 @@ const { drawer } = drawerStore
 
 function handleCardClick() {
 	const payload = {
-		title: 'Edit type',
+		title: `Edit ${SCD_ELEMENTS[currentColumn].element.name} type`,
 		description: `#${typeElement.id}`,
 		component: DrawerContent,
 		componentProps: {
