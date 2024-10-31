@@ -1,12 +1,12 @@
 <div id="custom-drawer">
-	<Drawer variant="dismissible" bind:open={$open}>
+	<Drawer variant="dismissible" bind:open={$drawer.isOpen}>
 		<Header>
-			<Title>{ $currentTitle }</Title>
-			<Subtitle>{ $currentDescription }</Subtitle>
+			<Title>{ $drawer.title }</Title>
+			<Subtitle>{ $drawer.description }</Subtitle>
 		</Header>
 		<Content>
-			{#if $currentInnerComponent}
-				<svelte:component this={InnerComponent} {...$currentInnerComponentProps}/>
+			{#if $drawer.component}
+				<svelte:component this={InnerComponent} {...$drawer.componentProps}/>
 			{/if}
 		</Content>
 	</Drawer>
@@ -30,15 +30,9 @@ import drawerStore from './custom-drawer.store'
 //====== INITIALIZATION ====//
 
 //stores
-const {
-	open,
-	currentTitle,
-	currentDescription,
-	currentInnerComponent,
-	currentInnerComponentProps
-} = drawerStore
+const { drawer } = drawerStore
 
-$: InnerComponent = $currentInnerComponent || null
+$: InnerComponent = $drawer.component || null
 </script>
 	
 <style>

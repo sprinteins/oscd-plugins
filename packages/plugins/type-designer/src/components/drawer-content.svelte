@@ -16,12 +16,12 @@ import type { DataTypeTemplates } from '@oscd-plugins/core'
 export let typeElement: DataTypeTemplates.TypeElement
 export let currentColumn: keyof typeof SCD_ELEMENTS
 
-const { element, ...attributes } = typeElement
+let localAttributes: Record<(typeof standardAttributes)[number], string>
 
 //====== REACTIVITY ====//
-
+$: ({ element, ...attributes } = typeElement)
 $: standardAttributes = SCD_ELEMENTS[currentColumn]?.element.standardAttributes
-$: localAttributes = attributes
+$: setNewLocalAttributes(attributes)
 
 //====== FUNCTIONS =====//
 
@@ -31,18 +31,26 @@ function updateTypeElement() {
 		oldAttributes: attributes,
 		newAttributes: localAttributes
 	})
-	drawerStore.closeDrawer()
+	drawerStore.handleCloseDrawer()
+}
+
+function setNewLocalAttributes(
+	newAttributes: Record<(typeof standardAttributes)[number], string>
+) {
+	localAttributes = { ...localAttributes, ...newAttributes }
 }
 </script>
 
 <div id="type-designer-drawer">
 	<div class="form">
 		{#each standardAttributes as attribute}
-			<Textfield class="textField" variant="outlined" bind:value={localAttributes[attribute]} label={attribute} />
+			{#if attribute !== 'id' && localAttributes[attribute] !== undefined}
+				<Textfield class="textField" variant="outlined" bind:value={localAttributes[attribute]} label={attribute} />
+			{/if}
 		{/each}
 	</div>
 	<div class="action">
-		<Button on:click={drawerStore.closeDrawer}>Cancel</Button>
+		<Button on:click={drawerStore.handleCloseDrawer}>Cancel</Button>
 		<Button on:click={updateTypeElement}>Save</Button>
 		
 	</div>

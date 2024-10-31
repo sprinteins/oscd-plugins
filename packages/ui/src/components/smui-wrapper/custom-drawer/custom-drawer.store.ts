@@ -1,61 +1,59 @@
 // SVELTE
 import { writable, get } from 'svelte/store'
 // TYPES
-import type { DrawerPayload } from './custom-drawer.types'
+import type { Drawer, DrawerPayload } from './custom-drawer.types'
+
+//==== INITIATORS
+
+const drawerInit: Drawer = {
+	isOpen: false,
+	title: '',
+	description: '',
+	component: undefined,
+	componentProps: undefined
+}
 
 //==== STATE
-const open = writable<boolean>(false)
 
-const currentTitle = writable<DrawerPayload['title']>('')
-const currentDescription = writable<DrawerPayload['description']>('')
-const currentInnerComponent = writable<DrawerPayload['component']>(undefined)
-const currentInnerComponentProps =
-	writable<DrawerPayload['componentProps']>(undefined)
+const drawer = writable(drawerInit)
 
 //==== ACTIONS
 
-function openDrawer({
+function handleOpenDrawer({
 	title,
 	description,
 	component,
 	componentProps
 }: DrawerPayload) {
-	currentTitle.set(title)
-	currentDescription.set(description || '')
-	currentInnerComponent.set(component)
-	currentInnerComponentProps.set(componentProps)
-
-	open.set(true)
+	drawer.update(() => ({
+		isOpen: true,
+		title,
+		description: description || '',
+		component,
+		componentProps
+	}))
 }
 
-function closeDrawer() {
-	currentTitle.set('')
-	currentDescription.set('')
-	currentInnerComponent.set(undefined)
-	currentInnerComponentProps.set(undefined)
-	open.set(false)
+function handleCloseDrawer() {
+	drawer.update(() => drawerInit)
 }
 
-function switchDrawer({
+function handleSwitchDrawer({
 	title,
 	description,
 	component,
 	componentProps
 }: DrawerPayload) {
-	if (get(open)) {
-		closeDrawer()
-	} else openDrawer({ title, description, component, componentProps })
+	if (get(drawer).isOpen) {
+		handleCloseDrawer()
+	} else handleOpenDrawer({ title, description, component, componentProps })
 }
 
 export default {
 	//state
-	open,
-	currentTitle,
-	currentDescription,
-	currentInnerComponent,
-	currentInnerComponentProps,
+	drawer,
 	//actions
-	openDrawer,
-	closeDrawer,
-	switchDrawer
+	handleOpenDrawer,
+	handleCloseDrawer,
+	handleSwitchDrawer
 }
