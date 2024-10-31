@@ -1,6 +1,6 @@
 import { DataTypeTemplatesQueries } from './queries.data-type-templates'
 // TYPES
-import type { CommonOptions } from '../types.scd-queries'
+import type { CommonOptions, PrivateElement } from '../types.scd-queries'
 import type { DataTypeTemplates } from './types.data-type-templates'
 
 export class DataTypeTemplatesService {
@@ -14,20 +14,37 @@ export class DataTypeTemplatesService {
 		return this.dataTypeTemplatesQueries.searchDataTypeTemplates()
 	}
 
-	public findTypeDesignerElements(
+	public findPrivateElement(
+		selector: `[type="${string}"]`,
 		options?: CommonOptions
-	): DataTypeTemplates.SubElements {
+	): PrivateElement | null {
+		return this.dataTypeTemplatesQueries.searchPrivateElement(
+			selector,
+			options
+		)
+	}
+
+	public findTypeElements(
+		options?: CommonOptions
+	): DataTypeTemplates.TypeElements {
 		return {
-			substations:
-				this.dataTypeTemplatesQueries.searchSubstationElements(options),
-			voltageLevels:
-				this.dataTypeTemplatesQueries.searchVoltageLevelElements(
+			substationTypes:
+				this.dataTypeTemplatesQueries.searchSubstationTypeElements(
 					options
 				),
-			bays: this.dataTypeTemplatesQueries.searchBayElements(options),
-			ieds: this.dataTypeTemplatesQueries.searchIEDElements(options),
-			logicalDevices:
-				this.dataTypeTemplatesQueries.searchLDeviceElements(options)
+			voltageLevelTypes:
+				this.dataTypeTemplatesQueries.searchVoltageLevelTypeElements(
+					options
+				),
+			bayTypes:
+				this.dataTypeTemplatesQueries.searchBayTypeElements(options),
+			iedTypes:
+				this.dataTypeTemplatesQueries.searchIEDTypeElements(options),
+			lDeviceTypes:
+				this.dataTypeTemplatesQueries.searchLDeviceTypeElements(
+					options
+				),
+			lNodeTypes: this.dataTypeTemplatesQueries.searchLNodeTypeElements()
 		}
 	}
 }

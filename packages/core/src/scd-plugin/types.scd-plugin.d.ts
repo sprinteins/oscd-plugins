@@ -10,6 +10,8 @@ export type EditorPluginInstance = HTMLElement & {
 	set doc(newDoc: XMLDocument)
 	get docName(): string | undefined
 	set docName(newDocName: string)
+	get editCount(): number
+	set editCount(newEditCount: number)
 	connectedCallback(): void
 	constructor(): EditorPluginInstance
 }
