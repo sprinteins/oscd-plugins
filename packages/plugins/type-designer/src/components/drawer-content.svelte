@@ -16,7 +16,9 @@ import type { DataTypeTemplates } from '@oscd-plugins/core'
 export let typeElement: DataTypeTemplates.TypeElement
 export let currentColumn: keyof typeof SCD_ELEMENTS
 
-let localAttributes: Record<(typeof standardAttributes)[number], string>
+let localAttributes: Partial<
+	Record<(typeof standardAttributes)[number], string>
+>
 
 //====== REACTIVITY ====//
 $: ({ element, ...attributes } = typeElement)
@@ -34,10 +36,16 @@ function updateTypeElement() {
 	drawerStore.handleCloseDrawer()
 }
 
+/**
+ * Set the new local attributes
+ * This is necessary to avoid reactivity issues
+ * because of the nature of the dynamic component & props
+ * @param newAttributes
+ */
 function setNewLocalAttributes(
-	newAttributes: Record<(typeof standardAttributes)[number], string>
+	newAttributes: Partial<Record<(typeof standardAttributes)[number], string>>
 ) {
-	localAttributes = { ...localAttributes, ...newAttributes }
+	localAttributes = newAttributes
 }
 </script>
 
