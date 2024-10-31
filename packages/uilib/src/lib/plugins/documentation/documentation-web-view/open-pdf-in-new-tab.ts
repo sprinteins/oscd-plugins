@@ -4,21 +4,22 @@ export enum PdfType {
   }
 
 
-export async function exportPdfInNewTab(type: PdfType) {
+export async function exportPdfInNewTab(type: PdfType, printContentWrapper: Element | null) {
 	let printContent: Element | null | undefined = undefined
 	let websiteRunsInLocalUiLib = false
 
 	if (type === PdfType.Telegram) {
-		printContent = document
-			?.querySelector("open-scd")?.shadowRoot
-			?.querySelector(".editor")?.shadowRoot
-			?.querySelector("#tscd-documentation-print-content-communication")
-
+		// printContent = document
+		// 	?.querySelector("open-scd")?.shadowRoot
+		// 	?.querySelector(".editor")?.shadowRoot
+		// 	?.querySelector("#tscd-documentation-print-content-communication")
+		printContent = printContentWrapper?.querySelector("#tscd-documentation-print-content-communication")
 	} else if (type === PdfType.Documentation) {
-		printContent = document
-			?.querySelector("open-scd")?.shadowRoot
-			?.querySelector(".editor")?.shadowRoot
-			?.querySelector("#tscd-documentation-print-content-documentation")
+		// printContent = document
+		// 	?.querySelector("open-scd")?.shadowRoot
+		// 	?.querySelector(".editor")?.shadowRoot
+		// 	?.querySelector("#tscd-documentation-print-content-documentation")
+		printContent = printContentWrapper?.querySelector("#tscd-documentation-print-content-documentation")
 	} else {
 		alert("unknown pdf export type")
 		return
@@ -37,6 +38,7 @@ export async function exportPdfInNewTab(type: PdfType) {
 		}
 	}
 
+	console.log({printContent})
 	const printPreview = window.open("about:blank", "_blank")
 	printPreview?.document.write(printContent?.innerHTML ?? "")
 

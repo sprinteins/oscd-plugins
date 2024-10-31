@@ -6,6 +6,7 @@
 	import { Theme } from "../../theme"
 
 	export let root: Element
+	let printContentWrapper: Element
 
 	onMount(() => {
 		disableOpenSCDComponentsForPrintView()
@@ -14,7 +15,7 @@
 
 <Theme>
 	<documentation>
-		<DocumentationWebView />
-		<DocumentationPrintView bind:scdData={root} />
+		<DocumentationWebView {printContentWrapper} />
+		<DocumentationPrintView bind:scdData={root} bind:wrapper={printContentWrapper} />
 	</documentation>
 </Theme>

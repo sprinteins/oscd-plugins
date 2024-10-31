@@ -5,12 +5,13 @@
     import PrintDocumentation from "./print-documentation/print-documentation.svelte"
 
     export let scdData: Element
+	export let wrapper: Element
 
     let iedByBay: Map<string, IEDCommInfo[]> = calcBayIEDs(scdData)
     let iedByBus: Map<string, IEDCommInfo[]> = calcBusIEDs(scdData)
 </script>
 
-<section class="documentation-print-content" id="documentation-print-content">
+<section class="documentation-print-content" id="documentation-print-content" bind:this={wrapper}>
     <div id="tscd-documentation-print-content-communication">
         <PrintTelemetry bind:scdData />
     </div>
