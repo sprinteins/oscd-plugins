@@ -1,23 +1,50 @@
 <script lang="ts">
+// CONSTANTS
+import { SCD_ELEMENTS } from '@oscd-plugins/core'
 // SMUI COMPONENTS
 import Card from '@smui/card'
+// COMPONENTS
+import DrawerContent from './drawer-content.svelte'
+// STORES
+import { drawerStore } from '@oscd-plugins/ui'
 // TYPES
-import type { BaseElementStandardAttributes } from '@oscd-plugins/core'
+import type { DataTypeTemplates } from '@oscd-plugins/core'
+
 //====== INITIALIZATION ======//
 
 // props
 export let name: string
-export let elementType: BaseElementStandardAttributes
+export let typeElement: DataTypeTemplates.TypeElement
+export let currentColumn: keyof typeof SCD_ELEMENTS
+
+// store
+const { drawer } = drawerStore
 
 //====== FUNCTIONS ======//
 
-function handleCardClick(elementType: BaseElementStandardAttributes) {
-	console.log('Clicked:', elementType)
+function handleCardClick() {
+	const payload = {
+		title: `Edit ${SCD_ELEMENTS[currentColumn].element.name} type`,
+		description: `#${typeElement.id}`,
+		component: DrawerContent,
+		componentProps: {
+			typeElement,
+			currentColumn
+		}
+	}
+
+	if (
+		$drawer.componentProps?.typeElement.id &&
+		$drawer.componentProps?.typeElement.id !== typeElement.id
+	)
+		return drawerStore.handleOpenDrawer(payload)
+
+	return drawerStore.handleSwitchDrawer(payload)
 }
 </script>
 
 <section id="type-designer-card">
-    <Card class="card" on:click={() => handleCardClick(elementType)}>
+    <Card class="card" on:click={() => handleCardClick()}>
         {name}
         <div class="rhombus-icon"></div>
     </Card>

@@ -40,8 +40,8 @@ $: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
           {#if column.visible}
             <Content class="content">
               <div class="element-types">
-                {#each column.types as elementType, index}
-                  <ContentCard name={elementType.name || SCD_ELEMENTS[key].type.baseName + ( index +1)  } {elementType} />
+                {#each column.types as typeElement, index}
+                  <ContentCard name={ typeElement.name || SCD_ELEMENTS[key].type.baseName + ( index +1) }  currentColumn={key} {typeElement} />
                 {/each}
               </div>
             </Content>

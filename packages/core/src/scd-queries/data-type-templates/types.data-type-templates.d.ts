@@ -9,7 +9,7 @@ import type {
 	BayElement,
 	IEDElement,
 	LDeviceElement,
-	lNodeElement
+	LNodeElement
 } from '../types.scd-queries'
 
 export namespace DataTypeTemplates {
@@ -36,4 +36,12 @@ export namespace DataTypeTemplates {
 		lDeviceTypes: LDeviceElement[]
 		lNodeTypes: lNodeElement[]
 	}
+
+	export type TypeElement =
+		| SubstationElement
+		| VoltageLevelElement
+		| BayElement
+		| IEDElement
+		| LDeviceElement
+		| LNodeElement
 }

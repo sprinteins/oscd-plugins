@@ -1,4 +1,4 @@
-export const BASE_STANDARD_ATTRIBUTES = ['id', 'desc', 'name'] as const
+export const BASE_STANDARD_ATTRIBUTES = ['id', 'name', 'desc'] as const
 
 export const SCD_ELEMENTS = {
 	substation: {

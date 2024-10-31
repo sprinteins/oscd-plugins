@@ -11,17 +11,39 @@ const pluginHostElement = writable<Element>()
 
 //====== ACTIONS ======//
 
-function createAndDispatchActionEvent(
-	parent: Element,
-	element: Element,
-	reference: Element | undefined = undefined
-) {
+function createAndDispatchCreateActionEvent({
+	parent,
+	element,
+	reference
+}: {
+	parent: Element
+	element: Element
+	reference?: Element
+}) {
 	const event = newActionEvent({
 		new: {
 			parent,
 			element,
 			reference
 		}
+	})
+
+	get(pluginHostElement).dispatchEvent(event)
+}
+
+function createAndDispatchUpdateActionEvent({
+	element,
+	oldAttributes,
+	newAttributes
+}: {
+	element: Element
+	oldAttributes: Record<string, string | null>
+	newAttributes: Record<string, string | null>
+}) {
+	const event = newActionEvent({
+		element,
+		oldAttributes,
+		newAttributes
 	})
 
 	get(pluginHostElement).dispatchEvent(event)
@@ -52,7 +74,11 @@ function addElementToXmlDocument({
 
 	const newElement = createElementWithNS(payload)
 
-	createAndDispatchActionEvent(parentElement, newElement, insertBefore)
+	createAndDispatchCreateActionEvent({
+		parent: parentElement,
+		element: newElement,
+		reference: insertBefore
+	})
 
 	return newElement
 }
@@ -76,5 +102,7 @@ export const pluginStore = {
 	pluginHostElement,
 	//actions
 	addElementToXmlDocument,
+	createAndDispatchCreateActionEvent,
+	createAndDispatchUpdateActionEvent,
 	init
 }

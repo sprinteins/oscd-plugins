@@ -6,7 +6,9 @@
 <MaterialTheme pluginType={pluginType}>
 	<type-designer>
 		{#if xmlDocument}
-				<ElementsTypeContainer />
+			<CustomDrawer>
+					<ElementsTypeContainer />
+			</CustomDrawer>
 		{:else}
 			<div class="no-content">
 				<p>No xml document loaded</p>
@@ -19,6 +21,7 @@
 // COMPONENTS
 import { MaterialTheme } from '@oscd-plugins/ui'
 import ElementsTypeContainer from '@/views/elements-type-container.svelte'
+import { CustomDrawer } from '@oscd-plugins/ui'
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES
