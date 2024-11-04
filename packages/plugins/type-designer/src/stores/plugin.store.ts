@@ -49,6 +49,26 @@ function createAndDispatchUpdateActionEvent({
 	get(pluginHostElement).dispatchEvent(event)
 }
 
+function createAndDispatchRemoveActionEvent({
+	parent,
+	element,
+	reference
+}: {
+	parent: Element
+	element: Element
+	reference?: Element
+}) {
+	const event = newActionEvent({
+		old: {
+			parent,
+			element,
+			reference
+		}
+	})
+
+	get(pluginHostElement).dispatchEvent(event)
+}
+
 function addElementToXmlDocument({
 	parentElement,
 	namespace,
@@ -104,5 +124,6 @@ export const pluginStore = {
 	addElementToXmlDocument,
 	createAndDispatchCreateActionEvent,
 	createAndDispatchUpdateActionEvent,
+	createAndDispatchRemoveActionEvent,
 	init
 }

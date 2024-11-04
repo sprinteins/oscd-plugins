@@ -23,6 +23,8 @@ const { drawer } = drawerStore
 //====== FUNCTIONS ======//
 
 function handleCardClick() {
+	if (currentColumn === 'lNode') return
+
 	const payload = {
 		title: `Edit ${SCD_ELEMENTS[currentColumn].element.name} type`,
 		description: `#${typeElement.id}`,
@@ -44,10 +46,12 @@ function handleCardClick() {
 </script>
 
 <section id="type-designer-card">
+
     <Card class="card" on:click={() => handleCardClick()}>
         {name}
         <div class="rhombus-icon"></div>
     </Card>
+
 </section>
 
 <style>
