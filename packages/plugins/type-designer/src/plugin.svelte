@@ -6,9 +6,13 @@
 <MaterialTheme pluginType={pluginType}>
 	<type-designer>
 		{#if xmlDocument}
-				<ElementsTypeContainer />
+			<CustomDrawer>
+					<ElementsTypeContainer />
+			</CustomDrawer>
 		{:else}
-			<p>No xml document loaded</p>
+			<div class="no-content">
+				<p>No xml document loaded</p>
+			</div>
 		{/if}
 	</type-designer>
 </MaterialTheme>
@@ -16,11 +20,13 @@
 <script lang="ts">
 // COMPONENTS
 import { MaterialTheme } from '@oscd-plugins/ui'
-import { ElementsTypeContainer } from './components'
+import ElementsTypeContainer from '@/views/elements-type-container.svelte'
+import { CustomDrawer } from '@oscd-plugins/ui'
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES
-import { dataTypeTemplatesStore, pluginStore } from './stores'
+import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
+import { pluginStore } from '@/stores/plugin.store'
 // TYPES
 import type { PluginType } from '@oscd-plugins/core'
 
@@ -29,12 +35,39 @@ import type { PluginType } from '@oscd-plugins/core'
 export let xmlDocument: XMLDocument | undefined = undefined
 export let pluginHostElement: Element
 export let pluginType: PluginType = 'editor'
+export let editCount: number
 
 //==== REACTIVITY ====//
 
-$: pluginStore.init({
-	newXMLDocument: xmlDocument,
+$: triggerUpdate({
+	updateTrigger: editCount,
+	newXmlDocument: xmlDocument,
 	newPluginHostElement: pluginHostElement
 })
-$: dataTypeTemplatesStore.init(xmlDocument?.documentElement)
+//====== FUNCTIONS =====//
+
+async function triggerUpdate({
+	updateTrigger, // is not used but should be passed to the function to trigger reactivity
+	newXmlDocument,
+	newPluginHostElement
+}: {
+	updateTrigger: number
+	newXmlDocument: XMLDocument | undefined
+	newPluginHostElement: Element
+}) {
+	await pluginStore.init({
+		newXmlDocument,
+		newPluginHostElement
+	})
+	dataTypeTemplatesStore.init(xmlDocument)
+}
 </script>
+
+<style>
+.no-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+</style>

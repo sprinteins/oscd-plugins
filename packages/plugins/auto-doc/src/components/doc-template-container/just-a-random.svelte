@@ -26,7 +26,6 @@ import Button from '@smui/button'
 // STORES
 import { xmlDocumentStore } from '@/stores'
 // CONSTANTS
-import { ELEMENT_NAMES } from '@oscd-plugins/core'
 // TYPES
 import type { AllowedElements, DataTypeTemplates } from '@oscd-plugins/core'
 
@@ -56,11 +55,11 @@ const fieldsConfig: Record<
 
 const buttons = [
 	{
-		name: ELEMENT_NAMES.ied,
+		name: "IED",
 		onClick: () => toggleFields('ied')
 	},
 	{
-		name: ELEMENT_NAMES.lDevice,
+		name: "LDevice",
 		onClick: () => toggleFields('lDevice')
 	}
 ]
