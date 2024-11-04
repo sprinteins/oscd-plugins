@@ -88,8 +88,7 @@ function setGlobalBackgroundColor(mode: {
 	tscd-theme {
 		font-family: "Roboto", sans-serif;
 		height: var(--global-height);
-		display: flex;
-		align-items: stretch;
+		display: block;
 		position: relative;
 		background-color: var(--global-background-color);
 	}

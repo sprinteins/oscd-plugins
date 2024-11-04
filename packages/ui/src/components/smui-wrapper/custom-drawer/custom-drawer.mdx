@@ -1,0 +1,48 @@
+
+import { Meta, Title, Controls, Primary, Story } from '@storybook/blocks';
+import CustomDrawerStories from './custom-drawer.stories.svelte';
+
+import CustomDrawer from './custom-drawer.store';
+
+<Meta of={CustomDrawerStories}/>
+ 
+# Custom Drawer
+ 
+This component should wrap the content of your global application so that the drawer instance lives right next to it.
+This is what it should looks like :
+
+```html
+<MaterialTheme pluginType={pluginType}>
+	<plugin>
+		<CustomDrawer>
+				<main />
+		</CustomDrawer>
+	</plugin>
+</MaterialTheme>
+```
+
+After importing the component, and creating a custom inner drawer component that suits your needs, you can use its store to control the drawer from anywhere in your application.
+
+```js
+import { drawerStore } from '@oscd-plugins/ui'
+import DrawerInnerComponent from 'path-to-component'
+
+drawerStore.switchDrawer({
+		title: "My awesome drawer" /* drawer title */,
+		description: "My custom component will be rendered just after the description" /* drawer description */,
+		component: DrawerInnerComponent /* drawer custom inner component to create*/,
+		componentProps: {
+			hello: "world"
+		} /* inner component props, if any */
+	})
+```
+
+## Sanbox
+
+<Primary />
+ 
+## Props
+ 
+<Controls />
+ 
+

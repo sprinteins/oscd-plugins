@@ -1,61 +1,65 @@
 <script lang="ts">
 // CONSTANTS
-import { ELEMENT_NAMES } from '@oscd-plugins/core'
+import { SCD_ELEMENTS } from '@oscd-plugins/core'
 // SMUI COMPONENTS
-import IconButton from '@smui/icon-button'
 import Paper, { Content } from '@smui/paper'
 import Button from '@smui/button'
 // UI COMPONENTS
-import { IconWrapper } from '@oscd-plugins/ui'
+import { CustomIconButton } from '@oscd-plugins/ui'
 // LOCAL COMPONENTS
-import ContentCard from './content-card.svelte'
+import ContentCard from '@/components/content-card.svelte'
 // STORES
-import { columnsStore } from '../../stores/columns.store'
+import { elementsTypesStore } from '@/stores/elements-types.store'
+import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
+// TYPES
+import type { Entries } from '@oscd-plugins/core'
 
 //====== INITIALIZATION ======//
-const { columns } = columnsStore
-columnsStore.loadDataFromSCD()
+const { columns } = elementsTypesStore
+
+$: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
 </script>
 
 <div class="columns-container" id="type-designer-columns">
-	{#if $columns}
-		{#each $columns as column, index}
-			<Paper class="column-container {`column-container--${column.visible ? "expanded" : "collapsed"}`}">
-				<article class="column">
-					<div class="column-header">
-						{#if column.visible}
-							<h1>{column.name}</h1>
-						{:else}
-							<h1>{column.name} (hidden)</h1>
-						{/if}
-						<IconButton on:click={() => columnsStore.toggleColumnVisibility(index)}>
-							<IconWrapper
-								icon={column.visible ? "visibility" : "visibility_off"}
-								fillColor="rgb(81, 159, 152)"
-							/>
-						</IconButton>
-					</div>
-					{#if column.visible}
-						<Content class="content">
-							<div class="element-types">
-								{#each column.items as elementType}
-									<ContentCard {elementType} />
-								{/each}
-							</div>
-						</Content>
-					{/if}
-					
-					{#if column.visible && column.name !== ELEMENT_NAMES.lNode}
+  {#if $columns}
+    {#each columnsEntries as [ key, column ]}
+      <Paper class="column-container {`column-container--${column.visible ? "expanded" : "collapsed"}`}">
+        <article class="column">
+          <div class="column-header">
+            {#if column.visible}
+              <h1>{column.name}</h1>
+            {:else}
+              <h1>{column.name} (hidden)</h1>
+            {/if}
+						<CustomIconButton
+							class="visibility-button"
+							icon={column.visible ? "visibility" : "visibility_off"}
+							on:click={() => elementsTypesStore.toggleColumnVisibility(key)}
+						/>
+          </div>
+          {#if column.visible}
+            <Content class="content">
+              <div class="element-types">
+                {#each column.types as typeElement, index}
+                  <ContentCard name={ typeElement.name || SCD_ELEMENTS[key].type.baseName + ( index +1) }  currentColumn={key} {typeElement} />
+                {/each}
+              </div>
+            </Content>
+          {/if}
+					{#if column.visible && column.name !== SCD_ELEMENTS.lNode.element.name}
 						<div class="add-button-container">
-							<Button class="add-button" on:click={() => columnsStore.addItemToColumn(index)}>
+						<Button
+								class="add-button"
+								on:click={() => dataTypeTemplatesStore.addNewType(key)}
+							>
 								New {column.name}
 							</Button>
 						</div>
 					{/if}
-				</article>
-			</Paper>
-		{/each}
-	{/if}
+        </article>
+      </Paper>
+    {/each}
+  {/if}
 </div>
 
 <style>
@@ -74,7 +78,7 @@ columnsStore.loadDataFromSCD()
 	}
 
 	#type-designer-columns :global(.column-container--expanded) {
-    flex-basis: 100%;
+    flex: 1 1 0;
   }
 
 	#type-designer-columns :global(.column-container--collapsed) {
@@ -101,7 +105,7 @@ columnsStore.loadDataFromSCD()
 		flex-direction: column;
   }
 
-	.column-header h1 {
+	.column-container--collapsed .column-header h1 {
 		width: max-content;
 	}
 
@@ -122,6 +126,14 @@ columnsStore.loadDataFromSCD()
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
+	}
+
+	#type-designer-columns :global(.visibility-button) {
+		margin-right: -0.5rem;
+	}
+
+	#type-designer-columns :global(.column-container--collapsed .visibility-button) {
+		margin-right: revert;
 	}
 
 	.element-types {
@@ -169,12 +181,9 @@ columnsStore.loadDataFromSCD()
 		}
 
 		#type-designer-columns :global(.column-container--collapsed h1) {
-			/* transform-origin: 0 0; */
 			transform: rotate(0deg);
-			/* line-height: revert !important; */
 			position: revert;
 			margin: revert;
-			
 		}
 
 		#type-designer-columns :global(.icon-visibility) {
