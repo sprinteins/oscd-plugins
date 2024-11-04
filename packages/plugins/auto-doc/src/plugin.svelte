@@ -6,8 +6,7 @@
 
 <MaterialTheme pluginType={pluginType}>
 	<auto-doc class="auto-doc">
-		<!-- <ElementsTypeContainer /> -->
-		 <TemplateCreation/>
+		<Router {routes} />
 	</auto-doc>
 </MaterialTheme>
 
@@ -15,7 +14,9 @@
 // COMPONENTS
 import { MaterialTheme } from '@oscd-plugins/ui'
 import { ElementsTypeContainer } from './components'
-import {TemplateOverview, TemplateCreation} from "@/pages"
+import Router from 'svelte-spa-router'
+import {routes} from '@/routes/routes'
+
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES

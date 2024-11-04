@@ -99,15 +99,9 @@ importers:
       '@smui/icon-button':
         specifier: ^7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
-      '@smui/checkbox':
-        specifier: ^7.0.0
-        version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
-      '@smui/data-table':
-        specifier: ^7.0.0
-        version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
-      '@smui/icon-button':
-        specifier: ^7.0.0
-        version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
+      svelte-spa-router:
+        specifier: ^4.0.1
+        version: 4.0.1
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
@@ -1557,6 +1551,9 @@ packages:
 
   '@smui/checkbox@7.0.0':
     resolution: {integrity: sha512-cHaO9aWi2Pk9GTBcVmvnF4Cwie+ySqODjCMU3OMmhtUZX3LamneyNMRtNqiKXmpr8sXVE6EK+WUisZrJp5e97g==}
+
+  '@smui/checkbox@7.0.0-beta.8':
+    resolution: {integrity: sha512-ODu1VpH3fgle7AmM1BSNHy3nViwAm4ljDhyM64PYPpyCc19dKUsiKDd5uW4PgG02Pe8RmepyQjysLaTPFO326g==}
 
   '@smui/chips@7.0.0':
     resolution: {integrity: sha512-jYjUJkp0W6+Yr2J2er6ESvlS2BEBsk2CwM1XDh6465B0oVNJh5QQgAskjIxjjnfRbV+TyKYVJ572GMYoLPZuOA==}
@@ -4785,6 +4782,10 @@ packages:
     resolution: {integrity: sha512-fjggEOO3slI6Wvgjwflkc4NFRCTZAu5CnNfBd5qOMYhWdn67nJBBu34/TkD++eeFmd8C9r9jfXJ27+nSiRkSUA==}
     engines: {node: '>= 0.4'}
 
+  regexparam@2.0.2:
+    resolution: {integrity: sha512-A1PeDEYMrkLrfyOwv2jwihXbo9qxdGD3atBYQA9JJgreAx8/7rC6IUkWOw2NQlOxLp2wL0ifQbh1HuidDfYA6w==}
+    engines: {node: '>=8'}
+
   regexpp@3.2.0:
     resolution: {integrity: sha512-pq2bWo9mVD43nbts2wGv17XLiNLya+GklZ8kaDLV2Z08gDCsGpnKn9BFMepvWuHCbyVvY7J5o5+BVvoQbmlJLg==}
     engines: {node: '>=8'}
@@ -5292,6 +5293,9 @@ packages:
         optional: true
       typescript:
         optional: true
+
+  svelte-spa-router@4.0.1:
+    resolution: {integrity: sha512-2JkmUQ2f9jRluijL58LtdQBIpynSbem2eBGp4zXdi7aDY1znbR6yjw0KsonD0aq2QLwf4Yx4tBJQjxIjgjXHKg==}
 
   svelte2tsx@0.6.0:
     resolution: {integrity: sha512-TrxfQkO7CKi8Pu2eC/FyteDCdk3OOeQV5u6z7OjYAsOhsd0ClzAKqxJdvp6xxNQLrbFzf/XvCi9Fy8MQ1MleFA==}
@@ -7223,14 +7227,14 @@ snapshots:
   '@smui/checkbox@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
     dependencies:
       '@material/checkbox': 14.0.0
-      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
-      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/common': 7.0.0(svelte@4.2.19)(typescript@5.5.4)
+      '@smui/ripple': 7.0.0(svelte@4.2.19)(typescript@5.5.4)
+      svelte2tsx: 0.7.21(svelte@4.2.19)(typescript@5.5.4)
     transitivePeerDependencies:
       - svelte
       - typescript
 
-  '@smui/checkbox@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
+  '@smui/checkbox@7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)':
     dependencies:
       '@material/checkbox': 14.0.0
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
@@ -10541,7 +10545,7 @@ snapshots:
 
   extract-zip@2.0.1:
     dependencies:
-      debug: 4.3.7
+      debug: 4.3.4
       get-stream: 5.2.0
       yauzl: 2.10.0
     optionalDependencies:
@@ -11772,6 +11776,8 @@ snapshots:
       define-properties: 1.2.0
       functions-have-names: 1.2.3
 
+  regexparam@2.0.2: {}
+
   regexpp@3.2.0: {}
 
   rehype-external-links@3.0.0:
@@ -12391,6 +12397,10 @@ snapshots:
       postcss: 8.4.45
       sass: 1.62.0
       typescript: 5.5.4
+
+  svelte-spa-router@4.0.1:
+    dependencies:
+      regexparam: 2.0.2
 
   svelte2tsx@0.6.0(svelte@3.55.0)(typescript@5.2.2):
     dependencies:

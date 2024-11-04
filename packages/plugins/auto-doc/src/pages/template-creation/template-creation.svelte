@@ -2,7 +2,11 @@
     import Button from "@smui/button"
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
     import {TemplateBuilder} from '@/components';
+    import {push} from 'svelte-spa-router'
 
+    function navigateToOverviewPage(){
+        push('/')
+    }
 
 
 
@@ -12,7 +16,7 @@
     <div class="header-conteiner">
         <header class="header">
             <div class="template-metadata">
-                <CustomIconButton icon="arrow_back" color="black"/>
+                <CustomIconButton icon="arrow_back" color="black" on:click={navigateToOverviewPage}/>
                 <span>untitled document</span>
             </div>
             <div class="template-options">

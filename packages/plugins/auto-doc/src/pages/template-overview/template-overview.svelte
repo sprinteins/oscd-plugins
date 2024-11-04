@@ -36,7 +36,7 @@
 
 <main class="template-overview">
     <header class="template-controls">
-        <Button variant="raised" class="btn-pill btn-pill-primary" > 
+        <Button variant="raised" class="btn-pill btn-pill-primary" href="#/create" > 
             <IconWrapper icon="add"/>
            <Label>Add template</Label> 
         </Button>
