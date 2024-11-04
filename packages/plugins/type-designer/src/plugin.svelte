@@ -7,7 +7,13 @@
 	<type-designer>
 		{#if xmlDocument}
 			<CustomDrawer>
-					<ElementsTypeContainer />
+				{#if showBanner}
+					<div class="banner" style="{showBanner ? 'display:flex;' : 'display:none;'}">
+						This plugin is in test phase and not suitable for production use.
+						<CustomIconButton icon="close" color="white" on:click={() => showBanner = !showBanner} />
+					</div>
+				{/if}
+				<ElementsTypeContainer />
 			</CustomDrawer>
 		{:else}
 			<div class="no-content">
@@ -19,9 +25,8 @@
 
 <script lang="ts">
 // COMPONENTS
-import { MaterialTheme } from '@oscd-plugins/ui'
+import { MaterialTheme, CustomDrawer, CustomIconButton } from '@oscd-plugins/ui'
 import ElementsTypeContainer from '@/views/elements-type-container.svelte'
-import { CustomDrawer } from '@oscd-plugins/ui'
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES
@@ -36,6 +41,9 @@ export let xmlDocument: XMLDocument | undefined = undefined
 export let pluginHostElement: Element
 export let pluginType: PluginType = 'editor'
 export let editCount: number
+
+//local
+let showBanner = true
 
 //==== REACTIVITY ====//
 
@@ -69,5 +77,17 @@ async function triggerUpdate({
 	justify-content: center;
 	align-items: center;
 	height: 100%;
+}
+
+.banner {
+	align-items: center;
+	justify-content: space-between;
+	padding: .25rem 2rem;
+	width: 100%;
+	background-color: var(--mdc-theme-error);
+	color: white;
+	position:fixed;
+	top: var(--header-height);
+	box-sizing: border-box;
 }
 </style>
