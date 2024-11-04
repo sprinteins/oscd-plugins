@@ -19,6 +19,9 @@
 		"@oscd-plugins/ui": "workspace:^",
 		"@oscd-plugins/uilib": "workspace:^",
 		"@smui/button": "7.0.0",
+		"@smui/checkbox": "^7.0.0",
+		"@smui/data-table": "^7.0.0",
+		"@smui/icon-button": "^7.0.0",
 		"uuid": "^10.0.0"
 	},
 	"devDependencies": {
@@ -38,4 +41,3 @@
 		"vitest": "^2.1.3"
 	}
 }
-
