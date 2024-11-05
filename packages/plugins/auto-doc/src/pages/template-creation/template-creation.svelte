@@ -3,11 +3,22 @@
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
     import {TemplateBuilder} from '@/components';
     import {push} from 'svelte-spa-router'
+    import Textfield from "@smui/textfield"
+    import HelperText from '@smui/textfield/helper-text';
+    import CharacterCounter from '@smui/textfield/character-counter';
+
+    let title = "";
+    let description = "";
 
     function navigateToOverviewPage(){
         push('/')
     }
 
+    function displayTitleAndDescription(){
+        console.log("HI")
+    }
+
+    $: templateTitle = title.length === 0 ? "Untitled Document" : title;
 
 
 </script>
@@ -15,9 +26,11 @@
 <div class="template-creation-container">
     <div class="header-conteiner">
         <header class="header">
-            <div class="template-metadata">
+            <div class="template-title">
                 <CustomIconButton icon="arrow_back" color="black" on:click={navigateToOverviewPage}/>
-                <span>untitled document</span>
+                <div on:click={displayTitleAndDescription}>
+                    {templateTitle}
+                </div>
             </div>
             <div class="template-options">
                 <Button>open template</Button>
@@ -25,6 +38,26 @@
             </div>
             <Button variant="raised">Export</Button>
         </header>
+    </div>
+
+    <div class="template-metadata">
+        <Textfield 
+            bind:value={title}
+            variant="outlined"
+            label="Title"
+        >
+        </Textfield>
+        <Textfield 
+            bind:value={description}
+            variant="outlined"
+            label="Description"
+            textarea
+            input$rows={4}
+            input$cols={30}
+            input$resizable={false}
+
+        >
+        </Textfield>
     </div>
 
     <main class="template-builder-container">
@@ -54,7 +87,7 @@
         align-items: center;
     }
 
-    .template-metadata{
+    .template-title{
         display: flex;
         align-items: center;
     }
@@ -62,6 +95,23 @@
         width: 20%;
         display: flex;
         justify-content: space-between;
+    }
+
+    .template-metadata{
+        display: flex;
+        flex-direction: column;
+        width: 20%;
+        max-width: 25%;
+        gap: 1rem;
+        position: absolute;
+        z-index: 50;
+        // margin-left: 2%;
+
+        // card "like" styles
+        border-radius: .5rem;
+        padding: 1.5rem;
+        background-color: white;
+
     }
 
 </style>

@@ -99,6 +99,9 @@ importers:
       '@smui/icon-button':
         specifier: ^7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
+      '@smui/textfield':
+        specifier: ^7.0.0
+        version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       svelte-spa-router:
         specifier: ^4.0.1
         version: 4.0.1
@@ -7073,7 +7076,7 @@ snapshots:
       '@smui/list': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/menu': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/menu-surface': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/textfield': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/textfield': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
@@ -8020,6 +8023,23 @@ snapshots:
       '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/tab-indicator': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
+  '@smui/textfield@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/dom': 14.0.0
+      '@material/feature-targeting': 14.0.0
+      '@material/ripple': 14.0.0
+      '@material/rtl': 14.0.0
+      '@material/textfield': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/floating-label': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/line-ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/notched-outline': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -12349,7 +12369,7 @@ snapshots:
       '@smui/tab-bar': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/tab-indicator': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/tab-scroller': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/textfield': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/textfield': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/tooltip': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/top-app-bar': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/touch-target': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
