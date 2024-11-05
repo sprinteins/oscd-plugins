@@ -1,23 +1,25 @@
-<script>
+<script lang="ts">
     import Button from "@smui/button"
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
     import {TemplateBuilder} from '@/components';
     import {push} from 'svelte-spa-router'
     import Textfield from "@smui/textfield"
-    import HelperText from '@smui/textfield/helper-text';
-    import CharacterCounter from '@smui/textfield/character-counter';
+    import {clickOutside} from "@/actions"
 
     let title = "";
     let description = "";
+    let isMetadataVisible = false
 
     function navigateToOverviewPage(){
         push('/')
     }
 
     function displayTitleAndDescription(){
-        console.log("HI")
+        isMetadataVisible = true;
     }
-
+    function closeTitleAndDescription(){
+            isMetadataVisible = false
+    }   
     $: templateTitle = title.length === 0 ? "Untitled Document" : title;
 
 
@@ -28,7 +30,7 @@
         <header class="header">
             <div class="template-title">
                 <CustomIconButton icon="arrow_back" color="black" on:click={navigateToOverviewPage}/>
-                <div on:click={displayTitleAndDescription}>
+                <div on:click|stopPropagation={displayTitleAndDescription}>
                     {templateTitle}
                 </div>
             </div>
@@ -40,25 +42,31 @@
         </header>
     </div>
 
-    <div class="template-metadata">
-        <Textfield 
-            bind:value={title}
-            variant="outlined"
-            label="Title"
-        >
-        </Textfield>
-        <Textfield 
-            bind:value={description}
-            variant="outlined"
-            label="Description"
-            textarea
-            input$rows={4}
-            input$cols={30}
-            input$resizable={false}
 
-        >
-        </Textfield>
-    </div>
+    {#if isMetadataVisible}
+        <div class="template-metadata"
+            use:clickOutside={closeTitleAndDescription}
+            on:click|stopPropagation
+            >
+                <Textfield
+                    bind:value={title}
+                    variant="outlined"
+                    label="Title"
+                >
+                </Textfield>
+                <Textfield
+                    bind:value={description}
+                    variant="outlined"
+                    label="Description"
+                    textarea
+                    input$rows={4}
+                    input$cols={30}
+                    input$resizable={false}
+                >
+                </Textfield>
+        </div>
+    {/if}
+
 
     <main class="template-builder-container">
         <TemplateBuilder/>
@@ -105,7 +113,7 @@
         gap: 1rem;
         position: absolute;
         z-index: 50;
-        // margin-left: 2%;
+        left: 2%;
 
         // card "like" styles
         border-radius: .5rem;
