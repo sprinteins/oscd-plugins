@@ -9,6 +9,7 @@
     let title = "";
     let description = "";
     let isMetadataVisible = false
+    const NO_TITLE_TEXT = "Untitled Document";
 
     function navigateToOverviewPage(){
         push('/')
@@ -20,17 +21,18 @@
     function closeTitleAndDescription(){
             isMetadataVisible = false
     }   
-    $: templateTitle = title.length === 0 ? "Untitled Document" : title;
+    $: templateTitle = title.length === 0 ? NO_TITLE_TEXT : title;
 
 
 </script>
 
 <div class="template-creation-container">
-    <div class="header-conteiner">
+    <div class="header-container">
         <header class="header">
             <div class="template-title">
                 <CustomIconButton icon="arrow_back" color="black" on:click={navigateToOverviewPage}/>
-                <div on:click|stopPropagation={displayTitleAndDescription}>
+                <div class="title" on:click|stopPropagation={displayTitleAndDescription} 
+                >
                     {templateTitle}
                 </div>
             </div>
@@ -84,7 +86,7 @@
       justify-content: center;
     }
 
-    .header-conteiner{
+    .header-container{
         border-bottom: 1px solid rgba(128, 128, 128, 0.27);
         padding: .75rem .75rem .25rem .25rem;
     }
@@ -94,10 +96,14 @@
         justify-content: space-between;
         align-items: center;
     }
-
     .template-title{
         display: flex;
         align-items: center;
+        cursor: pointer;
+        & .title{
+
+            min-width: 10rem;
+        }
     }
     .template-options{
         width: 20%;
