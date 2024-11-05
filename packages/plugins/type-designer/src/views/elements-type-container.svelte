@@ -20,66 +20,70 @@ const { columns } = elementsTypesStore
 
 $: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
 
-let dragState: {
-	sourceColumn?: string
-	targetColumn?: string
-	items?: DataTypeTemplates.TypeElement[]
-} = {}
-
-interface DndConsiderEvent<T> {
-	items: T[]
-	info: {
-		trigger: 'pointer' | 'keyboard'
-		id?: string
-		index?: number
-	}
+interface DragState {
+	sourceColumn?: keyof typeof SCD_ELEMENTS
+	targetColumn?: keyof typeof SCD_ELEMENTS
+	draggedElement?: DataTypeTemplates.TypeElement
 }
 
-interface DndFinalizeEvent<T> {
-	items: T[]
-	info: {
-		trigger: 'pointer' | 'keyboard'
-		id?: string
-		index?: number
-	}
-}
+let dragState: DragState = {}
 
 function handleConsiderDragEvent(
-	columnKey: string,
-	event: CustomEvent<DndConsiderEvent<DataTypeTemplates.TypeElement>>
+	columnKey: keyof typeof SCD_ELEMENTS,
+	event: CustomEvent<{
+		items: DataTypeTemplates.TypeElement[]
+		info: {
+			trigger: 'pointer' | 'keyboard'
+			id?: string
+			index?: number
+		}
+	}>
 ) {
-	dragState.targetColumn = columnKey
-	dragState.items = event.detail.items
-
 	if (!dragState.sourceColumn) {
 		dragState.sourceColumn = columnKey
+		dragState.draggedElement =
+			event.detail.items[event.detail.info.index || 0]
 	}
-	elementsTypesStore.updateColumnTypes(columnKey, event.detail.items)
+	dragState.targetColumn = columnKey
 }
 
 function handleFinalizeDragEvent(
-	columnKey: string,
-	event: CustomEvent<DndFinalizeEvent<DataTypeTemplates.TypeElement>>
-) {
-	if (dragState.sourceColumn && dragState.targetColumn) {
-		if (dragState.sourceColumn !== dragState.targetColumn) {
-			// TODO ts error
-			const sourceItems = $columns[dragState.sourceColumn].types.filter(
-				(item) => !event.detail.items.includes(item)
-			)
-			// TODO no interface to update
-			elementsTypesStore.updateColumnTypes(
-				dragState.sourceColumn,
-				sourceItems
-			)
-			elementsTypesStore.updateColumnTypes(
-				dragState.targetColumn,
-				event.detail.items
-			)
+	columnKey: keyof typeof SCD_ELEMENTS,
+	event: CustomEvent<{
+		items: DataTypeTemplates.TypeElement[]
+		info: {
+			trigger: 'pointer' | 'keyboard'
+			id?: string
+			index?: number
 		}
+	}>
+) {
+	if (
+		dragState.sourceColumn &&
+		dragState.targetColumn &&
+		dragState.sourceColumn !== dragState.targetColumn &&
+		dragState.draggedElement
+	) {
+		const movedElement = dragState.draggedElement
+
+		if (movedElement) {
+			dataTypeTemplatesStore.deleteTypeRef({
+				currentType: movedElement,
+				currentElementId: movedElement.element.getAttribute('id') || ''
+			})
+
+			dataTypeTemplatesStore.addNewTypeRef({
+				columnKey: dragState.targetColumn,
+				typeElement: $columns[dragState.targetColumn].types[0]?.element,
+				refElement: movedElement.element
+			})
+		}
+		console.log(
+			'current column element',
+			$columns[dragState.targetColumn].types
+		)
 	}
 
-	// Reset drag state
 	dragState = {}
 }
 </script>
@@ -110,8 +114,8 @@ function handleFinalizeDragEvent(
 					  flipDurationMs: 200,
 					  type: 'columns'
 					}}
-					on:consider={handleConsiderDragEvent}
-					on:finalize={handleFinalizeDragEvent}
+					on:consider={(event) => handleConsiderDragEvent(key, event)}
+					on:finalize={(event) => handleFinalizeDragEvent(key, event)}
 				  >
 					{#each column.types as typeElement, index}
 					  <ContentCard 
