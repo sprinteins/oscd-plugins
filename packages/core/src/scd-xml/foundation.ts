@@ -1,9 +1,10 @@
-////////////////////////////////////////////////////////////////////////////////////////////////
-// DO NOT MODIFY THIS FILE DIRECTLY !	MAKE A PR TO MODIFY THE CORE LIBRARY.										//
-// AS FOR NOW THE OPENSCD XML PACKAGE IS NOT PUBLISHED																				//
-// WE USE A COPY OF ITS CORE XML FUNCTIONALITIES																							//
-// SEE SOURCE  https://github.com/openscd/open-scd/blob/main/packages/xml/src/foundation.ts		//
-////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+// DO NOT MODIFY THIS FILE DIRECTLY !	MAKE A PR TO MODIFY THE CORE LIBRARY.
+// AS FOR NOW THE OPENSCD XML PACKAGE IS NOT PUBLISHED
+// WE USE A COPY OF ITS CORE XML FUNCTIONALITIES
+// SEE SOURCE  https://github.com/openscd/open-scd/blob/main/packages/xml/src/foundation.ts
+// THIS FILE IS IGNORED BY BIOME
+///////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @since 0.0.1

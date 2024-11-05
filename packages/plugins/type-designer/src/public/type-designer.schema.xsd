@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<xs:schema
+		xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		targetNamespace="http://www.iec.ch/61850/2003/SCL"
+		xmlns="http://www.iec.ch/61850/2003/SCL"
+		xmlns:td="$(TYPE_DESIGNER_XSD_URL)"
+		elementFormDefault="qualified"
+	>
+
+    <xs:element name="SCL">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Header" type="Header-XSDType" minOccurs="0"/>
+                <xs:element name="DataTypeTemplates" type="DataTypeTemplates-XSDType" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="version" type="xs:string" use="optional"/>
+            <xs:attribute name="revision" type="xs:string" use="optional"/>
+            <xs:attribute name="release" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Header element -->
+    <xs:complexType name="Header-XSDType">
+        <xs:attribute name="id" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <!-- DataTypeTemplates element -->
+    <xs:complexType name="DataTypeTemplates-XSDType">
+        <xs:sequence>
+            <xs:element name="Private" type="Private-XSDType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Private element -->
+    <xs:complexType name="Private-XSDType">
+        <xs:sequence>
+            <xs:element name="SubstationType" type="td:SubstationType-XSDType" />
+            <xs:element name="VoltageLevelType" type="td:VoltageLevelType-XSDType" />
+            <xs:element name="BayType" type="td:BayType-XSDType" />
+            <xs:element name="IEDType" type="td:IEDType-XSDType" />
+            <xs:element name="LDeviceType" type="td:LDeviceType-XSDType" />
+        </xs:sequence>
+				<xs:attribute name="type" type="xs:string" fixed="type-designer-plugin"/>
+    </xs:complexType>
+
+
+    <!-- SubstationType element -->
+    <xs:complexType name="SubstationType-XSDType">
+        <xs:sequence>
+            <xs:element name="VoltageLevelTypeRef" type="td:VoltageLevelTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- VoltageLevelTypeRef element -->
+    <xs:complexType name="VoltageLevelTypeRef-XSDType">
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <!-- VoltageLevelType element -->
+    <xs:complexType name="VoltageLevelType-XSDType">
+        <xs:sequence>
+            <xs:element name="BayTypeRef" type="td:BayTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+				<xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="desc" type="xs:string" use="optional"/>
+        <xs:attribute name="voltage" type="xs:string" use="optional"/>
+        <xs:attribute name="stages" type="xs:string" use="optional"/>
+        <xs:attribute name="frequency" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <!-- BayTypeRef element -->
+    <xs:complexType name="BayTypeRef-XSDType">
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <!-- BayType element -->
+    <xs:complexType name="BayType-XSDType">
+        <xs:sequence>
+            <xs:element name="IEDTypeRef" type="td:IEDTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+				<xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="desc" type="xs:string" use="optional"/>
+        <xs:attribute name="type" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <!-- IEDTypeRef element -->
+    <xs:complexType name="IEDTypeRef-XSDType">
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <!-- IEDType element -->
+    <xs:complexType name="IEDType-XSDType">
+        <xs:sequence>
+            <xs:element name="LDeviceTypeRef" type="td:LDeviceTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+				<xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="desc" type="xs:string" use="optional"/>
+        <xs:attribute name="type" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <!-- LDeviceTypeRef element -->
+    <xs:complexType name="LDeviceTypeRef-XSDType">
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <!-- LDeviceType element -->
+    <xs:complexType name="LDeviceType-XSDType">
+        <xs:sequence>
+            <xs:element name="LNodeTypeRef" type="td:LNodeTypeRef-XSDType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+				<xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="desc" type="xs:string" use="optional"/>
+        <xs:attribute name="function" type="xs:string" use="optional"/>
+        <xs:attribute name="stage" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <!-- LNodeTypeRef element -->
+    <xs:complexType name="LNodeTypeRef-XSDType">
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+
+</xs:schema>

@@ -10,3 +10,6 @@ export * from './constants/element.constant'
 
 // UTILS
 export type * from './utils'
+
+// PLUGIN
+export * from './scd-plugin'

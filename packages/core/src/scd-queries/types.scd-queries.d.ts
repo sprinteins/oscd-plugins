@@ -1,5 +1,8 @@
 // CONSTANTS
-import type { ELEMENT_NAMES } from '../constants/element.constant'
+import type {
+	SCD_ELEMENTS,
+	BASE_STANDARD_ATTRIBUTES
+} from '../constants/element.constant'
 
 //====== SCD QUERIES
 
@@ -16,49 +19,46 @@ export type AttributeList<T extends SCDBaseElement> = Exclude<
 	keyof SCDBaseElement
 >
 
+//====== PRIVATE ELEMENTS
+
+type PrivateElementAttributes = { type: string }
+export type PrivateElement = SCDBaseElement & PrivateElementAttributes
+
 //====== SCD ELEMENTS
-export type AllowedElements = keyof typeof ELEMENT_NAMES
-export type AllowedElementNames = (typeof ELEMENT_NAMES)[AllowedElements]
+export type AllowedElements = keyof typeof SCD_ELEMENTS
 
-export type SubstationElementAttributes = {
-	id: string
-	desc: string
-	name: string
+export type BaseElementStandardAttributes = {
+	[key in (typeof BASE_STANDARD_ATTRIBUTES)[number]]: string
 }
-export type SubstationElement = SCDBaseElement & SubstationElementAttributes
 
-export type VoltageLevelElementAttributes = {
-	id: string
-	desc: string
-	name: string
-	nomFreq: string
-	numPhases: string
+export type SubstationElementStandardAttributes = {
+	[key in (typeof SCD_ELEMENTS)['substation']['element']['standardAttributes'][number]]: string
 }
-export type VoltageLevelElement = SCDBaseElement & VoltageLevelElementAttributes
+export type SubstationElement = SCDBaseElement &
+	SubstationElementStandardAttributes
 
-export type BayElementAttributes = {
-	id: string
-	desc: string
-	name: string
+export type VoltageLevelElementStandardAttributes = {
+	[key in (typeof SCD_ELEMENTS)['voltageLevel']['element']['standardAttributes'][number]]: string
 }
-export type BayElement = SCDBaseElement & BayElementAttributes
+export type VoltageLevelElement = SCDBaseElement &
+	VoltageLevelElementStandardAttributes
 
-export type IEDElementAttributes = {
-	id: string
-	desc: string
-	name: string
-	originalSclRevision: string
-	originalSclVersion: string
-	owner: string
-	configVersion: string
-	manufacturer: string
-	type: string
+export type BayElementStandardAttributes = {
+	[key in (typeof SCD_ELEMENTS)['bay']['element']['standardAttributes'][number]]: string
 }
-export type IEDElement = SCDBaseElement & IEDElementAttributes
+export type BayElement = SCDBaseElement & BayElementStandardAttributes
 
-export type LDeviceElementAttributes = {
-	id: string
-	desc: string
-	inst: string
+export type IEDElementStandardAttributes = {
+	[key in (typeof SCD_ELEMENTS)['ied']['element']['standardAttributes'][number]]: string
 }
-export type LDeviceElement = SCDBaseElement & LDeviceElementAttributes
+export type IEDElement = SCDBaseElement & IEDElementStandardAttributes
+
+export type LDeviceElementStandardAttributes = {
+	[key in (typeof SCD_ELEMENTS)['lDevice']['element']['standardAttributes'][number]]: string
+}
+export type LDeviceElement = SCDBaseElement & LDeviceElementStandardAttributes
+
+export type LNodeElementStandardAttributes = {
+	[key in (typeof SCD_ELEMENTS)['lNode']['element']['standardAttributes'][number]]: string
+}
+export type LNodeElement = SCDBaseElement & LNodeElementStandardAttributes

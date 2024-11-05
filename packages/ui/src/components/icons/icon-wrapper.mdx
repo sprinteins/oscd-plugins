@@ -1,0 +1,46 @@
+
+import { Meta, Title, IconGallery, IconItem, Controls, Primary, Story } from '@storybook/blocks';
+import * as IconWrapperStories from './icon-wrapper.stories.svelte';
+
+import IconWrapper from './icon-wrapper.svelte';
+import IconDoc1 from './icon-doc-1.png?url';
+import IconDoc2 from './icon-doc-2.png?url';
+
+<Meta of={IconWrapperStories}/>
+ 
+ # Icon Wrapper
+ 
+
+	## To add a new icon :
+
+	* Go to `https://fonts.google.com/icons`
+	* Choose your icon, click on it and copy the icon by clicking on the copy icon within the icon (size and color will be set with css):
+
+	<img src={IconDoc1} />
+
+	* Extract the part from the `d` attribute of the svg and add it in `icons-draw.ts`
+
+	* Key name should be the name of the icon (here `menu`). It can be found and copied at the end of the drawer.
+
+	<img src={IconDoc2} />
+
+ ## Gallery
+ 
+<IconGallery>
+  <IconItem name="download">
+    <Story of={IconWrapperStories.Download} />
+  </IconItem>
+	<IconItem name="upload_file">
+    <Story of={IconWrapperStories.UploadFile} />
+  </IconItem>
+</IconGallery>
+ 
+## Sanbox
+
+<Primary />
+ 
+## Props
+ 
+<Controls />
+ 
+

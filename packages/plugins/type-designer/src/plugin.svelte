@@ -1,15 +1,73 @@
-<svelte:options tag={null} />
+
+<!-- Plugin logs -->
+<input type="hidden" name="package-name" value={jsonPackage.name} />
+<input type="hidden" name="package-version" value={jsonPackage.version} />
+
+<MaterialTheme pluginType={pluginType}>
+	<type-designer>
+		{#if xmlDocument}
+			<CustomDrawer>
+					<ElementsTypeContainer />
+			</CustomDrawer>
+		{:else}
+			<div class="no-content">
+				<p>No xml document loaded</p>
+			</div>
+		{/if}
+	</type-designer>
+</MaterialTheme>
 
 <script lang="ts">
-import { TypeDesignerPlugin } from '@oscd-plugins/uilib'
-import * as pckg from '../package.json'
+// COMPONENTS
+import { MaterialTheme } from '@oscd-plugins/ui'
+import ElementsTypeContainer from '@/views/elements-type-container.svelte'
+import { CustomDrawer } from '@oscd-plugins/ui'
+// PACKAGE
+import jsonPackage from '../package.json'
+// STORES
+import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
+import { pluginStore } from '@/stores/plugin.store'
+// TYPES
+import type { PluginType } from '@oscd-plugins/core'
 
-export let doc: XMLDocument
+//==== INITIALIZATION ====//
+//props
+export let xmlDocument: XMLDocument | undefined = undefined
+export let pluginHostElement: Element
+export let pluginType: PluginType = 'editor'
+export let editCount: number
+
+//==== REACTIVITY ====//
+
+$: triggerUpdate({
+	updateTrigger: editCount,
+	newXmlDocument: xmlDocument,
+	newPluginHostElement: pluginHostElement
+})
+//====== FUNCTIONS =====//
+
+async function triggerUpdate({
+	updateTrigger, // is not used but should be passed to the function to trigger reactivity
+	newXmlDocument,
+	newPluginHostElement
+}: {
+	updateTrigger: number
+	newXmlDocument: XMLDocument | undefined
+	newPluginHostElement: Element
+}) {
+	await pluginStore.init({
+		newXmlDocument,
+		newPluginHostElement
+	})
+	dataTypeTemplatesStore.init(xmlDocument)
+}
 </script>
 
-{#if doc}
-	<TypeDesignerPlugin xmlDocument={doc} />
-{/if}
-
-<input type="hidden" name="package-name" value={pckg.name} />
-<input type="hidden" name="package-version" value={pckg.version} />
+<style>
+.no-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+</style>
