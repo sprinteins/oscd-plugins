@@ -15,8 +15,11 @@
     import ConnectionInformation from "./connection-information/connection-information.svelte"
     import IEDAccordion from "./ied-accordion/ied-accordion.svelte"
     import { preferences$ } from "../_store-preferences"
+    import type { IEDCommInfo } from "@oscd-plugins/core"
 
     export let rootNode: RootNode
+    export let iedInfosWithBays: Map<string, IEDCommInfo[]> | undefined;
+    export let bayOptions: string[] | undefined;
 
     $: IEDSelectionIDs = $filterState?.selectedIEDs.map((ied) => ied.id)
     $: IEDSelections = $filterState?.selectedIEDs
@@ -49,7 +52,14 @@
     	selectedNode = rootNode.children.find(
     		(node: IEDNode | BayNode) => node.id === target.value
     	)
-    	if (selectedNode) {
+
+        console.log("iedInfosWithBays")
+        console.log(iedInfosWithBays)
+
+        console.log("bayOptions")
+        console.log(bayOptions)
+
+        if (selectedNode) {
     		selectIEDNode(selectedNode)
     	}
     }
@@ -84,7 +94,7 @@
             <a class="clear-all" on:keypress on:click={clearAll}>
                 Clear all
             </a>
-        </div>
+          </div>
 
         <div class="ied-nodes">
             <img src={ConnectionSelector} alt="connection selector" />
@@ -107,16 +117,10 @@
                             {filteredNodes.length} Bay(s) found
                         {/if}
                     </option>
-                    {#if filteredNodes.length > 0}
-                        {#each filteredNodes as node}
-                            <option
-                                selected={(IEDSelectionIDs[0] ?? "") ===
-                                    node.id}
-                                value={node.id}
-                            >
-                                {node.label}
-                            </option>
-                        {/each}
+                    {#if bayOptions !== undefined && bayOptions.length > 0}
+                        {#each bayOptions as bay}
+                        <option value={bay}>{bay}</option>
+                    {/each}
                     {/if}
                 </select>
             </label>
