@@ -14,11 +14,14 @@ import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
 // TYPES
 import type { DataTypeTemplates, Entries } from '@oscd-plugins/core'
 import { dndzone } from 'svelte-dnd-action'
+// import { setDebugMode } from 'svelte-dnd-action'
 
 //====== INITIALIZATION ======//
 const { columns } = elementsTypesStore
 
 $: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
+
+// setDebugMode(true)
 
 interface DragState {
 	sourceColumn?: keyof typeof SCD_ELEMENTS
@@ -30,34 +33,20 @@ let dragState: DragState = {}
 
 function handleConsiderDragEvent(
 	columnKey: keyof typeof SCD_ELEMENTS,
-	event: CustomEvent<{
-		items: DataTypeTemplates.TypeElement[]
-		info: {
-			trigger: 'pointer' | 'keyboard'
-			id?: string
-			index?: number
-		}
-	}>
+	typeElement: DataTypeTemplates.TypeElement
 ) {
-	if (!dragState.sourceColumn) {
+	if (
+		!dragState.sourceColumn ||
+		!dragState.draggedElement ||
+		!dragState.targetColumn
+	) {
 		dragState.sourceColumn = columnKey
-		dragState.draggedElement =
-			event.detail.items[event.detail.info.index || 0]
+		dragState.draggedElement = typeElement
+		dragState.targetColumn = SCD_ELEMENTS[columnKey].typeRef.to
 	}
-	dragState.targetColumn = columnKey
 }
 
-function handleFinalizeDragEvent(
-	columnKey: keyof typeof SCD_ELEMENTS,
-	event: CustomEvent<{
-		items: DataTypeTemplates.TypeElement[]
-		info: {
-			trigger: 'pointer' | 'keyboard'
-			id?: string
-			index?: number
-		}
-	}>
-) {
+function handleFinalizeDragEvent() {
 	if (
 		dragState.sourceColumn &&
 		dragState.targetColumn &&
@@ -69,21 +58,20 @@ function handleFinalizeDragEvent(
 		if (movedElement) {
 			dataTypeTemplatesStore.deleteTypeRef({
 				currentType: movedElement,
-				currentElementId: movedElement.element.getAttribute('id') || ''
+				currentElementId: movedElement.id
+				// currentElementId: movedElement.element.getAttribute('id') || ''
 			})
 
 			dataTypeTemplatesStore.addNewTypeRef({
 				columnKey: dragState.targetColumn,
-				typeElement: $columns[dragState.targetColumn].types[0]?.element,
+				typeElement: dragState.draggedElement.element,
 				refElement: movedElement.element
 			})
+			console.log('element added')
 		}
-		console.log(
-			'current column element',
-			$columns[dragState.targetColumn].types
-		)
+	} else {
+		// TODO revert drag. currently the dragged element is being deleted
 	}
-
 	dragState = {}
 }
 </script>
@@ -108,23 +96,26 @@ function handleFinalizeDragEvent(
 			{#if column.visible}
 			  <Content class="content">
 				<div class="element-types">
-				  <div 
-					use:dndzone={{
-					  items: column.types,
-					  flipDurationMs: 200,
-					  type: 'columns'
-					}}
-					on:consider={(event) => handleConsiderDragEvent(key, event)}
-					on:finalize={(event) => handleFinalizeDragEvent(key, event)}
-				  >
 					{#each column.types as typeElement, index}
-					  <ContentCard 
-						name={typeElement.name || SCD_ELEMENTS[key].type.baseName + (index + 1)}
-						currentColumn={key}
-						{typeElement}
-					  />
+						<div 
+							use:dndzone={{
+								items: column.types,
+								flipDurationMs: 200,
+								type: 'columns'
+							}}
+							on:consider={() => handleConsiderDragEvent(key, typeElement)}
+							on:finalize={handleFinalizeDragEvent}
+						>
+						<p></p>
+						<!-- <div class="content" animate:flip="{{duration: flipDurationMs}}"> -->
+							<ContentCard 
+								name={typeElement.name || SCD_ELEMENTS[key].type.baseName + (index + 1)}
+								currentColumn={key}
+								{typeElement}
+							/>
+						</div>
+					<!-- </div> -->
 					{/each}
-				  </div>
 				</div>
 			  </Content>
 			{/if}
