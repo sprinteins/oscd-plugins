@@ -110,11 +110,7 @@ function createPluginXmlStructure() {
 //==== PUBLIC ACTIONS
 
 function addNewType(columnKey: keyof typeof SCD_ELEMENTS) {
-	createPluginXmlStructure()
-
-	const currentPrivateElement = get(privateElement)?.element
-	if (!currentPrivateElement)
-		return console.error('No Private element found in DataTypeTemplates')
+	const currentPrivateElement = initAddDeleteType()
 
 	const iterateType = get(typeElements)[`${columnKey}Types`].length + 1
 
@@ -160,14 +156,22 @@ function addNewTypeRef({
 	})
 }
 
+function initAddDeleteType() {
+	createPluginXmlStructure()
+
+	const currentPrivateElement = get(privateElement)?.element
+	if (!currentPrivateElement) {
+		throw 'No Private element found in DataTypeTemplates'
+	}
+	return currentPrivateElement
+}
+
 function deleteType({
 	currentType
 }: {
 	currentType: DataTypeTemplates.TypeElement
 }) {
-	const currentPrivateElement = get(privateElement)?.element
-	if (!currentPrivateElement)
-		return console.error('No Private element found in DataTypeTemplates')
+	const currentPrivateElement = initAddDeleteType()
 
 	const elementToDelete = currentType.element
 	if (elementToDelete)
