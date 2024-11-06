@@ -13,7 +13,7 @@ import { elementsTypesStore } from '@/stores/elements-types.store'
 import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
 // TYPES
 import type { DataTypeTemplates, Entries } from '@oscd-plugins/core'
-import { dndzone } from 'svelte-dnd-action'
+import { dndzone, type DndEvent } from 'svelte-dnd-action'
 // import { setDebugMode } from 'svelte-dnd-action'
 
 //====== INITIALIZATION ======//
@@ -27,13 +27,15 @@ interface DragState {
 	sourceColumn?: keyof typeof SCD_ELEMENTS
 	targetColumn?: keyof typeof SCD_ELEMENTS
 	draggedElement?: DataTypeTemplates.TypeElement
+	parentElement?: DataTypeTemplates.TypeElement
 }
 
 let dragState: DragState = {}
 
 function handleConsiderDragEvent(
 	columnKey: keyof typeof SCD_ELEMENTS,
-	typeElement: DataTypeTemplates.TypeElement
+	typeElement: DataTypeTemplates.TypeElement,
+	event: CustomEvent<DndEvent<DataTypeTemplates.TypeElement>>
 ) {
 	if (
 		!dragState.sourceColumn ||
@@ -44,6 +46,7 @@ function handleConsiderDragEvent(
 		dragState.draggedElement = typeElement
 		dragState.targetColumn = SCD_ELEMENTS[columnKey].typeRef.to
 	}
+	dragState.parentElement = event.detail.items[0]
 }
 
 function handleFinalizeDragEvent() {
@@ -51,9 +54,11 @@ function handleFinalizeDragEvent() {
 		dragState.sourceColumn &&
 		dragState.targetColumn &&
 		dragState.sourceColumn !== dragState.targetColumn &&
-		dragState.draggedElement
+		dragState.draggedElement &&
+		dragState.parentElement
 	) {
 		const movedElement = dragState.draggedElement
+		const parentElement = dragState.parentElement
 
 		if (movedElement) {
 			dataTypeTemplatesStore.deleteTypeRef({
@@ -64,10 +69,10 @@ function handleFinalizeDragEvent() {
 
 			dataTypeTemplatesStore.addNewTypeRef({
 				columnKey: dragState.targetColumn,
-				typeElement: dragState.draggedElement.element,
+				typeElement: parentElement?.element,
 				refElement: movedElement.element
 			})
-			console.log('element added')
+			console.log('element added, report: ', parentElement)
 		}
 	} else {
 		// TODO revert drag. currently the dragged element is being deleted
@@ -103,7 +108,7 @@ function handleFinalizeDragEvent() {
 								flipDurationMs: 200,
 								type: 'columns'
 							}}
-							on:consider={() => handleConsiderDragEvent(key, typeElement)}
+							on:consider={(event) => handleConsiderDragEvent(key, typeElement, event)}
 							on:finalize={handleFinalizeDragEvent}
 						>
 						<p></p>
