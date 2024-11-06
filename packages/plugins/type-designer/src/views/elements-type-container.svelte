@@ -61,9 +61,8 @@ function handleFinalizeDragEvent() {
 		const parentElement = dragState.parentElement
 
 		if (movedElement) {
-			dataTypeTemplatesStore.deleteTypeRef({
-				currentType: movedElement,
-				currentElementId: movedElement.id
+			dataTypeTemplatesStore.deleteType({
+				currentType: movedElement
 				// currentElementId: movedElement.element.getAttribute('id') || ''
 			})
 

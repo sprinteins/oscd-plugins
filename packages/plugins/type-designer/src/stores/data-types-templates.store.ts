@@ -160,6 +160,23 @@ function addNewTypeRef({
 	})
 }
 
+function deleteType({
+	currentType
+}: {
+	currentType: DataTypeTemplates.TypeElement
+}) {
+	const currentPrivateElement = get(privateElement)?.element
+	if (!currentPrivateElement)
+		return console.error('No Private element found in DataTypeTemplates')
+
+	const elementToDelete = currentType.element
+	if (elementToDelete)
+		pluginStore.createAndDispatchRemoveActionEvent({
+			parent: currentPrivateElement,
+			element: elementToDelete
+		})
+}
+
 function deleteTypeRef({
 	currentType,
 	currentElementId
@@ -199,6 +216,7 @@ export const dataTypeTemplatesStore = {
 	//actions
 	init,
 	addNewType,
+	deleteType,
 	addNewTypeRef,
 	deleteTypeRef
 }
