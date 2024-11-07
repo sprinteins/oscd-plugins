@@ -7,7 +7,7 @@
 	<type-designer>
 		{#if xmlDocument}
 			<CustomDrawer>
-				{#if showBanner}
+				{#if showBanner && !import.meta.env.DEV}
 					<div class="banner" style="{showBanner ? 'display:flex;' : 'display:none;'}">
 						This plugin is in test phase and not suitable for production use.
 						<CustomIconButton icon="close" color="white" on:click={() => showBanner = !showBanner} />
@@ -30,7 +30,7 @@ import ElementsTypeContainer from '@/views/elements-type-container.svelte'
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES
-import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
+import { dataTypeTemplatesStore } from '@/stores/data-type-templates.store'
 import { pluginStore } from '@/stores/plugin.store'
 // TYPES
 import type { PluginType } from '@oscd-plugins/core'
@@ -89,5 +89,6 @@ async function triggerUpdate({
 	position:fixed;
 	top: var(--header-height);
 	box-sizing: border-box;
+	z-index: 50;
 }
 </style>

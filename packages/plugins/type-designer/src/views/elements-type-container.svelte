@@ -7,10 +7,10 @@ import Button from '@smui/button'
 // UI COMPONENTS
 import { CustomIconButton } from '@oscd-plugins/ui'
 // LOCAL COMPONENTS
-import ContentCard from '@/components/content-card.svelte'
+import ElementType from '@/components/element-type.svelte'
 // STORES
 import { elementsTypesStore } from '@/stores/elements-types.store'
-import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
+import { dataTypeTemplatesStore } from '@/stores/data-type-templates.store'
 // TYPES
 import type { DataTypeTemplates, Entries } from '@oscd-plugins/core'
 import { dndzone, type DndEvent } from 'svelte-dnd-action'

@@ -16,7 +16,8 @@ export const SCD_ELEMENTS = {
 		},
 		typeRef: {
 			tag: undefined,
-			to: undefined
+			to: undefined,
+			from: 'voltageLevel'
 		}
 	},
 	voltageLevel: {
@@ -38,7 +39,8 @@ export const SCD_ELEMENTS = {
 		},
 		typeRef: {
 			tag: 'td:VoltageLevelTypeRef',
-			to: 'substation'
+			to: 'substation',
+			from: 'bay'
 		}
 	},
 	bay: {
@@ -56,7 +58,8 @@ export const SCD_ELEMENTS = {
 		},
 		typeRef: {
 			tag: 'td:BayTypeRef',
-			to: 'voltageLevel'
+			to: 'voltageLevel',
+			from: 'ied'
 		}
 	},
 	ied: {
@@ -82,7 +85,8 @@ export const SCD_ELEMENTS = {
 		},
 		typeRef: {
 			tag: 'td:IEDTypeRef',
-			to: 'bay'
+			to: 'bay',
+			from: 'lDevice'
 		}
 	},
 	lDevice: {
@@ -100,7 +104,8 @@ export const SCD_ELEMENTS = {
 		},
 		typeRef: {
 			tag: 'td:LDeviceTypeRef',
-			to: 'ied'
+			to: 'ied',
+			from: 'lNode'
 		}
 	},
 	lNode: {
@@ -118,7 +123,8 @@ export const SCD_ELEMENTS = {
 		},
 		typeRef: {
 			tag: 'td:LNodeTypeRef',
-			to: 'lDevice'
+			to: 'lDevice',
+			from: undefined
 		}
 	}
 } as const

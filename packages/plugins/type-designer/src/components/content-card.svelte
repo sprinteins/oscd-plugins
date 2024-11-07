@@ -1,76 +1,73 @@
+
 <script lang="ts">
-// CONSTANTS
-import { SCD_ELEMENTS } from '@oscd-plugins/core'
 // SMUI COMPONENTS
 import Card from '@smui/card'
 // COMPONENTS
-import DrawerContent from './drawer-content.svelte'
-// STORES
-import { drawerStore } from '@oscd-plugins/ui'
-// TYPES
-import type { DataTypeTemplates } from '@oscd-plugins/core'
+import { IconWrapper } from '@oscd-plugins/ui'
 
 //====== INITIALIZATION ======//
 
 // props
-export let name: string
-export let typeElement: DataTypeTemplates.TypeElement
-export let currentColumn: keyof typeof SCD_ELEMENTS
+export let isRoot: boolean
+export let typeName: string
+export let isOpen: boolean | undefined = undefined
+export let displayArrow = true
+export let clickCallback: () => void
 
-// store
-const { drawer } = drawerStore
-
-//====== FUNCTIONS ======//
-
-function handleCardClick() {
-	if (currentColumn === 'lNode') return
-
-	const payload = {
-		title: `Edit ${SCD_ELEMENTS[currentColumn].element.name} type`,
-		description: `#${typeElement.id}`,
-		component: DrawerContent,
-		componentProps: {
-			typeElement,
-			currentColumn
-		}
-	}
-
-	if (
-		$drawer.componentProps?.typeElement.id &&
-		$drawer.componentProps?.typeElement.id !== typeElement.id
-	)
-		return drawerStore.handleOpenDrawer(payload)
-
-	return drawerStore.handleSwitchDrawer(payload)
-}
+// upcoming feature
+// function handleCardMenu(event: Event) {
+// 	event.preventDefault()
+// 	event.stopPropagation()
+// 	//menu
+// }
 </script>
 
-<section id="type-designer-card">
-
-    <Card class="card" on:click={() => handleCardClick()}>
-        {name}
-        <div class="rhombus-icon"></div>
-    </Card>
-
-</section>
+<div id="type-designer-type-element" style={isRoot ? '' : 'width: 80%;'}>
+	<Card  class="card" on:click={clickCallback}>
+		<div class="card-title">
+				{#if isRoot}
+					{#if isOpen }
+						<IconWrapper icon="keyboard_arrow_down" fillColor="#666" />
+					{:else}
+						<IconWrapper icon="keyboard_arrow_right" fillColor="#666" class="{displayArrow ? '' : 'card-title__arrow--hidden'}" />
+					{/if}
+					<IconWrapper icon="nearby" fillColor="primary" />
+				{:else}
+					<IconWrapper icon="nearby_empty" fillColor="primary" />
+				{/if}
+			<div class="card-title__name">
+				{#if !isRoot}
+					<i class="card-title__ref">#Ref</i>
+				{/if}
+				<span>{typeName}</span>
+			</div>
+		</div>
+		<!-- <CustomIconButton icon="more_vert" color="primary" on:click={handleCardMenu}/> -->
+	</Card>
+</div>
 
 <style>
-    #type-designer-card :global(.card) {
-        padding: 1rem;
-        border-radius: 4px;
-        margin-bottom: 1rem;
-        flex-shrink: 0;
-        border: 1px solid #ccc;
-        cursor: pointer;
-    }
-		
-		.rhombus-icon {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 8px;
-    height: 8px;
-    background-color: rgb(81, 159, 152);
-    transform: rotate(45deg);
-  }
+#type-designer-type-element :global(.card){
+	padding: 1rem;
+	border-radius: 4px;
+	flex-shrink: 0;
+	border: 1px solid #ccc;
+	cursor: pointer;
+}
+.card-title {
+	display: flex;
+	align-items: center;
+}
+#type-designer-type-element :global(.card-title__arrow--hidden) {
+	opacity: .2;
+}
+.card-title__name {
+	margin-left: 1rem;
+	display:flex;
+	flex-direction: column;
+}
+.card-title__ref {
+	font-size: 0.8rem;
+	color: #666;
+}
 </style>
