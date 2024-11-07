@@ -160,14 +160,14 @@ function findElementKeyByTag(
 			<Content class="content">
 				<div class="element-types">
 					{#each column.types as typeElement, index}
-						<!-- svelte-ignore a11y-no-static-element-interactions -->
 						<div 
 							class="draggable-container"
 							draggable="true"
+							role="listitem"
 							on:dragstart={(e) => handleDragStart(e, typeElement, key)}
-							on:dragover={(e) => handleDragOver(e, typeElement, key)}
+							on:dragover={(e) => handleDragOver(e, typeElement)}
 							on:dragleave={handleDragLeave}
-							on:drop={(e) => handleDrop(e, typeElement, key)}
+							on:drop={(e) => handleDrop(e, typeElement)}
 						>
 							<ContentCard 
 								name={typeElement.name || SCD_ELEMENTS[key].type.baseName + (index + 1)}
