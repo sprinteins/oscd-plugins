@@ -34,19 +34,28 @@
 <div class="ied">
     <IED label={IEDSelection.label} isSelected={true} isSelectable={false} />
 </div>
-{#if details.length == 3}
+{#if details != null}
     <div class={detailsCollapsed ? 'details_collapsed' : ''}>
-    {#if details[0] != ""}
+    {#if details.logicalNodes.length > 0}
         <h3>Logical Nodes</h3>
-        <p class="details">{@html details[0]}</p>
+        {#each details.logicalNodes as node}
+            <span class="details">{node}</span>
+            <br>
+        {/each}
     {/if}
-    {#if details[1] != ""}
+    {#if details.dataObjects.length > 0}
         <h3>Data Objects</h3>
-        <p class="details">{@html details[1]}</p>
+        {#each details.dataObjects as node}
+            <span class="details">{node}</span>
+            <br>
+        {/each}
     {/if}
-    {#if details[2] != ""}
+    {#if details.dataAttributes.length > 0}
         <h3>Data Attributes</h3>
-        <p class="details">{@html details[2]}</p>
+        {#each details.dataAttributes as node}
+            <span class="details">{node}</span>
+            <br>
+        {/each}
     {/if}
     </div>
     <button class="expand_button" on:click={() => detailsCollapsed = !detailsCollapsed}>

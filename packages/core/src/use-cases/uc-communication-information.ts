@@ -27,42 +27,46 @@ export class UCCommunicationInformation {
 		return commInfos
 	}
 
-	private parseDetails(element: Element): string[] {
-
-		let result = ["", "", ""]
+	private parseDetails(element: Element): IEDDetails {
 
 		const parser = new DOMParser()
 		const doc = parser.parseFromString(element.outerHTML, "text/xml")
 		
 		//for now, we are only looking for these specific strings when looking for logical nodes,
 		//data objects and data attributes. maybe this can be expanded in the future
-		result[0] = this.parseNodes(doc, ["LN", "LN0"])
-		result[1] = this.parseNodes(doc, ["DO", "DOI"])
-		result[2] = this.parseNodes(doc, ["DA", "FCDA"])
-		
-		return result
+		return {
+			logicalNodes: this.parseNodes(doc, ["LN", "LN0"]),
+			dataObjects: this.parseNodes(doc, ["DO", "DOI"]),
+			dataAttributes: this.parseNodes(doc, ["DA", "FCDA"])
+		}
 	}
 
-	private parseNodes(doc: Document, nodeTypes: string[]): string {
-		let result = ""
+	private parseNodes(doc: Document, nodeTypes: string[]): string[] {
+		let details: string[] = [];
 
-		for (var nodeType of nodeTypes) {
+		for (const nodeType of nodeTypes) {	
+			const elements = doc.getElementsByTagName(nodeType);
+			this.parseElements(elements, details);
+		}
+		return details;
+	}
+
+	private parseElements(elements: HTMLCollectionOf<Element>, details: string[]) {
+		for (const element of elements) {
+			details.push(this.parseAttributes(element));
+		}
+	}
+
+	private parseAttributes(element: Element): string {
+		let detail = element.localName + " ("
 		
-			const nodes = doc.getElementsByTagName(nodeType);
-			for (var node of nodes) {
-		
-				result += node.localName + " ("
-				for (var attribute of node.attributes) {
-		
-					result += attribute.name
-					if (attribute.value) {
-						result += "=" + attribute.value + " "
-					}
-				}
-				result +=")<br>"
+		for (const attribute of element.attributes) {
+			detail += attribute.name
+			if (attribute.value) {
+				detail += "=" + attribute.value + " "
 			}
 		}
-		return result
+		return detail + ")"
 	}
 
 	public IEDCommInfosByBay(): Map<string, IEDCommInfo[]> {
@@ -266,9 +270,15 @@ export type ReportControlInfo = {
 	name: string
 }
 
+export type IEDDetails = {
+	logicalNodes: string[]
+	dataObjects: string[]
+	dataAttributes: string[]
+}
+
 export type IEDCommInfo = {
 	iedName: string
-	iedDetails: string[]
+	iedDetails: IEDDetails
 	published: PublishedMessage_V2[]
 	received: ReceivedMessage[]
 }
