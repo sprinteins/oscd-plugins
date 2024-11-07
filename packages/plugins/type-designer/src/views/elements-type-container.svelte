@@ -169,11 +169,7 @@ function findElementKeyByTag(
 							on:dragleave={handleDragLeave}
 							on:drop={(e) => handleDrop(e, typeElement)}
 						>
-							<ContentCard 
-								name={typeElement.name || SCD_ELEMENTS[key].type.baseName + (index + 1)}
-								currentColumn={key}
-								{typeElement}
-							/>
+							<ElementType columnKey={key} {typeElement} />
 						</div>
 					{/each}
 				</div>
