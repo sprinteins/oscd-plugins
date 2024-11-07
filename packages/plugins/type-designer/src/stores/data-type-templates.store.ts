@@ -162,13 +162,13 @@ function addNewTypeRef({
 
 function deleteTypeRef({
 	currentType,
-	currentElementId
+	currentTypeElementId
 }: {
 	currentType: DataTypeTemplates.TypeElement
-	currentElementId: string
+	currentTypeElementId: string
 }) {
 	const currentTypeRef = currentType.typeRefs?.find(
-		(typeRef) => typeRef.type === currentElementId
+		(typeRef) => typeRef.type === currentTypeElementId
 	)
 	if (currentTypeRef)
 		pluginStore.createAndDispatchRemoveActionEvent({
