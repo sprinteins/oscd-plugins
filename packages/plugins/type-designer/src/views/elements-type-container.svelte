@@ -14,14 +14,11 @@ import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
 // TYPES
 import type { DataTypeTemplates, Entries } from '@oscd-plugins/core'
 import { dndzone, type DndEvent } from 'svelte-dnd-action'
-// import { setDebugMode } from 'svelte-dnd-action'
 
 //====== INITIALIZATION ======//
 const { columns } = elementsTypesStore
 
 $: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
-
-// setDebugMode(true)
 
 interface DragState {
 	sourceColumn?: keyof typeof SCD_ELEMENTS
@@ -32,51 +29,113 @@ interface DragState {
 
 let dragState: DragState = {}
 
-function handleConsiderDragEvent(
-	columnKey: keyof typeof SCD_ELEMENTS,
-	typeElement: DataTypeTemplates.TypeElement,
-	event: CustomEvent<DndEvent<DataTypeTemplates.TypeElement>>
-) {
-	if (
-		!dragState.sourceColumn ||
-		!dragState.draggedElement ||
-		!dragState.targetColumn
-	) {
-		dragState.sourceColumn = columnKey
-		dragState.draggedElement = typeElement
-		dragState.targetColumn = SCD_ELEMENTS[columnKey].typeRef.to
-	}
-	dragState.parentElement = event.detail.items[0]
+function resetDragState() {
+	dragState = {}
 }
 
-function handleFinalizeDragEvent() {
-	if (
-		dragState.sourceColumn &&
-		dragState.targetColumn &&
-		dragState.sourceColumn !== dragState.targetColumn &&
-		dragState.draggedElement &&
-		dragState.parentElement
-	) {
-		const movedElement = dragState.draggedElement
-		const parentElement = dragState.parentElement
+function handleDragStart(
+	e: DragEvent,
+	typeElement: DataTypeTemplates.TypeElement,
+	columnKey: keyof typeof SCD_ELEMENTS
+) {
+	if (!e.dataTransfer) return
 
-		if (movedElement) {
-			dataTypeTemplatesStore.deleteType({
-				currentType: movedElement
-				// currentElementId: movedElement.element.getAttribute('id') || ''
-			})
+	dragState.sourceColumn = columnKey
+	dragState.draggedElement = typeElement
+	dragState.targetColumn = SCD_ELEMENTS[columnKey].typeRef.to
 
-			dataTypeTemplatesStore.addNewTypeRef({
-				columnKey: dragState.targetColumn,
-				typeElement: parentElement?.element,
-				refElement: movedElement.element
-			})
-			console.log('element added, report: ', parentElement)
+	e.dataTransfer.setData(
+		'application/json',
+		JSON.stringify({
+			element: typeElement,
+			sourceColumn: columnKey,
+			targetColumn: SCD_ELEMENTS[columnKey].typeRef.to
+		})
+	)
+}
+
+function handleDragOver(
+	e: DragEvent,
+	typeElement: DataTypeTemplates.TypeElement
+) {
+	e.preventDefault()
+	const target = e.currentTarget as HTMLElement
+	dragState.parentElement = typeElement
+	target.classList.add('drag-over')
+}
+
+function handleDragLeave(e: DragEvent) {
+	const target = e.currentTarget as HTMLElement
+	target.classList.remove('drag-over')
+}
+
+function handleDrop(
+	e: DragEvent,
+	targetElement: DataTypeTemplates.TypeElement
+) {
+	e.preventDefault()
+	if (!e.dataTransfer) return
+
+	const target = e.currentTarget as HTMLElement
+	target.classList.remove('drag-over')
+
+	try {
+		const dragData = JSON.parse(e.dataTransfer.getData('application/json'))
+		dragState.parentElement = targetElement
+
+		if (
+			dragState.sourceColumn &&
+			dragState.targetColumn &&
+			dragState.sourceColumn !== dragState.targetColumn &&
+			dragState.draggedElement &&
+			dragState.parentElement
+		) {
+			const movedElement = dragState.draggedElement
+			const parentElement = dragState.parentElement
+			console.log('HERE 2:', parentElement)
+
+			const parentElementKey = findElementKeyByTag(
+				JSON.stringify(parentElement)
+			)
+
+			// TODO !! hardcode
+			if ('voltageLevel' !== dragState.targetColumn) {
+				console.log('Failed due to mismatched parent and target column')
+				console.log(
+					`Parent: ${parentElement.name}, Target: ${dragState.targetColumn}`
+				)
+				resetDragState()
+				return
+			}
+
+			try {
+				dataTypeTemplatesStore.deleteType({
+					currentType: movedElement
+				})
+
+				dataTypeTemplatesStore.addNewTypeRef({
+					columnKey: dragState.targetColumn,
+					typeElement: parentElement?.element,
+					refElement: movedElement.element
+				})
+				console.log('element added, report: ', parentElement)
+			} catch (error) {
+				console.error('Error updating data structure:', error)
+			}
 		}
-	} else {
-		// TODO revert drag. currently the dragged element is being deleted
+	} catch (error) {
+		console.error('Error handling drop:', error)
+	} finally {
+		resetDragState()
 	}
-	dragState = {}
+}
+
+function findElementKeyByTag(
+	tag: string
+): keyof typeof SCD_ELEMENTS | undefined {
+	return Object.entries(SCD_ELEMENTS).find(
+		([_, value]) => value.element.tag === tag
+	)?.[0] as keyof typeof SCD_ELEMENTS | undefined
 }
 </script>
 
@@ -98,30 +157,27 @@ function handleFinalizeDragEvent() {
 			  />
 			</div>
 			{#if column.visible}
-			  <Content class="content">
+			<Content class="content">
 				<div class="element-types">
 					{#each column.types as typeElement, index}
+						<!-- svelte-ignore a11y-no-static-element-interactions -->
 						<div 
-							use:dndzone={{
-								items: column.types,
-								flipDurationMs: 200,
-								type: 'columns'
-							}}
-							on:consider={(event) => handleConsiderDragEvent(key, typeElement, event)}
-							on:finalize={handleFinalizeDragEvent}
+							class="draggable-container"
+							draggable="true"
+							on:dragstart={(e) => handleDragStart(e, typeElement, key)}
+							on:dragover={(e) => handleDragOver(e, typeElement, key)}
+							on:dragleave={handleDragLeave}
+							on:drop={(e) => handleDrop(e, typeElement, key)}
 						>
-						<p></p>
-						<!-- <div class="content" animate:flip="{{duration: flipDurationMs}}"> -->
 							<ContentCard 
 								name={typeElement.name || SCD_ELEMENTS[key].type.baseName + (index + 1)}
 								currentColumn={key}
 								{typeElement}
 							/>
 						</div>
-					<!-- </div> -->
 					{/each}
 				</div>
-			  </Content>
+			</Content>
 			{/if}
 			{#if column.visible && column.name !== SCD_ELEMENTS.lNode.element.name}
 			  <div class="add-button-container">
@@ -231,6 +287,14 @@ function handleFinalizeDragEvent() {
 		text-transform: none;
 		height: 44px;
 	}
+
+	#type-designer-columns :global(.draggable-container) {
+        cursor: move;
+    }
+
+    #type-designer-columns :global(.draggable-container.drag-over) {
+        border: 2px dashed #519F98;
+    }
 
 	@media (max-width: 768px) {
 		.columns-container {
