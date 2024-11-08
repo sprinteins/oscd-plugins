@@ -1,5 +1,5 @@
 import type { ElkExtendedEdge, ElkNode } from "elkjs"
-import type { IEDCommInfo, MessageType } from "@oscd-plugins/core"
+import type { IEDDetails, IEDCommInfo, MessageType } from "@oscd-plugins/core"
 
 export function newIEDNode(iedNode: IEDElkNode): IEDElkNode {
 	const newIEDNode: IEDElkNode = {
@@ -36,6 +36,7 @@ export type IEDElkNode = Omit<ElkNode, "edges" | "children"> & {
 	isBayNode?: boolean
 	edges?: IEDConnection[]
 	children: IEDElkNode[]
+	details: IEDDetails
 }
 
 export type BayElkNode = Omit<IEDElkNode, "isBayNode"> & {

@@ -4,6 +4,7 @@
     import type { IEDNode, RootNode } from "../../../../components/diagram"
     import { IED } from "../../../../components/ied"
     import { getConnectedIEDsByLabel } from "../../_func-layout-calculation/get-connected-ieds"
+    import { getIEDDetails } from "../../_func-layout-calculation/get-ied-details"
     import {
     	ConnectionTypeDirection,
     	groupRelationsByServiceType,
@@ -18,6 +19,7 @@
     $: relations = getConnectedIEDsByLabel(rootNode, IEDSelection.label)
     $: relationsByServiceType = groupRelationsByServiceType(relations)
     $: serviceTypes = Array.from(relationsByServiceType.entries())
+    $: details = getIEDDetails(rootNode, IEDSelection.label)
 
     const serviceTypeColor: { [key in MessageType | "Unknown"]: string } = {
     	GOOSE:         "--color-message-goose",
@@ -25,12 +27,43 @@
     	SampledValues: "--color-message-sampledvalues",
     	Unknown:       "--color-message-unknown",
     }
+
+    let detailsCollapsed = true;
 </script>
 
 <div class="ied">
     <IED label={IEDSelection.label} isSelected={true} isSelectable={false} />
 </div>
-<div class="accordions">
+{#if details != null}
+    <div class={detailsCollapsed ? 'details_collapsed' : ''}>
+    {#if details.logicalNodes.length > 0}
+        <h3>Logical Nodes</h3>
+        {#each details.logicalNodes as node}
+            <span class="details">{node}</span>
+            <br>
+        {/each}
+    {/if}
+    {#if details.dataObjects.length > 0}
+        <h3>Data Objects</h3>
+        {#each details.dataObjects as node}
+            <span class="details">{node}</span>
+            <br>
+        {/each}
+    {/if}
+    {#if details.dataAttributes.length > 0}
+        <h3>Data Attributes</h3>
+        {#each details.dataAttributes as node}
+            <span class="details">{node}</span>
+            <br>
+        {/each}
+    {/if}
+    </div>
+    <button class="expand_button" on:click={() => detailsCollapsed = !detailsCollapsed}>
+        {detailsCollapsed ? 'Show more' : 'Show less'}
+    </button>
+{/if}
+
+<div>
     {#each serviceTypes as serviceType}
         {@const service = serviceType[1]}
         {@const type = service[0].serviceType}
@@ -59,12 +92,32 @@
 
 <style lang="scss">
     .ied {
-        margin-bottom: 1rem;
     }
     .accordions {
         display: flex;
         flex-direction: column;
         gap: 1rem;
         margin-left: 1rem;
+    }
+    .details_collapsed {
+        overflow: hidden;
+        max-height: 100px;
+    }
+    .expand_button {
+        background: none;
+        border: none;
+        color: #305CDE;
+        cursor: pointer;
+        margin-bottom: 1rem;
+        padding-left: 0;
+    }
+    .expand_button:focus {
+        outline: none;
+    }
+    .expand_button:hover {
+        text-decoration: underline;
+    }
+    .details:last-of-type {
+        margin-bottom: 0;
     }
 </style>
