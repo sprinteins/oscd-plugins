@@ -14,7 +14,7 @@ export let isOpen: boolean | undefined = undefined
 export let displayArrow = true
 export let clickCallback: () => void
 
-// upcoming feature
+// TODO : upcoming feature with a dedicated menu
 // function handleCardMenu(event: Event) {
 // 	event.preventDefault()
 // 	event.stopPropagation()
