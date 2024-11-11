@@ -1,4 +1,6 @@
 import { SCDQueries } from '../scd-queries'
+// CONSTANTS
+import { SCD_ELEMENTS } from '../../constants'
 // TYPES
 import type {
 	CommonOptions,
@@ -34,70 +36,98 @@ export class DataTypeTemplatesQueries extends SCDQueries {
 	public static SelectorSubstationType = 'SubstationType'
 	public searchSubstationTypeElements(
 		options?: CommonOptions
-	): SubstationElement[] {
-		return this.searchElements<SubstationElement>(
-			DataTypeTemplatesQueries.SelectorSubstationType,
-			['id', 'name', 'desc'],
+	): DataTypeTemplates.SubstationTypeElement[] {
+		return this.searchElementsWithChildren<
+			SubstationElement,
+			'typeRefs',
+			DataTypeTemplates.TypeRefElement
+		>({
+			selector: DataTypeTemplatesQueries.SelectorSubstationType,
+			childrenKey: 'typeRefs',
+			attributeList: [
+				...SCD_ELEMENTS.substation.element.standardAttributes
+			],
 			options
-		)
+		})
 	}
 
 	public static SelectorVoltageLevelType = 'VoltageLevelType'
 	public searchVoltageLevelTypeElements(
 		options?: CommonOptions
-	): VoltageLevelElement[] {
-		return this.searchElements<VoltageLevelElement>(
-			DataTypeTemplatesQueries.SelectorVoltageLevelType,
-			['id', 'name', 'desc', 'nomFreq', 'numPhases'],
+	): DataTypeTemplates.VoltageLevelTypeElement[] {
+		return this.searchElementsWithChildren<
+			VoltageLevelElement,
+			'typeRefs',
+			DataTypeTemplates.TypeRefElement
+		>({
+			selector: DataTypeTemplatesQueries.SelectorVoltageLevelType,
+			childrenKey: 'typeRefs',
+			attributeList: [
+				...SCD_ELEMENTS.voltageLevel.element.standardAttributes
+			],
 			options
-		)
+		})
 	}
 
 	public static SelectorBayType = 'BayType'
-	public searchBayTypeElements(options?: CommonOptions): BayElement[] {
-		return this.searchElements<BayElement>(
-			DataTypeTemplatesQueries.SelectorBayType,
-			['id', 'name', 'desc'],
+	public searchBayTypeElements(
+		options?: CommonOptions
+	): DataTypeTemplates.BayTypeElement[] {
+		return this.searchElementsWithChildren<
+			BayElement,
+			'typeRefs',
+			DataTypeTemplates.TypeRefElement
+		>({
+			selector: DataTypeTemplatesQueries.SelectorBayType,
+			childrenKey: 'typeRefs',
+			attributeList: [...SCD_ELEMENTS.bay.element.standardAttributes],
 			options
-		)
+		})
 	}
 
 	public static SelectorIEDType = 'IEDType'
-	public searchIEDTypeElements(options?: CommonOptions): IEDElement[] {
-		return this.searchElements<IEDElement>(
-			DataTypeTemplatesQueries.SelectorIEDType,
-			[
-				'id',
-				'name',
-				'desc',
-				'originalSclRevision',
-				'originalSclVersion',
-				'configVersion',
-				'owner',
-				'manufacturer',
-				'type'
-			],
+	public searchIEDTypeElements(
+		options?: CommonOptions
+	): DataTypeTemplates.IEDTypeElement[] {
+		return this.searchElementsWithChildren<
+			IEDElement,
+			'typeRefs',
+			DataTypeTemplates.TypeRefElement
+		>({
+			selector: DataTypeTemplatesQueries.SelectorIEDType,
+			childrenKey: 'typeRefs',
+			attributeList: [...SCD_ELEMENTS.ied.element.standardAttributes],
 			options
-		)
+		})
 	}
 
 	public static SelectorLDeviceType = 'LDeviceType'
 	public searchLDeviceTypeElements(
 		options?: CommonOptions
-	): LDeviceElement[] {
-		return this.searchElements<LDeviceElement>(
-			DataTypeTemplatesQueries.SelectorLDeviceType,
-			['id', 'desc', 'inst'],
+	): DataTypeTemplates.LDeviceTypeElement[] {
+		return this.searchElementsWithChildren<
+			LDeviceElement,
+			'typeRefs',
+			DataTypeTemplates.TypeRefElement
+		>({
+			selector: DataTypeTemplatesQueries.SelectorLDeviceType,
+			childrenKey: 'typeRefs',
+			attributeList: [...SCD_ELEMENTS.lDevice.element.standardAttributes],
 			options
-		)
+		})
 	}
 
 	public static SelectorLNodeType = 'LNodeType'
-	public searchLNodeTypeElements(options?: CommonOptions): LNodeElement[] {
+	public searchLNodeTypeElements(
+		options?: CommonOptions
+	): DataTypeTemplates.LNodeTypeElement[] {
 		return this.searchElements<LNodeElement>(
 			DataTypeTemplatesQueries.SelectorLNodeType,
-			['id', 'name', 'desc', 'lnClass'],
+			[...SCD_ELEMENTS.lNode.element.standardAttributes],
 			options
-		)
+		).map((LNodeElement) => ({
+			...LNodeElement,
+			typeRefs: undefined
+		}))
 	}
 }

@@ -2,9 +2,10 @@ import { writable, derived } from 'svelte/store'
 // CORE
 import { SCD_ELEMENTS } from '@oscd-plugins/core'
 // STORES
-import { dataTypeTemplatesStore } from './data-types-templates.store'
+import { dataTypeTemplatesStore } from './data-type-templates.store'
 
 //==== STATE
+
 const columnsVisibility = writable({
 	substation: true,
 	voltageLevel: true,

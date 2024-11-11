@@ -333,10 +333,16 @@ importers:
       '@oscd-plugins/uilib':
         specifier: workspace:^
         version: link:../../uilib
+      '@smui-extra/accordion':
+        specifier: 7.0.0
+        version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       '@smui/button':
         specifier: 7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       '@smui/card':
+        specifier: 7.0.0
+        version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
+      '@smui/form-field':
         specifier: 7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       '@smui/icon-button':
@@ -346,6 +352,9 @@ importers:
         specifier: 7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       '@smui/paper':
+        specifier: 7.0.0
+        version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
+      '@smui/switch':
         specifier: 7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       '@smui/textfield':
@@ -1531,9 +1540,6 @@ packages:
   '@smui/banner@7.0.0':
     resolution: {integrity: sha512-R+9RfIaN1OlMs8j0pCbINSsI5ISYZJ4BSw1QGs6gVhvwUs0I2ld43MzDrXbD1yyXb1TOWzVuXiVkRwr0PPqh+A==}
 
-  '@smui/banner@7.0.0-beta.8':
-    resolution: {integrity: sha512-nI2iKLTKsH3xSgD92cDO0uV3gnaKt2ZFq/RBSN+ZtfSFvaicFZOph9ednyFMHKwzLRbi2Ug70gFb7BXG3pr+Uw==}
-
   '@smui/button@7.0.0':
     resolution: {integrity: sha512-T1WK03HlOecrufoO4Z/W1dXC/R+VLqrwmBcIVQwqN0TiwUdHDfeCa1TjrqroLn9eJUe73T/O3Abh9b2Nttz77g==}
 
@@ -1599,9 +1605,6 @@ packages:
 
   '@smui/form-field@7.0.0':
     resolution: {integrity: sha512-qOs36mqDAjmCSmcgMsuJvSXdub6mk0XWofzhlryHwr/dBcih26RSASpsglUU0qlHer1NOd497JboHIViZib5yQ==}
-
-  '@smui/form-field@7.0.0-beta.8':
-    resolution: {integrity: sha512-B+8QJulCY13qiWiwLn9Fso3ZzYLCRBpq6MHE0o/4ZI0g5tI4yzyU1YNSXA3zWg6FJx7XukqOqoOA2sNCd00cjA==}
 
   '@smui/icon-button@7.0.0':
     resolution: {integrity: sha512-SlcmGTW027X44O2QERC5fCZB1zLDsy9k5Cn+ohM0woSFNV3pIlrWtCyYFr1ariRiT8NTF1ScMdW70y8YgK9ikA==}
@@ -1701,9 +1704,6 @@ packages:
 
   '@smui/switch@7.0.0':
     resolution: {integrity: sha512-LeY1aIMvbJOOmex5o/M7jOX0y6K/1Xa2u6myju30mOy595ibxMGRfuNSdePHBBrR79QbsEow/otltSA1vspw2Q==}
-
-  '@smui/switch@7.0.0-beta.8':
-    resolution: {integrity: sha512-+S1hh5v9u5sGkl39WormaUrIndPpnYB0v9NCxIg/XVAEn39hryCI9OFXlHq2zyfLiVtjAoWO09l+SnNV78tHyA==}
 
   '@smui/tab-bar@7.0.0':
     resolution: {integrity: sha512-ycAuoGAS2YaV541vDib69CAswNQ+yMRFnloagRcUhyJ4t1eypLDXnba29r1oiEkhwdunDMcH7UCbeyrZUIBJFg==}
@@ -7038,8 +7038,8 @@ snapshots:
       '@material/theme': 14.0.0
       '@material/typography': 14.0.0
       '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/paper': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/paper': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
@@ -7117,20 +7117,20 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/banner@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/banner': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/banner@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
     dependencies:
       '@material/banner': 14.0.0
       '@smui/common': 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       svelte2tsx: 0.7.21(svelte@4.2.19)(typescript@5.5.4)
-    transitivePeerDependencies:
-      - svelte
-      - typescript
-
-  '@smui/banner@7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)':
-    dependencies:
-      '@material/banner': 14.0.0
-      '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -7419,6 +7419,17 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/form-field@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/feature-targeting': 14.0.0
+      '@material/form-field': 14.0.0
+      '@material/rtl': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/form-field@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
     dependencies:
       '@material/feature-targeting': 14.0.0
@@ -7426,17 +7437,6 @@ snapshots:
       '@material/rtl': 14.0.0
       '@smui/common': 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       svelte2tsx: 0.7.21(svelte@4.2.19)(typescript@5.5.4)
-    transitivePeerDependencies:
-      - svelte
-      - typescript
-
-  '@smui/form-field@7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)':
-    dependencies:
-      '@material/feature-targeting': 14.0.0
-      '@material/form-field': 14.0.0
-      '@material/rtl': 14.0.0
-      '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -7908,6 +7908,18 @@ snapshots:
       - svelte
       - typescript
 
+  '@smui/switch@7.0.0(svelte@3.55.0)(typescript@5.2.2)':
+    dependencies:
+      '@material/feature-targeting': 14.0.0
+      '@material/switch': 14.0.0
+      '@material/theme': 14.0.0
+      '@smui/common': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      svelte2tsx: 0.7.21(svelte@3.55.0)(typescript@5.2.2)
+    transitivePeerDependencies:
+      - svelte
+      - typescript
+
   '@smui/switch@7.0.0(svelte@4.2.19)(typescript@5.5.4)':
     dependencies:
       '@material/feature-targeting': 14.0.0
@@ -7916,18 +7928,6 @@ snapshots:
       '@smui/common': 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       '@smui/ripple': 7.0.0(svelte@4.2.19)(typescript@5.5.4)
       svelte2tsx: 0.7.21(svelte@4.2.19)(typescript@5.5.4)
-    transitivePeerDependencies:
-      - svelte
-      - typescript
-
-  '@smui/switch@7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)':
-    dependencies:
-      '@material/feature-targeting': 14.0.0
-      '@material/switch': 14.0.0
-      '@material/theme': 14.0.0
-      '@smui/common': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/ripple': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
-      svelte2tsx: 0.6.14(svelte@3.55.0)(typescript@5.2.2)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -12303,7 +12303,7 @@ snapshots:
       '@smui-extra/autocomplete': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui-extra/badge': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui-extra/bottom-app-bar': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/banner': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/banner': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/button': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/card': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/checkbox': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
@@ -12315,8 +12315,8 @@ snapshots:
       '@smui/drawer': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/fab': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/floating-label': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/form-field': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/icon-button': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/form-field': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/icon-button': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/image-list': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/layout-grid': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/line-ripple': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
@@ -12332,7 +12332,7 @@ snapshots:
       '@smui/select': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/slider': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/snackbar': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
-      '@smui/switch': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
+      '@smui/switch': 7.0.0(svelte@3.55.0)(typescript@5.2.2)
       '@smui/tab': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/tab-bar': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
       '@smui/tab-indicator': 7.0.0-beta.8(svelte@3.55.0)(typescript@5.2.2)
