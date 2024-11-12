@@ -18,12 +18,55 @@ export class UCCommunicationInformation {
 		const commInfos: IEDCommInfo[] = ieds.map((ied) => {
 			return {
 				iedName: ied.name,
+				iedDetails: this.parseDetails(ied.element),
 				// published: this.findPublishedMessages(ied),
 				published: this.findPublishedMessages_V2(ied),
 				received: this.findReceivedMessages(ied, ieds)
 			}
 		})
 		return commInfos
+	}
+
+	private parseDetails(element: Element): IEDDetails {
+
+		const parser = new DOMParser()
+		const doc = parser.parseFromString(element.outerHTML, "text/xml")
+		
+		//for now, we are only looking for these specific strings when looking for logical nodes,
+		//data objects and data attributes. maybe this can be expanded in the future
+		return {
+			logicalNodes: this.parseNodes(doc, ["LN", "LN0"]),
+			dataObjects: this.parseNodes(doc, ["DO", "DOI"]),
+			dataAttributes: this.parseNodes(doc, ["DA", "FCDA"])
+		}
+	}
+
+	private parseNodes(doc: Document, nodeTypes: string[]): string[] {
+		let details: string[] = [];
+
+		for (const nodeType of nodeTypes) {	
+			const elements = doc.getElementsByTagName(nodeType);
+			this.parseElements(elements, details);
+		}
+		return details;
+	}
+
+	private parseElements(elements: HTMLCollectionOf<Element>, details: string[]) {
+		for (const element of elements) {
+			details.push(this.parseAttributes(element));
+		}
+	}
+
+	private parseAttributes(element: Element): string {
+		let detail = element.localName + " ("
+		
+		for (const attribute of element.attributes) {
+			detail += attribute.name
+			if (attribute.value) {
+				detail += "=" + attribute.value + " "
+			}
+		}
+		return detail + ")"
 	}
 
 	public IEDCommInfosByBay(): Map<string, IEDCommInfo[]> {
@@ -227,8 +270,15 @@ export type ReportControlInfo = {
 	name: string
 }
 
+export type IEDDetails = {
+	logicalNodes: string[]
+	dataObjects: string[]
+	dataAttributes: string[]
+}
+
 export type IEDCommInfo = {
 	iedName: string
+	iedDetails: IEDDetails
 	published: PublishedMessage_V2[]
 	received: ReceivedMessage[]
 }

@@ -138,6 +138,45 @@ function addNewType(columnKey: keyof typeof SCD_ELEMENTS) {
 	})
 }
 
+function addNewTypeRef({
+	columnKey,
+	typeElement,
+	refElement,
+	insertBeforeTypeRefElement
+}: {
+	columnKey: keyof typeof SCD_ELEMENTS
+	typeElement: Element
+	refElement: Element
+	insertBeforeTypeRefElement?: Element
+}) {
+	pluginStore.addElementToXmlDocument({
+		parentElement: typeElement,
+		newElementTagName: SCD_ELEMENTS[columnKey].typeRef.tag,
+		namespace: 'td',
+		elementAttributes: {
+			type: refElement.getAttribute('id')
+		},
+		insertBefore: insertBeforeTypeRefElement
+	})
+}
+
+function deleteTypeRef({
+	currentType,
+	currentTypeElementId
+}: {
+	currentType: DataTypeTemplates.TypeElement
+	currentTypeElementId: string
+}) {
+	const currentTypeRef = currentType.typeRefs?.find(
+		(typeRef) => typeRef.type === currentTypeElementId
+	)
+	if (currentTypeRef)
+		pluginStore.createAndDispatchRemoveActionEvent({
+			parent: currentType.element,
+			element: currentTypeRef.element
+		})
+}
+
 //==== STORE INITIALIZATION
 
 function init(newXmlDocument: XMLDocument | undefined) {
@@ -148,6 +187,8 @@ function init(newXmlDocument: XMLDocument | undefined) {
 	setRootElement()
 	setPrivateElement()
 	setTypeElements()
+
+	isStructureCreated.set(false)
 }
 
 //==== PUBLIC STORE
@@ -157,5 +198,7 @@ export const dataTypeTemplatesStore = {
 	dataTypeTemplatesSubElements: typeElements,
 	//actions
 	init,
-	addNewType
+	addNewType,
+	addNewTypeRef,
+	deleteTypeRef
 }
