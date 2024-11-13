@@ -9,21 +9,36 @@
 	export let disabled = false
 	export let testid = ""
 
+	let bays = Array.from(node.bays).join(", ");
 </script>
 
 {#if node}
-	<div
-		class="ied"
-		class:isIrrelevant={!node.isRelevant}
-		class:disabled
-		class:selected={isSelected}
-		data-testid={testid}
-	>
-		{node.label}
+	<div class="wrapper">
+		{#if bays.length > 0}
+			<div class="bayLabel">
+				{#each bays as bay}
+					{bay}
+				{/each}
+			</div>
+		{/if}
+
+		<div
+			class="ied"
+			class:isIrrelevant={!node.isRelevant}
+			class:disabled
+			class:selected={isSelected}
+			data-testid={testid}
+		>
+			{node.label}
+		</div>
 	</div>
 {/if}
 
 <style>
+	.wrapper {
+		height: 100%;
+	}
+	
 	.ied {
 		display: grid;
 		place-items: center;
@@ -71,5 +86,11 @@
 
 	.isIrrelevant {
 		opacity: 0.2;
+	}
+
+	.bayLabel {
+		position: absolute;
+		padding: 2px 4px;
+		font-size: 10px;
 	}
 </style>

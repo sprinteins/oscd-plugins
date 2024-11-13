@@ -37,6 +37,7 @@ export type IEDElkNode = Omit<ElkNode, "edges" | "children"> & {
 	edges?: IEDConnection[]
 	children: IEDElkNode[]
 	details: IEDDetails
+	bays: Set<string>
 }
 
 export type BayElkNode = Omit<IEDElkNode, "isBayNode"> & {
