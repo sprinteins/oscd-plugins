@@ -46,8 +46,9 @@
 	}
 	
 	const config: Config = {
-		width:  150,
-		height: 40,
+		iedWidth:  150,
+		iedHeight: 40,
+		bayLabelHeight: 15
 		// spacingBetweenNodes: 100,
 		// spacingBase: 40,
 		// heightPerConnection: 20,

@@ -28,14 +28,16 @@ export function generateIEDLayout(
 		}
 
 		return {
-			id:         Id(ii),
-			width:      config.width,
-			height:     config.height,
-			label:      ied.iedName,
-			isRelevant: isRelevant,
-			children:   [],
-			details:	ied.iedDetails,
-			bays:		ied.bays
+			id:         	Id(ii),
+			width:      	config.iedWidth,
+			height:     	config.iedHeight + config.bayLabelHeight,
+			label:      	ied.iedName,
+			isRelevant: 	isRelevant,
+			children:   	[],
+			details:		ied.iedDetails,
+			bayLabels:		ied.bayLabels,
+			bayLabelHeight:	config.bayLabelHeight,
+			iedHeight:		config.iedHeight
 		}
 	})
 
