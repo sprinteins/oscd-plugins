@@ -16,15 +16,15 @@
 		"//====== STORYBOOK ======//": "",
 		"storybook": "pnpm install:ui && pnpm --filter @oscd-plugins/ui storybook",
 		"//====== PLUGIN INSTALL ======//": "",
-		"install:type-designer": "pnpm install:dependencies && pnpm --filter @oscd-plugins/type-designer i --frozen-lockfile",
 		"install:auto-doc": "pnpm install:dependencies && pnpm --filter @oscd-plugins/auto-doc i --frozen-lockfile",
+		"install:type-designer": "pnpm install:dependencies && pnpm --filter @oscd-plugins/type-designer i --frozen-lockfile",
 		"//====== PLUGIN STAND ALONE MODE ======//": "",
+		"dev:auto-doc": "pnpm install:auto-doc && pnpm --filter @oscd-plugins/auto-doc dev",
 		"dev:type-designer": "pnpm --filter @oscd-plugins/type-designer dev",
 		"dev:type-designer:install": "pnpm install:type-designer && pnpm --filter @oscd-plugins/type-designer dev",
-		"dev:auto-doc": "pnpm install:auto-doc && pnpm --filter @oscd-plugins/auto-doc dev",
 		"//====== PLUGIN INTEGRATED MODE ======//": "",
-		"dev:integrated:type-designer": "pnpm install:type-designer && pnpm --filter @oscd-plugins/type-designer build:watch",
-		"dev:integrated:auto-doc": "pnpm install:auto-doc && pnpm --filter @oscd-plugins/auto-doc build:watch"
+		"dev:integrated:auto-doc": "pnpm install:auto-doc && pnpm --filter @oscd-plugins/auto-doc build:watch",
+		"dev:integrated:type-designer": "pnpm install:type-designer && pnpm --filter @oscd-plugins/type-designer build:watch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.2",
