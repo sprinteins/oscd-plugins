@@ -1,48 +1,50 @@
 <script lang="ts">
-    import type { IEDCommInfo, ReceivedMessage } from "@oscd-plugins/core"
-    import { PrintMessageServiceChip } from "../../../../../../components/print-message-service-chip"
-    import { convertIEDNameToID as convertIEDNameToHrefID } from "../../_shared-functions"
-    import type { IEDConnection } from "../_shared-functions"
-    import { Icons, openSCDIcons } from "../../../../../../components/icons"
+import { PrintMessageServiceChip } from '../../../../components/print-message-service-chip'
+import { Icons } from '../../../../components/icons'
 
-    export let publishedServiceTypes: IEDConnection[] | undefined = undefined
-    export let ied: IEDCommInfo
+// UTILS
+import { convertIEDNameToID as convertIEDNameToHrefID } from '../../utils/formatters'
+// TYPES
+import type { IED } from '@oscd-plugins/core'
+import type { IEDConnection } from '../../utils/mappers.d'
 
-    $: groupedReceiverByServiceTypeID = groupByServiceTypeIDs(ied.received)
+export let publishedServiceTypes: IEDConnection[] | undefined = undefined
+export let ied: IED.CommunicationInfo
 
-    type GroupedServiceType = {
-        serviceType: string,
-        serviceTypeLabel: string,
-        received: ReceivedMessage,
-    }
+$: groupedReceiverByServiceTypeID = groupByServiceTypeIDs(ied.received)
 
-    export function groupByServiceTypeIDs( relations: ReceivedMessage[] ) {
+type GroupedServiceType = {
+	serviceType: string
+	serviceTypeLabel: string
+	received: IED.ReceivedMessage
+}
 
-    	const array = new Map<string, GroupedServiceType[]>()
+export function groupByServiceTypeIDs(relations: IED.ReceivedMessage[]) {
+	const array = new Map<string, GroupedServiceType[]>()
 
-    	relations.forEach((element) => {
-    		let serviceType: string = element.serviceType
-    		let serviceTypeID: string = element.srcCBName
+	relations.forEach((element) => {
+		let serviceType: string = element.serviceType
+		let serviceTypeID: string = element.srcCBName
 
-    		const keyName = `${serviceType}_${serviceTypeID}`
-    		const content: GroupedServiceType = {
-    			serviceType:      serviceType,
-    			serviceTypeLabel: serviceTypeID,
-    			received:         element,
-    		}
+		const keyName = `${serviceType}_${serviceTypeID}`
+		const content: GroupedServiceType = {
+			serviceType: serviceType,
+			serviceTypeLabel: serviceTypeID,
+			received: element
+		}
 
-    		const hasServiceTypeElement = array.has(keyName)
-    		if (!hasServiceTypeElement) {
-    			array.set(keyName, []) 
-    		}
+		const hasServiceTypeElement = array.has(keyName)
+		if (!hasServiceTypeElement) {
+			array.set(keyName, [])
+		}
 
-    		const serviceTypeElement = array.get(keyName)
-    		serviceTypeElement?.push(content)
-    	})
-    	return array
-    }
+		const serviceTypeElement = array.get(keyName)
+		serviceTypeElement?.push(content)
+	})
+	return array
+}
 
-    const gotoIedNameID = convertIEDNameToHrefID(ied.iedName, false)
+const gotoIedNameID = convertIEDNameToHrefID(ied.iedName, false)
 </script>
 
 <div class="ied-node" id={gotoIedNameID}>
