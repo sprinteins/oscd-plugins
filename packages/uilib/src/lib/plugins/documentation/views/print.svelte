@@ -53,7 +53,6 @@ function getPrintableContent(type: keyof typeof PRINTABLE_INIT_CONSTANT) {
                 height: 297mm;
                 display: flex;
                 justify-content: center;
-                align-items: center;
             }
             svg {
                 max-width: 100%;
