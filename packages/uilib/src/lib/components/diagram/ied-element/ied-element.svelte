@@ -5,7 +5,8 @@
 	// INPUT
 	// 
 	export let node: IEDElkNode
-	export let isSelected = false
+	export let isIEDSelected = false
+	export let isBaySelected = false
 	export let disabled = false
 	export let testid = ""
 
@@ -18,8 +19,8 @@
 			class="bayLabel selectable"
 			class:isIrrelevant={!node.isRelevant}
 			class:disabled
-			class:selected={isSelected}
-			style="height: {node.bayLabelHeight}px"
+			class:selected={isBaySelected}
+			style="height: {node.bayLabelHeight}px;margin-bottom: {node.bayLabelGap}px"
 		>
 			{#each bays as bay}
 				{bay}
@@ -31,7 +32,7 @@
 		class="ied selectable"
 		class:isIrrelevant={!node.isRelevant}
 		class:disabled
-		class:selected={isSelected}
+		class:selected={isIEDSelected}
 		data-testid={testid}
 		style="height: {node.iedHeight}px"
 	>
@@ -49,7 +50,7 @@
 		/* TODO: extract colors */
 		background: var(--color-white);
 		border: 1px solid var(--color-cyan);
-		/*box-shadow: inset 0px 0px 6px rgba(77, 93, 99, 0.15);*/
+		box-shadow: inset 0px 0px 6px rgba(77, 93, 99, 0.15);
 		border-radius: 5px;
 		box-sizing: border-box;
 	}
@@ -71,40 +72,24 @@
 		border-width: 1px;
 		border-color: var(--color-cyan);
 		/* TODO: extract colors */
-		/* box-shadow: inset 0px 0px 6px rgba(77, 93, 99, 0.15); */
 	}
 	
 	.selectable.selected:hover{
 		border-style: dashed;
 		border-color: var(--color-white);
-
 	}
 
 	.ied {
 		display: grid;
 		place-items: center;
 		width: 100%;
-		border-top-left-radius: 0px;
-	}
-
-	.ied:only-child {
-		border-top-left-radius: 5px;
 	}
 
 	.bayLabel {
 		width: fit-content;
 		font-size: 10px;
-		border-bottom-left-radius: 0px;
-		border-bottom-right-radius: 0px;
-		border-bottom: none;
-		margin-bottom: -1px;
-		position: relative;
 		padding-left: 4px;
 		padding-right: 4px;
-	}
-
-	.bayLabel:hover{
-		border-bottom-width: 0px;
 	}
 
 	.isIrrelevant {

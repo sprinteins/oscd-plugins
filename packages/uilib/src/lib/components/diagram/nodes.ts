@@ -39,6 +39,7 @@ export type IEDElkNode = Omit<ElkNode, "edges" | "children"> & {
 	details: IEDDetails
 	bayLabels: Set<string>
 	bayLabelHeight: number,
+	bayLabelGap: number,
 	iedHeight: number
 }
 
