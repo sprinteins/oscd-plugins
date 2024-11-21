@@ -22,6 +22,10 @@ export class IEDService {
 			return {
 				iedName: ied.name,
 				iedDetails: this.parseDetails(ied.element),
+<<<<<<< HEAD
+=======
+				// published: this.findPublishedMessages(ied),
+>>>>>>> 050a526 (feat(core): migrating uc-communication to domain like files (ied))
 				published: this.findPublishedMessages(ied),
 				received: this.findReceivedMessages(ied, ieds)
 			}
