@@ -7,10 +7,10 @@ import Button from '@smui/button'
 // UI COMPONENTS
 import { CustomIconButton } from '@oscd-plugins/ui'
 // LOCAL COMPONENTS
-import ContentCard from '@/components/content-card.svelte'
+import ElementType from '@/components/element-type.svelte'
 // STORES
 import { elementsTypesStore } from '@/stores/elements-types.store'
-import { dataTypeTemplatesStore } from '@/stores/data-types-templates.store'
+import { dataTypeTemplatesStore } from '@/stores/data-type-templates.store'
 // TYPES
 import type { Entries } from '@oscd-plugins/core'
 
@@ -40,9 +40,9 @@ $: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
           {#if column.visible}
             <Content class="content">
               <div class="element-types">
-                {#each column.types as typeElement, index}
-                  <ContentCard name={ typeElement.name || SCD_ELEMENTS[key].type.baseName + ( index +1) }  currentColumn={key} {typeElement} />
-                {/each}
+                {#each column.types as typeElement}
+                	<ElementType columnKey={key} {typeElement} />								
+								{/each}
               </div>
             </Content>
           {/if}

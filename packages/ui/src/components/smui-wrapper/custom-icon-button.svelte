@@ -1,5 +1,5 @@
 <IconButton size="button" style={cssDynamicStyles} on:click class={className}>
-	<IconWrapper icon={icon} fillColor={iconColor} isCustomIconButton={true}/>
+	<IconWrapper icon={icon} fillColor={color} class="custom-icon-button-wrapper"/>
 </IconButton>
 
 <script lang='ts'>
@@ -27,17 +27,10 @@ const cssFixedStyles = {
 
 //====== REACTIVITY ======//
 
-$: iconColor = setColor(color)
 $: cssFixedStyles['button-size'] = setButtonSize(size)
 $: cssDynamicStyles = setInlineStyles(cssFixedStyles)
 
 //====== FUNCTIONS ======//
-
-function setColor(inputColor: string | 'primary' | 'secondary') {
-	if (inputColor === 'primary') return 'var(--mdc-theme-primary)'
-	if (inputColor === 'secondary') return 'var(--mdc-theme-secondary)'
-	return inputColor
-}
 
 function setButtonSize(inputSize: 'small' | 'medium' | 'large') {
 	if (inputSize === 'small') return '42px'
@@ -47,6 +40,10 @@ function setButtonSize(inputSize: 'small' | 'medium' | 'large') {
 </script>
 
 <style>
+	:global(svg.custom-icon-button-wrapper) {
+		padding: .25rem;
+	}
+
 	:global(.mdc-icon-button.smui-icon-button--size-button, .mdc-icon-button.smui-icon-button--size-button svg){
 		width: var(--button-size)!important;
 		height: var(--button-size)!important;
