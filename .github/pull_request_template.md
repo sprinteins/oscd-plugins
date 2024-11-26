@@ -22,3 +22,7 @@ You may remove tasks that do not make sense in this PR.
 - [ ] Documentation updated (check [Documentation guidelines](../doc/guidelines/doc_guidelines.md) for further reading )
 - [ ] All comments in the PR are resolved / answered
 #
+### 🔦 Useful commits
+
+You can add specific commits which are worth taking a look into
+
