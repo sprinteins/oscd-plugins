@@ -31,7 +31,7 @@
     let detailsCollapsed = true;
 </script>
 
-<div class="ied">
+<div>
     <IED label={IEDSelection.label} isSelected={true} isSelectable={false} />
 </div>
 {#if details != null}
@@ -63,7 +63,7 @@
     </button>
 {/if}
 
-<div>
+<div class="accordions">
     {#each serviceTypes as serviceType}
         {@const service = serviceType[1]}
         {@const type = service[0].serviceType}
@@ -91,8 +91,7 @@
 </div>
 
 <style lang="scss">
-    .ied {
-    }
+    
     .accordions {
         display: flex;
         flex-direction: column;
