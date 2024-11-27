@@ -1,10 +1,10 @@
-import type { MessageType } from '../types'
 import type {
 	BayNode,
 	IEDConnection,
 	IEDNode,
 	RootNode
 } from '../../../components/diagram'
+import type { MessageType } from "../types"
 
 export type ConnectedIEDs = {
 	publishedTo: ConnectedIED[]
@@ -13,7 +13,7 @@ export type ConnectedIEDs = {
 
 export type ConnectedIED = {
 	node: IEDNode
-	serviceType: MessageType | undefined
+	serviceType: MessageType
 	serviceTypeLabel: string | undefined
 }
 
