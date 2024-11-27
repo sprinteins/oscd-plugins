@@ -1,12 +1,5 @@
 export type PluginType = 'editor' | 'menu' | 'validator'
 
-export type PluginCustomComponentsProps = {
-	doc: XMLDocument
-	docName: string
-	editCount: number
-	locale: string
-}
-
 export type PluginConstructor = CustomElementConstructor
 
 export type EditorPluginInstance = HTMLElement & {

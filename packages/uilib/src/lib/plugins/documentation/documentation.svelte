@@ -1,35 +1,20 @@
 <script lang="ts">
-import Print from './views/print.svelte'
-import { Theme } from '../../theme'
-// STORES
-import pluginStore from './stores/plugin'
-import iedStore from './stores/ied'
+	import { onMount } from "svelte"
+	import DocumentationPrintView from "./documentation-print-view/documentation-print-view.svelte"
+	import DocumentationWebView from "./documentation-web-view/documentation-web-view.svelte"
+	import { disableOpenSCDComponentsForPrintView } from "."
+	import { Theme } from "../../theme"
 
-export let xmlDocument: XMLDocument
-export let editCount: number
+	export let root: Element
 
-//==== REACTIVITY ====//
-
-$: triggerUpdate({
-	updateTrigger: editCount,
-	newXmlDocument: xmlDocument
-})
-//====== FUNCTIONS =====//
-
-async function triggerUpdate({
-	updateTrigger, // is not used but should be passed to the function to trigger reactivity
-	newXmlDocument
-}: {
-	updateTrigger: number
-	newXmlDocument: XMLDocument | undefined
-}) {
-	pluginStore.init(newXmlDocument)
-	iedStore.init(newXmlDocument)
-}
+	onMount(() => {
+		disableOpenSCDComponentsForPrintView()
+	})
 </script>
 
 <Theme>
 	<documentation>
-		<Print />
+		<DocumentationWebView />
+		<DocumentationPrintView bind:scdData={root} />
 	</documentation>
 </Theme>

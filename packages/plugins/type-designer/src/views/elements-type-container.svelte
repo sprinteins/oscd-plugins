@@ -12,12 +12,12 @@ import ElementType from '@/components/element-type.svelte'
 import { elementsTypesStore } from '@/stores/elements-types.store'
 import { dataTypeTemplatesStore } from '@/stores/data-type-templates.store'
 // TYPES
-import type { Utils } from '@oscd-plugins/core'
+import type { Entries } from '@oscd-plugins/core'
 
 //====== INITIALIZATION ======//
 const { columns } = elementsTypesStore
 
-$: columnsEntries = Object.entries($columns) as Utils.Entries<typeof $columns>
+$: columnsEntries = Object.entries($columns) as Entries<typeof $columns>
 </script>
 
 <div class="columns-container" id="type-designer-columns">

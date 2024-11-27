@@ -1,35 +1,34 @@
 <script lang="ts">
-import PublisherSubscriberAccordion from '../../../../components/accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte'
-import type { IEDNode, RootNode } from '../../../../components/diagram'
-import { IED } from '../../../../components/ied'
-import { getConnectedIEDsByLabel } from '../../_func-layout-calculation/get-connected-ieds'
-import { getIEDDetails } from '../../_func-layout-calculation/get-ied-details'
-import {
-	ConnectionTypeDirection,
-	groupRelationsByServiceType,
-	type ServiceTypeGroup
-} from '.'
-import { filterState } from '../../_store-view-filter'
-// TYPES
-import type { MessageType } from '../../types'
+    import type { MessageType } from "@oscd-plugins/core"
+    import PublisherSubscriberAccordion from "../../../../components/accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte"
+    import type { IEDNode, RootNode } from "../../../../components/diagram"
+    import { IED } from "../../../../components/ied"
+    import { getConnectedIEDsByLabel } from "../../_func-layout-calculation/get-connected-ieds"
+    import { getIEDDetails } from "../../_func-layout-calculation/get-ied-details"
+    import {
+    	ConnectionTypeDirection,
+    	groupRelationsByServiceType,
+    	type ServiceTypeGroup,
+    } from "."
+    import { filterState } from "../../_store-view-filter"
 
-export let rootNode: RootNode
-export let IEDSelection: IEDNode
+    export let rootNode: RootNode
+    export let IEDSelection: IEDNode
 
-let relationsByServiceType: ServiceTypeGroup = new Map()
-$: relations = getConnectedIEDsByLabel(rootNode, IEDSelection.label)
-$: relationsByServiceType = groupRelationsByServiceType(relations)
-$: serviceTypes = Array.from(relationsByServiceType.entries())
-$: details = getIEDDetails(rootNode, IEDSelection.label)
+    let relationsByServiceType: ServiceTypeGroup = new Map()
+    $: relations = getConnectedIEDsByLabel(rootNode, IEDSelection.label)
+    $: relationsByServiceType = groupRelationsByServiceType(relations)
+    $: serviceTypes = Array.from(relationsByServiceType.entries())
+    $: details = getIEDDetails(rootNode, IEDSelection.label)
 
-const serviceTypeColor: { [key in MessageType | 'Unknown']: string } = {
-	GOOSE: '--color-message-goose',
-	MMS: '--color-message-mms',
-	SampledValues: '--color-message-sampledvalues',
-	Unknown: '--color-message-unknown'
-}
+    const serviceTypeColor: { [key in MessageType | "Unknown"]: string } = {
+    	GOOSE:         "--color-message-goose",
+    	MMS:           "--color-message-mms",
+    	SampledValues: "--color-message-sampledvalues",
+    	Unknown:       "--color-message-unknown",
+    }
 
-let detailsCollapsed = true
+    let detailsCollapsed = true;
 </script>
 
 <div>

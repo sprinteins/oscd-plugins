@@ -1,13 +1,12 @@
 <script lang="ts">
-import { isSelected, setTargetMessageType } from '.'
-import Icons from '../../../../components/icons/icons.svelte'
-// CONSTANTS
-import { MESSAGE_TYPE } from '@oscd-plugins/core'
+    import { MessageType } from "@oscd-plugins/core"
+    import { isSelected, setTargetMessageType } from "."
+    import Icons from "../../../../components/icons/icons.svelte"
 
-export let filterDisabled: boolean
-export let selectedMessageTypes: string[]
+    export let filterDisabled: boolean
+    export let selectedMessageTypes: string[]
 
-let checkboxIsClicked = true
+    let checkboxIsClicked = true
 </script>
 
 <div class="message-type">
@@ -16,12 +15,12 @@ let checkboxIsClicked = true
             type="checkbox"
             on:change={setTargetMessageType}
             checked={isSelected(
-                MESSAGE_TYPE.MMS,
+                MessageType.MMS,
                 selectedMessageTypes,
                 checkboxIsClicked
             )}
             disabled={filterDisabled}
-            name={MESSAGE_TYPE.MMS}
+            name={MessageType.MMS}
             data-testid="exampleFilterToBeChecked"
             class="mms-checkbox"
         />
@@ -37,12 +36,12 @@ let checkboxIsClicked = true
             type="checkbox"
             on:change={setTargetMessageType}
             checked={isSelected(
-                MESSAGE_TYPE.GOOSE,
+                MessageType.GOOSE,
                 selectedMessageTypes,
                 checkboxIsClicked
             )}
             disabled={filterDisabled}
-            name={MESSAGE_TYPE.GOOSE}
+            name={MessageType.GOOSE}
             class="goose-checkbox"
         />
         <div class="message-label">
@@ -57,12 +56,12 @@ let checkboxIsClicked = true
             type="checkbox"
             on:change={setTargetMessageType}
             checked={isSelected(
-                MESSAGE_TYPE.SampledValues,
+                MessageType.SampledValues,
                 selectedMessageTypes,
                 checkboxIsClicked
             )}
             disabled={filterDisabled}
-            name={MESSAGE_TYPE.SampledValues}
+            name={MessageType.SampledValues}
             class="sampledvalues-checkbox"
         />
         <div class="message-label">
@@ -77,12 +76,12 @@ let checkboxIsClicked = true
             type="checkbox"
             on:change={setTargetMessageType}
             checked={isSelected(
-                MESSAGE_TYPE.Unknown,
+                MessageType.Unknown,
                 selectedMessageTypes,
                 checkboxIsClicked
             )}
             disabled={filterDisabled}
-            name={MESSAGE_TYPE.Unknown}
+            name={MessageType.Unknown}
             class="undefined-checkbox"
         />
         <div class="message-label">

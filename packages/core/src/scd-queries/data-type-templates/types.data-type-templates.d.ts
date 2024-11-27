@@ -1,5 +1,5 @@
 // CONSTANTS
-import type { SCD_ELEMENTS } from '@/constants/element.constant'
+import type { SCD_ELEMENTS } from '../constants/element.constant'
 // TYPES
 import type {
 	SCDBaseElement,

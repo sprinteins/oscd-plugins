@@ -1,13 +1,12 @@
 <script lang="ts">
-import * as pckg from '../package.json'
-import { DocumentationPlugin } from '@oscd-plugins/uilib/src/lib/plugins/documentation'
+  import * as pckg from "../package.json";
+  import Documentation from "@oscd-plugins/uilib/src/lib/plugins/documentation/documentation.svelte";
 
-export let doc: XMLDocument
-export let editCount: number
+  export let doc: XMLDocument;
 </script>
 
 <main>
-  <DocumentationPlugin xmlDocument={doc} { editCount }/>
+  <Documentation root={doc?.documentElement} />
 
   <input type="hidden" name="package-name" value={pckg.name} />
   <input type="hidden" name="package-version" value={pckg.version} />

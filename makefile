@@ -37,7 +37,7 @@ uilib-tests: _install
 plugins: communication-explorer # shortcut
 
 _install:
-	pnpm i --frozen-lockfile && pnpm build:dependencies
+	pnpm install
 
 start-scd:
 	bash ./_scripts/run-openscd.sh

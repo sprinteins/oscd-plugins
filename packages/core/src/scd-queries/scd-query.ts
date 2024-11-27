@@ -11,12 +11,7 @@ import type {
 	CommonOptions,
 	BayElement,
 	IEDElement,
-	LDeviceElement,
-	LNodeElement,
-	ClientLNElement,
-	GSEControlElement,
-	ReportControlElement,
-	LNodeElementStandardAttributes
+	LDeviceElement
 } from './types.scd-queries'
 
 export class SCDQueries {
@@ -42,9 +37,14 @@ export class SCDQueries {
 	}
 
 	public static SelectorLNode = 'LNode'
-	public static AttributeListLNode: Array<
-		keyof LNodeElementStandardAttributes
-	> = ['name']
+	public static AttributeListLNode: AttributeList<LNodeElement>[] = [
+		'iedName',
+		'ldInst',
+		'lnClass',
+		'lnInst',
+		'lnType',
+		'prefix'
+	]
 	public searchLNodes(options?: CommonOptions): LNodeElement[] {
 		const selector = 'LNode'
 		return this.searchElement<LNodeElement>(
@@ -88,7 +88,7 @@ export class SCDQueries {
 		const root = this.determineRoot()
 		const selector = `SCL > Communication > SubNetwork > ConnectedAP[iedName='${name}']`
 
-		return new Set(Array.from(root.querySelectorAll(selector)))
+		return new Set(root.querySelectorAll(selector))
 	}
 
 	public getSubnetworksByIEDName(name: string): Set<Element> {
@@ -625,6 +625,15 @@ export type DOElement = SCDElement & {
 	type: string
 }
 
+export type LNodeElement = SCDElement & {
+	iedName: string
+	ldInst: string
+	lnClass: string
+	lnInst: string
+	lnType: string
+	prefix: string
+}
+
 export type LNodeTypeElement = SCDElement & {
 	id: string
 	lnClass: string
@@ -643,12 +652,27 @@ export type GSEElement = SCDElement & {
 	cbName: string
 }
 
+export type GSEControlElement = SCDElement & {
+	name: string
+	datSet: string
+}
+
 export type DataSetElement = SCDElement & {
 	name: string
 }
 
 export type SubNetworkElement = SCDElement & {
 	name: string
+}
+
+export type ReportControlElement = SCDElement & {
+	rptID: string
+	name: string
+	datSet: string
+}
+
+export type ClientLNElement = SCDElement & {
+	iedName: string
 }
 
 export type InputElement = SCDElement

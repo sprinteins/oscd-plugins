@@ -1,12 +1,12 @@
-import { setSelectedMessageTypes } from '../../_store-view-filter'
-// TYPES
-import type { MessageType } from '../../types'
+import type { MessageType } from "@oscd-plugins/core"
+import { setSelectedMessageTypes } from "../../_store-view-filter"
 
 export function isSelected(
 	messageType: MessageType,
 	selectedMessages: string[] = [],
-	checkboxIsSelected?: boolean
-) {
+	checkboxIsSelected?: boolean,	
+) 
+{
 	const doesInclude = selectedMessages.includes(messageType)
 	if (checkboxIsSelected === undefined) {
 		return doesInclude

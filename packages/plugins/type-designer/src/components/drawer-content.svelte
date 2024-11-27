@@ -15,7 +15,7 @@ import { dataTypeTemplatesStore } from '@/stores/data-type-templates.store'
 import type {
 	DataTypeTemplates,
 	SubstationElement,
-	Utils,
+	StrictExclude,
 	LNodeElement
 } from '@oscd-plugins/core'
 
@@ -32,7 +32,7 @@ let localAttributes: Partial<
 	Record<(typeof standardAttributes)[number], string>
 >
 let currentParentTypeElements: {
-	type: Utils.StrictExclude<DataTypeTemplates.TypeElement, SubstationElement>
+	type: StrictExclude<DataTypeTemplates.TypeElement, SubstationElement>
 	isAlreadyTypeRefToThisParent: boolean
 }[]
 

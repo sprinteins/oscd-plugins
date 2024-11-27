@@ -4,7 +4,7 @@
 import availableIcons from './icons-draw'
 // TYPES
 import type { AvailableIcon } from './types.icon'
-import type { Utils } from '@oscd-plugins/core'
+import type { ValueOf } from '@oscd-plugins/core'
 
 //====== INITIALIZATION ======//
 
@@ -23,7 +23,7 @@ $: fillColor = setFillColor(fillColor)
 
 function getIcon(
 	icon: keyof typeof availableIcons
-): Utils.ValueOf<typeof availableIcons> {
+): ValueOf<typeof availableIcons> {
 	return availableIcons[icon]
 }
 

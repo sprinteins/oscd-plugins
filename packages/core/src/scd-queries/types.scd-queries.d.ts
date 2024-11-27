@@ -2,7 +2,7 @@
 import type {
 	SCD_ELEMENTS,
 	BASE_STANDARD_ATTRIBUTES
-} from '@/constants/element.constant'
+} from '../constants/element.constant'
 
 //====== SCD QUERIES
 
@@ -62,29 +62,3 @@ export type LNodeElementStandardAttributes = {
 	[key in (typeof SCD_ELEMENTS)['lNode']['element']['standardAttributes'][number]]: string
 }
 export type LNodeElement = SCDBaseElement & LNodeElementStandardAttributes
-
-export type ReportControlStandardAttributes = {
-	[key in (typeof SCD_ELEMENTS)['reportControl']['element']['standardAttributes'][number]]: string
-}
-export type ReportControlElement = SCDBaseElement &
-	ReportControlStandardAttributes
-
-export type ClientLNStandardAttributes = {
-	[key in (typeof SCD_ELEMENTS)['clientLN']['element']['standardAttributes'][number]]: string
-}
-export type ClientLNElement = SCDBaseElement & ClientLNStandardAttributes
-
-export type InputsStandardAttributes = {
-	[key in (typeof SCD_ELEMENTS)['inputs']['element']['standardAttributes'][number]]: string
-}
-export type InputsElement = SCDBaseElement & InputsStandardAttributes
-
-export type ExtRefStandardAttributes = {
-	[key in (typeof SCD_ELEMENTS)['extRef']['element']['standardAttributes'][number]]: string
-}
-export type ExtRefElement = SCDBaseElement & ExtRefStandardAttributes
-
-export type GSEControlStandardAttributes = {
-	[key in (typeof SCD_ELEMENTS)['gseControl']['element']['standardAttributes'][number]]: string
-}
-export type GSEControlElement = SCDBaseElement & GSEControlStandardAttributes

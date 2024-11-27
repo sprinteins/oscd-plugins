@@ -5,18 +5,12 @@ import {
 	isDelete,
 	isReplace,
 	isUpdate
-} from '../../scd-events/api'
+} from '../../scd-events-v1'
 // UTILS
 import { serializeXmlDocument } from '../../scd-xml'
 // TYPES
 import type { EditorPluginInstance } from '../types.scd-plugin'
-import type {
-	Create,
-	Delete,
-	Move,
-	Replace,
-	Update
-} from '../../scd-events/api'
+import type { Create, Delete, Move, Replace, Update } from '../../scd-events-v1'
 
 //====== PRIVATE FUNCTIONS ======//
 
@@ -44,7 +38,7 @@ function onReplace(action: Replace) {
 }
 
 function onUpdate(action: Update) {
-	for (const attribute of Array.from(action.element.attributes)) {
+	for (const attribute of action.element.attributes) {
 		action.element.removeAttributeNode(attribute)
 	}
 	for (const [key, value] of Object.entries(action.newAttributes)) {

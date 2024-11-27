@@ -1,6 +1,6 @@
-import { SCDQueries } from '@/scd-queries/scd-queries'
+import { SCDQueries } from '../scd-queries'
 // CONSTANTS
-import { SCD_ELEMENTS } from '@/constants'
+import { SCD_ELEMENTS } from '../../constants'
 // TYPES
 import type {
 	CommonOptions,
@@ -11,7 +11,7 @@ import type {
 	IEDElement,
 	LDeviceElement,
 	LNodeElement
-} from '@/scd-queries'
+} from '../types.scd-queries'
 import type { DataTypeTemplates } from './types.data-type-templates'
 
 export class DataTypeTemplatesQueries extends SCDQueries {
