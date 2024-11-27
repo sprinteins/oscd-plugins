@@ -5,6 +5,7 @@
     } from "../_store-view-filter/selected-filter-store"
     import {
     	selectIEDNode,
+        selectBay,
     	clearSelection,
     	setNameFilter,
     } from "../_store-view-filter/selected-filter-store-functions"
@@ -23,6 +24,9 @@
 
     $: IEDSelectionIDs = $filterState?.selectedIEDs.map((ied) => ied.id)
     $: IEDSelections = $filterState?.selectedIEDs
+    
+    $: BaySelections = $filterState?.selectedBays
+
     $: ConnectionSelection = $filterState.selectedConnection
     $: selectedMessageTypes = $filterState.selectedMessageTypes
     $: isIedFiltersDisabled =
@@ -33,6 +37,7 @@
     )
 
     let selectedNode: IEDNode | BayNode | undefined
+    let selectedBay: string | undefined
 
     function handleConnectionDirectionDisabled(
     	filter: SelectedFilter,
@@ -40,14 +45,14 @@
     ): boolean {        
     	if (iedFilterDisabled) return true
 
-        searchQuery = ""
+        searchIEDQuery = ""
     	const selectedIEDs = filter?.selectedIEDs
     	const selectedCon = filter?.selectedConnection?.id
 
         return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
     }
 
-    function setSelectedNode(e: Event) {
+    function setSelectedIEDNode(e: Event) {
     	const target = e.target as HTMLSelectElement
     	selectedNode = rootNode.children.find(
     		(node: IEDNode | BayNode) => node.id === target.value
@@ -64,24 +69,72 @@
     	}
     }
 
+    function setSelectedBay(e: Event) {
+    	const target = e.target as HTMLSelectElement
+        
+        console.log("target");
+        console.log(target);
+        console.log("target.value");
+        console.log(target.value);
+        console.log("bayOptions");
+        console.log(bayOptions);
+
+        selectedBay = bayOptions?.find(bay => bay === target.value);
+
+        console.log("selectedBay");
+        console.log(selectedBay);
+
+        if (selectedBay) {
+    		selectBay(selectedBay)
+    	}
+    }
+
     function handleNameFilterChange(e: Event) {
     	const target = e.target as HTMLInputElement
     	setNameFilter(target.value)
     }
 
-    let searchQuery = "";
-    $: filteredNodes = rootNode.children.filter((node) =>
-        node.label.toLowerCase().includes(searchQuery.toLowerCase()),
+    /**
+     * Filter IEDs
+     */
+
+    let searchIEDQuery = "";
+
+    $: filteredIEDs = rootNode.children.filter((node) =>
+        node.label.toLowerCase().includes(searchIEDQuery.toLowerCase()),
     );
 
     function handleIEDSearch(e: Event) {
         IEDSelectionIDs = [""]; 
         const target = e.target as HTMLInputElement;
-        searchQuery = target.value;
+        searchIEDQuery = target.value;
     }
 
+    /**
+     * Filter Bays
+     */
+
+    let searchBayQuery = "";
+
+    $: filteredBays = bayOptions
+    ? bayOptions.filter((bay) =>
+          bay.toLowerCase().includes(searchBayQuery.toLowerCase()) )
+    : [];
+
+    function handleBaySearch(e: Event) {
+        const target = e.target as HTMLInputElement;
+        searchBayQuery = target.value;
+    }
+
+    /**
+     * Others
+     */
+
     function clearAll() {
-        searchQuery = "";
+        searchIEDQuery = "";
+        searchBayQuery = "";
+        selectedBay = undefined;
+
         clearSelection();
     }
 
@@ -96,6 +149,8 @@
             </a>
           </div>
 
+        <!--------------------------------- Bay --------------------------------->
+
         <div class="ied-nodes">
             <img src={ConnectionSelector} alt="connection selector" />
             <label>
@@ -103,24 +158,26 @@
                 <input
                     type="text"
                     placeholder="Filter Bay"
-                    bind:value={searchQuery}
-                    on:input={handleIEDSearch}
+                    bind:value={searchBayQuery}
+                    on:input={handleBaySearch}
                 />
                 <select
-                    value={IEDSelectionIDs[0] ?? ""}
-                    on:change={setSelectedNode}
+                    value={""}
+                    on:change={setSelectedBay}
                 >
                     <option value="" disabled>
-                        {#if searchQuery === ""}
-                            Select an Bay
+                        {#if searchBayQuery === ""}
+                            Select a Bay
+                        {:else if filteredBays.length > 0}
+                            {filteredBays.length} Bay(s) found
                         {:else}
-                            {filteredNodes.length} Bay(s) found
+                            No Bays found
                         {/if}
                     </option>
-                    {#if bayOptions !== undefined && bayOptions.length > 0}
-                        {#each bayOptions as bay}
-                        <option value={bay}>{bay}</option>
-                    {/each}
+                    {#if filteredBays.length > 0}
+                        {#each filteredBays as bay}
+                            <option value={bay}>{bay}</option>
+                        {/each}
                     {/if}
                 </select>
             </label>
@@ -128,6 +185,8 @@
 
         <hr class="seperation-line" />
 
+        <!--------------------------------- IED --------------------------------->
+    
         <div class="ied-nodes">
             <img src={ConnectionSelector} alt="connection selector" />
             <label>
@@ -135,22 +194,22 @@
                 <input
                     type="text"
                     placeholder="Filter IED"
-                    bind:value={searchQuery}
+                    bind:value={searchIEDQuery}
                     on:input={handleIEDSearch}
                 />
                 <select
                     value={IEDSelectionIDs[0] ?? ""}
-                    on:change={setSelectedNode}
+                    on:change={setSelectedIEDNode}
                 >
                     <option value="" disabled>
-                        {#if searchQuery === ""}
+                        {#if searchIEDQuery === ""}
                             Select an IED
                         {:else}
-                            {filteredNodes.length} IED(s) found
+                            {filteredIEDs.length} IED(s) found
                         {/if}
                     </option>
-                    {#if filteredNodes.length > 0}
-                        {#each filteredNodes as node}
+                    {#if filteredIEDs.length > 0}
+                        {#each filteredIEDs as node}
                             <option
                                 selected={(IEDSelectionIDs[0] ?? "") ===
                                     node.id}
