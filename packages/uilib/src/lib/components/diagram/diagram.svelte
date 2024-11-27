@@ -10,6 +10,7 @@
 	import { createEventDispatcher } from "svelte"
 	import type { ElkExtendedEdge } from "elkjs"
 	import {
+    isBaySelected,
 		isConnectionSelected,
 		isIEDSelected,
 	} from "../../plugins/communication-explorer/_store-view-filter"
@@ -34,12 +35,23 @@ import BayContainer from "./bay-container/bay-container.svelte"
 		if (draggingEnabled) {
 			return
 		}
+
+		const element = e.target;
+		if (!(element instanceof HTMLElement)) {
+			return;
+		}
+
 		const isAdditiveSelect = e.metaKey || e.ctrlKey || e.shiftKey
+
+		if (element.classList.contains("bayLabel")) {
+			dispatchBaySelect(element.textContent)
+			return;
+		}
+
 		if (isAdditiveSelect) {
 			dispatchIEDAdditiveSelect(node)
 			return
 		}
-
 		dispatchIEDSelect(node)
 	}
 	function dispatchIEDSelect(node: IEDElkNode) {
@@ -47,6 +59,9 @@ import BayContainer from "./bay-container/bay-container.svelte"
 	}
 	function dispatchIEDAdditiveSelect(node: IEDElkNode) {
 		dispatch("iedadditiveselect", node)
+	}
+	function dispatchBaySelect(bay: string) {
+		dispatch("bayselect", bay)
 	}
 
 	function dispatchConnectionClick(connection: ElkExtendedEdge) {
@@ -218,7 +233,8 @@ import BayContainer from "./bay-container/bay-container.svelte"
 						>
 							<IEDElement
 								{node}
-								isSelected={isIEDSelected(node)}
+								isIEDSelected={isIEDSelected(node)}
+								isBaySelected={node.bayLabels.size > 0 ? isBaySelected(node.bayLabels.values().next().value) : false}
 								testid={`ied-${node.label}`}
 							/>
 						</foreignObject>

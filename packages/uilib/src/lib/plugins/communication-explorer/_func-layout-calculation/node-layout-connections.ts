@@ -1,6 +1,6 @@
 import { MessageType, type IEDCommInfo } from "@oscd-plugins/core"
 import type { IEDConnectionWithCustomValues } from "../../../components/diagram"
-import { hasActiveIEDSelection, isIEDSelected, type SelectedFilter } from "../_store-view-filter"
+import { hasActiveIEDSelection, hasActiveBaySelection, isIEDSelected, type SelectedFilter } from "../_store-view-filter"
 
 export const messageTypeMap:{[key: string]: MessageType} = {
 	"GOOSE":   MessageType.GOOSE,
@@ -76,17 +76,21 @@ function convertPublishedMessagesToConnections(
 		const isUnknownMessageType: boolean = messageType === undefined
 		const isRelevantMessageType: boolean = (selectedMessageTypes.includes(messageType) || isUnknownMessageType)
 		
-		let isRelevant = true
-		if (hasSelection) {
-			isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
-			if (isRelevant && !isRelevantMessageType) {
-				isRelevant = false
-			}
-		} else {
-			if (!isRelevantMessageType) {
-				isRelevant = false
+		//TODO: this whole function seems like a lot of duplicate code?
+		let isRelevant = !hasActiveBaySelection() 
+		if (isRelevant) {
+			if (hasSelection) {
+				isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
+				if (isRelevant && !isRelevantMessageType) {
+					isRelevant = false
+				}
+			} else {
+				if (!isRelevantMessageType) {
+					isRelevant = false
+				}
 			}
 		}
+
 		// console.log({level: "dev", msg: "IEDConnectionWithCustomValues", message, checkRelevance: checkRelevance(selectionFilter, targetIED, sourceIED), isRelevant, isRelevantMessageType, selectedMessageTypes, messageType, selectionFilter, targetIED, sourceIED})
 
 		// 
@@ -143,15 +147,17 @@ function convertReceivedMessagesToConnections(
 		const isUnknownMessageType: boolean = (messageType === undefined && selectedMessageTypes.includes("Unknown"))
 		const isRelevantMessageType: boolean = (selectedMessageTypes.includes(messageType) || isUnknownMessageType)
 
-		let isRelevant = true
-		if (hasSelection) {
-			isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
-			if (isRelevant && !isRelevantMessageType) {
-				isRelevant = false
-			}
-		} else {
-			if (!isRelevantMessageType) {
-				isRelevant = false
+		let isRelevant = !hasActiveBaySelection()
+		if (isRelevant) {
+			if (hasSelection) {
+				isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
+				if (isRelevant && !isRelevantMessageType) {
+					isRelevant = false
+				}
+			} else {
+				if (!isRelevantMessageType) {
+					isRelevant = false
+				}
 			}
 		}
 
