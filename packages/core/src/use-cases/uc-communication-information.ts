@@ -19,6 +19,7 @@ export class UCCommunicationInformation {
 			return {
 				iedName: ied.name,
 				iedDetails: this.parseDetails(ied.element),
+				bayLabels: this.scdQueries.getBaysByIEDName(ied.name),
 				// published: this.findPublishedMessages(ied),
 				published: this.findPublishedMessages_V2(ied),
 				received: this.findReceivedMessages(ied, ieds)
@@ -279,6 +280,7 @@ export type IEDDetails = {
 export type IEDCommInfo = {
 	iedName: string
 	iedDetails: IEDDetails
+	bayLabels: Set<string>
 	published: PublishedMessage_V2[]
 	received: ReceivedMessage[]
 }
