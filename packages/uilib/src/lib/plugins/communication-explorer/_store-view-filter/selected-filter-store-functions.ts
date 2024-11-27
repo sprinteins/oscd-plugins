@@ -8,7 +8,19 @@ export function selectIEDNode(node: IEDElkNode) {
 		return {
 			...selectedFilter,
 			selectedIEDs:       [node],
+			selectedBays:		[],
 			selectedConnection: undefined,
+		}
+	})
+}
+
+export function selectBay(bay: string) {
+	filterState.update(selectedFilter => {
+		return {
+			...selectedFilter,
+			selectedBays:		[bay],
+			selectedIEDs:		[],
+			selectedConnection: undefined
 		}
 	})
 }
@@ -41,6 +53,7 @@ export function clearIEDSelection() {
 		return {
 			...selectedFilter,
 			selectedIEDs:       [],
+			selectedBays:		[],
 			selectedConnection: undefined,
 		}
 	})
@@ -52,6 +65,7 @@ export function selectConnection(connection: IEDConnectionWithCustomValues) {
 			...selectedFilter,
 			selectedConnection: connection,
 			selectedIEDs:       [],
+			selectedBays: 		[]
 		}
 	})
 }
@@ -66,6 +80,7 @@ export function clearSelection() {
 			outgoingMessageFilterActive: false,
 			selectedMessageTypes:        [...allMessageTypes],
 			selectedIEDs:                [],
+			selectedBays:				 [],
 			selectedConnection:          undefined,
 		}
 	})
@@ -154,6 +169,11 @@ export function isIEDSelected(node: {label: string}): boolean {
 	return isSelected
 }
 
+export function isBaySelected(bay: string): boolean {
+	const selectedBays = get(filterState).selectedBays;
+	return selectedBays.some(b => b === bay)
+}
+
 function _isIEDSelected(node: {label: string}, selectedIEDs: IEDElkNode[]): boolean {
 	return selectedIEDs.some(iedNode => iedNode.label === node.label)
 }
@@ -161,6 +181,10 @@ function _isIEDSelected(node: {label: string}, selectedIEDs: IEDElkNode[]): bool
 export function hasActiveIEDSelection(): boolean {
 	const selectedIEDs = get(filterState).selectedIEDs
 	return selectedIEDs.length > 0
+}
+
+export function hasActiveBaySelection(): boolean {
+	return get(filterState).selectedBays.length > 0
 }
 
 export function isConnectionSelected(connection: IEDConnectionWithCustomValues): boolean {
