@@ -51,8 +51,7 @@ function getPrintableContent(type: keyof typeof PRINTABLE_INIT_CONSTANT) {
                 padding: 0;
                 width: 210mm;
                 height: 297mm;
-                display: flex;
-                justify-content: center;
+								${$printableElements[type].selector === 'svg' ? 'display: flex;' : ''}               
             }
             svg {
                 max-width: 100%;

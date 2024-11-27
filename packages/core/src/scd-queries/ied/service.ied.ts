@@ -25,7 +25,6 @@ export class IEDService {
 			return {
 				iedName: ied.name,
 				iedDetails: this.parseDetails(ied.element),
-				// published: this.findPublishedMessages(ied),
 				published: this.findPublishedMessages(ied),
 				received: this.findReceivedMessages(ied, ieds)
 			}
