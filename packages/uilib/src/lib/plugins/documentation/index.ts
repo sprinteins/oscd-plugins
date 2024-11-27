@@ -1,2 +1,1 @@
-export { default as NetworkExplorer } from "./documentation.svelte"
-export * from "./create-css-print-rule"
+export { default as DocumentationPlugin } from './documentation.svelte'
