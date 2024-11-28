@@ -61,14 +61,6 @@ export class IEDQueries extends SCDQueries {
 	public static AttributeListExtRef: Array<keyof ExtRefStandardAttributes> = [
 		'iedName',
 		'serviceType',
-		// "ldInst",
-		// "lnClass",
-		// "lnInst",
-		// "prefix",
-		// "doName",
-		// "daName",
-		// "srcLDInst",
-		// "srcPrefix",
 		'srcCBName'
 	]
 	public searchExtRef(options?: CommonOptions): ExtRefElement[] {

@@ -37,10 +37,10 @@ export namespace IED {
 	}
 
 	export type ReceivedMessage = {
-		iedName: string // to show
-		serviceType: string // to filter
-		srcCBName: string // to show
-		datSet: string | null // to show
+		iedName: string
+		serviceType: string
+		srcCBName: string
+		datSet: string | null
 		data: ExtRefElementWithDatSet[]
 	}
 

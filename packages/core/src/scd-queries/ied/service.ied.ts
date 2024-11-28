@@ -3,10 +3,7 @@ import { IEDQueries } from './queries.ied'
 import { MESSAGE_TYPE } from '@/constants/message.contant'
 // TYPES
 import type {
-	CommonOptions,
-	PrivateElement,
-	IEDElement,
-	ReportControlElement
+	IEDElement
 } from '../types.scd-queries'
 import type { IED } from './types.ied'
 
@@ -25,7 +22,6 @@ export class IEDService {
 			return {
 				iedName: ied.name,
 				iedDetails: this.parseDetails(ied.element),
-				// published: this.findPublishedMessages(ied),
 				published: this.findPublishedMessages(ied),
 				received: this.findReceivedMessages(ied, ieds)
 			}
