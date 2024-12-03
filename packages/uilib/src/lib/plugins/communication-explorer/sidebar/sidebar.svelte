@@ -49,6 +49,9 @@
     	const selectedIEDs = filter?.selectedIEDs
     	const selectedCon = filter?.selectedConnection?.id
 
+        searchBayQuery = ""
+        selectedBay = BaySelections[0] || undefined
+
         return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
     }
 
@@ -58,35 +61,18 @@
     		(node: IEDNode | BayNode) => node.id === target.value
     	)
 
-        console.log("iedInfosWithBays")
-        console.log(iedInfosWithBays)
-
-        console.log("bayOptions")
-        console.log(bayOptions)
-
         if (selectedNode) {
     		selectIEDNode(selectedNode)
     	}
     }
 
     function setSelectedBay(e: Event) {
-    	const target = e.target as HTMLSelectElement
-        
-        console.log("target");
-        console.log(target);
-        console.log("target.value");
-        console.log(target.value);
-        console.log("bayOptions");
-        console.log(bayOptions);
-
-        selectedBay = bayOptions?.find(bay => bay === target.value);
-
-        console.log("selectedBay");
-        console.log(selectedBay);
-
+        const target = e.target as HTMLSelectElement;
+        selectedBay = target.value;
+        searchBayQuery = ""
         if (selectedBay) {
-    		selectBay(selectedBay)
-    	}
+            selectBay(selectedBay);
+        }
     }
 
     function handleNameFilterChange(e: Event) {
@@ -122,6 +108,7 @@
     : [];
 
     function handleBaySearch(e: Event) {
+        BaySelections = [""]
         const target = e.target as HTMLInputElement;
         searchBayQuery = target.value;
     }
@@ -133,9 +120,23 @@
     function clearAll() {
         searchIEDQuery = "";
         searchBayQuery = "";
-        selectedBay = undefined;
 
         clearSelection();
+    }
+
+    /**
+     * for debugging
+     */
+    function log() {
+        console.log("function:printAll");
+        // biome-ignore lint/style/useTemplate: <explanation>
+        console.log("selectedBay:" + selectedBay)
+        // biome-ignore lint/style/useTemplate: <explanation>
+        console.log("IEDSelectionIDs:" + IEDSelectionIDs)
+        // biome-ignore lint/style/useTemplate: <explanation>
+        console.log("filteredBays:"+filteredBays)
+        // biome-ignore lint/style/useTemplate: <explanation>
+        console.log("BaySelections:"+BaySelections)
     }
 
 </script>
@@ -148,13 +149,21 @@
                 Clear all
             </a>
           </div>
+        
+        <!-- 
+        <div class="actions">
+            <a class="clear-all" on:keypress on:click={log}>
+                Log
+            </a>
+        </div>
+        -->
 
         <!--------------------------------- Bay --------------------------------->
 
         <div class="ied-nodes">
             <img src={ConnectionSelector} alt="connection selector" />
             <label>
-                <span>Select an Bay</span>
+                <span>Select a Bay</span>
                 <input
                     type="text"
                     placeholder="Filter Bay"
@@ -162,8 +171,8 @@
                     on:input={handleBaySearch}
                 />
                 <select
-                    value={""}
-                    on:change={setSelectedBay}
+                    value={selectedBay ?? ""} 
+                    on:change={setSelectedBay} 
                 >
                     <option value="" disabled>
                         {#if searchBayQuery === ""}
@@ -177,6 +186,7 @@
                     {#if filteredBays.length > 0}
                         {#each filteredBays as bay}
                             <option value={bay}>{bay}</option>
+                            <!-- <option value={bay} selected={bay === selectedBay}>{bay}</option> -->
                         {/each}
                     {/if}
                 </select>
