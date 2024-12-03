@@ -5,6 +5,7 @@
     import {push} from 'svelte-spa-router'
     import Textfield from "@smui/textfield"
     import {clickOutside} from "@/actions"
+    import {docTemplatesStore} from '@/stores'
 
     let title = "";
     let description = "";
@@ -22,6 +23,7 @@
             isMetadataVisible = false
     }   
     $: templateTitle = title.length === 0 ? NO_TITLE_TEXT : title;
+
 
 
 </script>

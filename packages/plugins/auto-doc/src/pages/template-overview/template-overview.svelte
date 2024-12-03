@@ -3,47 +3,41 @@
     import type {Template} from "./types.template-overview";
     import Button, {Label} from "@smui/button"
     import {IconWrapper} from "@oscd-plugins/ui"
+    import {docTemplatesStore} from '@/stores'
+    import {push} from 'svelte-spa-router'
+
+    let newTemplateId: string | null = ""
+
+    function createNewTemplate(){
+        newTemplateId = docTemplatesStore.addDocumentTemplate("Template1", "Test")
+        push(`/create/${newTemplateId}`);
+    }
 
 
-    let allTemplates : Template[] = [
-        {
-            name: 'Template1',
-            description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda, asperiores accusamus quis sapiente sequi facilis?',
-            lastEdited: new Date("2024-10-15T08:38:00"),
-        },
-        {
-            name: 'Template256',
-            description: 'A simple description',
-            lastEdited: new Date("2024-10-10T13:24:00")
-        },
-        {
-            name: 'CYK_Template',
-            description: 'I have an invalid Date ',
-            lastEdited: new Date("foo"),
-        },
-        {
-            name: 'I surely have quite a long title name. sit amet consectetur adipisicing elit. Soluta placeat itaque minus',
-            description: "Lorem ipsum dolor sit amet consectetur.",
-            lastEdited: new Date("2024-10-20T10:55:32"),
-        },
-        {
-            name: 'AUOBHBT Template',
-            description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta placeat itaque minus praesentium sequi deleniti voluptatibus dicta!',
-            lastEdited: new Date(),
-        },
-    ];    
+        const allTemplates : Element[] = docTemplatesStore.getAllDocumentTemplates()
+        $: templatesConvertedToTableRow = allTemplates.map(mapElementToTableRow)
+
+
+    function mapElementToTableRow(template: Element):Template{
+        
+        return {
+            name: template.getAttribute('title') ?? "No title",
+            description: template.getAttribute('description') ?? "No description",
+            lastEdited: new Date()
+        }
+    }   
 </script>
 
 <main class="template-overview">
     <header class="template-controls">
-        <Button variant="raised" class="btn-pill btn-pill-primary" href="#/create" > 
+        <Button variant="raised" class="btn-pill btn-pill-primary" on:click={createNewTemplate} > 
             <IconWrapper icon="add"/>
            <Label>Add template</Label> 
         </Button>
         <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button>
     </header>
 
-    <Table allTemplates={allTemplates}/>
+    <Table allTemplates={templatesConvertedToTableRow}/>
 
 </main>
 

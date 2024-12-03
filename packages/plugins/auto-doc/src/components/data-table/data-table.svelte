@@ -47,7 +47,10 @@
 
 
 
-<div class="table-container">      
+<div class="table-container">   
+    {#if allTemplates.length === 0}
+        <div>there are no templates available</div>
+    {:else}
     <DataTable>
         <Head>
             <Row>
@@ -97,6 +100,7 @@
             {/each}
         </Body>
     </DataTable>
+{/if}  
 </div>
 
 <style lang="scss">

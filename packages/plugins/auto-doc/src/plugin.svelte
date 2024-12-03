@@ -6,7 +6,13 @@
 
 <MaterialTheme pluginType={pluginType}>
 	<auto-doc class="auto-doc">
-		<Router {routes} />
+		{#if xmlDocument}
+			<Router {routes} />
+		{:else}
+			<div>
+				<p>No XML loaded</p>
+			</div>
+		{/if}
 	</auto-doc>
 </MaterialTheme>
 
@@ -20,7 +26,7 @@ import {routes} from '@/routes/routes'
 // PACKAGE
 import jsonPackage from '../package.json'
 // STORES
-import { pluginStore, dataTypeTemplatesStore } from './stores'
+import { pluginStore, docTemplatesStore } from './stores'
 // TYPES
 import type { PluginType } from '@oscd-plugins/core'
 
@@ -29,15 +35,29 @@ import type { PluginType } from '@oscd-plugins/core'
 export let xmlDocument: XMLDocument | undefined = undefined
 export let pluginHostElement: Element
 export let pluginType: PluginType = 'editor'
+export let editCount: number
+
 
 //==== REACTIVITY ====//
 
-$: pluginStore.init({
+
+$: triggerUpdate({
+	updateTrigger: editCount,
 	newXMLDocument: xmlDocument,
 	newPluginHostElement: pluginHostElement
 })
 
-$: dataTypeTemplatesStore.init(xmlDocument?.documentElement)
+async function triggerUpdate(
+	{updateTrigger, newXMLDocument, newPluginHostElement} : 
+	{updateTrigger: number, newXMLDocument: XMLDocument|undefined, newPluginHostElement: Element}
+){
+	await pluginStore.init({
+		newXMLDocument,
+		newPluginHostElement
+	})
+	docTemplatesStore.init()
+}
+
 
 </script>
 
