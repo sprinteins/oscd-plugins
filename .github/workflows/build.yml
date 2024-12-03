@@ -17,7 +17,7 @@ jobs:
         uses: pnpm/action-setup@v2
         id: pnpm-install
         with:
-          version: 7
+          version: 9
           run_install: false
 
       - name: Get pnpm store directory
@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install Dependencies
-        run: pnpm install
+        run: pnpm run install:build:dependencies && pnpm --filter @oscd-plugins/${{ inputs.plugin-name }} i --frozen-lockfile
 
       - name: Run Tests
         run: (cd ./packages/uilib ; npm run test)
@@ -68,6 +68,8 @@ jobs:
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/package.json $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
+          find $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/ -name "*.css" -exec cp -f {} $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/ \;
+          find $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/ -name "*.css" -exec cp -f {} $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}/ \;
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .

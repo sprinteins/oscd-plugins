@@ -1,10 +1,11 @@
 <script lang="ts">
-    import type { IEDConnectionWithCustomValues } from "../../../../components/diagram"
+import type { IEDConnectionWithCustomValues } from '../../../../components/diagram'
 
-    export let ConnectionSelection: IEDConnectionWithCustomValues
+export let ConnectionSelection: IEDConnectionWithCustomValues
 </script>
 
 <table>
+	<tbody>
     <tr>
         <td>ID:</td>
         <td>{ConnectionSelection.id}</td>
@@ -25,4 +26,5 @@
         <td>ServiceType Label:</td>
         <td>{ConnectionSelection.messageTypeLabel}</td>
     </tr>
+	</tbody>
 </table>

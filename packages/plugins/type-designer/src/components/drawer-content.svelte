@@ -3,27 +3,61 @@
 import { SCD_ELEMENTS } from '@oscd-plugins/core'
 // SMUI COMPONENTS
 import Textfield from '@smui/textfield'
+import Switch from '@smui/switch'
+import FormField from '@smui/form-field'
 import Button from '@smui/button'
 // STORES
-import { pluginStore } from '@/stores/plugin.store'
 import { drawerStore } from '@oscd-plugins/ui'
+import { pluginStore } from '@/stores/plugin.store'
+import { elementsTypesStore } from '@/stores/elements-types.store'
+import { dataTypeTemplatesStore } from '@/stores/data-type-templates.store'
 // TYPES
-import type { DataTypeTemplates } from '@oscd-plugins/core'
+import type {
+	DataTypeTemplates,
+	SubstationElement,
+	Utils,
+	LNodeElement
+} from '@oscd-plugins/core'
 
 //====== INITIALIZATION ====//
 
 // props
-export let typeElement: DataTypeTemplates.TypeElement
-export let currentColumn: keyof typeof SCD_ELEMENTS
+export let currentTypeElement: Exclude<
+	DataTypeTemplates.TypeElement,
+	LNodeElement
+>
+export let currentColumnKey: keyof typeof SCD_ELEMENTS
 
 let localAttributes: Partial<
 	Record<(typeof standardAttributes)[number], string>
 >
+let currentParentTypeElements: {
+	type: Utils.StrictExclude<DataTypeTemplates.TypeElement, SubstationElement>
+	isAlreadyTypeRefToThisParent: boolean
+}[]
+
+// stores
+const { columns } = elementsTypesStore
+
+// local
 
 //====== REACTIVITY ====//
-$: ({ element, ...attributes } = typeElement)
-$: standardAttributes = SCD_ELEMENTS[currentColumn]?.element.standardAttributes
+
+$: ({ element, typeRefs, ...attributes } = currentTypeElement)
+$: standardAttributes =
+	SCD_ELEMENTS[currentColumnKey]?.element.standardAttributes
 $: setNewLocalAttributes(attributes)
+// typeRefs
+$: currentTypeCanBeRefTo = SCD_ELEMENTS[currentColumnKey]?.typeRef.to
+$: if (currentTypeCanBeRefTo)
+	currentParentTypeElements = $columns[currentTypeCanBeRefTo].types.map(
+		(currentParentType) => ({
+			type: currentParentType,
+			isAlreadyTypeRefToThisParent: currentParentType.typeRefs.some(
+				(typeRef) => typeRef.type === currentTypeElement.id
+			)
+		})
+	)
 
 //====== FUNCTIONS =====//
 
@@ -33,7 +67,6 @@ function updateTypeElement() {
 		oldAttributes: attributes,
 		newAttributes: localAttributes
 	})
-	drawerStore.handleCloseDrawer()
 }
 
 /**
@@ -47,30 +80,63 @@ function setNewLocalAttributes(
 ) {
 	localAttributes = newAttributes
 }
+
+function handleTypeRef({
+	type,
+	isAlreadyTypeRefToThisParent
+}: {
+	type: DataTypeTemplates.TypeElement
+	isAlreadyTypeRefToThisParent: boolean
+}) {
+	if (isAlreadyTypeRefToThisParent)
+		dataTypeTemplatesStore.deleteTypeRef({
+			currentType: type,
+			currentTypeElementId: currentTypeElement.id
+		})
+	else
+		dataTypeTemplatesStore.addNewTypeRef({
+			columnKey: currentColumnKey,
+			typeElement: type.element,
+			refElement: element
+		})
+}
 </script>
 
 <div id="type-designer-drawer">
-	<div class="form">
-		{#each standardAttributes as attribute}
-			{#if attribute !== 'id' && localAttributes[attribute] !== undefined}
-				<Textfield class="textField" variant="outlined" bind:value={localAttributes[attribute]} label={attribute} />
+	<div class="drawer-content">
+		<div class="form">
+			{#each standardAttributes as attribute}
+				{#if attribute !== 'id' && localAttributes[attribute] !== undefined}
+					<Textfield class="textField" variant="outlined" bind:value={localAttributes[attribute]} label={attribute} on:blur={updateTypeElement} />
+				{/if}
+			{/each}
+			
+			{#if currentParentTypeElements?.length && currentColumnKey !== 'substation'}
+				<p>Add current type as ref to these types :</p>
+				<div class="type-ref">
+					{#each currentParentTypeElements as parentTypeElement}
+						<FormField>
+							<Switch bind:checked={parentTypeElement.isAlreadyTypeRefToThisParent} icons={false} on:click={() => handleTypeRef(parentTypeElement)} />
+							<span>{parentTypeElement.type.name}</span>
+						</FormField>
+					{/each}
+				</div>
 			{/if}
-		{/each}
-	</div>
-	<div class="action">
-		<Button on:click={drawerStore.handleCloseDrawer}>Cancel</Button>
-		<Button on:click={updateTypeElement}>Save</Button>
-		
+		</div>
+		<Button class="button" on:click={drawerStore.handleCloseDrawer}>Cancel</Button>
 	</div>
 </div>
 
 <style>
 #type-designer-drawer {
 	display: flex;
+	height: 100%;
+}
+
+.drawer-content {
+	display: flex;
 	flex-direction: column;
 	padding: 1rem;
-	position: relative;
-	height: 100%;
 }
 
 .form {
@@ -78,17 +144,19 @@ function setNewLocalAttributes(
 	overflow-y: auto;	
 }
 
+.type-ref {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 2rem;
+}
+
 #type-designer-drawer :global(.textField) {
 	width: 100%;
 	margin: 1rem 0;
 }
 
-.action {
-	display: flex;
-	justify-content: space-between;
-	padding: .5rem 0;
-	background-color: var(--mdc-theme-surface);
-	width: 100%;
-	margin-bottom: 1rem;
+#type-designer-drawer :global(.button) {
+	color: var(--mdc-theme-secondary);
+	margin-top: 0.75rem;
 }
 </style>

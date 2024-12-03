@@ -1,35 +1,69 @@
 <script lang="ts">
-    import type { MessageType } from "@oscd-plugins/core"
-    import PublisherSubscriberAccordion from "../../../../components/accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte"
-    import type { IEDNode, RootNode } from "../../../../components/diagram"
-    import { IED } from "../../../../components/ied"
-    import { getConnectedIEDsByLabel } from "../../_func-layout-calculation/get-connected-ieds"
-    import {
-    	ConnectionTypeDirection,
-    	groupRelationsByServiceType,
-    	type ServiceTypeGroup,
-    } from "."
-    import { filterState } from "../../_store-view-filter"
+import PublisherSubscriberAccordion from '../../../../components/accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte'
+import type { IEDNode, RootNode } from '../../../../components/diagram'
+import { IED } from '../../../../components/ied'
+import { getConnectedIEDsByLabel } from '../../_func-layout-calculation/get-connected-ieds'
+import { getIEDDetails } from '../../_func-layout-calculation/get-ied-details'
+import {
+	ConnectionTypeDirection,
+	groupRelationsByServiceType,
+	type ServiceTypeGroup
+} from '.'
+import { filterState } from '../../_store-view-filter'
+// TYPES
+import type { MessageType } from '../../types'
 
-    export let rootNode: RootNode
-    export let IEDSelection: IEDNode
+export let rootNode: RootNode
+export let IEDSelection: IEDNode
 
-    let relationsByServiceType: ServiceTypeGroup = new Map()
-    $: relations = getConnectedIEDsByLabel(rootNode, IEDSelection.label)
-    $: relationsByServiceType = groupRelationsByServiceType(relations)
-    $: serviceTypes = Array.from(relationsByServiceType.entries())
+let relationsByServiceType: ServiceTypeGroup = new Map()
+$: relations = getConnectedIEDsByLabel(rootNode, IEDSelection.label)
+$: relationsByServiceType = groupRelationsByServiceType(relations)
+$: serviceTypes = Array.from(relationsByServiceType.entries())
+$: details = getIEDDetails(rootNode, IEDSelection.label)
 
-    const serviceTypeColor: { [key in MessageType | "Unknown"]: string } = {
-    	GOOSE:         "--color-message-goose",
-    	MMS:           "--color-message-mms",
-    	SampledValues: "--color-message-sampledvalues",
-    	Unknown:       "--color-message-unknown",
-    }
+const serviceTypeColor: { [key in MessageType | 'Unknown']: string } = {
+	GOOSE: '--color-message-goose',
+	MMS: '--color-message-mms',
+	SampledValues: '--color-message-sampledvalues',
+	Unknown: '--color-message-unknown'
+}
+
+let detailsCollapsed = true
 </script>
 
-<div class="ied">
+<div>
     <IED label={IEDSelection.label} isSelected={true} isSelectable={false} />
 </div>
+{#if details != null}
+    <div class={detailsCollapsed ? 'details_collapsed' : ''}>
+    {#if details.logicalNodes.length > 0}
+        <h3>Logical Nodes</h3>
+        {#each details.logicalNodes as node}
+            <span class="details">{node}</span>
+            <br>
+        {/each}
+    {/if}
+    {#if details.dataObjects.length > 0}
+        <h3>Data Objects</h3>
+        {#each details.dataObjects as node}
+            <span class="details">{node}</span>
+            <br>
+        {/each}
+    {/if}
+    {#if details.dataAttributes.length > 0}
+        <h3>Data Attributes</h3>
+        {#each details.dataAttributes as node}
+            <span class="details">{node}</span>
+            <br>
+        {/each}
+    {/if}
+    </div>
+    <button class="expand_button" on:click={() => detailsCollapsed = !detailsCollapsed}>
+        {detailsCollapsed ? 'Show more' : 'Show less'}
+    </button>
+{/if}
+
 <div class="accordions">
     {#each serviceTypes as serviceType}
         {@const service = serviceType[1]}
@@ -58,13 +92,32 @@
 </div>
 
 <style lang="scss">
-    .ied {
-        margin-bottom: 1rem;
-    }
+    
     .accordions {
         display: flex;
         flex-direction: column;
         gap: 1rem;
         margin-left: 1rem;
+    }
+    .details_collapsed {
+        overflow: hidden;
+        max-height: 100px;
+    }
+    .expand_button {
+        background: none;
+        border: none;
+        color: #305CDE;
+        cursor: pointer;
+        margin-bottom: 1rem;
+        padding-left: 0;
+    }
+    .expand_button:focus {
+        outline: none;
+    }
+    .expand_button:hover {
+        text-decoration: underline;
+    }
+    .details:last-of-type {
+        margin-bottom: 0;
     }
 </style>

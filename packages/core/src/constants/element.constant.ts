@@ -15,7 +15,9 @@ export const SCD_ELEMENTS = {
 			insertBefore: 'voltageLevelTypes'
 		},
 		typeRef: {
-			tag: undefined
+			tag: undefined,
+			to: undefined,
+			from: 'voltageLevel'
 		}
 	},
 	voltageLevel: {
@@ -36,7 +38,9 @@ export const SCD_ELEMENTS = {
 			insertBefore: 'bayTypes'
 		},
 		typeRef: {
-			tag: 'td:VoltageLevelTypeRef'
+			tag: 'td:VoltageLevelTypeRef',
+			to: 'substation',
+			from: 'bay'
 		}
 	},
 	bay: {
@@ -53,7 +57,9 @@ export const SCD_ELEMENTS = {
 			insertBefore: 'iedTypes'
 		},
 		typeRef: {
-			tag: 'td:BayTypeRef'
+			tag: 'td:BayTypeRef',
+			to: 'voltageLevel',
+			from: 'ied'
 		}
 	},
 	ied: {
@@ -78,7 +84,9 @@ export const SCD_ELEMENTS = {
 			insertBefore: 'lDeviceTypes'
 		},
 		typeRef: {
-			tag: 'td:IEDTypeRef'
+			tag: 'td:IEDTypeRef',
+			to: 'bay',
+			from: 'lDevice'
 		}
 	},
 	lDevice: {
@@ -95,7 +103,9 @@ export const SCD_ELEMENTS = {
 			insertBefore: undefined
 		},
 		typeRef: {
-			tag: 'td:LDeviceTypeRef'
+			tag: 'td:LDeviceTypeRef',
+			to: 'ied',
+			from: 'lNode'
 		}
 	},
 	lNode: {
@@ -112,7 +122,94 @@ export const SCD_ELEMENTS = {
 			insertBefore: undefined
 		},
 		typeRef: {
-			tag: 'td:LNodeTypeRef'
+			tag: 'td:LNodeTypeRef',
+			to: 'lDevice',
+			from: undefined
 		}
+	},
+	reportControl: {
+		element: {
+			tag: 'ReportControl',
+			name: 'Report Control',
+			standardAttributes: [
+				...BASE_STANDARD_ATTRIBUTES,
+				'confRev',
+				'datSet',
+				'intgPd',
+				'buffered',
+				'bufTime',
+				'indexed',
+				'rptID'
+			],
+			customAttributes: []
+		},
+		type: undefined,
+		typeRef: undefined
+	},
+	clientLN: {
+		element: {
+			tag: 'ClientLN',
+			name: 'Client LNode',
+			standardAttributes: [
+				...BASE_STANDARD_ATTRIBUTES,
+				'iedName',
+				'ldInst',
+				'prefix',
+				'lnClass',
+				'lnInst'
+			],
+			customAttributes: []
+		},
+		type: undefined,
+		typeRef: undefined
+	},
+	inputs: {
+		element: {
+			tag: 'Inputs',
+			name: 'Inputs',
+			standardAttributes: [],
+			customAttributes: []
+		},
+		type: undefined,
+		typeRef: undefined
+	},
+	extRef: {
+		element: {
+			tag: 'ExtRef',
+			name: 'External Reference',
+			standardAttributes: [
+				'iedName',
+				'serviceType',
+				'ldInst',
+				'lnClass',
+				'lnInst',
+				'prefix',
+				'doName',
+				'daName',
+				'srcLDInst',
+				'srcPrefix',
+				'srcCBName',
+				'intAddr'
+			],
+			customAttributes: []
+		},
+		type: undefined,
+		typeRef: undefined
+	},
+	gseControl: {
+		element: {
+			tag: 'GSEControl',
+			name: 'GSE Control',
+			standaAttributes: [
+				'appID',
+				'datSet',
+				'confRev',
+				'fixedOffs',
+				'type'
+			],
+			customAttributes: []
+		},
+		type: undefined,
+		typeRef: undefined
 	}
 } as const

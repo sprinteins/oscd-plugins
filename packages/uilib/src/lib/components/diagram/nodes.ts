@@ -1,5 +1,6 @@
+// TYPES
 import type { ElkExtendedEdge, ElkNode } from "elkjs"
-import type { IEDCommInfo, MessageType } from "@oscd-plugins/core"
+import type { IED, Utils, MESSAGE_TYPE } from "@oscd-plugins/core"
 
 export function newIEDNode(iedNode: IEDElkNode): IEDElkNode {
 	const newIEDNode: IEDElkNode = {
@@ -12,16 +13,16 @@ export function newIEDNode(iedNode: IEDElkNode): IEDElkNode {
 export type IEDConnection = ElkExtendedEdge & {
 	isRelevant?: boolean
 	relevantIEDNames?: string[]
-	messageType?: MessageType
+	messageType?: Utils.ValueOf<typeof MESSAGE_TYPE>
 	messageTypeLabel?: string
 }
 
 export type IEDConnectionWithCustomValues = IEDConnection & {
-	sourceIED: IEDCommInfo
-	targetIED: IEDCommInfo
+	sourceIED: IED.CommunicationInfo
+	targetIED: IED.CommunicationInfo
 }
 
-export type RootNode<ChildNodes=IEDElkNode> = Omit<ElkNode, "children" | "edges"> & {
+export type RootNode<ChildNodes = IEDElkNode> = Omit<ElkNode, "children" | "edges"> & {
 	children: Array<ChildNodes>,
 	edges?: IEDConnectionWithCustomValues[]
 }
@@ -36,6 +37,7 @@ export type IEDElkNode = Omit<ElkNode, "edges" | "children"> & {
 	isBayNode?: boolean
 	edges?: IEDConnection[]
 	children: IEDElkNode[]
+	details: IED.Details
 }
 
 export type BayElkNode = Omit<IEDElkNode, "isBayNode"> & {

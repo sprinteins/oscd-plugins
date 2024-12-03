@@ -1,5 +1,5 @@
 // CONSTANTS
-import type { SCD_ELEMENTS } from '../constants/element.constant'
+import type { SCD_ELEMENTS } from '@/constants/element.constant'
 // TYPES
 import type {
 	SCDBaseElement,
@@ -28,20 +28,38 @@ export namespace DataTypeTemplates {
 
 	export type RootElement = SCDBaseElement
 
-	export type TypeElements = {
-		substationTypes: SubstationElement[]
-		voltageLevelTypes: VoltageLevelElement[]
-		bayTypes: BayElement[]
-		iedTypes: IEDElement[]
-		lDeviceTypes: LDeviceElement[]
-		lNodeTypes: lNodeElement[]
+	export type TypeRefElement = {
+		element: Element
+		type: string
 	}
 
+	export type SubstationTypeElement = SubstationElement & {
+		typeRefs: TypeRefElement[]
+	}
+	export type VoltageLevelTypeElement = VoltageLevelElement & {
+		typeRefs: TypeRefElement[]
+	}
+	export type BayTypeElement = BayElement & { typeRefs: TypeRefElement[] }
+	export type IEDTypeElement = IEDElement & { typeRefs: TypeRefElement[] }
+	export type LDeviceTypeElement = LDeviceElement & {
+		typeRefs: TypeRefElement[]
+	}
+	export type LNodeTypeElement = LNodeElement & { typeRefs: undefined }
+
 	export type TypeElement =
-		| SubstationElement
-		| VoltageLevelElement
-		| BayElement
-		| IEDElement
-		| LDeviceElement
-		| LNodeElement
+		| SubstationTypeElement
+		| VoltageLevelTypeElement
+		| BayTypeElement
+		| IEDTypeElement
+		| LDeviceTypeElement
+		| LNodeTypeElement
+
+	export type TypeElements = {
+		substationTypes: SubstationTypeElement[]
+		voltageLevelTypes: VoltageLevelTypeElement[]
+		bayTypes: BayTypeElement[]
+		iedTypes: IEDTypeElement[]
+		lDeviceTypes: LDeviceTypeElement[]
+		lNodeTypes: LNodeTypeElement[]
+	}
 }

@@ -5,12 +5,18 @@ import {
 	isDelete,
 	isReplace,
 	isUpdate
-} from '../../scd-events-v1'
+} from '../../scd-events/api'
 // UTILS
 import { serializeXmlDocument } from '../../scd-xml'
 // TYPES
 import type { EditorPluginInstance } from '../types.scd-plugin'
-import type { Create, Delete, Move, Replace, Update } from '../../scd-events-v1'
+import type {
+	Create,
+	Delete,
+	Move,
+	Replace,
+	Update
+} from '../../scd-events/api'
 
 //====== PRIVATE FUNCTIONS ======//
 
@@ -18,30 +24,32 @@ function onMove(action: Move) {
 	console.warn('TODO onCreate', action)
 }
 
-function onCreate(pluginElement: EditorPluginInstance, action: Create) {
+function onCreate(action: Create) {
 	action.new.parent.insertBefore(
 		action.new.element,
 		action.new.reference ?? null
 	)
-	pluginElement.editCount++
 }
 
 function onDelete(action: Delete) {
-	console.warn('TODO onDelete', action)
+	if (!action.old.reference)
+		action.old.reference = action.old.element.nextSibling
+	if (action.old.element.parentNode !== action.old.parent) return
+
+	action.old.parent.removeChild(action.old.element)
 }
 
 function onReplace(action: Replace) {
 	console.warn('TODO onReplace', action)
 }
 
-function onUpdate(pluginElement: EditorPluginInstance, action: Update) {
-	for (const attribute of action.element.attributes) {
+function onUpdate(action: Update) {
+	for (const attribute of Array.from(action.element.attributes)) {
 		action.element.removeAttributeNode(attribute)
 	}
 	for (const [key, value] of Object.entries(action.newAttributes)) {
 		action.element.setAttribute(key, value ?? '')
 	}
-	pluginElement.editCount++
 }
 
 //====== PUBLIC FUNCTIONS ======//
@@ -74,9 +82,12 @@ export function handleSimpleAction(
 	event: CustomEvent
 ) {
 	const { action } = event.detail
-	if (isMove(action)) return onMove(action as Move)
-	if (isCreate(action)) return onCreate(pluginElement, action as Create)
-	if (isDelete(action)) return onDelete(action as Delete)
-	if (isReplace(action)) return onReplace(action as Replace)
-	if (isUpdate(action)) return onUpdate(pluginElement, action as Update)
+
+	if (isMove(action)) onMove(action as Move)
+	if (isCreate(action)) onCreate(action as Create)
+	if (isDelete(action)) onDelete(action as Delete)
+	if (isReplace(action)) onReplace(action as Replace)
+	if (isUpdate(action)) onUpdate(action as Update)
+
+	pluginElement.editCount++
 }
