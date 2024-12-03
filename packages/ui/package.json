@@ -34,6 +34,7 @@
 	"dependencies": {
 		"@oscd-plugins/core": "workspace:^",
 		"@smui/button": "^7.0.0",
+		"@smui/drawer": "^7.0.0",
 		"@smui/icon-button": "7.0.0",
 		"@smui/top-app-bar": "^7.0.0",
 		"normalize.css": "^8.0.1",

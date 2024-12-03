@@ -68,6 +68,8 @@ jobs:
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/package.json $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
+          cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/*.css $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
+          cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/*.css $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}/
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
