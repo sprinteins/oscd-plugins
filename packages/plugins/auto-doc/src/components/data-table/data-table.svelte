@@ -64,7 +64,7 @@
             </Row>
         </Head>
         <Body>
-            {#each allTemplates as template (template.name)}
+            {#each allTemplates as template}
                 <Row>
                     <Cell checkbox>
                         <Checkbox
@@ -112,6 +112,9 @@
     }
     .table-container{
 
+        & :global(.mdc-data-table){
+            width: 50%;
+        }
         & :global(.mdc-data-table__table-container),
         :global(.mdc-data-table__header-cell)
         {

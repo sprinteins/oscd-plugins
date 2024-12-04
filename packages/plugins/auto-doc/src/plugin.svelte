@@ -9,8 +9,8 @@
 		{#if xmlDocument}
 			<Router {routes} />
 		{:else}
-			<div>
-				<p>No XML loaded</p>
+			<div class="file-missing">
+				<p>No XML file loaded</p>
 			</div>
 		{/if}
 	</auto-doc>
@@ -60,5 +60,16 @@ async function triggerUpdate(
 
 
 </script>
+
+
+
+<style lang="scss">
+	.file-missing{
+		padding-top: 20px;
+		p{
+			text-align: center;
+		}
+	}
+</style>
 
 	

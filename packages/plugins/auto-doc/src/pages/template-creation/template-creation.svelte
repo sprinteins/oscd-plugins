@@ -6,11 +6,30 @@
     import Textfield from "@smui/textfield"
     import {clickOutside} from "@/actions"
     import {docTemplatesStore} from '@/stores'
+	import { onMount } from "svelte"
+
+
+    type Params = {id?: string}
+    export let params:Params = {} //params passed from the router
 
     let title = "";
     let description = "";
     let isMetadataVisible = false
+    let templateId:string|undefined = undefined
     const NO_TITLE_TEXT = "Untitled Document";
+
+    onMount(()=>{
+        templateId = params.id;
+        if(templateId){
+            const template = docTemplatesStore.getDocumentTemplate(templateId);
+            if(template){
+                title = template.getAttribute('title') as string;
+                description = template?.getAttribute('description') as string;
+            }
+        }
+    })
+    
+
 
     function navigateToOverviewPage(){
         push('/')
@@ -21,9 +40,19 @@
     }
     function closeTitleAndDescription(){
             isMetadataVisible = false
+            if(templateId){
+                console.log("updating title and description");
+                updateTitleAndDescription()
+            }else{
+                console.error("Template ID is null. Cannot update title and description.");
+            }
+
     }   
     $: templateTitle = title.length === 0 ? NO_TITLE_TEXT : title;
 
+    function updateTitleAndDescription(){
+       docTemplatesStore.editDocumentTemplateTitleAndDescription(templateId as string, title, description)
+    }
 
 
 </script>
