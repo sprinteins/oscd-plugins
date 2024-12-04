@@ -17,7 +17,7 @@
     let isMetadataVisible = false
     let templateId:string|undefined = undefined
     const NO_TITLE_TEXT = "Untitled Document";
-
+    
     onMount(()=>{
         templateId = params.id;
         if(templateId){
@@ -102,7 +102,9 @@
 
 
     <main class="template-builder-container">
-        <TemplateBuilder/>
+        {#if templateId}
+            <TemplateBuilder id={templateId}/>
+        {/if}
     </main>
 </div>
 

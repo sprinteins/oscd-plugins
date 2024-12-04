@@ -1,11 +1,36 @@
-<script>
+<script lang="ts">
     import Button, {Label} from "@smui/button"
     import {IconWrapper} from "@oscd-plugins/ui"
-    import TextElement from "../elements/text-element/text-element.svelte";
+    import TextElement from "../elements/text-element/text-element.svelte"
+    import ImageElement from "../elements/image-element/image-element.svelte"
     import ElementWrapper from "../element-wrapper/element-wrapper.svelte"
+    import {docTemplatesStore} from '@/stores'
+    import type {SvelteComponent, ComponentType} from 'svelte'
+    import type {BlockElement, ElementType} from '@/components/elements/types.elements'
+
+    // Prop
+    export let id: string
+
 
     let isElementsChoiceVisible = false
+    let blockElements : BlockElement[] = []
+    const template = docTemplatesStore.getDocumentTemplate(id) as Element;
+    const componentMap  = {
+        "text": TextElement,
+        "image": ImageElement
+    }
 
+
+    function addElement(type: ElementType){
+        const elementId = docTemplatesStore.addBlockToDocumentTemplate(template, "", type, blockElements.length)
+        
+        const newBlockElement: BlockElement = {
+            id: elementId,
+            type: type,
+        }
+
+        blockElements = [...blockElements, newBlockElement]
+    }
 
 </script>
 
@@ -16,9 +41,11 @@
     <div class="card">
 
         <div class="elements-list">
-            <ElementWrapper>
-                <TextElement/>
-            </ElementWrapper>
+            {#each blockElements as blockElement (blockElement.id)}
+                <ElementWrapper>
+                    <svelte:component this={componentMap[blockElement.type]}/>
+                </ElementWrapper>
+            {/each}
         </div>
 
         <footer >
@@ -30,8 +57,8 @@
             </Button>
             <div class="elements-container">
                 {#if isElementsChoiceVisible}
-                    <Button variant="outlined">Text</Button>
-                    <Button variant="outlined">Image</Button>
+                    <Button variant="outlined" on:click={()=>{addElement('text')}}>Text</Button>
+                    <Button variant="outlined" on:click={()=>{addElement("image")}}>Image</Button>
                 {/if}
             </div>
         </footer>

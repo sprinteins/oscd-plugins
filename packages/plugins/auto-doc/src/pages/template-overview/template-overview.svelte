@@ -19,11 +19,12 @@
 
 
     function mapElementToTableRow(template: Element):Template{
+        const templateDate:string = template.getAttribute('date') as string;
         
         return {
             name: template.getAttribute('title') ?? "No title",
             description: template.getAttribute('description') ?? "No description",
-            lastEdited: new Date()
+            lastEdited: new Date(templateDate)
         }
     }   
 </script>
