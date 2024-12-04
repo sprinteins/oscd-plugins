@@ -5,16 +5,15 @@
     import ImageElement from "../elements/image-element/image-element.svelte"
     import ElementWrapper from "../element-wrapper/element-wrapper.svelte"
     import {docTemplatesStore} from '@/stores'
-    import type {SvelteComponent, ComponentType} from 'svelte'
     import type {BlockElement, ElementType} from '@/components/elements/types.elements'
 
     // Prop
-    export let id: string
+    export let templateId: string
 
 
     let isElementsChoiceVisible = false
     let blockElements : BlockElement[] = []
-    const template = docTemplatesStore.getDocumentTemplate(id) as Element;
+    const template = docTemplatesStore.getDocumentTemplate(templateId) as Element;
     const componentMap  = {
         "text": TextElement,
         "image": ImageElement
@@ -32,6 +31,12 @@
         blockElements = [...blockElements, newBlockElement]
     }
 
+    function deleteBlockElement(event: CustomEvent<{elementId: string}>){
+        const {elementId} = event.detail
+        docTemplatesStore.deleteBlockFromDocumentTemplate(template, elementId);
+        blockElements = blockElements.filter(blockElement => blockElement.id !== elementId)
+    }
+
 </script>
 
 
@@ -42,7 +47,7 @@
 
         <div class="elements-list">
             {#each blockElements as blockElement (blockElement.id)}
-                <ElementWrapper>
+                <ElementWrapper elementId={blockElement.id} on:elementDelete={deleteBlockElement}>
                     <svelte:component this={componentMap[blockElement.type]}/>
                 </ElementWrapper>
             {/each}

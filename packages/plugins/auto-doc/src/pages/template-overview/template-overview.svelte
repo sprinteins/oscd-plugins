@@ -5,8 +5,14 @@
     import {IconWrapper} from "@oscd-plugins/ui"
     import {docTemplatesStore} from '@/stores'
     import {push} from 'svelte-spa-router'
+    import { onMount } from 'svelte';
 
     let newTemplateId: string | null = ""
+    let allTemplates: Element[] = []
+
+    onMount(() => {
+        allTemplates = docTemplatesStore.getAllDocumentTemplates();
+    });
 
     function createNewTemplate(){
         newTemplateId = docTemplatesStore.addDocumentTemplate("Template1", "Test")
@@ -14,19 +20,26 @@
     }
 
 
-        const allTemplates : Element[] = docTemplatesStore.getAllDocumentTemplates()
-        $: templatesConvertedToTableRow = allTemplates.map(mapElementToTableRow)
+    $: templatesConvertedToTableRow = allTemplates.map(mapElementToTableRow)
 
 
     function mapElementToTableRow(template: Element):Template{
         const templateDate:string = template.getAttribute('date') as string;
         
         return {
+            id: template.getAttribute('id') ?? "No id",
             name: template.getAttribute('title') ?? "No title",
             description: template.getAttribute('description') ?? "No description",
             lastEdited: new Date(templateDate)
         }
     }   
+
+    function deleteTemplate(event: CustomEvent<{templateId: string}>){
+        const {templateId} = event.detail
+        docTemplatesStore.deleteDocumentTemplate(templateId)
+        allTemplates = allTemplates.filter(template => template.getAttribute('id') !== templateId)
+
+    }
 </script>
 
 <main class="template-overview">
@@ -38,7 +51,7 @@
         <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button>
     </header>
 
-    <Table allTemplates={templatesConvertedToTableRow}/>
+    <Table allTemplates={templatesConvertedToTableRow} on:templateDelete={deleteTemplate}/>
 
 </main>
 

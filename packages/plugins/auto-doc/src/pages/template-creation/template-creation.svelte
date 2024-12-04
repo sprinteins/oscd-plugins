@@ -41,7 +41,6 @@
     function closeTitleAndDescription(){
             isMetadataVisible = false
             if(templateId){
-                console.log("updating title and description");
                 updateTitleAndDescription()
             }else{
                 console.error("Template ID is null. Cannot update title and description.");
@@ -103,7 +102,7 @@
 
     <main class="template-builder-container">
         {#if templateId}
-            <TemplateBuilder id={templateId}/>
+            <TemplateBuilder {templateId}/>
         {/if}
     </main>
 </div>

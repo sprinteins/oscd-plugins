@@ -4,11 +4,11 @@
     import {Tooltip, Truncate} from "@/components"
     import type {Template} from "@/pages/template-overview/types.template-overview";
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-
-
+    import {createEventDispatcher} from "svelte"
 
     export let allTemplates : Template[];
 
+    const dispatch = createEventDispatcher()
     let selectedTemplates : Template[] = [];
 
 0
@@ -41,6 +41,10 @@
 
         const DD_MM_YYYY = new Date(date).toLocaleDateString("de-DE", dateOptions); 
         return DD_MM_YYYY;
+    }
+
+    function deleteTemplate(templateId: string){
+        dispatch("templateDelete", {templateId})
     }
 
 </script>
@@ -86,7 +90,7 @@
                             <CustomIconButton icon="edit" color="black"/>
                         </Tooltip>
                         <Tooltip text="Delete">
-                            <CustomIconButton icon="delete" color="black"/>
+                            <CustomIconButton icon="delete" color="black" on:click={()=>{deleteTemplate(template.id)}}/>
                         </Tooltip>
                         <Tooltip text="Duplicate">
                             <CustomIconButton icon="content_copy" color="black"/>
