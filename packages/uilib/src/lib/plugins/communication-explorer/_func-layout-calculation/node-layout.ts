@@ -2,7 +2,7 @@ import ELK, { type ElkNode } from "elkjs/lib/elk.bundled"
 import type { IEDCommInfo } from "@oscd-plugins/core"
 import type { SelectedFilter } from "../_store-view-filter"
 import { generateConnectionLayout } from "."
-import type { IEDNode, RootNode } from "../../../components/diagram"
+import { IEDConnectionWithCustomValues, isBayNode, type IEDNode, type RootNode } from "../../../components/diagram"
 import { generateIEDLayout } from "./node-layout-ieds"
 import type { Config } from "./config"
 import type { Preferences } from "../_store-preferences"
@@ -31,6 +31,7 @@ export async function calculateLayout(
 
 	let edges = generateConnectionLayout(ieds, selectionFilter)
 	let children: IEDNode[] = generateIEDLayout(ieds, edges, config)
+	children = generateBayLayout(children, edges, config)
 
 	if(preferences.isFocusModeOn){
 		children = children.filter(child => child.isRelevant)
@@ -48,7 +49,8 @@ export async function calculateLayout(
 			"org.eclipse.elk.layered.unnecessaryBendpoints":           "true",
 			"org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment": "RIGHTUP",
 			"org.eclipse.elk.direction":                               "LEFT",
-			
+			"org.eclipse.elk.hierarchyHandling": 					   "INCLUDE_CHILDREN",
+
 			// default: 20; a component is when multiple nodes are connected
 			// "org.eclipse.elk.spacing.componentComponent": "20", 
 			
@@ -61,7 +63,56 @@ export async function calculateLayout(
 	}
 
 	// message type information gets lost here
-	const nodes = (await elk.layout(graph)) as RootNode
+	const root = (await elk.layout(graph)) as RootNode
 
-	return nodes
+	//moving all bay node children to the root node.
+	//this allows easier rendering but has to be done AFTER the layout calculation
+	for(const node of root.children) {
+		if (node.isBayNode) {
+			for(const child of node.children) {
+				if (node.x !== undefined && node.y !== undefined) {
+					child.x = node.x + (child.x ?? 0)
+					child.y = node.y + (child.y ?? 0)
+				}
+				root.children.push(child)
+			}
+			node.children = []
+		}
+	}
+
+	return root
+}
+
+function generateBayLayout(ieds: IEDNode[], edges: IEDConnectionWithCustomValues[], config: Config): IEDNode[] {
+	let children: IEDNode = []
+	let bays: IEDNode = []
+	let id = 0
+	for (const ied of ieds) {
+		if (ied.bayLabels.size == 0) {
+			children.push(ied);
+			continue;
+		}
+		let bayLabel = ied.bayLabels.values().next().value;
+		let bayNode: IEDNode = (children.find(b => b.label === bayLabel && b.isBayNode))
+		if (bayNode) {
+			bayNode.children.push(ied);
+			//bayNode.height += config.iedHeight
+			bayNode.isRelevant |= ied.isRelevant
+		}
+		else {
+			bayNode = {
+				id:         	"bay-" + (id++), //placeholder
+				width:      	config.iedWidth,
+				height:     	config.iedHeight,
+				label:      	bayLabel,
+				isRelevant: 	ied.isRelevant,
+				isBayNode:		true,
+				children:   	[ied]
+			}
+			children.push(bayNode)
+			bays.push(bayNode)
+		}
+	}
+
+	return children
 }

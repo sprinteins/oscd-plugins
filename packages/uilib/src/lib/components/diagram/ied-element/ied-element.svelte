@@ -14,6 +14,7 @@
 </script>
 
 {#if node}
+<!--
 	{#if bays.length > 0}
 		<div 
 			class="bayLabel selectable"
@@ -27,7 +28,8 @@
 			{/each}
 		</div>
 	{/if}
-
+-->
+	
 	<div
 		class="ied selectable"
 		class:isIrrelevant={!node.isRelevant}
