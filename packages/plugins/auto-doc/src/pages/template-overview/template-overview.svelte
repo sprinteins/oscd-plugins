@@ -15,7 +15,8 @@
     });
 
     function createNewTemplate(){
-        newTemplateId = docTemplatesStore.addDocumentTemplate("Template1", "Test")
+        newTemplateId = docTemplatesStore.addDocumentTemplate(
+            `Template${templatesConvertedToTableRow.length +1}`, "Test")
         push(`/create/${newTemplateId}`);
     }
 

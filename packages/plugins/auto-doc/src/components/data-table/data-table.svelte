@@ -82,7 +82,7 @@
                     </Cell>
                     <Cell>{formatDate(template.lastEdited)}</Cell>
                     <Cell>
-                        <Truncate text={template.description} maxChars={120} tooltipPosition="top"/>
+                        <Truncate text={template.description} maxChars={100} tooltipPosition="top"/>
                     </Cell>
                     <Cell>
                     <div class="action-btns">
@@ -117,12 +117,31 @@
     .table-container{
 
         & :global(.mdc-data-table){
-            width: 50%;
+            width: 95%;
         }
         & :global(.mdc-data-table__table-container),
         :global(.mdc-data-table__header-cell)
         {
             background-color: rgba(255,255,255);
+        }
+
+        & :global(.mdc-data-table__header-cell){
+
+            &:nth-child(1){
+                width: 1%;
+            }
+            &:nth-child(2){
+                width: 25%;
+            }
+            &:nth-child(3){
+                width: 15%;
+            }
+            &:nth-child(4){
+                width: 40%;
+            }
+            &:last-child{
+                width: 1%;
+            }
         }
 
         & :global(.mdc-data-table__table-container),
