@@ -23,8 +23,8 @@
         if(templateId){
             const template = docTemplatesStore.getDocumentTemplate(templateId);
             if(template){
-                title = template.getAttribute('title') as string;
-                description = template?.getAttribute('description') as string;
+                title = template.getAttribute('title') as string || "";
+                description = template?.getAttribute('description') as string || "";
             }
         }
     })
@@ -32,6 +32,12 @@
 
 
     function navigateToOverviewPage(){
+        if (!title) {
+            const confirmNavigation = confirm("No title has been provided. Do you want to proceed?");
+            if (!confirmNavigation) {
+                return;
+            }
+        }
         push('/')
     }
 

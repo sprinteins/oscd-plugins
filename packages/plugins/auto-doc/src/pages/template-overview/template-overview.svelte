@@ -15,8 +15,7 @@
     });
 
     function createNewTemplate(){
-        newTemplateId = docTemplatesStore.addDocumentTemplate(
-            `Template${templatesConvertedToTableRow.length +1}`, "Test")
+        newTemplateId = docTemplatesStore.addDocumentTemplate();
         push(`/create/${newTemplateId}`);
     }
 
@@ -29,8 +28,8 @@
         
         return {
             id: template.getAttribute('id') ?? "No id",
-            name: template.getAttribute('title') ?? "No title",
-            description: template.getAttribute('description') ?? "No description",
+            name: template.getAttribute('title') ?? "N/A",
+            description: template.getAttribute('description') ?? "N/A",
             lastEdited: new Date(templateDate)
         }
     }   

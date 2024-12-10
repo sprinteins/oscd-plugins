@@ -78,7 +78,7 @@ function getBlockOfDocumentTemplate(docTemplateId: string, blockId: string) {
     return null;
 }
 
-function addDocumentTemplate(title: string, description: string): string | null {
+function addDocumentTemplate(): string | null {
     let generatedId: string | null = null;
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -91,9 +91,7 @@ function addDocumentTemplate(title: string, description: string): string | null 
 
         const newDocDef = createElement(xmlDoc, 'DocumentTemplate', {
             id: id,
-            date: new Date().toISOString(),
-            title: title,
-            description: description
+            date: new Date().toISOString()
         });
         currentPrivateArea.appendChild(newDocDef);
         eventStore.createAndDispatchActionEvent(currentPrivateArea, newDocDef);
@@ -178,8 +176,8 @@ function deleteDocumentTemplate(docTemplateId: string) {
     if (currentPrivateArea) {
         const docTemplate = getDocumentTemplate(docTemplateId);
         if (docTemplate) {
-            eventStore.deleteAndDispatchActionEvent(currentPrivateArea, docTemplate);
             currentPrivateArea.removeChild(docTemplate);
+            eventStore.deleteAndDispatchActionEvent(currentPrivateArea, docTemplate);
         }
     }
 }
