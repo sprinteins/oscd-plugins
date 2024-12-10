@@ -79,14 +79,11 @@ describe('placeholders', () => {
         }
 
         const result = placeholderStore.fillTableWithPlaceholders(input);
-        console.log(result);
         const expected = `
             | IED Manufactorer | Service Name |
             | --- | --- |
             | Anon | XX |
             | Anon2 | XX2 |`.replace(/^\s+/gm, '');
-
-        console.log(expected);
 
         expect(result).toBe(expected);
     });
