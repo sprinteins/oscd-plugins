@@ -106,7 +106,7 @@ function addDocumentTemplate(title: string, description: string): string | null 
 function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle?: string, newDescription?: string) {
     const docTemplate = getDocumentTemplate(docTemplateId);
     if (docTemplate) {
-        const updates: { title?: string; description?: string } = {};
+        const updates: { title?: string; description?: string, id?: string; date?: string } = {};
         if (newTitle) {
             docTemplate.setAttribute('title', newTitle);
             updates.title = newTitle;
@@ -114,6 +114,14 @@ function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle
         if (newDescription) {
             docTemplate.setAttribute('description', newDescription);
             updates.description = newDescription;
+        }
+        const id = docTemplate.getAttribute('id');
+        if (id) {
+            updates.id = id;
+        }
+        const date = docTemplate.getAttribute('date');
+        if (date) {
+            updates.date = date;
         }
         if (Object.keys(updates).length > 0) {
             eventStore.updateAndDispatchActionEvent(docTemplate, updates);

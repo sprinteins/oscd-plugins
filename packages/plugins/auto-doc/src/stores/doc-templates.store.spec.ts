@@ -438,6 +438,35 @@ describe('DocumentTemplateStore', () => {
 		expect(updatedDocDef).not.toBeNull();
 		expect(updatedDocDef?.getAttribute('title')).toBe(updatedTitle);
 	});
+
+	it('should preserve id and date attributes when editing title and description', () => {
+		// Arrange
+		const title = 'Initial Title';
+		const description = 'Initial Description';
+		const generatedId = docTemplatesStore.addDocumentTemplate(title, description);
+		if (!generatedId) {
+		  throw new Error('adding DocumentTemplate failed');
+		}
+		const docDef = docTemplatesStore.getDocumentTemplate(generatedId);
+		if (!docDef) {
+		  throw new Error('DocumentTemplate not found');
+		}
+		const initialDate = docDef.getAttribute('date');
+		const initialId = docDef.getAttribute('id');
+	
+		// Act
+		const newTitle = 'Updated Title';
+		const newDescription = 'Updated Description';
+		docTemplatesStore.editDocumentTemplateTitleAndDescription(generatedId, newTitle, newDescription);
+	
+		// Assert
+		const updatedDocDef = docTemplatesStore.getDocumentTemplate(generatedId);
+		expect(updatedDocDef).not.toBeNull();
+		expect(updatedDocDef?.getAttribute('title')).toBe(newTitle);
+		expect(updatedDocDef?.getAttribute('description')).toBe(newDescription);
+		expect(updatedDocDef?.getAttribute('id')).toBe(initialId);
+		expect(updatedDocDef?.getAttribute('date')).toBe(initialDate);
+	  });
 });
 
 
