@@ -6,7 +6,7 @@ import { pluginStore } from './plugin.store';
 enum SignalType {
     GOOSE = 'GOOSE',
     MMS = 'MMS',
-    SVM = 'SVM',
+    SV = 'SV',
     UNKOWN = 'UNKOWN',
 }
 
@@ -21,9 +21,13 @@ describe('Signallist', () => {
         <DataTypeTemplates>
           <LNodeType id="LNType1">
             <DO name="do1" type="DOType1"/>
+            <DO name="do2" type="DOType2"/>
           </LNodeType>
           <DOType id="DOType1" cdc="CDC1">
-            <DA name="da1" btype="BType1"/>
+            <DA name="da1" bType="BType1"/>
+          </DOType>
+          <DOType id="DOType2" cdc="CDC2">
+            <DA name="da2" bType="BType1"/>
           </DOType>
         </DataTypeTemplates>
         <IED name="IED1">
@@ -33,14 +37,20 @@ describe('Signallist', () => {
                 <GSEControl />
                 <DataSet>
                   <FCDA lnClass="LC1" lnInst="1" doName="do1" daName="da1" fc="FC1" prefix=""/>
+                  <FCDA lnClass="LC1" lnInst="1" doName="do2" daName="da2" fc="FC1" prefix=""/>
                 </DataSet>
                 <DOI>
                   <DAI desc="Description1"/>
                 </DOI>
               </LN0>
               <LN inst="1" lnClass="LC1" prefix="" lnType="LNType1">
-                <DOI name="InsAlm">
+                <DOI name="do1">
                   <DAI name="da1" desc="LS SF6 Verlust">
+                    <Val/>
+                  </DAI>
+                </DOI>
+                <DOI name="do2">
+                  <DAI name="da2" desc="Abgangserder QC3-Befehl blockiert">
                     <Val/>
                   </DAI>
                 </DOI>
@@ -69,7 +79,7 @@ describe('Signallist', () => {
   });
 
   it('should extract message publishers from XML document', () => {
-    const {messagePublishers ,invaliditiesReports} = signallistStore.findPublishingLogicalDevices();
+    const {messagePublishers ,invaliditiesReports} = signallistStore.getPublishingLogicalDevices();
 
     expect(messagePublishers).toEqual([
       {
@@ -88,6 +98,26 @@ describe('Signallist', () => {
           DataObjectName: 'do1',
           DataAttributeName: 'da1',
           CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      },
+      {
+        M_text: 'Abgangserder QC3-Befehl blockiert',
+        signalType: 'GOOSE',
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do2',
+          DataAttributeName: 'da2',
+          CommonDataClass: 'CDC2',
           AttributeType: 'BType1',
           FunctionalConstraint: 'FC1'
         }
@@ -119,7 +149,7 @@ describe('Signallist', () => {
       }
     ];
 
-    const { messageSubscribers, invaliditiesReports } = signallistStore.findSubscribingLogicalDevices(messagePublishers);
+    const { messageSubscribers, invaliditiesReports } = signallistStore.getSubscribingLogicalDevices(messagePublishers);
 
     expect(messageSubscribers).toEqual([
       {
@@ -156,7 +186,7 @@ describe('Signallist', () => {
       newPluginHostElement: document.createElement('SCL')
     });
 
-    const {messagePublishers ,invaliditiesReports} = signallistStore.findPublishingLogicalDevices();
+    const {messagePublishers ,invaliditiesReports} = signallistStore.getPublishingLogicalDevices();
 
     expect(messagePublishers).toEqual([]);
   });
@@ -184,7 +214,7 @@ describe('Signallist', () => {
                 </DOI>
               </LN0>
               <LN inst="1" lnClass="LC1" prefix="" lnType="LNType1">
-                <DOI name="InsAlm">
+                <DOI name="do1">
                   <DAI name="da1" desc="LS SF6 Verlust">
                     <Val/>
                   </DAI>
@@ -201,7 +231,7 @@ describe('Signallist', () => {
       newPluginHostElement: document.createElement('SCL')
     });
 
-    const {messagePublishers ,invaliditiesReports} = signallistStore.findPublishingLogicalDevices();
+    const {messagePublishers ,invaliditiesReports} = signallistStore.getPublishingLogicalDevices();
 
     expect(messagePublishers).toEqual([]);
     expect(invaliditiesReports).toEqual([
@@ -245,7 +275,7 @@ describe('Signallist', () => {
                 </DOI>
               </LN0>
               <LN inst="1" lnClass="LC1" prefix="" lnType="LNType1">
-                <DOI name="InsAlm">
+                <DOI name="do1">
                   <DAI name="da1" desc="LS SF6 Verlust">
                     <Val/>
                   </DAI>
@@ -262,7 +292,7 @@ describe('Signallist', () => {
       newPluginHostElement: document.createElement('SCL')
     });
 
-    const {messagePublishers ,invaliditiesReports} = signallistStore.findPublishingLogicalDevices();
+    const {messagePublishers ,invaliditiesReports} = signallistStore.getPublishingLogicalDevices();
 
     expect(messagePublishers).toEqual([]);
     expect(invaliditiesReports).toEqual([
@@ -304,7 +334,7 @@ describe('Signallist', () => {
                 </DOI>
               </LN0>
               <LN inst="1" lnClass="LC1" prefix="" lnType="LNType1">
-                <DOI name="InsAlm">
+                <DOI name="do1">
                   <DAI name="da1" desc="LS SF6 Verlust">
                     <Val/>
                   </DAI>
@@ -321,7 +351,7 @@ describe('Signallist', () => {
       newPluginHostElement: document.createElement('SCL')
     });
 
-    const {messagePublishers ,invaliditiesReports} = signallistStore.findPublishingLogicalDevices();
+    const {messagePublishers ,invaliditiesReports} = signallistStore.getPublishingLogicalDevices();
 
     expect(messagePublishers).toEqual([]);
     expect(invaliditiesReports).toEqual([
@@ -365,7 +395,7 @@ describe('Signallist', () => {
                 </DOI>
               </LN0>
               <LN inst="1" lnClass="LC1" prefix="" lnType="LNType1">
-                <DOI name="InsAlm">
+                <DOI name="do1">
                   <DAI name="da1" desc="LS SF6 Verlust">
                     <Val/>
                   </DAI>
@@ -382,7 +412,7 @@ describe('Signallist', () => {
       newPluginHostElement: document.createElement('SCL')
     });
 
-    const {messagePublishers ,invaliditiesReports} = signallistStore.findPublishingLogicalDevices();
+    const {messagePublishers ,invaliditiesReports} = signallistStore.getPublishingLogicalDevices();
 
     expect(messagePublishers).toEqual([]);
     expect(invaliditiesReports).toEqual([
@@ -401,10 +431,23 @@ describe('Signallist', () => {
     ]);
   });
 
-  it('should add invalidities to the report if LN0 is not found', () => {
+  it('should retrun empty array if FCDA doName is not in DOI name', () => {
+    xmlDocument = writable<XMLDocument | undefined>(undefined);
     const parser = new DOMParser();
     const xmlString = `
       <SCL>
+        <DataTypeTemplates>
+          <LNodeType id="LNType1">
+            <DO name="do1" type="DOType1"/>
+            <DO name="do2" type="DOType2"/>
+          </LNodeType>
+          <DOType id="DOType1" cdc="CDC1">
+            <DA name="da1" bType="BType1"/>
+          </DOType>
+          <DOType id="DOType2" cdc="CDC2">
+            <DA name="da2" bType="BType1"/>
+          </DOType>
+        </DataTypeTemplates>
         <IED name="IED1">
           <AccessPoint>
             <LDevice inst="LD1">
@@ -412,13 +455,14 @@ describe('Signallist', () => {
                 <GSEControl />
                 <DataSet>
                   <FCDA lnClass="LC1" lnInst="1" doName="do1" daName="da1" fc="FC1" prefix=""/>
+                  <FCDA lnClass="LC1" lnInst="1" doName="do2" daName="da2" fc="FC1" prefix=""/>
                 </DataSet>
                 <DOI>
                   <DAI desc="Description1"/>
                 </DOI>
               </LN0>
               <LN inst="1" lnClass="LC1" prefix="" lnType="LNType1">
-                <DOI name="InsAlm">
+                <DOI name="other do name">
                   <DAI name="da1" desc="LS SF6 Verlust">
                     <Val/>
                   </DAI>
@@ -430,7 +474,11 @@ describe('Signallist', () => {
         <IED name="IED2">
           <AccessPoint>
             <LDevice inst="LD2">
-              <!-- LN0 is missing -->
+              <LN0>
+                <Inputs>
+                  <ExtRef iedName="IED1" serviceType="GOOSE" ldInst="LD1" lnClass="LC1" lnInst="1" prefix="" doName="do1" daName="da1" srcLDInst="LD1" srcPrefix="" srcLNClass="LC1" srcCBName="GSEControl"/>
+                </Inputs>
+              </LN0>
             </LDevice>
           </AccessPoint>
         </IED>
@@ -442,46 +490,12 @@ describe('Signallist', () => {
       newPluginHostElement: document.createElement('SCL')
     });
 
-    const messagePublishers = [
-      {
-        M_text: 'LS SF6 Verlust',
-        signalType: SignalType.GOOSE,
-        IEDName: 'IED1',
-        logicalNodeInofrmation: {
-          IEDName: 'IED1',
-          LogicalDeviceInstance: 'LD1',
-          LogicalNodePrefix: '',
-          LogicalNodeClass: 'LC1',
-          LogicalNodeInstance: '1',
-          LogicalNodeType: 'LNType1'
-        },
-        dataObjectInformation: {
-          DataObjectName: 'do1',
-          DataAttributeName: 'da1',
-          CommonDataClass: 'CDC1',
-          AttributeType: 'BType1',
-          FunctionalConstraint: 'FC1'
-        }
-      }
-    ];
+    const {messagePublishers ,invaliditiesReports} = signallistStore.getPublishingLogicalDevices();
 
-    const { messageSubscribers, invaliditiesReports } = signallistStore.findSubscribingLogicalDevices(messagePublishers);
+    expect(messagePublishers).toEqual([]);
+    expect(invaliditiesReports).toEqual([]);
 
-    expect(messageSubscribers).toEqual([]);
-    expect(invaliditiesReports).toEqual([
-      {
-        IEDName: 'IED2',
-        LogicalNodeInformation: {
-          IEDName: '',
-          LogicalDeviceInstance: '',
-          LogicalNodePrefix: '',
-          LogicalNodeClass: '',
-          LogicalNodeInstance: '',
-          LogicalNodeType: ''
-        },
-        invalidities: ['LN0 Element not found']
-      }
-    ]);
   });
+
 
 });

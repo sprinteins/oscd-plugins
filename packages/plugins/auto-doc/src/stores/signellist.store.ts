@@ -8,18 +8,70 @@ import { pluginStore } from './index'
 const { xmlDocument } = pluginStore
 
 //==== PUBLIC ACTIONS
-function getSignallist(){
+function getSignallist() {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
     }
 
+    const { messagePublishers, invaliditiesReports: publishingInvalidities } = getPublishingLogicalDevices();
+    const { messageSubscribers, invaliditiesReports: subscribingInvalidities } = getSubscribingLogicalDevices(messagePublishers);
+
+    return {
+        messagePublishers,
+        messageSubscribers,
+        invaliditiesReports: [...publishingInvalidities, ...subscribingInvalidities]
+    };
 }
+
+function getPublishingLogicalDevices(): { messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[] } {
+    const messagePublishers: MessagePublisher[] = [];
+    const invaliditiesReports: InvalditiesReport[] = [];
+
+    const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
+
+    const dataTypeTemplates = xmlDoc.querySelector('DataTypeTemplates');
+    if (!dataTypeTemplates) {
+        throw new Error("DataTypeTemplates Element not found in XML Document");
+    }
+
+    const IEDs = xmlDoc.querySelectorAll('IED');
+    for (const ied of IEDs) {
+        processIEDForPublishers(ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
+    }
+
+    return { messagePublishers, invaliditiesReports };
+}
+
+function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[]): { messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[] } {
+    const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
+
+    const messageSubscribers: MessageSubscriber[] = [];
+    const invaliditiesReports: InvalditiesReport[] = [];
+
+    for (const messagePublisher of messagePublishers) {
+        const IEDs = Array.from(xmlDoc.querySelectorAll('IED')).filter(ied => ied.getAttribute('name') !== messagePublisher.IEDName);
+        for (const ied of IEDs) {
+            processIEDForSubscribers(ied, messagePublisher, messageSubscribers, invaliditiesReports);
+        }
+    }
+
+    return { messageSubscribers, invaliditiesReports };
+}
+
+
+
 
 enum SignalType {
     GOOSE = 'GOOSE',
     MMS = 'MMS',
-    SVM = 'SVM',
+    SV = 'SV',
     UNKOWN = 'UNKOWN',
 }
 
@@ -51,15 +103,14 @@ interface ExtRef {
 }
 // <LNode> Element in SCD
 interface LogicalNodeInformation {
-    IEDName: string; // Reference to the iedName name in the SCD
-    LogicalDeviceInstance: string; // Reference to the ldInst in the SCD
-    LogicalNodePrefix: string; // Reference to the prefix in the SCD
-    LogicalNodeClass: string; // Reference to the lnClass in the SCD
-    LogicalNodeInstance: string; // Reference to the lnInst in the SCD
-    LogicalNodeType:string; // Reference to the lnType in the SCD
+    IEDName: string;
+    LogicalDeviceInstance: string;
+    LogicalNodePrefix: string;
+    LogicalNodeClass: string;
+    LogicalNodeInstance: string;
+    LogicalNodeType:string;
 }
 
-// <DO> Element in SCD
 interface DataObjectInformation{
     DataObjectName: string;
     DataAttributeName: string;
@@ -74,203 +125,224 @@ interface InvalditiesReport{
     invalidities: string[];
 }
 
-function findPublishingLogicalDevices(): { messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[] }
-{
-    const messagePublishers: MessagePublisher[] = [];
-    const invaliditiesReports: InvalditiesReport[] = [];
-
-    const xmlDoc = get(xmlDocument);
-    if (!xmlDoc) {
-        throw new Error("XML Document is not defined");
+//==== PRIVATE ACTIONS
+function processIEDForPublishers(ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    const accessPoints = ied.querySelectorAll('AccessPoint');
+    for (const accessPoint of accessPoints) {
+        processAccessPointForPublishers(accessPoint, ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
     }
-    const dataTypeTemplates = xmlDoc.querySelector('DataTypeTemplates');
-    if (!dataTypeTemplates){
-        throw new Error("DataTypeTemplates Element not found in XML Document");
+}
+
+function processAccessPointForPublishers(accessPoint: Element, ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    const LDevices = accessPoint.querySelectorAll('LDevice');
+    for (const lDevice of LDevices) {
+        processLDeviceForPublishers(lDevice, ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
     }
-    const IEDs = xmlDoc.querySelectorAll('IED')
-    for (const ied of IEDs){
-        // loop over all AccessPoint in IED
-        const accessPoints = ied.querySelectorAll('AccessPoint');
-        for (const accessPoint of accessPoints){
-            const LDevices = accessPoint.querySelectorAll('LDevice');
-            for (const lDevice of LDevices){
-                // check if the lDevice has a LN0 child with GSEControl child
-                const lNode0 = lDevice.querySelector('LN0');
-                if (lNode0){
-                    const GSEControl = lNode0.querySelector('GSEControl');
-                    const ReportControl = lNode0.querySelector('ReportControl');
-                    if (GSEControl || ReportControl){
-                        // save SignalType
-                        let signalType: SignalType;
-                        if (GSEControl){
-                            signalType = SignalType.GOOSE;
-                        } else if (ReportControl){
-                            signalType = SignalType.MMS;
-                        } else {
-                            signalType = SignalType.UNKOWN;
-                        }
+}
 
-                        //navigate to DataSet in lNode0
-                        const dataSets = lNode0.querySelectorAll('DataSet');
-                        for (const dataSet of dataSets){
-                            const FCDAs = dataSet.querySelectorAll('FCDA');
-                            for (const FCDA of FCDAs){
-                                //extract linINst, doName, daName from FCDA
-                                const ldInst = lDevice.getAttribute('inst') || '';
-                                const prefix = FCDA.getAttribute('prefix') || '';
-                                const lnClass = FCDA.getAttribute('lnClass') || '';
-                                const lnInst = FCDA.getAttribute('lnInst') || '';
-                                const doName = FCDA.getAttribute('doName') || '';
-                                const fc = FCDA.getAttribute('fc') || '';
+function processLDeviceForPublishers(lDevice: Element, ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    const lNode0 = lDevice.querySelector('LN0');
+    if (!lNode0) return;
 
-                                // iterate over all LN under LDevice with inst=lnInst and lnClass=lnClass and prefix=prefix
-                                const lNodes = lDevice.querySelectorAll(`LN[inst="${lnInst}"][lnClass="${lnClass}"][prefix="${prefix}"]`);
-                                for(const ln of lNodes){
-                                    // check if there is a DOI Element with a DAI element and the DAI has a desc != ""
-                                    const DOIs = ln.querySelectorAll('DOI');
-                                    for (const DOI of DOIs){
-                                        const DAIs = DOI.querySelectorAll('DAI');
-                                        for (const DAI of DAIs){
-                                            const desc = DAI.getAttribute('desc') || '';
-                                            if (desc !== ''){
-                                                const IEDName = ied.getAttribute('name') || '';
-                                                const logicalNodeInofrmation: LogicalNodeInformation = {
-                                                    IEDName,
-                                                    LogicalDeviceInstance: ldInst,
-                                                    LogicalNodePrefix: prefix,
-                                                    LogicalNodeClass: lnClass,
-                                                    LogicalNodeInstance: lnInst,
-                                                    LogicalNodeType: ln.getAttribute('lnType') || ''
-                                                }
-                                                // search in DataTypeTemplates for LNodeType with id == logicalNodeInofrmation.LogicalNodeType
-                                                const LNodeType = dataTypeTemplates.querySelector(`LNodeType[id="${logicalNodeInofrmation.LogicalNodeType}"]`);
-                                                if (!LNodeType){
-                                                    invaliditiesReports.push({IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`LNodeType with id ${logicalNodeInofrmation.LogicalNodeType} not found in DataTypeTemplates`]});
-                                                    continue;
-                                                }
-                                                // search in LNodeType for DO with name == doName
-                                                const DO = LNodeType.querySelector(`DO[name="${doName}"]`);
-                                                if (!DO){
-                                                    invaliditiesReports.push({IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`DO with name ${doName} not found in LNodeType with id ${logicalNodeInofrmation.LogicalNodeType}`]});
-                                                    continue;
-                                                }
-                                                const DOtypeId = DO.getAttribute('type') || '';
-                                                // search in DataTypeTemplates for DOType with id == DOtype
-                                                const DOtype = dataTypeTemplates.querySelector(`DOType[id="${DOtypeId}"]`);
-                                                if (!DOtype){
-                                                    invaliditiesReports.push({IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`DOType with id ${DOtypeId} not found in DataTypeTemplates`]});
-                                                    continue;
-                                                }
+    const GSEControl = lNode0.querySelector('GSEControl');
+    const ReportControl = lNode0.querySelector('ReportControl');
+    if (!GSEControl && !ReportControl) return;
 
-                                                const daName = DAI.getAttribute('name') || '';
-                                                const commonDataClass = DOtype.getAttribute('cdc') || '';
-                                                // search in DOType for DA with name == daName
-                                                const DA = DOtype.querySelector(`DA[name="${daName}"]`);
-                                                if (!DA){
-                                                    invaliditiesReports.push({IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`DA with name ${daName} not found in DOType with id ${DOtypeId}`]});
-                                                    continue;
-                                                }
-                                                const attributeType = DA.getAttribute('btype') || '';
+    const signalType = GSEControl ? SignalType.GOOSE : (ReportControl ? SignalType.MMS : SignalType.UNKOWN);
 
-                                                const dataObjectInformation: DataObjectInformation = {
-                                                    DataObjectName: doName,
-                                                    DataAttributeName: daName,
-                                                    CommonDataClass: commonDataClass,
-                                                    AttributeType: attributeType,
-                                                    FunctionalConstraint: fc
-                                                }
-                                                messagePublishers.push({M_text: desc, signalType, IEDName, logicalNodeInofrmation, dataObjectInformation});
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }                  
-                    }
+    const dataSets = lNode0.querySelectorAll('DataSet');
+    for (const dataSet of dataSets) {
+        processDataSet(dataSet, lDevice, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
+    }
+}
+
+function processDataSet(dataSet: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    const FCDAs = dataSet.querySelectorAll('FCDA');
+    for (const FCDA of FCDAs) {
+        processFCDA(FCDA, lDevice, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
+    }
+}
+
+function processFCDA(FCDA: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    const ldInst = lDevice.getAttribute('inst') || '';
+    const prefix = FCDA.getAttribute('prefix') || '';
+    const lnClass = FCDA.getAttribute('lnClass') || '';
+    const lnInst = FCDA.getAttribute('lnInst') || '';
+    const doName = FCDA.getAttribute('doName') || '';
+    const daName = FCDA.getAttribute('daName') || '';
+    const fc = FCDA.getAttribute('fc') || '';
+
+    const lNodes = lDevice.querySelectorAll(`LN[inst="${lnInst}"][lnClass="${lnClass}"][prefix="${prefix}"]`);
+    for (const ln of lNodes) {
+        processLN(ln, ldInst, prefix, lnClass, lnInst, doName, daName, fc, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
+    }
+}
+
+function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string, lnInst: string, doName: string, daName:string, fc: string, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    const DOIs = ln.querySelectorAll('DOI');
+    for (const DOI of DOIs) {
+
+        const doiName = DOI.getAttribute('name') || '';
+        if(doName !== doiName) continue;
+
+        const DAIs = DOI.querySelectorAll('DAI');
+        for (const DAI of DAIs) {
+            const desc = DAI.getAttribute('desc') || '';
+            if (desc !== '') {
+                const IEDName = ied.getAttribute('name') || '';
+                const logicalNodeInofrmation: LogicalNodeInformation = {
+                    IEDName,
+                    LogicalDeviceInstance: ldInst,
+                    LogicalNodePrefix: prefix,
+                    LogicalNodeClass: lnClass,
+                    LogicalNodeInstance: lnInst,
+                    LogicalNodeType: ln.getAttribute('lnType') || ''
+                };
+
+                const LNodeType = findLNodeType(logicalNodeInofrmation.LogicalNodeType, dataTypeTemplates, IEDName, logicalNodeInofrmation, invaliditiesReports);
+                if (!LNodeType) continue;
+
+                const DO = findDO(doName, LNodeType, IEDName, logicalNodeInofrmation, invaliditiesReports);
+                if (!DO) continue;
+
+                const DOtypeId = DO.getAttribute('type') || '';
+                const DOtype = findDOType(DOtypeId, dataTypeTemplates, IEDName, logicalNodeInofrmation, invaliditiesReports);
+                if (!DOtype) continue;
+
+                const daName = DAI.getAttribute('name') || '';
+                const commonDataClass = DOtype.getAttribute('cdc') || '';
+                const DA = findDA(daName, DOtype, IEDName, logicalNodeInofrmation, invaliditiesReports);
+                if (!DA) continue;
+
+                const attributeType = DA.getAttribute('bType') || '';
+
+                const dataObjectInformation: DataObjectInformation = {
+                    DataObjectName: doName,
+                    DataAttributeName: daName,
+                    CommonDataClass: commonDataClass,
+                    AttributeType: attributeType,
+                    FunctionalConstraint: fc
+                };
+
+                const isDuplicate = messagePublishers.some(publisher =>
+                    publisher.M_text === desc &&
+                    publisher.IEDName === IEDName &&
+                    publisher.logicalNodeInofrmation.LogicalDeviceInstance === ldInst &&
+                    publisher.logicalNodeInofrmation.LogicalNodePrefix === prefix &&
+                    publisher.logicalNodeInofrmation.LogicalNodeClass === lnClass &&
+                    publisher.logicalNodeInofrmation.LogicalNodeInstance === lnInst &&
+                    publisher.logicalNodeInofrmation.LogicalNodeType === logicalNodeInofrmation.LogicalNodeType &&
+                    publisher.dataObjectInformation.DataObjectName === doName &&
+                    publisher.dataObjectInformation.DataAttributeName === daName &&
+                    publisher.dataObjectInformation.CommonDataClass === commonDataClass &&
+                    publisher.dataObjectInformation.AttributeType === attributeType &&
+                    publisher.dataObjectInformation.FunctionalConstraint === fc
+                );
+                if (!isDuplicate) {
+                    messagePublishers.push({ M_text: desc, signalType, IEDName, logicalNodeInofrmation, dataObjectInformation });
                 }
             }
         }
     }
-    return { messagePublishers, invaliditiesReports };
 }
 
-function findSubscribingLogicalDevices(messagePublishers: MessagePublisher[]): { messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[] }
-{
-    const xmlDoc = get(xmlDocument);
-    if (!xmlDoc) {
-        throw new Error("XML Document is not defined");
+function findLNodeType(logicalNodeType: string, dataTypeTemplates: Element, IEDName: string, logicalNodeInofrmation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
+    const LNodeType = dataTypeTemplates.querySelector(`LNodeType[id="${logicalNodeType}"]`);
+    if (!LNodeType) {
+        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`LNodeType with id ${logicalNodeType} not found in DataTypeTemplates`] });
+    }
+    return LNodeType;
+}
+
+function findDO(doName: string, LNodeType: Element, IEDName: string, logicalNodeInofrmation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
+    const DO = LNodeType.querySelector(`DO[name="${doName}"]`);
+    if (!DO) {
+        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`DO with name ${doName} not found in LNodeType with id ${logicalNodeInofrmation.LogicalNodeType}`] });
+    }
+    return DO;
+}
+
+function findDOType(DOtypeId: string, dataTypeTemplates: Element, IEDName: string, logicalNodeInofrmation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
+    const DOtype = dataTypeTemplates.querySelector(`DOType[id="${DOtypeId}"]`);
+    if (!DOtype) {
+        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`DOType with id ${DOtypeId} not found in DataTypeTemplates`] });
+    }
+    return DOtype;
+}
+
+function findDA(daName: string, DOtype: Element, IEDName: string, logicalNodeInofrmation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
+    const DA = DOtype.querySelector(`DA[name="${daName}"]`);
+    if (!DA) {
+        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`DA with name ${daName} not found in DOType with id ${DOtype.getAttribute('id')}`] });
+    }
+    return DA;
+}
+
+function processIEDForSubscribers(ied: Element, messagePublisher: MessagePublisher, messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[]) {
+    const accessPoints = ied.querySelectorAll('AccessPoint');
+    for (const accessPoint of accessPoints) {
+        processAccessPointForSubscribers(accessPoint, ied, messagePublisher, messageSubscribers, invaliditiesReports);
+    }
+}
+
+function processAccessPointForSubscribers(accessPoint: Element, ied: Element, messagePublisher: MessagePublisher, messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[]) {
+    const LDevices = accessPoint.querySelectorAll('LDevice');
+    for (const lDevice of LDevices) {
+        processLDeviceForSubscribers(lDevice, ied, messagePublisher, messageSubscribers, invaliditiesReports);
+    }
+}
+
+function processLDeviceForSubscribers(lDevice: Element, ied: Element, messagePublisher: MessagePublisher, messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[]) {
+    const lNode0 = lDevice.querySelector('LN0');
+    if (!lNode0) {
+        return;
     }
 
-    const messageSubscribers: MessageSubscriber[] = [];
-    const invaliditiesReports: InvalditiesReport[] = [];
+    const Inputs = lNode0.querySelectorAll('Inputs');
+    for (const input of Inputs) {
+        processInputs(input, ied, messagePublisher, messageSubscribers, invaliditiesReports);
+    }
+}
 
-    for (const messagePublisher of messagePublishers){
-        // search for all IED exept the one that is publishing
-        const IEDs = Array.from(xmlDoc.querySelectorAll('IED')).filter(ied => ied.getAttribute('name') !== messagePublisher.IEDName);
-        for (const ied of IEDs){
-            // loop over all AccessPoint in IED
-            const accessPoints = ied.querySelectorAll('AccessPoint');
-            for (const accessPoint of accessPoints){
-                //loop over Server in AccessPoint
-                const LDevices = accessPoint.querySelectorAll('LDevice');
-                for (const lDevice of LDevices){
-                    //get the LN0 element
-                    const lNode0 = lDevice.querySelector('LN0');
-                    // get all Inputs in LN0
-                    if(!lNode0){
-                        invaliditiesReports.push({IEDName: ied.getAttribute('name') || '', LogicalNodeInformation: {IEDName: '', LogicalDeviceInstance: '', LogicalNodePrefix: '', LogicalNodeClass: '', LogicalNodeInstance: '', LogicalNodeType: ''}, invalidities: ['LN0 Element not found']});
-                        continue;
-                    }
-                    const Inputs = lNode0.querySelectorAll('Inputs');
-                    for (const input of Inputs){
-                        // get all ExtRef in Inputs
-                        const ExtRefs = input.querySelectorAll('ExtRef');
-                        for (const extRef of ExtRefs){
-                            // if extRef has iedName == messagePublisher.IEDName 
-                            if (extRef.getAttribute('iedName') === messagePublisher.IEDName 
-                            && extRef.getAttribute('ldInst') === messagePublisher.logicalNodeInofrmation.LogicalDeviceInstance 
-                            && extRef.getAttribute('lnClass') === messagePublisher.logicalNodeInofrmation.LogicalNodeClass 
-                            && extRef.getAttribute('lnInst') === messagePublisher.logicalNodeInofrmation.LogicalNodeInstance 
-                            && extRef.getAttribute('prefix') === messagePublisher.logicalNodeInofrmation.LogicalNodePrefix 
-                            && extRef.getAttribute('doName') === messagePublisher.dataObjectInformation.DataObjectName 
-                            && extRef.getAttribute('daName') === messagePublisher.dataObjectInformation.DataAttributeName){
-
-                                console.log(extRef.getAttribute('serviceType'));
-                                const subscriber: MessageSubscriber = {
-                                    IDEName: ied.getAttribute('name') || '',
-                                    ExtRef: {
-                                        iedName: extRef.getAttribute('iedName') || '',
-                                        serviceType: SignalType[extRef.getAttribute('serviceType') as keyof typeof SignalType] || SignalType.UNKOWN as SignalType,
-                                        ldInst: extRef.getAttribute('ldInst') || '',
-                                        lnClass: extRef.getAttribute('lnClass') || '',
-                                        lnInst: extRef.getAttribute('lnInst') || '',
-                                        prefix: extRef.getAttribute('prefix') || '',
-                                        doName: extRef.getAttribute('doName') || '',
-                                        daName: extRef.getAttribute('daName') || '',
-                                        srcLDInst: extRef.getAttribute('srcLDInst') || '',
-                                        srcPrefix: extRef.getAttribute('srcPrefix') || '',
-                                        srcLNClass: extRef.getAttribute('srcLNClass') || '',
-                                        srcCBName: extRef.getAttribute('srcCBName') || ''
-                                    }
-                                }
-                                messageSubscribers.push(subscriber);
-                            }
-                        }
-                    }
+function processInputs(input: Element, ied: Element, messagePublisher: MessagePublisher, messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[]) {
+    const ExtRefs = input.querySelectorAll('ExtRef');
+    for (const extRef of ExtRefs) {
+        if (matchesExtRef(extRef, messagePublisher)) {
+            const subscriber: MessageSubscriber = {
+                IDEName: ied.getAttribute('name') || '',
+                ExtRef: {
+                    iedName: extRef.getAttribute('iedName') || '',
+                    serviceType: SignalType[extRef.getAttribute('serviceType') as keyof typeof SignalType] || SignalType.UNKOWN as SignalType,
+                    ldInst: extRef.getAttribute('ldInst') || '',
+                    lnClass: extRef.getAttribute('lnClass') || '',
+                    lnInst: extRef.getAttribute('lnInst') || '',
+                    prefix: extRef.getAttribute('prefix') || '',
+                    doName: extRef.getAttribute('doName') || '',
+                    daName: extRef.getAttribute('daName') || '',
+                    srcLDInst: extRef.getAttribute('srcLDInst') || '',
+                    srcPrefix: extRef.getAttribute('srcPrefix') || '',
+                    srcLNClass: extRef.getAttribute('srcLNClass') || '',
+                    srcCBName: extRef.getAttribute('srcCBName') || ''
                 }
-            }   
+            };
+            messageSubscribers.push(subscriber);
         }
-
     }
-
-    return { messageSubscribers, invaliditiesReports };
 }
 
-
-
+function matchesExtRef(extRef: Element, messagePublisher: MessagePublisher): boolean {
+    return extRef.getAttribute('iedName') === messagePublisher.IEDName &&
+        extRef.getAttribute('ldInst') === messagePublisher.logicalNodeInofrmation.LogicalDeviceInstance &&
+        extRef.getAttribute('lnClass') === messagePublisher.logicalNodeInofrmation.LogicalNodeClass &&
+        extRef.getAttribute('lnInst') === messagePublisher.logicalNodeInofrmation.LogicalNodeInstance &&
+        extRef.getAttribute('prefix') === messagePublisher.logicalNodeInofrmation.LogicalNodePrefix &&
+        extRef.getAttribute('doName') === messagePublisher.dataObjectInformation.DataObjectName &&
+        extRef.getAttribute('daName') === messagePublisher.dataObjectInformation.DataAttributeName;
+}
 
 export const signallistStore = {
     // actions
-    findPublishingLogicalDevices,
-    findSubscribingLogicalDevices,
+    getSignallist,
+    getPublishingLogicalDevices,
+    getSubscribingLogicalDevices,
 };
