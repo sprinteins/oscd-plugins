@@ -24,7 +24,7 @@ function getSignallist() {
     };
 }
 
-function getPublishingLogicalDevices(): { messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[] } {
+function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[] } {
     const messagePublishers: MessagePublisher[] = [];
     const invaliditiesReports: InvalditiesReport[] = [];
 
@@ -43,10 +43,12 @@ function getPublishingLogicalDevices(): { messagePublishers: MessagePublisher[],
         processIEDForPublishers(ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
     }
 
-    return { messagePublishers, invaliditiesReports };
+    const filteredMessagePublishers = filterMessagePublishers(messagePublishers, filter);
+
+    return { messagePublishers: filteredMessagePublishers, invaliditiesReports };
 }
 
-function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[]): { messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[] } {
+function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[], filter: MessageSubscriberFilter = {}): { messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[] } {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
@@ -62,11 +64,14 @@ function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[]): { 
         }
     }
 
-    return { messageSubscribers, invaliditiesReports };
+    const filteredMessageSubscribers = filterMessageSubscribers(messageSubscribers, filter);
+
+    return { messageSubscribers: filteredMessageSubscribers, invaliditiesReports };
 }
 
 
 
+//====Types
 
 enum SignalType {
     GOOSE = 'GOOSE',
@@ -123,6 +128,32 @@ interface InvalditiesReport{
     IEDName: string;
     LogicalNodeInformation: LogicalNodeInformation;
     invalidities: string[];
+}
+
+interface MessagePublisherFilter {
+    M_text?: RegExp;
+    signalType?: RegExp;
+    IEDName?: RegExp;
+    logicalNodeInofrmation?: {
+        IEDName?: RegExp;
+        LogicalDeviceInstance?: RegExp;
+        LogicalNodePrefix?: RegExp;
+        LogicalNodeClass?: RegExp;
+        LogicalNodeInstance?: RegExp;
+        LogicalNodeType?: RegExp;
+    };
+    dataObjectInformation?: {
+        DataObjectName?: RegExp;
+        DataAttributeName?: RegExp;
+        CommonDataClass?: RegExp;
+        AttributeType?: RegExp;
+        FunctionalConstraint?: RegExp;
+    };
+}
+
+interface MessageSubscriberFilter {
+    IDEName?: RegExp;
+    serviceType?: RegExp;
 }
 
 //==== PRIVATE ACTIONS
@@ -338,6 +369,36 @@ function matchesExtRef(extRef: Element, messagePublisher: MessagePublisher): boo
         extRef.getAttribute('prefix') === messagePublisher.logicalNodeInofrmation.LogicalNodePrefix &&
         extRef.getAttribute('doName') === messagePublisher.dataObjectInformation.DataObjectName &&
         extRef.getAttribute('daName') === messagePublisher.dataObjectInformation.DataAttributeName;
+}
+
+function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: MessagePublisherFilter): MessagePublisher[] {
+    return messagePublishers.filter(publisher => {
+        return (!filter.M_text || filter.M_text.test(publisher.M_text)) &&
+            (!filter.signalType || filter.signalType.test(publisher.signalType)) &&
+            (!filter.IEDName || filter.IEDName.test(publisher.IEDName)) &&
+            (!filter.logicalNodeInofrmation || (
+                (!filter.logicalNodeInofrmation.IEDName || filter.logicalNodeInofrmation.IEDName.test(publisher.logicalNodeInofrmation.IEDName)) &&
+                (!filter.logicalNodeInofrmation.LogicalDeviceInstance || filter.logicalNodeInofrmation.LogicalDeviceInstance.test(publisher.logicalNodeInofrmation.LogicalDeviceInstance)) &&
+                (!filter.logicalNodeInofrmation.LogicalNodePrefix || filter.logicalNodeInofrmation.LogicalNodePrefix.test(publisher.logicalNodeInofrmation.LogicalNodePrefix)) &&
+                (!filter.logicalNodeInofrmation.LogicalNodeClass || filter.logicalNodeInofrmation.LogicalNodeClass.test(publisher.logicalNodeInofrmation.LogicalNodeClass)) &&
+                (!filter.logicalNodeInofrmation.LogicalNodeInstance || filter.logicalNodeInofrmation.LogicalNodeInstance.test(publisher.logicalNodeInofrmation.LogicalNodeInstance)) &&
+                (!filter.logicalNodeInofrmation.LogicalNodeType || filter.logicalNodeInofrmation.LogicalNodeType.test(publisher.logicalNodeInofrmation.LogicalNodeType))
+            )) &&
+            (!filter.dataObjectInformation || (
+                (!filter.dataObjectInformation.DataObjectName || filter.dataObjectInformation.DataObjectName.test(publisher.dataObjectInformation.DataObjectName)) &&
+                (!filter.dataObjectInformation.DataAttributeName || filter.dataObjectInformation.DataAttributeName.test(publisher.dataObjectInformation.DataAttributeName)) &&
+                (!filter.dataObjectInformation.CommonDataClass || filter.dataObjectInformation.CommonDataClass.test(publisher.dataObjectInformation.CommonDataClass)) &&
+                (!filter.dataObjectInformation.AttributeType || filter.dataObjectInformation.AttributeType.test(publisher.dataObjectInformation.AttributeType)) &&
+                (!filter.dataObjectInformation.FunctionalConstraint || filter.dataObjectInformation.FunctionalConstraint.test(publisher.dataObjectInformation.FunctionalConstraint))
+            ));
+    });
+}
+
+function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filter: MessageSubscriberFilter): MessageSubscriber[] {
+    return messageSubscribers.filter(subscriber => {
+        return (!filter.IDEName || filter.IDEName.test(subscriber.IDEName)) &&
+            (!filter.serviceType || filter.serviceType.test(subscriber.ExtRef.serviceType));
+    });
 }
 
 export const signallistStore = {

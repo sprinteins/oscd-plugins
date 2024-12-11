@@ -69,6 +69,17 @@ describe('Signallist', () => {
             </LDevice>
           </AccessPoint>
         </IED>
+        <IED name="IED3">
+          <AccessPoint>
+            <LDevice inst="LD3">
+              <LN0>
+                <Inputs>
+                  <ExtRef iedName="IED1" serviceType="GOOSE" ldInst="LD1" lnClass="LC1" lnInst="1" prefix="" doName="do1" daName="da1" srcLDInst="LD1" srcPrefix="" srcLNClass="LC1" srcCBName="GSEControl"/>
+                </Inputs>
+              </LN0>
+            </LDevice>
+          </AccessPoint>
+        </IED>
       </SCL>`;
     const xmlDoc = parser.parseFromString(xmlString, 'application/xml');
     xmlDocument.set(xmlDoc);
@@ -154,6 +165,23 @@ describe('Signallist', () => {
     expect(messageSubscribers).toEqual([
       {
         IDEName: 'IED2',
+        ExtRef: {
+          iedName: 'IED1',
+          serviceType: 'GOOSE',
+          ldInst: 'LD1',
+          lnClass: 'LC1',
+          lnInst: '1',
+          prefix: '',
+          doName: 'do1',
+          daName: 'da1',
+          srcLDInst: 'LD1',
+          srcPrefix: '',
+          srcLNClass: 'LC1',
+          srcCBName: 'GSEControl'
+        }
+      },
+      {
+        IDEName: 'IED3',
         ExtRef: {
           iedName: 'IED1',
           serviceType: 'GOOSE',
@@ -495,6 +523,408 @@ describe('Signallist', () => {
     expect(messagePublishers).toEqual([]);
     expect(invaliditiesReports).toEqual([]);
 
+  });
+
+  it('should filter message publishers based on M_text regex', () => {
+    const filter = { M_text: /LS SF6 Verlust/ };
+    const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
+
+    expect(messagePublishers).toEqual([
+      {
+        M_text: 'LS SF6 Verlust',
+        signalType: 'GOOSE',
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do1',
+          DataAttributeName: 'da1',
+          CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      }
+    ]);
+  });
+
+  it('should filter message publishers based on signalType regex', () => {
+    const filter = { signalType: /GOOSE/ };
+    const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
+
+    expect(messagePublishers).toEqual([
+      {
+        M_text: 'LS SF6 Verlust',
+        signalType: 'GOOSE',
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do1',
+          DataAttributeName: 'da1',
+          CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      },
+      {
+        M_text: 'Abgangserder QC3-Befehl blockiert',
+        signalType: 'GOOSE',
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do2',
+          DataAttributeName: 'da2',
+          CommonDataClass: 'CDC2',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      }
+    ]);
+  });
+
+  it('should filter message publishers based on IEDName regex', () => {
+    const filter = { IEDName: /IED1/ };
+    const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
+
+    expect(messagePublishers).toEqual([
+      {
+        M_text: 'LS SF6 Verlust',
+        signalType: 'GOOSE',
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do1',
+          DataAttributeName: 'da1',
+          CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      },
+      {
+        M_text: 'Abgangserder QC3-Befehl blockiert',
+        signalType: 'GOOSE',
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do2',
+          DataAttributeName: 'da2',
+          CommonDataClass: 'CDC2',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      }
+    ]);
+  });
+
+  it('should filter message publishers based on logicalNodeInofrmation regex', () => {
+    const filter = { logicalNodeInofrmation: { LogicalDeviceInstance: /LD1/ } };
+    const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
+
+    expect(messagePublishers).toEqual([
+      {
+        M_text: 'LS SF6 Verlust',
+        signalType: 'GOOSE',
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do1',
+          DataAttributeName: 'da1',
+          CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      },
+      {
+        M_text: 'Abgangserder QC3-Befehl blockiert',
+        signalType: 'GOOSE',
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do2',
+          DataAttributeName: 'da2',
+          CommonDataClass: 'CDC2',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      }
+    ]);
+  });
+
+  it('should filter message publishers based on dataObjectInformation regex', () => {
+    const filter = { dataObjectInformation: { DataObjectName: /do1/ } };
+    const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
+
+    expect(messagePublishers).toEqual([
+      {
+        M_text: 'LS SF6 Verlust',
+        signalType: 'GOOSE',
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do1',
+          DataAttributeName: 'da1',
+          CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      }
+    ]);
+  });
+
+  it('should filter message publishers based on multiple regex filters', () => {
+    const filter = {
+      M_text: /LS SF6 Verlust/,
+      signalType: /GOOSE/,
+      IEDName: /IED1/,
+      logicalNodeInofrmation: {
+        LogicalDeviceInstance: /LD1/
+      },
+      dataObjectInformation: {
+        DataObjectName: /do1/
+      }
+    };
+    const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
+
+    expect(messagePublishers).toEqual([
+      {
+        M_text: 'LS SF6 Verlust',
+        signalType: 'GOOSE',
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do1',
+          DataAttributeName: 'da1',
+          CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      }
+    ]);
+  });
+
+  it('should filter message subscribers based on IDEName regex', () => {
+    const messagePublishers = [
+      {
+        M_text: 'LS SF6 Verlust',
+        signalType: SignalType.GOOSE,
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do1',
+          DataAttributeName: 'da1',
+          CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      }
+    ];
+
+    const filter = { IDEName: /IED2/ };
+    const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
+
+    expect(messageSubscribers).toEqual([
+      {
+        IDEName: 'IED2',
+        ExtRef: {
+          iedName: 'IED1',
+          serviceType: 'GOOSE',
+          ldInst: 'LD1',
+          lnClass: 'LC1',
+          lnInst: '1',
+          prefix: '',
+          doName: 'do1',
+          daName: 'da1',
+          srcLDInst: 'LD1',
+          srcPrefix: '',
+          srcLNClass: 'LC1',
+          srcCBName: 'GSEControl'
+        }
+      }
+    ]);
+  });
+
+  it('should filter message subscribers based on serviceType regex', () => {
+    const messagePublishers = [
+      {
+        M_text: 'LS SF6 Verlust',
+        signalType: SignalType.GOOSE,
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do1',
+          DataAttributeName: 'da1',
+          CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      }
+    ];
+
+    const filter = { serviceType: /GOOSE/ };
+    const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
+
+    expect(messageSubscribers).toEqual([
+      {
+        IDEName: 'IED2',
+        ExtRef: {
+          iedName: 'IED1',
+          serviceType: 'GOOSE',
+          ldInst: 'LD1',
+          lnClass: 'LC1',
+          lnInst: '1',
+          prefix: '',
+          doName: 'do1',
+          daName: 'da1',
+          srcLDInst: 'LD1',
+          srcPrefix: '',
+          srcLNClass: 'LC1',
+          srcCBName: 'GSEControl'
+        }
+      },
+      {
+        IDEName: 'IED3',
+        ExtRef: {
+          iedName: 'IED1',
+          serviceType: 'GOOSE',
+          ldInst: 'LD1',
+          lnClass: 'LC1',
+          lnInst: '1',
+          prefix: '',
+          doName: 'do1',
+          daName: 'da1',
+          srcLDInst: 'LD1',
+          srcPrefix: '',
+          srcLNClass: 'LC1',
+          srcCBName: 'GSEControl'
+        }
+      }
+    ]);
+  });
+
+  it('should filter message subscribers based on multiple regex filters', () => {
+    const messagePublishers = [
+      {
+        M_text: 'LS SF6 Verlust',
+        signalType: SignalType.GOOSE,
+        IEDName: 'IED1',
+        logicalNodeInofrmation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do1',
+          DataAttributeName: 'da1',
+          CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      }
+    ];
+
+    const filter = {
+      IDEName: /IED3/,
+      serviceType: /GOOSE/
+    };
+    const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
+
+    expect(messageSubscribers).toEqual([
+      {
+        IDEName: 'IED3',
+        ExtRef: {
+          iedName: 'IED1',
+          serviceType: 'GOOSE',
+          ldInst: 'LD1',
+          lnClass: 'LC1',
+          lnInst: '1',
+          prefix: '',
+          doName: 'do1',
+          daName: 'da1',
+          srcLDInst: 'LD1',
+          srcPrefix: '',
+          srcLNClass: 'LC1',
+          srcCBName: 'GSEControl'
+        }
+      }
+    ]);
   });
 
 
