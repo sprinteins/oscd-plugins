@@ -106,7 +106,7 @@ interface ExtRef {
     srcLNClass:string;
     srcCBName:string;
 }
-// <LNode> Element in SCD
+
 interface LogicalNodeInformation {
     IEDName: string;
     LogicalDeviceInstance: string;

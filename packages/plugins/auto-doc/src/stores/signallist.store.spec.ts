@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { writable, type Writable } from 'svelte/store';
-import { signallistStore } from './signellist.store';
+import { signallistStore } from './signallist.store';
 import { pluginStore } from './plugin.store';
 
 enum SignalType {
