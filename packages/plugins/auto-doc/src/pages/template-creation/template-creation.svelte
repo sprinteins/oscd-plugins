@@ -24,7 +24,7 @@
             const template = docTemplatesStore.getDocumentTemplate(templateId);
             if(template){
                 title = template.getAttribute('title') as string || "";
-                description = template?.getAttribute('description') as string || "";
+                description = template.getAttribute('description') as string || "";
             }
         }
     })

@@ -24,7 +24,7 @@
 
 
     function mapElementToTableRow(template: Element):Template{
-        const templateDate:string = template.getAttribute('date') as string;
+        const templateDate: string = template.getAttribute('date') as string;
         
         return {
             id: template.getAttribute('id') ?? "No id",
