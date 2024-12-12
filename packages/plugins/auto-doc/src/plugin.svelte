@@ -19,7 +19,6 @@
 <script lang="ts">
 // COMPONENTS
 import { MaterialTheme } from '@oscd-plugins/ui'
-import { ElementsTypeContainer } from './components'
 import Router from 'svelte-spa-router'
 import {routes} from '@/routes/routes'
 
