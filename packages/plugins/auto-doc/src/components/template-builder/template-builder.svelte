@@ -3,9 +3,10 @@
     import {IconWrapper} from "@oscd-plugins/ui"
     import TextElement from "../elements/text-element/text-element.svelte"
     import ImageElement from "../elements/image-element/image-element.svelte"
+    import SignalListElement from "../elements/signal-list/signal-list-element.svelte"
     import ElementWrapper from "../element-wrapper/element-wrapper.svelte"
     import {docTemplatesStore} from '@/stores'
-    import type {BlockElement, ElementType} from '@/components/elements/types.elements'
+    import type {BlockElement, ElementType, ElementMap} from '@/components/elements/types.elements'
 
     // Prop
     export let templateId: string
@@ -14,9 +15,10 @@
     let isElementsChoiceVisible = false
     let blockElements : BlockElement[] = []
     const template = docTemplatesStore.getDocumentTemplate(templateId) as Element;
-    const componentMap  = {
+    const componentMap : ElementMap  = {
         "text": TextElement,
-        "image": ImageElement
+        "image": ImageElement,
+        "signal-list": SignalListElement,
     }
 
 
@@ -64,6 +66,7 @@
                 {#if isElementsChoiceVisible}
                     <Button variant="outlined" on:click={()=>{addElement('text')}}>Text</Button>
                     <Button variant="outlined" on:click={()=>{addElement("image")}}>Image</Button>
+                    <Button variant="outlined" on:click={()=>{addElement("signal-list")}}>Signal List</Button>
                 {/if}
             </div>
         </footer>
