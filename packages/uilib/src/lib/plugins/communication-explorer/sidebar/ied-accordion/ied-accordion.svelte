@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { MessageType } from "@oscd-plugins/core"
     import PublisherSubscriberAccordion from "../../../../components/accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte"
-    import type { IEDNode, RootNode } from "../../../../components/diagram"
+    import type { IEDElkNode, RootNode } from "../../../../components/diagram"
     import { IED } from "../../../../components/ied"
     import { getConnectedIEDsByLabel } from "../../_func-layout-calculation/get-connected-ieds"
     import { getIEDDetails } from "../../_func-layout-calculation/get-ied-details"
@@ -13,7 +13,7 @@
     import { filterState } from "../../_store-view-filter"
 
     export let rootNode: RootNode
-    export let IEDSelection: IEDNode
+    export let IEDSelection: IEDElkNode
 
     let relationsByServiceType: ServiceTypeGroup = new Map()
     $: relations = getConnectedIEDsByLabel(rootNode, IEDSelection.label)
@@ -29,9 +29,18 @@
     }
 
     let detailsCollapsed = true;
+    let bays = Array.from(IEDSelection.bayLabels).join(", ");
 </script>
 
 <div>
+    {#if bays.length > 0}
+		<div class="baylabel" style="height: {IEDSelection.bayLabelHeight}px;margin-bottom: {IEDSelection.bayLabelGap}px">
+			{#each bays as bay}
+				{bay}
+			{/each}
+		</div>
+	{/if}
+
     <IED label={IEDSelection.label} isSelected={true} isSelectable={false} />
 </div>
 {#if details != null}
@@ -92,6 +101,22 @@
 
 <style lang="scss">
     
+    /*quickly copied over from ied-element.svelte 
+    TODO: make bay-label it's own Element!*/
+    .baylabel {
+        width: fit-content;
+		font-size: 10px;
+        padding-top: 0.2em;
+		padding-left: 4px;
+		padding-right: 4px;
+        margin-bottom: 2px;
+
+		/* TODO: extract colors */
+		background: var(--color-white);
+		border: 1px solid var(--color-cyan);
+		border-radius: 5px;
+		box-sizing: border-box;
+    }
     .accordions {
         display: flex;
         flex-direction: column;
