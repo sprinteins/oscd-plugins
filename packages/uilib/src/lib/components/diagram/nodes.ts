@@ -1,5 +1,6 @@
+// TYPES
 import type { ElkExtendedEdge, ElkNode } from "elkjs"
-import type { IEDDetails, IEDCommInfo, MessageType } from "@oscd-plugins/core"
+import type { IED, Utils, MESSAGE_TYPE } from "@oscd-plugins/core"
 
 export function newIEDNode(iedNode: IEDElkNode): IEDElkNode {
 	const newIEDNode: IEDElkNode = {
@@ -12,16 +13,16 @@ export function newIEDNode(iedNode: IEDElkNode): IEDElkNode {
 export type IEDConnection = ElkExtendedEdge & {
 	isRelevant?: boolean
 	relevantIEDNames?: string[]
-	messageType?: MessageType
+	messageType?: Utils.ValueOf<typeof MESSAGE_TYPE>
 	messageTypeLabel?: string
 }
 
 export type IEDConnectionWithCustomValues = IEDConnection & {
-	sourceIED: IEDCommInfo
-	targetIED: IEDCommInfo
+	sourceIED: IED.CommunicationInfo
+	targetIED: IED.CommunicationInfo
 }
 
-export type RootNode<ChildNodes=IEDElkNode> = Omit<ElkNode, "children" | "edges"> & {
+export type RootNode<ChildNodes = IEDElkNode> = Omit<ElkNode, "children" | "edges"> & {
 	children: Array<ChildNodes>,
 	edges?: IEDConnectionWithCustomValues[]
 }
@@ -31,15 +32,15 @@ export type SubnetworkEdge = ElkExtendedEdge & {
 }
 
 export type IEDElkNode = Omit<ElkNode, "edges" | "children"> & {
-	label: string,
+	label: string
 	isRelevant?: boolean
 	isBayNode?: boolean
 	edges?: IEDConnection[]
 	children: IEDElkNode[]
-	details: IEDDetails
+	details: IED.Details
 	bayLabels: Set<string>
-	bayLabelHeight: number,
-	bayLabelGap: number,
+	bayLabelHeight: number
+	bayLabelGap: number
 	iedHeight: number
 }
 

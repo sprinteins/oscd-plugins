@@ -9,12 +9,47 @@ import type {
 export class SCDQueries {
 	constructor(protected readonly root: Element) {}
 
-	//
-	// Privates
-	//
+	//====== PUBLIC METHODS
+	public retrieveAncestorsNameBySelectorWithAttribute({
+		ancestor,
+		selector,
+		attribute
+	}: { ancestor: string; selector: string; attribute: string }): Set<string> {
+		const root = this.determineRoot()
+		const selectorWithAttribute = `${selector}[${attribute}]`
+
+		const elements = Array.from(
+			root.querySelectorAll(selectorWithAttribute)
+		)
+
+		const names = new Set<string>()
+
+		for (const element of elements) {
+			const ancestorElement = element.closest(ancestor)
+			const name = ancestorElement?.getAttribute('name')
+			if (name) names.add(name)
+		}
+
+		return names
+	}
+
+	//====== PROTECTED METHODS
 
 	protected determineRoot(options?: CommonOptions): Element {
 		return options?.root || this.root
+	}
+
+	protected searchElement<T extends SCDBaseElement>(
+		selector: string,
+		attributeList: AttributeList<T>[],
+		options?: CommonOptions
+	): T[] {
+		const root = this.determineRoot(options)
+		const elements = Array.from(root.querySelectorAll(selector))
+		const els = elements.map((el) =>
+			this.createElement<T>(el, attributeList)
+		)
+		return els
 	}
 
 	protected searchElements<T extends SCDBaseElement>(
@@ -105,7 +140,7 @@ export class SCDQueries {
 				obj[key] = el.getAttribute(key) ?? ''
 			}
 		} else {
-			for (const attribute of el.attributes) {
+			for (const attribute of Array.from(el.attributes)) {
 				obj[attribute.name] = attribute.value
 			}
 		}

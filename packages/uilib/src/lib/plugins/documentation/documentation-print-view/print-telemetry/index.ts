@@ -1,1 +1,0 @@
-export {default as PrintTelemetry} from "./print-telemetry.svelte"

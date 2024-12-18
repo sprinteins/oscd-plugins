@@ -1,15 +1,17 @@
-export * from './use-cases'
+export * from '@/use-cases'
 
 // SCD
-export * from './scd-queries'
-export * from './scd-xml'
-export * from './scd-events-v1'
+export * from '@/scd-queries'
+export * from '@/scd-xml'
+export * from '@/scd-events'
+export * from '@/scd-actions'
 
 // CONSTANTS
-export * from './constants/element.constant'
+export * from '@/constants'
 
 // UTILS
-export type * from './utils'
+export * from '@/utils'
+export type * from '@/utils'
 
 // PLUGIN
-export * from './scd-plugin'
+export * from '@/scd-plugin'

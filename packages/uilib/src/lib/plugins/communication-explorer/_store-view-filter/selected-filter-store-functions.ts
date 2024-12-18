@@ -1,15 +1,21 @@
-import { filterState } from "./selected-filter-store"
-import type { IEDConnectionWithCustomValues, IEDElkNode } from "../../../components/diagram"
-import { MessageType, allMessageTypes } from "@oscd-plugins/core"
-import { get } from "svelte/store"
+import { filterState } from './selected-filter-store'
+import { get } from 'svelte/store'
+// CONSTANTS
+import { MESSAGE_TYPE } from '@oscd-plugins/core'
+// TYPES
+import type {
+	IEDConnectionWithCustomValues,
+	IEDElkNode
+} from '../../../components/diagram'
+import type { MessageType } from '../types'
 
 export function selectIEDNode(node: IEDElkNode) {
-	filterState.update(selectedFilter => {
+	filterState.update((selectedFilter) => {
 		return {
 			...selectedFilter,
-			selectedIEDs:       [node],
-			selectedBays:		[],
-			selectedConnection: undefined,
+			selectedIEDs: [node],
+			selectedBays: [],
+			selectedConnection: undefined
 		}
 	})
 }
@@ -32,62 +38,65 @@ export function toggleMultiSelectionOfIED(node: IEDElkNode){
 		const isAlreadySelected = _isIEDSelected(node, selectedIEDs)
 
 		let newSelectedIEDs: IEDElkNode[] = []
-		if(!isAlreadySelected){
+		if (!isAlreadySelected) {
 			newSelectedIEDs = [...selectedFilter.selectedIEDs, node]
-		}else{
-			newSelectedIEDs = selectedIEDs.filter(selectedIED => selectedIED.id !== node.id)
+		} else {
+			newSelectedIEDs = selectedIEDs.filter(
+				(selectedIED) => selectedIED.id !== node.id
+			)
 		}
 
 		const newFilterState = {
 			...selectedFilter,
-			selectedIEDs:       newSelectedIEDs,
-			selectedConnection: undefined,
+			selectedIEDs: newSelectedIEDs,
+			selectedConnection: undefined
 		}
 		return newFilterState
 	})
 }
 
-
 export function clearIEDSelection() {
-	filterState.update(selectedFilter => {
+	filterState.update((selectedFilter) => {
 		return {
 			...selectedFilter,
-			selectedIEDs:       [],
-			selectedBays:		[],
+			selectedIEDs: [],
+			selectedBays: [],
 			selectedConnection: undefined,
 		}
 	})
 }
 
 export function selectConnection(connection: IEDConnectionWithCustomValues) {
-	filterState.update(selectedFilter => {
+	filterState.update((selectedFilter) => {
 		return {
 			...selectedFilter,
 			selectedConnection: connection,
-			selectedIEDs:       [],
-			selectedBays: 		[]
+			selectedIEDs: [],
+			selectedBays: []
 		}
 	})
 }
 
 export function clearSelection() {
-	filterState.update(selectedFilter => {
+	filterState.update((selectedFilter) => {
 		return {
 			...selectedFilter,
-			incomingConnections:         true,
-			outgoingConnections:         true,
+			incomingConnections: true,
+			outgoingConnections: true,
 			incomingMessageFilterActive: false,
 			outgoingMessageFilterActive: false,
-			selectedMessageTypes:        [...allMessageTypes],
-			selectedIEDs:                [],
-			selectedBays:				 [],
-			selectedConnection:          undefined,
+			selectedMessageTypes: Object.values(MESSAGE_TYPE),
+			selectedIEDs: [],
+			selectedBays: [],
+			selectedConnection: undefined
 		}
 	})
 }
 
-export function changeMessageConnectionFilterDirection(inc: boolean, out: boolean) {
-
+export function changeMessageConnectionFilterDirection(
+	inc: boolean,
+	out: boolean
+) {
 	let incoming = true
 	let outgoing = true
 
@@ -104,18 +113,20 @@ export function changeMessageConnectionFilterDirection(inc: boolean, out: boolea
 	filterState.update((value) => {
 		return {
 			...value,
-			incomingConnections:         incoming,
-			outgoingConnections:         outgoing,
+			incomingConnections: incoming,
+			outgoingConnections: outgoing,
 			incomingMessageFilterActive: inc,
-			outgoingMessageFilterActive: out,
+			outgoingMessageFilterActive: out
 		}
 	})
 }
 
-
-function addOrRemoveMessageType(list: string[], messageType: string, checked: boolean): string[] {
+function addOrRemoveMessageType(
+	list: string[],
+	messageType: MessageType,
+	checked: boolean
+): string[] {
 	if (checked) {
-
 		const containsTypeAlready = list.includes(messageType)
 		if (!containsTypeAlready) {
 			list.push(messageType)
@@ -130,8 +141,12 @@ function addOrRemoveMessageType(list: string[], messageType: string, checked: bo
 export function setSelectedMessageTypes(type: MessageType, isActived: boolean) {
 	filterState.update((value) => {
 		return {
-			...value, 
-			selectedMessageTypes: addOrRemoveMessageType(value.selectedMessageTypes, type, isActived),
+			...value,
+			selectedMessageTypes: addOrRemoveMessageType(
+				value.selectedMessageTypes,
+				type,
+				isActived
+			)
 		}
 	})
 }
@@ -139,8 +154,8 @@ export function setSelectedMessageTypes(type: MessageType, isActived: boolean) {
 export function setHideIrrelevantStuff(hide: boolean) {
 	filterState.update((value) => {
 		return {
-			...value, 
-			hideIrrelevantStuff: hide,
+			...value,
+			hideIrrelevantStuff: hide
 		}
 	})
 }
@@ -149,7 +164,7 @@ export function setHideConnectionArrows(hide: boolean) {
 	filterState.update((value) => {
 		return {
 			...value,
-			showConnectionArrows: hide,
+			showConnectionArrows: hide
 		}
 	})
 }
@@ -157,13 +172,13 @@ export function setHideConnectionArrows(hide: boolean) {
 export function setNameFilter(filter: string) {
 	filterState.update((value) => {
 		return {
-			...value, 
-			nameFilter: filter,
+			...value,
+			nameFilter: filter
 		}
 	})
 }
 
-export function isIEDSelected(node: {label: string}): boolean {
+export function isIEDSelected(node: { label: string }): boolean {
 	const selectedIEDs = get(filterState).selectedIEDs
 	const isSelected = _isIEDSelected(node, selectedIEDs)
 	return isSelected
@@ -187,7 +202,9 @@ export function hasActiveBaySelection(): boolean {
 	return get(filterState).selectedBays.length > 0
 }
 
-export function isConnectionSelected(connection: IEDConnectionWithCustomValues): boolean {
+export function isConnectionSelected(
+	connection: IEDConnectionWithCustomValues
+): boolean {
 	const selectedConnection = get(filterState).selectedConnection
 	return selectedConnection?.id === connection.id
 }
