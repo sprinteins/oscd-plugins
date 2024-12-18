@@ -20,7 +20,7 @@
 
 	function updateSignalRow(index: number, key: keyof SignalRowType, value: string) {
     	rows = rows.map((row, i) => i === index ? { ...row, [key]: value } : row);
-  }
+}
 </script>
 
 

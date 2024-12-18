@@ -9,7 +9,7 @@
     export let idx = 1;
 
     const dispatch = createEventDispatcher()
-    const label = `Column ${idx}`;
+    const label = `Column ${idx+1}`;
 
     function handleInputChange(key, event) {
         const value = event.target.value;
@@ -17,11 +17,21 @@
         column2 = key === 'column2' ? value : column2;
         dispatch('update', { key, value });
   }
+
+  function isFirstRow(){
+        return idx === 0;
+  }
 </script>
 
 
 
 <div class="signal-row">
+    {#if isFirstRow()}
+        <div></div>
+        <small>Choose the columns you want to display</small>
+        <small>Use Regex to filter columns</small>
+        
+    {/if}
     <Checkbox bind:checked={isSelected} />
     <Textfield
         bind:value={column1}
@@ -52,8 +62,11 @@
 
        & :global(.mdc-text-field__input[disabled]){
             cursor: not-allowed;
+        }
 
-    }
+        small{
+            color: #4d5d63;
+        }
 
     }
 </style>
