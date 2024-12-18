@@ -234,7 +234,7 @@ import BayContainer from "./bay-container/bay-container.svelte"
 							<IEDElement
 								{node}
 								isIEDSelected={isIEDSelected(node)}
-								isBaySelected={node.bayLabels.size > 0 ? isBaySelected(node.bayLabels.values().next().value) : false}
+								isBaySelected={(node.bayLabels && node.bayLabels.size > 0) ? isBaySelected(node.bayLabels.values().next().value) : false}
 								testid={`ied-${node.label}`}
 							/>
 						</foreignObject>

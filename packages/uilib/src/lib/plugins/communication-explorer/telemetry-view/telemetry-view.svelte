@@ -62,7 +62,7 @@ async function initInfos(
 
 const config: Config = {
 	iedWidth: 		150,
-	iedHeight: 		40
+	iedHeight: 		40,
 	bayLabelHeight: 15,
 	bayLabelGap: 	2
 	// spacingBetweenNodes: 100,
