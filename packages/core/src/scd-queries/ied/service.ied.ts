@@ -1,4 +1,5 @@
 import { IEDQueries } from './queries.ied'
+import { SCDQueries } from '../scd-query'
 // CONSTANTS
 import { MESSAGE_TYPE } from '@/constants/message.contant'
 // TYPES
@@ -9,9 +10,11 @@ import type { IED } from './types.ied'
 
 export class IEDService {
 	private iedQueries: IEDQueries
+	private scdQueries: SCDQueries
 
 	constructor(private readonly root: Element) {
 		this.iedQueries = new IEDQueries(this.root)
+		this.scdQueries = new SCDQueries(this.root)
 	}
 
 	//====== PUBLIC METHODS
@@ -22,6 +25,7 @@ export class IEDService {
 			return {
 				iedName: ied.name,
 				iedDetails: this.parseDetails(ied.element),
+				bays: this.scdQueries.getBaysByIEDName(ied.name),
 				published: this.findPublishedMessages(ied),
 				received: this.findReceivedMessages(ied, ieds)
 			}
