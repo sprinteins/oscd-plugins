@@ -1,6 +1,8 @@
 export type Config = {
-	width: number,
-	height: number,
+	iedWidth: number,
+	iedHeight: number,
+	bayLabelHeight: number,
+	bayLabelGap: number,
 	spacingBase?: number,
 	spacingBetweenNodes?: number,
 	// heightPerConnection: number,

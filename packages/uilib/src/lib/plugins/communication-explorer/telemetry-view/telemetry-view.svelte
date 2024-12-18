@@ -13,6 +13,7 @@ import {
 	type SelectedFilter,
 	selectConnection,
 	selectIEDNode,
+	selectBay,
 	clearIEDSelection,
 	toggleMultiSelectionOfIED
 } from '../_store-view-filter'
@@ -22,6 +23,7 @@ import { preferences$, type Preferences } from '../_store-preferences'
 import { getIEDCommunicationInfos } from '../services/ied'
 // TYPES
 import type { IED } from '@oscd-plugins/core'
+import BayContainer from '../../../components/diagram/bay-container/bay-container.svelte'
 
 //
 // INPUT
@@ -59,8 +61,10 @@ async function initInfos(
 }
 
 const config: Config = {
-	width: 150,
-	height: 40
+	iedWidth: 		150,
+	iedHeight: 		40,
+	bayLabelHeight: 15,
+	bayLabelGap: 	2
 	// spacingBetweenNodes: 100,
 	// spacingBase: 40,
 	// heightPerConnection: 20,
@@ -71,6 +75,9 @@ function handleIEDSelect(e: CustomEvent<IEDNode>) {
 }
 function handleIEDAdditiveSelect(e: CustomEvent<IEDNode>) {
 	toggleMultiSelectionOfIED(e.detail)
+}
+function handleBaySelect(e: CustomEvent<string>) {
+	selectBay(e.detail)
 }
 function handleConnectionClick(e: CustomEvent<IEDConnection>) {
 	// temp till fully migrated: map element to enhanced data model
@@ -89,6 +96,7 @@ function handleClearClick() {
 			playAnimation={$preferences$.playConnectionAnimation}
 			showConnectionArrows={$preferences$.showConnectionArrows}
 			on:iedselect={handleIEDSelect}
+			on:bayselect={handleBaySelect}
 			on:iedadditiveselect={handleIEDAdditiveSelect}
 			on:connectionclick={handleConnectionClick}
 			on:clearclick={handleClearClick}

@@ -1,5 +1,5 @@
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
-import { hasActiveIEDSelection, isIEDSelected } from '../_store-view-filter'
+import { hasActiveIEDSelection, hasActiveBaySelection, isIEDSelected } from '../_store-view-filter'
 // TYPES
 import type { IED, Utils } from '@oscd-plugins/core'
 import type { SelectedFilter } from '../_store-view-filter'
@@ -93,17 +93,21 @@ function convertPublishedMessagesToConnections(
 		const isRelevantMessageType: boolean =
 			selectedMessageTypes.includes(messageType) || isUnknownMessageType
 
-		let isRelevant = true
-		if (hasSelection) {
-			isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
-			if (isRelevant && !isRelevantMessageType) {
-				isRelevant = false
-			}
-		} else {
-			if (!isRelevantMessageType) {
-				isRelevant = false
+		//TODO: this whole function seems like a lot of duplicate code?
+		let isRelevant = !hasActiveBaySelection() 
+		if (isRelevant) {
+			if (hasSelection) {
+				isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
+				if (isRelevant && !isRelevantMessageType) {
+					isRelevant = false
+				}
+			} else {
+				if (!isRelevantMessageType) {
+					isRelevant = false
+				}
 			}
 		}
+
 		// console.log({level: "dev", msg: "IEDConnectionWithCustomValues", message, checkRelevance: checkRelevance(selectionFilter, targetIED, sourceIED), isRelevant, isRelevantMessageType, selectedMessageTypes, messageType, selectionFilter, targetIED, sourceIED})
 
 		//
@@ -170,15 +174,17 @@ function convertReceivedMessagesToConnections(
 		const isRelevantMessageType: boolean =
 			selectedMessageTypes.includes(messageType) || isUnknownMessageType
 
-		let isRelevant = true
-		if (hasSelection) {
-			isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
-			if (isRelevant && !isRelevantMessageType) {
-				isRelevant = false
-			}
-		} else {
-			if (!isRelevantMessageType) {
-				isRelevant = false
+		let isRelevant = !hasActiveBaySelection()
+		if (isRelevant) {
+			if (hasSelection) {
+				isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
+				if (isRelevant && !isRelevantMessageType) {
+					isRelevant = false
+				}
+			} else {
+				if (!isRelevantMessageType) {
+					isRelevant = false
+				}
 			}
 		}
 

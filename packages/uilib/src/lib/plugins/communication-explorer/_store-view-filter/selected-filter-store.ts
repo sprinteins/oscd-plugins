@@ -13,6 +13,7 @@ import type {
 // If the check changes we have to go through all places and change it
 export type SelectedFilter = {
 	selectedIEDs: IEDElkNode[]
+	selectedBays: string[]
 	selectedConnection: IEDConnectionWithCustomValues | undefined
 	incomingConnections: boolean
 	outgoingConnections: boolean
@@ -26,6 +27,7 @@ export type SelectedFilter = {
 
 export const defaultSelection: SelectedFilter = {
 	selectedIEDs: [],
+	selectedBays: [],
 	selectedConnection: undefined,
 
 	incomingConnections: true,
