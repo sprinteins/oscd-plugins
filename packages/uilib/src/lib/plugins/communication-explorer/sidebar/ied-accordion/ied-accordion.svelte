@@ -21,6 +21,7 @@ $: relations = getConnectedIEDsByLabel(rootNode, IEDSelection.label)
 $: relationsByServiceType = groupRelationsByServiceType(relations)
 $: serviceTypes = Array.from(relationsByServiceType.entries())
 $: details = getIEDDetails(rootNode, IEDSelection.label)
+$: bays = Array.from(IEDSelection.bays).join(", ")
 
 const serviceTypeColor: { [key in MessageType | 'Unknown']: string } = {
 	GOOSE: '--color-message-goose',
@@ -30,7 +31,6 @@ const serviceTypeColor: { [key in MessageType | 'Unknown']: string } = {
 }
 
 let detailsCollapsed = true
-let bays = Array.from(IEDSelection.bays).join(", ")
 </script>
 
 <div>
