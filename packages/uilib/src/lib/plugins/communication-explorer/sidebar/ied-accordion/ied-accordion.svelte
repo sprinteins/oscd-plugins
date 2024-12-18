@@ -33,84 +33,81 @@ const serviceTypeColor: { [key in MessageType | 'Unknown']: string } = {
 let detailsCollapsed = true
 </script>
 
-<div>
-    {#if bays.length > 0}
-		<div class="baylabel" style="height: {IEDSelection.bayLabelHeight}px;margin-bottom: {IEDSelection.bayLabelGap}px">
-			{#each bays as bay}
-				{bay}
-			{/each}
-		</div>
-	{/if}
-
-    <IED label={IEDSelection.label} isSelected={true} isSelectable={false} />
-</div>
-{#if details != null}
-    <div class={detailsCollapsed ? 'details_collapsed' : ''}>
-    {#if details.logicalNodes.length > 0}
-        <h3>Logical Nodes</h3>
-        {#each details.logicalNodes as node}
-            <span class="details">{node}</span>
-            <br>
+{#if bays.length > 0}
+    <div class="baylabel">
+        {#each bays as bay}
+            {bay}
         {/each}
-    {/if}
-    {#if details.dataObjects.length > 0}
-        <h3>Data Objects</h3>
-        {#each details.dataObjects as node}
-            <span class="details">{node}</span>
-            <br>
-        {/each}
-    {/if}
-    {#if details.dataAttributes.length > 0}
-        <h3>Data Attributes</h3>
-        {#each details.dataAttributes as node}
-            <span class="details">{node}</span>
-            <br>
-        {/each}
-    {/if}
     </div>
-    <button class="expand_button" on:click={() => detailsCollapsed = !detailsCollapsed}>
-        {detailsCollapsed ? 'Show more' : 'Show less'}
-    </button>
 {/if}
 
-<div class="accordions">
-    {#each serviceTypes as serviceType}
-        {@const service = serviceType[1]}
-        {@const type = service[0].serviceType}
-        {@const typeLabel = service[0].serviceTypeLabel}
-        {@const connection = service[0].connectionDirection}
-
-        {@const shouldMessageTypeBeShown = $filterState.selectedMessageTypes.includes(type)}
-        {@const shouldMessageDirectionShownIncoming = $filterState.incomingConnections && (connection === ConnectionTypeDirection.INCOMING)}
-        {@const shouldMessageDirectionShownOutgoing = $filterState.outgoingConnections && (connection === ConnectionTypeDirection.OUTGOING)}
-
+<div style="margin-left: {(bays.length > 0) ? '15px' : '0px'}">
+    <IED label={IEDSelection.label} isSelected={true} isSelectable={false} />
     
-        {#if shouldMessageTypeBeShown && (shouldMessageDirectionShownIncoming || shouldMessageDirectionShownOutgoing)}
-            <div class="accordion">
-                <PublisherSubscriberAccordion
-                    color={serviceTypeColor[type]}
-                    serviceType={type}
-                    serviceLabel={typeLabel}
-                    affectedIEDObjects={service}
-                    connectionDirection={connection}
-                />
-            </div>
+    {#if details != null}
+        <div class={detailsCollapsed ? 'details_collapsed' : ''}>
+        {#if details.logicalNodes.length > 0}
+            <h3>Logical Nodes</h3>
+            {#each details.logicalNodes as node}
+                <span class="details">{node}</span>
+                <br>
+            {/each}
         {/if}
-
-    {/each}
+        {#if details.dataObjects.length > 0}
+            <h3>Data Objects</h3>
+            {#each details.dataObjects as node}
+                <span class="details">{node}</span>
+                <br>
+            {/each}
+        {/if}
+        {#if details.dataAttributes.length > 0}
+            <h3>Data Attributes</h3>
+            {#each details.dataAttributes as node}
+                <span class="details">{node}</span>
+                <br>
+            {/each}
+        {/if}
+        </div>
+        <button class="expand_button" on:click={() => detailsCollapsed = !detailsCollapsed}>
+            {detailsCollapsed ? 'Show more' : 'Show less'}
+        </button>
+    {/if}
+    
+    <div class="accordions">
+        {#each serviceTypes as serviceType}
+            {@const service = serviceType[1]}
+            {@const type = service[0].serviceType}
+            {@const typeLabel = service[0].serviceTypeLabel}
+            {@const connection = service[0].connectionDirection}
+    
+            {@const shouldMessageTypeBeShown = $filterState.selectedMessageTypes.includes(type)}
+            {@const shouldMessageDirectionShownIncoming = $filterState.incomingConnections && (connection === ConnectionTypeDirection.INCOMING)}
+            {@const shouldMessageDirectionShownOutgoing = $filterState.outgoingConnections && (connection === ConnectionTypeDirection.OUTGOING)}
+    
+        
+            {#if shouldMessageTypeBeShown && (shouldMessageDirectionShownIncoming || shouldMessageDirectionShownOutgoing)}
+                <div class="accordion">
+                    <PublisherSubscriberAccordion
+                        color={serviceTypeColor[type]}
+                        serviceType={type}
+                        serviceLabel={typeLabel}
+                        affectedIEDObjects={service}
+                        connectionDirection={connection}
+                    />
+                </div>
+            {/if}
+            
+        {/each}
+    </div>
 </div>
 
 <style lang="scss">
     
-    /*quickly copied over from ied-element.svelte 
-    TODO: make bay-label it's own Element!*/
+    //TODO: make bay-label it's own Element
     .baylabel {
         width: fit-content;
-		font-size: 10px;
-        padding-top: 0.2em;
-		padding-left: 4px;
-		padding-right: 4px;
-        margin-bottom: 2px;
+		padding: 10px;
+        margin-bottom: 5px;
 
 		/* TODO: extract colors */
 		background: var(--color-white);
