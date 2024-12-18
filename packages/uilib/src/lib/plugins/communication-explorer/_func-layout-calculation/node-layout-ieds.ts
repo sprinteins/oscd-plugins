@@ -33,7 +33,7 @@ export function generateIEDLayout(
 			isRelevant = isNodeRelevant || isNodeSelected
 		}
 		if (hasBaySelection) {
-			isRelevant = isBaySelected(ied.bayLabels.values().next().value) //TODO: this needs to change to support multiple bays!
+			isRelevant = isBaySelected(ied.bays.values().next().value) //TODO: this needs to change to support multiple bays!
 		}
 
 		return {
@@ -44,7 +44,7 @@ export function generateIEDLayout(
 			isRelevant: isRelevant,
 			children: [],
 			details: ied.iedDetails,
-			bayLabels: ied.bayLabels,
+			bays: ied.bays,
 			bayLabelHeight: config.bayLabelHeight,
 			bayLabelGap: config.bayLabelGap,
 			iedHeight: config.iedHeight

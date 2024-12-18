@@ -38,7 +38,7 @@ export type IEDElkNode = Omit<ElkNode, "edges" | "children"> & {
 	edges?: IEDConnection[]
 	children: IEDElkNode[]
 	details: IED.Details
-	bayLabels: Set<string>
+	bays: Set<string>
 	bayLabelHeight: number
 	bayLabelGap: number
 	iedHeight: number

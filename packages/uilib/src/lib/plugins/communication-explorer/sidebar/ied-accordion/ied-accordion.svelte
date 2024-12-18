@@ -30,7 +30,7 @@ const serviceTypeColor: { [key in MessageType | 'Unknown']: string } = {
 }
 
 let detailsCollapsed = true
-let bays = Array.from(IEDSelection.bayLabels).join(", ")
+let bays = Array.from(IEDSelection.bays).join(", ")
 </script>
 
 <div>

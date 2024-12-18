@@ -10,7 +10,7 @@
 	export let disabled = false
 	export let testid = ""
 
-	let bays = Array.from(node.bayLabels).join(", ");
+	let bays = Array.from(node.bays).join(", ");
 </script>
 
 {#if node}
