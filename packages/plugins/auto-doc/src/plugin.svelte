@@ -53,7 +53,7 @@
 <MaterialTheme pluginType={pluginType}>
 	<auto-doc class="auto-doc">
 		{#if xmlDocument}
-			{#if showBanner && import.meta.env.DEV}
+			{#if showBanner && !import.meta.env.DEV}
 				<div class="banner" style="{showBanner ? 'display:flex;' : 'display:none;'}">
 					This plugin is in test phase and not suitable for production use.
 					<CustomIconButton icon="close" color="white" on:click={() => showBanner = !showBanner} />
