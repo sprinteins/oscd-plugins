@@ -1,7 +1,7 @@
 
 <script lang="ts">
 	// COMPONENTS
-	import { MaterialTheme } from '@oscd-plugins/ui'
+	import { MaterialTheme, CustomIconButton } from '@oscd-plugins/ui'
 	import Router from 'svelte-spa-router'
 	import {routes} from '@/routes/routes'
 	
@@ -20,6 +20,8 @@
 	export let editCount: number
 	
 	
+	let showBanner = true
+
 	//==== REACTIVITY ====//
 	
 	
@@ -51,6 +53,12 @@
 <MaterialTheme pluginType={pluginType}>
 	<auto-doc class="auto-doc">
 		{#if xmlDocument}
+			{#if showBanner && import.meta.env.DEV}
+				<div class="banner" style="{showBanner ? 'display:flex;' : 'display:none;'}">
+					This plugin is in test phase and not suitable for production use.
+					<CustomIconButton icon="close" color="white" on:click={() => showBanner = !showBanner} />
+				</div>
+			{/if}
 			<Router {routes} />
 		{:else}
 			<div class="file-missing">
@@ -67,6 +75,19 @@
 		p{
 			text-align: center;
 		}
+	}
+
+	.banner {
+		align-items: center;
+		justify-content: space-between;
+		padding: .25rem 2rem;
+		width: 100%;
+		background-color: var(--mdc-theme-error);
+		color: white;
+		position:fixed;
+		top: var(--header-height);
+		box-sizing: border-box;
+		z-index: 1;
 	}
 </style>
 
