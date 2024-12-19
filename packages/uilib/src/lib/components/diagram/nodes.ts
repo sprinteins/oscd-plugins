@@ -32,12 +32,13 @@ export type SubnetworkEdge = ElkExtendedEdge & {
 }
 
 export type IEDElkNode = Omit<ElkNode, "edges" | "children"> & {
-	label: string,
+	label: string
 	isRelevant?: boolean
 	isBayNode?: boolean
 	edges?: IEDConnection[]
 	children: IEDElkNode[]
 	details: IED.Details
+	bays: Set<string>
 }
 
 export type BayElkNode = Omit<IEDElkNode, "isBayNode"> & {
