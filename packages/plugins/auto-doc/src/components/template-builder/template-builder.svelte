@@ -1,10 +1,10 @@
 <script lang="ts">
     import Button, {Label} from "@smui/button"
     import {IconWrapper} from "@oscd-plugins/ui"
-    import TextElement from "../elements/text-element/text-element.svelte"
-    import ImageElement from "../elements/image-element/image-element.svelte"
-    import SignalListElement from "../elements/signal-list/signal-list-element.svelte"
-    import ElementWrapper from "../element-wrapper/element-wrapper.svelte"
+    import TextElement from "@/components/elements/text-element/text-element.svelte"
+    import ImageElement from "@/components/elements/image-element/image-element.svelte"
+    import SignalListElement from "@/components/elements/signal-list/signal-list-element.svelte"
+    import ElementWrapper from "@/components/element-wrapper/element-wrapper.svelte"
     import {docTemplatesStore} from '@/stores'
     import type {BlockElement, ElementType, ElementMap} from '@/components/elements/types.elements'
 

@@ -63,8 +63,8 @@
 </script>
 
 <div class="template-creation-container">
-    <div class="header-container">
-        <header class="header">
+    <header class="header-container">
+        <div class="header">
             <div class="template-title">
                 <CustomIconButton icon="arrow_back" color="black" on:click={navigateToOverviewPage}/>
                 <div class="title" on:click|stopPropagation={displayTitleAndDescription} 
@@ -77,8 +77,8 @@
                 <Button>save template</Button>
             </div>
             <Button variant="raised">Export</Button>
-        </header>
-    </div>
+        </div>
+    </header>
 
 
     {#if isMetadataVisible}

@@ -53,7 +53,7 @@
 
 <div class="table-container">   
     {#if allTemplates.length === 0}
-        <div>there are no templates available</div>
+        <div>There are currently no templates available</div>
     {:else}
     <DataTable>
         <Head>

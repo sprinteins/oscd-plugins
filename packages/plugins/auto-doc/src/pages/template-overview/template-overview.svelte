@@ -42,7 +42,7 @@
     }
 </script>
 
-<main class="template-overview">
+<div class="template-overview">
     <header class="template-controls">
         <Button variant="raised" class="btn-pill btn-pill-primary" on:click={createNewTemplate} > 
             <IconWrapper icon="add"/>
@@ -51,9 +51,11 @@
         <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button>
     </header>
 
-    <Table allTemplates={templatesConvertedToTableRow} on:templateDelete={deleteTemplate}/>
+    <main>
+        <Table allTemplates={templatesConvertedToTableRow} on:templateDelete={deleteTemplate}/>
+    </main>
 
-</main>
+</div>
 
 
 <style lang="scss">
