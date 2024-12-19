@@ -27,7 +27,7 @@
 		width: 100%;
 		height: 100%;
 		padding: 0.4rem;
-		border: 1px dashed var(--color-black);
+		border: 2px dashed var(--color-black);
 		border-radius: 5px;
 		box-sizing: border-box;
 	}
