@@ -51,7 +51,11 @@ describe('DocumentTemplateStore', () => {
 		const description = 'Test Description';
 
 		// Act
-		const generatedId = docTemplatesStore.addDocumentTemplate(title, description);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
+		if(generatedId){
+
+			docTemplatesStore.editDocumentTemplateTitleAndDescription(generatedId, title, description);
+		}
 
 		// Assert
 		const xmlDocValue = get(xmlDocument);
@@ -66,9 +70,7 @@ describe('DocumentTemplateStore', () => {
 
 	it('should retrieve a "DocumentTemplate" element by id', () => {
 		// Arrange
-		const title = 'Test Title';
-		const description = 'Test Description';
-		docTemplatesStore.addDocumentTemplate(title, description);
+		docTemplatesStore.addDocumentTemplate();
 		const xmlDocValue = get(xmlDocument);
 		const privateArea = xmlDocValue?.documentElement.querySelector('Private[type="AUTO_DOC"]');
 		const docDef = privateArea?.querySelector('DocumentTemplate');
@@ -87,7 +89,10 @@ describe('DocumentTemplateStore', () => {
 		const titles = ['Title 1', 'Title 2'];
 		const descriptions = ['Description 1', 'Description 2'];
 		for (let i = 0; i < descriptions.length; i++) {
-			docTemplatesStore.addDocumentTemplate(titles[i], descriptions[i]);
+			const generatedId = docTemplatesStore.addDocumentTemplate();
+			if(generatedId){
+				docTemplatesStore.editDocumentTemplateTitleAndDescription(generatedId, titles[i], descriptions[i]);
+			}
 		}
 
 		// Act
@@ -102,9 +107,7 @@ describe('DocumentTemplateStore', () => {
 
 	it('should add a "Block" element with markdown text to an existing "DocumentTemplate" element', () => {
 		// Arrange
-		const title = 'Test Title';
-		const description = 'Test Description';
-		const id = docTemplatesStore.addDocumentTemplate(title, description);
+		const id = docTemplatesStore.addDocumentTemplate();
 		if (!id) {
 			throw new Error('adding DocumentTemplate failed');
 		}
@@ -130,9 +133,7 @@ describe('DocumentTemplateStore', () => {
 
 	it('should retrieve a "Block" element by id from a given "DocumentTemplate"', () => {
 		// Arrange
-		const title = 'Test Title';
-		const description = 'Test Description';
-		const generatedId = docTemplatesStore.addDocumentTemplate(title, description);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
 		if (!generatedId) {
 			throw new Error('adding DocumentTemplate failed');
 		}
@@ -156,9 +157,7 @@ describe('DocumentTemplateStore', () => {
 
 	it('should retrieve all "Block" elements of a given "DocumentTemplate"', () => {
 		// Arrange
-		const title = 'Test Title';
-		const description = 'Test Description';
-		const generatedId = docTemplatesStore.addDocumentTemplate(title, description);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
 		if (!generatedId) {
 			throw new Error('adding DocumentTemplate failed');
 		}
@@ -189,9 +188,7 @@ describe('DocumentTemplateStore', () => {
 	it('should insert "BlockId" element at the correct position', () => {
 		// Arrange
 		docTemplatesStore.init();
-		const title = 'Test Title';
-		const description = 'Test Description';
-		const generatedId = docTemplatesStore.addDocumentTemplate(title, description);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
 		if (!generatedId) {
 			throw new Error('adding DocumentTemplate failed');
 		}
@@ -225,9 +222,7 @@ describe('DocumentTemplateStore', () => {
 	it('should move a block to the specified position in the document definition', () => {
 		// Arrange
 		docTemplatesStore.init();
-		const title = 'Test Title';
-		const description = 'Test Description';
-		const generatedId = docTemplatesStore.addDocumentTemplate(title, description);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
 		if (!generatedId) {
 			throw new Error('adding DocumentTemplate failed');
 		}
@@ -266,9 +261,7 @@ describe('DocumentTemplateStore', () => {
 	it('should delete a block from the document definition', () => {
 		// Arrange
 		docTemplatesStore.init();
-		const title = 'Test Title';
-		const description = 'Test Description';
-		const generatedId = docTemplatesStore.addDocumentTemplate(title, description);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
 		if (!generatedId) {
 			throw new Error('adding DocumentTemplate failed');
 		}
@@ -298,9 +291,7 @@ describe('DocumentTemplateStore', () => {
 
 	it('should delete a "DocumentTemplate" element by id', () => {
 		// Arrange
-		const title = 'Test Title';
-		const description = 'Test Description';
-		const generatedId = docTemplatesStore.addDocumentTemplate(title, description);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
 		if (!generatedId) {
 			throw new Error('adding DocumentTemplate failed');
 		}
@@ -325,10 +316,13 @@ describe('DocumentTemplateStore', () => {
 		const description = 'Original Description';
 		const newTitle = 'Duplicated Title';
 		const newDescription = 'Duplicated Description';
-		const generatedId = docTemplatesStore.addDocumentTemplate(title, description);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
+	
 		if (!generatedId) {
 			throw new Error('adding DocumentTemplate failed');
 		}
+		docTemplatesStore.editDocumentTemplateTitleAndDescription(generatedId, title, description);
+		
 		const docDef = docTemplatesStore.getDocumentTemplate(generatedId);
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
@@ -369,9 +363,7 @@ describe('DocumentTemplateStore', () => {
 
 	it('should edit the content of a "Block" element within a "DocumentTemplate"', () => {
 		// Arrange
-		const title = 'Test Title';
-		const description = 'Test Description';
-		const generatedId = docTemplatesStore.addDocumentTemplate(title, description);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
 		if (!generatedId) {
 			throw new Error('adding DocumentTemplate failed');
 		}
@@ -398,10 +390,12 @@ describe('DocumentTemplateStore', () => {
 		const title = 'Test Title';
 		const initialDescription = 'Initial Description';
 		const updatedDescription = 'Updated Description';
-		const generatedId = docTemplatesStore.addDocumentTemplate(title, initialDescription);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
 		if (!generatedId) {
 			throw new Error('adding DocumentTemplate failed');
 		}
+		docTemplatesStore.editDocumentTemplateTitleAndDescription(generatedId, title, initialDescription);
+		
 		const docDef = docTemplatesStore.getDocumentTemplate(generatedId);
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
@@ -421,10 +415,12 @@ describe('DocumentTemplateStore', () => {
 		const initialTitle = 'Initial Title';
 		const updatedTitle = 'Updated Title';
 		const description = 'Test Description';
-		const generatedId = docTemplatesStore.addDocumentTemplate(initialTitle, description);
+		const generatedId = docTemplatesStore.addDocumentTemplate();
 		if (!generatedId) {
 			throw new Error('adding DocumentTemplate failed');
 		}
+		docTemplatesStore.editDocumentTemplateTitleAndDescription(generatedId, initialTitle, description);
+
 		const docDef = docTemplatesStore.getDocumentTemplate(generatedId);
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
@@ -438,6 +434,37 @@ describe('DocumentTemplateStore', () => {
 		expect(updatedDocDef).not.toBeNull();
 		expect(updatedDocDef?.getAttribute('title')).toBe(updatedTitle);
 	});
+
+	it('should preserve id and date attributes when editing title and description', () => {
+		// Arrange
+		const title = 'Initial Title';
+		const description = 'Initial Description';
+		const generatedId = docTemplatesStore.addDocumentTemplate();
+		if (!generatedId) {
+		  throw new Error('adding DocumentTemplate failed');
+		}
+		docTemplatesStore.editDocumentTemplateTitleAndDescription(generatedId, title, description);
+
+		const docDef = docTemplatesStore.getDocumentTemplate(generatedId);
+		if (!docDef) {
+		  throw new Error('DocumentTemplate not found');
+		}
+		const initialDate = docDef.getAttribute('date');
+		const initialId = docDef.getAttribute('id');
+	
+		// Act
+		const newTitle = 'Updated Title';
+		const newDescription = 'Updated Description';
+		docTemplatesStore.editDocumentTemplateTitleAndDescription(generatedId, newTitle, newDescription);
+	
+		// Assert
+		const updatedDocDef = docTemplatesStore.getDocumentTemplate(generatedId);
+		expect(updatedDocDef).not.toBeNull();
+		expect(updatedDocDef?.getAttribute('title')).toBe(newTitle);
+		expect(updatedDocDef?.getAttribute('description')).toBe(newDescription);
+		expect(updatedDocDef?.getAttribute('id')).toBe(initialId);
+		expect(updatedDocDef?.getAttribute('date')).toBe(initialDate);
+	  });
 });
 
 
