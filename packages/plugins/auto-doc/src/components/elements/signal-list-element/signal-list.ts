@@ -1,4 +1,4 @@
-export const messageColumns = ['Goose', 'MMS', 'SMV', 'Unknown'] as const;
+export const messageTypes = ['Goose', 'MMS', 'SMV', 'Unknown'] as const;
 
 export const signalColumns = [
 	'UW', 'Voltage Level', 'Bay', 'Meldetext',

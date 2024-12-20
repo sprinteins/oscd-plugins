@@ -1,11 +1,11 @@
 <script lang="ts">
 	import SignalRow from './signal-row.svelte';
 	import type { SignalRow as SignalRowType, HintText, LabelText } from './types.signal-list';
-	import {signalColumns, messageColumns} from './signal-list';
+	import {signalColumns,  messageTypes} from './signal-list';
 
 
 
-	let rows: SignalRowType[] = signalColumns.map((col, i) => {
+	let columns: SignalRowType[] = signalColumns.map((col, i) => {
 		return {
 			index: i,
 			isSelected: false,
@@ -14,7 +14,7 @@
 		}
 	})
 
-	let messages: SignalRowType[] = messageColumns.map((message, i) => {
+	let messages: SignalRowType[] = messageTypes.map((message, i) => {
 		return {
 			index: i,
 			isSelected: false,
@@ -44,14 +44,17 @@
 	}
 
 	function updateSignalRow(index: number, key: keyof SignalRowType, value: string) {
-    	rows = rows.map((row, i) => i === index ? { ...row, [key]: value } : row);
-}
+    	columns = columns.map((row, i) => i === index ? { ...row, [key]: value } : row);
+	}
+	function updateMessageType(index: number, key: keyof SignalRowType, value: string) {
+    	messages = messages.map((message, i) => i === index ? { ...message, [key]: value } : message);
+	}
 </script>
 
 
 <article class="signal-list">
 
-	{#each rows as row (row.index)}
+	{#each columns as row (row.index)}
 		<SignalRow 
 			idx={row.index}
 			label={columnsLabelText}
@@ -70,7 +73,7 @@
 			bind:isSelected={message.isSelected}
 			bind:column1={message.column1}
 			bind:column2={message.column2}
-			on:update={e => updateSignalRow(message.index, e.detail.key, e.detail.value)}
+			on:update={e => updateMessageType(message.index, e.detail.key, e.detail.value)}
 		/>
 	{/each}
 	

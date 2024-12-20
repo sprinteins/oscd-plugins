@@ -1,4 +1,4 @@
-import { signalColumns, messageColumns } from './signal-list';
+import { signalColumns, messageTypes } from './signal-list';
 
 export type SignalRow = {
 	index: number;
@@ -9,7 +9,7 @@ export type SignalRow = {
 
 export type SignalColumn = typeof signalColumns[number];
 
-export type MessageType = typeof messageColumns[number];
+export type MessageType = typeof messageTypes[number];
 
 export type HintText = {
 	col1Hint: string
