@@ -2,18 +2,18 @@
     import Checkbox from '@smui/checkbox';
     import Textfield from "@smui/textfield"
     import {createEventDispatcher} from "svelte"
-	import type { SignalRow, HintText } from './types.signal-list';
+	import type { SignalRow, HintText, LabelText, Label } from './types.signal-list';
 
     //Props
+    export let idx = 1;
+    export let label: LabelText = {col1Label: {name: "", hasSuffix: false}, col2Label: {name: "", hasSuffix: false}};
+    export let hintText: HintText = {col1Hint: "", col2Hint: ""};
     export let isSelected = false;
     export let column1 = "";
     export let column2 = "";
-    export let label = "";
-    export let idx = 1;
-    export let hintText: HintText = {col1: "", col2: ""};
+
 
     const dispatch = createEventDispatcher()
-    const labelWithSuffix = `${label} ${idx+1}`;
 
     function handleInputChange(key: keyof SignalRow, event: CustomEvent<HTMLInputElement>) {
         const target = event.target as HTMLInputElement | null;
@@ -30,7 +30,12 @@
         return idx === 0;
   }
   function isThereHintText(){
-        return hintText.col1.length > 0 || hintText.col2.length > 0;
+        return hintText.col1Hint.length > 0 || hintText.col2Hint.length > 0;
+  }
+
+  function createSuffixForLabelIfNeeded(label: Label){
+    const {name, hasSuffix} = label;
+    return hasSuffix ? `${name} ${idx+1}` : name;
   }
 </script>
 
@@ -39,15 +44,15 @@
 <div class="signal-row">
     {#if isFirstRow() && isThereHintText()}
         <div></div>
-        <small>{hintText.col1}</small>
-        <small>{hintText.col2}</small>
+        <small>{hintText.col1Hint}</small>
+        <small>{hintText.col2Hint}</small>
         
     {/if}
     <Checkbox bind:checked={isSelected} />
     <Textfield
         bind:value={column1}
         variant="outlined"
-        label={labelWithSuffix}
+        label={createSuffixForLabelIfNeeded(label.col1Label)}
         on:input= {e => handleInputChange('column1', e)}
         disabled={!isSelected}
         >
@@ -55,7 +60,7 @@
     <Textfield
         bind:value={column2}
         variant="outlined"
-        label={labelWithSuffix}
+        label={createSuffixForLabelIfNeeded(label.col2Label)}
         on:input= {e => handleInputChange('column2', e)}
         disabled={!isSelected}
         >

@@ -12,6 +12,15 @@ export type SignalColumn = typeof signalColumns[number];
 export type MessageType = typeof messageColumns[number];
 
 export type HintText = {
-	col1: string
-	col2: string
+	col1Hint: string
+	col2Hint: string
 }
+
+export type Label = { name: string, hasSuffix: boolean }
+
+export type LabelText = {
+	col1Label: Label
+	col2Label: Label
+}
+
+
