@@ -6,3 +6,5 @@ export * from './events.store'
 
 export * from './data-types-templates.store'
 export * from './doc-templates.store'
+export * from './placeholder.store'
+export * from './signallist.store'
