@@ -22,17 +22,19 @@
         "signal-list": SignalListElement,
     }
     const signallist = signallistStore.getSignallist();
+    const emptyContent = "";
     console.log('Message Publishers:', signallist.messagePublishers);
     console.log('Message Subscribers:', signallist.messageSubscribers);
     console.log('Invalidities Reports:', signallist.invaliditiesReports);
 
 
     function addElement(type: ElementType){
-        const elementId = docTemplatesStore.addBlockToDocumentTemplate(template, "", type, blockElements.length)
+        const elementId = docTemplatesStore.addBlockToDocumentTemplate(template, emptyContent, type, blockElements.length)
         
         const newBlockElement: BlockElement = {
             id: elementId,
             type: type,
+            content: emptyContent
         }
 
         blockElements = [...blockElements, newBlockElement]
@@ -44,6 +46,10 @@
         blockElements = blockElements.filter(blockElement => blockElement.id !== elementId)
     }
 
+
+    function handleContentChange(elementId: string, newContent: string){
+        docTemplatesStore.editBlockContentOfDocumentTemplate(template, elementId, newContent)
+    }
 </script>
 
 
@@ -55,7 +61,11 @@
         <div class="elements-list">
             {#each blockElements as blockElement (blockElement.id)}
                 <ElementWrapper elementId={blockElement.id} on:elementDelete={deleteBlockElement}>
-                    <svelte:component this={componentMap[blockElement.type]}/>
+                    <svelte:component 
+                        this={componentMap[blockElement.type]}
+                        content={blockElement.content}
+                        onContentChange={(newContent) => handleContentChange(blockElement.id, newContent)}
+                    />
                 </ElementWrapper>
             {/each}
         </div>
