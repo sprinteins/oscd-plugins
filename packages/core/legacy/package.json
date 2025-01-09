@@ -6,8 +6,13 @@
 	"main": "dist/index.js",
 	"source": "src/index.ts",
 	"types": "dist/index.d.ts",
-	"files": ["dist"],
-	"exports": "./dist/index.js",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": "./dist/index.js",
+		"./instance-api/v1": "./dist/instance-api/v1/index.js"
+	},
 	"scripts": {
 		"//====== BUILD ======//": "",
 		"build": "tsup",
