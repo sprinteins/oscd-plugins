@@ -1,16 +1,37 @@
-<svelte:options tag={null} />
+<svelte:options customElement={{
+	props: {
+		doc: { reflect: true, type: 'Object'},
+		docName: { reflect: true, type: 'String'},
+		editCount: { reflect: true, type: 'Number'},
+		locale: { reflect: true, type: 'String'},
+		pluginType: { reflect: true, type: 'String'}
+	}
+}} />
+
+<Theme pluginName={jsonPackage.name} pluginVersion={jsonPackage.version}>
+	<h1>IO Center</h1>
+</Theme>
 
 <script lang="ts">
-  import { IOCenter } from "@oscd-plugins/uilib/src/lib/plugins/io-center";
-  import * as pckg from "../package.json";
+import { onMount } from 'svelte'
+// PACKAGE
+import jsonPackage from '../package.json'
+// CORE
+import { Theme, xmlDocumentStore } from '@oscd-plugins/core-ui-svelte'
+// TYPES
+import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 
-  // Inputs
-  export let doc: XMLDocument;
+// props
+const { doc, editCount }: Utils.PluginCustomComponentsProps = $props()
+
+// composables
+//====== HOOKS ======//
+
+onMount(() => {
+	// set the document
+	xmlDocumentStore.update({
+		newXmlDocument: doc,
+		editCount
+	})
+})
 </script>
-
-{#if doc}
-  <IOCenter root={doc?.documentElement} />
-{/if}
-
-<input type="hidden" name="package-name" value={pckg.name} />
-<input type="hidden" name="package-version" value={pckg.version} />

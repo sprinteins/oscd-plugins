@@ -1,29 +1,29 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
-import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+import { resolve } from 'node:path'
+import jsonPackage from './package.json'
+import dts from 'vite-plugin-dts'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
-	plugins: [
-		svelte(),
-		cssInjectedByJsPlugin({
-            styleId: process.env.npm_package_name,
-            injectCodeFunction: function injectCodeCustomRunTimeFunction(cssCode: string, options: any) {
-                if(!globalThis.pluginStyle){
-                    globalThis.pluginStyle = {}
-                }
-                globalThis.pluginStyle[options.styleId] = cssCode
-            }
-        }),
-	],
-	build:{
-		lib:{
-			entry: "src/plugin.ts",
+	// base: isDevelopment
+	// 	? ''
+	// 	: `/oscd-plugins/${jsonPackage.name.replace('@oscd-plugins/', '')}/`,
+	plugins: [svelte(), dts({ rollupTypes: true })],
+	resolve: {
+		alias: {
+			'@': resolve(__dirname, 'src')
+		}
+	},
+	build: {
+		target: 'esnext',
+		lib: {
+			entry: resolve(__dirname, 'src/plugin.ts'),
 			formats: ['es'],
-			fileName: "index",
+			fileName: 'plugin'
 		},
-		sourcemap: isDevelopment ? "inline" : false,
+		sourcemap: isDevelopment ? 'inline' : false
 	}
 })
