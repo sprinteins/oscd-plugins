@@ -1,0 +1,44 @@
+{
+	"name": "@oscd-plugins/core-api",
+	"version": "0.0.1",
+	"description": "",
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"source": "src/index.ts",
+	"exports": {
+		".": "./dist/index.js",
+		"./instance/v1": {
+			"types": "./dist/instance/v1/index.d.ts",
+			"default": "./dist/instance/v1/index.js"
+		},
+		"./plugin/v1": {
+			"types": "./dist/plugin/v1/index.d.ts",
+			"default": "./dist/plugin/v1/index.js"
+		},
+		"./mocks/v1": {
+			"types": "./dist/mocks/v1/index.d.ts",
+			"default": "./dist/mocks/v1/index.js"
+		}
+	},
+	"scripts": {
+		"//====== BUILD ======//": "",
+		"build": "tsup",
+		"build:watch": "tsup --watch",
+		"//====== TYPES ======//": "",
+		"types": "tsc --project .",
+		"types:watch": "npm run types -- --watch",
+		"//====== TESTS ======//": "",
+		"test": "npm run test:watch --run",
+		"test:watch": "vitest"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@oscd-plugins/core-standard": "workspace:^",
+		"tsup": "^8.3.5",
+		"typescript": "5.6.3"
+	}
+}
