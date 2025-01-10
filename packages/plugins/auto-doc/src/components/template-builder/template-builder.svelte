@@ -19,7 +19,7 @@
     const componentMap : ElementMap  = {
         "text": TextElement,
         "image": ImageElement,
-        "signal-list": SignalListElement,
+        "signalList": SignalListElement,
     }
     const signallist = signallistStore.getSignallist();
     const emptyContent = "";
@@ -81,7 +81,7 @@
                 {#if isElementsChoiceVisible}
                     <Button variant="outlined" on:click={()=>{addElement('text')}}>Text</Button>
                     <Button variant="outlined" on:click={()=>{addElement("image")}}>Image</Button>
-                    <Button variant="outlined" on:click={()=>{addElement("signal-list")}}>Signal List</Button>
+                    <Button variant="outlined" on:click={()=>{addElement("signalList")}}>Signal List</Button>
                 {/if}
             </div>
         </footer>

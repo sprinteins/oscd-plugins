@@ -217,7 +217,7 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const type = "signal-list";
+		const type = "signalList";
 
 		// Add blocks to the document definition
 		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
@@ -352,7 +352,7 @@ describe('DocumentTemplateStore', () => {
 			throw new Error('DocumentTemplate not found');
 		}
 		const updatedContent = 'Updated block content';
-		const type = "signal-list";
+		const type = "signalList";
 		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
 	
 		// Act

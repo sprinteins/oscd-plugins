@@ -1,4 +1,4 @@
-export type ElementType = 'text' | 'image' | 'signal-list'
+export type ElementType = 'text' | 'image' | 'signalList'
 
 export type BlockElement = {
 	id: string
