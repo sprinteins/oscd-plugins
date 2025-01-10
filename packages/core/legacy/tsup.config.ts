@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig((options) => ({
 	name: 'core',
-	entry: ['src/index.ts'],
+	entry: ['./src/index.ts'],
 	clean: true,
 	format: ['esm'],
 	sourcemap: true,
