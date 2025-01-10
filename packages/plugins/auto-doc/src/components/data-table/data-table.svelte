@@ -4,11 +4,11 @@
     import {Tooltip, Truncate} from "@/components"
     import type {Template} from "@/pages/template-overview/types.template-overview";
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-
-
+    import {createEventDispatcher} from "svelte"
 
     export let allTemplates : Template[];
 
+    const dispatch = createEventDispatcher()
     let selectedTemplates : Template[] = [];
 
 0
@@ -43,11 +43,18 @@
         return DD_MM_YYYY;
     }
 
+    function deleteTemplate(templateId: string){
+        dispatch("templateDelete", {templateId})
+    }
+
 </script>
 
 
 
-<div class="table-container">      
+<div class="table-container">   
+    {#if allTemplates.length === 0}
+        <div>There are currently no templates available</div>
+    {:else}
     <DataTable>
         <Head>
             <Row>
@@ -61,7 +68,7 @@
             </Row>
         </Head>
         <Body>
-            {#each allTemplates as template (template.name)}
+            {#each allTemplates as template}
                 <Row>
                     <Cell checkbox>
                         <Checkbox
@@ -75,7 +82,7 @@
                     </Cell>
                     <Cell>{formatDate(template.lastEdited)}</Cell>
                     <Cell>
-                        <Truncate text={template.description} maxChars={120} tooltipPosition="top"/>
+                        <Truncate text={template.description} maxChars={100} tooltipPosition="top"/>
                     </Cell>
                     <Cell>
                     <div class="action-btns">
@@ -83,7 +90,7 @@
                             <CustomIconButton icon="edit" color="black"/>
                         </Tooltip>
                         <Tooltip text="Delete">
-                            <CustomIconButton icon="delete" color="black"/>
+                            <CustomIconButton icon="delete" color="black" on:click={()=>{deleteTemplate(template.id)}}/>
                         </Tooltip>
                         <Tooltip text="Duplicate">
                             <CustomIconButton icon="content_copy" color="black"/>
@@ -97,6 +104,7 @@
             {/each}
         </Body>
     </DataTable>
+{/if}  
 </div>
 
 <style lang="scss">
@@ -108,10 +116,32 @@
     }
     .table-container{
 
+        & :global(.mdc-data-table){
+            width: 95%;
+        }
         & :global(.mdc-data-table__table-container),
         :global(.mdc-data-table__header-cell)
         {
             background-color: rgba(255,255,255);
+        }
+
+        & :global(.mdc-data-table__header-cell){
+
+            &:nth-child(1){
+                width: 1%;
+            }
+            &:nth-child(2){
+                width: 25%;
+            }
+            &:nth-child(3){
+                width: 15%;
+            }
+            &:nth-child(4){
+                width: 40%;
+            }
+            &:last-child{
+                width: 1%;
+            }
         }
 
         & :global(.mdc-data-table__table-container),
