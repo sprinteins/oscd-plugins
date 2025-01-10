@@ -115,7 +115,7 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const type = "standard";
+		const type = "text";
 
 		// Act
 		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
@@ -139,7 +139,7 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const type = "standard";
+		const type = "text";
 		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
 
 		// Act
@@ -161,7 +161,7 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const type = "standard";
+		const type = "image";
 
 		// Add blocks to the document definition
 		docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
@@ -186,7 +186,7 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const type = "standard";
+		const type = "text";
 
 		// Act
 		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
@@ -217,7 +217,7 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const type = "standard";
+		const type = "signal-list";
 
 		// Add blocks to the document definition
 		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
@@ -253,7 +253,7 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const type = "standard";
+		const type = "text";
 
 		// Add blocks to the document definition
 		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
@@ -309,7 +309,7 @@ describe('DocumentTemplateStore', () => {
 			throw new Error('DocumentTemplate not found');
 		}
 		
-		const type = "standard";
+		const type = "image";
 
 		// Add blocks to the document definition
 		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
@@ -352,7 +352,7 @@ describe('DocumentTemplateStore', () => {
 			throw new Error('DocumentTemplate not found');
 		}
 		const updatedContent = 'Updated block content';
-		const type = "standard";
+		const type = "signal-list";
 		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
 	
 		// Act
