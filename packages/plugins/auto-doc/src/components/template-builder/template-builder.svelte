@@ -29,7 +29,7 @@
 
 
     function addElement(type: ElementType){
-        const elementId = docTemplatesStore.addBlockToDocumentTemplate(template, emptyContent, type, blockElements.length)
+        const elementId = docTemplatesStore.addBlockToDocumentTemplate(template, type, blockElements.length)
         
         const newBlockElement: BlockElement = {
             id: elementId,

@@ -115,18 +115,16 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const content = 'This is some markdown content';
 		const type = "standard";
 
 		// Act
-		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, content, type, 0);
+		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
 
 		// Assert
 		const blockElements = getAllBlockElements(docDef);
 		expect(blockElements.length).toBeGreaterThan(0);
 
 		const blockElement = blockElements[0];
-		expect(blockElement?.textContent).toBe(content);
 		expect(blockElement?.getAttribute('type')).toBe(type);
 		expect(blockElement?.getAttribute('id')).toBe(blockId);
 	});
@@ -141,16 +139,14 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const content = 'Block content';
 		const type = "standard";
-		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, content, type, 0);
+		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
 
 		// Act
 		const retrievedBlock = docTemplatesStore.getBlockOfDocumentTemplate(generatedId, blockId);
 
 		// Assert
 		expect(retrievedBlock).not.toBeNull();
-		expect(retrievedBlock?.textContent).toBe(content);
 		expect(retrievedBlock?.getAttribute('type')).toBe(type);
 		expect(retrievedBlock?.getAttribute('id')).toBe(blockId);
 	});
@@ -165,24 +161,18 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const content1 = 'First block content';
-		const content2 = 'Second block content';
-		const content3 = 'Third block content';
 		const type = "standard";
 
 		// Add blocks to the document definition
-		docTemplatesStore.addBlockToDocumentTemplate(docDef, content1, type, 0);
-		docTemplatesStore.addBlockToDocumentTemplate(docDef, content2, type, 1);
-		docTemplatesStore.addBlockToDocumentTemplate(docDef, content3, type, 2);
+		docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
+		docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
+		docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 2);
 
 		// Act
 		const blocks = docTemplatesStore.getAllBlocksOfDocumentTemplate(generatedId);
 
 		// Assert
 		expect(blocks.length).toBe(3);
-		expect(blocks[0].textContent).toBe(content1);
-		expect(blocks[1].textContent).toBe(content2);
-		expect(blocks[2].textContent).toBe(content3);
 	});
 
 	it('should insert "BlockId" element at the correct position', () => {
@@ -196,15 +186,12 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const content1 = 'First block content';
-		const content2 = 'Second block content';
-		const content3 = 'Third block content';
 		const type = "standard";
 
 		// Act
-		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content1, type, 0);
-		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content2, type, 1);
-		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content3, type, 1);
+		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
+		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
+		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
 
 		// Assert
 		const blockElements = docDef?.querySelectorAll('Block');
@@ -230,15 +217,12 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const content1 = 'First block content';
-		const content2 = 'Second block content';
-		const content3 = 'Third block content';
 		const type = "standard";
 
 		// Add blocks to the document definition
-		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content1, type, 0);
-		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content2, type, 1);
-		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content3, type, 2);
+		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
+		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
+		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 2);
 
 		// Assert
 		let blockElements = getAllBlockElements(docDef);
@@ -269,15 +253,12 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const content1 = 'First block content';
-		const content2 = 'Second block content';
-		const content3 = 'Third block content';
 		const type = "standard";
 
 		// Add blocks to the document definition
-		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content1, type, 0);
-		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content2, type, 1);
-		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content3, type, 2);
+		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
+		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
+		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 2);
 
 		// Act
 		docTemplatesStore.deleteBlockFromDocumentTemplate(docDef, idBlock2);
@@ -327,13 +308,12 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const content1 = 'First block content';
-		const content2 = 'Second block content';
+		
 		const type = "standard";
 
 		// Add blocks to the document definition
-		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content1, type, 0);
-		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, content2, type, 1);
+		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
+		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
 
 		// Act
 		docTemplatesStore.duplicateDocumentTemplate(generatedId, newTitle, newDescription);
@@ -371,10 +351,9 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const initialContent = 'Initial block content';
 		const updatedContent = 'Updated block content';
 		const type = "standard";
-		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, initialContent, type, 0);
+		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
 	
 		// Act
 		docTemplatesStore.editBlockContentOfDocumentTemplate(docDef, blockId, updatedContent);

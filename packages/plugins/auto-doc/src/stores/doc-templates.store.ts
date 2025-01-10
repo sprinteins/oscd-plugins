@@ -127,7 +127,7 @@ function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle
     }
 }
 
-function addBlockToDocumentTemplate(docTemplate: Element, content: string, type: string, position: number) {
+function addBlockToDocumentTemplate(docTemplate: Element, type: string, position: number) {
     const generatedId = uuidv4();
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -137,7 +137,6 @@ function addBlockToDocumentTemplate(docTemplate: Element, content: string, type:
         id: generatedId,
         type: type 
     });
-    blockElement.textContent = content;
     docTemplate.appendChild(blockElement);
 
     insertBlockAtPosition(docTemplate, blockElement, position);
