@@ -37,7 +37,6 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
-		"@oscd-plugins/core-standard": "workspace:^",
 		"tsup": "^8.3.5",
 		"typescript": "5.6.3"
 	}
