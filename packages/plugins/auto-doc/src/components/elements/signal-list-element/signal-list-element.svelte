@@ -2,6 +2,8 @@
 	import SignalRow from './signal-row.svelte';
 	import type { SignalRow as SignalRowType, HintText, LabelText } from './types.signal-list';
 	import {signalColumns,  messageTypes} from './signal-list';
+	export let onContentChange: (newContent: string) => void;
+
 
 
 
@@ -45,10 +47,19 @@
 
 	function updateSignalRow(index: number, key: keyof SignalRowType, value: string) {
     	columns = columns.map((row, i) => i === index ? { ...row, [key]: value } : row);
+		emitSelectedRows();
+
 	}
 	function updateMessageType(index: number, key: keyof SignalRowType, value: string) {
     	messages = messages.map((message, i) => i === index ? { ...message, [key]: value } : message);
+		emitSelectedRows();
 	}
+
+	function emitSelectedRows() {
+        const selectedColumns = columns.filter(row => row.isSelected);
+        const selectedMessages = messages.filter(message => message.isSelected);
+        onContentChange({ columns: selectedColumns, messages: selectedMessages });
+    }
 </script>
 
 

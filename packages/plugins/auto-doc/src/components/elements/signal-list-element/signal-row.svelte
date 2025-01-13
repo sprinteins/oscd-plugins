@@ -37,6 +37,12 @@
     const {name, hasSuffix} = label;
     return hasSuffix ? `${name} ${idx+1}` : name;
   }
+
+  $: if(isSelected || !isSelected){
+    dispatch('update', { key: 'isSelected', value: isSelected });
+  }
+
+
 </script>
 
 
