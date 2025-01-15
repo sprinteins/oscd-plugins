@@ -1,3 +1,3 @@
-# Type Designer
+# OSCD Plugin Template
 
-Refer to [I/O Center UiLib folder](../../uilib/src/lib/plugins/io-center/) to see the source code.
+TODO
