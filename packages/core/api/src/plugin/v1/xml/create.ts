@@ -22,13 +22,8 @@ function setElementsAttributes(
 
 function checkIfRequiredAttributesArePresent(
 	attributes: Record<string, string | null> | undefined,
-<<<<<<< Updated upstream
-	element: Utils.CurrentDefinitionElements,
-	standardVersion: StandardVersion = 'ed2'
-=======
 	element: Utils.CurrentDefinitionElement<typeof standardVersion>,
 	standardVersion: AvailableStandardVersion = 'ed2'
->>>>>>> Stashed changes
 ) {
 	const CURRENT_DEFINITION = DEFINITION_PER_VERSION[standardVersion]
 	const elementAttributes = Object.keys(
@@ -56,13 +51,8 @@ function checkIfRequiredAttributesArePresent(
 
 function checkIfAttributesAreAllowed(
 	attributes: Record<string, string | null> | undefined,
-<<<<<<< Updated upstream
-	element: Utils.CurrentDefinitionElements,
-	standardVersion: StandardVersion = 'ed2'
-=======
 	element: Utils.CurrentDefinitionElement<typeof standardVersion>,
 	standardVersion: AvailableStandardVersion = 'ed2'
->>>>>>> Stashed changes
 ) {
 	const CURRENT_DEFINITION = DEFINITION_PER_VERSION[standardVersion]
 
@@ -104,11 +94,7 @@ export function createStandardElement({
 }: {
 	xmlDocument: XMLDocument
 	namespace?: string
-<<<<<<< Updated upstream
-	element: Utils.CurrentDefinitionElements
-=======
 	element: Utils.CurrentDefinitionElement<typeof standardVersion>
->>>>>>> Stashed changes
 	attributes?: Record<string, string | null> | Record<never, never>
 	standardVersion: AvailableStandardVersion
 }) {

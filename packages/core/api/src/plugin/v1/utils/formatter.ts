@@ -4,13 +4,8 @@ import type { AvailableStandardVersion } from '@oscd-plugins/core-standard'
 import type { Utils } from '.'
 
 export function flattenElementDefinition(
-<<<<<<< Updated upstream
-	element: Utils.CurrentDefinitionElements,
-	standardVersion: StandardVersion
-=======
 	element: Utils.CurrentDefinitionElement<typeof standardVersion>,
 	standardVersion: AvailableStandardVersion
->>>>>>> Stashed changes
 ) {
 	const CURRENT_DEFINITION = DEFINITION_PER_VERSION[standardVersion]
 	const currentElement = CURRENT_DEFINITION[element]

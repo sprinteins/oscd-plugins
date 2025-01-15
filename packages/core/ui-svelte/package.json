@@ -33,6 +33,7 @@
 			"svelte": "./dist/index.js"
 		},
 		"./preset": "./dist/theme/tailwind-preset.js",
+		"./stock-theme.css": "./dist/theme/styles/shadcn-stock.theme.css",
 		"./legacy-theme.css": "./dist/theme/styles/legacy-oscd-instance.theme.css",
 		"./fonts.css": "./dist/theme/styles/fonts.css"
 	},
