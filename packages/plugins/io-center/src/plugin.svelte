@@ -1,16 +1,3 @@
-<svelte:options 
-	customElement={{
-		props: {
-			doc: { reflect: true, type: 'Object'},
-			docName: { reflect: true, type: 'String'},
-			editCount: { reflect: true, type: 'Number'},
-			locale: { reflect: true, type: 'String'},
-			pluginType: { reflect: true, type: 'String'},
-			isCustomInstance: { reflect: true, type: 'Boolean'},
-		}
-	}}
-/>
-
 <main 
 	use:initPlugin={{
 		getDoc: () => doc,
@@ -31,6 +18,15 @@
 
 
 <script lang="ts">
+import { onMount } from 'svelte'
+import jsonPackage from '../package.json'
+import { Theme } from '@oscd-plugins/core-ui-svelte'
+import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import Layout from "./ui/layout.svelte"
+import store from "./store.svelte"
+import { initQuery } from './query.svelte';
+
+
 // PACKAGE
 import jsonPackage from '../package.json'
 // CORE
@@ -45,4 +41,30 @@ const {
 	editCount,
 	isCustomInstance
 }: Utils.PluginCustomComponentsProps = $props()
+
+initQuery(store)
+
+onMount(() => {
+	store.doc = doc
+})
+// we need to trigger a rerendering when the editCount changes
+// this is how OpenSCD lets us know that there was a change in the document
+$effect( () => {
+	let onlyForEffectTriggering = editCount
+	// biome-ignore lint/correctness/noSelfAssign: We need to trigger a rerendering
+	store.doc = store.doc
+})
 </script>
+
+<svelte:options 
+	customElement={{
+		props: {
+			doc: { reflect: true, type: 'Object'},
+			docName: { reflect: true, type: 'String'},
+			editCount: { reflect: true, type: 'Number'},
+			locale: { reflect: true, type: 'String'},
+			pluginType: { reflect: true, type: 'String'},
+			isCustomInstance: { reflect: true, type: 'Boolean'},
+		}
+	}}
+/>

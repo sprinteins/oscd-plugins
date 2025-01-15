@@ -25,5 +25,8 @@ export default defineConfig({
 			fileName: 'plugin'
 		},
 		sourcemap: isDevelopment ? 'inline' : false
+	},
+	server: {
+		port: 56343,
 	}
 })
