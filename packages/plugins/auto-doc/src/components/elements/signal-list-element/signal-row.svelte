@@ -35,7 +35,7 @@
 
   function createSuffixForLabelIfNeeded(label: Label){
     const {name, hasSuffix} = label;
-    return hasSuffix ? `${name} ${idx+1}` : name;
+    return hasSuffix ? `Column ${idx+1} "${name}"` : name;
   }
 
   $: if(isSelected || !isSelected){

@@ -15,7 +15,7 @@
 			column2: "",
 			label: {
 				col1Label: {name: col, hasSuffix: true},
-				col2Label: {name: "Column", hasSuffix: true}
+				col2Label: {name: `Filter by ${col}`, hasSuffix: false}
 			}
 		}
 	})
@@ -38,8 +38,8 @@
 		col2Hint: "Filter Target IEDS with Regex"
 	}
 	const columnsHintText: HintText = {
-		col1Hint: "Choose the columns you want to display",
-		col2Hint: "Use Regex to filter columns"
+		col1Hint: "Choose the columns you want to display and rename if needed",
+		col2Hint: "Use the filter to limit the content of the columns to certain values"
 	}
 
 	function updateSignalRow(index: number, key: keyof SignalRowType, value: string) {
