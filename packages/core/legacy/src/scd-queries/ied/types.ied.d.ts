@@ -17,6 +17,7 @@ export namespace IED {
 	export type CommunicationInfo = {
 		iedName: string
 		iedDetails: Details
+		bays: Set<string>
 		published: PublishedMessage[]
 		received: ReceivedMessage[]
 	}

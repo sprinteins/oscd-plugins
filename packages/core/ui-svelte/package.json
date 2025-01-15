@@ -33,7 +33,9 @@
 			"svelte": "./dist/index.js"
 		},
 		"./preset": "./dist/theme/tailwind-preset.js",
-		"./theme.css": "./dist/theme/styles/theme.css"
+		"./stock-theme.css": "./dist/theme/styles/shadcn-stock.theme.css",
+		"./legacy-theme.css": "./dist/theme/styles/legacy-oscd-instance.theme.css",
+		"./fonts.css": "./dist/theme/styles/fonts.css"
 	},
 	"peerDependencies": {
 		"svelte": "^5.0.0"
@@ -41,6 +43,7 @@
 	"devDependencies": {
 		"@chromatic-com/storybook": "^3.2.2",
 		"@internationalized/date": "^3.6.0",
+		"@oscd-plugins/core": "workspace:^",
 		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/core-standard": "workspace:^",
 		"@storybook/addon-essentials": "^8.4.7",
@@ -60,7 +63,7 @@
 		"clsx": "^2.1.1",
 		"embla-carousel-svelte": "^8.5.1",
 		"formsnap": "2.0.0-next.1",
-		"lucide-svelte": "^0.469.0",
+		"lucide-svelte": "^0.471.0",
 		"mode-watcher": "^0.5.0",
 		"paneforge": "1.0.0-next.1",
 		"publint": "^0.2.0",

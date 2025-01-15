@@ -9,10 +9,6 @@
 	"source": "src/index.ts",
 	"exports": {
 		".": "./dist/index.js",
-		"./instance/v1": {
-			"types": "./dist/instance/v1/index.d.ts",
-			"default": "./dist/instance/v1/index.js"
-		},
 		"./plugin/v1": {
 			"types": "./dist/plugin/v1/index.d.ts",
 			"default": "./dist/plugin/v1/index.js"
@@ -37,6 +33,7 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
+		"@openenergytools/open-scd-core": "^0.0.5",
 		"@oscd-plugins/core-standard": "workspace:^",
 		"tsup": "^8.3.5",
 		"typescript": "5.6.3"

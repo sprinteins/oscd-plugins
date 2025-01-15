@@ -2,7 +2,7 @@ import { DEFINITION_PER_VERSION } from '@/plugin/v1/constants'
 // TYPES
 import type { Xml } from './types'
 import type { Utils } from '@/plugin/v1/utils'
-import type { StandardVersion } from '@oscd-plugins/core-standard/ed2'
+import type { AvailableStandardVersion } from '@oscd-plugins/core-standard'
 
 //====== PRIVATE FUNCTIONS ======//
 
@@ -22,8 +22,8 @@ function setElementsAttributes(
 
 function checkIfRequiredAttributesArePresent(
 	attributes: Record<string, string | null> | undefined,
-	element: Utils.CurrentDefinitionElements,
-	standardVersion: StandardVersion = 'ed2'
+	element: Utils.CurrentDefinitionElement<typeof standardVersion>,
+	standardVersion: AvailableStandardVersion = 'ed2'
 ) {
 	const CURRENT_DEFINITION = DEFINITION_PER_VERSION[standardVersion]
 	const elementAttributes = Object.keys(
@@ -51,8 +51,8 @@ function checkIfRequiredAttributesArePresent(
 
 function checkIfAttributesAreAllowed(
 	attributes: Record<string, string | null> | undefined,
-	element: Utils.CurrentDefinitionElements,
-	standardVersion: StandardVersion = 'ed2'
+	element: Utils.CurrentDefinitionElement<typeof standardVersion>,
+	standardVersion: AvailableStandardVersion = 'ed2'
 ) {
 	const CURRENT_DEFINITION = DEFINITION_PER_VERSION[standardVersion]
 
@@ -63,8 +63,9 @@ function checkIfAttributesAreAllowed(
 	)
 
 	for (const key in attributes) {
-		if (!elementAttributes.includes(key))
+		if (!elementAttributes.includes(key)) {
 			throw new Error(`Attribute ${key} is not allowed for ${element}`)
+		}
 	}
 }
 
@@ -78,23 +79,24 @@ function checkIfAttributesAreAllowed(
  *
  * @param xmlDocument - XML Document where the Element should be created
  * @param namespace - Optional namespace of the element
- * @param tag - Tagname of the element
- * @param attributes - to be added to the created element
+ * @param element - Element name to create from the standard
+ * @param attributes - Attributes to be added to the created element
+ * @param standardVersion - Standard version to use for the element creation
  *
  * @returns a new [[`tag`]] element owned by [[`xmlDocument`]].
  */
-export async function createStandardElement({
+export function createStandardElement({
 	xmlDocument,
 	namespace,
 	element,
 	attributes = {},
-	standardVersion = 'ed2'
+	standardVersion
 }: {
 	xmlDocument: XMLDocument
 	namespace?: string
-	element: Utils.CurrentDefinitionElements
+	element: Utils.CurrentDefinitionElement<typeof standardVersion>
 	attributes?: Record<string, string | null> | Record<never, never>
-	standardVersion?: StandardVersion
+	standardVersion: AvailableStandardVersion
 }) {
 	const CURRENT_DEFINITION = DEFINITION_PER_VERSION[standardVersion]
 
@@ -118,10 +120,13 @@ export async function createStandardElement({
 			element,
 			standardVersion
 		)
-		checkIfAttributesAreAllowed(attributes, element, standardVersion)
 
+		checkIfAttributesAreAllowed(attributes, element, standardVersion)
 		currentElement = setElementsAttributes(currentElement, attributes)
 	}
 
-	return currentElement as Xml.SclElement<typeof element>
+	return currentElement as Xml.SclElement<
+		typeof standardVersion,
+		typeof element
+	>
 }

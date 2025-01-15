@@ -1,129 +1,157 @@
 import { DEFINITION } from '@oscd-plugins/core-standard/ed2'
-import { findElementsBySelector } from '@oscd-plugins/core-api/plugin/v1'
+import {
+	findOneElementBySelector,
+	findAllElementsBySelector
+} from '@oscd-plugins/core-api/plugin/v1'
 // TYPES
 import type {
-	RootElements,
-	DataTypeTemplatesElements
+	RootElement,
+	RootSubElements,
+	SubstationSubElements,
+	DataTypeTemplatesSubElements
 } from './types.xmlDocument.js'
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import type { Utils, Xml } from '@oscd-plugins/core-api/plugin/v1'
+import type { AvailableStandardVersion } from '@oscd-plugins/core-standard'
 
 class UseXmlDocumentsStore {
 	//====== STATES ======//
 
 	xmlDocument: XMLDocument | undefined = $state.raw()
+	xmlDocumentName: string | undefined = $state()
+	editCount: number | undefined = $state()
+	//====== DERIVED STATES ======//
 
-	rootElements: RootElements = $derived({
-		header:
-			this.xmlDocument?.documentElement.querySelector(
-				DEFINITION.header.tag
-			) || null,
-		substation:
-			Array.from(
-				this.xmlDocument?.documentElement.querySelectorAll(
-					DEFINITION.substation.tag
-				) || []
-			) || null,
-		// TODO: add communication after standard implementation
-		// communication:
-		// 	this.xmlDocument?.documentElement.querySelector(
-		// 		COMMUNICATION.tag
-		// 	) || null,
-		// TODO: add ied after standard implementation
-		// ied:
-		// 	Array.from(
-		// 		this.xmlDocument?.documentElement.querySelectorAll(
-		// 			IED.tag
-		// 		) || []
-		// 	) || null,
-		dataTypeTemplates:
-			this.xmlDocument?.documentElement.querySelector(
-				DEFINITION.dataTypeTemplates.tag
-			) || null
-		// TODO: add line after standard implementation
-		// line:
-		// 	Array.from(
-		// 		this.xmlDocument?.documentElement.querySelectorAll(
-		// 			LINE.tag
-		// 		) || []
-		// 	) || null,
-		// TODO: add process after standard implementation
-		// process:
-		// 	Array.from(
-		// 		this.xmlDocument?.documentElement.querySelectorAll(
-		// 			PROCESS.tag
-		// 		) || []
-		// 	) || null
-	})
+	xmlDocumentExtension = $derived(this.xmlDocumentName?.split('.').pop())
 
-	dataTypeTemplatesElements: DataTypeTemplatesElements = $derived.by(() => {
-		return {
-			lNodeType:
-				Array.from(
-					this.rootElements.dataTypeTemplates?.querySelectorAll(
-						DEFINITION.lNodeType.tag
-					) || []
-				) || null,
-			dOType:
-				Array.from(
-					this.rootElements.dataTypeTemplates?.querySelectorAll(
-						DEFINITION.dOType.tag
-					) || []
-				) || null,
-			dAType:
-				Array.from(
-					this.rootElements.dataTypeTemplates?.querySelectorAll(
-						DEFINITION.dAType.tag
-					) || []
-				) || null,
-			enumType:
-				Array.from(
-					this.rootElements.dataTypeTemplates?.querySelectorAll(
-						DEFINITION.enumType.tag
-					) || []
-				) || null
+	rootElement: RootElement | undefined = $derived.by(() => {
+		// needed to trigger reactivity
+		if (`${xmlDocumentStore.editCount}`) {
+			return this.xmlDocument?.firstElementChild as RootElement
 		}
 	})
 
-	//====== PRIVATE ACTIONS ======//
+	rootSubElements: RootSubElements | undefined = $derived.by(() => {
+		// needed to trigger reactivity
+		if (`${xmlDocumentStore.editCount}`) {
+			return {
+				header: this.findOneElement<'ed2', 'header'>({
+					selectorTag: DEFINITION.header.tag
+				}),
+				substation: this.findAllElements<'ed2', 'substation'>({
+					selectorTag: DEFINITION.substation.tag
+				}),
+				communication: this.findOneElement<'ed2', 'communication'>({
+					selectorTag: DEFINITION.communication.tag
+				}),
+				ied: this.findAllElements<'ed2', 'ied'>({
+					selectorTag: DEFINITION.ied.tag
+				}),
+				dataTypeTemplates: this.findOneElement<
+					'ed2',
+					'dataTypeTemplates'
+				>({
+					selectorTag: DEFINITION.dataTypeTemplates.tag
+				}),
+				line: this.findAllElements<'ed2', 'line'>({
+					selectorTag: DEFINITION.line.tag
+				}),
+				process: this.findAllElements<'ed2', 'process'>({
+					selectorTag: DEFINITION.process.tag
+				}),
+				text: this.findOneElement<'ed2', 'text'>({
+					selectorTag: DEFINITION.text.tag
+				}),
+				private: this.findAllElements<'ed2', 'private'>({
+					selectorTag: DEFINITION.private.tag
+				})
+			}
+		}
+	})
+
+	substationSubElements: SubstationSubElements | undefined = $derived.by(
+		() => {
+			// needed to trigger reactivity
+			if (`${xmlDocumentStore.editCount}`) {
+				return this.rootSubElements?.substation.map((substation) => {
+					return {
+						voltageLevel: this.findAllElements<
+							'ed2',
+							'voltageLevel'
+						>({
+							selectorTag: DEFINITION.voltageLevel.tag,
+							root: substation
+						}),
+						function: this.findAllElements<'ed2', 'function'>({
+							selectorTag: DEFINITION.function.tag,
+							root: substation
+						})
+					}
+				})
+			}
+		}
+	)
+
+	dataTypeTemplatesSubElements: DataTypeTemplatesSubElements | undefined =
+		$derived.by(() => {
+			// needed to trigger reactivity
+			if (`${xmlDocumentStore.editCount}` && this.rootSubElements) {
+				return {
+					lNodeType: this.findAllElements<'ed2', 'lNodeType'>({
+						selectorTag: DEFINITION.lNodeType.tag,
+						root: this.rootSubElements.dataTypeTemplates
+					}),
+					dOType: this.findAllElements<'ed2', 'dOType'>({
+						selectorTag: DEFINITION.dOType.tag,
+						root: this.rootSubElements.dataTypeTemplates
+					}),
+					dAType: this.findAllElements<'ed2', 'dAType'>({
+						selectorTag: DEFINITION.dAType.tag,
+						root: this.rootSubElements.dataTypeTemplates
+					}),
+					enumType: this.findAllElements<'ed2', 'enumType'>({
+						selectorTag: DEFINITION.enumType.tag,
+						root: this.rootSubElements.dataTypeTemplates
+					})
+				}
+			}
+		})
 
 	//====== PUBLIC ACTIONS ======//
 
-	update({
-		editCount,
-		newXmlDocument
-	}: { editCount: number; newXmlDocument: XMLDocument | undefined }) {
-		const trigger = ({
-			editCount, // is not used but should be passed to the function to trigger reactivity
-			newXmlDocument
-		}: {
-			editCount: number
-			newXmlDocument: XMLDocument | undefined
-		}) => {
-			if (newXmlDocument) this.xmlDocument = newXmlDocument
-		}
-
-		$effect(() => {
-			trigger({
-				editCount,
-				newXmlDocument
-			})
+	findOneElement<
+		GenericVersion extends AvailableStandardVersion,
+		GenericSclElement extends Utils.CurrentDefinitionElement<GenericVersion>
+	>({
+		selectorTag,
+		root
+	}: {
+		selectorTag: string
+		root?: Element
+	}) {
+		if (!this.xmlDocument) return null
+		return findOneElementBySelector<GenericVersion, GenericSclElement>({
+			selector: selectorTag,
+			root: root || this.xmlDocument.documentElement
 		})
 	}
 
-	findElements<GenericSclElement extends Utils.CurrentDefinitionElements>({
+	findAllElements<
+		GenericVersion extends AvailableStandardVersion,
+		GenericSclElement extends Utils.CurrentDefinitionElement<GenericVersion>
+	>({
 		selectorTag,
-		rootTag
+		root
 	}: {
 		selectorTag: string
-		rootTag?: string
+		root?: Element
 	}) {
-		if (!this.xmlDocument) throw new Error('No XML Document found')
-		return findElementsBySelector<GenericSclElement>({
+		if (!this.xmlDocument)
+			return [] as Array<
+				Xml.SclElement<GenericVersion, GenericSclElement>
+			>
+		return findAllElementsBySelector<GenericVersion, GenericSclElement>({
 			selector: selectorTag,
-			root:
-				(rootTag &&
-					this.xmlDocument.documentElement.querySelector(rootTag)) ||
-				this.xmlDocument.documentElement
+			root: root || this.xmlDocument.documentElement
 		})
 	}
 }

@@ -8,18 +8,28 @@
 		"dist"
 	],
 	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
 		"./ed2": {
 			"types": "./dist/ed2/index.d.ts",
 			"schema": "./dist/ed2/schema",
 			"default": "./dist/ed2/index.js"
+		},
+		"./ed3": {
+			"types": "./dist/ed3/index.d.ts",
+			"schema": "./dist/ed3/schema",
+			"default": "./dist/ed3/index.js"
 		}
 	},
 	"scripts": {
 		"//====== GENERATE ======//": "",
 		"generate:ed2": "pnpm dlx tsx ./src/ed2/scripts/index.ts",
+		"generate:ed3": "pnpm dlx tsx ./src/ed3/scripts/index.ts",
 		"//====== BUILD ======//": "",
-		"build": "pnpm run generate:ed2 && tsup",
-		"build:watch": "pnpm run generate:ed2 && tsup --watch",
+		"build": "pnpm run generate:ed2 && pnpm run generate:ed3 && tsup",
+		"build:watch": "pnpm run generate:ed2 && pnpm run generate:ed3 && tsup --watch",
 		"//====== TEST ======//": "",
 		"types": "tsc --project ."
 	},
