@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SignalRow from './signal-row.svelte';
-	import type { SignalRow as SignalRowType, HintText, LabelText } from './types.signal-list';
+	import type { SignalRow as SignalRowType, HintText } from './types.signal-list';
 	import {signalColumns,  messageTypes} from './signal-list';
 	export let onContentChange: (newContent: string) => void;
 
@@ -12,7 +12,11 @@
 			index: i,
 			isSelected: false,
 			column1: col,
-			column2: ""
+			column2: "",
+			label: {
+				col1Label: {name: col, hasSuffix: true},
+				col2Label: {name: "Column", hasSuffix: true}
+			}
 		}
 	})
 
@@ -21,7 +25,11 @@
 			index: i,
 			isSelected: false,
 			column1: message,
-			column2: ""
+			column2: "",
+			label: {
+				col1Label: {name: message, hasSuffix: true},
+				col2Label: {name: "IED Name", hasSuffix: false}
+			}
 		}
 	})
 
@@ -32,17 +40,6 @@
 	const columnsHintText: HintText = {
 		col1Hint: "Choose the columns you want to display",
 		col2Hint: "Use Regex to filter columns"
-	}
-
-	const columnsLabelText: LabelText = {
-		col1Label: {name: "Column", hasSuffix: true},
-		col2Label: {name: "Column", hasSuffix: true}
-	}
-
-	const messagesLabelText: LabelText = {
-		col1Label: {name: "Message type", hasSuffix: true},
-		col2Label: {name: "IED Name", hasSuffix: false},
-		
 	}
 
 	function updateSignalRow(index: number, key: keyof SignalRowType, value: string) {
@@ -68,7 +65,7 @@
 	{#each columns as row (row.index)}
 		<SignalRow 
 			idx={row.index}
-			label={columnsLabelText}
+			label={row.label}
 			hintText={columnsHintText}
 			bind:isSelected={row.isSelected}
 			bind:column1={row.column1}
@@ -79,7 +76,7 @@
 	{#each messages as message (message.index)}
 		<SignalRow 
 			idx={message.index}
-			label={messagesLabelText}
+			label={message.label}
 			hintText={messageHintText}
 			bind:isSelected={message.isSelected}
 			bind:column1={message.column1}
