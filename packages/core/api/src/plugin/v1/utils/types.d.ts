@@ -1,18 +1,32 @@
 import type { DEFINITION_PER_VERSION } from '@/plugin/v1/constants'
-import type { StandardVersion } from '@oscd-plugins/core-standard/ed2'
+import type { AvailableStandardVersion } from '@oscd-plugins/core-standard'
 
 export namespace Utils {
-	export type CurrentDefinition =
-		(typeof DEFINITION_PER_VERSION)[StandardVersion]
+	export type CurrentDefinition<
+		GenericVersion extends AvailableStandardVersion
+	> = (typeof DEFINITION_PER_VERSION)[GenericVersion]
 
+<<<<<<< Updated upstream
 	export type CurrentDefinitionElements = keyof CurrentDefinition
 
 	export type CurrentDefinitionElementTags<
 		Element extends CurrentDefinitionElements
 	> = Utils.CurrentDefinition[Element]['tag']
+=======
+	export type CurrentDefinitionElement<
+		GenericVersion extends AvailableStandardVersion
+	> = keyof CurrentDefinition<GenericVersion>
+
+	export type CurrentDefinitionElementTag<
+		GenericVersion extends AvailableStandardVersion,
+		Element extends CurrentDefinitionElements<GenericVersion>
+	> = Utils.CurrentDefinition<GenericVersion>[Element]['tag']
+
+>>>>>>> Stashed changes
 	export type CurrentDefinitionElementAttributes<
-		Element extends CurrentDefinitionElements
-	> = Utils.CurrentDefinition[Element]['attributes']
+		GenericVersion extends AvailableStandardVersion,
+		Element extends CurrentDefinitionElements<GenericVersion>
+	> = Utils.CurrentDefinition<GenericVersion>[Element]['attributes']
 
 	export type PluginType = 'editor' | 'menu' | 'validator'
 
