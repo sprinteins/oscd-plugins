@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 
 import generateDefinitionConstant from './generate-definition-constant'
 //import generateTree from './generate-tree-constant'
+
 //====== INITIALIZATION ======//
 
 const __filename = fileURLToPath(import.meta.url)
@@ -36,6 +37,6 @@ export default generated;`
 }
 
 const definitionConstant = generateDefinitionConstant()
-// const treeConstant = generateTree(definitionConstant.scl)
+//const treeConstant = generateTree(definitionConstant.scl)
 
 writeResultToFile('definition.generated.ts', definitionConstant)
