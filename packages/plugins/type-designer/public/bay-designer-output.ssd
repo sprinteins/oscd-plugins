@@ -9,7 +9,10 @@ and should be used to instantiate a project SSD file
 	<Header id="Bay Designer Plugin simple output file"/>
 	<Substation name="TEMPLATE">
 		<VoltageLevel name="TEMPLATE">
-			<Bay name="Bay_1">
+		<Bay>
+			<GeneralEquipment id="genEqRef-uuid" templateUuid="genEq-uuid" />
+		</Bay>
+			<!-- <Bay name="Bay_1">
 					<Function name="Protection">
 							<Private type="eIEC61850-6-100">
 									<eIEC61850-6-100:FsdReference uuid="82a8697e-2130-4836-86ff-8f56c50f301c" version="1" revision="0"/>
@@ -28,22 +31,23 @@ and should be used to instantiate a project SSD file
 									<LNode iedName="None" lnClass="PTOC" lnInst="1" lnType="SE_PTOC_SET_V002" />
 							</SubFunction>
 					</Function>
-			</Bay>
+			</Bay> -->
 		</VoltageLevel>
+		<GeneralEquipment id="genEq-uuid" />
 	</Substation>
 
 	<FunctionTemplate name="CTR" uuid="82a8697e-2130-4836-86ff-8f56c50f301c">
-			<SubFunction name="L1">
+			<!-- <SubFunction name="L1">
 					<LNode iedName="None" lnClass="TCTR" lnInst="1" lnType="TCTR$oscd$_83206a014339c058">
 							<Private type="eIEC61850-6-100">
 									<eTr_6-100:LNodeSpecNaming sIedName="None" sLnClass="TCTR" sLnInst="1"/>
 							</Private>
 					</LNode>
-			</SubFunction>
+			</SubFunction> -->
 	</FunctionTemplate>
 
 	<DataTypeTemplates>
-		<LNodeType lnClass="TCTR" id="TCTR$oscd$_83206a014339c058">
+		<LNodeType lnClass="TCTR" id="">
 			<DO name="ARtg" type="ARtg$oscd$_70f83e1c005744f2" />
 			<DO name="Beh" type="Beh$oscd$_c6ed035c8137b35a" />
 		</LNodeType>
