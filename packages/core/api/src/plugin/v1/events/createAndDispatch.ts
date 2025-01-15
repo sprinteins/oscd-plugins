@@ -1,14 +1,15 @@
-import { editEvent } from '@/instance/v1'
-import type { EditEvent } from '@/instance/v1'
+import { newEditEvent } from '@openenergytools/open-scd-core'
+// TYPES
+import type { EditV2, EditEventOptions } from '@openenergytools/open-scd-core'
 
-export function createEditEvent({
+export function createAndDispatchEditEvent({
 	host,
 	edit,
 	options
 }: {
 	host: Element
-	edit: EditEvent.AvailableAction
-	options: EditEvent.Options
+	edit: EditV2
+	options?: EditEventOptions
 }) {
-	host.dispatchEvent(editEvent(edit, options))
+	host.dispatchEvent(newEditEvent(edit, options))
 }

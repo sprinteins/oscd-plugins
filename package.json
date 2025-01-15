@@ -22,7 +22,7 @@
 		"build:core:ui:svelte": "pnpm --filter @oscd-plugins/core-ui-svelte build",
 		"build:core:standard": "pnpm --filter @oscd-plugins/core-standard build",
 		"build:core:legacy": "pnpm --filter @oscd-plugins/core build",
-		"build:dependencies": "pnpm build:core:api && pnpm build:core:ui:svelte && pnpm build:core:standard && pnpm build:core:legacy",
+		"build:dependencies": "pnpm build:core:standard && pnpm build:core:api && pnpm build:core:ui:svelte && pnpm build:core:legacy",
 		"//====== LOCAL DEPENDENCIES BUILD & INSTALL ======//": "",
 		"install:build:dependencies": "pnpm install:dependencies && pnpm build:dependencies",
 		"//====== STORYBOOK ======//": "",
@@ -42,7 +42,7 @@
 		"dev:type-designer": "pnpm install:type-designer && pnpm --filter @oscd-plugins/type-designer dev",
 		"//====== PLUGIN INTEGRATED MODE ======//": "",
 		"dev:integrated:auto-doc": "pnpm install:auto-doc && pnpm --filter @oscd-plugins/auto-doc build:watch",
-		"dev:integrated:io-center": "pnpm install:io-center && pnpm --filter @oscd-plugins/type-designer build && pnpm --filter @oscd-plugins/type-designer integrated",
+		"dev:integrated:io-center": "pnpm install:io-center && pnpm --filter @oscd-plugins/io-center build && pnpm --filter @oscd-plugins/io-center integrated",
 		"dev:integrated:type-designer": "pnpm install:type-designer && pnpm --filter @oscd-plugins/type-designer build && pnpm --filter @oscd-plugins/type-designer integrated"
 	},
 	"devDependencies": {
