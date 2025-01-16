@@ -10,6 +10,7 @@
 	const columns: SignalRowType[] = signalColumns.map((col, i) => {
 		return {
 			index: i,
+			searchKey: col,
 			isSelected: false,
 			column1: col,
 			column2: "",
@@ -23,6 +24,7 @@
 	const messages: SignalRowType[] = messageTypes.map((message, i) => {
 		return {
 			index: (signalColumns.length + i),
+			searchKey: message,
 			isSelected: false,
 			column1: message,
 			column2: "",

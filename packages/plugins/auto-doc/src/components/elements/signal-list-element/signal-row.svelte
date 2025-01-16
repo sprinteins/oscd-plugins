@@ -4,6 +4,8 @@
     import {createEventDispatcher} from "svelte"
 	import type { SignalRow, HintText, LabelText, Label } from './types.signal-list';
 
+    import {debounce} from '@/utils/';
+
     //Props
     export let idx = 1;
     export let label: LabelText = {col1Label: {name: "", hasSuffix: false}, col2Label: {name: "", hasSuffix: false}};
@@ -14,15 +16,14 @@
 
     let areAllCheckboxesSelected = false;
 
+    const ONE_SECOND_IN_MS = 1000;
+
+    const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS);
+
 
     const dispatch = createEventDispatcher()
 
-    function handleInputChange(key: keyof SignalRow, event: CustomEvent<HTMLInputElement>) {
-        const target = event.target as HTMLInputElement | null;
-        if(target === null) {
-            throw new Error('Event target is null');
-        }
-        const value = target.value;
+    function handleInputChange(key: keyof SignalRow, value: string) {
         column1 = key === 'column1' ? value : column1;
         column2 = key === 'column2' ? value : column2;
         dispatch('update', { key, value });
@@ -68,7 +69,7 @@
         bind:value={column1}
         variant="outlined"
         label={createSuffixForLabelIfNeeded(label.col1Label)}
-        on:input= {e => handleInputChange('column1', e)}
+        on:input= {e => debounceUserInput('column1', e.target.value)}
         disabled={!isSelected}
         >
     </Textfield>
@@ -76,7 +77,7 @@
         bind:value={column2}
         variant="outlined"
         label={createSuffixForLabelIfNeeded(label.col2Label)}
-        on:input= {e => handleInputChange('column2', e)}
+        on:input= {e => debounceUserInput('column2', e.target.value)}
         disabled={!isSelected}
         >
     </Textfield>

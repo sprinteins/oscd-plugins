@@ -1,4 +1,4 @@
-import { signalColumns, messageTypes } from './signal-list';
+import  { signalColumns, messageTypes } from './signal-list';
 
 export type Label = { name: string, hasSuffix: boolean }
 
@@ -8,11 +8,12 @@ export type LabelText = {
 }
 
 export type SignalRow = {
-	index: number;
-	isSelected: boolean;
-	column1: string;
-	column2: string;
+	index: number
+	isSelected: boolean
+	column1: string
+	column2: string
 	label: LabelText
+	searchKey: keyof messageTypes | keyof signalColumns
 
 }
 
