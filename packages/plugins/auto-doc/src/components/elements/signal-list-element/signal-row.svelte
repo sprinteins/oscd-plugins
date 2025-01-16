@@ -12,6 +12,8 @@
     export let column1 = "";
     export let column2 = "";
 
+    let areAllCheckboxesSelected = false;
+
 
     const dispatch = createEventDispatcher()
 
@@ -42,14 +44,21 @@
     dispatch('update', { key: 'isSelected', value: isSelected });
   }
 
+  function toggleAllCheckboxes(){
+    dispatch('toggleAllCheckboxes', {value: areAllCheckboxesSelected});
+  }
 
 </script>
 
 
-
 <div class="signal-row">
     {#if isFirstRow() && isThereHintText()}
-        <div></div>
+        <div>
+            <Checkbox 
+                on:click={toggleAllCheckboxes}
+                bind:checked={areAllCheckboxesSelected}
+            />
+        </div>
         <small>{hintText.col1Hint}</small>
         <small>{hintText.col2Hint}</small>
         
@@ -88,6 +97,7 @@
 
         small{
             color: #4d5d63;
+            text-align: center;
         }
 
     }

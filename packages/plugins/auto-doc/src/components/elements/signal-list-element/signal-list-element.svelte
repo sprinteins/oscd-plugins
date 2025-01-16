@@ -45,6 +45,11 @@
 		emitSelectedRows();
 	}
 
+	function toggleAllCheckboxes(newValue: boolean) {
+		mergedColsAndMessages = mergedColsAndMessages.map(row => ({...row, isSelected: !newValue}));
+		emitSelectedRows();
+	}
+
 	function emitSelectedRows() {
         const selectedColumns = mergedColsAndMessages.filter(row => row.isSelected);
         onContentChange({ columns: selectedColumns});
@@ -62,6 +67,7 @@
 			bind:column1={row.column1}
 			bind:column2={row.column2}
 			on:update={e => updateSignalRow(row.index, e.detail.key, e.detail.value)}
+			on:toggleAllCheckboxes={e => toggleAllCheckboxes(e.detail.value)}
 		/>
 	{/each}
 </article>
