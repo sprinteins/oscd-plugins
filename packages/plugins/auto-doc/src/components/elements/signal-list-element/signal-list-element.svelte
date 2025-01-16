@@ -7,7 +7,7 @@
 
 
 
-	let columns: SignalRowType[] = signalColumns.map((col, i) => {
+	const columns: SignalRowType[] = signalColumns.map((col, i) => {
 		return {
 			index: i,
 			isSelected: false,
@@ -20,49 +20,40 @@
 		}
 	})
 
-	let messages: SignalRowType[] = messageTypes.map((message, i) => {
+	const messages: SignalRowType[] = messageTypes.map((message, i) => {
 		return {
-			index: i,
+			index: (signalColumns.length + i),
 			isSelected: false,
 			column1: message,
 			column2: "",
 			label: {
 				col1Label: {name: message, hasSuffix: true},
-				col2Label: {name: "IED Name", hasSuffix: false}
+				col2Label: {name: "Filter by IED Name", hasSuffix: false}
 			}
 		}
 	})
 
-	const messageHintText: HintText = {
-		col1Hint: "Choose the message types you want to display",
-		col2Hint: "Filter Target IEDS with Regex"
-	}
+	$: mergedColsAndMessages = [...columns, ...messages];
+
 	const columnsHintText: HintText = {
 		col1Hint: "Choose the columns you want to display and rename if needed",
 		col2Hint: "Use the filter to limit the content of the columns to certain values"
 	}
 
 	function updateSignalRow(index: number, key: keyof SignalRowType, value: string) {
-    	columns = columns.map((row, i) => i === index ? { ...row, [key]: value } : row);
-		emitSelectedRows();
-
-	}
-	function updateMessageType(index: number, key: keyof SignalRowType, value: string) {
-    	messages = messages.map((message, i) => i === index ? { ...message, [key]: value } : message);
+    	mergedColsAndMessages = mergedColsAndMessages.map((row, i) => i === index ? { ...row, [key]: value } : row);
 		emitSelectedRows();
 	}
 
 	function emitSelectedRows() {
-        const selectedColumns = columns.filter(row => row.isSelected);
-        const selectedMessages = messages.filter(message => message.isSelected);
-        onContentChange({ columns: selectedColumns, messages: selectedMessages });
+        const selectedColumns = mergedColsAndMessages.filter(row => row.isSelected);
+        onContentChange({ columns: selectedColumns});
     }
 </script>
 
 
 <article class="signal-list">
-
-	{#each columns as row (row.index)}
+	{#each mergedColsAndMessages as row (row.index)}
 		<SignalRow 
 			idx={row.index}
 			label={row.label}
@@ -73,18 +64,6 @@
 			on:update={e => updateSignalRow(row.index, e.detail.key, e.detail.value)}
 		/>
 	{/each}
-	{#each messages as message (message.index)}
-		<SignalRow 
-			idx={message.index}
-			label={message.label}
-			hintText={messageHintText}
-			bind:isSelected={message.isSelected}
-			bind:column1={message.column1}
-			bind:column2={message.column2}
-			on:update={e => updateMessageType(message.index, e.detail.key, e.detail.value)}
-		/>
-	{/each}
-	
 </article>
 
 <style lang="scss">
