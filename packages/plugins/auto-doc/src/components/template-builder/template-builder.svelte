@@ -7,7 +7,6 @@
     import ElementWrapper from "@/components/element-wrapper/element-wrapper.svelte"
     import {docTemplatesStore} from '@/stores'
     import type {BlockElement, ElementType, ElementMap} from '@/components/elements/types.elements'
-    import {signallistStore} from '@/stores'
 
     // Prop
     export let templateId: string
@@ -21,11 +20,6 @@
         "image": ImageElement,
         "signalList": SignalListElement,
     }
-    const signallist = signallistStore.getSignallist();
-    const emptyContent = "";
-    console.log('Message Publishers:', signallist.messagePublishers);
-    console.log('Message Subscribers:', signallist.messageSubscribers);
-    console.log('Invalidities Reports:', signallist.invaliditiesReports);
 
 
     function addElement(type: ElementType){
@@ -34,7 +28,7 @@
         const newBlockElement: BlockElement = {
             id: elementId,
             type: type,
-            content: emptyContent
+            content: ""
         }
 
         blockElements = [...blockElements, newBlockElement]
