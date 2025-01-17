@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL" version="2007" revision="B" release="4">
+    <Header id="" version="" revision="" toolID="" nameStructure="">
+        <Text source=""/>
+        <History>
+            <Hitem version="" revision="" when="" who="" what="" why=""/>
+        </History>
+    </Header>
+    <Substation name="">
+        <VoltageLevel name="">
+            <Voltage unit="V" multiplier=""/>
+            <Bay name="">
+                <ConductingEquipment type="" virtual="false">
+                    <Terminal name="" connectivityNode="" processName="" substationName="" voltageLevelName="" bayName="" cNodeName="" lineName=""/>
+                    <SubEquipment phase="none" virtual="false">
+                        <EqFunction type="">
+                            <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                        </EqFunction>
+                    </SubEquipment>
+                </ConductingEquipment>
+                <ConnectivityNode pathName=""/>
+                <Function type="">
+                    <SubFunction type="">
+                        <GeneralEquipment type="" virtual="false">
+                            <EqFunction type="">
+                                <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                            </EqFunction>
+                        </GeneralEquipment>
+                        <ConductingEquipment type="" virtual="false">
+                            <Terminal name="" connectivityNode="" processName="" substationName="" voltageLevelName="" bayName="" cNodeName="" lineName=""/>
+                            <SubEquipment phase="none" virtual="false">
+                                <EqFunction type="">
+                                    <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                                </EqFunction>
+                            </SubEquipment>
+                        </ConductingEquipment>
+                        <SubFunction type="">
+                            <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                        </SubFunction>
+                    </SubFunction>
+                </Function>
+            </Bay>
+        </VoltageLevel>
+        <Function type="">
+            <SubFunction type="">
+                <GeneralEquipment type="" virtual="false">
+                    <EqFunction type="">
+                        <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                    </EqFunction>
+                </GeneralEquipment>
+                <ConductingEquipment type="" virtual="false">
+                    <Terminal name="" connectivityNode="" processName="" substationName="" voltageLevelName="" bayName="" cNodeName="" lineName=""/>
+                    <SubEquipment phase="none" virtual="false">
+                        <EqFunction type="">
+                            <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                        </EqFunction>
+                    </SubEquipment>
+                </ConductingEquipment>
+                <SubFunction type="">
+                    <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                </SubFunction>
+            </SubFunction>
+        </Function>
+    </Substation>
+    <Communication>
+        <SubNetwork name="">
+            <BitRate unit="b/s" multiplier="M"/>
+            <ConnectedAP iedName="" apName="" redProt="">
+                <Address>
+                    <P type=""/>
+                </Address>
+                <GSE ldInst="" cbName="">
+                    <MinTime unit="s" multiplier="m"/>
+                    <MaxTime unit="s" multiplier="m"/>
+                </GSE>
+                <SMV ldInst="" cbName=""/>
+                <PhysConn type="">
+                    <P type=""/>
+                </PhysConn>
+            </ConnectedAP>
+        </SubNetwork>
+    </Communication>
+    <IED name="" type="" manufacturer="" configVersion="" originalSclVersion="2003" originalSclRevision="A" originalSclRelease="1" engRight="full" owner="">
+        <Services nameLength="32">
+            <DynAssociation max=""/>
+            <SettingGroups>
+                <SGEdit resvTms="false"/>
+                <ConfSG resvTms="false"/>
+            </SettingGroups>
+            <GetDirectory/>
+            <GetDataObjectDefinition/>
+            <DataObjectDirectory/>
+            <GetDataSetValue/>
+            <SetDataSetValue/>
+            <DataSetDirectory/>
+            <ConfDataSet max="" maxAttributes="" modify="true"/>
+            <DynDataSet max="" maxAttributes=""/>
+            <ReadWrite/>
+            <TimerActivatedControl/>
+            <ConfReportControl max="" bufMode="both" bufConf="false" maxBuf=""/>
+            <GetCBValues/>
+            <ConfLogControl max=""/>
+            <ReportSettings cbName="Fix" datSet="Fix" rptID="Fix" optFields="Fix" bufTime="Fix" trgOps="Fix" intgPd="Fix" resvTms="false" owner="false"/>
+            <LogSettings cbName="Fix" datSet="Fix" logEna="Fix" trgOps="Fix" intgPd="Fix"/>
+            <GSESettings cbName="Fix" datSet="Fix" appID="Fix" dataLabel="Fix" kdaParticipant="false">
+                <McSecurity signature="false" encryption="false"/>
+            </GSESettings>
+            <SMVSettings cbName="Fix" datSet="Fix" svID="Fix" optFields="Fix" smpRate="Fix" samplesPerSec="false" pdcTimeStamp="false" synchSrcId="false" nofASDU="Fix" kdaParticipant="false">
+                <SmpRate/>
+                <SamplesPerSec/>
+                <SecPerSamples/>
+                <McSecurity signature="false" encryption="false"/>
+            </SMVSettings>
+            <GSEDir/>
+            <GOOSE max="" fixedOffs="false" goose="true" rGOOSE="false"/>
+            <GSSE max=""/>
+            <SMVsc max="" delivery="multicast" deliveryConf="false" sv="true" rSV="false"/>
+            <FileHandling mms="true" ftp="false" ftps="false"/>
+            <ConfLNs fixPrefix="false" fixLnInst="false"/>
+            <ClientServices goose="false" gsse="false" bufReport="false" unbufReport="false" readLog="false" sv="false" supportsLdName="false" maxAttributes="" maxReports="" maxGOOSE="" maxSMV="" rGOOSE="false" rSV="false" noIctBinding="false">
+                <TimeSyncProt sntp="true" iec61850_9_3="false" c37_238="false" other="false"/>
+                <McSecurity signature="false" encryption="false"/>
+            </ClientServices>
+            <ConfLdName/>
+            <SupSubscription maxGo="" maxSv=""/>
+            <ConfSigRef max=""/>
+            <ValueHandling setToRO="false"/>
+            <RedProt hsr="false" prp="false" rstp="false"/>
+            <TimeSyncProt sntp="true" iec61850_9_3="false" c37_238="false" other="false"/>
+            <CommProt ipv6="false"/>
+        </Services>
+        <AccessPoint name="" router="false" clock="false" kdc="false">
+            <Server timeout="30">
+                <Authentication none="true" password="false" weak="false" strong="false" certificate="false"/>
+                <LDevice inst="">
+                    <LN0 lnType="" lnClass="LLN0" inst="">
+                        <DataSet name="">
+                            <FCDA ldInst="" prefix="" lnClass="" lnInst="" doName="" daName="" fc="" ix=""/>
+                        </DataSet>
+                        <ReportControl name="" datSet="" rptID="" confRev="" buffered="false" bufTime="0" indexed="true">
+                            <TrgOps dchg="false" qchg="false" dupd="false" period="false" gi="true"/>
+                            <OptFields seqNum="false" timeStamp="false" dataSet="false" reasonCode="false" dataRef="false" entryID="false" configRef="false" bufOvfl="true"/>
+                            <RptEnabled max="1">
+                                <ClientLN apRef="">
+                                    <LNRef iedName="" ldInst="" prefix="" lnClass="" lnInst=""/>
+                                </ClientLN>
+                            </RptEnabled>
+                        </ReportControl>
+                        <LogControl name="" datSet="" ldInst="" prefix="" lnClass="LLN0" lnInst="" logName="" logEna="true" reasonCode="true" bufTime="0">
+                            <TrgOps dchg="false" qchg="false" dupd="false" period="false" gi="true"/>
+                        </LogControl>
+                        <GSEControl name="" datSet="" confRev="" type="GOOSE" appID="" fixedOffs="false" securityEnable="None">
+                            <IEDName/>
+                            <Protocol mustUnderstand="true"/>
+                        </GSEControl>
+                        <SampledValueControl name="" datSet="" confRev="" smvID="" multicast="true" smpRate="" nofASDU="" smpMod="SmpPerPeriod" securityEnable="None">
+                            <SmvOpts refreshTime="false" sampleSynchronized="true" sampleRate="false" dataSet="false" security="false" timestamp="false" synchSourceId="false"/>
+                            <Protocol mustUnderstand="true"/>
+                        </SampledValueControl>
+                        <SettingControl numOfSGs="" actSG="1" resvTms=""/>
+                        <DOI name="">
+                            <SDI name="" ix="" sAddr="">
+                                <DAI name="" sAddr="" valKind="" ix="" valImport="false">
+                                    <Val sGroup=""/>
+                                </DAI>
+                            </SDI>
+                            <DAI name="" sAddr="" valKind="" ix="" valImport="false">
+                                <Val sGroup=""/>
+                            </DAI>
+                        </DOI>
+                        <Inputs>
+                            <ExtRef iedName="" ldInst="" prefix="" lnClass="" lnInst="" doName="" daName="" intAddr="" serviceType="" srcLDInst="" srcPrefix="" srcLNClass="" srcLNInst="" srcCBName="" pServT="" pLN="" pDO="" pDA=""/>
+                        </Inputs>
+                        <Log name=""/>
+                    </LN0>
+                    <LN prefix="" lnClass="" inst="" lnType="">
+                        <DataSet name="">
+                            <FCDA ldInst="" prefix="" lnClass="" lnInst="" doName="" daName="" fc="" ix=""/>
+                        </DataSet>
+                        <ReportControl name="" datSet="" rptID="" confRev="" buffered="false" bufTime="0" indexed="true">
+                            <TrgOps dchg="false" qchg="false" dupd="false" period="false" gi="true"/>
+                            <OptFields seqNum="false" timeStamp="false" dataSet="false" reasonCode="false" dataRef="false" entryID="false" configRef="false" bufOvfl="true"/>
+                            <RptEnabled max="1">
+                                <ClientLN apRef="">
+                                    <LNRef iedName="" ldInst="" prefix="" lnClass="" lnInst=""/>
+                                </ClientLN>
+                            </RptEnabled>
+                        </ReportControl>
+                        <LogControl name="" datSet="" ldInst="" prefix="" lnClass="LLN0" lnInst="" logName="" logEna="true" reasonCode="true" bufTime="0">
+                            <TrgOps dchg="false" qchg="false" dupd="false" period="false" gi="true"/>
+                        </LogControl>
+                        <DOI name="">
+                            <SDI name="" ix="" sAddr="">
+                                <DAI name="" sAddr="" valKind="" ix="" valImport="false">
+                                    <Val sGroup=""/>
+                                </DAI>
+                            </SDI>
+                            <DAI name="" sAddr="" valKind="" ix="" valImport="false">
+                                <Val sGroup=""/>
+                            </DAI>
+                        </DOI>
+                        <Inputs>
+                            <ExtRef iedName="" ldInst="" prefix="" lnClass="" lnInst="" doName="" daName="" intAddr="" serviceType="" srcLDInst="" srcPrefix="" srcLNClass="" srcLNInst="" srcCBName="" pServT="" pLN="" pDO="" pDA=""/>
+                        </Inputs>
+                        <Log name=""/>
+                    </LN>
+                    <AccessControl/>
+                </LDevice>
+                <Association kind="" associationID="">
+                    <LNRef iedName="" ldInst="" prefix="" lnClass="" lnInst=""/>
+                </Association>
+            </Server>
+            <LN inst="" lnClass="" prefix=""/>
+            <ServerAt apName=""/>
+            <Services nameLength="32">
+                <DynAssociation max=""/>
+                <SettingGroups>
+                    <SGEdit resvTms="false"/>
+                    <ConfSG resvTms="false"/>
+                </SettingGroups>
+                <GetDirectory/>
+                <GetDataObjectDefinition/>
+                <DataObjectDirectory/>
+                <GetDataSetValue/>
+                <SetDataSetValue/>
+                <DataSetDirectory/>
+                <ConfDataSet max="" maxAttributes="" modify="true"/>
+                <DynDataSet max="" maxAttributes=""/>
+                <ReadWrite/>
+                <TimerActivatedControl/>
+                <ConfReportControl max="" bufMode="both" bufConf="false" maxBuf=""/>
+                <GetCBValues/>
+                <ConfLogControl max=""/>
+                <ReportSettings cbName="Fix" datSet="Fix" rptID="Fix" optFields="Fix" bufTime="Fix" trgOps="Fix" intgPd="Fix" resvTms="false" owner="false"/>
+                <LogSettings cbName="Fix" datSet="Fix" logEna="Fix" trgOps="Fix" intgPd="Fix"/>
+                <GSESettings cbName="Fix" datSet="Fix" appID="Fix" dataLabel="Fix" kdaParticipant="false">
+                    <McSecurity signature="false" encryption="false"/>
+                </GSESettings>
+                <SMVSettings cbName="Fix" datSet="Fix" svID="Fix" optFields="Fix" smpRate="Fix" samplesPerSec="false" pdcTimeStamp="false" synchSrcId="false" nofASDU="Fix" kdaParticipant="false">
+                    <SmpRate/>
+                    <SamplesPerSec/>
+                    <SecPerSamples/>
+                    <McSecurity signature="false" encryption="false"/>
+                </SMVSettings>
+                <GSEDir/>
+                <GOOSE max="" fixedOffs="false" goose="true" rGOOSE="false"/>
+                <GSSE max=""/>
+                <SMVsc max="" delivery="multicast" deliveryConf="false" sv="true" rSV="false"/>
+                <FileHandling mms="true" ftp="false" ftps="false"/>
+                <ConfLNs fixPrefix="false" fixLnInst="false"/>
+                <ClientServices goose="false" gsse="false" bufReport="false" unbufReport="false" readLog="false" sv="false" supportsLdName="false" maxAttributes="" maxReports="" maxGOOSE="" maxSMV="" rGOOSE="false" rSV="false" noIctBinding="false">
+                    <TimeSyncProt sntp="true" iec61850_9_3="false" c37_238="false" other="false"/>
+                    <McSecurity signature="false" encryption="false"/>
+                </ClientServices>
+                <ConfLdName/>
+                <SupSubscription maxGo="" maxSv=""/>
+                <ConfSigRef max=""/>
+                <ValueHandling setToRO="false"/>
+                <RedProt hsr="false" prp="false" rstp="false"/>
+                <TimeSyncProt sntp="true" iec61850_9_3="false" c37_238="false" other="false"/>
+                <CommProt ipv6="false"/>
+            </Services>
+            <GOOSESecurity name="" xferNumber="" serialNumber="">
+                <Subject commonName="CN=" idHierarchy=""/>
+                <IssuerName commonName="CN=" idHierarchy=""/>
+            </GOOSESecurity>
+            <SMVSecurity name="" xferNumber="" serialNumber="">
+                <Subject commonName="CN=" idHierarchy=""/>
+                <IssuerName commonName="CN=" idHierarchy=""/>
+            </SMVSecurity>
+        </AccessPoint>
+        <KDC iedName="" apName=""/>
+    </IED>
+    <DataTypeTemplates>
+        <LNodeType id="" lnClass="" iedType="">
+            <DO name="" type="" accessControl="" transient="false"/>
+        </LNodeType>
+        <DOType id="" cdc="" iedType="">
+            <SDO name="" type="" count="0"/>
+            <DA name="" sAddr="" valKind="Set" ix="" valImport="false" fc="">
+                <Val sGroup=""/>
+                <ProtNs type="8-MMS"/>
+            </DA>
+        </DOType>
+        <DAType id="" iedType="">
+            <BDA name="" sAddr="" valKind="Set" ix="" valImport="false" bType="" type="" count="0">
+                <Val sGroup=""/>
+            </BDA>
+            <ProtNs type="8-MMS"/>
+        </DAType>
+        <EnumType id="">
+            <EnumVal ord="">
+                <Desc/>
+            </EnumVal>
+        </EnumType>
+    </DataTypeTemplates>
+    <Line name="" type="" nomFreq="" numPhases="">
+        <Voltage unit="V" multiplier=""/>
+        <ConductingEquipment type="" virtual="false">
+            <Terminal name="" connectivityNode="" processName="" substationName="" voltageLevelName="" bayName="" cNodeName="" lineName=""/>
+            <SubEquipment phase="none" virtual="false">
+                <EqFunction type="">
+                    <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                </EqFunction>
+            </SubEquipment>
+        </ConductingEquipment>
+        <ConnectivityNode pathName=""/>
+        <Function type="">
+            <SubFunction type="">
+                <GeneralEquipment type="" virtual="false">
+                    <EqFunction type="">
+                        <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                    </EqFunction>
+                </GeneralEquipment>
+                <ConductingEquipment type="" virtual="false">
+                    <Terminal name="" connectivityNode="" processName="" substationName="" voltageLevelName="" bayName="" cNodeName="" lineName=""/>
+                    <SubEquipment phase="none" virtual="false">
+                        <EqFunction type="">
+                            <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                        </EqFunction>
+                    </SubEquipment>
+                </ConductingEquipment>
+                <SubFunction type="">
+                    <LNode iedName="None" ldInst="" prefix="" lnClass="" lnInst="" lnType=""/>
+                </SubFunction>
+            </SubFunction>
+        </Function>
+    </Line>
+</SCL>

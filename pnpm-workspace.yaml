@@ -2,4 +2,4 @@ packages:
   - "packages/plugins/*"
   - "packages/uilib"
   - "packages/ui"
-  - "packages/core"
+  - "packages/core/*"
