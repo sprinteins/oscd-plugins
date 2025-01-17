@@ -19,7 +19,7 @@ import {
 import type { Config } from '../_func-layout-calculation/config'
 import { preferences$, type Preferences } from '../_store-preferences'
 // SERVICES
-import { getIEDCommunicationInfos } from '../services/ied'
+import { getIEDCommunicationInfos, getIEDCommunicationInfosByBay } from '../services/ied'
 // TYPES
 import type { IED } from '@oscd-plugins/core'
 
@@ -33,6 +33,7 @@ let rootNode: RootNode | undefined = undefined
 $: initInfos(root, $filterState, $preferences$)
 let lastUsedRoot: Element | undefined = undefined
 let lastExtractedInfos: IED.CommunicationInfo[] = []
+let lastExtractedBays: string[] = []
 
 // Note: maybe have a mutex if there are too many changes
 async function initInfos(
@@ -48,6 +49,7 @@ async function initInfos(
 	if (root !== lastUsedRoot) {
 		const iedInfos = getIEDCommunicationInfos(root)
 		lastExtractedInfos = iedInfos
+		lastExtractedBays = Array.from(getIEDCommunicationInfosByBay(root).keys());
 		lastUsedRoot = root
 	}
 	rootNode = await calculateLayout(
@@ -94,7 +96,7 @@ function handleClearClick() {
 			on:clearclick={handleClearClick}
 		/>
 		{#if showSidebar}
-			<Sidebar {rootNode} />
+			<Sidebar {rootNode} bays={lastExtractedBays}/>
 		{/if}
 	{/if}
 </div>

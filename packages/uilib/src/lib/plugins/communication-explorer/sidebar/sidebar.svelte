@@ -7,6 +7,8 @@
     	selectIEDNode,
     	clearSelection,
     	setNameFilter,
+        clearIEDSelection,
+        toggleMultiSelectionOfIED,
     } from "../_store-view-filter/selected-filter-store-functions"
     import ConnectionSelector from "./assets/connection-selector.svg"
     import type { BayNode, IEDNode, RootNode } from "../../../components/diagram"
@@ -17,8 +19,8 @@
     import { preferences$ } from "../_store-preferences"
 
     export let rootNode: RootNode
+    export let bays: string[]
 
-    $: IEDSelectionIDs = $filterState?.selectedIEDs.map((ied) => ied.id)
     $: IEDSelections = $filterState?.selectedIEDs
     $: ConnectionSelection = $filterState.selectedConnection
     $: selectedMessageTypes = $filterState.selectedMessageTypes
@@ -28,18 +30,12 @@
     	$filterState,
     	isIedFiltersDisabled
     )
-    $: IEDs = rootNode.children.filter(node => !node.isBayNode);
-    $: bays = rootNode.children.filter(node => node.isBayNode);
 
-    console.log(rootNode.children)
-    console.log(IEDs)
-    console.log(bays)
-    
+    let IEDs = rootNode.children;  
     let searchQuery = ""
     let searchFocus = false
     let filteredIEDs = IEDs
     let filteredBays = bays
-    let selectedNode: IEDNode | BayNode | undefined
 
     function handleConnectionDirectionDisabled(
     	filter: SelectedFilter,
@@ -54,16 +50,6 @@
         return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
     }
 
-    function setSelectedNode(e: Event) {
-    	const target = e.target as HTMLSelectElement
-    	selectedNode = rootNode.children.find(
-    		(node: IEDNode | BayNode) => node.id === target.value
-    	)
-    	if (selectedNode) {
-    		selectIEDNode(selectedNode)
-    	}
-    }
-
     function handleNameFilterChange(e: Event) {
     	const target = e.target as HTMLInputElement
     	setNameFilter(target.value)
@@ -71,7 +57,7 @@
 
     function handleSearch() {
         filteredIEDs = IEDs.filter(ied => ied.label.toLowerCase().includes(searchQuery.toLowerCase()))
-		filteredBays = bays.filter(bay => bay.label.toLowerCase().includes(searchQuery.toLowerCase()))
+		filteredBays = bays.filter(bay => bay.toLowerCase().includes(searchQuery.toLowerCase()))
     }
 
     function handleSearchFocus(e: Event) {
@@ -86,8 +72,21 @@
 
     function handleSearchClick(e: Event) {
         const target = e.target as HTMLElement;
-	    const textContent = target.textContent || '';
-		searchQuery = textContent;
+	    const nodeName = target.innerText|| '';
+        if (bays.includes(nodeName)) {
+            clearIEDSelection()
+            for (const node of rootNode.children) {
+                if (node.bays.has(nodeName)) {
+                    toggleMultiSelectionOfIED(node)
+                }
+            }
+        }
+        else {
+            let selectedNode = rootNode.children.find(node => node.label == nodeName)
+            if (selectedNode) {
+                selectIEDNode(selectedNode)
+            }
+        }
     }
 
     function clearAll() {
@@ -139,7 +138,7 @@
                             </div>
                             {#each filteredBays as bay}
                                 <div role="button" tabindex="0" class="content" on:mousedown={handleSearchClick}>
-                                    {bay.label}
+                                    {bay}
                                 </div>
                             {/each}
                         {/if}
@@ -254,14 +253,13 @@
     }
 
     .ied-nodes img {
-        margin-top: 0.9rem;
         height: 1.3rem;
         width: 1.3rem;
     }
 
     .dropdown {
         position: relative;
-        display: inline-block;
+        display: block;
     }
 
     .searchfield {
@@ -274,9 +272,9 @@
     	display: block;
         position: absolute;
     	background-color: #f6f6f6;
-        min-width: 230px;
         border: 1px solid #ddd;
         z-index: 1;
+        width: 100%;
     }
 
     .content {
@@ -289,16 +287,16 @@
     .content_label {
     	display: block;
     	color: gray;
-    	padding: 6px 8px 0px 8px;
+    	padding: 8px;
     	text-decoration: none;
-    	font-size: 14px
+    	font-size: 1em
     }
     
     .content_seperator {
     	border: none;
     	background-color: gray;
     	height: 1px;
-    	width: 90%;
+        margin: 0.5em
     }
 
     .content:hover {
@@ -354,87 +352,3 @@
         border-top: 0.1rem solid var(--color-accent);
     }
 </style>
-
-
-<!--
-
-    WIP thing (test on svelte.dev/playground)
-
-<script lang="ts">
-    let searchQuery = "";
-		let searchFocus = false;
-		let items = ["About", "Base", "Blog", "Contact", "Custom", "Support", "Tools", "Boats", "Cars", "Bikes", "Sheds", "Billygoats", "Zebras", "Tennis Shoes", "New Zealand"];
-		let filteredNodes = items
-	
-    function handleSearch() {
-      filteredNodes = items.filter(node => node.toLowerCase().includes(searchQuery.toLowerCase()))
-    }
-
-    function handleSearchFocus(e: Event) {
-      searchFocus = true
-    }
-
-    function handleSearchBlur(e: Event) {
-      searchFocus = false
-    }
-
-    function handleSearchClick(e: Event) {
-			
-    }
-	
-</script>
-
-<div class="dropdown">
-	<input
-    type="text"
-    placeholder="Filter IED or bay"
-    bind:value={searchQuery}
-    on:input={handleSearch}
-    on:focus={handleSearchFocus}
-    on:blur={handleSearchBlur}
-/>
-	{#if searchFocus}
-		<div class="dropdown-content">
-			{#each filteredNodes as node}
-	      <div class="content">
-			    {node}
-	      </div>
-	    {/each}
-		</div>  
-	{/if} 
-</div>
-
-<br>
-test
-<br>
-<br>
-test
-<style>
-	
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-	
-.dropdown-content {
-	display: block;
-  position: absolute;
-	background-color: #f6f6f6;
-  min-width: 230px;
-  border: 1px solid #ddd;
-  z-index: 1;
-}
-
-.content {
-	display: block;
-	color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-}	
-
-	
-</style>
-
--->
-
-
