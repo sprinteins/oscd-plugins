@@ -1,4 +1,4 @@
-import  { signalColumns, messageTypes } from './signal-list';
+import type { SignalType, Columns } from "@/stores/signallist.store.d"
 
 export type Label = { name: string, hasSuffix: boolean }
 
@@ -13,13 +13,9 @@ export type SignalRow = {
 	column1: string
 	column2: string
 	label: LabelText
-	searchKey: keyof messageTypes | keyof signalColumns
+	searchKey: keyof typeof SignalType | keyof  typeofColumns
 
 }
-
-export type SignalColumn = typeof signalColumns[number];
-
-export type MessageType = typeof messageTypes[number];
 
 export type HintText = {
 	col1Hint: string

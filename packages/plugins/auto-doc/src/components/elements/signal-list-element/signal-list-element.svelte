@@ -3,40 +3,42 @@
 
 	import SignalRow from './signal-row.svelte';
 	import type { SignalRow as SignalRowType, HintText } from './types.signal-list';
-	import {signalColumns,  messageTypes} from './signal-list';
+	import {Columns, SignalType} from '@/stores/';
+
 	export let onContentChange: (newContent: string) => void;
-
+	
 	const signallist = signallistStore.getSignallist();
-	console.log('Message Publishers:', signallist.messagePublishers);
-    console.log('Message Subscribers:', signallist.messageSubscribers);
-    console.log('Invalidities Reports:', signallist.invaliditiesReports);
+	// console.log('Message Publishers:', signallist.messagePublishers);
+	// console.log('Columns:', Object.entries(Columns));
+    // console.log('Message Subscribers:', signallist.messageSubscribers);
+    // console.log('Invalidities Reports:', signallist.invaliditiesReports);
 
-	console.log('PUBLISHING LD:', signallistStore.getPublishingLogicalDevices());
-	console.log('PUBLISHING LD:', signallistStore.getSubscribingLogicalDevices(signallist.messagePublishers));
+	// console.log('PUBLISHING LD:', signallistStore.getPublishingLogicalDevices());
+	// console.log('PUBLISHING LD:', signallistStore.getSubscribingLogicalDevices(signallist.messagePublishers));
 
-	const columns: SignalRowType[] = signalColumns.map((col, i) => {
+	const columns: SignalRowType[] = Object.entries(Columns).map(([key, value], i) => {
 		return {
 			index: i,
-			searchKey: col,
+			searchKey: key,
 			isSelected: false,
-			column1: col,
+			column1: value,
 			column2: "",
 			label: {
-				col1Label: {name: col, hasSuffix: true},
-				col2Label: {name: `Filter by ${col}`, hasSuffix: false}
+				col1Label: {name: value, hasSuffix: true},
+				col2Label: {name: `Filter by ${value}`, hasSuffix: false}
 			}
 		}
 	})
 
-	const messages: SignalRowType[] = messageTypes.map((message, i) => {
+	const messages: SignalRowType[] = Object.entries(SignalType).map(([key,value], i) => {
 		return {
-			index: (signalColumns.length + i),
-			searchKey: message,
+			index: (columns.length + i),
+			searchKey: key,
 			isSelected: false,
-			column1: message,
+			column1: value,
 			column2: "",
 			label: {
-				col1Label: {name: message, hasSuffix: true},
+				col1Label: {name: value, hasSuffix: true},
 				col2Label: {name: "Filter by IED Name", hasSuffix: false}
 			}
 		}
@@ -68,15 +70,15 @@
 
 	function searchForMatchOnSignalList(){
 		// biome-ignore lint/complexity/noForEach: <explanation>
-		selectedRows.forEach(({column2, searchKey}) => {
-		    const matches = signallist.messagePublishers.filter((publisher) => {
-				console.log('Publisher:', publisher);
-                return publisher.M_text.toString().includes(column2);
-            });
-            console.log(`Matches for ${searchKey}:`, matches);
+		// selectedRows.forEach(({column2, searchKey}) => {
+		//     const matches = signallist.messagePublishers.filter((publisher) => {
+		// 		console.log('Publisher:', publisher);
+        //         return publisher.M_text.toString().includes(column2);
+        //     });
+        //     console.log(`Matches for ${searchKey}:`, matches);
 			
-			}
-		)
+		// 	}
+		// )
 	}
 </script>
 
