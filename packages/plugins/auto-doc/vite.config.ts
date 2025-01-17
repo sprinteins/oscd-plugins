@@ -6,6 +6,7 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	base: isDevelopment ? '' : '/oscd-plugins/auto-doc/',
 	plugins: [
 		svelte({
 			compilerOptions: {
