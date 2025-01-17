@@ -2,7 +2,14 @@
 import { get } from "svelte/store";
 // STORES
 import { pluginStore } from './index'
+// TYPES
+import type { 
+    MessagePublisher, MessageSubscriber, LogicalNodeInformation,
+    DataObjectInformation, InvalditiesReport, MessagePublisherFilter, 
+    MessageSubscriberFilter 
+} from './signallist.store.d'
 
+import { SignalType } from './signallist.store.d'
 
 //====== STORES ======//
 const { xmlDocument } = pluginStore
@@ -71,91 +78,6 @@ function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[], fil
 
 
 
-//====Types
-
-enum SignalType {
-    GOOSE = 'GOOSE',
-    MMS = 'MMS',
-    SV = 'SV',
-    UNKOWN = 'UNKOWN',
-}
-
-interface MessagePublisher{
-    M_text: string;
-    signalType: SignalType;
-    IEDName: string;
-    logicalNodeInofrmation: LogicalNodeInformation;
-    dataObjectInformation: DataObjectInformation;
-}
-
-interface MessageSubscriber{
-    IDEName: string;
-    ExtRef: ExtRef
-}
-interface ExtRef {
-    iedName:string;
-    serviceType:SignalType;
-    ldInst:string;
-    lnClass:string;
-    lnInst:string;
-    prefix:string;
-    doName:string;
-    daName:string;
-    srcLDInst:string;
-    srcPrefix:string;
-    srcLNClass:string;
-    srcCBName:string;
-}
-
-interface LogicalNodeInformation {
-    IEDName: string;
-    LogicalDeviceInstance: string;
-    LogicalNodePrefix: string;
-    LogicalNodeClass: string;
-    LogicalNodeInstance: string;
-    LogicalNodeType:string;
-}
-
-interface DataObjectInformation{
-    DataObjectName: string;
-    DataAttributeName: string;
-    CommonDataClass: string;
-    AttributeType: string;
-    FunctionalConstraint: string;
-}
-
-interface InvalditiesReport{
-    IEDName: string;
-    LogicalNodeInformation: LogicalNodeInformation;
-    invalidities: string[];
-}
-
-interface MessagePublisherFilter {
-    M_text?: RegExp;
-    signalType?: RegExp;
-    IEDName?: RegExp;
-    logicalNodeInofrmation?: {
-        IEDName?: RegExp;
-        LogicalDeviceInstance?: RegExp;
-        LogicalNodePrefix?: RegExp;
-        LogicalNodeClass?: RegExp;
-        LogicalNodeInstance?: RegExp;
-        LogicalNodeType?: RegExp;
-    };
-    dataObjectInformation?: {
-        DataObjectName?: RegExp;
-        DataAttributeName?: RegExp;
-        CommonDataClass?: RegExp;
-        AttributeType?: RegExp;
-        FunctionalConstraint?: RegExp;
-    };
-}
-
-interface MessageSubscriberFilter {
-    IDEName?: RegExp;
-    serviceType?: RegExp;
-}
-
 //==== PRIVATE ACTIONS
 function processIEDForPublishers(ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
     const accessPoints = ied.querySelectorAll('AccessPoint');
@@ -179,7 +101,7 @@ function processLDeviceForPublishers(lDevice: Element, ied: Element, dataTypeTem
     const ReportControl = lNode0.querySelector('ReportControl');
     if (!GSEControl && !ReportControl) return;
 
-    const signalType = GSEControl ? SignalType.GOOSE : (ReportControl ? SignalType.MMS : SignalType.UNKOWN);
+    const signalType = GSEControl ? SignalType.GOOSE : (ReportControl ? SignalType.MMS : SignalType.UNKNOWN);
 
     const dataSets = lNode0.querySelectorAll('DataSet');
     for (const dataSet of dataSets) {
@@ -343,7 +265,7 @@ function processInputs(input: Element, ied: Element, messagePublisher: MessagePu
                 IDEName: ied.getAttribute('name') || '',
                 ExtRef: {
                     iedName: extRef.getAttribute('iedName') || '',
-                    serviceType: SignalType[extRef.getAttribute('serviceType') as keyof typeof SignalType] || SignalType.UNKOWN as SignalType,
+                    serviceType: SignalType[extRef.getAttribute('serviceType') as keyof typeof SignalType] || SignalType.UNKNOWN as SignalType,
                     ldInst: extRef.getAttribute('ldInst') || '',
                     lnClass: extRef.getAttribute('lnClass') || '',
                     lnInst: extRef.getAttribute('lnInst') || '',

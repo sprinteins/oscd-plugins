@@ -2,13 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { writable, type Writable } from 'svelte/store';
 import { signallistStore } from './signallist.store';
 import { pluginStore } from './plugin.store';
+import { SignalType } from './signallist.store.d';
 
-enum SignalType {
-    GOOSE = 'GOOSE',
-    MMS = 'MMS',
-    SV = 'SV',
-    UNKOWN = 'UNKOWN',
-}
 
 describe('Signallist', () => {
   let xmlDocument: Writable<XMLDocument | undefined>;

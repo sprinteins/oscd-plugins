@@ -11,6 +11,9 @@
     console.log('Message Subscribers:', signallist.messageSubscribers);
     console.log('Invalidities Reports:', signallist.invaliditiesReports);
 
+	console.log('PUBLISHING LD:', signallistStore.getPublishingLogicalDevices());
+	console.log('PUBLISHING LD:', signallistStore.getSubscribingLogicalDevices(signallist.messagePublishers));
+
 	const columns: SignalRowType[] = signalColumns.map((col, i) => {
 		return {
 			index: i,
@@ -64,7 +67,16 @@
 
 
 	function searchForMatchOnSignalList(){
-	return;
+		// biome-ignore lint/complexity/noForEach: <explanation>
+		selectedRows.forEach(({column2, searchKey}) => {
+		    const matches = signallist.messagePublishers.filter((publisher) => {
+				console.log('Publisher:', publisher);
+                return publisher.M_text.toString().includes(column2);
+            });
+            console.log(`Matches for ${searchKey}:`, matches);
+			
+			}
+		)
 	}
 </script>
 
