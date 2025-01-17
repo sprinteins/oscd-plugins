@@ -28,7 +28,17 @@
     	$filterState,
     	isIedFiltersDisabled
     )
+    $: IEDs = rootNode.children.filter(node => !node.isBayNode);
+    $: bays = rootNode.children.filter(node => node.isBayNode);
 
+    console.log(rootNode.children)
+    console.log(IEDs)
+    console.log(bays)
+    
+    let searchQuery = ""
+    let searchFocus = false
+    let filteredIEDs = IEDs
+    let filteredBays = bays
     let selectedNode: IEDNode | BayNode | undefined
 
     function handleConnectionDirectionDisabled(
@@ -59,15 +69,25 @@
     	setNameFilter(target.value)
     }
 
-    let searchQuery = "";
-    $: filteredNodes = rootNode.children.filter((node) =>
-        node.label.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
+    function handleSearch() {
+        filteredIEDs = IEDs.filter(ied => ied.label.toLowerCase().includes(searchQuery.toLowerCase()))
+		filteredBays = bays.filter(bay => bay.label.toLowerCase().includes(searchQuery.toLowerCase()))
+    }
 
-    function handleIEDSearch(e: Event) {
-        IEDSelectionIDs = [""]; 
-        const target = e.target as HTMLInputElement;
-        searchQuery = target.value;
+    function handleSearchFocus(e: Event) {
+        searchFocus = true
+		searchQuery = ''
+		handleSearch()
+    }
+
+    function handleSearchBlur(e: Event) {
+		searchFocus = false		
+	}
+
+    function handleSearchClick(e: Event) {
+        const target = e.target as HTMLElement;
+	    const textContent = target.textContent || '';
+		searchQuery = textContent;
     }
 
     function clearAll() {
@@ -88,38 +108,44 @@
 
         <div class="ied-nodes">
             <img src={ConnectionSelector} alt="connection selector" />
-            <label>
-                <span>Select an IED</span>
+            <div class="dropdown">
                 <input
+                    class ="searchfield"
                     type="text"
-                    placeholder="Filter IED"
+                    placeholder="Filter IED or bay"
                     bind:value={searchQuery}
-                    on:input={handleIEDSearch}
+                    on:input={handleSearch}
+                    on:focus={handleSearchFocus}
+                    on:blur={handleSearchBlur}
                 />
-                <select
-                    value={IEDSelectionIDs[0] ?? ""}
-                    on:change={setSelectedNode}
-                >
-                    <option value="" disabled>
-                        {#if searchQuery === ""}
-                            Select an IED
-                        {:else}
-                            {filteredNodes.length} IED(s) found
+                {#if searchFocus}
+                    <div class="dropdown_content">
+                        {#if filteredIEDs.length > 0}
+                            <div class="content_label">
+                                IEDs ({filteredIEDs.length})
+                            </div>
+                            {#each filteredIEDs as ied}
+                                <div role="button" tabindex="0" class="content" on:mousedown={handleSearchClick}>
+                                    {ied.label}
+                                </div>
+                            {/each}
+                            {#if filteredBays.length > 0}
+                                <hr class="content_seperator">
+                            {/if}
                         {/if}
-                    </option>
-                    {#if filteredNodes.length > 0}
-                        {#each filteredNodes as node}
-                            <option
-                                selected={(IEDSelectionIDs[0] ?? "") ===
-                                    node.id}
-                                value={node.id}
-                            >
-                                {node.label}
-                            </option>
-                        {/each}
-                    {/if}
-                </select>
-            </label>
+                        {#if filteredBays.length > 0}
+                            <div class="content_label">
+                                bays ({filteredBays.length})
+                            </div>
+                            {#each filteredBays as bay}
+                                <div role="button" tabindex="0" class="content" on:mousedown={handleSearchClick}>
+                                    {bay.label}
+                                </div>
+                            {/each}
+                        {/if}
+                    </div>  
+                {/if} 
+            </div>
         </div>
 
         <div class="centered">
@@ -139,9 +165,9 @@
         {#if IEDSelections.length > 0}
             <hr class="seperation-line" />
             <ul class="ied-detail-list">
-                {#each IEDSelections as IEDSelections}
+                {#each IEDSelections as IEDSelection}
                     <li>
-                        <IEDAccordion IEDSelection={IEDSelections} {rootNode} />
+                        <IEDAccordion {IEDSelection} {rootNode} />
                     </li>
                 {/each}
             </ul>
@@ -233,17 +259,50 @@
         width: 1.3rem;
     }
 
-    .ied-nodes label {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        flex-grow: 1;
-        max-width: 80%;
+    .dropdown {
+        position: relative;
+        display: inline-block;
     }
 
-    .ied-nodes select {
-        width: 100%;
-        padding: 0.5rem 1rem;
+    .searchfield {
+        padding: 14px 20px 12px 15px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .dropdown_content {
+    	display: block;
+        position: absolute;
+    	background-color: #f6f6f6;
+        min-width: 230px;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+    .content {
+    	display: block;
+    	color: black;
+        padding: 4px 16px;
+        text-decoration: none;
+    }	
+    
+    .content_label {
+    	display: block;
+    	color: gray;
+    	padding: 6px 8px 0px 8px;
+    	text-decoration: none;
+    	font-size: 14px
+    }
+    
+    .content_seperator {
+    	border: none;
+    	background-color: gray;
+    	height: 1px;
+    	width: 90%;
+    }
+
+    .content:hover {
+    	background-color: #ddd;
     }
 
     .actions {
@@ -295,3 +354,87 @@
         border-top: 0.1rem solid var(--color-accent);
     }
 </style>
+
+
+<!--
+
+    WIP thing (test on svelte.dev/playground)
+
+<script lang="ts">
+    let searchQuery = "";
+		let searchFocus = false;
+		let items = ["About", "Base", "Blog", "Contact", "Custom", "Support", "Tools", "Boats", "Cars", "Bikes", "Sheds", "Billygoats", "Zebras", "Tennis Shoes", "New Zealand"];
+		let filteredNodes = items
+	
+    function handleSearch() {
+      filteredNodes = items.filter(node => node.toLowerCase().includes(searchQuery.toLowerCase()))
+    }
+
+    function handleSearchFocus(e: Event) {
+      searchFocus = true
+    }
+
+    function handleSearchBlur(e: Event) {
+      searchFocus = false
+    }
+
+    function handleSearchClick(e: Event) {
+			
+    }
+	
+</script>
+
+<div class="dropdown">
+	<input
+    type="text"
+    placeholder="Filter IED or bay"
+    bind:value={searchQuery}
+    on:input={handleSearch}
+    on:focus={handleSearchFocus}
+    on:blur={handleSearchBlur}
+/>
+	{#if searchFocus}
+		<div class="dropdown-content">
+			{#each filteredNodes as node}
+	      <div class="content">
+			    {node}
+	      </div>
+	    {/each}
+		</div>  
+	{/if} 
+</div>
+
+<br>
+test
+<br>
+<br>
+test
+<style>
+	
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+	
+.dropdown-content {
+	display: block;
+  position: absolute;
+	background-color: #f6f6f6;
+  min-width: 230px;
+  border: 1px solid #ddd;
+  z-index: 1;
+}
+
+.content {
+	display: block;
+	color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+}	
+
+	
+</style>
+
+-->
+
+
