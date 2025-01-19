@@ -521,7 +521,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on M_text regex', () => {
-    const filter = { M_text: /LS SF6 Verlust/ };
+    const filter = { M_text: "LS SF6 Verlust" };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -549,7 +549,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on signalType regex', () => {
-    const filter = { signalType: /GOOSE/ };
+    const filter = { signalType: "GOOSE" };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -597,7 +597,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on IEDName regex', () => {
-    const filter = { IEDName: /IED1/ };
+    const filter = { IEDName: "IED1" };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -645,7 +645,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on logicalNodeInofrmation regex', () => {
-    const filter = { logicalNodeInofrmation: { LogicalDeviceInstance: /LD1/ } };
+    const filter = { logicalNodeInofrmation: { LogicalDeviceInstance: "LD1" } };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -693,7 +693,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on dataObjectInformation regex', () => {
-    const filter = { dataObjectInformation: { DataObjectName: /do1/ } };
+    const filter = { dataObjectInformation: { DataObjectName: "do1" } };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -722,14 +722,14 @@ describe('Signallist', () => {
 
   it('should filter message publishers based on multiple regex filters', () => {
     const filter = {
-      M_text: /LS SF6 Verlust/,
-      signalType: /GOOSE/,
-      IEDName: /IED1/,
+      M_text: "LS SF6 Verlust",
+      signalType: "GOOSE",
+      IEDName: "IED1",
       logicalNodeInofrmation: {
-        LogicalDeviceInstance: /LD1/
+        LogicalDeviceInstance: "LD1"
       },
       dataObjectInformation: {
-        DataObjectName: /do1/
+        DataObjectName: "do1"
       }
     };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
@@ -782,7 +782,7 @@ describe('Signallist', () => {
       }
     ];
 
-    const filter = { IDEName: /IED2/ };
+    const filter = { IDEName: "IED2" };
     const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 
     expect(messageSubscribers).toEqual([
@@ -830,7 +830,7 @@ describe('Signallist', () => {
       }
     ];
 
-    const filter = { serviceType: /GOOSE/ };
+    const filter = { serviceType: "GOOSE" };
     const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 
     expect(messageSubscribers).toEqual([
@@ -896,8 +896,8 @@ describe('Signallist', () => {
     ];
 
     const filter = {
-      IDEName: /IED3/,
-      serviceType: /GOOSE/
+      IDEName: "IED3",
+      serviceType: "GOOSE"
     };
     const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 

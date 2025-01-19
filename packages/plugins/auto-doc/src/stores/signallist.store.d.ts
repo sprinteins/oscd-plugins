@@ -75,27 +75,27 @@ export type InvalditiesReport = {
 }
 
 export type MessagePublisherFilter = {
-    M_text?: RegExp;
-    signalType?: RegExp;
-    IEDName?: RegExp;
+    M_text?: string;
+    signalType?: string;
+    IEDName?: string;
     logicalNodeInofrmation?: {
-        IEDName?: RegExp;
-        LogicalDeviceInstance?: RegExp;
-        LogicalNodePrefix?: RegExp;
-        LogicalNodeClass?: RegExp;
-        LogicalNodeInstance?: RegExp;
-        LogicalNodeType?: RegExp;
+        IEDName?: string;
+        LogicalDeviceInstance?: string;
+        LogicalNodePrefix?: string;
+        LogicalNodeClass?: string;
+        LogicalNodeInstance?: string;
+        LogicalNodeType?: string;
     };
     dataObjectInformation?: {
-        DataObjectName?: RegExp;
-        DataAttributeName?: RegExp;
-        CommonDataClass?: RegExp;
-        AttributeType?: RegExp;
-        FunctionalConstraint?: RegExp;
+        DataObjectName?: string;
+        DataAttributeName?: string;
+        CommonDataClass?: string;
+        AttributeType?: string;
+        FunctionalConstraint?: string;
     };
 }
 
 export type MessageSubscriberFilter = {
-    IDEName?: RegExp;
-    serviceType?: RegExp;
+    IDEName?: string;
+    serviceType?: string;
 }

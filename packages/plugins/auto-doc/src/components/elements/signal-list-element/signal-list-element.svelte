@@ -1,9 +1,10 @@
 <script lang="ts">
     import {signallistStore} from '@/stores'
 
-	import SignalRow from './signal-row.svelte';
-	import type { SignalRow as SignalRowType, HintText } from './types.signal-list';
-	import {Columns, SignalType} from '@/stores/';
+	import SignalRow from './signal-row.svelte'
+	import type { SignalRow as SignalRowType, HintText } from './types.signal-list'
+	import {Columns, SignalType} from '@/stores/'
+	import type {MessagePublisherFilter}  from '@/stores'
 
 	export let onContentChange: (newContent: string) => void;
 	
@@ -69,16 +70,14 @@
 
 
 	function searchForMatchOnSignalList(){
-		// biome-ignore lint/complexity/noForEach: <explanation>
-		// selectedRows.forEach(({column2, searchKey}) => {
-		//     const matches = signallist.messagePublishers.filter((publisher) => {
-		// 		console.log('Publisher:', publisher);
-        //         return publisher.M_text.toString().includes(column2);
-        //     });
-        //     console.log(`Matches for ${searchKey}:`, matches);
-			
-		// 	}
-		// )
+
+		const filter: MessagePublisherFilter = {M_text: ""}
+
+		for (const {searchKey, column2} of selectedRows) {
+			filter[searchKey] = column2;
+		}
+		console.log("🚀 ~ searchForMatchOnSignalList ~ filter:", filter)
+		console.log(signallistStore.getPublishingLogicalDevices(filter).messagePublishers);
 	}
 </script>
 

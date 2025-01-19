@@ -295,31 +295,31 @@ function matchesExtRef(extRef: Element, messagePublisher: MessagePublisher): boo
 
 function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: MessagePublisherFilter): MessagePublisher[] {
     return messagePublishers.filter(publisher => {
-        return (!filter.M_text || filter.M_text.test(publisher.M_text)) &&
-            (!filter.signalType || filter.signalType.test(publisher.signalType)) &&
-            (!filter.IEDName || filter.IEDName.test(publisher.IEDName)) &&
+        return (!filter.M_text || (publisher.M_text.includes(filter.M_text))) &&
+            (!filter.signalType || (publisher.signalType.includes(filter.signalType))) &&
+            (!filter.IEDName || (publisher.IEDName.includes(filter.IEDName))) &&
             (!filter.logicalNodeInofrmation || (
-                (!filter.logicalNodeInofrmation.IEDName || filter.logicalNodeInofrmation.IEDName.test(publisher.logicalNodeInofrmation.IEDName)) &&
-                (!filter.logicalNodeInofrmation.LogicalDeviceInstance || filter.logicalNodeInofrmation.LogicalDeviceInstance.test(publisher.logicalNodeInofrmation.LogicalDeviceInstance)) &&
-                (!filter.logicalNodeInofrmation.LogicalNodePrefix || filter.logicalNodeInofrmation.LogicalNodePrefix.test(publisher.logicalNodeInofrmation.LogicalNodePrefix)) &&
-                (!filter.logicalNodeInofrmation.LogicalNodeClass || filter.logicalNodeInofrmation.LogicalNodeClass.test(publisher.logicalNodeInofrmation.LogicalNodeClass)) &&
-                (!filter.logicalNodeInofrmation.LogicalNodeInstance || filter.logicalNodeInofrmation.LogicalNodeInstance.test(publisher.logicalNodeInofrmation.LogicalNodeInstance)) &&
-                (!filter.logicalNodeInofrmation.LogicalNodeType || filter.logicalNodeInofrmation.LogicalNodeType.test(publisher.logicalNodeInofrmation.LogicalNodeType))
+                (!filter.logicalNodeInofrmation.IEDName || (publisher.logicalNodeInofrmation.IEDName.includes(filter.logicalNodeInofrmation.IEDName))) &&
+                (!filter.logicalNodeInofrmation.LogicalDeviceInstance || (publisher.logicalNodeInofrmation.LogicalDeviceInstance.includes(filter.logicalNodeInofrmation.LogicalDeviceInstance))) &&
+                (!filter.logicalNodeInofrmation.LogicalNodePrefix || (publisher.logicalNodeInofrmation.LogicalNodePrefix.includes(filter.logicalNodeInofrmation.LogicalNodePrefix))) &&
+                (!filter.logicalNodeInofrmation.LogicalNodeClass || (publisher.logicalNodeInofrmation.LogicalNodeClass.includes(filter.logicalNodeInofrmation.LogicalNodeClass))) &&
+                (!filter.logicalNodeInofrmation.LogicalNodeInstance || (publisher.logicalNodeInofrmation.LogicalNodeInstance.includes(filter.logicalNodeInofrmation.LogicalNodeInstance))) &&
+                (!filter.logicalNodeInofrmation.LogicalNodeType || (publisher.logicalNodeInofrmation.LogicalNodeType.includes(filter.logicalNodeInofrmation.LogicalNodeType)))
             )) &&
             (!filter.dataObjectInformation || (
-                (!filter.dataObjectInformation.DataObjectName || filter.dataObjectInformation.DataObjectName.test(publisher.dataObjectInformation.DataObjectName)) &&
-                (!filter.dataObjectInformation.DataAttributeName || filter.dataObjectInformation.DataAttributeName.test(publisher.dataObjectInformation.DataAttributeName)) &&
-                (!filter.dataObjectInformation.CommonDataClass || filter.dataObjectInformation.CommonDataClass.test(publisher.dataObjectInformation.CommonDataClass)) &&
-                (!filter.dataObjectInformation.AttributeType || filter.dataObjectInformation.AttributeType.test(publisher.dataObjectInformation.AttributeType)) &&
-                (!filter.dataObjectInformation.FunctionalConstraint || filter.dataObjectInformation.FunctionalConstraint.test(publisher.dataObjectInformation.FunctionalConstraint))
+                (!filter.dataObjectInformation.DataObjectName || (publisher.dataObjectInformation.DataObjectName.includes(filter.dataObjectInformation.DataObjectName))) &&
+                (!filter.dataObjectInformation.DataAttributeName || (publisher.dataObjectInformation.DataAttributeName.includes(filter.dataObjectInformation.DataAttributeName))) &&
+                (!filter.dataObjectInformation.CommonDataClass || (publisher.dataObjectInformation.CommonDataClass.includes(filter.dataObjectInformation.CommonDataClass))) &&
+                (!filter.dataObjectInformation.AttributeType || (publisher.dataObjectInformation.AttributeType.includes(filter.dataObjectInformation.AttributeType))) &&
+                (!filter.dataObjectInformation.FunctionalConstraint || (publisher.dataObjectInformation.FunctionalConstraint.includes(filter.dataObjectInformation.FunctionalConstraint)))
             ));
     });
 }
 
 function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filter: MessageSubscriberFilter): MessageSubscriber[] {
     return messageSubscribers.filter(subscriber => {
-        return (!filter.IDEName || filter.IDEName.test(subscriber.IDEName)) &&
-            (!filter.serviceType || filter.serviceType.test(subscriber.ExtRef.serviceType));
+        return (!filter.IDEName || (subscriber.IDEName.includes(filter.IDEName))) &&
+            (!filter.serviceType || (subscriber.ExtRef.serviceType.includes(filter.serviceType)));
     });
 }
 
