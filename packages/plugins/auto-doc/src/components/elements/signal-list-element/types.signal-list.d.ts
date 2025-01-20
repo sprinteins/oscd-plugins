@@ -17,10 +17,6 @@ export type SignalRow = {
 
 }
 
-export type HintText = {
-	col1Hint: string
-	col2Hint: string
-}
 
 
 

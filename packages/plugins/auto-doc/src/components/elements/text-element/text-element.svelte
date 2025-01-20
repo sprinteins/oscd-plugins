@@ -2,10 +2,11 @@
 	export let content = "";
 	export let onContentChange: (newContent: string) => void;
 
-	import {debounce} from '@/utils/debounce';
-	const TWO_SECONDS_IN_MS = 2000;
+	import {debounce} from '@/utils';
+	const ONE_SECOND_IN_MS = 1000;
 
-	const debouncedContentChange = debounce(onContentChange, TWO_SECONDS_IN_MS);
+
+	const debouncedContentChange = debounce(onContentChange, ONE_SECOND_IN_MS);
 </script>
 
 

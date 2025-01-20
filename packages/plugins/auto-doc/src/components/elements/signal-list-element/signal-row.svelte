@@ -1,15 +1,14 @@
 <script lang="ts">
     import Checkbox from '@smui/checkbox';
-    import Textfield from "@smui/textfield"
-    import {createEventDispatcher} from "svelte"
-	import type { SignalRow, HintText, LabelText, Label } from './types.signal-list';
+    import Textfield from "@smui/textfield";
+    import {createEventDispatcher} from "svelte";
+	import type { SignalRow, LabelText, Label } from './types.signal-list';
 
     import {debounce} from '@/utils/';
 
     //Props
     export let idx = 1;
     export let label: LabelText = {col1Label: {name: "", hasSuffix: false}, col2Label: {name: "", hasSuffix: false}};
-    export let hintText: HintText = {col1Hint: "", col2Hint: ""};
     export let isSelected = false;
     export let column1 = "";
     export let column2 = "";
@@ -32,9 +31,6 @@
   function isFirstRow(){
         return idx === 0;
   }
-  function isThereHintText(){
-        return hintText.col1Hint.length > 0 || hintText.col2Hint.length > 0;
-  }
 
   function createSuffixForLabelIfNeeded(label: Label){
     const {name, hasSuffix} = label;
@@ -53,15 +49,15 @@
 
 
 <div class="signal-row">
-    {#if isFirstRow() && isThereHintText()}
+    {#if isFirstRow()}
         <div>
             <Checkbox 
                 on:click={toggleAllCheckboxes}
                 bind:checked={areAllCheckboxesSelected}
             />
         </div>
-        <small>{hintText.col1Hint}</small>
-        <small>{hintText.col2Hint}</small>
+        <small>Choose the columns you want to display and rename if needed</small>
+        <small>Use the filter to limit the content of the columns to certain values</small>
         
     {/if}
     <Checkbox bind:checked={isSelected} />

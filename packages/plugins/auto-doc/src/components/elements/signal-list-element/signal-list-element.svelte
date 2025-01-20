@@ -1,10 +1,10 @@
 <script lang="ts">
-    import {signallistStore} from '@/stores'
+    import {signallistStore} from '@/stores';
 
-	import SignalRow from './signal-row.svelte'
-	import type { SignalRow as SignalRowType, HintText } from './types.signal-list'
-	import {Columns, SignalType} from '@/stores/'
-	import type {MessagePublisherFilter}  from '@/stores'
+	import SignalRow from './signal-row.svelte';
+	import type { SignalRow as SignalRowType} from './types.signal-list';
+	import {Columns, SignalType} from '@/stores/';
+	import type {MessagePublisherFilter}  from '@/stores';
 
 	export let onContentChange: (newContent: string) => void;
 	
@@ -41,11 +41,6 @@
 	$: mergedColsAndMessages = [...columns, ...messages];
 	$: selectedRows = mergedColsAndMessages.filter(row => row.isSelected);
 
-	const columnsHintText: HintText = {
-		col1Hint: "Choose the columns you want to display and rename if needed",
-		col2Hint: "Use the filter to limit the content of the columns to certain values"
-	}
-
 	function updateSignalRow(index: number, key: keyof SignalRowType, value: string) {
     	mergedColsAndMessages = mergedColsAndMessages.map((row, i) => i === index ? { ...row, [key]: value } : row);
 		searchForMatchOnSignalList();
@@ -73,7 +68,7 @@
 				filter[searchKey] = column2;
 			}
 		}
-		console.log(signallistStore.getPublishingLogicalDevices(filter).messagePublishers);
+		signallistStore.getPublishingLogicalDevices(filter).messagePublishers;
 	}
 
 	function doesItIncludeSignalType(searchKey: string){	
@@ -93,7 +88,6 @@
 		<SignalRow 
 			idx={row.index}
 			label={row.label}
-			hintText={columnsHintText}
 			bind:isSelected={row.isSelected}
 			bind:column1={row.column1}
 			bind:column2={row.column2}
