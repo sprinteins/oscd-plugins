@@ -8,19 +8,12 @@
 
 	export let onContentChange: (newContent: string) => void;
 	
-	const signallist = signallistStore.getSignallist();
-	// console.log('Message Publishers:', signallist.messagePublishers);
-	// console.log('Columns:', Object.entries(Columns));
-    // console.log('Message Subscribers:', signallist.messageSubscribers);
-    // console.log('Invalidities Reports:', signallist.invaliditiesReports);
 
-	// console.log('PUBLISHING LD:', signallistStore.getPublishingLogicalDevices());
-	// console.log('PUBLISHING LD:', signallistStore.getSubscribingLogicalDevices(signallist.messagePublishers));
 
 	const columns: SignalRowType[] = Object.entries(Columns).map(([key, value], i) => {
 		return {
 			index: i,
-			searchKey: key,
+			searchKey: key as keyof typeof Columns,
 			isSelected: false,
 			column1: value,
 			column2: "",
@@ -34,7 +27,7 @@
 	const messages: SignalRowType[] = Object.entries(SignalType).map(([key,value], i) => {
 		return {
 			index: (columns.length + i),
-			searchKey: key,
+			searchKey: key as keyof typeof SignalType,
 			isSelected: false,
 			column1: value,
 			column2: "",
@@ -65,19 +58,32 @@
 	}
 
 	function emitSelectedRows() {
-        onContentChange({ columns: selectedRows});
+		// emit the selected rows to the parent component in order to save it into SCD file
+        // onContentChange(JSON.stringify(selectedRows));
     }
 
 
 	function searchForMatchOnSignalList(){
-
-		const filter: MessagePublisherFilter = {M_text: ""}
-
+		const filter: MessagePublisherFilter = {}
 		for (const {searchKey, column2} of selectedRows) {
-			filter[searchKey] = column2;
+			
+			if(doesItIncludeSignalType(searchKey)){			
+				filter.signalType = column2;
+			}else{
+				filter[searchKey] = column2;
+			}
 		}
-		console.log("🚀 ~ searchForMatchOnSignalList ~ filter:", filter)
 		console.log(signallistStore.getPublishingLogicalDevices(filter).messagePublishers);
+	}
+
+	function doesItIncludeSignalType(searchKey: string){	
+		return [
+			SignalType.GOOSE, 
+			SignalType.MMS, 
+			SignalType.SV, 
+			SignalType.UNKNOWN
+		].includes(SignalType[searchKey as unknown as keyof typeof SignalType]);
+
 	}
 </script>
 
