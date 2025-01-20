@@ -78,21 +78,17 @@ export type MessagePublisherFilter = {
     M_text?: string;
     signalType?: string;
     IEDName?: string;
-    logicalNodeInofrmation?: {
-        IEDName?: string;
-        LogicalDeviceInstance?: string;
-        LogicalNodePrefix?: string;
-        LogicalNodeClass?: string;
-        LogicalNodeInstance?: string;
-        LogicalNodeType?: string;
-    };
-    dataObjectInformation?: {
-        DataObjectName?: string;
-        DataAttributeName?: string;
-        CommonDataClass?: string;
-        AttributeType?: string;
-        FunctionalConstraint?: string;
-    };
+    LogicalNodeIEDName?: string;
+    LogicalDeviceInstance?: string;
+    LogicalNodePrefix?: string;
+    LogicalNodeClass?: string;
+    LogicalNodeInstance?: string;
+    LogicalNodeType?: string;
+    DataObjectName?: string;
+    DataAttributeName?: string;
+    CommonDataClass?: string;
+    AttributeType?: string;
+    FunctionalConstraint?: string;
 }
 
 export type MessageSubscriberFilter = {

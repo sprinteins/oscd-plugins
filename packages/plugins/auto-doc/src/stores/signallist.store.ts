@@ -298,21 +298,20 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
         return (!filter.M_text || (publisher.M_text.includes(filter.M_text))) &&
             (!filter.signalType || (publisher.signalType.includes(filter.signalType))) &&
             (!filter.IEDName || (publisher.IEDName.includes(filter.IEDName))) &&
-            (!filter.logicalNodeInofrmation || (
-                (!filter.logicalNodeInofrmation.IEDName || (publisher.logicalNodeInofrmation.IEDName.includes(filter.logicalNodeInofrmation.IEDName))) &&
-                (!filter.logicalNodeInofrmation.LogicalDeviceInstance || (publisher.logicalNodeInofrmation.LogicalDeviceInstance.includes(filter.logicalNodeInofrmation.LogicalDeviceInstance))) &&
-                (!filter.logicalNodeInofrmation.LogicalNodePrefix || (publisher.logicalNodeInofrmation.LogicalNodePrefix.includes(filter.logicalNodeInofrmation.LogicalNodePrefix))) &&
-                (!filter.logicalNodeInofrmation.LogicalNodeClass || (publisher.logicalNodeInofrmation.LogicalNodeClass.includes(filter.logicalNodeInofrmation.LogicalNodeClass))) &&
-                (!filter.logicalNodeInofrmation.LogicalNodeInstance || (publisher.logicalNodeInofrmation.LogicalNodeInstance.includes(filter.logicalNodeInofrmation.LogicalNodeInstance))) &&
-                (!filter.logicalNodeInofrmation.LogicalNodeType || (publisher.logicalNodeInofrmation.LogicalNodeType.includes(filter.logicalNodeInofrmation.LogicalNodeType)))
-            )) &&
-            (!filter.dataObjectInformation || (
-                (!filter.dataObjectInformation.DataObjectName || (publisher.dataObjectInformation.DataObjectName.includes(filter.dataObjectInformation.DataObjectName))) &&
-                (!filter.dataObjectInformation.DataAttributeName || (publisher.dataObjectInformation.DataAttributeName.includes(filter.dataObjectInformation.DataAttributeName))) &&
-                (!filter.dataObjectInformation.CommonDataClass || (publisher.dataObjectInformation.CommonDataClass.includes(filter.dataObjectInformation.CommonDataClass))) &&
-                (!filter.dataObjectInformation.AttributeType || (publisher.dataObjectInformation.AttributeType.includes(filter.dataObjectInformation.AttributeType))) &&
-                (!filter.dataObjectInformation.FunctionalConstraint || (publisher.dataObjectInformation.FunctionalConstraint.includes(filter.dataObjectInformation.FunctionalConstraint)))
-            ));
+            // LNs
+            (!filter.LogicalNodeIEDName || (publisher.logicalNodeInofrmation.IEDName.includes(filter.LogicalNodeIEDName))) &&
+            (!filter.LogicalDeviceInstance || (publisher.logicalNodeInofrmation.LogicalDeviceInstance.includes(filter.LogicalDeviceInstance))) &&
+            (!filter.LogicalNodePrefix || (publisher.logicalNodeInofrmation.LogicalNodePrefix.includes(filter.LogicalNodePrefix))) &&
+            (!filter.LogicalNodeClass || (publisher.logicalNodeInofrmation.LogicalNodeClass.includes(filter.LogicalNodeClass))) &&
+            (!filter.LogicalNodeInstance || (publisher.logicalNodeInofrmation.LogicalNodeInstance.includes(filter.LogicalNodeInstance))) &&
+            (!filter.LogicalNodeType || (publisher.logicalNodeInofrmation.LogicalNodeType.includes(filter.LogicalNodeType))) &&
+            // DOs
+            (!filter.DataObjectName || (publisher.dataObjectInformation.DataObjectName.includes(filter.DataObjectName))) &&
+            (!filter.DataAttributeName || (publisher.dataObjectInformation.DataAttributeName.includes(filter.DataAttributeName))) &&
+            (!filter.CommonDataClass || (publisher.dataObjectInformation.CommonDataClass.includes(filter.CommonDataClass))) &&
+            (!filter.AttributeType || (publisher.dataObjectInformation.AttributeType.includes(filter.AttributeType))) &&
+            (!filter.FunctionalConstraint || (publisher.dataObjectInformation.FunctionalConstraint.includes(filter.FunctionalConstraint)))
+            
     });
 }
 

@@ -645,7 +645,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on logicalNodeInofrmation regex', () => {
-    const filter = { logicalNodeInofrmation: { LogicalDeviceInstance: "LD1" } };
+    const filter = {  LogicalDeviceInstance: "LD1"  };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -693,7 +693,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on dataObjectInformation regex', () => {
-    const filter = { dataObjectInformation: { DataObjectName: "do1" } };
+    const filter = {  DataObjectName: "do1"  };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([

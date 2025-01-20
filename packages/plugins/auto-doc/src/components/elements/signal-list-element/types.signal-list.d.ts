@@ -13,7 +13,7 @@ export type SignalRow = {
 	column1: string
 	column2: string
 	label: LabelText
-	searchKey: keyof typeof SignalType | keyof  typeofColumns
+	searchKey: keyof typeof SignalType | keyof  typeof Columns
 
 }
 
