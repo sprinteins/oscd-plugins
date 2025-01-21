@@ -21,5 +21,10 @@ The plugin is build, and then launched in a preview mode.
 Copy the given URL to your test instance : `${URL}/${buildJSFilename}.js`
 The `buildJSFilename` is the one provided in the `vite.config` : here `plugin.js` by default.
 
+## SVELTE ACTIONS
 
+See `src > lib >headless > actions` in `core-ui-svelte`
+
+* initPlugin : takes care of the plugin initialization (theme + document load in the xmlDocumentStore)
+* initSsdTemplate : takes care of the initialization of a ssd `template` file for plugin working exclusively with this type of file
 
