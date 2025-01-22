@@ -105,11 +105,10 @@
             </a>
         </div>
 
-        <div class="ied-nodes">
+        <div class="search_filter">
             <img src={ConnectionSelector} alt="connection selector" />
-            <div class="dropdown">
+            <div class="search_container">
                 <input
-                    class ="searchfield"
                     type="text"
                     placeholder="Filter IED or bay"
                     bind:value={searchQuery}
@@ -118,26 +117,26 @@
                     on:blur={handleSearchBlur}
                 />
                 {#if searchFocus}
-                    <div class="dropdown_content">
+                    <div class="dropdown">
                         {#if filteredIEDs.length > 0}
-                            <div class="content_label">
+                            <div class="dropdown_label">
                                 IEDs ({filteredIEDs.length})
                             </div>
                             {#each filteredIEDs as ied}
-                                <div role="button" tabindex="0" class="content" on:mousedown={handleSearchClick}>
+                                <div class="dropdown_content" role="button" tabindex="0" on:mousedown={handleSearchClick}>
                                     {ied.label}
                                 </div>
                             {/each}
                             {#if filteredBays.length > 0}
-                                <hr class="content_seperator">
+                                <hr>
                             {/if}
                         {/if}
                         {#if filteredBays.length > 0}
-                            <div class="content_label">
+                            <div class="dropdown_label">
                                 bays ({filteredBays.length})
                             </div>
                             {#each filteredBays as bay}
-                                <div role="button" tabindex="0" class="content" on:mousedown={handleSearchClick}>
+                                <div class="dropdown_content" role="button" tabindex="0" on:mousedown={handleSearchClick}>
                                     {bay}
                                 </div>
                             {/each}
@@ -245,64 +244,64 @@
         min-width: 330px;
     }
 
-    .ied-nodes {
+    .search_filter {
         display: flex;
         align-items: center;
         gap: 1rem;
         margin-bottom: 2rem;
     }
 
-    .ied-nodes img {
+    .search_filter img {
         height: 1.3rem;
         width: 1.3rem;
     }
 
-    .dropdown {
+    .search_container {
         position: relative;
-        display: block;
-    }
-
-    .searchfield {
-        padding: 14px 20px 12px 15px;
-        border: none;
-        border-bottom: 1px solid #ddd;
-    }
-    
-    .dropdown_content {
-    	display: block;
-        position: absolute;
-    	background-color: #f6f6f6;
-        border: 1px solid #ddd;
-        z-index: 1;
         width: 100%;
     }
 
-    .content {
-    	display: block;
+    .search_container input {
+        padding: 14px 20px 12px 15px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .dropdown {
+        position: absolute;
+        width: 100%;
+    	background-color: #f6f6f6;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+    .dropdown_label {
+    	color: gray;
+    	padding: 8px;
+    	font-size: 1em;
+        box-sizing: border-box;
+    }
+
+    .dropdown_content {
     	color: black;
         padding: 4px 16px;
         text-decoration: none;
-    }	
-    
-    .content_label {
-    	display: block;
-    	color: gray;
-    	padding: 8px;
-    	text-decoration: none;
-    	font-size: 1em
+        box-sizing: border-box;
     }
-    
-    .content_seperator {
+    .dropdown_content:hover {
+     	background-color: #ddd;
+    }
+
+    .dropdown hr {
     	border: none;
     	background-color: gray;
     	height: 1px;
-        margin: 0.5em
+        margin: 0.5em;
+        box-sizing: border-box;
     }
-
-    .content:hover {
-    	background-color: #ddd;
-    }
-
+    
     .actions {
         display: flex;
         flex-direction: row-reverse;
