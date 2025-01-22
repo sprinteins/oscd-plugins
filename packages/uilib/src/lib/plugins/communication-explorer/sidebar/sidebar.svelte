@@ -43,7 +43,6 @@
     ): boolean {        
     	if (iedFilterDisabled) return true
 
-        searchQuery = ""
     	const selectedIEDs = filter?.selectedIEDs
     	const selectedCon = filter?.selectedConnection?.id
 
@@ -62,7 +61,6 @@
 
     function handleSearchFocus(e: Event) {
         searchFocus = true
-		searchQuery = ''
 		handleSearch()
     }
 
@@ -70,19 +68,19 @@
 		searchFocus = false		
 	}
 
-    function handleSearchClick(e: Event) {
+    function handleDropdownSelect(e: Event) {
         const target = e.target as HTMLElement;
-	    const nodeName = target.innerText|| '';
-        if (bays.includes(nodeName)) {
+	    searchQuery = target.innerText|| '';
+        if (bays.includes(searchQuery)) {
             clearIEDSelection()
             for (const node of rootNode.children) {
-                if (node.bays.has(nodeName)) {
+                if (node.bays.has(searchQuery)) {
                     toggleMultiSelectionOfIED(node)
                 }
             }
         }
         else {
-            let selectedNode = rootNode.children.find(node => node.label == nodeName)
+            let selectedNode = rootNode.children.find(node => node.label == searchQuery)
             if (selectedNode) {
                 selectIEDNode(selectedNode)
             }
@@ -123,7 +121,7 @@
                                 IEDs ({filteredIEDs.length})
                             </div>
                             {#each filteredIEDs as ied}
-                                <div class="dropdown_content" role="button" tabindex="0" on:mousedown={handleSearchClick}>
+                                <div class="dropdown_content" role="button" tabindex="0" on:mousedown={handleDropdownSelect}>
                                     {ied.label}
                                 </div>
                             {/each}
@@ -136,7 +134,7 @@
                                 bays ({filteredBays.length})
                             </div>
                             {#each filteredBays as bay}
-                                <div class="dropdown_content" role="button" tabindex="0" on:mousedown={handleSearchClick}>
+                                <div class="dropdown_content" role="button" tabindex="0" on:mousedown={handleDropdownSelect}>
                                     {bay}
                                 </div>
                             {/each}
