@@ -72,10 +72,10 @@
                     {templateTitle}
                 </div>
             </div>
-            <div class="template-options">
+            <!-- <div class="template-options">
                 <Button>open template</Button>
                 <Button>save template</Button>
-            </div>
+            </div> -->
             <Button variant="raised">Export</Button>
         </div>
     </header>

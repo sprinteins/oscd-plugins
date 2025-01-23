@@ -86,15 +86,15 @@
                     </Cell>
                     <Cell>
                     <div class="action-btns">
-                        <Tooltip text="Edit">
+                        <!-- <Tooltip text="Edit">
                             <CustomIconButton icon="edit" color="black"/>
-                        </Tooltip>
+                        </Tooltip> -->
                         <Tooltip text="Delete">
                             <CustomIconButton icon="delete" color="black" on:click={()=>{deleteTemplate(template.id)}}/>
                         </Tooltip>
-                        <Tooltip text="Duplicate">
+                        <!-- <Tooltip text="Duplicate">
                             <CustomIconButton icon="content_copy" color="black"/>
-                        </Tooltip>
+                        </Tooltip> -->
                         <Tooltip text="Download" position="left">
                             <CustomIconButton icon="download" color="black"/>
                         </Tooltip>
