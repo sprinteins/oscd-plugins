@@ -1,6 +1,9 @@
 
-export type ObjectTree = {
-	logicalDevices: LogicalDevice[]
+export type ObjectTree = TreeNode[]
+
+export type TreeNode = {
+	name: string
+	children?: TreeNode[]
 }
 
 export type LogicalDevice = {

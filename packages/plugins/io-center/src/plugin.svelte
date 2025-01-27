@@ -10,6 +10,7 @@
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
+	<ObjectTree {objectTree} />
 	<div class="flex flex-col space-y-9 items-center justify-center h-screen">
 		<h1 class="h1 font-black text-9xl">Hello Plugin!</h1>
 		<span>See the <i>README</i> file in <b>`packages/template`</b> (oscd-plugins monorepo)</span>
@@ -20,19 +21,84 @@
 <script lang="ts">
 import { onMount } from 'svelte'
 import jsonPackage from '../package.json'
-import { Theme } from '@oscd-plugins/core-ui-svelte'
 import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 import Layout from "./ui/layout.svelte"
 import store from "./store.svelte"
 import { initQuery } from './query.svelte';
 
 
-// PACKAGE
-import jsonPackage from '../package.json'
 // CORE
 import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
-// TYPES
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import ObjectTree from './ui/components/object-tree/object-tree.svelte';
+
+const objectTree = [
+    {
+      name: 'Device1',
+      children: [
+        {
+          name: 'Node1',
+          children: [
+            {
+              name: 'ObjectInstance1',
+              children: [
+                { name: 'Attribute1' },
+                { name: 'Attribute2' },
+              ],
+            },
+            {
+              name: 'ObjectInstance2',
+              children: [
+                { name: 'Attribute3' },
+                { name: 'Attribute4' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Node2',
+          children: [
+            {
+              name: 'ObjectInstance3',
+              children: [
+                { name: 'Attribute5' },
+                { name: 'Attribute6' },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'Device2',
+      children: [
+        {
+          name: 'Node3',
+          children: [
+            {
+              name: 'ObjectInstance4',
+              children: [
+                { name: 'Attribute7' },
+                { name: 'Attribute8' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Node4',
+          children: [
+            {
+              name: 'ObjectInstance5',
+              children: [
+                { name: 'Attribute9' },
+                { name: 'Attribute10' },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
 
 // props
 const {
