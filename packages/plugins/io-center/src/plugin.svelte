@@ -10,7 +10,9 @@
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	<ObjectTree {objectTree} />
+	<div class="w-full">
+		<ObjectTree {objectTree} />
+	</div>
 	<div class="flex flex-col space-y-9 items-center justify-center h-screen">
 		<h1 class="h1 font-black text-9xl">Hello Plugin!</h1>
 		<span>See the <i>README</i> file in <b>`packages/template`</b> (oscd-plugins monorepo)</span>

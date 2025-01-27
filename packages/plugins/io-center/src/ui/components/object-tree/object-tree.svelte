@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ObjectTree, TreeNode } from "./object-tree";
-    import TreeItem from "./TreeItem.svelte";
+	import TreeItem from "./TreeItem.svelte";
 
 	type Props = {
 		objectTree: ObjectTree;
@@ -9,8 +9,8 @@
 	let { objectTree }: Props = $props();
 </script>
 
-<object-tree>
+<div class="w-1/4">
 	{#each objectTree as node}
-		<TreeItem treeNode={node}/>
+		<TreeItem treeNode={node} />
 	{/each}
-</object-tree>
+</div>
