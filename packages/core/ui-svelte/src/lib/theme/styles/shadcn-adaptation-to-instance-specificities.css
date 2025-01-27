@@ -1,0 +1,5 @@
+/* SIDEBAR */
+.sidebar-root {
+	height: var(--plugin-container-height);
+	top: var(--sidebar-root-top);
+}
