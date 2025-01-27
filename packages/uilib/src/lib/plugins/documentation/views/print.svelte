@@ -31,8 +31,11 @@ function printContent(content: string) {
 
 function getPrintableContent(type: keyof typeof PRINTABLE_INIT_CONSTANT) {
 	let printableContent: string
+	console.log("🚀 ~ currentPluginElement:", currentPluginElement)
 	const style =
-		currentPluginElement.shadowRoot.querySelector('style').innerText
+	currentPluginElement.shadowRoot.querySelector('style').innerText
+	console.log("🚀 ~ getPrintableContent ~ style:", style)
+	console.log("PRINTABLE ELEMENT:", $printableElements[type])
 
 	if ($printableElements[type].selector)
 		printableContent = $printableElements[type].element.querySelector(
@@ -78,6 +81,7 @@ function handlePrint(type: keyof typeof PRINTABLE_INIT_CONSTANT) {
 	printStore.selectCurrentPrintableElement(type)
 
 	const printableContent = getPrintableContent(type)
+	console.log("🚀 ~ handlePrint ~ printableContent:", printableContent)
 	printContent(printableContent)
 }
 </script>
@@ -100,7 +104,7 @@ function handlePrint(type: keyof typeof PRINTABLE_INIT_CONSTANT) {
 
 	<div class="hide" bind:this={$printableElements.documentation.element}>
 		<SCDElementList />
-</div>
+	</div>
 	<InformationCard
 		on:buttonClick={() => handlePrint("documentation")}
 	>

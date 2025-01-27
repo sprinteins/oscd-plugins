@@ -47,6 +47,10 @@
         dispatch("templateDelete", {templateId})
     }
 
+    function downloadTemplateContent(templateId: string){
+        dispatch("templateDownload", {templateId})
+    }
+
 </script>
 
 
@@ -96,7 +100,7 @@
                             <CustomIconButton icon="content_copy" color="black"/>
                         </Tooltip> -->
                         <Tooltip text="Download" position="left">
-                            <CustomIconButton icon="download" color="black"/>
+                            <CustomIconButton icon="download" color="black" on:click={()=>{downloadTemplateContent(template.id)}}/>
                         </Tooltip>
                     </div>
                     </Cell>

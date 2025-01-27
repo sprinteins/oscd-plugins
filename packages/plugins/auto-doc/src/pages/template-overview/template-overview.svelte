@@ -40,6 +40,12 @@
         allTemplates = allTemplates.filter(template => template.getAttribute('id') !== templateId)
 
     }
+
+    function downloadTemplateContent(event: CustomEvent<{templateId: string}>){
+        const {templateId} = event.detail
+        const template = docTemplatesStore.getDocumentTemplate(templateId);
+        console.log("🚀 ~ downloadTemplateContent ~ template:", template)
+    }
 </script>
 
 <div class="template-overview">
@@ -52,7 +58,11 @@
     </header>
 
     <main>
-        <Table allTemplates={templatesConvertedToTableRow} on:templateDelete={deleteTemplate}/>
+        <Table 
+            allTemplates={templatesConvertedToTableRow} 
+            on:templateDelete={deleteTemplate}
+            on:templateDownload={downloadTemplateContent}
+        />
     </main>
 
 </div>
