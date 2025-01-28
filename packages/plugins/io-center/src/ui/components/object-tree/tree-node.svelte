@@ -5,6 +5,7 @@
 
     type Props = {
         treeNode: TreeNodeType;
+        isSelectable?: boolean;
     };
 
     let { treeNode }: Props = $props();
@@ -13,6 +14,7 @@
 <Accordion.Item value={treeNode.name} class="px-2">
     {#if treeNode.children}
         <Accordion.Trigger
+            onclick={() => console.log("HIIII")}
             class="flex flex-1 w-full items-center py-2 hover:no-underline"
         >
             <p>{treeNode.name}</p>
