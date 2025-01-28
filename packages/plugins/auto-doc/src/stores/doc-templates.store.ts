@@ -151,8 +151,12 @@ function addBlockToDocumentTemplate(docTemplate: Element, type: ElementType, pos
 function editBlockContentOfDocumentTemplate(docTemplate: Element, blockId: string, content: string) {
     const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockElement) {
+
+        const blockIdAttribute = blockElement.getAttribute('id');
+        const blockTypeAttribute = blockElement.getAttribute('type');
         blockElement.textContent = content;
-        eventStore.updateAndDispatchActionEvent(blockElement, { content: content });
+
+        eventStore.updateAndDispatchActionEvent(blockElement, { id: blockIdAttribute, type: blockTypeAttribute });
     }
 }
 
