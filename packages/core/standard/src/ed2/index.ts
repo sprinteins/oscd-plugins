@@ -1,2 +1,1 @@
-export * from './definition'
-export * from './constants'
+export * as rev1 from './rev1'

@@ -1,1 +1,2 @@
-export type * from './index.d.ts'
+export type * from './global'
+export * from './generated/definitions.generated'
