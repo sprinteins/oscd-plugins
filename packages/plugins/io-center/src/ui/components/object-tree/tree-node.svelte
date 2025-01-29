@@ -6,23 +6,56 @@
     type Props = {
         treeNode: TreeNodeType;
         isSelectable?: boolean;
+        selectedNodeName: string;
+        setSelectedNodeName: (name: string) => void;
         onToggle?: (event: MouseEvent) => void;
+        onSelect?: (event: MouseEvent) => void;
     };
 
-    let { treeNode }: Props = $props();
+    let {
+        treeNode,
+        isSelectable,
+        selectedNodeName,
+        setSelectedNodeName,
+        onToggle,
+        onSelect,
+    }: Props = $props();
+
+    const onClick = (name: string, event: MouseEvent) => {
+        setSelectedNodeName(name);
+
+        if (onToggle) {
+            onToggle(event);
+        }
+
+        if (onSelect) {
+            onSelect(event);
+        }
+    };
 </script>
 
 <Accordion.Item value={treeNode.name}>
     {#if treeNode.children}
         <Accordion.Trigger
-            class="flex items-center py-2 cursor-pointer hover:no-underline"
+            onclick={(e) => {
+                onClick(treeNode.name, e);
+            }}
+            class="flex items-center py-2 cursor-pointer hover:no-underline {isSelectable &&
+            selectedNodeName === treeNode.name
+                ? 'bg-white'
+                : ''}"
         >
             <p class="text-sm font-medium">{treeNode.name}</p>
         </Accordion.Trigger>
         <Accordion.Content class="ml-4">
             <div>
                 {#each treeNode.children as node}
-                    <TreeNode treeNode={node} />
+                    <TreeNode
+                        treeNode={node}
+                        isSelectable
+                        {selectedNodeName}
+                        {setSelectedNodeName}
+                    />
                 {/each}
             </div>
         </Accordion.Content>

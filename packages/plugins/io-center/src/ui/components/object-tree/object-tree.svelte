@@ -10,6 +10,8 @@
 
 	let { objectTree }: Props = $props();
 
+	let selectedNodeName = $state("");
+
 	const getOpenItems = (nodes: TreeNodeType[]): string[] =>
 		nodes.reduce<string[]>(
 			(acc, node) => [
@@ -19,6 +21,10 @@
 			],
 			[],
 		);
+
+	const setSelectedNodeName = (name: string) => {
+		selectedNodeName = name;
+	};
 </script>
 
 <Accordion.Root
@@ -27,6 +33,11 @@
 	class="w-1/4 p-2"
 >
 	{#each objectTree as treeNode}
-		<TreeNode {treeNode} />
+		<TreeNode
+			{treeNode}
+			isSelectable
+			{selectedNodeName}
+			{setSelectedNodeName}
+		/>
 	{/each}
 </Accordion.Root>
