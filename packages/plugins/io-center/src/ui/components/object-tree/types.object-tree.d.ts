@@ -1,4 +1,3 @@
-
 export type ObjectTree = TreeNode[]
 
 export type TreeNode = {

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { ObjectTree } from "./object-tree";
+	import type { ObjectTree } from "./types.object-tree";
 	import { Accordion } from "@oscd-plugins/core-ui-svelte";
-	import type { TreeNode as TreeNodeType } from "./object-tree";
+	import type { TreeNode as TreeNodeType } from "./types.object-tree";
 	import TreeNode from "./tree-node.svelte";
 
 	type Props = {
