@@ -6,9 +6,11 @@
     import {docTemplatesStore} from '@/stores'
     import {push} from 'svelte-spa-router'
     import { onMount } from 'svelte';
+    import {pdfGenerator} from '@/utils'
 
     let newTemplateId: string | null = ""
     let allTemplates: Element[] = []
+    const emptyTitleOrDescription = "N/A"
 
     onMount(() => {
         allTemplates = docTemplatesStore.getAllDocumentTemplates();
@@ -28,8 +30,8 @@
         
         return {
             id: template.getAttribute('id') ?? "No id",
-            name: template.getAttribute('title') ?? "N/A",
-            description: template.getAttribute('description') ?? "N/A",
+            name: template.getAttribute('title') ?? emptyTitleOrDescription,
+            description: template.getAttribute('description') ?? emptyTitleOrDescription,
             lastEdited: new Date(templateDate)
         }
     }   
@@ -44,8 +46,19 @@
     function downloadTemplateContent(event: CustomEvent<{templateId: string}>){
         const {templateId} = event.detail
         const template = docTemplatesStore.getDocumentTemplate(templateId);
-        console.log("🚀 ~ downloadTemplateContent ~ template:", template)
+        if(!template) {
+            console.error("Template not found");
+            return;
+        }
+        const allBlocks: NodeList = template.querySelectorAll('Block');
+        const templateTitle = template.getAttribute('title') ?? emptyTitleOrDescription;
+        pdfGenerator.generatePdf(templateTitle, allBlocks);
     }
+
+
+
+
+    
 </script>
 
 <div class="template-overview">
@@ -55,8 +68,7 @@
            <Label>Add template</Label> 
         </Button>
         <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button>
-    </header>
-
+    </header>  
     <main>
         <Table 
             allTemplates={templatesConvertedToTableRow} 

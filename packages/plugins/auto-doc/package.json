@@ -23,6 +23,7 @@
 		"@smui/data-table": "^7.0.0",
 		"@smui/icon-button": "^7.0.0",
 		"@smui/textfield": "^7.0.0",
+		"jspdf": "^2.5.2",
 		"svelte-spa-router": "^4.0.1",
 		"uuid": "^10.0.0"
 	},
