@@ -41,7 +41,7 @@
     }
 
 
-    function handleContentChange(elementId: string, elementType: ElementType, newContent: string){
+    function handleContentChange(elementId: string, newContent: string){
         docTemplatesStore.editBlockContentOfDocumentTemplate(template, elementId, newContent)
     }
 </script>
@@ -58,7 +58,7 @@
                     <svelte:component 
                         this={componentMap[blockElement.type]}
                         content={blockElement.content}
-                        onContentChange={(newContent) => handleContentChange(blockElement.id, blockElement.type, newContent)}
+                        onContentChange={(newContent) => handleContentChange(blockElement.id, newContent)}
                     />
                 </ElementWrapper>
             {/each}

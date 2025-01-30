@@ -45,14 +45,7 @@
 
     function downloadTemplateContent(event: CustomEvent<{templateId: string}>){
         const {templateId} = event.detail
-        const template = docTemplatesStore.getDocumentTemplate(templateId);
-        if(!template) {
-            console.error("Template not found");
-            return;
-        }
-        const allBlocks: NodeList = template.querySelectorAll('Block');
-        const templateTitle = template.getAttribute('title') ?? emptyTitleOrDescription;
-        pdfGenerator.generatePdf(templateTitle, allBlocks);
+        pdfGenerator.downloadAsPdf(templateId)
     }
 
 

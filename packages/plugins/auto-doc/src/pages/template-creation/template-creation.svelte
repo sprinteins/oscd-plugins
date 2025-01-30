@@ -7,6 +7,7 @@
     import {clickOutside} from "@/actions"
     import {docTemplatesStore} from '@/stores'
 	import { onMount } from "svelte"
+    import {pdfGenerator} from '@/utils'
 
 
     type Params = {id?: string}
@@ -59,6 +60,12 @@
        docTemplatesStore.editDocumentTemplateTitleAndDescription(templateId as string, title, description)
     }
 
+    function downloadTemplateContent(){
+        if(!templateId){return}
+            
+        pdfGenerator.downloadAsPdf(templateId)
+    }
+
 
 </script>
 
@@ -67,7 +74,8 @@
         <div class="header">
             <div class="template-title">
                 <CustomIconButton icon="arrow_back" color="black" on:click={navigateToOverviewPage}/>
-                <div class="title" on:click|stopPropagation={displayTitleAndDescription} 
+                <div class="title" role="button" tabindex="0" on:click|stopPropagation={displayTitleAndDescription} 
+                on:keydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}
                 >
                     {templateTitle}
                 </div>
@@ -76,7 +84,7 @@
                 <Button>open template</Button>
                 <Button>save template</Button>
             </div> -->
-            <Button variant="raised">Export</Button>
+            <Button variant="raised" on:click={downloadTemplateContent}>Export</Button>
         </div>
     </header>
 
@@ -85,6 +93,8 @@
         <div class="template-metadata"
             use:clickOutside={closeTitleAndDescription}
             on:click|stopPropagation
+            role="dialog"
+            on:keydown={(e) => e.key === 'Escape' && closeTitleAndDescription()}
             >
                 <Textfield
                     bind:value={title}
