@@ -21,7 +21,7 @@
         onSelect,
     }: Props = $props();
 
-    const onClick = (name: string, event: MouseEvent) => {
+    function onClick(name: string, event: MouseEvent) {
         setSelectedNodeName(name);
 
         if (onToggle) {
@@ -31,10 +31,16 @@
         if (onSelect) {
             onSelect(event);
         }
-    };
+    }
 
     const baseClass =
         "font-mono cursor-pointer hover:no-underline rounded-md hover:bg-gray-100 transition-colors duration-300";
+
+    function getSelectedClass() {
+        return isSelectable && selectedNodeName === treeNode.name
+            ? "bg-beige hover:bg-beige"
+            : "";
+    }
 </script>
 
 <Accordion.Item value={treeNode.name}>
@@ -43,11 +49,7 @@
             onclick={(e) => {
                 onClick(treeNode.name, e);
             }}
-            class={`flex items-center text-lg p-2 ${baseClass} ${
-                isSelectable && selectedNodeName === treeNode.name
-                    ? "bg-beige hover:bg-beige"
-                    : ""
-            }`}
+            class={`flex items-center text-lg p-2 ${baseClass} ${getSelectedClass()}`}
         >
             <p class="text-sm font-medium">{treeNode.name}</p>
         </Accordion.Trigger>
@@ -65,11 +67,7 @@
         </Accordion.Content>
     {:else}
         <button
-            class={`p-2 w-full text-left ${baseClass} ${
-                isSelectable && selectedNodeName === treeNode.name
-                    ? "bg-beige hover:bg-beige"
-                    : ""
-            }`}
+            class={`p-2 w-full text-left ${baseClass} ${getSelectedClass()}`}
             onclick={(e) => {
                 onClick(treeNode.name, e);
             }}

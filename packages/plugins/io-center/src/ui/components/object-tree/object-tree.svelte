@@ -12,8 +12,8 @@
 
 	let selectedNodeName = $state("");
 
-	const getOpenItems = (nodes: TreeNodeType[]): string[] =>
-		nodes.reduce<string[]>(
+	function getOpenItems(nodes: TreeNodeType[]): string[] {
+		return nodes.reduce<string[]>(
 			(acc, node) => [
 				...acc,
 				...(node.isOpen ? [node.name] : []),
@@ -21,10 +21,11 @@
 			],
 			[],
 		);
+	}
 
-	const setSelectedNodeName = (name: string) => {
+	function setSelectedNodeName(name: string) {
 		selectedNodeName = name;
-	};
+	}
 </script>
 
 <Accordion.Root
