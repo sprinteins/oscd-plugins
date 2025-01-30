@@ -295,30 +295,30 @@ function matchesExtRef(extRef: Element, messagePublisher: MessagePublisher): boo
 
 function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: MessagePublisherFilter): MessagePublisher[] {
     return messagePublishers.filter(publisher => {
-        return (!filter.M_text || (publisher.M_text.includes(filter.M_text))) &&
-            (!filter.signalType || (publisher.signalType.includes(filter.signalType))) &&
-            (!filter.IEDName || (publisher.IEDName.includes(filter.IEDName))) &&
+        return (!filter.M_text || (publisher.M_text.toLocaleLowerCase().includes(filter.M_text.toLocaleLowerCase()))) &&
+            (!filter.signalType || (publisher.signalType.toLocaleLowerCase().includes(filter.signalType.toLocaleLowerCase()))) &&
+            (!filter.IEDName || (publisher.IEDName.toLocaleLowerCase().includes(filter.IEDName.toLocaleLowerCase()))) &&
             // LNs
-            (!filter.LogicalNodeIEDName || (publisher.logicalNodeInofrmation.IEDName.includes(filter.LogicalNodeIEDName))) &&
-            (!filter.LogicalDeviceInstance || (publisher.logicalNodeInofrmation.LogicalDeviceInstance.includes(filter.LogicalDeviceInstance))) &&
-            (!filter.LogicalNodePrefix || (publisher.logicalNodeInofrmation.LogicalNodePrefix.includes(filter.LogicalNodePrefix))) &&
-            (!filter.LogicalNodeClass || (publisher.logicalNodeInofrmation.LogicalNodeClass.includes(filter.LogicalNodeClass))) &&
-            (!filter.LogicalNodeInstance || (publisher.logicalNodeInofrmation.LogicalNodeInstance.includes(filter.LogicalNodeInstance))) &&
-            (!filter.LogicalNodeType || (publisher.logicalNodeInofrmation.LogicalNodeType.includes(filter.LogicalNodeType))) &&
+            (!filter.LogicalNodeIEDName || (publisher.logicalNodeInofrmation.IEDName.toLocaleLowerCase().includes(filter.LogicalNodeIEDName.toLocaleLowerCase()))) &&
+            (!filter.LogicalDeviceInstance || (publisher.logicalNodeInofrmation.LogicalDeviceInstance.toLocaleLowerCase().includes(filter.LogicalDeviceInstance.toLocaleLowerCase()))) &&
+            (!filter.LogicalNodePrefix || (publisher.logicalNodeInofrmation.LogicalNodePrefix.toLocaleLowerCase().includes(filter.LogicalNodePrefix.toLocaleLowerCase()))) &&
+            (!filter.LogicalNodeClass || (publisher.logicalNodeInofrmation.LogicalNodeClass.toLocaleLowerCase().includes(filter.LogicalNodeClass.toLocaleLowerCase()))) &&
+            (!filter.LogicalNodeInstance || (publisher.logicalNodeInofrmation.LogicalNodeInstance.toLocaleLowerCase().includes(filter.LogicalNodeInstance.toLocaleLowerCase()))) &&
+            (!filter.LogicalNodeType || (publisher.logicalNodeInofrmation.LogicalNodeType.toLocaleLowerCase().includes(filter.LogicalNodeType.toLocaleLowerCase()))) &&
             // DOs
-            (!filter.DataObjectName || (publisher.dataObjectInformation.DataObjectName.includes(filter.DataObjectName))) &&
-            (!filter.DataAttributeName || (publisher.dataObjectInformation.DataAttributeName.includes(filter.DataAttributeName))) &&
-            (!filter.CommonDataClass || (publisher.dataObjectInformation.CommonDataClass.includes(filter.CommonDataClass))) &&
-            (!filter.AttributeType || (publisher.dataObjectInformation.AttributeType.includes(filter.AttributeType))) &&
-            (!filter.FunctionalConstraint || (publisher.dataObjectInformation.FunctionalConstraint.includes(filter.FunctionalConstraint)))
+            (!filter.DataObjectName || (publisher.dataObjectInformation.DataObjectName.toLocaleLowerCase().includes(filter.DataObjectName.toLocaleLowerCase()))) &&
+            (!filter.DataAttributeName || (publisher.dataObjectInformation.DataAttributeName.toLocaleLowerCase().includes(filter.DataAttributeName.toLocaleLowerCase()))) &&
+            (!filter.CommonDataClass || (publisher.dataObjectInformation.CommonDataClass.toLocaleLowerCase().includes(filter.CommonDataClass.toLocaleLowerCase()))) &&
+            (!filter.AttributeType || (publisher.dataObjectInformation.AttributeType.toLocaleLowerCase().includes(filter.AttributeType.toLocaleLowerCase()))) &&
+            (!filter.FunctionalConstraint || (publisher.dataObjectInformation.FunctionalConstraint.toLocaleLowerCase().includes(filter.FunctionalConstraint.toLocaleLowerCase())))
             
     });
 }
 
 function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filter: MessageSubscriberFilter): MessageSubscriber[] {
     return messageSubscribers.filter(subscriber => {
-        return (!filter.IDEName || (subscriber.IDEName.includes(filter.IDEName))) &&
-            (!filter.serviceType || (subscriber.ExtRef.serviceType.includes(filter.serviceType)));
+        return (!filter.IDEName || (subscriber.IDEName.toLocaleLowerCase().includes(filter.IDEName.toLocaleLowerCase()))) &&
+            (!filter.serviceType || (subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase())));
     });
 }
 

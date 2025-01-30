@@ -4,7 +4,7 @@
 	import SignalRow from './signal-row.svelte';
 	import type { SignalRow as SignalRowType} from './types.signal-list';
 	import {Columns, SignalType} from '@/stores/';
-	import type {MessagePublisherFilter}  from '@/stores';
+	import type {MessagePublisherFilter, MessagePublisher}  from '@/stores';
 
 	export let onContentChange: (newContent: string) => void;
 	
@@ -41,9 +41,15 @@
 	$: mergedColsAndMessages = [...columns, ...messages];
 	$: selectedRows = mergedColsAndMessages.filter(row => row.isSelected);
 
+
+
+	$: results = {
+		selected: selectedRows,
+		matches: searchForMatchOnSignalList()
+	}
+
 	function updateSignalRow(index: number, key: keyof SignalRowType, value: string) {
     	mergedColsAndMessages = mergedColsAndMessages.map((row, i) => i === index ? { ...row, [key]: value } : row);
-		searchForMatchOnSignalList();
 		emitSelectedRows();
 	}
 
@@ -52,9 +58,8 @@
 		emitSelectedRows();
 	}
 
-	function emitSelectedRows() {
-		// emit the selected rows to the parent component in order to save it into SCD file
-        // onContentChange(JSON.stringify(selectedRows));
+	function emitSelectedRows() {	
+        onContentChange(JSON.stringify(results));
     }
 
 
@@ -68,7 +73,8 @@
 				filter[searchKey] = column2;
 			}
 		}
-		signallistStore.getPublishingLogicalDevices(filter).messagePublishers;
+		const matches = signallistStore.getPublishingLogicalDevices(filter).messagePublishers;
+		return matches;
 	}
 
 	function doesItIncludeSignalType(searchKey: string){	

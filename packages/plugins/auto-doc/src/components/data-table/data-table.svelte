@@ -13,7 +13,7 @@
 
 0
     function isInvalidDate(date: Date){
-        return isNaN(date.getTime());
+        return Number.isNaN(date.getTime());
     }
 
     function formatDate(date: Date, defaultString = "-"): string{
