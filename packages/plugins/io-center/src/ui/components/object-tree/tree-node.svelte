@@ -32,6 +32,9 @@
             onSelect(event);
         }
     };
+
+    const baseClass =
+        "font-mono cursor-pointer hover:no-underline rounded-md hover:bg-gray-100 transition-colors duration-300";
 </script>
 
 <Accordion.Item value={treeNode.name}>
@@ -40,14 +43,15 @@
             onclick={(e) => {
                 onClick(treeNode.name, e);
             }}
-            class="flex items-center py-2 cursor-pointer hover:no-underline {isSelectable &&
-            selectedNodeName === treeNode.name
-                ? 'bg-white'
-                : ''}"
+            class={`flex items-center text-lg p-2 ${baseClass} ${
+                isSelectable && selectedNodeName === treeNode.name
+                    ? "bg-beige hover:bg-beige"
+                    : ""
+            }`}
         >
             <p class="text-sm font-medium">{treeNode.name}</p>
         </Accordion.Trigger>
-        <Accordion.Content class="ml-4">
+        <Accordion.Content class="ml-4 border-l">
             <div>
                 {#each treeNode.children as node}
                     <TreeNode
@@ -60,8 +64,17 @@
             </div>
         </Accordion.Content>
     {:else}
-        <p class="ml-6 py-1 text-sm text-gray-700 cursor-pointer">
+        <button
+            class={`p-2 w-full text-left ${baseClass} ${
+                isSelectable && selectedNodeName === treeNode.name
+                    ? "bg-beige hover:bg-beige"
+                    : ""
+            }`}
+            onclick={(e) => {
+                onClick(treeNode.name, e);
+            }}
+        >
             {treeNode.name}
-        </p>
+        </button>
     {/if}
 </Accordion.Item>
