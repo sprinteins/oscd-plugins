@@ -1,4 +1,5 @@
 import type { SignalType, Columns } from "@/stores/signallist.store.d"
+import type {MessagePublisher, MessageSubscriber}  from '@/stores';
 
 export type Label = { name: string, hasSuffix: boolean }
 
@@ -15,6 +16,15 @@ export type SignalRow = {
 	label: LabelText
 	searchKey: keyof typeof SignalType | keyof  typeof Columns
 
+}
+
+export type SignalListMach = {
+	publishers: string[][]
+}
+
+export type SignalListOnSCD = {
+	selected: SignalRow[]
+	matches: SignalListMach
 }
 
 

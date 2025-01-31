@@ -2,7 +2,7 @@
     import {signallistStore} from '@/stores';
 
 	import SignalRow from './signal-row.svelte';
-	import type { SignalRow as SignalRowType} from './types.signal-list';
+	import type { SignalRow as SignalRowType, SignalListMach} from './types.signal-list';
 	import {Columns, SignalType} from '@/stores/';
 	import type {MessagePublisherFilter, MessagePublisher}  from '@/stores';
 
@@ -63,7 +63,7 @@
     }
 
 
-	function searchForMatchOnSignalList(){
+	function searchForMatchOnSignalList():SignalListMach{
 		const filter: MessagePublisherFilter = {}
 		for (const {searchKey, column2} of selectedRows) {
 			
@@ -73,8 +73,9 @@
 				filter[searchKey] = column2;
 			}
 		}
-		const matches = signallistStore.getPublishingLogicalDevices(filter).messagePublishers;
-		return matches;
+		const publishers = signallistStore.getPublishingLogicalDevices(filter).filteredValuesForPdf;
+		
+		return {publishers};
 	}
 
 	function doesItIncludeSignalType(searchKey: string){	

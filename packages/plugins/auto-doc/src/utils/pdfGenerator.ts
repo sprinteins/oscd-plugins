@@ -1,6 +1,8 @@
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore} from '@/stores'
+import type {SignalListOnSCD} from '@/components/elements/signal-list-element/types.signal-list'
 
 
 
@@ -10,12 +12,14 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     doc.setFontSize(12);
     let y = 10; 
     const pageHeight = doc.internal.pageSize.height;
+    const pageSize = doc.internal.pageSize;
+    const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth()
     const marginBottom = 10; 
 
     const blockHandler: Record<ElementType, (block: Element) => void> = {
         text: handleTextBlock,
         image: () => {},
-        signalList: handleSignalList
+        signalList: processSignalListForPdfGeneration
     }
 
     function incrementYPositionForNextLine() {
@@ -27,7 +31,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     }
 
     function handleTextBlock(block: Element){
-        const wrappedText : string [] = doc.splitTextToSize(block.textContent ?? "", 180);
+        const wrappedText : string [] = doc.splitTextToSize(block.textContent ?? "", pageWidth-35);
             for(const line of wrappedText){
                 if (contentExceedsCurrentPage(y, pageHeight, marginBottom)) {
                     doc.addPage();
@@ -38,8 +42,27 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
             }    
     }
 
-    function handleSignalList(block: Element){
-        console.log("SIGNAL LIST", block)
+  
+    function processSignalListForPdfGeneration(block: Element){
+        if(!block.textContent) {
+            console.error("No content found in Signal List Block");
+            return;
+        }
+        const parsedBlockContent = JSON.parse(block.textContent) as SignalListOnSCD;
+
+        const selectedRows = parsedBlockContent.selected
+
+        const tableHeader = selectedRows.map(row => row.column1);
+        const tableRows = parsedBlockContent.matches.publishers
+            
+        autoTable(doc, {
+            head: [tableHeader],
+            body: tableRows,
+            startY: y+10,
+            tableWidth: 'wrap',
+            styles: { cellPadding: 0.5, fontSize: 8 },
+
+        })
     }
 
     for(const block of allBlocks){
