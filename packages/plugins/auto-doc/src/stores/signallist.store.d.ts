@@ -95,3 +95,8 @@ export type MessageSubscriberFilter = {
     IDEName?: string;
     serviceType?: string;
 }
+
+export type MessagePublisherAndPdfContent = {
+    publishers: MessagePublisher[];
+    filteredValuesForPdf: string[][];
+}
