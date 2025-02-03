@@ -6,7 +6,7 @@ import { pluginStore } from './index'
 import type { 
     MessagePublisher, MessageSubscriber, LogicalNodeInformation,
     DataObjectInformation, InvalditiesReport, MessagePublisherFilter, 
-    MessageSubscriberFilter, MessagePublisherAndPdfContent 
+    MessageSubscriberFilter, MessagePublisherAndPdfContent, MessageSubscriberAndPdfContent 
 } from './signallist.store.d'
 
 import { SignalType } from './signallist.store.d'
@@ -31,7 +31,7 @@ function getSignallist() {
     };
 }
 
-function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[], filteredValuesForPdf: string[][] } {
+function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[], filteredPublisherValuesForPdf: string[][] } {
     const messagePublishers: MessagePublisher[] = [];
     const invaliditiesReports: InvalditiesReport[] = [];
 
@@ -50,12 +50,12 @@ function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { mes
         processIEDForPublishers(ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
     }
 
-    const {publishers:filteredMessagePublishers, filteredValuesForPdf} = filterMessagePublishers(messagePublishers, filter);
+    const {publishers:filteredMessagePublishers, filteredPublisherValuesForPdf} = filterMessagePublishers(messagePublishers, filter);
 
-    return { messagePublishers: filteredMessagePublishers, invaliditiesReports, filteredValuesForPdf};
+    return { messagePublishers: filteredMessagePublishers, invaliditiesReports, filteredPublisherValuesForPdf};
 }
 
-function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[], filter: MessageSubscriberFilter = {}): { messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[] } {
+function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[], filter: MessageSubscriberFilter = {}): { messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[], filteredSubscriberValuesForPdf: string[][] } {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
@@ -71,9 +71,9 @@ function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[], fil
         }
     }
 
-    const filteredMessageSubscribers = filterMessageSubscribers(messageSubscribers, filter);
+    const {subscribers:filteredMessageSubscribers, filteredSubscriberValuesForPdf} = filterMessageSubscribers(messageSubscribers, filter);
 
-    return { messageSubscribers: filteredMessageSubscribers, invaliditiesReports };
+    return { messageSubscribers: filteredMessageSubscribers, invaliditiesReports, filteredSubscriberValuesForPdf };
 }
 
 
@@ -100,7 +100,6 @@ function processLDeviceForPublishers(lDevice: Element, ied: Element, dataTypeTem
     const GSEControl = lNode0.querySelector('GSEControl');
     const ReportControl = lNode0.querySelector('ReportControl');
     if (!GSEControl && !ReportControl) return;
-
     const signalType = GSEControl ? SignalType.GOOSE : (ReportControl ? SignalType.MMS : SignalType.UNKNOWN);
 
     const dataSets = lNode0.querySelectorAll('DataSet');
@@ -308,13 +307,6 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
                 allFiltersMatch = false;
             }
         }
-        if (filter.signalType !== undefined) {
-            if (publisher.signalType.toLocaleLowerCase().includes(filter.signalType.toLocaleLowerCase()) || (filter.signalType.trim() === '')) {
-                valuesMatched.push(publisher.signalType);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
         if (filter.IEDName !== undefined) {
             if (publisher.IEDName.toLocaleLowerCase().includes(filter.IEDName.toLocaleLowerCase()) || (filter.IEDName.trim() === '')) {
                 valuesMatched.push(publisher.IEDName);
@@ -408,18 +400,41 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
         }
     }
 
-    return {filteredValuesForPdf: matchedFilteredValuesForPdf, publishers: allMessagePublishers};
+    return {filteredPublisherValuesForPdf: matchedFilteredValuesForPdf, publishers: allMessagePublishers};
 }
 
-function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filter: MessageSubscriberFilter): MessageSubscriber[] {
-    return messageSubscribers.filter(subscriber => {
-        return (!filter.IDEName || (subscriber.IDEName.toLocaleLowerCase().includes(filter.IDEName.toLocaleLowerCase()))) &&
-            (!filter.serviceType || (subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase())));
-    });
+function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filter: MessageSubscriberFilter): MessageSubscriberAndPdfContent {
+
+    const matchedFilteredValuesForPdf: string [][] = [];
+    const allMessageSubscribers: MessageSubscriber[] = [];
+
+    for (const subscriber of messageSubscribers) {
+        const valuesMatched = [];
+        let allFiltersMatch = true;
+        if(filter.IDEName !== undefined) {
+            if (subscriber.IDEName.toLocaleLowerCase().includes(filter.IDEName.toLocaleLowerCase()) || (filter.IDEName.trim() === '')) {
+                valuesMatched.push(subscriber.IDEName);
+            } else {
+                allFiltersMatch = false;
+            }
+        }
+        if(filter.serviceType !== undefined) {
+            if (subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase()) || (filter.serviceType.trim() === '')) {
+                // valuesMatched.push(subscriber.ExtRef.serviceType);
+            } else {
+                allFiltersMatch = false;
+            }
+        }
+        if(allFiltersMatch) {
+            matchedFilteredValuesForPdf.push(valuesMatched);
+            allMessageSubscribers.push(subscriber);
+        } 
+    }
+        
+    return {filteredSubscriberValuesForPdf: matchedFilteredValuesForPdf, subscribers: allMessageSubscribers};
 }
 
 export const signallistStore = {
-    // actions
     getSignallist,
     getPublishingLogicalDevices,
     getSubscribingLogicalDevices,

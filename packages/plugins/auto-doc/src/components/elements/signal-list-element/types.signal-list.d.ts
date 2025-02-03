@@ -19,7 +19,8 @@ export type SignalRow = {
 }
 
 export type SignalListMach = {
-	publishers: string[][]
+	publishers: string[][],
+	subscribers: string[][]
 }
 
 export type SignalListOnSCD = {

@@ -1,3 +1,7 @@
+/* 
+    The keys of SignalType and Columns are used for the searchKey in SignalRow. 
+    check signal-list-element.svelte for more information
+*/
 export enum SignalType {
     GOOSE = 'GOOSE',
     MMS = 'MMS',
@@ -75,6 +79,9 @@ export type InvalditiesReport = {
 }
 
 export type MessagePublisherFilter = {
+    UW?: string;
+    VoltageLevel?: string;
+    Bay?: string;
     M_text?: string;
     signalType?: string;
     IEDName?: string;
@@ -98,5 +105,10 @@ export type MessageSubscriberFilter = {
 
 export type MessagePublisherAndPdfContent = {
     publishers: MessagePublisher[];
-    filteredValuesForPdf: string[][];
+    filteredPublisherValuesForPdf: string[][];
+}
+
+export type MessageSubscriberAndPdfContent = {
+    subscribers: MessageSubscriber[];
+    filteredSubscriberValuesForPdf: string[][];
 }
