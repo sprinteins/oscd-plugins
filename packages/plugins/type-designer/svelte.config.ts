@@ -1,4 +1,6 @@
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
+// TYPES
+import type { Config } from '@sveltejs/kit'
 
 /** @type {import('@sveltejs/kit').Config} */
 export default {
@@ -8,4 +10,4 @@ export default {
 	compilerOptions: {
 		customElement: true
 	}
-}
+} satisfies Config

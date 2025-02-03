@@ -1,11 +1,12 @@
 <script lang="ts">
     import Button, {Label} from "@smui/button"
     import {IconWrapper} from "@oscd-plugins/ui"
-    import TextElement from "../elements/text-element/text-element.svelte"
-    import ImageElement from "../elements/image-element/image-element.svelte"
-    import ElementWrapper from "../element-wrapper/element-wrapper.svelte"
+    import TextElement from "@/components/elements/text-element/text-element.svelte"
+    import ImageElement from "@/components/elements/image-element/image-element.svelte"
+    import SignalListElement from "@/components/elements/signal-list-element/signal-list-element.svelte"
+    import ElementWrapper from "@/components/element-wrapper/element-wrapper.svelte"
     import {docTemplatesStore} from '@/stores'
-    import type {BlockElement, ElementType} from '@/components/elements/types.elements'
+    import type {BlockElement, ElementType, ElementMap} from '@/components/elements/types.elements'
 
     // Prop
     export let templateId: string
@@ -14,18 +15,20 @@
     let isElementsChoiceVisible = false
     let blockElements : BlockElement[] = []
     const template = docTemplatesStore.getDocumentTemplate(templateId) as Element;
-    const componentMap  = {
+    const componentMap : ElementMap  = {
         "text": TextElement,
-        "image": ImageElement
+        "image": ImageElement,
+        "signalList": SignalListElement,
     }
 
 
     function addElement(type: ElementType){
-        const elementId = docTemplatesStore.addBlockToDocumentTemplate(template, "", type, blockElements.length)
+        const elementId = docTemplatesStore.addBlockToDocumentTemplate(template, type, blockElements.length)
         
         const newBlockElement: BlockElement = {
             id: elementId,
             type: type,
+            content: ""
         }
 
         blockElements = [...blockElements, newBlockElement]
@@ -37,6 +40,10 @@
         blockElements = blockElements.filter(blockElement => blockElement.id !== elementId)
     }
 
+
+    function handleContentChange(elementId: string, elementType: ElementType, newContent: string){
+        docTemplatesStore.editBlockContentOfDocumentTemplate(template, elementId, newContent)
+    }
 </script>
 
 
@@ -48,7 +55,11 @@
         <div class="elements-list">
             {#each blockElements as blockElement (blockElement.id)}
                 <ElementWrapper elementId={blockElement.id} on:elementDelete={deleteBlockElement}>
-                    <svelte:component this={componentMap[blockElement.type]}/>
+                    <svelte:component 
+                        this={componentMap[blockElement.type]}
+                        content={blockElement.content}
+                        onContentChange={(newContent) => handleContentChange(blockElement.id, blockElement.type, newContent)}
+                    />
                 </ElementWrapper>
             {/each}
         </div>
@@ -64,6 +75,7 @@
                 {#if isElementsChoiceVisible}
                     <Button variant="outlined" on:click={()=>{addElement('text')}}>Text</Button>
                     <Button variant="outlined" on:click={()=>{addElement("image")}}>Image</Button>
+                    <Button variant="outlined" on:click={()=>{addElement("signalList")}}>Signal List</Button>
                 {/if}
             </div>
         </footer>

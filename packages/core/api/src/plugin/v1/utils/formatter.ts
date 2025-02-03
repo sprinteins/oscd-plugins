@@ -41,7 +41,8 @@ export function namedNodeMapAttributesToPlainObject<
 		}
 	}
 	for (const attribute of Array.from(attributes))
-		attributesObject[attribute.name] = attribute.value
+		attributesObject[attribute.name as keyof typeof attributesObject] =
+			attribute.value
 
 	return attributesObject as typeof addAttributesFromDefinition extends undefined
 		? Record<string, string | null>

@@ -42,8 +42,6 @@ and should be used to instantiate a project SSD file
 			</Bay> -->
 		</VoltageLevel>
 
-	</Substation>
-
 <Private type="eIEC61850-6-100">
 	<EquipmentTemplates uuid="82a8697e-2130-4836-86ff-8f56c50f301c">
 
