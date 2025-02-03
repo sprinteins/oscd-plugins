@@ -6,7 +6,7 @@ mount(Plugin, {
 	target: document.getElementById('plugin') as Element,
 	props: {
 		doc: new DOMParser().parseFromString(sclMockA, 'text/xml'),
-		docName: 'scl-mock-A',
+		docName: 'scl-mock-A.ssd',
 		editCount: 0,
 		locale: 'en'
 	}

@@ -2,16 +2,23 @@
 // COMPONENTS
 import Column from '@/ui/components/column/column.svelte'
 // STORES
-import { elementTypesStore } from '@/headless/stores/element-types.svelte'
+import { typeElementsStore } from '@/headless/stores'
 // TYPES
-import type { Columns } from '@/headless/stores/types.element-types'
+import type {
+	Columns,
+	Column as ColumnType,
+	AvailableTypeFamily
+} from '@/headless/stores'
+
+const columnsEntries = $derived(Object.entries(typeElementsStore.columns)) as [
+	keyof Columns,
+	ColumnType<AvailableTypeFamily>
+][]
 </script>
 
-
-
 <div  class="grid grid-cols-4 min-h-full gap-4 w-full p-4">
-{#each Object.entries(elementTypesStore.columns) as [key, column]}
-	<Column columnKey={key as keyof Columns} {column} />
+{#each columnsEntries as [key, column]}
+	<Column columnKey={key} {column} />
 {/each}
 </div>
 
