@@ -13,3 +13,12 @@ export function createAndDispatchEditEvent({
 }) {
 	host.dispatchEvent(newEditEvent(edit, options))
 }
+
+/**
+ * @example of EditV2
+ * edit: {
+ *	node: document.createElement("LD"),
+ *	parent: document.getElementById("IED-1"),
+ *	reference: null,
+ *}
+ */

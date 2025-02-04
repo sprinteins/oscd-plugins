@@ -1,20 +1,24 @@
 <script lang="ts">
-    import AffectedNodes from "@oscd-plugins/uilib/src/lib/plugins/type-switcher/affected-nodes/affected-nodes.svelte";
 
-	export let src = "";
-	let imagePreview = src;
-	let uploadedImage: FileReader|undefined = undefined
-	function handleImageUpload(event) {
+	export let content = "";
+	export let onContentChange: (newContent: string) => void;
+	import {imageUtils} from "@/utils"
+
+	let imagePreview = imageUtils.createImageFromBase64(content);
+
+	async function handleImageUpload(event) {
 		const file = event.target.files[0];
 		if (file && file.type.startsWith('image/')) {
+			const base64String = await imageUtils.convertImageToBase64(file)
 		const reader = new FileReader();
 		reader.onload = (e: ProgressEvent<FileReader>) => {
 			imagePreview = e.target?.result as string; 
 		};
 		reader.readAsDataURL(file); 
-		uploadedImage = file;
+		onContentChange(base64String);
+
 		} else {
-		alert('Please upload a valid image file');
+			alert('Please upload a valid image file');
 		}
   }
 </script>

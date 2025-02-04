@@ -1,1 +1,3 @@
-export type IED = { name: string }
+export type IED = { 
+	name: string 
+}
