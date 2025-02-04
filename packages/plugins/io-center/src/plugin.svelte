@@ -9,51 +9,73 @@
 	}}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
+	bind:this={root}
 >
-	<div class="flex flex-col space-y-9 items-center justify-center h-screen">
-		<h1 class="h1 font-black text-9xl">Hello Plugin!</h1>
-		<span>See the <i>README</i> file in <b>`packages/template`</b> (oscd-plugins monorepo)</span>
+<Layout>
+	<div slot="sidebar-left">
+		<IEDSelect ieds={store.iedList} />
 	</div>
+	<div slot="content">
+		Document: {docName}
+		<p>
+			<button onclick={addIED}>Add IED</button>
+		</p>
+	</div>
+	<div slot="sidebar-right">sidebar right</div>
+</Layout>
 </main>
 
 
 <script lang="ts">
+
 import { onMount } from 'svelte'
 import jsonPackage from '../package.json'
-import { Theme } from '@oscd-plugins/core-ui-svelte'
+import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
 import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 import Layout from "./ui/layout.svelte"
 import store from "./store.svelte"
 import { initQuery } from './query.svelte';
+import { newCommand, type Command } from "./command.svelte"
+import IEDSelect from "./ied/ied-select.svelte"
+import type { Nullable } from './types';
 
 
-// PACKAGE
-import jsonPackage from '../package.json'
-// CORE
-import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
-// TYPES
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 
 // props
 const {
 	doc,
 	docName,
 	editCount,
-	isCustomInstance
+	// isCustomInstance
 }: Utils.PluginCustomComponentsProps = $props()
 
-initQuery(store)
 
-onMount(() => {
-	store.doc = doc
-})
+// 
+// Setup
+// 
+let root = $state<Nullable<HTMLElement>>(null)
+let cmd = $state<Command>(newCommand(store, () => root))
+
+initQuery(store)
+onMount(() => { storeDoc(doc) })
 // we need to trigger a rerendering when the editCount changes
 // this is how OpenSCD lets us know that there was a change in the document
 $effect( () => {
 	let onlyForEffectTriggering = editCount
-	// biome-ignore lint/correctness/noSelfAssign: We need to trigger a rerendering
-	store.doc = store.doc
+	storeDoc(store.doc)
 })
+
+
+function storeDoc(doc: Nullable<XMLDocument>){
+	console.log("changing doc:", doc)
+	store.doc = doc
+}
+
+function addIED(){
+	cmd.addIED()
+}
+
+
 </script>
 
 <svelte:options 
