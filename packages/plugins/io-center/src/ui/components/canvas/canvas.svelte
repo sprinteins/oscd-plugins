@@ -1,11 +1,7 @@
 <script lang="ts">
 import Node from './node.svelte'
 import { onMount } from 'svelte'
-
-type Connection = {
-	from: { node: string; side: string }
-	to: { node: string; side: string }
-}
+import type { Connection } from './types.canvas'
 
 let connections = $state<Connection[]>([])
 let dragStartNode: EventTarget | null = $state(null)
@@ -31,7 +27,6 @@ function startDragging(event: MouseEvent) {
 }
 
 function handleMouseMove(event: MouseEvent) {
-	//TODO - Debounce this
 	event.preventDefault()
 	if (dragStartNode && svgElement) {
 		mousePosition = convertToSVGCoordinates(event.clientX, event.clientY)
@@ -42,7 +37,6 @@ function isSameColumn(node1: string, node2: string) {
 	if (!container) {
 		return
 	}
-	//TODO - Refactor this because its duplicated in getConnection can be done with types DO / LC / LP
 	const column1 = container
 		.querySelector(`[data-title="${node1}"]`)
 		?.closest('.flex-col')
@@ -54,7 +48,7 @@ function isSameColumn(node1: string, node2: string) {
 
 function isDOandLPColumn(node1: string, node2: string) {
 	if (!container) {
-		return
+		return false
 	}
 	const column1 = container
 		.querySelector(`[data-title="${node1}"]`)
@@ -64,12 +58,12 @@ function isDOandLPColumn(node1: string, node2: string) {
 		?.closest('.flex-col')
 
 	if (!column1 || !column2) {
-		return
+		return false
 	}
 	const column1Title = column1.getAttribute('data-title')
 	const column2Title = column2.getAttribute('data-title')
 	if (!column1Title || !column2Title) {
-		return
+		return false
 	}
 
 	if (
@@ -78,20 +72,13 @@ function isDOandLPColumn(node1: string, node2: string) {
 	) {
 		return true
 	}
+	return false
 }
 
-function isSameSide(
-	tmpDragStartNode: HTMLElement,
-	targetSide: string
-): boolean {
+function isSameSide(tmpDragStartNode: HTMLElement, targetSide: string) {
 	const isSameSide =
 		(tmpDragStartNode.id === 'left-circle' && targetSide === 'left') ||
 		(tmpDragStartNode.id === 'right-circle' && targetSide === 'right')
-
-	console.log(`tmpDragStartNode ID: ${tmpDragStartNode.id}`)
-	console.log(`target ID: ${targetSide}`)
-	console.log(`Is same side: ${isSameSide}`)
-
 	return isSameSide
 }
 
@@ -220,7 +207,6 @@ function convertToSVGCoordinates(clientX: number, clientY: number) {
 }
 
 function redrawConnections() {
-	//TODO - Debounce this
 	connections = [...connections]
 }
 
@@ -248,7 +234,7 @@ onMount(() => {
 	>
 	  <div class="flex flex-col items-center w-full gap-2" data-title="DO">
 		<div class="text-center">DO</div>
-		{#each ["DO X", "DO Y"] as node, index}
+		{#each ["DO X", "DO Y"] as node}
 		  <Node
 			title={node}
 			subtitle="Attribut"
@@ -261,7 +247,7 @@ onMount(() => {
 	  </div>
 	  <div class="flex flex-col items-center w-full gap-2" data-title="LC">
 		<div class="text-center">LC</div>
-		{#each ["Logical Component X", "Logical Component Y"] as node, index}
+		{#each ["Logical Component X", "Logical Component Y"] as node}
 		  <Node
 			title={node}
 			subtitle="Attribut"
@@ -274,7 +260,7 @@ onMount(() => {
 	  </div>
 	  <div class="flex flex-col items-center w-full gap-2" data-title="LP">
 		<div class="text-center">LP</div>
-		{#each ["LP X", "LP Y"] as node, index}
+		{#each ["LP X", "LP Y"] as node}
 		  <Node
 			title={node}
 			subtitle="Attribut"

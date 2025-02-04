@@ -1,4 +1,5 @@
 <script lang="ts">
+import type { NodeProps } from './types.node'
 let {
 	title,
 	subtitle,
@@ -6,14 +7,7 @@ let {
 	showRightCircle,
 	startDragging,
 	stopDragging
-}: {
-	title: string
-	subtitle: string
-	showLeftCircle: boolean
-	showRightCircle: boolean
-	startDragging: (event: MouseEvent) => void
-	stopDragging: (node: string, side: string) => void
-} = $props()
+}: NodeProps = $props()
 </script>
     
     <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -29,7 +23,6 @@ let {
             startDragging(event);
           }}
           onmouseup={() => {
-            // add side
             stopDragging(title, 'left');
           }}
         ></div>
