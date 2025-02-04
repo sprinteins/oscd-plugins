@@ -1,4 +1,9 @@
+export type ConnectionPoint = {
+	node: string
+	side: string
+}
+
 export type Connection = {
-	from: { node: string; side: string }
-	to: { node: string; side: string }
+	from: ConnectionPoint
+	to: ConnectionPoint
 }

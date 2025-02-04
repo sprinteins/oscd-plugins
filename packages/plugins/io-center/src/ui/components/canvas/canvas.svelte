@@ -1,10 +1,10 @@
 <script lang="ts">
 import Node from './node.svelte'
 import { onMount } from 'svelte'
-import type { Connection } from './types.canvas'
+import type { Connection, ConnectionPoint } from './types.canvas'
 
 let connections = $state<Connection[]>([])
-let dragStartNode: EventTarget | null = $state(null)
+let dragStartCircle: EventTarget | null = $state(null)
 let startNode = $state<string | null>('')
 let mousePosition = $state({ x: 0, y: 0 })
 let svgElement = $state<SVGGraphicsElement | null>(null)
@@ -16,7 +16,7 @@ function startDragging(event: MouseEvent) {
 		console.log('event.target is null')
 		return
 	}
-	dragStartNode = event.target
+	dragStartCircle = event.target
 	const currentTarget = event.currentTarget as HTMLElement
 	if (!currentTarget.parentElement) {
 		console.log('no parent')
@@ -28,38 +28,29 @@ function startDragging(event: MouseEvent) {
 
 function handleMouseMove(event: MouseEvent) {
 	event.preventDefault()
-	if (dragStartNode && svgElement) {
+	if (dragStartCircle && svgElement) {
 		mousePosition = convertToSVGCoordinates(event.clientX, event.clientY)
 	}
 }
 
-function isSameColumn(node1: string, node2: string) {
-	if (!container) {
-		return
-	}
-	const column1 = container
-		.querySelector(`[data-title="${node1}"]`)
-		?.closest('.flex-col')
-	const column2 = container
-		.querySelector(`[data-title="${node2}"]`)
-		?.closest('.flex-col')
-	return column1 === column2
-}
-
-function isDOandLPColumn(node1: string, node2: string) {
+function isWrongColumn(node1: string, node2: string) {
 	if (!container) {
 		return false
 	}
+
 	const column1 = container
 		.querySelector(`[data-title="${node1}"]`)
 		?.closest('.flex-col')
 	const column2 = container
 		.querySelector(`[data-title="${node2}"]`)
 		?.closest('.flex-col')
-
 	if (!column1 || !column2) {
 		return false
 	}
+	if (column1 === column2) {
+		return true
+	}
+
 	const column1Title = column1.getAttribute('data-title')
 	const column2Title = column2.getAttribute('data-title')
 	if (!column1Title || !column2Title) {
@@ -75,15 +66,24 @@ function isDOandLPColumn(node1: string, node2: string) {
 	return false
 }
 
-function isSameSide(tmpDragStartNode: HTMLElement, targetSide: string) {
-	const isSameSide =
-		(tmpDragStartNode.id === 'left-circle' && targetSide === 'left') ||
-		(tmpDragStartNode.id === 'right-circle' && targetSide === 'right')
-	return isSameSide
+function isSameSide(startSide: string, targetSide: string) {
+	return (
+		(startSide === 'left-circle' && targetSide === 'left') ||
+		(startSide === 'right-circle' && targetSide === 'right')
+	)
+}
+
+function connectionExists(fromNode: string, toNode: string) {
+	return connections.some(
+		(connection) =>
+			(connection.from.node === fromNode &&
+				connection.to.node === toNode) ||
+			(connection.from.node === toNode && connection.to.node === fromNode)
+	)
 }
 
 function stopDragging(targetNode: string, targetSide: string) {
-	const tmpDragStartNode = dragStartNode
+	const startCircle = dragStartCircle
 	if (!container) {
 		console.log('container is null')
 		return
@@ -93,7 +93,7 @@ function stopDragging(targetNode: string, targetSide: string) {
 		`[data-title="${targetNode}"]`
 	) as HTMLElement | null
 
-	if (tmpDragStartNode && target && tmpDragStartNode !== target) {
+	if (startCircle && target && startCircle !== target) {
 		let fromNode = startNode
 		if (!fromNode) {
 			console.log('fromNode is null')
@@ -101,32 +101,23 @@ function stopDragging(targetNode: string, targetSide: string) {
 		}
 		let toNode = targetNode
 
-		if (tmpDragStartNode instanceof HTMLElement)
+		if (startCircle instanceof HTMLElement)
 			if (
 				fromNode === toNode ||
-				isSameColumn(fromNode, toNode) ||
-				isDOandLPColumn(fromNode, toNode) ||
-				isSameSide(tmpDragStartNode, targetSide)
+				isWrongColumn(fromNode, toNode) ||
+				isSameSide(startCircle.id, targetSide)
 			) {
 				return
 			}
 
 		if (
-			tmpDragStartNode instanceof HTMLElement &&
-			tmpDragStartNode.id === 'left-circle'
+			startCircle instanceof HTMLElement &&
+			startCircle.id === 'left-circle'
 		) {
 			;[fromNode, toNode] = [toNode, fromNode]
 		}
 
-		const connectionExists = connections.some(
-			(connection) =>
-				(connection.from.node === fromNode &&
-					connection.to.node === toNode) ||
-				(connection.from.node === toNode &&
-					connection.to.node === fromNode)
-		)
-
-		if (!connectionExists) {
+		if (!connectionExists(fromNode, toNode)) {
 			connections = [
 				...connections,
 				{
@@ -138,14 +129,14 @@ function stopDragging(targetNode: string, targetSide: string) {
 	}
 }
 
-function getConnection(connection: { node: string; side: string }) {
+function getCoordinates(connectionPoint: ConnectionPoint) {
 	if (!svgElement || !container) {
 		console.log('svgElement or container is null')
 		return { x: 0, y: 0 }
 	}
 
 	const target = container.querySelector(
-		`[data-title="${connection.node}"]`
+		`[data-title="${connectionPoint.node}"]`
 	) as HTMLElement | null
 
 	if (!target) {
@@ -154,7 +145,7 @@ function getConnection(connection: { node: string; side: string }) {
 	}
 
 	const circle = target.querySelector(
-		connection.side === 'left' ? '#left-circle' : '#right-circle'
+		connectionPoint.side === 'left' ? '#left-circle' : '#right-circle'
 	)
 
 	if (!circle) {
@@ -229,7 +220,7 @@ onMount(() => {
 <div
   class="grid grid-cols-3 h-full"
   onmousemove={handleMouseMove}
-  onmouseup={(dragStartNode = null)}
+  onmouseup={(dragStartCircle = null)}
   bind:this={container}
 >
   <div class="flex flex-col items-center w-full gap-2" data-title="DO">
@@ -281,17 +272,17 @@ onMount(() => {
     {#each connections as connection}
       <path
         class="stroke-black stroke-2 fill-none"
-        d={`M ${getConnection(connection.from).x},${getConnection(connection.from).y} 
-					 C ${(getConnection(connection.from).x + getConnection(connection.to).x) / 2},${getConnection(connection.from).y} 
-					 ${(getConnection(connection.from).x + getConnection(connection.to).x) / 2},${getConnection(connection.to).y} 
-					 ${getConnection(connection.to).x},${getConnection(connection.to).y}`}
+        d={`M ${getCoordinates(connection.from).x},${getCoordinates(connection.from).y} 
+					 C ${(getCoordinates(connection.from).x + getCoordinates(connection.to).x) / 2},${getCoordinates(connection.from).y} 
+					 ${(getCoordinates(connection.from).x + getCoordinates(connection.to).x) / 2},${getCoordinates(connection.to).y} 
+					 ${getCoordinates(connection.to).x},${getCoordinates(connection.to).y}`}
       />
     {/each}
   {/key}
-  {#if dragStartNode}
+  {#if dragStartCircle}
     <path
       class="stroke-black stroke-2"
-      d={`M ${getCirclePosition(dragStartNode).x},${getCirclePosition(dragStartNode).y} L ${mousePosition.x},${mousePosition.y}`}
+      d={`M ${getCirclePosition(dragStartCircle).x},${getCirclePosition(dragStartCircle).y} L ${mousePosition.x},${mousePosition.y}`}
     />
   {/if}
 </svg>
