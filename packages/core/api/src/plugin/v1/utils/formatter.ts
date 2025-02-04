@@ -1,31 +1,58 @@
-import { DEFINITION_PER_VERSION } from '@/plugin/v1/constants'
+// HELPERS
+import { getCurrentElementDefinition } from './helpers'
 // TYPES
-import type { AvailableStandardVersion } from '@oscd-plugins/core-standard'
-import type { Utils } from '.'
+import type { IEC61850 } from '@oscd-plugins/core-standard'
 
-export function flattenElementDefinition(
-	element: Utils.CurrentDefinitionElement<typeof standardVersion>,
-	standardVersion: AvailableStandardVersion
-) {
-	const CURRENT_DEFINITION = DEFINITION_PER_VERSION[standardVersion]
-	const currentElement = CURRENT_DEFINITION[element]
-	return {
-		tag: currentElement.tag,
-		attributes: Object.keys(currentElement.attributes),
-		subElements: Object.keys(currentElement.subElements)
+export function namedNodeMapAttributesToPlainObject<
+	GenericElement extends IEC61850.AvailableElement<
+		GenericEdition,
+		GenericUnstableRevision
+	>,
+	GenericEdition extends IEC61850.AvailableEdition,
+	GenericUnstableRevision extends
+		| IEC61850.AvailableUnstableRevision<GenericEdition>
+		| undefined = undefined
+>({
+	attributes,
+	addAttributesFromDefinition
+}: {
+	attributes: NamedNodeMap
+	addAttributesFromDefinition?: {
+		element: GenericElement
+		currentEdition: GenericEdition
+		currentUnstableRevision?: GenericUnstableRevision
 	}
-}
+}) {
+	// init
+	const attributesObject = {} as Record<string, string | null>
 
-export function attributesToObject<
-	GenericVersion extends AvailableStandardVersion,
-	Element extends keyof Utils.CurrentDefinition<GenericVersion>
->(attributes: NamedNodeMap) {
-	const attributesObject: Record<string, string> = {}
+	if (addAttributesFromDefinition) {
+		const CURRENT_ELEMENT_DEFINITION = getCurrentElementDefinition<
+			GenericElement,
+			GenericEdition,
+			GenericUnstableRevision
+		>({
+			element: addAttributesFromDefinition.element,
+			currentEdition: addAttributesFromDefinition.currentEdition,
+			currentUnstableRevision:
+				addAttributesFromDefinition.currentUnstableRevision
+		})
+
+		for (const attribute of Object.keys(
+			CURRENT_ELEMENT_DEFINITION.attributes
+		)) {
+			if (attribute) attributesObject[attribute] = null
+		}
+	}
 	for (const attribute of Array.from(attributes))
-		attributesObject[attribute.name] = attribute.value
+		attributesObject[attribute.name as keyof typeof attributesObject] =
+			attribute.value
 
-	return attributesObject as Record<
-		keyof Utils.CurrentDefinitionElementAttributes<GenericVersion, Element>,
-		string
-	>
+	return attributesObject as typeof addAttributesFromDefinition extends undefined
+		? Record<string, string | null>
+		: IEC61850.CurrentElementAttributes<
+				GenericElement,
+				GenericEdition,
+				GenericUnstableRevision
+			>
 }

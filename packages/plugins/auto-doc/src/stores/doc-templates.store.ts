@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
+import type {ElementType} from '@/components/elements/types.elements'
+
 // OPENSCD
 import { createElement } from '@oscd-plugins/core'
 // SVELTE
@@ -127,7 +129,7 @@ function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle
     }
 }
 
-function addBlockToDocumentTemplate(docTemplate: Element, content: string, type: string, position: number) {
+function addBlockToDocumentTemplate(docTemplate: Element, type: ElementType, position: number) {
     const generatedId = uuidv4();
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -137,7 +139,6 @@ function addBlockToDocumentTemplate(docTemplate: Element, content: string, type:
         id: generatedId,
         type: type 
     });
-    blockElement.textContent = content;
     docTemplate.appendChild(blockElement);
 
     insertBlockAtPosition(docTemplate, blockElement, position);
