@@ -20,6 +20,7 @@
 		<p>
 			<button onclick={addIED}>Add IED</button>
 		</p>
+		<Canvas />
 	</div>
 	<div slot="sidebar-right">sidebar right</div>
 </Layout>
@@ -27,55 +28,51 @@
 
 
 <script lang="ts">
-
 import { onMount } from 'svelte'
 import jsonPackage from '../package.json'
 import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
 import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
-import Layout from "./ui/layout.svelte"
-import store from "./store.svelte"
-import { initQuery } from './query.svelte';
-import { newCommand, type Command } from "./command.svelte"
-import IEDSelect from "./ied/ied-select.svelte"
-import type { Nullable } from './types';
-
-
+import Layout from './ui/layout.svelte'
+import store from './store.svelte'
+import { initQuery } from './query.svelte'
+import { newCommand, type Command } from './command.svelte'
+import IEDSelect from './ied/ied-select.svelte'
+import Canvas from './ui/components/canvas/canvas.svelte'
+import type { Nullable } from './types'
 
 // props
 const {
 	doc,
 	docName,
-	editCount,
+	editCount
 	// isCustomInstance
 }: Utils.PluginCustomComponentsProps = $props()
 
-
-// 
+//
 // Setup
-// 
+//
 let root = $state<Nullable<HTMLElement>>(null)
 let cmd = $state<Command>(newCommand(store, () => root))
 
 initQuery(store)
-onMount(() => { storeDoc(doc) })
+onMount(() => {
+	storeDoc(doc)
+})
 // we need to trigger a rerendering when the editCount changes
 // this is how OpenSCD lets us know that there was a change in the document
-$effect( () => {
+$effect(() => {
 	let onlyForEffectTriggering = editCount
 	storeDoc(store.doc)
 })
 
-
-function storeDoc(doc: Nullable<XMLDocument>){
-	console.log("changing doc:", doc)
+function storeDoc(doc: Nullable<XMLDocument>) {
+	console.log('changing doc:', doc)
 	store.doc = doc
 }
 
-function addIED(){
+function addIED() {
 	cmd.addIED()
 }
-
-
 </script>
 
 <svelte:options 
