@@ -81,6 +81,4 @@
     ];
 </script>
 
-<div class="w-full">
-    <ObjectTree {objectTree} />
-</div>
+<ObjectTree {objectTree} />

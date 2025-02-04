@@ -31,7 +31,7 @@
 <Accordion.Root
 	value={getOpenItems(objectTree)}
 	type="multiple"
-	class="w-1/4 p-2"
+	class="p-2"
 >
 	{#each objectTree as treeNode}
 		<TreeNode
