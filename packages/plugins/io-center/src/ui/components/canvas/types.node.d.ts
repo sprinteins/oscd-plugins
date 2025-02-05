@@ -1,6 +1,5 @@
 export type NodeProps = {
-	title: string
-	subtitle: string
+	node: { name: string; attribute: string }
 	showLeftCircle: boolean
 	showRightCircle: boolean
 	startDrawing: (event: MouseEvent) => void

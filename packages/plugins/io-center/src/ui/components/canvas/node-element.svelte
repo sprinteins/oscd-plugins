@@ -1,8 +1,7 @@
 <script lang="ts">
 import type { NodeProps } from './types.node'
 let {
-	title,
-	subtitle,
+	node,
 	showLeftCircle,
 	showRightCircle,
 	startDrawing,
@@ -12,7 +11,7 @@ let {
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-  data-title={title}
+  data-title={node.name}
   class="relative flex items-center bg-gray-100 border border-gray-300 rounded w-4/5"
 >
   {#if showLeftCircle}
@@ -23,14 +22,14 @@ let {
         startDrawing(event);
       }}
       onmouseup={() => {
-        stopDrawing(title, "left");
+        stopDrawing(node.name, "left");
       }}
     ></div>
   {/if}
 
   <div class="flex-1 text-center">
-    <div class="text-gray-700 font-semibold">{title}</div>
-    <div class="text-sm text-gray-500 mt-1">{subtitle}</div>
+    <div class="text-gray-700 font-semibold">{node.name}</div>
+    <div class="text-sm text-gray-500 mt-1">{node.attribute}</div>
   </div>
 
   {#if showRightCircle}
@@ -41,7 +40,7 @@ let {
         startDrawing(event);
       }}
       onmouseup={() => {
-        stopDrawing(title, "right");
+        stopDrawing(node.name, "right");
       }}
     ></div>
   {/if}

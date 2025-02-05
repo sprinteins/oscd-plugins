@@ -9,9 +9,18 @@ let connections = $state<Connection[]>([])
 let startNode = $state<string | null>('')
 let container = $state<HTMLDivElement | null>(null)
 
-let dataObjects = $state<string[]>(['DO X', 'DO Y'])
-let logicalConditoners = $state<string[]>(['LC X', 'LC Y'])
-let logicalPhyscials = $state<string[]>(['LP X', 'LP Y'])
+let dataObjects = $state<{ name: string; attribute: string }[]>([
+	{ name: 'DO X', attribute: 'Pwr' },
+	{ name: 'DO Y', attribute: 'Pos' }
+])
+let logicalConditoners = $state<{ name: string; attribute: string }[]>([
+	{ name: 'LC X', attribute: 'attr' },
+	{ name: 'LC Y', attribute: 'attr' }
+])
+let logicalPhyscials = $state<{ name: string; attribute: string }[]>([
+	{ name: 'LP X', attribute: 'attr' },
+	{ name: 'LP Y', attribute: 'attr' }
+])
 
 function startDrawing(event: MouseEvent) {
 	event.preventDefault()
@@ -209,8 +218,7 @@ onDestroy(() => {
     <div class="text-center">DO</div>
     {#each dataObjects as node}
       <NodeElement
-        title={node}
-        subtitle="Attribut"
+        {node}
         showLeftCircle={false}
         showRightCircle={true}
         {startDrawing}
@@ -222,8 +230,7 @@ onDestroy(() => {
     <div class="text-center">LC</div>
     {#each logicalConditoners as node}
       <NodeElement
-        title={node}
-        subtitle="Attribut"
+        {node}
         showLeftCircle={true}
         showRightCircle={true}
         {startDrawing}
@@ -235,8 +242,7 @@ onDestroy(() => {
     <div class="text-center">LP</div>
     {#each logicalPhyscials as node}
       <NodeElement
-        title={node}
-        subtitle="Attribut"
+        {node}
         showLeftCircle={true}
         showRightCircle={false}
         {startDrawing}
