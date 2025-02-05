@@ -47,7 +47,7 @@
     {#if treeNode.children}
         <Accordion.Trigger
             onclick={(e) => {
-                onClick(treeNode.name, e);
+                
             }}
             class={`flex items-center text-lg p-2 ${baseClass} ${getSelectedClass()}`}
         >
@@ -69,10 +69,11 @@
         <button
             class={`p-2 w-full text-left ${baseClass} ${getSelectedClass()}`}
             onclick={(e) => {
-                onClick(treeNode.name, e);
+                
             }}
         >
             {treeNode.name}
         </button>
     {/if}
 </Accordion.Item>
+
