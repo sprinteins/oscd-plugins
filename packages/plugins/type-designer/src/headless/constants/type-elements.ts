@@ -41,12 +41,11 @@ export const ALLOWED_TARGETS_BY_REF_FAMILY = {
 	bay: [],
 	generalEquipment: [TYPE_FAMILY_MAP.bay],
 	conductingEquipment: [TYPE_FAMILY_MAP.bay],
-	function: [
-		TYPE_FAMILY_MAP.bay,
+	function: [TYPE_FAMILY_MAP.bay],
+	eqFunction: [
 		TYPE_FAMILY_MAP.conductingEquipmentType,
 		TYPE_FAMILY_MAP.generalEquipmentType
 	],
-	eqFunction: [TYPE_FAMILY_MAP.generalEquipmentType],
 	lNode: [TYPE_FAMILY_MAP.functionTemplate]
 } as const
 

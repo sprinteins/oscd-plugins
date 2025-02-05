@@ -83,7 +83,7 @@ class UseTypeElementsStore {
 		}
 	})
 
-	getUniqueTypeRefsFunctionIds(family: AvailableTypeFamily) {
+	getUniqueTypeRefsFunctionIds(family: AvailableTypeFamily): string[] {
 		return Array.from(
 			// remove duplicates with a Set
 			new Set(
@@ -101,18 +101,13 @@ class UseTypeElementsStore {
 		const conductingEquipmentTypeRefsFunctionIds =
 			this.getUniqueTypeRefsFunctionIds('conductingEquipmentType')
 
-		// is EqFunction if it is not part of ConductingEquipment or Bay per Definition
-		const eqFunctionsIds = generalEquipmentTypeRefsFunctionIds.filter(
-			(id) =>
-				!conductingEquipmentTypeRefsFunctionIds.includes(id) &&
-				!bayTypeRefsFunctionIds.includes(id)
-		)
-
-		const functionsIds = [
+		// is EqFunction if it is not part of Bay per Definition (checking the ConductingEquipment case)
+		const eqFunctionsIds = [
 			...generalEquipmentTypeRefsFunctionIds,
-			...conductingEquipmentTypeRefsFunctionIds,
-			...bayTypeRefsFunctionIds
-		].filter((id) => !eqFunctionsIds.includes(id))
+			...conductingEquipmentTypeRefsFunctionIds
+		]
+
+		const functionsIds = [...bayTypeRefsFunctionIds]
 
 		return {
 			eqFunctionsIds,
@@ -226,11 +221,7 @@ class UseTypeElementsStore {
 		if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
 
 		return {
-			node: createStandardElement<
-				typeof family,
-				typeof pluginLocalStore.currentEdition,
-				typeof pluginLocalStore.currentUnstableRevision
-			>({
+			node: createStandardElement({
 				xmlDocument: pluginGlobalStore.xmlDocument,
 				element: { family },
 				attributes: {
@@ -284,11 +275,7 @@ class UseTypeElementsStore {
 		if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
 
 		return {
-			node: createStandardElement<
-				typeof family,
-				typeof pluginLocalStore.currentEdition,
-				typeof pluginLocalStore.currentUnstableRevision
-			>({
+			node: createStandardElement({
 				xmlDocument: pluginGlobalStore.xmlDocument,
 				element: {
 					family,
@@ -361,11 +348,7 @@ class UseTypeElementsStore {
 				]
 			}
 		}
-		const newRefElement = createStandardElement<
-			typeof family,
-			typeof pluginLocalStore.currentEdition,
-			typeof pluginLocalStore.currentUnstableRevision
-		>({
+		const newRefElement = createStandardElement({
 			xmlDocument: pluginGlobalStore.xmlDocument,
 			element: {
 				family

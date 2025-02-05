@@ -81,7 +81,10 @@ class UseDnDStore {
 		if (!this.currentSourceTypeIdOrUuid) throw new Error('No source family')
 
 		if (currentFamily === 'genericFunction') {
-			if (typeElementFamily === TYPE_FAMILY_MAP.conductingEquipmentType)
+			if (
+				typeElementFamily === TYPE_FAMILY_MAP.generalEquipmentType ||
+				typeElementFamily === TYPE_FAMILY_MAP.conductingEquipmentType
+			)
 				currentFamily = REF_FAMILY_MAP.eqFunction
 			else currentFamily = REF_FAMILY_MAP.function
 		}
