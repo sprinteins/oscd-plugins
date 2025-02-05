@@ -12,7 +12,9 @@ import { Toaster } from '$lib/ui/shadcn/sonner/index.js'
 // UTILS
 import { setInlineStylesVariables } from '$lib/utils/style.js'
 // HEADLESS
-import { xmlDocumentStore, pluginStore } from '$lib/headless/stores/index.js'
+import { pluginGlobalStore } from '$lib/headless/stores/index.js'
+// TYPES
+import type { IEC61850 } from '@oscd-plugins/core-standard'
 
 export function initPlugin(
 	node: HTMLElement,
@@ -22,17 +24,66 @@ export function initPlugin(
 		getDocName: () => string
 		getEditCount: () => number
 		getIsCustomInstance: () => boolean
-		host: HTMLElement
+		definition: {
+			edition: IEC61850.AvailableEdition
+			revision?: IEC61850.AvailableUnstableRevision<
+				typeof params.definition.edition
+			>
+		}
+		getHost: () => HTMLElement | undefined
+		getRootElement: () => Element | null | undefined
+		customNamespaces?: Record<'namespacePrefix' | 'namespaceUri', string>[]
 	}
 ) {
+	//====== INIT GETTERS ======//
+
+	const doc = $derived(params.getDoc())
+	const docName = $derived(params.getDocName())
+	const editCount = $derived(params.getEditCount())
+	const isCustomInstance = $derived(params.getIsCustomInstance())
+	const host = $derived(params.getHost())
+	const rootElement = $derived(params.getRootElement())
+
+	const revisionNamespace = $derived.by(() => {
+		if (params.definition?.revision) {
+			return [
+				{
+					namespacePrefix:
+						pluginGlobalStore.revisionsStores[
+							params.definition.revision
+						].currentNamespacePrefix,
+					namespaceUri:
+						pluginGlobalStore.revisionsStores[
+							params.definition.revision
+						].currentNamespaceUri
+				}
+			]
+		}
+	})
+	const namespaceToAdd = $derived([
+		...(revisionNamespace || []),
+		...(params.customNamespaces || [])
+	])
+
+	const needsNamespaceAttributes = $derived(!!namespaceToAdd?.length)
+	const hasNamespaceAttributes = $derived.by(() => {
+		if (rootElement && needsNamespaceAttributes) {
+			checkIfRootElementHasAllCustomNamespaces(
+				rootElement,
+				namespaceToAdd
+			)
+		}
+		return false
+	})
+
 	//====== DYNAMIC STYLE ======//
 
 	const mode = $derived({
 		isStorybook: import.meta.env.MODE === 'STORYBOOK',
 		isLegacyInstance:
 			import.meta.env.MODE !== 'STORYBOOK' &&
-			!import.meta.env.DEV &&
-			!params.getIsCustomInstance()
+			import.meta.env.MODE !== 'development' &&
+			!isCustomInstance
 	})
 
 	const currentMode = $derived(
@@ -68,7 +119,7 @@ export function initPlugin(
 		${inlineCssFonts}
 		${inlineShadCnAdaptation}
 	`
-	node.appendChild(style)
+	node.insertAdjacentElement('beforebegin', style)
 
 	//====== FUNCTIONS ======//
 
@@ -107,21 +158,60 @@ export function initPlugin(
 		}
 	}
 
+	// namespace
+
+	function checkIfRootElementHasAllCustomNamespaces(
+		currentRootElement: Element,
+		currentCustomNamespace: Record<string, string>[]
+	) {
+		return currentCustomNamespace.some((namespaceEntries) => {
+			Object.entries(namespaceEntries).some(
+				([namespace, namespaceUri]) => {
+					return (
+						currentRootElement.getAttribute(
+							`xmlns:${namespace}`
+						) !== namespaceUri
+					)
+				}
+			)
+		})
+	}
+
+	// TODO: not working for now
+	function createNamespaceAttributes(currentRootElement: Element) {
+		const payload: Record<string, Record<string, string>> = {}
+
+		for (const namespaceEntries of namespaceToAdd) {
+			payload['http://www.w3.org/2000/xmlns/'] = {
+				[namespaceEntries.namespacePrefix]:
+					namespaceEntries.namespaceUri
+			}
+		}
+		console.log(
+			currentRootElement.lookupPrefix('http://www.w3.org/2000/xmlns/')
+		)
+		pluginGlobalStore.updateElementType({
+			element: currentRootElement,
+			attributesNS: payload
+		})
+	}
+
 	//====== XML DOCUMENT INIT ======//
 
 	const xmlDocumentUpdateTrigger = ({
-		editCount, // is not used but should be passed to the function to trigger reactivity
-		newXmlDocument,
-		newXmlDocumentName
+		currentEditCount, // is not used but should be passed to the function to trigger reactivity
+		currentXmlDocument,
+		currentXmlDocumentName
 	}: {
-		editCount: number
-		newXmlDocument: XMLDocument | undefined
-		newXmlDocumentName: string
+		currentEditCount: number
+		currentXmlDocument: XMLDocument | undefined
+		currentXmlDocumentName: string
 	}) => {
-		if (newXmlDocument) {
-			xmlDocumentStore.xmlDocument = newXmlDocument
-			xmlDocumentStore.xmlDocumentName = newXmlDocumentName
-			xmlDocumentStore.editCount = editCount
+		if (currentXmlDocument) {
+			pluginGlobalStore.xmlDocument = currentXmlDocument
+			pluginGlobalStore.xmlDocumentName = currentXmlDocumentName
+			pluginGlobalStore.editCount = currentEditCount
+			pluginGlobalStore.host = host
 		}
 	}
 
@@ -163,9 +253,9 @@ export function initPlugin(
 	// biome-ignore lint/suspicious/noExplicitAny: generic type of mounted component
 	let toaster: Record<string, any>
 	$effect(() => {
-		if (!toaster && params.host.shadowRoot)
+		if (!toaster && host?.shadowRoot)
 			toaster = mount(Toaster, {
-				target: params.host.shadowRoot
+				target: host.shadowRoot
 			})
 
 		return () => {
@@ -176,32 +266,28 @@ export function initPlugin(
 	// set XML Document after user action through the instance
 	$effect(() => {
 		xmlDocumentUpdateTrigger({
-			editCount: params.getEditCount(),
-			newXmlDocument: params.getDoc(),
-			newXmlDocumentName: params.getDocName()
+			currentEditCount: editCount,
+			currentXmlDocument: doc,
+			currentXmlDocumentName: docName
 		})
 	})
 
-	// set plugin host HTMLElement
+	// add custom namespace attribute to root element
 	$effect(() => {
-		pluginStore.host = params.host
+		if (host && needsNamespaceAttributes && rootElement) {
+			if (!hasNamespaceAttributes) createNamespaceAttributes(rootElement)
+		}
 	})
 
 	// set error handler
 	// TODO: not working for now
 	$effect(() => {
-		pluginStore.host?.addEventListener('error', globalError)
-		pluginStore.host?.addEventListener(
-			'unhandledrejection',
-			unHandledRejection
-		)
+		host?.addEventListener('error', globalError)
+		host?.addEventListener('unhandledrejection', unHandledRejection)
 
 		return () => {
-			pluginStore.host?.removeEventListener('error', globalError)
-			pluginStore.host?.removeEventListener(
-				'unhandledrejection',
-				unHandledRejection
-			)
+			host?.removeEventListener('error', globalError)
+			host?.removeEventListener('unhandledrejection', unHandledRejection)
 		}
 	})
 }

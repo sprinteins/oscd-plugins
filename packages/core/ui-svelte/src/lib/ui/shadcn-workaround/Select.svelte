@@ -15,7 +15,7 @@ let {
 }: {
 	value: string | undefined
 	class?: string
-	options: { value: string; label: string }[]
+	options?: { value: string; label: string }[]
 	placeholder?: string
 } = $props()
 </script>
@@ -27,7 +27,9 @@ class={cn(
 	className
 )}>
 	{#if placeholder}<option value="">{placeholder}</option>{/if}
-	{#each options as option}
-		<option value={option.value}>{option.label}</option>
-	{/each}
+	{#if options?.length}
+		{#each options as option}
+			<option value={option.value}>{option.label}</option>
+		{/each}
+	{/if}
 </select>
