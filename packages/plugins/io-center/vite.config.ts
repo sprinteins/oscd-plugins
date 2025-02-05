@@ -27,6 +27,10 @@ export default defineConfig({
 		sourcemap: isDevelopment ? 'inline' : false
 	},
 	server: {
-		port: 56343,
+		port: 4174
+	},
+	preview: {
+		port: 4174,
+		cors: true
 	}
 })

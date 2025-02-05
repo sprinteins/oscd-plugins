@@ -2,12 +2,11 @@
 import NodeElement from './node-element.svelte'
 import { onDestroy, onMount } from 'svelte'
 import type { Connection, ConnectionPoint } from './types.canvas'
+import { calulateCoordinates } from './mouse-action.svelte'
+import { canvasStore } from './canvas-store.svelte'
 
 let connections = $state<Connection[]>([])
-let dragStartCircle: EventTarget | null = $state(null)
 let startNode = $state<string | null>('')
-let mousePosition = $state({ x: 0, y: 0 })
-let svgElement = $state<SVGGraphicsElement | null>(null)
 let container = $state<HTMLDivElement | null>(null)
 
 let dataObjects = $state<string[]>(['DO X', 'DO Y'])
@@ -19,20 +18,12 @@ function startDrawing(event: MouseEvent) {
 	if (!event.target || !event.currentTarget) {
 		return
 	}
-	dragStartCircle = event.target
+	canvasStore.drawStartPoint = event.target
 	const currentTarget = event.currentTarget as HTMLElement
 	if (!currentTarget.parentElement) {
 		return
 	}
 	startNode = currentTarget.parentElement.getAttribute('data-title')
-	mousePosition = convertToSVGCoordinates(event.clientX, event.clientY)
-}
-
-function handleMouseMove(event: MouseEvent) {
-	event.preventDefault()
-	if (dragStartCircle && svgElement) {
-		mousePosition = convertToSVGCoordinates(event.clientX, event.clientY)
-	}
 }
 
 function isWrongColumn(node1: string, node2: string) {
@@ -85,7 +76,8 @@ function connectionExists(fromNode: string, toNode: string) {
 }
 
 function stopDrawing(targetNode: string, targetSide: string) {
-	const startCircle = dragStartCircle
+	const startCircle = canvasStore.lastStartPoint
+	canvasStore.lastStartPoint = null
 	if (!container) {
 		return
 	}
@@ -130,7 +122,7 @@ function stopDrawing(targetNode: string, targetSide: string) {
 }
 
 function getCoordinates(connectionPoint: ConnectionPoint) {
-	if (!svgElement || !container) {
+	if (!canvasStore.svgElement || !container) {
 		return { x: 0, y: 0 }
 	}
 
@@ -158,13 +150,17 @@ function getCoordinates(connectionPoint: ConnectionPoint) {
 	)
 
 	const transformedPoint = svgPoint.matrixTransform(
-		svgElement.getScreenCTM()?.inverse()
+		canvasStore.svgElement.getScreenCTM()?.inverse()
 	)
 	return { x: transformedPoint.x, y: transformedPoint.y }
 }
 
 function getCirclePosition(target: EventTarget | null) {
-	if (!target || !(target instanceof HTMLElement) || !svgElement) {
+	if (
+		!target ||
+		!(target instanceof HTMLElement) ||
+		!canvasStore.svgElement
+	) {
 		return { x: 0, y: 0 }
 	}
 
@@ -176,20 +172,7 @@ function getCirclePosition(target: EventTarget | null) {
 	)
 
 	const transformedPoint = svgPoint.matrixTransform(
-		svgElement.getScreenCTM()?.inverse()
-	)
-	return { x: transformedPoint.x, y: transformedPoint.y }
-}
-
-function convertToSVGCoordinates(clientX: number, clientY: number) {
-	if (!svgElement) {
-		return { x: clientX, y: clientY }
-	}
-
-	const svgPoint = new DOMPoint(clientX, clientY)
-
-	const transformedPoint = svgPoint.matrixTransform(
-		svgElement.getScreenCTM()?.inverse()
+		canvasStore.svgElement.getScreenCTM()?.inverse()
 	)
 	return { x: transformedPoint.x, y: transformedPoint.y }
 }
@@ -217,11 +200,9 @@ onDestroy(() => {
 })
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
+  use:calulateCoordinates
   class="grid grid-cols-3 h-full"
-  onmousemove={handleMouseMove}
-  onmouseup={(dragStartCircle = null)}
   bind:this={container}
 >
   <div class="flex flex-col items-center w-full gap-2" data-title="DO">
@@ -267,7 +248,7 @@ onDestroy(() => {
 
 <svg
   class="absolute top-0 left-0 w-full h-full pointer-events-none"
-  bind:this={svgElement}
+  bind:this={canvasStore.svgElement}
 >
   {#key connections}
     {#each connections as connection}
@@ -280,10 +261,10 @@ onDestroy(() => {
       />
     {/each}
   {/key}
-  {#if dragStartCircle}
+  {#if canvasStore.drawStartPoint}
     <path
       class="stroke-black stroke-2"
-      d={`M ${getCirclePosition(dragStartCircle).x},${getCirclePosition(dragStartCircle).y} L ${mousePosition.x},${mousePosition.y}`}
+      d={`M ${getCirclePosition(canvasStore.drawStartPoint).x},${getCirclePosition(canvasStore.drawStartPoint).y} L ${canvasStore.mousePosition.x},${canvasStore.mousePosition.y}`}
     />
   {/if}
 </svg>
