@@ -43,37 +43,34 @@
     }
 </script>
 
-<Accordion.Item value={treeNode.name}>
-    {#if treeNode.children}
-        <Accordion.Trigger
+{#if treeNode.children}
+    <details name={treeNode.name}>
+        <summary
             onclick={(e) => {
-                
+                onClick(treeNode.name, e);
             }}
             class={`flex items-center text-lg p-2 ${baseClass} ${getSelectedClass()}`}
         >
             <p class="text-sm font-medium">{treeNode.name}</p>
-        </Accordion.Trigger>
-        <Accordion.Content class="ml-4 border-l">
-            <div>
-                {#each treeNode.children as node}
-                    <TreeNode
-                        treeNode={node}
-                        isSelectable
-                        {selectedNodeName}
-                        {setSelectedNodeName}
-                    />
-                {/each}
-            </div>
-        </Accordion.Content>
-    {:else}
-        <button
-            class={`p-2 w-full text-left ${baseClass} ${getSelectedClass()}`}
-            onclick={(e) => {
-                
-            }}
-        >
-            {treeNode.name}
-        </button>
-    {/if}
-</Accordion.Item>
-
+        </summary>
+        <div class="ml-4 border-l">
+            {#each treeNode.children as node}
+                <TreeNode
+                    treeNode={node}
+                    isSelectable
+                    {selectedNodeName}
+                    {setSelectedNodeName}
+                />
+            {/each}
+        </div>
+    </details>
+{:else}
+    <button
+        class={`p-2 w-full text-sm text-left ${baseClass} ${getSelectedClass()}`}
+        onclick={(e) => {
+            onClick(treeNode.name, e);
+        }}
+    >
+        {treeNode.name}
+    </button>
+{/if}

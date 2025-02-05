@@ -2,7 +2,7 @@
 	import type { ObjectTree } from "./types.object-tree";
 	import { Accordion } from "@oscd-plugins/core-ui-svelte";
 	import TreeNode from "./tree-node.svelte";
-    import { getOpenItems } from "./utils";
+	import { getOpenItems } from "./utils";
 
 	type Props = {
 		objectTree: ObjectTree;
@@ -17,11 +17,7 @@
 	}
 </script>
 
-<Accordion.Root
-	value={getOpenItems(objectTree)}
-	type="multiple"
-	class="p-2"
->
+<div class="p-2">
 	{#each objectTree as treeNode}
 		<TreeNode
 			{treeNode}
@@ -30,4 +26,4 @@
 			{setSelectedNodeName}
 		/>
 	{/each}
-</Accordion.Root>
+</div>
