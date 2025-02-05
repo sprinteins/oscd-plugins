@@ -17,13 +17,11 @@ let logicalPhyscials = $state<string[]>(['LP X', 'LP Y'])
 function startDrawing(event: MouseEvent) {
 	event.preventDefault()
 	if (!event.target || !event.currentTarget) {
-		console.log('event.target is null')
 		return
 	}
 	dragStartCircle = event.target
 	const currentTarget = event.currentTarget as HTMLElement
 	if (!currentTarget.parentElement) {
-		console.log('no parent')
 		return
 	}
 	startNode = currentTarget.parentElement.getAttribute('data-title')
@@ -89,7 +87,6 @@ function connectionExists(fromNode: string, toNode: string) {
 function stopDrawing(targetNode: string, targetSide: string) {
 	const startCircle = dragStartCircle
 	if (!container) {
-		console.log('container is null')
 		return
 	}
 
@@ -100,7 +97,6 @@ function stopDrawing(targetNode: string, targetSide: string) {
 	if (startCircle && target && startCircle !== target) {
 		let fromNode = startNode
 		if (!fromNode) {
-			console.log('fromNode is null')
 			return
 		}
 		let toNode = targetNode
@@ -135,7 +131,6 @@ function stopDrawing(targetNode: string, targetSide: string) {
 
 function getCoordinates(connectionPoint: ConnectionPoint) {
 	if (!svgElement || !container) {
-		console.log('svgElement or container is null')
 		return { x: 0, y: 0 }
 	}
 
@@ -144,7 +139,6 @@ function getCoordinates(connectionPoint: ConnectionPoint) {
 	) as HTMLElement | null
 
 	if (!target) {
-		console.log('target is null')
 		return { x: 0, y: 0 }
 	}
 
@@ -153,7 +147,6 @@ function getCoordinates(connectionPoint: ConnectionPoint) {
 	)
 
 	if (!circle) {
-		console.log('circle is null')
 		return { x: 0, y: 0 }
 	}
 
