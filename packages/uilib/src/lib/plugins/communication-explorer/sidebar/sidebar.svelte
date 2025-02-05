@@ -20,6 +20,9 @@
 
     export let rootNode: RootNode
     export let bays: string[]
+    let IEDs = rootNode.children;  
+    let searchQuery = ""
+    let filterTextFieldFocused = false
 
     $: IEDSelections = $filterState?.selectedIEDs
     $: ConnectionSelection = $filterState.selectedConnection
@@ -30,12 +33,8 @@
     	$filterState,
     	isIedFiltersDisabled
     )
-
-    let IEDs = rootNode.children;  
-    let searchQuery = ""
-    let searchFocus = false
-    let filteredIEDs = IEDs
-    let filteredBays = bays
+    $: filteredIEDs = (searchQuery && IEDs?.filter(ied => ied.label.toLowerCase().includes(searchQuery.toLowerCase()))) || IEDs
+    $: filteredBays = (searchQuery && bays?.filter(bay => bay.toLowerCase().includes(searchQuery.toLowerCase()))) || bays
 
     function handleConnectionDirectionDisabled(
     	filter: SelectedFilter,
@@ -53,20 +52,6 @@
     	const target = e.target as HTMLInputElement
     	setNameFilter(target.value)
     }
-
-    function handleSearch() {
-        filteredIEDs = IEDs.filter(ied => ied.label.toLowerCase().includes(searchQuery.toLowerCase()))
-		filteredBays = bays.filter(bay => bay.toLowerCase().includes(searchQuery.toLowerCase()))
-    }
-
-    function handleSearchFocus(e: Event) {
-        searchFocus = true
-		handleSearch()
-    }
-
-    function handleSearchBlur(e: Event) {
-		searchFocus = false		
-	}
 
     function handleDropdownSelect(e: Event) {
         const target = e.target as HTMLElement;
@@ -110,11 +95,10 @@
                     type="text"
                     placeholder="Filter IED or bay"
                     bind:value={searchQuery}
-                    on:input={handleSearch}
-                    on:focus={handleSearchFocus}
-                    on:blur={handleSearchBlur}
+                    on:focus={()=> filterTextFieldFocused = true}
+                    on:blur={()=> filterTextFieldFocused = false}
                 />
-                {#if searchFocus}
+                {#if filterTextFieldFocused}
                     <div class="dropdown">
                         {#if filteredIEDs.length > 0}
                             <div class="dropdown_label">
