@@ -1,5 +1,7 @@
 <script lang="ts">
 import type { NodeProps } from './types.node'
+import { CircleX } from 'lucide-svelte'
+
 let {
 	node,
 	showLeftCircle,
@@ -7,6 +9,10 @@ let {
 	startDrawing,
 	stopDrawing
 }: NodeProps = $props()
+
+function handleClose() {
+	return
+}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -44,4 +50,13 @@ let {
       }}
     ></div>
   {/if}
+
+  <button
+    type="button"
+    class="absolute top-0 right-0 cursor-pointer"
+    onclick={handleClose}
+    aria-label="Close"
+  >
+    <CircleX size=15/>
+  </button>
 </div>

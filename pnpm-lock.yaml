@@ -377,6 +377,10 @@ importers:
         version: 3.1.1(vite@4.3.1(@types/node@22.10.1)(sass@1.62.0))
 
   packages/plugins/io-center:
+    dependencies:
+      lucide-svelte:
+        specifier: ^0.474.0
+        version: 0.474.0(svelte@5.17.3)
     devDependencies:
       '@oscd-plugins/core-api':
         specifier: workspace:^
@@ -5308,6 +5312,11 @@ packages:
 
   lucide-svelte@0.471.0:
     resolution: {integrity: sha512-z+C6G2K089iDGbl8HzTdD5G6i5BvuaBxdIPQDa650Kb8TXBJRODa7YfmaIHy78+Y+YaB75N0lzUIQEclzflJrQ==}
+    peerDependencies:
+      svelte: ^3 || ^4 || ^5.0.0-next.42
+
+  lucide-svelte@0.474.0:
+    resolution: {integrity: sha512-yOSqjXPoEDOXCceBIfDaed6RinOvhp03ShiTXH6O+vlXE/NsyjQpktL8gm2vGDxi9d81HMuPFN1dwhVURh6mGg==}
     peerDependencies:
       svelte: ^3 || ^4 || ^5.0.0-next.42
 
@@ -13979,6 +13988,10 @@ snapshots:
       svelte: 5.17.3
 
   lucide-svelte@0.471.0(svelte@5.17.3):
+    dependencies:
+      svelte: 5.17.3
+
+  lucide-svelte@0.474.0(svelte@5.17.3):
     dependencies:
       svelte: 5.17.3
 

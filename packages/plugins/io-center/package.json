@@ -41,5 +41,8 @@
 		"typescript": "~5.6.2",
 		"vite": "^6.0.3",
 		"vite-plugin-dts": "^4.4.0"
+	},
+	"dependencies": {
+		"lucide-svelte": "^0.474.0"
 	}
 }
