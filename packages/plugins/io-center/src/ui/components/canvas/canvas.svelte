@@ -10,6 +10,10 @@ let mousePosition = $state({ x: 0, y: 0 })
 let svgElement = $state<SVGGraphicsElement | null>(null)
 let container = $state<HTMLDivElement | null>(null)
 
+let dataObjects = $state<string[]>(['DO X', 'DO Y'])
+let logicalConditoners = $state<string[]>(['LC X', 'LC Y'])
+let logicalPhyscials = $state<string[]>(['LP X', 'LP Y'])
+
 function startDragging(event: MouseEvent) {
 	event.preventDefault()
 	if (!event.target || !event.currentTarget) {
@@ -206,11 +210,11 @@ onMount(() => {
 	connections = [
 		{
 			from: { node: 'DO X', side: 'right' },
-			to: { node: 'Logical Component X', side: 'left' }
+			to: { node: 'LC X', side: 'left' }
 		},
 		{
 			from: { node: 'DO Y', side: 'right' },
-			to: { node: 'Logical Component X', side: 'left' }
+			to: { node: 'LC X', side: 'left' }
 		}
 	]
 })
@@ -225,7 +229,7 @@ onMount(() => {
 >
   <div class="flex flex-col items-center w-full gap-2" data-title="DO">
     <div class="text-center">DO</div>
-    {#each ["DO X", "DO Y"] as node}
+    {#each dataObjects as node}
       <Node
         title={node}
         subtitle="Attribut"
@@ -238,7 +242,7 @@ onMount(() => {
   </div>
   <div class="flex flex-col items-center w-full gap-2" data-title="LC">
     <div class="text-center">LC</div>
-    {#each ["Logical Component X", "Logical Component Y"] as node}
+    {#each logicalConditoners as node}
       <Node
         title={node}
         subtitle="Attribut"
@@ -251,7 +255,7 @@ onMount(() => {
   </div>
   <div class="flex flex-col items-center w-full gap-2" data-title="LP">
     <div class="text-center">LP</div>
-    {#each ["LP X", "LP Y"] as node}
+    {#each logicalPhyscials as node}
       <Node
         title={node}
         subtitle="Attribut"
