@@ -14,7 +14,7 @@ let dataObjects = $state<string[]>(['DO X', 'DO Y'])
 let logicalConditoners = $state<string[]>(['LC X', 'LC Y'])
 let logicalPhyscials = $state<string[]>(['LP X', 'LP Y'])
 
-function startDragging(event: MouseEvent) {
+function startDrawing(event: MouseEvent) {
 	event.preventDefault()
 	if (!event.target || !event.currentTarget) {
 		console.log('event.target is null')
@@ -86,7 +86,7 @@ function connectionExists(fromNode: string, toNode: string) {
 	)
 }
 
-function stopDragging(targetNode: string, targetSide: string) {
+function stopDrawing(targetNode: string, targetSide: string) {
 	const startCircle = dragStartCircle
 	if (!container) {
 		console.log('container is null')
@@ -239,8 +239,8 @@ onDestroy(() => {
         subtitle="Attribut"
         showLeftCircle={false}
         showRightCircle={true}
-        {startDragging}
-        {stopDragging}
+        {startDrawing}
+        {stopDrawing}
       />
     {/each}
   </div>
@@ -252,8 +252,8 @@ onDestroy(() => {
         subtitle="Attribut"
         showLeftCircle={true}
         showRightCircle={true}
-        {startDragging}
-        {stopDragging}
+        {startDrawing}
+        {stopDrawing}
       />
     {/each}
   </div>
@@ -265,8 +265,8 @@ onDestroy(() => {
         subtitle="Attribut"
         showLeftCircle={true}
         showRightCircle={false}
-        {startDragging}
-        {stopDragging}
+        {startDrawing}
+        {stopDrawing}
       />
     {/each}
   </div>

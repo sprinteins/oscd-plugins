@@ -5,8 +5,8 @@ let {
 	subtitle,
 	showLeftCircle,
 	showRightCircle,
-	startDragging,
-	stopDragging
+	startDrawing,
+	stopDrawing
 }: NodeProps = $props()
 </script>
 
@@ -20,10 +20,10 @@ let {
       id="left-circle"
       class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-black rounded-full"
       onmousedown={(event) => {
-        startDragging(event);
+        startDrawing(event);
       }}
       onmouseup={() => {
-        stopDragging(title, "left");
+        stopDrawing(title, "left");
       }}
     ></div>
   {/if}
@@ -38,10 +38,10 @@ let {
       id="right-circle"
       class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-black rounded-full"
       onmousedown={(event) => {
-        startDragging(event);
+        startDrawing(event);
       }}
       onmouseup={() => {
-        stopDragging(title, "right");
+        stopDrawing(title, "right");
       }}
     ></div>
   {/if}

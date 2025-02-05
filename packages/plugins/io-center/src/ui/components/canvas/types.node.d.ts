@@ -3,6 +3,6 @@ export type NodeProps = {
 	subtitle: string
 	showLeftCircle: boolean
 	showRightCircle: boolean
-	startDragging: (event: MouseEvent) => void
-	stopDragging: (node: string, side: string) => void
+	startDrawing: (event: MouseEvent) => void
+	stopDrawing: (node: string, side: string) => void
 }
