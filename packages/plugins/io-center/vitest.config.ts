@@ -1,8 +1,15 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 export default defineConfig({
+  plugins: [svelte()],
   test: {
-    globals: true,
-    environment: 'jsdom', // Or 'jsdom', depending on your needs
+    environment: 'jsdom',
+    setupFiles: ['./vitest-setup.js'],
+    server: {
+      deps: {
+        inline: ['bits-ui'],
+      }
+    }
   },
-});
+})
