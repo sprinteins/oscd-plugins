@@ -1,6 +1,6 @@
 <script lang="ts">
-import Node from './node.svelte'
-import { onMount } from 'svelte'
+import NodeElement from './node-element.svelte'
+import { onDestroy, onMount } from 'svelte'
 import type { Connection, ConnectionPoint } from './types.canvas'
 
 let connections = $state<Connection[]>([])
@@ -206,7 +206,7 @@ function redrawConnections() {
 }
 
 onMount(() => {
-	window.addEventListener('resize', () => redrawConnections())
+	window.addEventListener('resize', redrawConnections)
 	connections = [
 		{
 			from: { node: 'DO X', side: 'right' },
@@ -217,6 +217,10 @@ onMount(() => {
 			to: { node: 'LC X', side: 'left' }
 		}
 	]
+})
+
+onDestroy(() => {
+	window.removeEventListener('resize', redrawConnections)
 })
 </script>
 
@@ -230,7 +234,7 @@ onMount(() => {
   <div class="flex flex-col items-center w-full gap-2" data-title="DO">
     <div class="text-center">DO</div>
     {#each dataObjects as node}
-      <Node
+      <NodeElement
         title={node}
         subtitle="Attribut"
         showLeftCircle={false}
@@ -243,7 +247,7 @@ onMount(() => {
   <div class="flex flex-col items-center w-full gap-2" data-title="LC">
     <div class="text-center">LC</div>
     {#each logicalConditoners as node}
-      <Node
+      <NodeElement
         title={node}
         subtitle="Attribut"
         showLeftCircle={true}
@@ -256,7 +260,7 @@ onMount(() => {
   <div class="flex flex-col items-center w-full gap-2" data-title="LP">
     <div class="text-center">LP</div>
     {#each logicalPhyscials as node}
-      <Node
+      <NodeElement
         title={node}
         subtitle="Attribut"
         showLeftCircle={true}

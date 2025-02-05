@@ -20,7 +20,7 @@
 		<p>
 			<button onclick={addIED}>Add IED</button>
 		</p>
-		<Canvas />
+		<CanvasArea />
 	</div>
 	<div slot="sidebar-right">sidebar right</div>
 </Layout>
@@ -37,7 +37,7 @@ import store from './store.svelte'
 import { initQuery } from './query.svelte'
 import { newCommand, type Command } from './command.svelte'
 import IEDSelect from './ied/ied-select.svelte'
-import Canvas from './ui/components/canvas/canvas.svelte'
+import CanvasArea from './ui/components/canvas/canvas-area.svelte'
 import type { Nullable } from './types'
 
 // props
