@@ -2,7 +2,7 @@
 // COMPONENTS
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import AddElement from './add-element.svelte'
-import ElementCard from './element-card.svelte'
+import CardCollapsibleWrapper from '../element-card/card-collapsible-wrapper.svelte'
 // TYPES
 import type {
 	AvailableTypeFamily,
@@ -35,7 +35,7 @@ const groupedTypeElementsEntries = $derived(
 	<Card.Content class="overflow-y-auto space-y-2">
 		{#each groupedTypeElementsEntries as [typeElementFamily, typeElements]}
 			{#each Object.entries(typeElements) as [typeElementKey, typeElement]}
-				<ElementCard {typeElementKey} {typeElement} {typeElementFamily}/>
+				<CardCollapsibleWrapper {typeElementKey} {typeElement} {typeElementFamily}/>
 			{/each}
 		{/each}
 	</Card.Content>
