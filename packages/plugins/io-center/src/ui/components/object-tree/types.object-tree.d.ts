@@ -1,6 +1,9 @@
+export type ObjectTree = TreeNode[]
 
-export type ObjectTree = {
-	logicalDevices: LogicalDevice[]
+export type TreeNode = {
+	name: string
+	isOpen?: boolean
+	children?: TreeNode[]
 }
 
 export type LogicalDevice = {

@@ -14,6 +14,7 @@
 <Layout>
 	<div slot="sidebar-left">
 		<IEDSelect ieds={store.iedList} />
+		<ObjectTreeView />
 	</div>
 	<div slot="content">
 		Document: {docName}
@@ -38,6 +39,7 @@ import { initQuery } from './query.svelte';
 import { newCommand, type Command } from "./command.svelte"
 import IEDSelect from "./ied/ied-select.svelte"
 import type { Nullable } from './types';
+import ObjectTreeView from './ui/components/views/object-tree-view.svelte';
 
 
 
