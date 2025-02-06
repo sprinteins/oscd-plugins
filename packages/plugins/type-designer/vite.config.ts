@@ -21,5 +21,12 @@ export default defineConfig({
 			fileName: 'plugin'
 		},
 		sourcemap: isDevelopment ? 'inline' : false
+	},
+	server: {
+		port: 4175
+	},
+	preview: {
+		port: 4175,
+		cors: true
 	}
 })
