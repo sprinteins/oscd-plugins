@@ -15,13 +15,15 @@ function handleClose() {
 }
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
+
 <div
   data-title={node.name}
   class="relative flex items-center bg-gray-100 border border-gray-300 rounded w-4/5"
 >
   {#if showLeftCircle}
     <div
+      role="button"
+      tabindex="-1"
       id="left-circle"
       class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-black rounded-full"
       onmousedown={(event) => {
@@ -40,6 +42,8 @@ function handleClose() {
 
   {#if showRightCircle}
     <div
+      role="button"
+      tabindex="-1"
       id="right-circle"
       class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-black rounded-full"
       onmousedown={(event) => {
