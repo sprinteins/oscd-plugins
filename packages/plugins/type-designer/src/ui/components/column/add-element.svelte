@@ -25,15 +25,21 @@ let newTypeFamily = $state<Exclude<AvailableTypeFamily, 'lNodeType'>>()
 
 const newElementName = $derived.by(() => {
 	if (!newTypeFamily) return
+
 	const namesByFamilies = {
-		bay: `Bay_${Object.keys(typeElementsStore.typeElementsPerFamily[newTypeFamily]).length + 1}`,
-		generalEquipmentType: `_${Object.keys(typeElementsStore.typeElementsPerFamily[newTypeFamily]).length + 1}`,
-		conductingEquipmentType: `_${Object.keys(typeElementsStore.typeElementsPerFamily[newTypeFamily]).length + 1}`,
-		functionTemplate: `Func_${Object.keys(typeElementsStore.typeElementsPerFamily[newTypeFamily]).length + 1}`
+		bay: `Bay_${getNameNumberOfOccurrence('bay', 'Bay', true)}`,
+		generalEquipmentType: '',
+		conductingEquipmentType: '',
+		functionTemplate: `Func_${getNameNumberOfOccurrence(
+			'functionTemplate',
+			'Func',
+			true
+		)}`
 	}
 
 	if (newTypeInput) {
 		const numberOfOccurrence = getNameNumberOfOccurrence(
+			newTypeFamily,
 			newTypeInput,
 			false
 		)
@@ -50,6 +56,7 @@ const newElementName = $derived.by(() => {
 				(option) => option.value === newTypeElement
 			)?.label || ''
 		const numberOfNameOccurrence = getNameNumberOfOccurrence(
+			newTypeFamily,
 			selectOptionValue,
 			true
 		)
@@ -108,25 +115,42 @@ function handleAddNewElement() {
 }
 
 function getNameNumberOfOccurrence(
+	family: Exclude<AvailableTypeFamily, 'lNodeType'>,
 	valueToTest: string,
 	needsSubstring: boolean
 ) {
-	if (!newTypeFamily) return
-	return (
-		Object.values(
-			typeElementsStore.typeElementsPerFamily[newTypeFamily]
-		).filter((typeElement) => {
-			if (needsSubstring)
+	const lastElementOfSameKind = Object.values(
+		typeElementsStore.typeElementsPerFamily[family]
+	)
+		.filter((typeElement) => {
+			if (needsSubstring) {
+				const currentElementNameLength =
+					typeElement.attributes?.name.length
+				const currentElementNameOccurrenceAsStringLength =
+					typeElement.attributes?.name.match(/\d+$/)?.[0].length
+				const extraUnderscoreCharacter = 1
+
+				const numberOfCharactersToRemove =
+					currentElementNameLength -
+					currentElementNameOccurrenceAsStringLength -
+					extraUnderscoreCharacter
+
 				return (
 					typeElement.attributes?.name?.substring(
 						0,
-						typeElement.attributes?.name.length - 2
+						numberOfCharactersToRemove
 					) === valueToTest
 				)
-
+			}
 			return typeElement.attributes?.name === valueToTest
-		}).length + 1
+		})
+		.slice(-1)?.[0]
+
+	const occurrence = Number(
+		lastElementOfSameKind?.attributes?.name?.match(/\d+$/)?.[0] || 0
 	)
+
+	return occurrence + 1
 }
 
 //====== WATCHERS ======//

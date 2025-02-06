@@ -80,7 +80,7 @@ function handleCardClick() {
 		})} 
 		ondragend={(event) => dndStore.handleDragEnd(event)}
 	>
-		<Card.Content class={`flex flex-row items-center justify-between px-2 h-14 ${cursorPointer}`}>
+		<Card.Content class={`flex flex-row items-center justify-between h-14 ${cursorPointer} ${typeElementFamily === TYPE_FAMILY_MAP.lNodeType ? 'px-6' : 'px-2'}`}>
 
 			<div class="flex items-center min-w-0">
 				{#if typeElementFamily !== TYPE_FAMILY_MAP.lNodeType }

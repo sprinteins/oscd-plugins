@@ -32,7 +32,7 @@ const groupedTypeElementsEntries = $derived(
 		<Card.Title>{ column.name}</Card.Title>
 	</Card.Header>
 
-	<Card.Content class="overflow-y-auto space-y-2">
+	<Card.Content class="overflow-y-auto space-y-2 h-full">
 		{#each groupedTypeElementsEntries as [typeElementFamily, typeElements]}
 			{#each Object.entries(typeElements) as [typeElementKey, typeElement]}
 				<CardCollapsibleWrapper {typeElementKey} {typeElement} {typeElementFamily}/>

@@ -187,8 +187,6 @@ export function deleteType({
 	id
 }: { family: Exclude<AvailableTypeFamily, 'lNodeType'>; id: string }) {
 	if (!pluginGlobalStore.host) throw new Error('No host')
-	console.log('deleteType', family, id)
-	console.log(typeElementsStore.typeElementsPerFamily[family][id].element)
 	createAndDispatchEditEvent({
 		host: pluginGlobalStore.host,
 		edit: {
