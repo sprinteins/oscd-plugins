@@ -48,7 +48,9 @@ function getTypeElementAttributes(
 	}
 }
 
-function getRefs(element: Element) {
+function getRefs(
+	element: Element
+): Record<AvailableTypeFamily, string[]> | Record<never, never> {
 	if (element.tagName === 'LNodeType') return {}
 	return Array.from(element.children).reduce(
 		(acc, childElement) => {

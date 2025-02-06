@@ -98,7 +98,7 @@ const equipmentsSelectOptions = $derived({
 function handleAddNewElement() {
 	if (!newTypeFamily) return
 
-	typeElementsStore.createNewElementType({
+	typeElementsStore.createNewType({
 		family: newTypeFamily,
 		attributes: currentAttributes
 	})
@@ -145,6 +145,9 @@ $effect(() => {
 	<SelectWorkaround
 		options={equipmentsSelectOptions.primarySelect}
 		bind:value={newTypeFamily}
+		handleChange={() => {
+			newTypeElement = ''
+		}}
 	/>
 	<SelectWorkaround
 		options={(newTypeFamily === 'generalEquipmentType' || newTypeFamily === 'conductingEquipmentType') && equipmentsSelectOptions.secondarySelect[newTypeFamily] || []}
