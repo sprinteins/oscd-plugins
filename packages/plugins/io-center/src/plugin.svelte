@@ -14,6 +14,7 @@
 <Layout>
 	<div slot="sidebar-left">
 		<IEDSelect ieds={store.iedList} />
+		<ObjectTreeView />
 	</div>
 	<div slot="content">
 		Document: {docName}
@@ -39,6 +40,7 @@ import { newCommand, type Command } from './command.svelte'
 import IEDSelect from './ied/ied-select.svelte'
 import CanvasArea from './ui/components/canvas/canvas-area.svelte'
 import type { Nullable } from './types'
+import ObjectTreeView from './ui/components/views/object-tree-view.svelte'
 
 // props
 const {
