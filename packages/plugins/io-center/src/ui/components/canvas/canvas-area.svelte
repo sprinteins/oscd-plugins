@@ -4,6 +4,8 @@ import { onDestroy, onMount } from 'svelte'
 import type { Connection, ConnectionPoint } from './types.canvas'
 import { calulateCoordinates } from './mouse-action.svelte'
 import { canvasStore } from './canvas-store.svelte'
+import { Button } from '@oscd-plugins/core-ui-svelte'
+import { CirclePlus } from 'lucide-svelte'
 
 let connections = $state<Connection[]>([])
 let startNode = $state<string | null>('')
@@ -21,6 +23,25 @@ let logicalPhyscials = $state<{ name: string; attribute: string }[]>([
 	{ name: 'LP X', attribute: 'attr' },
 	{ name: 'LP Y', attribute: 'attr' }
 ])
+
+function addNode(type: string) {
+	if (type === 'DO') {
+		dataObjects = [
+			...dataObjects,
+			{ name: `DO ${dataObjects.length + 1}`, attribute: 'attr' }
+		]
+	} else if (type === 'LC') {
+		logicalConditoners = [
+			...logicalConditoners,
+			{ name: `LC ${logicalConditoners.length + 1}`, attribute: 'attr' }
+		]
+	} else if (type === 'LP') {
+		logicalPhyscials = [
+			...logicalPhyscials,
+			{ name: `LP ${logicalPhyscials.length + 1}`, attribute: 'attr' }
+		]
+	}
+}
 
 function startDrawing(event: MouseEvent) {
 	event.preventDefault()
@@ -227,7 +248,10 @@ onDestroy(() => {
     {/each}
   </div>
   <div class="flex flex-col items-center w-full gap-2" data-title="LC">
-    <div class="text-center">LC</div>
+	<div class="flex items-center justify-between">
+		<div class="text-center">LC</div>
+		<button class="ml-4" onclick={() => addNode("LC")}><CirclePlus size={20} /></button>
+	</div>
     {#each logicalConditoners as node}
       <NodeElement
         {node}
