@@ -2,7 +2,8 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore} from '@/stores'
-import type {SignalListOnSCD} from '@/components/elements/signal-list-element/types.signal-list'
+import type {Columns, SignalType} from '@/stores'
+import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list-element/types.signal-list'
 
 
 
@@ -51,13 +52,17 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         const parsedBlockContent = JSON.parse(block.textContent) as SignalListOnSCD;
 
         const selectedRows = parsedBlockContent.selected
-
-        const tableHeader = selectedRows.map(row => row.column1);
         const tableRows = parsedBlockContent.matches.publishers
-            
+        const columnHere = generateTableHeader(selectedRows)
+        
+    
+        
+        const body = generateTableBody(tableRows, columnHere);
+       
+
         autoTable(doc, {
-            head: [tableHeader],
-            body: tableRows,
+            columns: columnHere,
+            body: body,
             startY: y+10,
             tableWidth: 'wrap',
             styles: { cellPadding: 0.5, fontSize: 8 },
@@ -79,6 +84,30 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
     
 }
+
+function generateTableBody(tableRows: string[][], columnHere: TableHeader []) {
+   const generatedRows =  tableRows.map((row) => {
+        return columnHere.reduce((acc: Record<string, string>, col, index) => {
+            acc[col.dataKey as string] = row[index];
+            return acc;
+        }, {} as Record<string, string>);
+    });
+    return generatedRows
+}
+
+type TableHeader = {
+    header: string;
+    dataKey: keyof typeof SignalType | keyof typeof Columns;
+}
+
+function generateTableHeader(selectedRows: SignalRow[]): TableHeader[] {
+    return selectedRows.map(row => ({
+        header: row.column1,
+        dataKey: row.searchKey
+    }));
+}
+
+
 
 
 function downloadAsPdf(templateId: string){
