@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { ObjectTree } from "./types.object-tree";
-	import { Accordion } from "@oscd-plugins/core-ui-svelte";
 	import TreeNode from "./tree-node.svelte";
-	import { getOpenItems } from "./utils";
 
 	type Props = {
 		objectTree: ObjectTree;
@@ -21,6 +19,7 @@
 	{#each objectTree as treeNode}
 		<TreeNode
 			{treeNode}
+			isOpen={treeNode.isOpen}
 			isSelectable
 			{selectedNodeName}
 			{setSelectedNodeName}

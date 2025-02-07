@@ -39,6 +39,7 @@
 		"autoprefixer": "^10.4.20",
 		"concurrently": "^7.6.0",
 		"jsdom": "^21.1.1",
+		"lucide-svelte": "^0.474.0",
 		"postcss": "^8.4.49",
 		"svelte": "^5.17.0",
 		"svelte-check": "^4.1.2",
