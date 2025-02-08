@@ -81,10 +81,10 @@
 			subscriberFilter.IDEName = column2;
 		}
 
-		const {filteredPublisherValuesForPdf, messagePublishers} = signallistStore.getPublishingLogicalDevices(publisherFilter);
-		const {filteredSubscriberValuesForPdf} = signallistStore.getSubscribingLogicalDevices(messagePublishers, subscriberFilter);
+		const {messagePublishers} = signallistStore.getPublishingLogicalDevices(publisherFilter);
+		const {matchedRows} = signallistStore.getSubscribingLogicalDevices(messagePublishers, subscriberFilter);
 
-		return {publishers: filteredPublisherValuesForPdf, subscribers: filteredSubscriberValuesForPdf};
+		return {matchedRowsForTablePdf: matchedRows};
 
 	}
 

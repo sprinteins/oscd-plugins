@@ -1,4 +1,4 @@
-import type { SignalType, Columns } from "@/stores/signallist.store.d"
+import type { SignalType, Columns, PdfRowStructure } from "@/stores/signallist.store.d"
 import type {MessagePublisher, MessageSubscriber}  from '@/stores';
 
 export type Label = { name: string, hasSuffix: boolean }
@@ -19,8 +19,7 @@ export type SignalRow = {
 }
 
 export type SignalListMach = {
-	publishers: string[][],
-	subscribers: string[][]
+	matchedRowsForTablePdf: PdfRowStructure[]
 }
 
 export type SignalListOnSCD = {

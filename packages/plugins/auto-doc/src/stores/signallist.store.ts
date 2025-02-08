@@ -6,15 +6,11 @@ import { pluginStore } from './index'
 import type { 
     MessagePublisher, MessageSubscriber, LogicalNodeInformation,
     DataObjectInformation, InvalditiesReport, MessagePublisherFilter, 
-    MessageSubscriberFilter, MessagePublisherAndPdfContent, MessageSubscriberAndPdfContent 
+    MessageSubscriberFilter, MessagePublisherAndPdfContent, MessageSubscriberAndPdfContent, PdfRowStructure 
 } from './signallist.store.d'
 
 import { SignalType } from './signallist.store.d'
 
-type PdfRowStructure = {
-    matchedFilteredValuesForPdf: string[][],
-    publisher: MessagePublisher
-}
 
 //====== STORES ======//
 const { xmlDocument } = pluginStore
@@ -62,7 +58,7 @@ function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { mes
     return { messagePublishers: filteredMessagePublishers, invaliditiesReports, filteredPublisherValuesForPdf};
 }
 
-function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[], filter: MessageSubscriberFilter = {}): { messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[], filteredSubscriberValuesForPdf: string[][] } {
+function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[], filter: MessageSubscriberFilter = {}): { messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[], matchedRows: PdfRowStructure[] } {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
@@ -78,9 +74,9 @@ function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[], fil
         }
     }
 
-    const {subscribers:filteredMessageSubscribers, filteredSubscriberValuesForPdf} = filterMessageSubscribers(messageSubscribers, filter);
+    const {subscribers:filteredMessageSubscribers, matchedRows} = filterMessageSubscribers(messageSubscribers, filter);
 
-    return { messageSubscribers: filteredMessageSubscribers, invaliditiesReports, filteredSubscriberValuesForPdf };
+    return { messageSubscribers: filteredMessageSubscribers, invaliditiesReports, matchedRows };
 }
 
 
@@ -300,25 +296,6 @@ function matchesExtRef(extRef: Element, messagePublisher: MessagePublisher): boo
 }
 
 
-function setSubscriberIedNameInCorrespondingPublisherRow(subscriber: MessageSubscriber, pdfRows: PdfRowStructure[]): void {
-    for (const pdfRow of pdfRows) {
-        if(isSubscriberMatch(pdfRow, subscriber)){
-            pdfRow.matchedFilteredValuesForPdf[0].push(subscriber.IDEName)
-        }
-    }
-
-    pdfRowValues.update(() => [...pdfRows])
-}
-
-function isSubscriberMatch(pdfRow: PdfRowStructure, subscriber: MessageSubscriber) {
-    return (pdfRow.publisher.IEDName === subscriber.ExtRef.iedName &&
-        pdfRow.publisher.logicalNodeInofrmation.LogicalDeviceInstance === subscriber.ExtRef.ldInst &&
-        pdfRow.publisher.logicalNodeInofrmation.LogicalNodeClass === subscriber.ExtRef.lnClass &&
-        pdfRow.publisher.logicalNodeInofrmation.LogicalNodeInstance === subscriber.ExtRef.lnInst &&
-        pdfRow.publisher.logicalNodeInofrmation.LogicalNodePrefix === subscriber.ExtRef.prefix &&
-        pdfRow.publisher.dataObjectInformation.DataObjectName === subscriber.ExtRef.doName &&
-        pdfRow.publisher.dataObjectInformation.DataAttributeName === subscriber.ExtRef.daName);
-}
 
 function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: MessagePublisherFilter): MessagePublisherAndPdfContent {
     const matchedFilteredValuesForPdf : string [][] = [];
@@ -451,7 +428,6 @@ function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filte
         if(filter.serviceType !== undefined) {
             if (subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase()) || (filter.serviceType.trim() === '')) {
                 setSubscriberIedNameInCorrespondingPublisherRow(subscriber, get(pdfRowValues))
-                // valuesMatched.push(subscriber.ExtRef.serviceType);
             } else {
                 allFiltersMatch = false;
             }
@@ -462,7 +438,27 @@ function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filte
         } 
     }
         
-    return {filteredSubscriberValuesForPdf: matchedFilteredValuesForPdf, subscribers: allMessageSubscribers};
+    return {matchedRows: get(pdfRowValues), subscribers: allMessageSubscribers};
+}
+
+function setSubscriberIedNameInCorrespondingPublisherRow(subscriber: MessageSubscriber, pdfRows: PdfRowStructure[]): void {
+    for (const pdfRow of pdfRows) {
+        if(isSubscriberMatch(pdfRow, subscriber)){
+            pdfRow.matchedFilteredValuesForPdf[0].push(subscriber.IDEName)
+        }
+    }
+
+    pdfRowValues.update(() => [...pdfRows])
+}
+
+function isSubscriberMatch(pdfRow: PdfRowStructure, subscriber: MessageSubscriber) {
+    return (pdfRow.publisher.IEDName === subscriber.ExtRef.iedName &&
+        pdfRow.publisher.logicalNodeInofrmation.LogicalDeviceInstance === subscriber.ExtRef.ldInst &&
+        pdfRow.publisher.logicalNodeInofrmation.LogicalNodeClass === subscriber.ExtRef.lnClass &&
+        pdfRow.publisher.logicalNodeInofrmation.LogicalNodeInstance === subscriber.ExtRef.lnInst &&
+        pdfRow.publisher.logicalNodeInofrmation.LogicalNodePrefix === subscriber.ExtRef.prefix &&
+        pdfRow.publisher.dataObjectInformation.DataObjectName === subscriber.ExtRef.doName &&
+        pdfRow.publisher.dataObjectInformation.DataAttributeName === subscriber.ExtRef.daName);
 }
 
 export const signallistStore = {

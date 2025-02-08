@@ -110,5 +110,10 @@ export type MessagePublisherAndPdfContent = {
 
 export type MessageSubscriberAndPdfContent = {
     subscribers: MessageSubscriber[];
-    filteredSubscriberValuesForPdf: string[][];
+    matchedRows: PdfRowStructure[];
+}
+
+export type PdfRowStructure = {
+    matchedFilteredValuesForPdf: string[][],
+    publisher: MessagePublisher
 }

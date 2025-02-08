@@ -60,7 +60,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         })
 
         const selectedRows = parsedBlockContent.selected
-        const tableRows = parsedBlockContent.matches.publishers
+        const tableRows = parsedBlockContent.matches.matchedRowsForTablePdf
         const tableHeader = generateTableHeader(selectedRows)
 
         
