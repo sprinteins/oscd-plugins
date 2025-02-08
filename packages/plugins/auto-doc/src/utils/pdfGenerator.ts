@@ -1,9 +1,11 @@
+import { get } from 'svelte/store'
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore} from '@/stores'
 import type {Columns, SignalType} from '@/stores'
 import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list-element/types.signal-list'
+import {signallistStore} from "@/stores"
 
 
 
@@ -51,16 +53,20 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         }
         const parsedBlockContent = JSON.parse(block.textContent) as SignalListOnSCD;
 
+        const pdfRowsWithPublisher = get(signallistStore.pdfRowValues)
+
+        const rows = pdfRowsWithPublisher.flatMap((row) => {
+            return row.matchedFilteredValuesForPdf
+        })
+
         const selectedRows = parsedBlockContent.selected
         const tableRows = parsedBlockContent.matches.publishers
         const tableHeader = generateTableHeader(selectedRows)
 
-        console.log("🚀 ~ processSignalListForPdfGeneration ~ tableHeader:", tableHeader)
         
     
         
-        const body = generateTableBody(tableRows, tableHeader);
-        console.log("🚀 ~ processSignalListForPdfGeneration ~ body:", body)
+        const body = generateTableBody(rows, tableHeader);
        
 
         autoTable(doc, {

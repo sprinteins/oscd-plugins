@@ -1,5 +1,5 @@
 // SVELTE
-import { get } from "svelte/store";
+import { get, writable } from "svelte/store";
 // STORES
 import { pluginStore } from './index'
 // TYPES
@@ -11,8 +11,15 @@ import type {
 
 import { SignalType } from './signallist.store.d'
 
+type PdfRowStructure = {
+    matchedFilteredValuesForPdf: string[][],
+    publisher: MessagePublisher
+}
+
 //====== STORES ======//
 const { xmlDocument } = pluginStore
+const pdfRowValues = writable<PdfRowStructure[]>([])
+
 
 //==== PUBLIC ACTIONS
 function getSignallist() {
@@ -292,8 +299,30 @@ function matchesExtRef(extRef: Element, messagePublisher: MessagePublisher): boo
         extRef.getAttribute('daName') === messagePublisher.dataObjectInformation.DataAttributeName;
 }
 
+
+function setSubscriberIedNameInCorrespondingPublisherRow(subscriber: MessageSubscriber, pdfRows: PdfRowStructure[]): void {
+    for (const pdfRow of pdfRows) {
+        if(isSubscriberMatch(pdfRow, subscriber)){
+            pdfRow.matchedFilteredValuesForPdf[0].push(subscriber.IDEName)
+        }
+    }
+
+    pdfRowValues.update(() => [...pdfRows])
+}
+
+function isSubscriberMatch(pdfRow: PdfRowStructure, subscriber: MessageSubscriber) {
+    return (pdfRow.publisher.IEDName === subscriber.ExtRef.iedName &&
+        pdfRow.publisher.logicalNodeInofrmation.LogicalDeviceInstance === subscriber.ExtRef.ldInst &&
+        pdfRow.publisher.logicalNodeInofrmation.LogicalNodeClass === subscriber.ExtRef.lnClass &&
+        pdfRow.publisher.logicalNodeInofrmation.LogicalNodeInstance === subscriber.ExtRef.lnInst &&
+        pdfRow.publisher.logicalNodeInofrmation.LogicalNodePrefix === subscriber.ExtRef.prefix &&
+        pdfRow.publisher.dataObjectInformation.DataObjectName === subscriber.ExtRef.doName &&
+        pdfRow.publisher.dataObjectInformation.DataAttributeName === subscriber.ExtRef.daName);
+}
+
 function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: MessagePublisherFilter): MessagePublisherAndPdfContent {
-    const matchedFilteredValuesForPdf = [];
+    const matchedFilteredValuesForPdf : string [][] = [];
+    const test : PdfRowStructure [] = [];
     const allMessagePublishers: MessagePublisher[] = [];
 
     for (const publisher of messagePublishers) {
@@ -397,9 +426,10 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
         if (allFiltersMatch) {
             matchedFilteredValuesForPdf.push(valuesMatched);
             allMessagePublishers.push(publisher);
-        }
+            test.push({matchedFilteredValuesForPdf:[valuesMatched], publisher})
+        }  
     }
-
+    pdfRowValues.update(() => [...test])
     return {filteredPublisherValuesForPdf: matchedFilteredValuesForPdf, publishers: allMessagePublishers};
 }
 
@@ -420,6 +450,7 @@ function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filte
         }
         if(filter.serviceType !== undefined) {
             if (subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase()) || (filter.serviceType.trim() === '')) {
+                setSubscriberIedNameInCorrespondingPublisherRow(subscriber, get(pdfRowValues))
                 // valuesMatched.push(subscriber.ExtRef.serviceType);
             } else {
                 allFiltersMatch = false;
@@ -438,4 +469,6 @@ export const signallistStore = {
     getSignallist,
     getPublishingLogicalDevices,
     getSubscribingLogicalDevices,
+    // Store for table pdf
+    pdfRowValues
 };
