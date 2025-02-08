@@ -2,7 +2,7 @@
     import {signallistStore} from '@/stores';
 
 	import SignalRow from './signal-row.svelte';
-	import type { SignalRow as SignalRowType, SignalListMach} from './types.signal-list';
+	import type { SignalRow as SignalRowType, PdfRows} from './types.signal-list';
 	import {Columns, SignalType} from '@/stores/';
 	import type {MessagePublisherFilter, MessageSubscriberFilter}  from '@/stores';
 
@@ -63,7 +63,7 @@
     }
 
 
-	function searchForMatchOnSignalList(): SignalListMach{
+	function searchForMatchOnSignalList(): PdfRows{
 		const publisherFilter: MessagePublisherFilter = {}
 		const subscriberFilter: MessageSubscriberFilter = {}
 

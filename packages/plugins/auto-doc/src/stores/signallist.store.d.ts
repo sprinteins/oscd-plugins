@@ -103,10 +103,6 @@ export type MessageSubscriberFilter = {
     serviceType?: string;
 }
 
-export type MessagePublisherAndPdfContent = {
-    publishers: MessagePublisher[];
-    filteredPublisherValuesForPdf: string[][];
-}
 
 export type MessageSubscriberAndPdfContent = {
     subscribers: MessageSubscriber[];

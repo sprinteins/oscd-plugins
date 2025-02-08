@@ -18,13 +18,13 @@ export type SignalRow = {
 
 }
 
-export type SignalListMach = {
+export type PdfRows = {
 	matchedRowsForTablePdf: PdfRowStructure[]
 }
 
 export type SignalListOnSCD = {
 	selected: SignalRow[]
-	matches: SignalListMach
+	matches: PdfRows
 }
 
 

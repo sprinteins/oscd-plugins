@@ -6,7 +6,7 @@ import { pluginStore } from './index'
 import type { 
     MessagePublisher, MessageSubscriber, LogicalNodeInformation,
     DataObjectInformation, InvalditiesReport, MessagePublisherFilter, 
-    MessageSubscriberFilter, MessagePublisherAndPdfContent, MessageSubscriberAndPdfContent, PdfRowStructure 
+    MessageSubscriberFilter, MessageSubscriberAndPdfContent, PdfRowStructure 
 } from './signallist.store.d'
 
 import { SignalType } from './signallist.store.d'
@@ -34,7 +34,7 @@ function getSignallist() {
     };
 }
 
-function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[], filteredPublisherValuesForPdf: string[][] } {
+function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[] } {
     const messagePublishers: MessagePublisher[] = [];
     const invaliditiesReports: InvalditiesReport[] = [];
 
@@ -53,9 +53,9 @@ function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { mes
         processIEDForPublishers(ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
     }
 
-    const {publishers:filteredMessagePublishers, filteredPublisherValuesForPdf} = filterMessagePublishers(messagePublishers, filter);
+    const filteredMessagePublishers = filterMessagePublishers(messagePublishers, filter);
 
-    return { messagePublishers: filteredMessagePublishers, invaliditiesReports, filteredPublisherValuesForPdf};
+    return { messagePublishers: filteredMessagePublishers, invaliditiesReports};
 }
 
 function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[], filter: MessageSubscriberFilter = {}): { messageSubscribers: MessageSubscriber[], invaliditiesReports: InvalditiesReport[], matchedRows: PdfRowStructure[] } {
@@ -297,9 +297,8 @@ function matchesExtRef(extRef: Element, messagePublisher: MessagePublisher): boo
 
 
 
-function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: MessagePublisherFilter): MessagePublisherAndPdfContent {
-    const matchedFilteredValuesForPdf : string [][] = [];
-    const test : PdfRowStructure [] = [];
+function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: MessagePublisherFilter):  MessagePublisher[] {
+    const matchedValueAndCorrespondingPublisher : PdfRowStructure [] = [];
     const allMessagePublishers: MessagePublisher[] = [];
 
     for (const publisher of messagePublishers) {
@@ -401,18 +400,16 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
             }
         }
         if (allFiltersMatch) {
-            matchedFilteredValuesForPdf.push(valuesMatched);
             allMessagePublishers.push(publisher);
-            test.push({matchedFilteredValuesForPdf:[valuesMatched], publisher})
+            matchedValueAndCorrespondingPublisher.push({matchedFilteredValuesForPdf:[valuesMatched], publisher})
         }  
     }
-    pdfRowValues.update(() => [...test])
-    return {filteredPublisherValuesForPdf: matchedFilteredValuesForPdf, publishers: allMessagePublishers};
+    pdfRowValues.update(() => [...matchedValueAndCorrespondingPublisher])
+    return  allMessagePublishers
 }
 
 function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filter: MessageSubscriberFilter): MessageSubscriberAndPdfContent {
 
-    const matchedFilteredValuesForPdf: string [][] = [];
     const allMessageSubscribers: MessageSubscriber[] = [];
 
     for (const subscriber of messageSubscribers) {
@@ -433,7 +430,6 @@ function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filte
             }
         }
         if(allFiltersMatch) {
-            matchedFilteredValuesForPdf.push(valuesMatched);
             allMessageSubscribers.push(subscriber);
         } 
     }
@@ -447,7 +443,6 @@ function setSubscriberIedNameInCorrespondingPublisherRow(subscriber: MessageSubs
             pdfRow.matchedFilteredValuesForPdf[0].push(subscriber.IDEName)
         }
     }
-
     pdfRowValues.update(() => [...pdfRows])
 }
 
