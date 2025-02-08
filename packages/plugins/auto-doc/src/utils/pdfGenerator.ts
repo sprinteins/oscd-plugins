@@ -53,15 +53,18 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
         const selectedRows = parsedBlockContent.selected
         const tableRows = parsedBlockContent.matches.publishers
-        const columnHere = generateTableHeader(selectedRows)
+        const tableHeader = generateTableHeader(selectedRows)
+
+        console.log("🚀 ~ processSignalListForPdfGeneration ~ tableHeader:", tableHeader)
         
     
         
-        const body = generateTableBody(tableRows, columnHere);
+        const body = generateTableBody(tableRows, tableHeader);
+        console.log("🚀 ~ processSignalListForPdfGeneration ~ body:", body)
        
 
         autoTable(doc, {
-            columns: columnHere,
+            columns: tableHeader,
             body: body,
             startY: y+10,
             tableWidth: 'wrap',
@@ -85,9 +88,9 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     
 }
 
-function generateTableBody(tableRows: string[][], columnHere: TableHeader []) {
+function generateTableBody(tableRows: string[][], tableHeader: TableHeader []) {
    const generatedRows =  tableRows.map((row) => {
-        return columnHere.reduce((acc: Record<string, string>, col, index) => {
+        return tableHeader.reduce((acc: Record<string, string>, col, index) => {
             acc[col.dataKey as string] = row[index];
             return acc;
         }, {} as Record<string, string>);
