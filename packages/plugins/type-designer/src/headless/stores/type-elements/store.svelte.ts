@@ -145,7 +145,7 @@ class UseTypeElementsStore {
 		elementId: string
 	): AvailableRefFamily | 'genericFunction' {
 		return {
-			[REF_FAMILY_MAP.bay]: () => REF_FAMILY_MAP.bay,
+			[TYPE_FAMILY_MAP.bay]: () => REF_FAMILY_MAP.bay,
 			[TYPE_FAMILY_MAP.generalEquipmentType]: () =>
 				REF_FAMILY_MAP.generalEquipment,
 			[TYPE_FAMILY_MAP.conductingEquipmentType]: () =>
