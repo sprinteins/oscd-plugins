@@ -40,7 +40,6 @@
 			revision: 'IEC61850-90-30'
 		}
 	}}
-	use:initEquipmentTypeTemplates
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
@@ -64,8 +63,6 @@ import {
 	initPlugin,
 	initSsdTemplate
 } from '@oscd-plugins/core-ui-svelte'
-// ACTIONS
-import { initEquipmentTypeTemplates } from '@/headless/actions'
 // STORES
 import { pluginLocalStore } from '@/headless/stores'
 // COMPONENTS
