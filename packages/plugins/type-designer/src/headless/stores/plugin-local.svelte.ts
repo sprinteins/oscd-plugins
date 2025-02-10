@@ -37,9 +37,8 @@ class UsePluginLocalStore {
 	)
 
 	rootElement = $derived(
-		this.currentEdition &&
-			pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
-				.rootElement
+		pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
+			.rootElement
 	)
 
 	rootSubElements = $derived({
@@ -58,10 +57,8 @@ class UsePluginLocalStore {
 	})
 
 	substationsSubElements = $derived([
-		...((this.currentEdition &&
-			pluginGlobalStore.editionStores[this.currentEdition]
-				?.substationsSubElements) ||
-			[])
+		...(pluginGlobalStore.editionStores[this.currentEdition]
+			?.substationsSubElements || [])
 	])
 
 	templateBaysSubElements:
@@ -104,10 +101,14 @@ class UsePluginLocalStore {
 			}
 	})
 
+	currentUnstableRevisionRootPrivateWrapper = $derived(
+		pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
+			.rootPrivateWrapper
+	)
+
 	dataTypeTemplatesSubElements = $derived({
-		...(this.currentEdition &&
-			pluginGlobalStore.editionStores[this.currentEdition]
-				.dataTypeTemplatesSubElements)
+		...pluginGlobalStore.editionStores[this.currentEdition]
+			.dataTypeTemplatesSubElements
 	})
 }
 
