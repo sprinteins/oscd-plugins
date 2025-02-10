@@ -254,7 +254,7 @@ export function duplicateType({
 		edit: {
 			parent: currentParent,
 			node: clonedElement,
-			reference: clonedElement.nextElementSibling
+			reference: elementToClone.nextElementSibling
 		}
 	})
 }
