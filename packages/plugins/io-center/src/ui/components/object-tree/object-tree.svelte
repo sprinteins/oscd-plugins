@@ -1,12 +1,6 @@
 <script lang="ts">
-	import type { ObjectTree } from "./types.object-tree";
+	import store from "../../../store.svelte";
 	import TreeNode from "./tree-node.svelte";
-
-	type Props = {
-		objectTree: ObjectTree;
-	};
-
-	let { objectTree }: Props = $props();
 
 	let selectedNodeName = $state("");
 
@@ -16,7 +10,7 @@
 </script>
 
 <div class="p-2">
-	{#each objectTree as treeNode}
+	{#each store.objectTree as treeNode}
 		<TreeNode
 			{treeNode}
 			isOpen={treeNode.isOpen}

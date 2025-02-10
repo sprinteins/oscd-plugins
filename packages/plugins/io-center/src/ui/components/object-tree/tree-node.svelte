@@ -51,7 +51,7 @@
 </script>
 
 <div class="tree-node">
-    {#if treeNode.children}
+    {#if treeNode.children.length !== 0}
         <details name={treeNode.name} {open}>
             <summary
                 onclick={(e) => {

@@ -3,7 +3,7 @@ export type ObjectTree = TreeNode[]
 export type TreeNode = {
 	name: string
 	isOpen?: boolean
-	children?: TreeNode[]
+	children: TreeNode[]
 }
 
 export type LogicalDevice = {
