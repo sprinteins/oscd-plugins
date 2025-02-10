@@ -1,5 +1,8 @@
 // CORE
-import { findAllStandardElementsByTagNameNS } from '@oscd-plugins/core-api/plugin/v1'
+import {
+	findAllStandardElementsByTagNameNS,
+	findOneStandardElementBySelector
+} from '@oscd-plugins/core-api/plugin/v1'
 import { IEC61850_DEFINITIONS } from '@oscd-plugins/core-standard'
 import * as ed2 from '@oscd-plugins/core-standard/ed2'
 // STORES
@@ -46,6 +49,23 @@ class UseIEC61850_90_30Store {
 				}
 		}
 	)
+
+	rootPrivateWrapper:
+		| IEC61850_90_30.PrivateWrapperElement
+		| undefined
+		| null = $derived.by(() => {
+		// needed to trigger reactivity
+		if (this.rootElement && `${pluginGlobalStore.editCount}`) {
+			return findOneStandardElementBySelector<
+				'private',
+				typeof this.currentEditionName,
+				typeof this.currentRevisionName
+			>({
+				selector: `Private[type=${this.currentNamespacePrefix}]`,
+				root: this.rootElement
+			})
+		}
+	})
 }
 
 export const IEC61850_90_30Store = new UseIEC61850_90_30Store()
