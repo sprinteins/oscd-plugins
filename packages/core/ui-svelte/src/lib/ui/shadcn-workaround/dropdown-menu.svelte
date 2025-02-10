@@ -56,8 +56,8 @@ function handleActionClick(event: Event, action: { callback: () => void }) {
 	)}>
 		{#if actions?.length}
 			{#each actions as action}
-				<li class={["relative flex cursor-default select-none items-start gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground", action.disabled && 'disabled' ]}>
-					<button class="w-full cursor-pointer" onclick={(event) => handleActionClick(event, action)}>{action.label}</button>
+				<li class={["relative flex cursor-default select-none items-start gap-2 rounded-sm  text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground", action.disabled && 'disabled' ]}>
+					<button class="w-full cursor-pointer px-2 py-1.5" onclick={(event) => handleActionClick(event, action)}>{action.label}</button>
 				</li>
 			{/each}
 		{/if}
