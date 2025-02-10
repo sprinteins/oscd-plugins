@@ -187,9 +187,6 @@ export function initPlugin(
 					namespaceEntries.namespaceUri
 			}
 		}
-		console.log(
-			currentRootElement.lookupPrefix('http://www.w3.org/2000/xmlns/')
-		)
 		pluginGlobalStore.updateElementType({
 			element: currentRootElement,
 			attributesNS: payload

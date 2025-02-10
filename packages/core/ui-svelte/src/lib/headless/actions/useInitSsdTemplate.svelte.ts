@@ -59,7 +59,7 @@ export function initSsdTemplate(
 
 		return {
 			parent: rootElement,
-			reference: rootSubElements?.substation[0] || null
+			reference: rootSubElements?.substation?.[0] || null
 		}
 	}
 
