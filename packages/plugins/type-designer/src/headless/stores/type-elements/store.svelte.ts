@@ -7,9 +7,11 @@ import { getAndMapTypeElements } from './consolidate-types.helper'
 import {
 	createNewType,
 	updateType,
+	duplicateType,
 	deleteType
 } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
+import { getTypeNextOccurrence } from './type-naming.helper'
 // TYPES
 import type {
 	TypeElementsPerFamily,
@@ -128,6 +130,17 @@ class UseTypeElementsStore {
 			REF_FAMILY_MAP.lNode
 	})
 
+	parentElementWrapperPerColumnKey: Record<
+		Exclude<keyof Columns, 'lNodeType'>,
+		Element | undefined | null
+	> = $derived({
+		bay: pluginLocalStore.substationsSubElements?.[0].voltageLevel?.[0],
+		equipmentTypeTemplates:
+			pluginLocalStore.rootSubElements?.equipmentTypeTemplates,
+		functionTemplate:
+			pluginLocalStore.currentUnstableRevisionRootPrivateWrapper
+	})
+
 	//====== PRIVATE ACTIONS ======//
 
 	private getFunctionTemplateRefFamily(elementId: string) {
@@ -157,10 +170,13 @@ class UseTypeElementsStore {
 	//====== PROXY TO HELPERS ======//
 	// type
 	createNewType = createNewType
+	duplicateType = duplicateType
 	updateType = updateType
 	deleteType = deleteType
 	// ref
 	createNewRef = createNewRef
+	// naming
+	getTypeNextOccurrence = getTypeNextOccurrence
 }
 
 export const typeElementsStore = new UseTypeElementsStore()

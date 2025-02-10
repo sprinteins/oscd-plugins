@@ -15,6 +15,13 @@ export const REF_FAMILY_MAP = {
 	lNode: 'lNode'
 } as const
 
+export const COLUMNS = {
+	bay: 'bay',
+	equipmentTypeTemplates: 'equipmentTypeTemplates',
+	functionTemplate: 'functionTemplate',
+	lNodeType: 'lNodeType'
+} as const
+
 export const REF_FAMILY_TO_TYPE_FAMILY_MAP = {
 	[REF_FAMILY_MAP.bay]: REF_FAMILY_MAP.bay,
 	[REF_FAMILY_MAP.generalEquipment]: TYPE_FAMILY_MAP.generalEquipmentType,
@@ -30,6 +37,14 @@ export const TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES = {
 	// standard equivalent for custom elements
 	generalEquipmentType: 'generalEquipment',
 	conductingEquipmentType: 'conductingEquipment'
+} as const
+
+export const TYPE_FAMILY_TO_COLUMN_KEY = {
+	[TYPE_FAMILY_MAP.bay]: COLUMNS.bay,
+	[TYPE_FAMILY_MAP.generalEquipmentType]: COLUMNS.equipmentTypeTemplates,
+	[TYPE_FAMILY_MAP.conductingEquipmentType]: COLUMNS.equipmentTypeTemplates,
+	[TYPE_FAMILY_MAP.functionTemplate]: COLUMNS.functionTemplate,
+	[TYPE_FAMILY_MAP.lNodeType]: COLUMNS.lNodeType
 } as const
 
 export const CUSTOM_TAG_NAME_MAP = {

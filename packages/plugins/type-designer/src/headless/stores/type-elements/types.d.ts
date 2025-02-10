@@ -1,5 +1,9 @@
 import type { pluginLocalStore } from '@/headless/stores'
-import type { TYPE_FAMILY_MAP, REF_FAMILY_MAP } from '@/headless/constants'
+import type {
+	TYPE_FAMILY_MAP,
+	REF_FAMILY_MAP,
+	COLUMNS
+} from '@/headless/constants'
 import type { Xml, Utils } from '@oscd-plugins/core-api/plugin/v1'
 
 export type AvailableTypeFamily = keyof typeof TYPE_FAMILY_MAP
@@ -20,19 +24,19 @@ export type TypeElement<Family extends AvailableTypeFamily> = {
 }
 
 export type MapTypeFamilyToDefinitionElement = {
-	bay: Xml.SclElement<
+	[TYPE_FAMILY_MAP.bay]: Xml.SclElement<
 		'bay',
 		typeof pluginLocalStore.currentEdition,
 		typeof pluginLocalStore.currentUnstableRevision
 	>
-	generalEquipmentType: Xml.SclCustomElement<'GeneralEquipmentType'>
-	conductingEquipmentType: Xml.SclCustomElement<'ConductingEquipmentType'>
-	functionTemplate: Xml.SclElement<
+	[TYPE_FAMILY_MAP.generalEquipmentType]: Xml.SclCustomElement<'GeneralEquipmentType'>
+	[TYPE_FAMILY_MAP.conductingEquipmentType]: Xml.SclCustomElement<'ConductingEquipmentType'>
+	[TYPE_FAMILY_MAP.functionTemplate]: Xml.SclElement<
 		'functionTemplate',
 		typeof pluginLocalStore.currentEdition,
 		typeof pluginLocalStore.currentUnstableRevision
 	>
-	lNodeType: Xml.SclElement<
+	[TYPE_FAMILY_MAP.lNodeType]: Xml.SclElement<
 		'lNodeType',
 		typeof pluginLocalStore.currentEdition,
 		typeof pluginLocalStore.currentUnstableRevision
@@ -40,11 +44,11 @@ export type MapTypeFamilyToDefinitionElement = {
 }
 
 export type TypeElementsPerFamily = {
-	bay: TypeElements<'bay'>
-	generalEquipmentType: TypeElements<'generalEquipmentType'>
-	conductingEquipmentType: TypeElements<'conductingEquipmentType'>
-	functionTemplate: TypeElements<'functionTemplate'>
-	lNodeType: TypeElements<'lNodeType'>
+	[TYPE_FAMILY_MAP.bay]: TypeElements<'bay'>
+	[TYPE_FAMILY_MAP.generalEquipmentType]: TypeElements<'generalEquipmentType'>
+	[TYPE_FAMILY_MAP.conductingEquipmentType]: TypeElements<'conductingEquipmentType'>
+	[TYPE_FAMILY_MAP.functionTemplate]: TypeElements<'functionTemplate'>
+	[TYPE_FAMILY_MAP.lNodeType]: TypeElements<'lNodeType'>
 }
 
 export type NewTypeAttributes = {
@@ -58,10 +62,10 @@ export type Column<Family extends AvailableTypeFamily> = {
 }
 
 export type Columns = {
-	bay: Column<'bay'>
-	equipmentTypeTemplates:
+	[COLUMNS.bay]: Column<'bay'>
+	[COLUMNS.equipmentTypeTemplates]:
 		| Column<'generalEquipmentType'>
 		| Column<'conductingEquipmentType'>
-	functionTemplate: Column<'functionTemplate'>
-	lNodeType: Column<'lNodeType'>
+	[COLUMNS.functionTemplate]: Column<'functionTemplate'>
+	[COLUMNS.lNodeType]: Column<'lNodeType'>
 }
