@@ -57,6 +57,15 @@ export function buildObjectTree() {
 
 		for (const lNode of lNodes) {
 			const node: TreeNode = { name: lNode.getAttribute("lnClass") || "", isOpen: true, children: [] }
+
+			const dObjects = Array.from(lNode.querySelectorAll("DOI"))
+
+			for (const dObject of dObjects) {
+				const object: TreeNode = { name: dObject.getAttribute("name") || "", children: [] }
+
+				node.children.push(object)
+			}
+
 			device.children.push(node)
 		}
 
