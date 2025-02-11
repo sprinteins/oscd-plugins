@@ -42,37 +42,6 @@ export class Command {
 		})
 
 	}
-
-	public buildObjectTree() {
-		const doc = this.store.doc
-		const iedSelected = this.store.iedSelected
-
-		if (!doc || !iedSelected) return
-
-		let tree: TreeNode[] = []
-
-		const selectedIED = doc.querySelector(`IED[name="${iedSelected.name}"]`)
-
-		if (!selectedIED) return
-
-		const lDevices = Array.from(selectedIED.querySelectorAll("LDevice"))
-
-		for (const lDevice of lDevices) {
-			const device: TreeNode = { name: lDevice.getAttribute("inst") || "", children: [] }
-
-			const lNodes = Array.from(lDevice.querySelectorAll("LN"))
-
-			for (const lNode of lNodes) {
-				const node: TreeNode = { name: lNode.getAttribute("lnClass") || "", children: [] }
-				device.children.push(node)
-			}
-
-			tree.push(device)
-		}
-
-		this.store.objectTree = tree
-	}
-
 }
 
 export function newCommand(store: StoreType, getHost: HostGetter) {

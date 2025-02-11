@@ -18,7 +18,7 @@
 	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
 	import Layout from "./ui/layout.svelte";
 	import store from "./store.svelte";
-	import { initQuery } from "./query.svelte";
+	import { buildObjectTree, initQuery } from "./query.svelte";
 	import { newCommand, type Command } from "./command.svelte";
 	import IEDSelect from "./ied/ied-select.svelte";
 	import type { Nullable } from "./types";
@@ -65,10 +65,6 @@
 
 	function selectIED(ied: IED) {
 		cmd.selectIED(ied);
-	}
-
-	function buildObjectTree() {
-		cmd.buildObjectTree();
 	}
 
 	function onSelectIED(ied: IED) {
