@@ -17,14 +17,34 @@
 		getDocName: () => docName,
 		getEditCount: () => editCount,
 		getIsCustomInstance: () => isCustomInstance,
-		host: $host(),
-		theme: 'legacy-oscd-instance'
+		getHost: () => $host() || window,
+		getRootElement: () => pluginLocalStore.rootElement,
+		customNamespaces: [
+			{ 
+				namespacePrefix: pluginLocalStore.pluginNamespacePrefix,
+				namespaceUri: pluginLocalStore.pluginNamespacePrefix 
+			}
+		],
+		theme: 'legacy-oscd-instance',
+		definition: {
+			edition: 'ed2Rev1',
+			revision: 'IEC61850-90-30'
+		}
 	}}
-	use:initSsdTemplate
+	use:initSsdTemplate={{
+		getRootElement: () => pluginLocalStore.rootElement,
+		getRootSubElements: () => pluginLocalStore.rootSubElements,
+		getSubstationsSubElements: () => pluginLocalStore.substationsSubElements,
+		definition: {
+			edition: 'ed2Rev1',
+			revision: 'IEC61850-90-30'
+		}
+	}}
+	use:initEquipmentTypeTemplates
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	<Sidebar.Provider 
+	<Sidebar.Provider
 		open={false}
 		class="overflow-hidden h-[--plugin-container-height] min-h-full"
 		style="--sidebar-width: 20rem; --sidebar-width-mobile: 20rem;"
@@ -44,11 +64,15 @@ import {
 	initPlugin,
 	initSsdTemplate
 } from '@oscd-plugins/core-ui-svelte'
+// ACTIONS
+import { initEquipmentTypeTemplates } from '@/headless/actions'
+// STORES
+import { pluginLocalStore } from '@/headless/stores'
 // COMPONENTS
 import ColumnsContainer from '@/ui/views/columns-container.svelte'
 import SidebarWrapper from '@/ui/components/sidebar-wrapper.svelte'
 // TYPES
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 
 // props
 const {
@@ -56,5 +80,5 @@ const {
 	docName,
 	editCount,
 	isCustomInstance
-}: Utils.PluginCustomComponentsProps = $props()
+}: Plugin.CustomComponentsProps = $props()
 </script>
