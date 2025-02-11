@@ -21,8 +21,11 @@
 	}
 </script>
 
-<p>IEDs:</p>
-<select onchange={handleChange}>
+<select
+	onchange={handleChange}
+	class="w-5/6 p-2.5 mt-2 mx-auto bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block"
+>
+	<option disabled selected>Select an IED</option>
 	{#each store.iedList as ied}
 		<option value={ied.name}>{ied.name}</option>
 	{/each}
