@@ -1,28 +1,21 @@
-import { v4 as uuidv4 } from 'uuid'
-// CORE
-import {
-	createStandardElement,
-	createCustomElement,
-	createAndDispatchEditEvent
-} from '@oscd-plugins/core-api/plugin/v1'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // STORES
-import { sidebarStore, pluginLocalStore } from '@/headless/stores'
+import { pluginLocalStore } from '@/headless/stores'
 // CONSTANTS
-import {
-	REF_FAMILY_MAP,
-	TYPE_FAMILY_MAP,
-	CUSTOM_TAG_NAME_MAP
-} from '@/headless/constants'
+import { REF_FAMILY_MAP, TYPE_FAMILY_MAP } from '@/headless/constants'
 // HELPERS
 import { getAndMapTypeElements } from './consolidate-types.helper'
+import {
+	createNewType,
+	updateType,
+	deleteType
+} from './type-crud-operation.helper'
+import { createNewRef } from './ref-crud-operation.helper'
 // TYPES
 import type {
 	TypeElementsPerFamily,
 	Columns,
 	AvailableTypeFamily,
-	AvailableRefFamily,
-	NewTypeAttributes
+	AvailableRefFamily
 } from '@/headless/stores'
 
 class UseTypeElementsStore {
@@ -83,7 +76,7 @@ class UseTypeElementsStore {
 		}
 	})
 
-	getUniqueTypeRefsFunctionIds(family: AvailableTypeFamily): string[] {
+	getUniqueTypeRefsFunctionIds(family: AvailableTypeFamily) {
 		return Array.from(
 			// remove duplicates with a Set
 			new Set(
@@ -101,7 +94,7 @@ class UseTypeElementsStore {
 		const conductingEquipmentTypeRefsFunctionIds =
 			this.getUniqueTypeRefsFunctionIds('conductingEquipmentType')
 
-		// is EqFunction if it is not part of Bay per Definition (checking the ConductingEquipment case)
+		// is EqFunction if it is not part of ConductingEquipment or Bay per Definition
 		const eqFunctionsIds = [
 			...generalEquipmentTypeRefsFunctionIds,
 			...conductingEquipmentTypeRefsFunctionIds
@@ -115,9 +108,7 @@ class UseTypeElementsStore {
 		}
 	})
 
-	mapRefTagNameToFamily = $derived({
-		[pluginLocalStore.currentDefinition[REF_FAMILY_MAP.bay].tag]:
-			REF_FAMILY_MAP.bay,
+	mapRefTagNameToRefFamily = $derived({
 		[pluginLocalStore.currentDefinition[REF_FAMILY_MAP.generalEquipment]
 			.tag]: REF_FAMILY_MAP.generalEquipment,
 		[pluginLocalStore.currentDefinition[REF_FAMILY_MAP.conductingEquipment]
@@ -141,11 +132,10 @@ class UseTypeElementsStore {
 	}
 
 	getRefFamilyFromTypeFamily(
-		typeFamily: AvailableTypeFamily,
+		typeFamily: Exclude<AvailableTypeFamily, 'bay'>,
 		elementId: string
 	): AvailableRefFamily | 'genericFunction' {
 		return {
-			[TYPE_FAMILY_MAP.bay]: () => REF_FAMILY_MAP.bay,
 			[TYPE_FAMILY_MAP.generalEquipmentType]: () =>
 				REF_FAMILY_MAP.generalEquipment,
 			[TYPE_FAMILY_MAP.conductingEquipmentType]: () =>
@@ -156,235 +146,13 @@ class UseTypeElementsStore {
 		}[typeFamily]()
 	}
 
-	//====== PUBLIC ACTIONS ======//
-
-	//==== TYPE CREATION WRAPPER
-
-	createNewElementType({
-		family,
-		attributes
-	}: {
-		family: Exclude<AvailableTypeFamily, 'lNodeType'>
-		attributes: NewTypeAttributes
-	}) {
-		let eventPayload: { node: Element; parent: Element | null | undefined }
-
-		switch (family) {
-			case TYPE_FAMILY_MAP.bay:
-				eventPayload = this.createBayType({
-					family,
-					attributes
-				})
-				break
-			case TYPE_FAMILY_MAP.generalEquipmentType:
-				eventPayload = this.createEquipmentType({
-					family,
-					attributes
-				})
-				break
-			case TYPE_FAMILY_MAP.conductingEquipmentType:
-				eventPayload = this.createEquipmentType({
-					family,
-					attributes
-				})
-				break
-			case TYPE_FAMILY_MAP.functionTemplate:
-				eventPayload = this.createFunctionTemplate({
-					family,
-					attributes
-				})
-				break
-		}
-
-		if (!pluginGlobalStore.host) throw new Error('No host')
-		if (!eventPayload.parent) throw new Error('No parent element')
-
-		createAndDispatchEditEvent({
-			host: pluginGlobalStore.host,
-			edit: {
-				parent: eventPayload.parent,
-				node: eventPayload.node,
-				reference: null
-			}
-		})
-	}
-
-	//==== TYPE CREATION SUB FUNCTIONS
-
-	createBayType({
-		family,
-		attributes
-	}: {
-		family: typeof TYPE_FAMILY_MAP.bay
-		attributes: NewTypeAttributes
-	}) {
-		if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
-
-		return {
-			node: createStandardElement({
-				xmlDocument: pluginGlobalStore.xmlDocument,
-				element: { family },
-				attributes: {
-					...attributes,
-					uuid: uuidv4()
-				},
-				currentEdition: pluginLocalStore.currentEdition,
-				currentUnstableRevision:
-					pluginLocalStore.currentUnstableRevision
-			}),
-			parent: pluginLocalStore.substationsSubElements?.[0]
-				.voltageLevel?.[0]
-		}
-	}
-
-	createEquipmentType({
-		family,
-		attributes
-	}: {
-		family:
-			| typeof TYPE_FAMILY_MAP.generalEquipmentType
-			| typeof TYPE_FAMILY_MAP.conductingEquipmentType
-		attributes: NewTypeAttributes
-	}) {
-		if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
-
-		return {
-			node: createCustomElement({
-				xmlDocument: pluginGlobalStore.xmlDocument,
-				tagName: CUSTOM_TAG_NAME_MAP[family],
-				namespace: {
-					uri: pluginLocalStore.pluginNamespaceUri,
-					prefix: pluginLocalStore.pluginNamespacePrefix
-				},
-				attributes: {
-					...attributes,
-					uuid: uuidv4()
-				}
-			}),
-			parent: pluginLocalStore.rootSubElements?.equipmentTypeTemplates
-		}
-	}
-
-	createFunctionTemplate({
-		family,
-		attributes
-	}: {
-		family: typeof TYPE_FAMILY_MAP.functionTemplate
-		attributes: NewTypeAttributes
-	}) {
-		if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
-
-		return {
-			node: createStandardElement({
-				xmlDocument: pluginGlobalStore.xmlDocument,
-				element: {
-					family,
-					namespace: {
-						uri: pluginGlobalStore.revisionsStores[
-							pluginLocalStore.currentUnstableRevision
-						].currentNamespaceUri,
-						prefix: pluginGlobalStore.revisionsStores[
-							pluginLocalStore.currentUnstableRevision
-						].currentNamespacePrefix
-					}
-				},
-				attributes: {
-					...attributes,
-					uuid: uuidv4()
-				},
-				currentEdition: pluginLocalStore.currentEdition,
-				currentUnstableRevision:
-					pluginLocalStore.currentUnstableRevision,
-				wrapWithPrivateElement: true
-			}),
-			parent: pluginLocalStore.rootElement
-		}
-	}
-
-	//==== REF CREATION
-
-	createNewElementRef({
-		family,
-		sourceTypeIdOrUuid,
-		parentTypeWrapper
-	}: {
-		family: AvailableRefFamily
-		sourceTypeIdOrUuid: string
-		parentTypeWrapper: Element
-	}) {
-		if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
-		if (!pluginGlobalStore.host) throw new Error('No host')
-
-		let attributesPayload: {
-			attributes?: { lnType: string }
-			attributesNS?: {
-				namespace: { uri: string; prefix: string }
-				attributes: { type: string }
-			}[]
-		}
-
-		if (family === REF_FAMILY_MAP.lNode) {
-			attributesPayload = {
-				attributes: {
-					lnType: sourceTypeIdOrUuid
-				}
-			}
-		} else {
-			attributesPayload = {
-				attributesNS: [
-					{
-						namespace: {
-							uri: pluginGlobalStore.revisionsStores[
-								pluginLocalStore.currentUnstableRevision
-							].currentNamespaceUri,
-							prefix: pluginGlobalStore.revisionsStores[
-								pluginLocalStore.currentUnstableRevision
-							].currentNamespacePrefix
-						},
-						attributes: {
-							type: sourceTypeIdOrUuid
-						}
-					}
-				]
-			}
-		}
-		const newRefElement = createStandardElement({
-			xmlDocument: pluginGlobalStore.xmlDocument,
-			element: {
-				family
-			},
-			...attributesPayload,
-			currentEdition: pluginLocalStore.currentEdition,
-			currentUnstableRevision: pluginLocalStore.currentUnstableRevision
-		})
-
-		createAndDispatchEditEvent({
-			host: pluginGlobalStore.host,
-			edit: {
-				parent: parentTypeWrapper,
-				node: newRefElement,
-				reference: null
-			}
-		})
-	}
-
-	updateElementType(attributeKey: string) {
-		if (!pluginGlobalStore.host) throw new Error('No host')
-		if (!sidebarStore.currentElementType)
-			throw new Error('No current element type')
-
-		createAndDispatchEditEvent({
-			host: pluginGlobalStore.host,
-			edit: {
-				element: sidebarStore.currentElementType.element,
-				attributes: {
-					[attributeKey]:
-						sidebarStore.currentElementType.attributes[attributeKey]
-				},
-				attributesNS: {}
-			}
-		})
-	}
+	//====== PROXY TO HELPERS ======//
+	// type
+	createNewType = createNewType
+	updateType = updateType
+	deleteType = deleteType
+	// ref
+	createNewRef = createNewRef
 }
 
 export const typeElementsStore = new UseTypeElementsStore()

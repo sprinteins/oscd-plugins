@@ -69,7 +69,7 @@ function isAttributeReadonly(attributeKey: string) {
 								id={attributeKey}
 								placeholder={isAttributeReadonly(attributeKey) ? '' : attributeKey}
 								bind:value={sidebarStore.currentElementType.attributes[attributeKey]}
-								oninput={() => typeElementsStore.updateElementType(attributeKey)}
+								oninput={() => typeElementsStore.updateType(attributeKey)}
 							/>
 						{/if}
 					</div>

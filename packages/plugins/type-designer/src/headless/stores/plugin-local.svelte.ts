@@ -19,12 +19,26 @@ class UsePluginLocalStore {
 		typeof this.currentEdition
 	> = 'IEC61850-90-30'
 
-	pluginNamespacePrefix = 'type-designer'
-	pluginNamespaceUri = 'https://transnetbw.de/type-designer'
+	pluginNamespacePrefix = 'type-designer' as const
+	pluginNamespaceUri = 'https://transnetbw.de/type-designer' as const
 
 	//====== STATES ======//
 
 	host = $state<HTMLElement>()
+
+	namespaces = $derived({
+		currentPlugin: {
+			uri: this.pluginNamespaceUri,
+			prefix: this.pluginNamespacePrefix
+		},
+		currentUnstableRevision: {
+			uri: pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
+				.currentNamespaceUri,
+			prefix: pluginGlobalStore.revisionsStores[
+				this.currentUnstableRevision
+			].currentNamespacePrefix
+		}
+	})
 
 	currentDefinition = $derived(
 		getCurrentDefinition({

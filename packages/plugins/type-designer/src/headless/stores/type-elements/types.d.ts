@@ -16,13 +16,7 @@ export type TypeElement<Family extends AvailableTypeFamily> = {
 	parameters: {
 		label: string
 	}
-	refs: Record<
-		IEC61850.AvailableElement<
-			typeof pluginLocalStore.currentEdition,
-			typeof pluginLocalStore.currentUnstableRevision
-		>,
-		string[]
-	>
+	refs: Record<AvailableTypeFamily, string[]>
 }
 
 export type MapTypeFamilyToDefinitionElement = {

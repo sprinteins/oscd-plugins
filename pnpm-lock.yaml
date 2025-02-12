@@ -117,13 +117,13 @@ importers:
         specifier: ^8.4.7
         version: 8.5.3(storybook@8.5.3)
       '@sveltejs/adapter-auto':
-        specifier: ^3.3.1
-        version: 3.3.1(@sveltejs/kit@2.17.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))
+        specifier: ^4.0.0
+        version: 4.0.0(@sveltejs/kit@2.17.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))
       '@sveltejs/kit':
-        specifier: ^2.15.2
+        specifier: ^2.17.1
         version: 2.17.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0))
       '@sveltejs/package':
-        specifier: ^2.3.7
+        specifier: ^2.3.10
         version: 2.3.10(svelte@5.19.8)(typescript@5.6.3)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
@@ -147,8 +147,8 @@ importers:
         specifier: 2.0.0-next.1
         version: 2.0.0-next.1(svelte@5.19.8)(sveltekit-superforms@2.23.1(@sveltejs/kit@2.17.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))(@types/json-schema@7.0.15)(svelte@5.19.8)(typescript@5.6.3))
       lucide-svelte:
-        specifier: ^0.471.0
-        version: 0.471.0(svelte@5.19.8)
+        specifier: ^0.474.0
+        version: 0.474.0(svelte@5.19.8)
       mode-watcher:
         specifier: ^0.5.0
         version: 0.5.1(svelte@5.19.8)
@@ -162,10 +162,10 @@ importers:
         specifier: ^8.4.7
         version: 8.5.3
       svelte:
-        specifier: ^5.17.0
+        specifier: ^5.19.8
         version: 5.19.8
       svelte-check:
-        specifier: ^4.1.1
+        specifier: ^4.1.4
         version: 4.1.4(picomatch@4.0.2)(svelte@5.19.8)(typescript@5.6.3)
       svelte-sonner:
         specifier: ^0.3.28
@@ -192,7 +192,7 @@ importers:
         specifier: 1.0.0-next.3
         version: 1.0.0-next.3(svelte@5.19.8)
       vite:
-        specifier: ^6.0.0
+        specifier: 6.1.0
         version: 6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)
       zod:
         specifier: ^3.24.1
@@ -524,10 +524,10 @@ importers:
         specifier: ^8.4.49
         version: 8.5.1
       svelte:
-        specifier: ^5.17.0
+        specifier: ^5.19.8
         version: 5.19.8
       svelte-check:
-        specifier: ^4.1.2
+        specifier: ^4.1.4
         version: 4.1.4(picomatch@4.0.2)(svelte@5.19.8)(typescript@5.6.3)
       tailwindcss:
         specifier: ^3.4.15
@@ -545,10 +545,10 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
       vite:
-        specifier: ^6.0.3
+        specifier: 6.1.0
         version: 6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)
       vite-plugin-dts:
-        specifier: ^4.4.0
+        specifier: ^4.5.0
         version: 4.5.0(@types/node@22.13.1)(rollup@4.34.4)(typescript@5.6.3)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0))
 
   packages/plugins/type-switcher:
@@ -2414,8 +2414,8 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^1.0.0
 
-  '@sveltejs/adapter-auto@3.3.1':
-    resolution: {integrity: sha512-5Sc7WAxYdL6q9j/+D0jJKjGREGlfIevDyHSQ2eNETHcB1TKlQWHcAo8AS8H1QdjNvSXpvOwNjykDUHPEAyGgdQ==}
+  '@sveltejs/adapter-auto@4.0.0':
+    resolution: {integrity: sha512-kmuYSQdD2AwThymQF0haQhM8rE5rhutQXG4LNbnbShwhMO4qQGnKaaTy+88DuNSuoQDi58+thpq8XpHc1+oEKQ==}
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
 
@@ -4830,11 +4830,6 @@ packages:
 
   lucide-svelte@0.469.0:
     resolution: {integrity: sha512-PMIJ8jrFqVUsXJz4d1yfAQplaGhNOahwwkzbunha8DhpiD73xqX24n8dE1dPpUk3vcrdWVsHc1y/liHHotOnGQ==}
-    peerDependencies:
-      svelte: ^3 || ^4 || ^5.0.0-next.42
-
-  lucide-svelte@0.471.0:
-    resolution: {integrity: sha512-z+C6G2K089iDGbl8HzTdD5G6i5BvuaBxdIPQDa650Kb8TXBJRODa7YfmaIHy78+Y+YaB75N0lzUIQEclzflJrQ==}
     peerDependencies:
       svelte: ^3 || ^4 || ^5.0.0-next.42
 
@@ -9754,7 +9749,7 @@ snapshots:
       '@sveltejs/kit': 1.30.4(svelte@3.59.2)(vite@4.5.9(@types/node@22.13.1)(sass@1.84.0))
       import-meta-resolve: 2.2.2
 
-  '@sveltejs/adapter-auto@3.3.1(@sveltejs/kit@2.17.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))':
+  '@sveltejs/adapter-auto@4.0.0(@sveltejs/kit@2.17.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))':
     dependencies:
       '@sveltejs/kit': 2.17.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)))(svelte@5.19.8)(vite@6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0))
       import-meta-resolve: 4.1.0
@@ -12568,10 +12563,6 @@ snapshots:
     dependencies:
       svelte: 5.19.8
 
-  lucide-svelte@0.471.0(svelte@5.19.8):
-    dependencies:
-      svelte: 5.19.8
-
   lucide-svelte@0.474.0(svelte@5.19.8):
     dependencies:
       svelte: 5.19.8
@@ -14251,16 +14242,15 @@ snapshots:
       - supports-color
       - terser
 
-  vite-node@3.0.5(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0):
+  vite-node@3.0.5(@types/node@22.13.1)(sass@1.84.0):
     dependencies:
       cac: 6.7.14
       debug: 4.4.0
       es-module-lexer: 1.6.0
       pathe: 2.0.2
-      vite: 6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)
+      vite: 5.4.14(@types/node@22.13.1)(sass@1.84.0)
     transitivePeerDependencies:
       - '@types/node'
-      - jiti
       - less
       - lightningcss
       - sass
@@ -14269,8 +14259,6 @@ snapshots:
       - sugarss
       - supports-color
       - terser
-      - tsx
-      - yaml
 
   vite-plugin-css-injected-by-js@3.5.2(vite@4.5.9(@types/node@22.13.1)(sass@1.84.0)):
     dependencies:
@@ -14497,7 +14485,7 @@ snapshots:
       tinypool: 1.0.2
       tinyrainbow: 2.0.0
       vite: 6.1.0(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)
-      vite-node: 3.0.5(@types/node@22.13.1)(jiti@1.21.7)(sass@1.84.0)(yaml@2.7.0)
+      vite-node: 3.0.5(@types/node@22.13.1)(sass@1.84.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.13.1

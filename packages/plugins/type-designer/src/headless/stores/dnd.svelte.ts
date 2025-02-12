@@ -89,7 +89,7 @@ class UseDnDStore {
 			else currentFamily = REF_FAMILY_MAP.function
 		}
 
-		typeElementsStore.createNewElementRef({
+		typeElementsStore.createNewRef({
 			family: currentFamily,
 			sourceTypeIdOrUuid: this.currentSourceTypeIdOrUuid,
 			parentTypeWrapper
