@@ -14,17 +14,31 @@ class UsePluginLocalStore {
 	//====== CONSTANTS ======//
 
 	// CHANGE THESE VALUES TO MATCH YOUR PLUGIN
-	currentEdition: IEC61850.AvailableEdition = 'ed2Rev1'
+	currentEdition: IEC61850.AvailableEdition = 'ed2Rev1' as const
 	currentUnstableRevision: IEC61850.AvailableUnstableRevision<
 		typeof this.currentEdition
-	> = 'IEC61850-90-30'
+	> = 'IEC61850-90-30' as const
 
-	pluginNamespacePrefix = 'type-designer'
-	pluginNamespaceUri = 'https://transnetbw.de/type-designer'
+	pluginNamespacePrefix = 'type-designer' as const
+	pluginNamespaceUri = 'https://transnetbw.de/type-designer' as const
 
 	//====== STATES ======//
 
 	host = $state<HTMLElement>()
+
+	namespaces = $derived({
+		currentPlugin: {
+			uri: this.pluginNamespaceUri,
+			prefix: this.pluginNamespacePrefix
+		},
+		currentUnstableRevision: {
+			uri: pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
+				.currentNamespaceUri,
+			prefix: pluginGlobalStore.revisionsStores[
+				this.currentUnstableRevision
+			].currentNamespacePrefix
+		}
+	})
 
 	currentDefinition = $derived(
 		getCurrentDefinition({
@@ -42,12 +56,9 @@ class UsePluginLocalStore {
 	)
 
 	rootSubElements = $derived({
-		...(this.currentEdition &&
-			pluginGlobalStore.editionStores[this.currentEdition]
-				.rootSubElements),
-		...(this.currentUnstableRevision &&
-			pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
-				.rootSubElements),
+		...pluginGlobalStore.editionStores[this.currentEdition].rootSubElements,
+		...pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
+			.rootSubElements,
 		...(this.rootElement && {
 			equipmentTypeTemplates: findOneCustomElement({
 				selector: 'EquipmentTypeTemplates',

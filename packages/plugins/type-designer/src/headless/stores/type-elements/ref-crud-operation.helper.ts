@@ -7,7 +7,11 @@ import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { pluginLocalStore } from '@/headless/stores'
 // CONSTANTS
-import { REF_FAMILY_MAP } from '@/headless/constants'
+import {
+	REF_FAMILY_MAP,
+	REF_ATTRIBUTES_KIND_BY_REF_FAMILY,
+	KIND
+} from '@/headless/constants'
 // TYPES
 import type { AvailableRefFamily } from '@/headless/stores'
 
@@ -24,7 +28,7 @@ export function createNewRef({
 	if (!pluginGlobalStore.host) throw new Error('No host')
 
 	let attributesPayload: {
-		attributes?: { lnType: string }
+		attributes?: { lnType: string } | { type: string }
 		attributesNS?: {
 			namespace: { uri: string; prefix: string }
 			attributes: { type: string }
@@ -38,23 +42,24 @@ export function createNewRef({
 			}
 		}
 	} else {
-		attributesPayload = {
-			attributesNS: [
-				{
-					namespace: {
-						uri: pluginGlobalStore.revisionsStores[
-							pluginLocalStore.currentUnstableRevision
-						].currentNamespaceUri,
-						prefix: pluginGlobalStore.revisionsStores[
-							pluginLocalStore.currentUnstableRevision
-						].currentNamespacePrefix
-					},
-					attributes: {
-						type: sourceTypeIdOrUuid
+		attributesPayload =
+			REF_ATTRIBUTES_KIND_BY_REF_FAMILY[family] === KIND.custom
+				? {
+						attributesNS: [
+							{
+								namespace:
+									pluginLocalStore.namespaces.currentPlugin,
+								attributes: {
+									type: sourceTypeIdOrUuid
+								}
+							}
+						]
 					}
-				}
-			]
-		}
+				: {
+						attributes: {
+							type: sourceTypeIdOrUuid
+						}
+					}
 	}
 	const newRefElement = createStandardElement({
 		xmlDocument: pluginGlobalStore.xmlDocument,
