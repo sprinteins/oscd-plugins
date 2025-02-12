@@ -25,5 +25,9 @@ export default defineConfig({
 			fileName: "index",
 		},
 		sourcemap: isDevelopment ? "inline" : false,
-	}
+	},
+	preview: {
+		port: 4178,
+		cors: true
+	},
 })
