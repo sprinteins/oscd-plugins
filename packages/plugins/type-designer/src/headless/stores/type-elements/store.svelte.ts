@@ -95,17 +95,12 @@ class UseTypeElementsStore {
 			this.getUniqueTypeRefsFunctionIds('conductingEquipmentType')
 
 		// is EqFunction if it is not part of ConductingEquipment or Bay per Definition
-		const eqFunctionsIds = generalEquipmentTypeRefsFunctionIds.filter(
-			(id) =>
-				!conductingEquipmentTypeRefsFunctionIds.includes(id) &&
-				!bayTypeRefsFunctionIds.includes(id)
-		)
-
-		const functionsIds = [
+		const eqFunctionsIds = [
 			...generalEquipmentTypeRefsFunctionIds,
-			...conductingEquipmentTypeRefsFunctionIds,
-			...bayTypeRefsFunctionIds
-		].filter((id) => !eqFunctionsIds.includes(id))
+			...conductingEquipmentTypeRefsFunctionIds
+		]
+
+		const functionsIds = [...bayTypeRefsFunctionIds]
 
 		return {
 			eqFunctionsIds,
@@ -113,9 +108,7 @@ class UseTypeElementsStore {
 		}
 	})
 
-	mapRefTagNameToFamily = $derived({
-		[pluginLocalStore.currentDefinition[REF_FAMILY_MAP.bay].tag]:
-			REF_FAMILY_MAP.bay,
+	mapRefTagNameToRefFamily = $derived({
 		[pluginLocalStore.currentDefinition[REF_FAMILY_MAP.generalEquipment]
 			.tag]: REF_FAMILY_MAP.generalEquipment,
 		[pluginLocalStore.currentDefinition[REF_FAMILY_MAP.conductingEquipment]
@@ -139,11 +132,10 @@ class UseTypeElementsStore {
 	}
 
 	getRefFamilyFromTypeFamily(
-		typeFamily: AvailableTypeFamily,
+		typeFamily: Exclude<AvailableTypeFamily, 'bay'>,
 		elementId: string
 	): AvailableRefFamily | 'genericFunction' {
 		return {
-			[REF_FAMILY_MAP.bay]: () => REF_FAMILY_MAP.bay,
 			[TYPE_FAMILY_MAP.generalEquipmentType]: () =>
 				REF_FAMILY_MAP.generalEquipment,
 			[TYPE_FAMILY_MAP.conductingEquipmentType]: () =>
