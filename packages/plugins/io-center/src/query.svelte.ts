@@ -61,12 +61,16 @@ export function buildObjectTree() {
 			const dObjects = Array.from(lNode.querySelectorAll("DOI"))
 
 			for (const dObject of dObjects) {
-				const object: TreeNode = { name: dObject.getAttribute("name") || "", children: [] }
+				const object: TreeNode = { name: dObject.getAttribute("name") || "" }
 
-				node.children.push(object)
+				if (node.children) {
+					node.children.push(object)
+				}
 			}
 
-			device.children.push(node)
+			if (device.children) {
+				device.children.push(node)
+			}
 		}
 
 		tree.push(device)

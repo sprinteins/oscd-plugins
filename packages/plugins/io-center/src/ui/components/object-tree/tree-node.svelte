@@ -7,6 +7,7 @@
         treeNode: TreeNodeType;
         isSelectable?: boolean;
         isOpen?: boolean;
+        searchTerm: string;
         selectedNodeName: string;
         setSelectedNodeName: (name: string) => void;
         onToggle?: (event: MouseEvent) => void;
@@ -17,6 +18,7 @@
         treeNode,
         isSelectable,
         isOpen = false,
+        searchTerm,
         selectedNodeName,
         setSelectedNodeName,
         onToggle,
@@ -24,6 +26,8 @@
     }: Props = $props();
 
     let open = $state(isOpen);
+
+    let isSearched = $derived(searchTerm !== "" && treeNode.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
     function onClick(name: string, event: MouseEvent) {
         event.preventDefault();
@@ -48,16 +52,20 @@
             ? "bg-beige hover:bg-beige"
             : "";
     }
+
+    function getSearchedClass() {
+        return isSearched ? "bg-gray-200 hover:bg-gray-200" : "";
+    }
 </script>
 
 <div class="tree-node">
-    {#if treeNode.children.length !== 0}
-        <details name={treeNode.name} {open}>
+    {#if treeNode.children}
+        <details {open}>
             <summary
                 onclick={(e) => {
                     onClick(treeNode.name, e);
                 }}
-                class={`flex items-center gap-1 text-lg p-2 ${baseClass} ${getSelectedClass()}`}
+                class={`flex items-center gap-1 text-lg p-2 ${baseClass} ${getSelectedClass()} ${getSearchedClass()}`}
             >
                 {#if open}
                     <ChevronDown size={14} />
@@ -72,6 +80,7 @@
                         treeNode={node}
                         isSelectable
                         isOpen={node.isOpen}
+                        {searchTerm}
                         {selectedNodeName}
                         {setSelectedNodeName}
                     />
@@ -80,7 +89,7 @@
         </details>
     {:else}
         <button
-            class={`p-2 w-full text-sm text-left ${baseClass} ${getSelectedClass()}`}
+            class={`p-2 w-full text-sm text-left ${baseClass} ${getSelectedClass()} ${getSearchedClass()}`}
             onclick={(e) => {
                 onClick(treeNode.name, e);
             }}

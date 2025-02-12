@@ -51,9 +51,6 @@
 		storeDoc(doc);
 	});
 
-	$inspect(store.iedSelected);
-	$inspect(store.objectTree);
-
 	function storeDoc(doc: Nullable<XMLDocument>) {
 		console.log("changing doc:", doc);
 		store.doc = doc;
