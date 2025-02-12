@@ -1,0 +1,39 @@
+{
+	"name": "@oscd-plugins/core-standard",
+	"version": "1.0.0",
+	"description": "",
+	"type": "module",
+	"source": "src/index.ts",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./ed2": {
+			"types": "./dist/ed2/index.d.ts",
+			"default": "./dist/ed2/index.js"
+		}
+	},
+	"scripts": {
+		"//====== GENERATE ======//": "",
+		"generate": "pnpm dlx tsx ./src/scripts/index.ts",
+		"//====== BUILD ======//": "",
+		"build": "pnpm run generate && tsup",
+		"build:watch": "pnpm run generate && tsup --watch",
+		"//====== TEST ======//": "",
+		"types": "tsc --project ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/node": "^22.10.1",
+		"ts-json-schema-generator": "^2.3.0",
+		"ts-morph": "^24.0.0",
+		"tsup": "^8.3.5",
+		"typescript": "5.6.3"
+	}
+}

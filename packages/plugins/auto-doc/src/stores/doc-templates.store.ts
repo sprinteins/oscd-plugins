@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
+import type {ElementType} from '@/components/elements/types.elements'
+
 // OPENSCD
 import { createElement } from '@oscd-plugins/core'
 // SVELTE
@@ -78,7 +80,7 @@ function getBlockOfDocumentTemplate(docTemplateId: string, blockId: string) {
     return null;
 }
 
-function addDocumentTemplate(title: string, description: string): string | null {
+function addDocumentTemplate(): string | null {
     let generatedId: string | null = null;
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -91,9 +93,7 @@ function addDocumentTemplate(title: string, description: string): string | null 
 
         const newDocDef = createElement(xmlDoc, 'DocumentTemplate', {
             id: id,
-            date: new Date().toISOString(),
-            title: title,
-            description: description
+            date: new Date().toISOString()
         });
         currentPrivateArea.appendChild(newDocDef);
         eventStore.createAndDispatchActionEvent(currentPrivateArea, newDocDef);
@@ -106,7 +106,7 @@ function addDocumentTemplate(title: string, description: string): string | null 
 function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle?: string, newDescription?: string) {
     const docTemplate = getDocumentTemplate(docTemplateId);
     if (docTemplate) {
-        const updates: { title?: string; description?: string } = {};
+        const updates: { title?: string; description?: string, id?: string; date?: string } = {};
         if (newTitle) {
             docTemplate.setAttribute('title', newTitle);
             updates.title = newTitle;
@@ -115,13 +115,21 @@ function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle
             docTemplate.setAttribute('description', newDescription);
             updates.description = newDescription;
         }
+        const id = docTemplate.getAttribute('id');
+        if (id) {
+            updates.id = id;
+        }
+        const date = docTemplate.getAttribute('date');
+        if (date) {
+            updates.date = date;
+        }
         if (Object.keys(updates).length > 0) {
             eventStore.updateAndDispatchActionEvent(docTemplate, updates);
         }
     }
 }
 
-function addBlockToDocumentTemplate(docTemplate: Element, content: string, type: string, position: number) {
+function addBlockToDocumentTemplate(docTemplate: Element, type: ElementType, position: number) {
     const generatedId = uuidv4();
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -131,7 +139,6 @@ function addBlockToDocumentTemplate(docTemplate: Element, content: string, type:
         id: generatedId,
         type: type 
     });
-    blockElement.textContent = content;
     docTemplate.appendChild(blockElement);
 
     insertBlockAtPosition(docTemplate, blockElement, position);
@@ -160,8 +167,8 @@ function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, posi
 function deleteBlockFromDocumentTemplate(docTemplate: Element, blockId: string) {
     const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockElement && blockElement.parentNode === docTemplate) {
-        eventStore.deleteAndDispatchActionEvent(docTemplate, blockElement);
         docTemplate.removeChild(blockElement);
+        eventStore.deleteAndDispatchActionEvent(docTemplate, blockElement);
     }
 }
 
@@ -170,8 +177,8 @@ function deleteDocumentTemplate(docTemplateId: string) {
     if (currentPrivateArea) {
         const docTemplate = getDocumentTemplate(docTemplateId);
         if (docTemplate) {
-            eventStore.deleteAndDispatchActionEvent(currentPrivateArea, docTemplate);
             currentPrivateArea.removeChild(docTemplate);
+            eventStore.deleteAndDispatchActionEvent(currentPrivateArea, docTemplate);
         }
     }
 }

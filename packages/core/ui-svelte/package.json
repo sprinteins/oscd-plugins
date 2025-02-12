@@ -1,0 +1,84 @@
+{
+	"name": "@oscd-plugins/core-ui-svelte",
+	"version": "0.0.1",
+	"type": "module",
+	"source": "src/lib/index.ts",
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"//====== DEV ======//": "",
+		"storybook": "storybook dev -p 6006",
+		"//====== BUILD ======//": "",
+		"build": "npm run package",
+		"build:watch": "svelte-package -w",
+		"build:storybook": "storybook build",
+		"//====== SVELTE ======//": "",
+		"package": "svelte-kit sync && svelte-package && publint",
+		"package:watch": "svelte-package -w",
+		"prepublishOnly": "npm run package",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+	},
+	"files": [
+		"dist",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*"
+	],
+	"sideEffects": [
+		"**/*.css"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js"
+		},
+		"./preset": "./dist/theme/tailwind-preset.js",
+		"./stock-theme.css": "./dist/theme/styles/shadcn-stock.theme.css",
+		"./legacy-theme.css": "./dist/theme/styles/legacy-oscd-instance.theme.css",
+		"./fonts.css": "./dist/theme/styles/fonts.css"
+	},
+	"peerDependencies": {
+		"svelte": "^5.0.0"
+	},
+	"devDependencies": {
+		"@chromatic-com/storybook": "^3.2.2",
+		"@internationalized/date": "^3.6.0",
+		"@oscd-plugins/core": "workspace:^",
+		"@oscd-plugins/core-api": "workspace:^",
+		"@oscd-plugins/core-standard": "workspace:^",
+		"@storybook/addon-essentials": "^8.4.7",
+		"@storybook/addon-interactions": "^8.4.7",
+		"@storybook/addon-svelte-csf": "^5.0.0-next.14",
+		"@storybook/blocks": "^8.4.7",
+		"@storybook/svelte": "^8.4.7",
+		"@storybook/sveltekit": "^8.4.7",
+		"@storybook/test": "^8.4.7",
+		"@sveltejs/adapter-auto": "^4.0.0",
+		"@sveltejs/kit": "^2.17.1",
+		"@sveltejs/package": "^2.3.10",
+		"@sveltejs/vite-plugin-svelte": "^5.0.3",
+		"@tanstack/table-core": "^8.20.5",
+		"autoprefixer": "^10.4.20",
+		"bits-ui": "1.0.0-next.70",
+		"clsx": "^2.1.1",
+		"embla-carousel-svelte": "^8.5.1",
+		"formsnap": "2.0.0-next.1",
+		"lucide-svelte": "^0.474.0",
+		"mode-watcher": "^0.5.0",
+		"paneforge": "1.0.0-next.1",
+		"publint": "^0.2.0",
+		"storybook": "^8.4.7",
+		"svelte": "^5.19.8",
+		"svelte-check": "^4.1.4",
+		"svelte-sonner": "^0.3.28",
+		"sveltekit-superforms": "^2.22.1",
+		"tailwind-merge": "^2.5.5",
+		"tailwind-variants": "^0.3.0",
+		"tailwindcss": "^3.4.9",
+		"tailwindcss-animate": "^1.0.7",
+		"typescript": "^5.0.0",
+		"vaul-svelte": "1.0.0-next.3",
+		"vite": "6.1.0",
+		"zod": "^3.24.1"
+	}
+}

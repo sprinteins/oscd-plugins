@@ -10,7 +10,8 @@
 		"ignore": [
 			"packages/core/src/scd-events-v1/edit.scd-events-v1.ts",
 			"packages/core/src/scd-events-v1/open.scd-events-v1.ts",
-			"packages/core/src/scd-xml/foundation.ts"
+			"packages/core/src/scd-xml/foundation.ts",
+			"package/create-plugin/template/src/**/*.ts"
 		]
 	},
 	"formatter": {
