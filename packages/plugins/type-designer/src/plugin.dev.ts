@@ -8,6 +8,7 @@ mount(Plugin, {
 		doc: new DOMParser().parseFromString(ssdMockA, 'text/xml'),
 		docName: 'scl-mock-A.ssd',
 		editCount: 0,
-		locale: 'en'
+		locale: 'en',
+		isCustomInstance: false
 	}
 })
