@@ -84,6 +84,7 @@
 		const {messagePublishers} = signallistStore.getPublishingLogicalDevices(publisherFilter);
 		const {matchedRows} = signallistStore.getSubscribingLogicalDevices(messagePublishers, subscriberFilter);
 
+		console.log("🚀 ~ searchForMatchOnSignalList ~ matchedRows:", matchedRows)
 		return {matchedRowsForTablePdf: matchedRows};
 
 	}

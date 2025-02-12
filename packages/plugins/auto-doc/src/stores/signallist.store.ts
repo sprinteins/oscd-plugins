@@ -401,7 +401,7 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
         }
         if (allFiltersMatch) {
             allMessagePublishers.push(publisher);
-            matchedValueAndCorrespondingPublisher.push({matchedFilteredValuesForPdf:[valuesMatched], publisher})
+            matchedValueAndCorrespondingPublisher.push({matchedFilteredValuesForPdf:[valuesMatched], publisher, matchedSubscribers: []})
         }  
     }
     pdfRowValues.update(() => [...matchedValueAndCorrespondingPublisher])
@@ -424,7 +424,7 @@ function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filte
         }
         if(filter.serviceType !== undefined) {
             if (subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase()) || (filter.serviceType.trim() === '')) {
-                setSubscriberIedNameInCorrespondingPublisherRow(subscriber, get(pdfRowValues))
+                setSubscriberIedNameInCorrespondingPublisher(subscriber, get(pdfRowValues))
             } else {
                 allFiltersMatch = false;
             }
@@ -437,12 +437,16 @@ function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filte
     return {matchedRows: get(pdfRowValues), subscribers: allMessageSubscribers};
 }
 
-function setSubscriberIedNameInCorrespondingPublisherRow(subscriber: MessageSubscriber, pdfRows: PdfRowStructure[]): void {
+function setSubscriberIedNameInCorrespondingPublisher(subscriber: MessageSubscriber, pdfRows: PdfRowStructure[]): void {
     for (const pdfRow of pdfRows) {
         if(isSubscriberMatch(pdfRow, subscriber)){
-            pdfRow.matchedFilteredValuesForPdf[0].push(subscriber.IDEName)
+            const existingValues = pdfRow.matchedFilteredValuesForPdf[0];
+            pdfRow.matchedSubscribers.push(subscriber.IDEName)
+
+            const concatenatedSubscribers = pdfRow.matchedSubscribers.join(', ')
+            existingValues.push(concatenatedSubscribers)
         }
-    }
+    }   
     pdfRowValues.update(() => [...pdfRows])
 }
 
