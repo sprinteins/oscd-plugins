@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from 'uuid'
 import {
 	createStandardElement,
 	createCustomElement,
-	createAndDispatchEditEvent
+	createAndDispatchEditEvent,
+	findAllStandardElementsBySelector
 } from '@oscd-plugins/core-api/plugin/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // STORES
@@ -13,10 +14,20 @@ import {
 	typeElementsStore
 } from '@/headless/stores'
 // CONSTANTS
-import { TYPE_FAMILY_MAP, CUSTOM_TAG_NAME_MAP } from '@/headless/constants'
+import {
+	TYPE_FAMILY_MAP,
+	CUSTOM_TAG_NAME_MAP,
+	TYPE_FAMILY_TO_REF_FAMILY_MAP,
+	REF_FAMILY_MAP,
+	REF_ATTRIBUTES_KIND_BY_REF_FAMILY,
+	KIND
+} from '@/headless/constants'
 // TYPES
-import type { AvailableTypeFamily, NewTypeAttributes } from '@/headless/stores'
-import type { Xml } from '@oscd-plugins/core-api/plugin/v1'
+import type {
+	AvailableTypeFamily,
+	NewTypeAttributes,
+	AvailableRefFamily
+} from '@/headless/stores'
 
 //====== CREATE ======//
 
@@ -112,10 +123,7 @@ export function createEquipmentType({
 		node: createCustomElement({
 			xmlDocument: pluginGlobalStore.xmlDocument,
 			tagName: CUSTOM_TAG_NAME_MAP[family],
-			namespace: {
-				uri: pluginLocalStore.pluginNamespaceUri,
-				prefix: pluginLocalStore.pluginNamespacePrefix
-			},
+			namespace: pluginLocalStore.namespaces.currentPlugin,
 			attributes: {
 				...attributes,
 				uuid: uuidv4()
@@ -139,14 +147,7 @@ export function createFunctionTemplate({
 			xmlDocument: pluginGlobalStore.xmlDocument,
 			element: {
 				family,
-				namespace: {
-					uri: pluginGlobalStore.revisionsStores[
-						pluginLocalStore.currentUnstableRevision
-					].currentNamespaceUri,
-					prefix: pluginGlobalStore.revisionsStores[
-						pluginLocalStore.currentUnstableRevision
-					].currentNamespacePrefix
-				}
+				namespace: pluginLocalStore.namespaces.currentUnstableRevision
 			},
 			attributes: {
 				...attributes,
@@ -182,15 +183,73 @@ export function updateType(attributeKey: string) {
 
 //====== DELETE ======//
 
-export function deleteType({
-	family,
-	id
-}: { family: Exclude<AvailableTypeFamily, 'lNodeType'>; id: string }) {
+export function deleteType(params: {
+	family: Exclude<AvailableTypeFamily, 'lNodeType'>
+	id: string
+}) {
 	if (!pluginGlobalStore.host) throw new Error('No host')
+	if (!pluginLocalStore.rootElement) throw new Error('No root element')
+
+	if (params.family !== TYPE_FAMILY_MAP.bay)
+		deleteAssociatedRefs({ family: params.family, id: params.id })
+
 	createAndDispatchEditEvent({
 		host: pluginGlobalStore.host,
 		edit: {
-			node: typeElementsStore.typeElementsPerFamily[family][id].element
+			node: typeElementsStore.typeElementsPerFamily[params.family][
+				params.id
+			].element
 		}
 	})
+}
+
+function deleteAssociatedRefs(params: {
+	family: Exclude<AvailableTypeFamily, 'bay' | 'lNodeType'>
+	id: string
+}) {
+	if (!pluginGlobalStore.host) throw new Error('No host')
+	if (!pluginLocalStore.rootElement) throw new Error('No root element')
+
+	let refFamily: AvailableRefFamily
+
+	if (params.family === TYPE_FAMILY_MAP.functionTemplate)
+		refFamily =
+			typeElementsStore.functionsIdsByType.eqFunctionsIds.includes(
+				params.id
+			)
+				? REF_FAMILY_MAP.eqFunction
+				: REF_FAMILY_MAP.function
+	else refFamily = TYPE_FAMILY_TO_REF_FAMILY_MAP[params.family]
+
+	const tagName = pluginLocalStore.currentDefinition[refFamily].tag
+
+	const getAllRefElements = findAllStandardElementsBySelector({
+		selector: `${tagName}`,
+		root: pluginLocalStore.rootElement
+	})
+
+	for (const ref of getAllRefElements) {
+		let shouldDeleteCurrentRef = false
+
+		// standard element case
+		if (ref.getAttribute('type') === params.id)
+			shouldDeleteCurrentRef = true
+		// element with custom attributes case
+		if (
+			REF_ATTRIBUTES_KIND_BY_REF_FAMILY[refFamily] === KIND.custom &&
+			ref.getAttributeNS(
+				pluginLocalStore.namespaces.currentPlugin.uri,
+				'type'
+			) === params.id
+		)
+			shouldDeleteCurrentRef = true
+
+		if (shouldDeleteCurrentRef)
+			createAndDispatchEditEvent({
+				host: pluginGlobalStore.host,
+				edit: {
+					node: ref
+				}
+			})
+	}
 }

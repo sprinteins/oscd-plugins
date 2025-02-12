@@ -4,14 +4,15 @@ import {
 	namedNodeMapAttributesToPlainObject,
 	typeGuard
 } from '@oscd-plugins/core-api/plugin/v1'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { typeElementsStore, pluginLocalStore } from '@/headless/stores'
 // CONSTANTS
 import {
 	TYPE_FAMILY_MAP,
 	REF_FAMILY_TO_TYPE_FAMILY_MAP,
-	TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES
+	TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES,
+	REF_ATTRIBUTES_KIND_BY_REF_FAMILY,
+	KIND
 } from '@/headless/constants'
 // TYPES
 import type {
@@ -57,14 +58,14 @@ function getRefs(
 			if (
 				!typeGuard.isPropertyOfObject(
 					childElement.tagName,
-					typeElementsStore.mapRefTagNameToFamily
+					typeElementsStore.mapRefTagNameToRefFamily
 				)
 			)
 				return acc
-			const tagName =
-				typeElementsStore.mapRefTagNameToFamily[childElement.tagName]
+			const refFamily =
+				typeElementsStore.mapRefTagNameToRefFamily[childElement.tagName]
 
-			const typeFamily = REF_FAMILY_TO_TYPE_FAMILY_MAP[tagName]
+			const typeFamily = REF_FAMILY_TO_TYPE_FAMILY_MAP[refFamily]
 			acc[typeFamily] = acc[typeFamily] || []
 
 			//get LNodeType ids
@@ -72,12 +73,13 @@ function getRefs(
 			if (lnType) acc[typeFamily].push(lnType)
 
 			//get other Types uuids
-			const type = childElement.getAttributeNS(
-				pluginGlobalStore.revisionsStores[
-					pluginLocalStore.currentUnstableRevision
-				].currentNamespaceUri,
-				'type'
-			)
+			const type =
+				REF_ATTRIBUTES_KIND_BY_REF_FAMILY[refFamily] === KIND.custom
+					? childElement.getAttributeNS(
+							pluginLocalStore.namespaces.currentPlugin.uri,
+							'type'
+						)
+					: childElement.getAttribute('type')
 			if (type) acc[typeFamily].push(type)
 
 			return acc
