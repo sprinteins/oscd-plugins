@@ -54,11 +54,7 @@ export function checkIfRequiredAttributesArePresent<
 	attributes
 }: CheckAttributes<GenericElement, GenericEdition, GenericUnstableRevision>) {
 	// const
-	const CURRENT_ELEMENT_DEFINITION = getCurrentElementDefinition<
-		GenericElement,
-		GenericEdition,
-		GenericUnstableRevision
-	>({
+	const CURRENT_ELEMENT_DEFINITION = getCurrentElementDefinition({
 		currentEdition,
 		currentUnstableRevision,
 		element: element.family

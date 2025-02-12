@@ -1,6 +1,4 @@
 import { IEC61850_DEFINITIONS } from '@oscd-plugins/core-standard'
-// GUARDS
-import { isCurrentElementKeyOfCurrentDefinition } from './guards'
 // TYPES
 import type { IEC61850 } from '@oscd-plugins/core-standard'
 
@@ -48,22 +46,10 @@ export function getCurrentElementDefinition<
 	currentEdition: GenericEdition
 	currentUnstableRevision?: GenericUnstableRevision
 }) {
-	const CURRENT_DEFINITION = getCurrentDefinition<
-		GenericEdition,
-		GenericUnstableRevision
-	>({
+	const CURRENT_DEFINITION = getCurrentDefinition({
 		currentEdition,
 		currentUnstableRevision
 	})
-
-	if (
-		!isCurrentElementKeyOfCurrentDefinition<
-			GenericElement,
-			GenericEdition,
-			GenericUnstableRevision
-		>(element, CURRENT_DEFINITION)
-	)
-		throw new Error('Element is not part of the current definition')
 
 	const CURRENT_DEFINITION_ELEMENT = CURRENT_DEFINITION[
 		element
