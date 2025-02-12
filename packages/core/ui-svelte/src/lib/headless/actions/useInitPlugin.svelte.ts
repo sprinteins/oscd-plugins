@@ -187,7 +187,7 @@ export function initPlugin(
 					namespaceEntries.namespaceUri
 			}
 		}
-		pluginGlobalStore.updateElementType({
+		pluginGlobalStore.updateElement({
 			element: currentRootElement,
 			attributesNS: payload
 		})

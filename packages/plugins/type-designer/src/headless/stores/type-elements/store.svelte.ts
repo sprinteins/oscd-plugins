@@ -1,14 +1,16 @@
+// CORE
+import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
 // STORES
 import { pluginLocalStore } from '@/headless/stores'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
 import { REF_FAMILY_MAP, TYPE_FAMILY_MAP } from '@/headless/constants'
 // HELPERS
 import { getAndMapTypeElements } from './consolidate-types.helper'
 import {
 	createNewType,
-	updateType,
 	duplicateType,
-	deleteType
+	deleteTypeAndRefs
 } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
 import { getTypeNextOccurrence } from './type-naming.helper'
@@ -133,7 +135,7 @@ class UseTypeElementsStore {
 			pluginLocalStore.currentUnstableRevisionRootPrivateWrapper
 	})
 
-	//====== PRIVATE ACTIONS ======//
+	//====== PRIVATE METHODS ======//
 
 	private getFunctionTemplateRefFamily(elementId: string) {
 		if (this.functionsIdsByType.eqFunctionsIds.includes(elementId))
@@ -158,12 +160,13 @@ class UseTypeElementsStore {
 		}[typeFamily]()
 	}
 
+	//====== PUBLIC METHODS ======//
+
 	//====== PROXY TO HELPERS ======//
 	// type
 	createNewType = createNewType
 	duplicateType = duplicateType
-	updateType = updateType
-	deleteType = deleteType
+	deleteTypeAndRefs = deleteTypeAndRefs
 	// ref
 	createNewRef = createNewRef
 	// naming

@@ -8,18 +8,12 @@ import {
 } from '@oscd-plugins/core-api/plugin/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // STORES
-import {
-	sidebarStore,
-	pluginLocalStore,
-	typeElementsStore
-} from '@/headless/stores'
+import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
 // HELPERS
 import { getNewNameWithOccurrence } from '@/headless/stores/type-elements/type-naming.helper'
 import {
 	createEquipmentTypeTemplates,
-	deleteEquipmentTypeTemplates,
-	createCurrentUnstableRevisionRootPrivateWrapper,
-	deleteCurrentUnstableRevisionRootPrivateWrapper
+	createCurrentUnstableRevisionRootPrivateWrapper
 } from '@/headless/stores/type-elements/wrapper.helper'
 // CONSTANTS
 import {
@@ -255,32 +249,6 @@ export function duplicateType({
 	})
 }
 
-//====== UPDATE ======//
-
-/**
- * Updates the type of the current element by dispatching an edit event.
- *
- * @param attributeKey - The key of the attribute to update.
- * @throws Will throw an error if there is no host or no current element type.
- */
-export function updateType(attributeKey: string) {
-	if (!pluginGlobalStore.host) throw new Error('No host')
-	if (!sidebarStore.currentElementType)
-		throw new Error('No current element type')
-
-	createAndDispatchEditEvent({
-		host: pluginGlobalStore.host,
-		edit: {
-			element: sidebarStore.currentElementType.element,
-			attributes: {
-				[attributeKey]:
-					sidebarStore.currentElementType.attributes[attributeKey]
-			},
-			attributesNS: {}
-		}
-	})
-}
-
 //====== DELETE ======//
 
 /**
@@ -298,7 +266,7 @@ export function updateType(attributeKey: string) {
  * - If the family is 'functionTemplate' and the current unstable revision root private wrapper element has no children, it deletes it.
  * - If the family is 'conductingEquipmentType' or 'generalEquipmentType' and the EquipmentTypeTemplates element has no children, it deletes it.
  */
-export function deleteType(params: {
+export function deleteTypeAndRefs(params: {
 	family: Exclude<AvailableTypeFamily, 'lNodeType'>
 	id: string
 }) {
@@ -308,29 +276,31 @@ export function deleteType(params: {
 	if (params.family !== TYPE_FAMILY_MAP.bay)
 		deleteAssociatedRefs({ family: params.family, id: params.id })
 
-	createAndDispatchEditEvent({
-		host: pluginGlobalStore.host,
-		edit: {
-			node: typeElementsStore.typeElementsPerFamily[params.family][
-				params.id
-			].element
-		}
-	})
+	pluginGlobalStore.deleteElement(
+		typeElementsStore.typeElementsPerFamily[params.family][params.id]
+			.element
+	)
 
 	if (
 		params.family === 'functionTemplate' &&
 		pluginLocalStore.currentUnstableRevisionRootPrivateWrapper
 			?.childElementCount === 0
 	)
-		deleteCurrentUnstableRevisionRootPrivateWrapper()
+		pluginGlobalStore.deleteElement(
+			pluginLocalStore.currentUnstableRevisionRootPrivateWrapper
+		)
 
 	if (
 		(params.family === 'conductingEquipmentType' ||
 			params.family === 'generalEquipmentType') &&
 		pluginLocalStore.rootSubElements?.equipmentTypeTemplates
-			?.childElementCount === 0
+			?.childElementCount === 0 &&
+		pluginLocalStore.rootSubElements.equipmentTypeTemplates?.parentElement
 	)
-		deleteEquipmentTypeTemplates()
+		pluginGlobalStore.deleteElement(
+			pluginLocalStore.rootSubElements.equipmentTypeTemplates
+				.parentElement
+		)
 }
 
 /**

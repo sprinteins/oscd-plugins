@@ -29,7 +29,7 @@ function duplicateHandler() {
 
 function deleteHandler() {
 	if (level === 'type')
-		typeElementsStore.deleteType({
+		typeElementsStore.deleteTypeAndRefs({
 			family: family as Exclude<AvailableTypeFamily, 'lNodeType'>,
 			id
 		})

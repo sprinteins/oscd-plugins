@@ -47,24 +47,6 @@ export function createCurrentUnstableRevisionRootPrivateWrapper() {
 }
 
 /**
- * Deletes the root private wrapper by dispatching an edit event.
- *
- * @throws If `pluginGlobalStore.host` or `pluginLocalStore.currentUnstableRevisionRootPrivateWrapper` is not defined.
- */
-export function deleteCurrentUnstableRevisionRootPrivateWrapper() {
-	if (!pluginGlobalStore.host) throw new Error('No host')
-	if (!pluginLocalStore.currentUnstableRevisionRootPrivateWrapper)
-		throw new Error('No private wrapper')
-
-	createAndDispatchEditEvent({
-		host: pluginGlobalStore.host,
-		edit: {
-			node: pluginLocalStore.currentUnstableRevisionRootPrivateWrapper
-		}
-	})
-}
-
-/**
  * Creates a new EquipmentTypeTemplates element and dispatches an edit event to create it in the XML document.
  *
  * @throws If the host, XML document, or root element is not available.
@@ -96,22 +78,4 @@ export function createEquipmentTypeTemplates() {
 	})
 
 	return newEquipmentTypeTemplatesWrapper.firstElementChild
-}
-
-/**
- * Deletes the equipment type templates by dispatching an edit event.
- *
- * @throws If `pluginGlobalStore.host` or `pluginLocalStore.rootSubElements?.equipmentTypeTemplates` is undefined.
- */
-export function deleteEquipmentTypeTemplates() {
-	if (!pluginGlobalStore.host) throw new Error('No host')
-	if (!pluginLocalStore.rootSubElements?.equipmentTypeTemplates)
-		throw new Error('No EquipmentTypeTemplates element')
-
-	createAndDispatchEditEvent({
-		host: pluginGlobalStore.host,
-		edit: {
-			node: pluginLocalStore.rootSubElements?.equipmentTypeTemplates
-		}
-	})
 }
