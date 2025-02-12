@@ -1,39 +1,50 @@
 <script lang="ts">
+    import { NODE_TYPE } from "@/headless/constants";
     import TreeNode from "./tree-node.svelte";
     import type { TreeNode as TreeNodeType } from "./types.object-tree";
-    import { ChevronRight, ChevronDown } from "lucide-svelte";
+    import {
+        ChevronRight,
+        ChevronDown,
+        CheckCircleIcon,
+        Highlighter,
+        CheckIcon,
+    } from "lucide-svelte";
 
     type Props = {
         treeNode: TreeNodeType;
-        isSelectable?: boolean;
         isOpen?: boolean;
         searchTerm: string;
-        selectedNodeName: string;
-        setSelectedNodeName: (name: string) => void;
+        selectedNodeIds: string[];
+        setSelectedNodeIds: (name: string) => void;
         onToggle?: (event: MouseEvent) => void;
         onSelect?: (event: MouseEvent) => void;
     };
 
     let {
         treeNode,
-        isSelectable,
         isOpen = false,
         searchTerm,
-        selectedNodeName,
-        setSelectedNodeName,
+        selectedNodeIds,
+        setSelectedNodeIds,
         onToggle,
         onSelect,
     }: Props = $props();
 
     let open = $state(isOpen);
 
-    let isSearched = $derived(searchTerm !== "" && treeNode.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    let isSearched = $derived(
+        searchTerm !== "" &&
+            treeNode.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
 
-    function onClick(name: string, event: MouseEvent) {
+    function onClick(id: string, event: MouseEvent) {
         event.preventDefault();
 
         open = !open;
-        setSelectedNodeName(name);
+
+        if (treeNode.type === NODE_TYPE.dataObjectInstance) {
+            setSelectedNodeIds(id);
+        }
 
         if (onToggle) {
             onToggle(event);
@@ -48,7 +59,7 @@
         "font-mono cursor-pointer hover:no-underline rounded-md hover:bg-gray-100 transition-colors duration-300";
 
     function getSelectedClass() {
-        return isSelectable && selectedNodeName === treeNode.name
+        return selectedNodeIds.includes(treeNode.id)
             ? "bg-beige hover:bg-beige"
             : "";
     }
@@ -63,7 +74,7 @@
         <details {open}>
             <summary
                 onclick={(e) => {
-                    onClick(treeNode.name, e);
+                    onClick(treeNode.id, e);
                 }}
                 class={`flex items-center gap-1 text-lg p-2 ${baseClass} ${getSelectedClass()} ${getSearchedClass()}`}
             >
@@ -75,25 +86,27 @@
                 <p class="text-sm font-medium">{treeNode.name}</p>
             </summary>
             <div class="ml-4 border-l">
-                {#each treeNode.children as node}
+                {#each treeNode.children as node (node.id)}
                     <TreeNode
                         treeNode={node}
-                        isSelectable
                         isOpen={node.isOpen}
                         {searchTerm}
-                        {selectedNodeName}
-                        {setSelectedNodeName}
+                        {selectedNodeIds}
+                        {setSelectedNodeIds}
                     />
                 {/each}
             </div>
         </details>
     {:else}
         <button
-            class={`p-2 w-full text-sm text-left ${baseClass} ${getSelectedClass()} ${getSearchedClass()}`}
+            class={`p-2 w-full text-sm text-left flex items-center gap-1 ${baseClass} ${getSelectedClass()} ${getSearchedClass()}`}
             onclick={(e) => {
-                onClick(treeNode.name, e);
+                onClick(treeNode.id, e);
             }}
         >
+            {#if selectedNodeIds.includes(treeNode.id)}
+                <CheckIcon size={16} />
+            {/if}
             {treeNode.name}
         </button>
     {/if}
