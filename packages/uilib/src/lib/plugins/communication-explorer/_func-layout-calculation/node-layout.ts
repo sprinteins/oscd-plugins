@@ -74,15 +74,13 @@ export async function calculateLayout(
 	// message type information gets lost here
 	const root = (await elk.layout(graph)) as RootNode
 
-	// everything about this is horrible, it is just meant as a proof of concept for bay containers for now
-	// TODO: make rendering in Svelte more flexible so that it expects the data as it is returned by ELK 
-	// and none of this is necessary in the first place
+	// this is not ideal, ELK will calculate positions of IEDs and connections in local space of the parent bay (I didn't find a way to change that...)
+	// we are not expecting local positions but absolute positions so we have to add the position of the bay to each affected Connection
+	// TODO: make our Svelte rendering more flexible so that it expects the data as it is returned by ELK 
 	for (const node of root.children) {
 		if (node.isBayNode) {
 
 			//find all connections that have both source and target IED within the same bay
-			//ELK will calculate positions of such connections in local space of the parent bay (I didn't find a way to change that...)
-			//we are not expecting local positions but absolute positions so we have to add the position of the bay to each affected Connection
 			if (root.edges) {
 				for (const edge of root.edges) {
 					if (node.children.some(ied => ied.label == edge.sourceIED.iedName) &&
