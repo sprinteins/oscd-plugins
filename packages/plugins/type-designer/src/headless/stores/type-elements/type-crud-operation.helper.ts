@@ -52,38 +52,35 @@ import type {
  *
  * @throws If there is no host or no parent element.
  */
-export function createNewType({
-	family,
-	attributes
-}: {
+export function createNewType(params: {
 	family: Exclude<AvailableTypeFamily, 'lNodeType'>
 	attributes: NewTypeAttributes
 }) {
 	let eventPayload: { node: Element; parent: Element | null | undefined }
 
-	switch (family) {
+	switch (params.family) {
 		case TYPE_FAMILY_MAP.bay:
 			eventPayload = createBayType({
-				family,
-				attributes
+				family: params.family,
+				attributes: params.attributes
 			})
 			break
 		case TYPE_FAMILY_MAP.generalEquipmentType:
 			eventPayload = createEquipmentType({
-				family,
-				attributes
+				family: params.family,
+				attributes: params.attributes
 			})
 			break
 		case TYPE_FAMILY_MAP.conductingEquipmentType:
 			eventPayload = createEquipmentType({
-				family,
-				attributes
+				family: params.family,
+				attributes: params.attributes
 			})
 			break
 		case TYPE_FAMILY_MAP.functionTemplate:
 			eventPayload = createFunctionTemplate({
-				family,
-				attributes
+				family: params.family,
+				attributes: params.attributes
 			})
 			break
 	}
@@ -336,6 +333,15 @@ export function deleteType(params: {
 		deleteEquipmentTypeTemplates()
 }
 
+/**
+ * Deletes associated references based on the provided parameters.
+ *
+ * @param params - The parameters for deleting associated references.
+ * @param params.family - The family of the type to delete references for, excluding 'bay' and 'lNodeType'.
+ * @param params.id - The ID of the type to delete references for.
+ *
+ * @throws Will throw an error if there is no host or root element available.
+ */
 function deleteAssociatedRefs(params: {
 	family: Exclude<AvailableTypeFamily, 'bay' | 'lNodeType'>
 	id: string

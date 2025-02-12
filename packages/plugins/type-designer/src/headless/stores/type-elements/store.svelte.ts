@@ -78,7 +78,7 @@ class UseTypeElementsStore {
 		}
 	})
 
-	getUniqueTypeRefsFunctionIds(family: AvailableTypeFamily) {
+	getUniqueTypeRefsFunctionIds(family: AvailableTypeFamily): string[] {
 		return Array.from(
 			// remove duplicates with a Set
 			new Set(

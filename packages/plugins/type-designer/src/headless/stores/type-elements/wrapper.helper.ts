@@ -12,7 +12,6 @@ import { pluginLocalStore } from '@/headless/stores/index.js'
  * Creates a new root private wrapper element and dispatch an edit event to create it in the XML document.
  *
  * @throws If the `host`, `xmlDocument`, or `rootElement` properties are not available in the respective stores.
- *
  * @returns The newly created private wrapper element.
  */
 export function createCurrentUnstableRevisionRootPrivateWrapper() {
@@ -69,7 +68,6 @@ export function deleteCurrentUnstableRevisionRootPrivateWrapper() {
  * Creates a new EquipmentTypeTemplates element and dispatches an edit event to create it in the XML document.
  *
  * @throws If the host, XML document, or root element is not available.
- *
  * @returns The first child element of the newly created EquipmentTypeTemplates element, or null if there are no children.
  */
 export function createEquipmentTypeTemplates() {
