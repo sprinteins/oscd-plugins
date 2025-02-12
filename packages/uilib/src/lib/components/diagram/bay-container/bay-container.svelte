@@ -30,5 +30,6 @@
 		border: 2px dashed var(--color-black);
 		border-radius: 5px;
 		box-sizing: border-box;
+		background-color: rgba(0, 0, 0, 0.1);
 	}
 </style>
