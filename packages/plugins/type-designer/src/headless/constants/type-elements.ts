@@ -14,19 +14,29 @@ export const REF_FAMILY_MAP = {
 	lNode: 'lNode'
 } as const
 
+export const COLUMNS = {
+	bay: 'bay',
+	equipmentTypeTemplates: 'equipmentTypeTemplates',
+	functionTemplate: 'functionTemplate',
+	lNodeType: 'lNodeType'
+} as const
+
 export const KIND = {
 	custom: 'custom',
 	standard: 'standard',
 	unstable: 'unstable'
 } as const
 
-export const REF_FAMILY_TO_TYPE_FAMILY_MAP = {
-	[REF_FAMILY_MAP.generalEquipment]: TYPE_FAMILY_MAP.generalEquipmentType,
-	[REF_FAMILY_MAP.conductingEquipment]:
-		TYPE_FAMILY_MAP.conductingEquipmentType,
-	[REF_FAMILY_MAP.function]: TYPE_FAMILY_MAP.functionTemplate,
-	[REF_FAMILY_MAP.eqFunction]: TYPE_FAMILY_MAP.functionTemplate,
-	[REF_FAMILY_MAP.lNode]: TYPE_FAMILY_MAP.lNodeType
+export const READONLY_ATTRIBUTES = ['id', 'uuid', 'originUuid'] as const
+
+//====== MAPPERS ======//
+
+export const TYPE_FAMILY_TO_COLUMN_KEY = {
+	[TYPE_FAMILY_MAP.bay]: COLUMNS.bay,
+	[TYPE_FAMILY_MAP.generalEquipmentType]: COLUMNS.equipmentTypeTemplates,
+	[TYPE_FAMILY_MAP.conductingEquipmentType]: COLUMNS.equipmentTypeTemplates,
+	[TYPE_FAMILY_MAP.functionTemplate]: COLUMNS.functionTemplate,
+	[TYPE_FAMILY_MAP.lNodeType]: COLUMNS.lNodeType
 } as const
 
 export const TYPE_FAMILY_TO_REF_FAMILY_MAP = {
@@ -38,6 +48,15 @@ export const TYPE_FAMILY_TO_REF_FAMILY_MAP = {
 		REF_FAMILY_MAP.eqFunction
 	],
 	[TYPE_FAMILY_MAP.lNodeType]: REF_FAMILY_MAP.lNode
+} as const
+
+export const REF_FAMILY_TO_TYPE_FAMILY_MAP = {
+	[REF_FAMILY_MAP.generalEquipment]: TYPE_FAMILY_MAP.generalEquipmentType,
+	[REF_FAMILY_MAP.conductingEquipment]:
+		TYPE_FAMILY_MAP.conductingEquipmentType,
+	[REF_FAMILY_MAP.function]: TYPE_FAMILY_MAP.functionTemplate,
+	[REF_FAMILY_MAP.eqFunction]: TYPE_FAMILY_MAP.functionTemplate,
+	[REF_FAMILY_MAP.lNode]: TYPE_FAMILY_MAP.lNodeType
 } as const
 
 export const TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES = {
@@ -70,5 +89,3 @@ export const ALLOWED_TARGETS_BY_REF_FAMILY = {
 	],
 	[REF_FAMILY_MAP.lNode]: [TYPE_FAMILY_MAP.functionTemplate]
 } as const
-
-export const READONLY_ATTRIBUTES = ['id', 'uuid', 'originUuid'] as const

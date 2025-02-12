@@ -22,24 +22,33 @@ import type {
 	MapTypeFamilyToDefinitionElement
 } from '@/headless/stores'
 
-function getTypeElementAttributes(
-	family: AvailableTypeFamily,
-	attributes: NamedNodeMap,
+/**
+ * Retrieves the attributes of a type element
+ *
+ * @param params - The parameters for retrieving the type element attributes.
+ * @param params.family - The family of the type element.
+ * @param params.attributes - The NamedNodeMap of attributes to be converted.
+ * @param params.elementId - The ID of the element to be enforced as an identification attribute.
+ * @returns An object containing the attributes of the type element
+ */
+function getTypeElementAttributes(params: {
+	family: AvailableTypeFamily
+	attributes: NamedNodeMap
 	elementId: string
-) {
+}) {
 	let enforceIdentificationAttribute:
 		| Record<'id', string>
 		| Record<'uuid', string>
 
-	if (family === TYPE_FAMILY_MAP.lNodeType)
-		enforceIdentificationAttribute = { id: elementId }
-	else enforceIdentificationAttribute = { uuid: elementId }
+	if (params.family === TYPE_FAMILY_MAP.lNodeType)
+		enforceIdentificationAttribute = { id: params.elementId }
+	else enforceIdentificationAttribute = { uuid: params.elementId }
 
 	return {
 		...namedNodeMapAttributesToPlainObject({
-			attributes,
+			attributes: params.attributes,
 			addAttributesFromDefinition: {
-				element: TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES[family],
+				element: TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES[params.family],
 				currentEdition: pluginLocalStore.currentEdition,
 				currentUnstableRevision:
 					pluginLocalStore.currentUnstableRevision
@@ -104,11 +113,11 @@ export function getAndMapTypeElements<
 
 				acc[elementId] = {
 					element,
-					attributes: getTypeElementAttributes(
+					attributes: getTypeElementAttributes({
 						family,
-						element.attributes,
+						attributes: element.attributes,
 						elementId
-					),
+					}),
 					parameters: {
 						label:
 							element.getAttribute('name') ||

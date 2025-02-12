@@ -14,10 +14,10 @@ class UsePluginLocalStore {
 	//====== CONSTANTS ======//
 
 	// CHANGE THESE VALUES TO MATCH YOUR PLUGIN
-	currentEdition: IEC61850.AvailableEdition = 'ed2Rev1'
+	currentEdition: IEC61850.AvailableEdition = 'ed2Rev1' as const
 	currentUnstableRevision: IEC61850.AvailableUnstableRevision<
 		typeof this.currentEdition
-	> = 'IEC61850-90-30'
+	> = 'IEC61850-90-30' as const
 
 	pluginNamespacePrefix = 'type-designer' as const
 	pluginNamespaceUri = 'https://transnetbw.de/type-designer' as const
@@ -51,18 +51,14 @@ class UsePluginLocalStore {
 	)
 
 	rootElement = $derived(
-		this.currentEdition &&
-			pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
-				.rootElement
+		pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
+			.rootElement
 	)
 
 	rootSubElements = $derived({
-		...(this.currentEdition &&
-			pluginGlobalStore.editionStores[this.currentEdition]
-				.rootSubElements),
-		...(this.currentUnstableRevision &&
-			pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
-				.rootSubElements),
+		...pluginGlobalStore.editionStores[this.currentEdition].rootSubElements,
+		...pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
+			.rootSubElements,
 		...(this.rootElement && {
 			equipmentTypeTemplates: findOneCustomElement({
 				selector: 'EquipmentTypeTemplates',
@@ -72,10 +68,8 @@ class UsePluginLocalStore {
 	})
 
 	substationsSubElements = $derived([
-		...((this.currentEdition &&
-			pluginGlobalStore.editionStores[this.currentEdition]
-				?.substationsSubElements) ||
-			[])
+		...(pluginGlobalStore.editionStores[this.currentEdition]
+			?.substationsSubElements || [])
 	])
 
 	templateBaysSubElements:
@@ -118,10 +112,14 @@ class UsePluginLocalStore {
 			}
 	})
 
+	currentUnstableRevisionRootPrivateWrapper = $derived(
+		pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
+			.rootPrivateWrapper
+	)
+
 	dataTypeTemplatesSubElements = $derived({
-		...(this.currentEdition &&
-			pluginGlobalStore.editionStores[this.currentEdition]
-				.dataTypeTemplatesSubElements)
+		...pluginGlobalStore.editionStores[this.currentEdition]
+			.dataTypeTemplatesSubElements
 	})
 }
 

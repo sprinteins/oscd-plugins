@@ -9,4 +9,9 @@ export namespace IEC61850_90_30 {
 			'IEC61850-90-30'
 		>[]
 	}
+	export type PrivateWrapperElement = Xml.SclElement<
+		'private',
+		'ed2Rev1',
+		'IEC61850-90-30'
+	>
 }
