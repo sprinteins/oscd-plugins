@@ -24,22 +24,29 @@ class UsePluginGlobalStore {
 		'IEC61850-90-30': IEC61850_90_30Store
 	})
 
-	updateElementType({
-		element,
-		attributes,
-		attributesNS
-	}: {
+	updateElement(params: {
 		element: Element
 		attributes?: Record<string, string | null>
 		attributesNS?: Record<string, Record<string, string | null>>
 	}) {
 		if (!this.host) throw new Error('No host')
+
 		createAndDispatchEditEvent({
 			host: this.host,
 			edit: {
-				element,
-				attributes: attributes || {},
-				attributesNS: attributesNS || {}
+				element: params.element,
+				attributes: params.attributes || {},
+				attributesNS: params.attributesNS || {}
+			}
+		})
+	}
+
+	deleteElement(element: Element) {
+		if (!pluginGlobalStore.host) throw new Error('No host')
+		createAndDispatchEditEvent({
+			host: pluginGlobalStore.host,
+			edit: {
+				node: element
 			}
 		})
 	}

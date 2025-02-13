@@ -27,22 +27,22 @@ const newElementName = $derived.by(() => {
 	if (!newTypeFamily) return
 
 	const namesByFamilies = {
-		bay: `Bay_${getNameNumberOfOccurrence('bay', 'Bay', true)}`,
+		bay: `Bay_${typeElementsStore.getTypeNextOccurrence({ family: 'bay', valueToTest: 'Bay', removeOccurrencePartToTestedValue: true })}`,
 		generalEquipmentType: '',
 		conductingEquipmentType: '',
-		functionTemplate: `Func_${getNameNumberOfOccurrence(
-			'functionTemplate',
-			'Func',
-			true
-		)}`
+		functionTemplate: `Func_${typeElementsStore.getTypeNextOccurrence({
+			family: 'functionTemplate',
+			valueToTest: 'Func',
+			removeOccurrencePartToTestedValue: true
+		})}`
 	}
 
 	if (newTypeInput) {
-		const numberOfOccurrence = getNameNumberOfOccurrence(
-			newTypeFamily,
-			newTypeInput,
-			false
-		)
+		const numberOfOccurrence = typeElementsStore.getTypeNextOccurrence({
+			family: newTypeFamily,
+			valueToTest: newTypeInput,
+			removeOccurrencePartToTestedValue: false
+		})
 		namesByFamilies[newTypeFamily] = `${newTypeInput}_${numberOfOccurrence}`
 	}
 
@@ -55,11 +55,11 @@ const newElementName = $derived.by(() => {
 			equipmentsSelectOptions.secondarySelect[newTypeFamily].find(
 				(option) => option.value === newTypeElement
 			)?.label || ''
-		const numberOfNameOccurrence = getNameNumberOfOccurrence(
-			newTypeFamily,
-			selectOptionValue,
-			true
-		)
+		const numberOfNameOccurrence = typeElementsStore.getTypeNextOccurrence({
+			family: newTypeFamily,
+			valueToTest: selectOptionValue,
+			removeOccurrencePartToTestedValue: true
+		})
 		namesByFamilies[newTypeFamily] =
 			`${selectOptionValue}_${numberOfNameOccurrence}`
 	}
@@ -112,45 +112,6 @@ function handleAddNewElement() {
 
 	newTypeInput = ''
 	newTypeElement = ''
-}
-
-function getNameNumberOfOccurrence(
-	family: Exclude<AvailableTypeFamily, 'lNodeType'>,
-	valueToTest: string,
-	needsSubstring: boolean
-) {
-	const lastElementOfSameKind = Object.values(
-		typeElementsStore.typeElementsPerFamily[family]
-	)
-		.filter((typeElement) => {
-			if (needsSubstring) {
-				const currentElementNameLength =
-					typeElement.attributes?.name.length
-				const currentElementNameOccurrenceAsStringLength =
-					typeElement.attributes?.name.match(/\d+$/)?.[0].length
-				const extraUnderscoreCharacter = 1
-
-				const numberOfCharactersToRemove =
-					currentElementNameLength -
-					currentElementNameOccurrenceAsStringLength -
-					extraUnderscoreCharacter
-
-				return (
-					typeElement.attributes?.name?.substring(
-						0,
-						numberOfCharactersToRemove
-					) === valueToTest
-				)
-			}
-			return typeElement.attributes?.name === valueToTest
-		})
-		.slice(-1)?.[0]
-
-	const occurrence = Number(
-		lastElementOfSameKind?.attributes?.name?.match(/\d+$/)?.[0] || 0
-	)
-
-	return occurrence + 1
 }
 
 //====== WATCHERS ======//

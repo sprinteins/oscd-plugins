@@ -1,15 +1,19 @@
+// CORE
+import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
 // STORES
 import { pluginLocalStore } from '@/headless/stores'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
 import { REF_FAMILY_MAP, TYPE_FAMILY_MAP } from '@/headless/constants'
 // HELPERS
 import { getAndMapTypeElements } from './consolidate-types.helper'
 import {
 	createNewType,
-	updateType,
-	deleteType
+	duplicateType,
+	deleteTypeAndRefs
 } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
+import { getTypeNextOccurrence } from './type-naming.helper'
 // TYPES
 import type {
 	TypeElementsPerFamily,
@@ -76,7 +80,7 @@ class UseTypeElementsStore {
 		}
 	})
 
-	getUniqueTypeRefsFunctionIds(family: AvailableTypeFamily) {
+	getUniqueTypeRefsFunctionIds(family: AvailableTypeFamily): string[] {
 		return Array.from(
 			// remove duplicates with a Set
 			new Set(
@@ -94,7 +98,6 @@ class UseTypeElementsStore {
 		const conductingEquipmentTypeRefsFunctionIds =
 			this.getUniqueTypeRefsFunctionIds('conductingEquipmentType')
 
-		// is EqFunction if it is not part of ConductingEquipment or Bay per Definition
 		const eqFunctionsIds = [
 			...generalEquipmentTypeRefsFunctionIds,
 			...conductingEquipmentTypeRefsFunctionIds
@@ -121,7 +124,18 @@ class UseTypeElementsStore {
 			REF_FAMILY_MAP.lNode
 	})
 
-	//====== PRIVATE ACTIONS ======//
+	parentElementWrapperPerColumnKey: Record<
+		Exclude<keyof Columns, 'lNodeType'>,
+		Element | undefined | null
+	> = $derived({
+		bay: pluginLocalStore.substationsSubElements?.[0].voltageLevel?.[0],
+		equipmentTypeTemplates:
+			pluginLocalStore.rootSubElements?.equipmentTypeTemplates,
+		functionTemplate:
+			pluginLocalStore.currentUnstableRevisionRootPrivateWrapper
+	})
+
+	//====== PRIVATE METHODS ======//
 
 	private getFunctionTemplateRefFamily(elementId: string) {
 		if (this.functionsIdsByType.eqFunctionsIds.includes(elementId))
@@ -146,13 +160,17 @@ class UseTypeElementsStore {
 		}[typeFamily]()
 	}
 
+	//====== PUBLIC METHODS ======//
+
 	//====== PROXY TO HELPERS ======//
 	// type
 	createNewType = createNewType
-	updateType = updateType
-	deleteType = deleteType
+	duplicateType = duplicateType
+	deleteTypeAndRefs = deleteTypeAndRefs
 	// ref
 	createNewRef = createNewRef
+	// naming
+	getTypeNextOccurrence = getTypeNextOccurrence
 }
 
 export const typeElementsStore = new UseTypeElementsStore()

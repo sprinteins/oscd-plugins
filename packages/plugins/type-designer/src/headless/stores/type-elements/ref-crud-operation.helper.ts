@@ -15,11 +15,17 @@ import {
 // TYPES
 import type { AvailableRefFamily } from '@/headless/stores'
 
-export function createNewRef({
-	family,
-	sourceTypeIdOrUuid,
-	parentTypeWrapper
-}: {
+/**
+ * Creates a new reference element and dispatches an edit event.
+ *
+ * @param params - The parameters for creating the new reference.
+ * @param params.family - The family of the reference.
+ * @param params.sourceTypeIdOrUuid - The source type ID or UUID.
+ * @param params.parentTypeWrapper - The parent element to which the new reference will be added.
+ *
+ * @throws If there is no XML document or host available in the global store.
+ */
+export function createNewRef(params: {
 	family: AvailableRefFamily
 	sourceTypeIdOrUuid: string
 	parentTypeWrapper: Element
@@ -35,36 +41,36 @@ export function createNewRef({
 		}[]
 	}
 
-	if (family === REF_FAMILY_MAP.lNode) {
+	if (params.family === REF_FAMILY_MAP.lNode) {
 		attributesPayload = {
 			attributes: {
-				lnType: sourceTypeIdOrUuid
+				lnType: params.sourceTypeIdOrUuid
 			}
 		}
 	} else {
 		attributesPayload =
-			REF_ATTRIBUTES_KIND_BY_REF_FAMILY[family] === KIND.custom
+			REF_ATTRIBUTES_KIND_BY_REF_FAMILY[params.family] === KIND.custom
 				? {
 						attributesNS: [
 							{
 								namespace:
 									pluginLocalStore.namespaces.currentPlugin,
 								attributes: {
-									type: sourceTypeIdOrUuid
+									type: params.sourceTypeIdOrUuid
 								}
 							}
 						]
 					}
 				: {
 						attributes: {
-							type: sourceTypeIdOrUuid
+							type: params.sourceTypeIdOrUuid
 						}
 					}
 	}
 	const newRefElement = createStandardElement({
 		xmlDocument: pluginGlobalStore.xmlDocument,
 		element: {
-			family
+			family: params.family
 		},
 		...attributesPayload,
 		currentEdition: pluginLocalStore.currentEdition,
@@ -74,7 +80,7 @@ export function createNewRef({
 	createAndDispatchEditEvent({
 		host: pluginGlobalStore.host,
 		edit: {
-			parent: parentTypeWrapper,
+			parent: params.parentTypeWrapper,
 			node: newRefElement,
 			reference: null
 		}

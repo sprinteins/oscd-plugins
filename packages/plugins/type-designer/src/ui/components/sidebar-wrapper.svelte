@@ -1,7 +1,12 @@
 	
 <script lang="ts">
 // COMPONENTS
-import { Sidebar, Input, Label } from '@oscd-plugins/core-ui-svelte'
+import {
+	Sidebar,
+	Input,
+	Label,
+	pluginGlobalStore
+} from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
 import {
 	READONLY_ATTRIBUTES,
@@ -69,7 +74,7 @@ function isAttributeReadonly(attributeKey: string) {
 								id={attributeKey}
 								placeholder={isAttributeReadonly(attributeKey) ? '' : attributeKey}
 								bind:value={sidebarStore.currentElementType.attributes[attributeKey]}
-								oninput={() => typeElementsStore.updateType(attributeKey)}
+								oninput={() => sidebarStore.currentElementType && pluginGlobalStore.updateElement({ element: sidebarStore.currentElementType.element, attributes: sidebarStore.currentElementType.attributes })}
 							/>
 						{/if}
 					</div>
