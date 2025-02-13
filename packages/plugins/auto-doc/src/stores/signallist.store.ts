@@ -310,118 +310,24 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
     const matchedValueAndCorrespondingPublisher : PdfRowStructure [] = [];
     const allMessagePublishers: MessagePublisher[] = [];
 
+    const filterSearchKeys = Object.keys(filter) as (keyof MessagePublisherFilter)[];
     for (const publisher of messagePublishers) {
         const valuesMatched = [];
         let allFiltersMatch = true;
 
-        if (filter.M_text !== undefined) {
-            if (publisher.M_text.toLocaleLowerCase().includes(filter.M_text.toLocaleLowerCase()) || (filter.M_text.trim() === '')) {
-                valuesMatched.push(publisher.M_text);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.IEDName !== undefined) {
-            if (publisher.IEDName.toLocaleLowerCase().includes(filter.IEDName.toLocaleLowerCase()) || (filter.IEDName.trim() === '')) {
-                valuesMatched.push(publisher.IEDName);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.UW !== undefined) {
-            if (publisher.UW.toLocaleLowerCase().includes(filter.UW.toLocaleLowerCase()) || (filter.UW.trim() === '')) {
-                valuesMatched.push(publisher.UW);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.VoltageLevel !== undefined) {
-            if (publisher.VoltageLevel.toLocaleLowerCase().includes(filter.VoltageLevel.toLocaleLowerCase()) || (filter.VoltageLevel.trim() === '')) {
-                valuesMatched.push(publisher.VoltageLevel);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        // LNs check
-        if (filter.LogicalNodeIEDName !== undefined) {
-            if (publisher.logicalNodeInofrmation.IEDName.toLocaleLowerCase().includes(filter.LogicalNodeIEDName.toLocaleLowerCase()) || (filter.LogicalNodeIEDName.trim() === '')) {
-                valuesMatched.push(publisher.logicalNodeInofrmation.IEDName);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.LogicalDeviceInstance !== undefined) {
-            if (publisher.logicalNodeInofrmation.LogicalDeviceInstance.toLocaleLowerCase().includes(filter.LogicalDeviceInstance.toLocaleLowerCase()) || (filter.LogicalDeviceInstance.trim() === '')) {
-                valuesMatched.push(publisher.logicalNodeInofrmation.LogicalDeviceInstance);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.LogicalNodePrefix !== undefined) {
-            if (publisher.logicalNodeInofrmation.LogicalNodePrefix.toLocaleLowerCase().includes(filter.LogicalNodePrefix.toLocaleLowerCase()) || (filter.LogicalNodePrefix.trim() === '')) {
-                valuesMatched.push(publisher.logicalNodeInofrmation.LogicalNodePrefix);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.LogicalNodeClass !== undefined) {
-            if (publisher.logicalNodeInofrmation.LogicalNodeClass.toLocaleLowerCase().includes(filter.LogicalNodeClass.toLocaleLowerCase()) || (filter.LogicalNodeClass.trim() === '')) {
-                valuesMatched.push(publisher.logicalNodeInofrmation.LogicalNodeClass);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.LogicalNodeInstance !== undefined) {
-            if (publisher.logicalNodeInofrmation.LogicalNodeInstance.toLocaleLowerCase().includes(filter.LogicalNodeInstance.toLocaleLowerCase()) || (filter.LogicalNodeInstance.trim() === '')) {
-                valuesMatched.push(publisher.logicalNodeInofrmation.LogicalNodeInstance);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.LogicalNodeType !== undefined) {
-            if (publisher.logicalNodeInofrmation.LogicalNodeType.toLocaleLowerCase().includes(filter.LogicalNodeType.toLocaleLowerCase()) || (filter.LogicalNodeType.trim() === '')) {
-                valuesMatched.push(publisher.logicalNodeInofrmation.LogicalNodeType);
-            } else {
-                allFiltersMatch = false;
-            }
+
+        for(const searKey of filterSearchKeys) {
+            const substringSearch = filter[searKey];
+            if(substringSearch !== undefined) {
+                const publisherValueFromSearchKey : string = getValueFromNestedProperty(publisher, searKey);
+                if(publisherValueFromSearchKey.toLocaleLowerCase().includes(substringSearch.toLocaleLowerCase()) || (substringSearch.trim() === '')){
+                    valuesMatched.push(publisherValueFromSearchKey);
+                }else{
+                    allFiltersMatch = false
+                }
+            }       
         }
 
-        // Dos check
-        if (filter.DataObjectName !== undefined) {
-            if (publisher.dataObjectInformation.DataObjectName.toLowerCase().includes(filter.DataObjectName.toLowerCase()) || (filter.DataObjectName.trim() === '')) {
-                valuesMatched.push(publisher.dataObjectInformation.DataObjectName);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.DataAttributeName !== undefined) {
-            if (publisher.dataObjectInformation.DataAttributeName.toLowerCase().includes(filter.DataAttributeName.toLowerCase()) || (filter.DataAttributeName.trim() === '')) {
-                valuesMatched.push(publisher.dataObjectInformation.DataAttributeName);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.CommonDataClass !== undefined) {
-            if (publisher.dataObjectInformation.CommonDataClass.toLowerCase().includes(filter.CommonDataClass.toLowerCase()) || (filter.CommonDataClass.trim() === '')) {
-                valuesMatched.push(publisher.dataObjectInformation.CommonDataClass);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.AttributeType !== undefined) {
-            if (publisher.dataObjectInformation.AttributeType.toLowerCase().includes(filter.AttributeType.toLowerCase()) || (filter.AttributeType.trim() === '')) {
-                valuesMatched.push(publisher.dataObjectInformation.AttributeType);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if (filter.FunctionalConstraint !== undefined) {
-            if (publisher.dataObjectInformation.FunctionalConstraint.toLowerCase().includes(filter.FunctionalConstraint.toLowerCase()) || (filter.FunctionalConstraint.trim() === '')) {
-                valuesMatched.push(publisher.dataObjectInformation.FunctionalConstraint);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
         if (allFiltersMatch) {
             allMessagePublishers.push(publisher);
             matchedValueAndCorrespondingPublisher.push({matchedFilteredValuesForPdf:[valuesMatched], publisher, matchedSubscribers: []})
@@ -429,6 +335,27 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
     }
     pdfRowValues.update(() => [...matchedValueAndCorrespondingPublisher])
     return  allMessagePublishers
+}
+
+function getValueFromNestedProperty(publisher: MessagePublisher, key: keyof MessagePublisherFilter): string {
+    const keyMap: Partial<Record<keyof MessagePublisherFilter, string>> = {
+        LogicalNodeIEDName: "logicalNodeInofrmation.IEDName",
+        LogicalDeviceInstance: "logicalNodeInofrmation.LogicalDeviceInstance",
+        LogicalNodePrefix: "logicalNodeInofrmation.LogicalNodePrefix",
+        LogicalNodeClass: "logicalNodeInofrmation.LogicalNodeClass",
+        LogicalNodeInstance: "logicalNodeInofrmation.LogicalNodeInstance",
+        LogicalNodeType: "logicalNodeInofrmation.LogicalNodeType",
+        DataObjectName: "dataObjectInformation.DataObjectName",
+        DataAttributeName: "dataObjectInformation.DataAttributeName",
+        CommonDataClass: "dataObjectInformation.CommonDataClass",
+        AttributeType: "dataObjectInformation.AttributeType",
+        FunctionalConstraint: "dataObjectInformation.FunctionalConstraint",
+    };
+
+    const path = keyMap[key] || key;
+
+    const value: string = path.split('.').reduce((pub, k) => (pub ? pub[k] : ""), publisher) as unknown as string;
+    return value;
 }
 
 function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filter: MessageSubscriberFilter): MessageSubscriberAndPdfContent {

@@ -3,6 +3,7 @@ import { writable, type Writable } from 'svelte/store';
 import { signallistStore } from './signallist.store';
 import { pluginStore } from './plugin.store';
 import { SignalType } from './signallist.store.d';
+import type {MessagePublisherFilter, MessageSubscriberFilter, MessagePublisher, MessageSubscriber} from '@/stores/signallist.store.d'
 
 
 describe('Signallist', () => {
@@ -136,7 +137,7 @@ describe('Signallist', () => {
   });
 
   it('should find subscribing logical devices', () => {
-    const messagePublishers = [
+    const messagePublishers: MessagePublisher[] = [
       {
         UW: '',
         VoltageLevel: '',
@@ -527,7 +528,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on M_text regex', () => {
-    const filter = { M_text: "LS SF6 Verlust" };
+    const filter: MessagePublisherFilter = { M_text: "LS SF6 Verlust" };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -557,7 +558,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on signalType regex', () => {
-    const filter = { signalType: "GOOSE" };
+    const filter: MessagePublisherFilter = { signalType: "GOOSE" };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -609,7 +610,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on IEDName regex', () => {
-    const filter = { IEDName: "IED1" };
+    const filter: MessagePublisherFilter = { IEDName: "IED1" };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -661,7 +662,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on logicalNodeInofrmation regex', () => {
-    const filter = {  LogicalDeviceInstance: "LD1"  };
+    const filter: MessagePublisherFilter = {  LogicalDeviceInstance: "LD1"  };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -713,7 +714,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on dataObjectInformation regex', () => {
-    const filter = {  DataObjectName: "do1"  };
+    const filter: MessagePublisherFilter = {  DataObjectName: "do1"  };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
     expect(messagePublishers).toEqual([
@@ -743,16 +744,13 @@ describe('Signallist', () => {
   });
 
   it('should filter message publishers based on multiple regex filters', () => {
-    const filter = {
+    const filter : MessagePublisherFilter = {
       M_text: "LS SF6 Verlust",
       signalType: "GOOSE",
       IEDName: "IED1",
-      logicalNodeInofrmation: {
-        LogicalDeviceInstance: "LD1"
-      },
-      dataObjectInformation: {
-        DataObjectName: "do1"
-      }
+      LogicalDeviceInstance: "LD1",
+      DataObjectName: "do1"
+      
     };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
@@ -783,7 +781,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message subscribers based on IDEName regex', () => {
-    const messagePublishers = [
+    const messagePublishers: MessagePublisher[] = [
       {
         UW: '',
         VoltageLevel: '',
@@ -808,7 +806,7 @@ describe('Signallist', () => {
       }
     ];
 
-    const filter = { IDEName: "IED2" };
+    const filter: MessageSubscriberFilter = { IDEName: "IED2" };
     const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 
     expect(messageSubscribers).toEqual([
@@ -833,7 +831,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message subscribers based on serviceType regex', () => {
-    const messagePublishers = [
+    const messagePublishers: MessagePublisher[] = [
       {
         UW: '',
         VoltageLevel: '',
@@ -858,7 +856,7 @@ describe('Signallist', () => {
       }
     ];
 
-    const filter = { serviceType: "GOOSE" };
+    const filter: MessageSubscriberFilter = { serviceType: "GOOSE" };
     const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 
     expect(messageSubscribers).toEqual([
@@ -900,7 +898,7 @@ describe('Signallist', () => {
   });
 
   it('should filter message subscribers based on multiple regex filters', () => {
-    const messagePublishers = [
+    const messagePublishers : MessagePublisher[] = [
       {
         UW: '',
         VoltageLevel: '',
@@ -925,7 +923,7 @@ describe('Signallist', () => {
       }
     ];
 
-    const filter = {
+    const filter : MessageSubscriberFilter = {
       IDEName: "IED3",
       serviceType: "GOOSE"
     };
