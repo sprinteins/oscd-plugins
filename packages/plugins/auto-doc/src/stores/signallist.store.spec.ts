@@ -138,6 +138,8 @@ describe('Signallist', () => {
   it('should find subscribing logical devices', () => {
     const messagePublishers = [
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
@@ -783,6 +785,8 @@ describe('Signallist', () => {
   it('should filter message subscribers based on IDEName regex', () => {
     const messagePublishers = [
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
@@ -831,6 +835,8 @@ describe('Signallist', () => {
   it('should filter message subscribers based on serviceType regex', () => {
     const messagePublishers = [
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
@@ -896,6 +902,8 @@ describe('Signallist', () => {
   it('should filter message subscribers based on multiple regex filters', () => {
     const messagePublishers = [
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
