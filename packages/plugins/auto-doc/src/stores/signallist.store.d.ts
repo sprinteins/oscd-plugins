@@ -29,6 +29,9 @@ export enum Columns{
 }
 
 export type MessagePublisher = {
+    UW: string;
+    VoltageLevel: string;
+    // Bay: string;
     M_text: string;
     signalType: SignalType;
     IEDName: string;

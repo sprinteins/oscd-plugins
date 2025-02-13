@@ -69,6 +69,7 @@ function getSubscribingLogicalDevices(messagePublishers: MessagePublisher[], fil
 
     for (const messagePublisher of messagePublishers) {
         const IEDs = Array.from(xmlDoc.querySelectorAll('IED')).filter(ied => ied.getAttribute('name') !== messagePublisher.IEDName);
+       
         for (const ied of IEDs) {
             processIEDForSubscribers(ied, messagePublisher, messageSubscribers, invaliditiesReports);
         }
@@ -134,6 +135,14 @@ function processFCDA(FCDA: Element, lDevice: Element, ied: Element, dataTypeTemp
 }
 
 function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string, lnInst: string, doName: string, daName:string, fc: string, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
+    const substation = xmlDoc.querySelector('Substation');
+    const substationName = substation ? substation.getAttribute('name') || '' : '';
+    const voltageLevel = substation?.querySelector("VoltageLevel")?.getAttribute('name')|| '';
+
     const DOIs = ln.querySelectorAll('DOI');
     for (const DOI of DOIs) {
 
@@ -194,7 +203,7 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                     publisher.dataObjectInformation.FunctionalConstraint === fc
                 );
                 if (!isDuplicate) {
-                    messagePublishers.push({ M_text: desc, signalType, IEDName, logicalNodeInofrmation, dataObjectInformation });
+                    messagePublishers.push({ UW: substationName, VoltageLevel: voltageLevel, M_text: desc, signalType, IEDName, logicalNodeInofrmation, dataObjectInformation });
                 }
             }
         }
@@ -315,6 +324,20 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
         if (filter.IEDName !== undefined) {
             if (publisher.IEDName.toLocaleLowerCase().includes(filter.IEDName.toLocaleLowerCase()) || (filter.IEDName.trim() === '')) {
                 valuesMatched.push(publisher.IEDName);
+            } else {
+                allFiltersMatch = false;
+            }
+        }
+        if (filter.UW !== undefined) {
+            if (publisher.UW.toLocaleLowerCase().includes(filter.UW.toLocaleLowerCase()) || (filter.UW.trim() === '')) {
+                valuesMatched.push(publisher.UW);
+            } else {
+                allFiltersMatch = false;
+            }
+        }
+        if (filter.VoltageLevel !== undefined) {
+            if (publisher.VoltageLevel.toLocaleLowerCase().includes(filter.VoltageLevel.toLocaleLowerCase()) || (filter.VoltageLevel.trim() === '')) {
+                valuesMatched.push(publisher.VoltageLevel);
             } else {
                 allFiltersMatch = false;
             }

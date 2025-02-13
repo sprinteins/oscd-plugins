@@ -89,6 +89,8 @@ describe('Signallist', () => {
 
     expect(messagePublishers).toEqual([
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -109,6 +111,8 @@ describe('Signallist', () => {
         }
       },
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -526,6 +530,8 @@ describe('Signallist', () => {
 
     expect(messagePublishers).toEqual([
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -554,6 +560,8 @@ describe('Signallist', () => {
 
     expect(messagePublishers).toEqual([
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -574,6 +582,8 @@ describe('Signallist', () => {
         }
       },
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -602,6 +612,8 @@ describe('Signallist', () => {
 
     expect(messagePublishers).toEqual([
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -622,6 +634,8 @@ describe('Signallist', () => {
         }
       },
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -650,6 +664,8 @@ describe('Signallist', () => {
 
     expect(messagePublishers).toEqual([
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -670,6 +686,8 @@ describe('Signallist', () => {
         }
       },
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -698,6 +716,8 @@ describe('Signallist', () => {
 
     expect(messagePublishers).toEqual([
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -736,6 +756,8 @@ describe('Signallist', () => {
 
     expect(messagePublishers).toEqual([
       {
+        UW: '',
+        VoltageLevel: '',
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
