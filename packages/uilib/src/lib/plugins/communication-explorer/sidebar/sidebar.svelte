@@ -7,6 +7,8 @@
     	selectIEDNode,
     	clearSelection,
     	setNameFilter,
+        clearIEDSelection,
+        toggleMultiSelectionOfIED,
     } from "../_store-view-filter/selected-filter-store-functions"
     import ConnectionSelector from "./assets/connection-selector.svg"
     import type { BayNode, IEDNode, RootNode } from "../../../components/diagram"
@@ -17,8 +19,11 @@
     import { preferences$ } from "../_store-preferences"
 
     export let rootNode: RootNode
+    export let bays: string[]
+    let IEDs = rootNode.children;  
+    let searchQuery = ""
+    let filterTextFieldFocused = false
 
-    $: IEDSelectionIDs = $filterState?.selectedIEDs.map((ied) => ied.id)
     $: IEDSelections = $filterState?.selectedIEDs
     $: ConnectionSelection = $filterState.selectedConnection
     $: selectedMessageTypes = $filterState.selectedMessageTypes
@@ -28,8 +33,8 @@
     	$filterState,
     	isIedFiltersDisabled
     )
-
-    let selectedNode: IEDNode | BayNode | undefined
+    $: filteredIEDs = (searchQuery && IEDs?.filter(ied => ied.label.toLowerCase().includes(searchQuery.toLowerCase()))) || IEDs
+    $: filteredBays = (searchQuery && bays?.filter(bay => bay.toLowerCase().includes(searchQuery.toLowerCase()))) || bays
 
     function handleConnectionDirectionDisabled(
     	filter: SelectedFilter,
@@ -37,21 +42,10 @@
     ): boolean {        
     	if (iedFilterDisabled) return true
 
-        searchQuery = ""
     	const selectedIEDs = filter?.selectedIEDs
     	const selectedCon = filter?.selectedConnection?.id
 
         return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
-    }
-
-    function setSelectedNode(e: Event) {
-    	const target = e.target as HTMLSelectElement
-    	selectedNode = rootNode.children.find(
-    		(node: IEDNode | BayNode) => node.id === target.value
-    	)
-    	if (selectedNode) {
-    		selectIEDNode(selectedNode)
-    	}
     }
 
     function handleNameFilterChange(e: Event) {
@@ -59,15 +53,23 @@
     	setNameFilter(target.value)
     }
 
-    let searchQuery = "";
-    $: filteredNodes = rootNode.children.filter((node) =>
-        node.label.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-
-    function handleIEDSearch(e: Event) {
-        IEDSelectionIDs = [""]; 
-        const target = e.target as HTMLInputElement;
-        searchQuery = target.value;
+    function handleDropdownSelect(e: Event) {
+        const target = e.target as HTMLElement;
+	    searchQuery = target.innerText|| '';
+        if (bays.includes(searchQuery)) {
+            clearIEDSelection()
+            for (const node of rootNode.children) {
+                if (node.bays.has(searchQuery)) {
+                    toggleMultiSelectionOfIED(node)
+                }
+            }
+        }
+        else {
+            let selectedNode = rootNode.children.find(node => node.label == searchQuery)
+            if (selectedNode) {
+                selectIEDNode(selectedNode)
+            }
+        }
     }
 
     function clearAll() {
@@ -86,40 +88,44 @@
             </a>
         </div>
 
-        <div class="ied-nodes">
+        <div class="search_filter">
             <img src={ConnectionSelector} alt="connection selector" />
-            <label>
-                <span>Select an IED</span>
+            <div class="search_container">
                 <input
                     type="text"
-                    placeholder="Filter IED"
+                    placeholder="Filter IED or bay"
                     bind:value={searchQuery}
-                    on:input={handleIEDSearch}
+                    on:focus={()=> filterTextFieldFocused = true}
+                    on:blur={()=> filterTextFieldFocused = false}
                 />
-                <select
-                    value={IEDSelectionIDs[0] ?? ""}
-                    on:change={setSelectedNode}
-                >
-                    <option value="" disabled>
-                        {#if searchQuery === ""}
-                            Select an IED
-                        {:else}
-                            {filteredNodes.length} IED(s) found
+                {#if filterTextFieldFocused}
+                    <div class="dropdown">
+                        {#if filteredIEDs.length > 0}
+                            <div class="dropdown_label">
+                                IEDs ({filteredIEDs.length})
+                            </div>
+                            {#each filteredIEDs as ied}
+                                <div class="dropdown_content" role="button" tabindex="0" on:mousedown={handleDropdownSelect}>
+                                    {ied.label}
+                                </div>
+                            {/each}
+                            {#if filteredBays.length > 0}
+                                <hr>
+                            {/if}
                         {/if}
-                    </option>
-                    {#if filteredNodes.length > 0}
-                        {#each filteredNodes as node}
-                            <option
-                                selected={(IEDSelectionIDs[0] ?? "") ===
-                                    node.id}
-                                value={node.id}
-                            >
-                                {node.label}
-                            </option>
-                        {/each}
-                    {/if}
-                </select>
-            </label>
+                        {#if filteredBays.length > 0}
+                            <div class="dropdown_label">
+                                bays ({filteredBays.length})
+                            </div>
+                            {#each filteredBays as bay}
+                                <div class="dropdown_content" role="button" tabindex="0" on:mousedown={handleDropdownSelect}>
+                                    {bay}
+                                </div>
+                            {/each}
+                        {/if}
+                    </div>  
+                {/if} 
+            </div>
         </div>
 
         <div class="centered">
@@ -139,9 +145,9 @@
         {#if IEDSelections.length > 0}
             <hr class="seperation-line" />
             <ul class="ied-detail-list">
-                {#each IEDSelections as IEDSelections}
+                {#each IEDSelections as IEDSelection}
                     <li>
-                        <IEDAccordion IEDSelection={IEDSelections} {rootNode} />
+                        <IEDAccordion {IEDSelection} {rootNode} />
                     </li>
                 {/each}
             </ul>
@@ -220,32 +226,64 @@
         min-width: 330px;
     }
 
-    .ied-nodes {
+    .search_filter {
         display: flex;
         align-items: center;
         gap: 1rem;
         margin-bottom: 2rem;
     }
 
-    .ied-nodes img {
-        margin-top: 0.9rem;
+    .search_filter img {
         height: 1.3rem;
         width: 1.3rem;
     }
 
-    .ied-nodes label {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        flex-grow: 1;
-        max-width: 80%;
-    }
-
-    .ied-nodes select {
+    .search_container {
+        position: relative;
         width: 100%;
-        padding: 0.5rem 1rem;
     }
 
+    .search_container input {
+        padding: 14px 20px 12px 15px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .dropdown {
+        position: absolute;
+        width: 100%;
+    	background-color: #f6f6f6;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+    .dropdown_label {
+    	color: gray;
+    	padding: 8px;
+    	font-size: 1em;
+        box-sizing: border-box;
+    }
+
+    .dropdown_content {
+    	color: black;
+        padding: 4px 16px;
+        text-decoration: none;
+        box-sizing: border-box;
+    }
+    .dropdown_content:hover {
+     	background-color: #ddd;
+    }
+
+    .dropdown hr {
+    	border: none;
+    	background-color: gray;
+    	height: 1px;
+        margin: 0.5em;
+        box-sizing: border-box;
+    }
+    
     .actions {
         display: flex;
         flex-direction: row-reverse;
