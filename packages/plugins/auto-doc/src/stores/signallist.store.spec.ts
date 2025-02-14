@@ -951,4 +951,61 @@ describe('Signallist', () => {
   });
 
 
+  it('filtering for Message subscribers also returns structure for pdf rows creation', () => {
+    const publisherFilter : MessagePublisherFilter = {
+      M_text: "LS SF6 Verlust",
+      IEDName: "IED1",
+    }
+
+    const {messagePublishers} = signallistStore.getPublishingLogicalDevices(publisherFilter);
+
+
+    const filter : MessageSubscriberFilter = {
+      IDEName: "IED3",
+      serviceType: "GOOSE"
+    };
+    const { matchedRows  } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
+
+    expect(matchedRows).toEqual([
+      {
+        matchedFilteredValuesForPdf: [
+          [
+            "LS SF6 Verlust",
+            "IED1",
+            "IED2",
+            "IED2, IED3"
+          ]
+        ],
+        "publisher": {
+          UW: "",
+          VoltageLevel: "",
+          M_text: "LS SF6 Verlust",
+          IEDName: "IED1",
+          dataObjectInformation: {
+            "AttributeType": "BType1",
+            "CommonDataClass": "CDC1",
+            "DataAttributeName": "da1",
+            "DataObjectName": "do1",
+            "FunctionalConstraint": "FC1"
+          },
+          logicalNodeInofrmation: {
+            "IEDName": "IED1",
+            "LogicalDeviceInstance": "LD1",
+            "LogicalNodeClass": "LC1",
+            "LogicalNodeInstance": "1",
+            "LogicalNodePrefix": "",
+            "LogicalNodeType": "LNType1"
+          },
+          signalType: "GOOSE",
+        },
+        matchedSubscribers: [
+          "IED2", "IED3"
+        ]
+      }
+    ]);
+
+
+  });
+
+
 });
