@@ -47,6 +47,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
   
     function processSignalListForPdfGeneration(block: Element){
+        
         if(!block.textContent) {
             console.error("No content found in Signal List Block");
             return;

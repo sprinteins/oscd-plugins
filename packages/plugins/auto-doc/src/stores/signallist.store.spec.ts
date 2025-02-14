@@ -951,7 +951,7 @@ describe('Signallist', () => {
   });
 
 
-  it('filtering for Message subscribers also returns structure for pdf rows creation', () => {
+  it(' Returns pdf structure while filtering for Message subscribers', () => {
     const publisherFilter : MessagePublisherFilter = {
       M_text: "LS SF6 Verlust",
       IEDName: "IED1",
@@ -975,30 +975,86 @@ describe('Signallist', () => {
             "IED3"
           ]
         ],
-        "publisher": {
+        publisher: {
           IEDName: "IED1",
           M_text: "LS SF6 Verlust",
           UW: "",
           VoltageLevel: "",
           dataObjectInformation: {
-            "AttributeType": "BType1",
-            "CommonDataClass": "CDC1",
-            "DataAttributeName": "da1",
-            "DataObjectName": "do1",
-            "FunctionalConstraint": "FC1"
+            AttributeType: "BType1",
+            CommonDataClass: "CDC1",
+            DataAttributeName: "da1",
+            DataObjectName: "do1",
+            FunctionalConstraint: "FC1"
           },
           logicalNodeInofrmation: {
-            "IEDName": "IED1",
-            "LogicalDeviceInstance": "LD1",
-            "LogicalNodeClass": "LC1",
-            "LogicalNodeInstance": "1",
-            "LogicalNodePrefix": "",
-            "LogicalNodeType": "LNType1"
+            IEDName: "IED1",
+            LogicalDeviceInstance: "LD1",
+            LogicalNodeClass: "LC1",
+            LogicalNodeInstance: "1",
+            LogicalNodePrefix: "",
+            LogicalNodeType: "LNType1"
           },
           signalType: "GOOSE",
         },
         matchedSubscribers: [
           "IED3"
+        ]
+      }
+    ]);
+
+
+  });
+
+  it(' Returns pdf structure with no filter for Message subscribers', () => {
+    const publisherFilter : MessagePublisherFilter = {
+      M_text: "LS SF6 Verlust",
+      AttributeType: "BType1",
+    }
+
+    const {messagePublishers} = signallistStore.getPublishingLogicalDevices(publisherFilter);
+
+
+    const filter : MessageSubscriberFilter = {
+      IDEName: "",
+      serviceType: ""
+    };
+    const { matchedRows  } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
+
+    expect(matchedRows).toEqual([
+      {
+        matchedFilteredValuesForPdf: [
+          [
+            "LS SF6 Verlust",
+            "BType1",
+            "IED2",
+            "IED2, IED3"
+          ]
+        ],
+        publisher: {
+          IEDName: "IED1",
+          M_text: "LS SF6 Verlust",
+          UW: "",
+          VoltageLevel: "",
+          dataObjectInformation: {
+            AttributeType: "BType1",
+            CommonDataClass: "CDC1",
+            DataAttributeName: "da1",
+            DataObjectName: "do1",
+            FunctionalConstraint: "FC1"
+          },
+          logicalNodeInofrmation: {
+            IEDName: "IED1",
+            LogicalDeviceInstance: "LD1",
+            LogicalNodeClass: "LC1",
+            LogicalNodeInstance: "1",
+            LogicalNodePrefix: "",
+            LogicalNodeType: "LNType1"
+          },
+          signalType: "GOOSE",
+        },
+        matchedSubscribers: [
+          "IED2", "IED3"
         ]
       }
     ]);

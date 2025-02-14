@@ -361,28 +361,20 @@ function getValueFromNestedProperty(publisher: MessagePublisher, key: keyof Mess
 function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filter: MessageSubscriberFilter): MessageSubscriberAndPdfContent {
 
     const allMessageSubscribers: MessageSubscriber[] = [];
-
     for (const subscriber of messageSubscribers) {
-        const valuesMatched = [];
-        let allFiltersMatch = true;
-        if(filter.IDEName !== undefined) {
-            if (subscriber.IDEName.toLocaleLowerCase().includes(filter.IDEName.toLocaleLowerCase()) || (filter.IDEName.trim() === '')) {
-                valuesMatched.push(subscriber.IDEName);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if(filter.serviceType !== undefined) {
-            if (subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase()) || (filter.serviceType.trim() === '')) {
-                valuesMatched.push(subscriber.ExtRef.serviceType);
-            } else {
-                allFiltersMatch = false;
-            }
-        }
-        if(allFiltersMatch) {
+
+        const matchesIEDName = !filter.IDEName || 
+            subscriber.IDEName.toLocaleLowerCase().includes(filter.IDEName.toLocaleLowerCase()) ||
+            (filter.IDEName.trim() === '');
+
+        const matchesServiceType = !filter.serviceType ||
+            subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase()) ||
+            (filter.serviceType.trim() === '');
+
+        if(matchesIEDName && matchesServiceType){
             allMessageSubscribers.push(subscriber);
             setSubscriberIedNameInCorrespondingPublisher(subscriber, get(pdfRowValues))
-        } 
+        }
     }
         
     return {matchedRows: get(pdfRowValues), subscribers: allMessageSubscribers};
