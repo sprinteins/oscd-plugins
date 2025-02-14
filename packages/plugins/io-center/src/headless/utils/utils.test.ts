@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { generateUniqueId, searchTree } from "./utils";
+import { describe, expect, it } from "vitest";
+import { searchTree } from "./utils";
 import type { TreeNode } from "@/ui/components/object-tree/types.object-tree";
 import { NODE_TYPE } from "../constants";
 
@@ -179,38 +179,5 @@ describe("searchNestedArray", () => {
                 ]
             }
         ]);
-    });
-});
-
-describe('generateUniqueId', () => {
-    let mockDateNow: vi.SpyInstance;
-    let mockMathRandom: vi.SpyInstance;
-
-    beforeEach(() => {
-        mockDateNow = vi.spyOn(Date, 'now').mockReturnValue(1631129100000);
-
-        mockMathRandom = vi.spyOn(Math, 'random').mockReturnValue(0.5);
-    });
-
-    afterEach(() => {
-        mockDateNow.mockRestore();
-        mockMathRandom.mockRestore();
-    });
-
-    it('should generate a unique ID based on current timestamp and random number', () => {
-        const id = generateUniqueId();
-        expect(id).toBe('1631129100000-500');
-    });
-
-    it('should generate a different ID when called multiple times with mocked random values', () => {
-        mockMathRandom.mockReturnValueOnce(0.2).mockReturnValueOnce(0.8);
-
-        const id1 = generateUniqueId();
-        const id2 = generateUniqueId();
-        const id3 = generateUniqueId();
-
-        expect(id1).toBe('1631129100000-200');
-        expect(id2).toBe('1631129100000-800');
-        expect(id3).toBe('1631129100000-500');
     });
 });
