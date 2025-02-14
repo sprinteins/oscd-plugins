@@ -972,15 +972,14 @@ describe('Signallist', () => {
           [
             "LS SF6 Verlust",
             "IED1",
-            "IED2",
-            "IED2, IED3"
+            "IED3"
           ]
         ],
         "publisher": {
+          IEDName: "IED1",
+          M_text: "LS SF6 Verlust",
           UW: "",
           VoltageLevel: "",
-          M_text: "LS SF6 Verlust",
-          IEDName: "IED1",
           dataObjectInformation: {
             "AttributeType": "BType1",
             "CommonDataClass": "CDC1",
@@ -999,7 +998,7 @@ describe('Signallist', () => {
           signalType: "GOOSE",
         },
         matchedSubscribers: [
-          "IED2", "IED3"
+          "IED3"
         ]
       }
     ]);

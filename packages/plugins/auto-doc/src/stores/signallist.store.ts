@@ -374,13 +374,14 @@ function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filte
         }
         if(filter.serviceType !== undefined) {
             if (subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase()) || (filter.serviceType.trim() === '')) {
-                setSubscriberIedNameInCorrespondingPublisher(subscriber, get(pdfRowValues))
+                valuesMatched.push(subscriber.ExtRef.serviceType);
             } else {
                 allFiltersMatch = false;
             }
         }
         if(allFiltersMatch) {
             allMessageSubscribers.push(subscriber);
+            setSubscriberIedNameInCorrespondingPublisher(subscriber, get(pdfRowValues))
         } 
     }
         
@@ -389,7 +390,7 @@ function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filte
 
 function setSubscriberIedNameInCorrespondingPublisher(subscriber: MessageSubscriber, pdfRows: PdfRowStructure[]): void {
     for (const pdfRow of pdfRows) {
-        if(isSubscriberMatch(pdfRow, subscriber)){
+        if(isSubscribedToCurrentPublisher(pdfRow, subscriber)){
             const existingValues = pdfRow.matchedFilteredValuesForPdf[0];
             pdfRow.matchedSubscribers.push(subscriber.IDEName)
 
@@ -400,7 +401,7 @@ function setSubscriberIedNameInCorrespondingPublisher(subscriber: MessageSubscri
     pdfRowValues.update(() => [...pdfRows])
 }
 
-function isSubscriberMatch(pdfRow: PdfRowStructure, subscriber: MessageSubscriber) {
+function isSubscribedToCurrentPublisher(pdfRow: PdfRowStructure, subscriber: MessageSubscriber) {
     return (pdfRow.publisher.IEDName === subscriber.ExtRef.iedName &&
         pdfRow.publisher.logicalNodeInofrmation.LogicalDeviceInstance === subscriber.ExtRef.ldInst &&
         pdfRow.publisher.logicalNodeInofrmation.LogicalNodeClass === subscriber.ExtRef.lnClass &&
