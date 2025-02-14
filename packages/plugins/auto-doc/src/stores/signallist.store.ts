@@ -383,11 +383,9 @@ function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filte
 function setSubscriberIedNameInCorrespondingPublisher(subscriber: MessageSubscriber, pdfRows: PdfRowStructure[]): void {
     for (const pdfRow of pdfRows) {
         if(isSubscribedToCurrentPublisher(pdfRow, subscriber)){
-            const existingValues = pdfRow.matchedFilteredValuesForPdf[0];
-            pdfRow.matchedSubscribers.push(subscriber.IDEName)
 
-            const concatenatedSubscribers = pdfRow.matchedSubscribers.join(', ')
-            existingValues.push(concatenatedSubscribers)
+            addUniqueSubscribersIEDName(pdfRow, subscriber.IDEName);
+            updateMatchedFilteredValues(pdfRow);
         }
     }   
     pdfRowValues.update(() => [...pdfRows])
@@ -401,6 +399,23 @@ function isSubscribedToCurrentPublisher(pdfRow: PdfRowStructure, subscriber: Mes
         pdfRow.publisher.logicalNodeInofrmation.LogicalNodePrefix === subscriber.ExtRef.prefix &&
         pdfRow.publisher.dataObjectInformation.DataObjectName === subscriber.ExtRef.doName &&
         pdfRow.publisher.dataObjectInformation.DataAttributeName === subscriber.ExtRef.daName);
+}
+
+function addUniqueSubscribersIEDName(pdfRow: PdfRowStructure, subscriberName: string): void {
+    if (!pdfRow.matchedSubscribers.includes(subscriberName)) {
+        pdfRow.matchedSubscribers.push(subscriberName);
+    }
+}
+
+function updateMatchedFilteredValues(pdfRow: PdfRowStructure): void {
+    const concatenatedSubscribers = pdfRow.matchedSubscribers.join(', ');
+    const existingValues = pdfRow.matchedFilteredValuesForPdf[0];
+
+    if (existingValues.length > 0 && pdfRow.matchedSubscribers.includes(existingValues[existingValues.length - 1])) {
+        existingValues[existingValues.length - 1] = concatenatedSubscribers;
+    } else {
+        existingValues.push(concatenatedSubscribers);
+    }
 }
 
 export const signallistStore = {

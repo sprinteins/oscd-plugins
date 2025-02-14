@@ -1027,7 +1027,6 @@ describe('Signallist', () => {
           [
             "LS SF6 Verlust",
             "BType1",
-            "IED2",
             "IED2, IED3"
           ]
         ],
