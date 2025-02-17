@@ -211,11 +211,11 @@ onDestroy(() => {
 
 <div
   use:calulateCoordinates
-  class="grid grid-cols-3 h-full"
+  class="grid grid-cols-3 h-screen p-2 gap-2"
   bind:this={container}
 >
-  <div class="flex flex-col items-center w-full gap-2" data-title="DO">
-    <div class="text-center">DO</div>
+  <div class="flex flex-col items-center w-full gap-2 bg-gray-50" data-title="DO">
+    <div class="text-center">Data Objects</div>
     {#each dataObjects as node}
       <NodeElement
         {node}
@@ -226,8 +226,8 @@ onDestroy(() => {
       />
     {/each}
   </div>
-  <div class="flex flex-col items-center w-full gap-2" data-title="LC">
-    <div class="text-center">LC</div>
+  <div class="flex flex-col items-center w-full gap-2 bg-gray-50" data-title="LC">
+    <div class="text-center">Logical Conditioners</div>
     {#each logicalConditoners as node}
       <NodeElement
         {node}
@@ -238,8 +238,8 @@ onDestroy(() => {
       />
     {/each}
   </div>
-  <div class="flex flex-col items-center w-full gap-2" data-title="LP">
-    <div class="text-center">LP</div>
+  <div class="flex flex-col items-center w-full gap-2 bg-gray-50" data-title="LP">
+    <div class="text-center">Logical Physical Inputs/Outputs</div>
     {#each logicalPhyscials as node}
       <NodeElement
         {node}

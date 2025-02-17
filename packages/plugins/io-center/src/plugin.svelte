@@ -24,6 +24,7 @@
 	import type { Nullable } from "./types";
 	import type { IED } from "./ied/ied";
 	import ObjectTree from "./ui/components/object-tree/object-tree.svelte";
+    import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
 
 	// props
 	const {
@@ -89,10 +90,7 @@
 			<ObjectTree />
 		</div>
 		<div slot="content">
-			Document: {docName}
-			<p>
-				<button onclick={addIED}>Add IED</button>
-			</p>
+			<CanvasArea />
 		</div>
 		<div slot="sidebar-right">sidebar right</div>
 	</Layout>
