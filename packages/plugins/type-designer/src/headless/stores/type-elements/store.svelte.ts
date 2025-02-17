@@ -16,7 +16,7 @@ import { createNewRef } from './ref-crud-operation.helper'
 import { getTypeNextOccurrence } from './type-naming.helper'
 // TYPES
 import type {
-	TypeElementsPerFamily,
+	TypeElementsByFamily,
 	Columns,
 	AvailableTypeFamily,
 	AvailableRefFamily
@@ -25,7 +25,7 @@ import type {
 class UseTypeElementsStore {
 	//====== STATES ======//
 
-	typeElementsPerFamily: TypeElementsPerFamily = $derived.by(() => ({
+	typeElementsPerFamily: TypeElementsByFamily = $derived.by(() => ({
 		bay: getAndMapTypeElements(
 			TYPE_FAMILY_MAP.bay,
 			pluginLocalStore.templateBaysSubElements
@@ -85,7 +85,13 @@ class UseTypeElementsStore {
 			// remove duplicates with a Set
 			new Set(
 				Object.values(this.typeElementsPerFamily[family]).flatMap(
-					(element) => element.refs?.functionTemplate || []
+					(element) =>
+						element.refs
+							? [
+									...Object.keys(element.refs.function),
+									...Object.keys(element.refs.eqFunction)
+								]
+							: []
 				)
 			)
 		)

@@ -8,7 +8,7 @@ import type {
 	AvailableTypeFamily,
 	Columns,
 	Column,
-	TypeElements
+	TypeElementByIds
 } from '@/headless/stores'
 
 //======= INITIALIZATION =======//
@@ -22,7 +22,7 @@ const {
 const groupedTypeElementsEntries = $derived(
 	Object.entries(column.groupedTypeElements) as [
 		AvailableTypeFamily,
-		TypeElements<AvailableTypeFamily>
+		TypeElementByIds<AvailableTypeFamily>
 	][]
 )
 </script>

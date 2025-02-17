@@ -1,4 +1,6 @@
 import { setElementsAttributes } from './create-helpers'
+// CONSTANTS
+import { DEFAULT_NAMESPACE_URI } from './constants'
 // TYPES
 import type { CreateCustomElement } from './types.create'
 
@@ -21,7 +23,10 @@ export function createCustomElement({
 			setAttributesToFirstChild
 		})
 	if (wrapWithPrivateElement) {
-		const privateElement = xmlDocument.createElement('Private')
+		const privateElement = xmlDocument.createElementNS(
+			DEFAULT_NAMESPACE_URI,
+			'Private'
+		)
 		privateElement.setAttribute('type', namespace.prefix)
 		privateElement.appendChild(customElement)
 
