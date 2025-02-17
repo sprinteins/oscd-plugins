@@ -113,8 +113,12 @@ const currentRefs = $derived(
 					typeElementFamily
 				)}
 			>
-				<Card.Content class="h-14 flex items-center justify-center min-w-0">
-					<span>Drop <i class="truncate">{currentDraggedItemLabel}</i> here</span>
+				<Card.Content class="h-14 flex items-center justify-center">
+					<span class="mr-1">Drop</span>
+					<div class="overflow-hidden text-ellipsis">
+						<span class="truncate font-bold">{currentDraggedItemLabel}</span>
+					</div>
+					<span class="mr-2">here.</span>
 				</Card.Content>
 			</Card.Root>
 		</div>
