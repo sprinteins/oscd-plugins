@@ -67,6 +67,16 @@ const currentRefs = $derived(
 		RefElementByIds<AvailableRefFamily>
 	][]
 )
+
+const hasRefs = $derived.by(() => {
+	return Object.values(typeElement.refs).some(
+		(ref) => Object.keys(ref).length
+	)
+})
+
+$effect(() => {
+	if (!hasRefs) isElementCardOpen = false
+})
 </script>
 	
 <Collapsible.Root bind:open={isElementCardOpen} class="space-y-2">
@@ -118,7 +128,7 @@ const currentRefs = $derived(
 					<div class="overflow-hidden text-ellipsis">
 						<span class="truncate font-bold">{currentDraggedItemLabel}</span>
 					</div>
-					<span class="mr-2">here.</span>
+					<span class="ml-1">here.</span>
 				</Card.Content>
 			</Card.Root>
 		</div>
