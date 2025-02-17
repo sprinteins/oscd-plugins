@@ -1,20 +1,19 @@
 <script lang="ts">
-import type { NodeProps } from './types.node'
-import { CircleX } from 'lucide-svelte'
+  import type { NodeProps } from "./types.node";
+  import { CircleX } from "lucide-svelte";
 
-let {
-	node,
-	showLeftCircle,
-	showRightCircle,
-	startDrawing,
-	stopDrawing
-}: NodeProps = $props()
+  let {
+    node,
+    showLeftCircle,
+    showRightCircle,
+    startDrawing,
+    stopDrawing,
+  }: NodeProps = $props();
 
-function handleClose() {
-	return
-}
+  function handleClose() {
+    return;
+  }
 </script>
-
 
 <div
   data-title={node.name}
@@ -61,6 +60,6 @@ function handleClose() {
     onclick={handleClose}
     aria-label="Close"
   >
-    <CircleX size=15/>
+    <CircleX size="15" />
   </button>
 </div>
