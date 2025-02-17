@@ -27,11 +27,7 @@ export function namedNodeMapAttributesToPlainObject<
 	const attributesObject = {} as Record<string, string | null>
 
 	if (addAttributesFromDefinition) {
-		const CURRENT_ELEMENT_DEFINITION = getCurrentElementDefinition<
-			GenericElement,
-			GenericEdition,
-			GenericUnstableRevision
-		>({
+		const CURRENT_ELEMENT_DEFINITION = getCurrentElementDefinition({
 			element: addAttributesFromDefinition.element,
 			currentEdition: addAttributesFromDefinition.currentEdition,
 			currentUnstableRevision:
@@ -50,9 +46,12 @@ export function namedNodeMapAttributesToPlainObject<
 
 	return attributesObject as typeof addAttributesFromDefinition extends undefined
 		? Record<string, string | null>
-		: IEC61850.CurrentElementAttributes<
-				GenericElement,
-				GenericEdition,
-				GenericUnstableRevision
+		: Record<
+				keyof IEC61850.CurrentElementAttributes<
+					GenericElement,
+					GenericEdition,
+					GenericUnstableRevision
+				>,
+				string | null
 			>
 }

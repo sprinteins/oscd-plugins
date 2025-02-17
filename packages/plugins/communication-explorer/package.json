@@ -8,7 +8,7 @@
     "build": "vite build",
     "_build:watch": "NODE_ENV=development vite build --watch",
     "build:watch": "concurrently 'npm:_build:watch' 'npm:preview'",
-    "preview": "vite preview --port 61942",
+    "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "npm run check -- --watch",
     "version": "echo $npm_package_version"

@@ -1,11 +1,6 @@
 import { createCustomElement } from './create-custom'
-// GUARDS
-import { isCurrentElementKeyOfCurrentDefinition } from '../utils/guards'
 // HELPERS
-import {
-	getCurrentDefinition,
-	getCurrentElementDefinition
-} from '@/plugin/v1/utils'
+import { getCurrentElementDefinition } from '@/plugin/v1/utils'
 import {
 	setElementsAttributes,
 	checkIfRequiredAttributesArePresent,
@@ -42,11 +37,7 @@ export function createStandardElement<
 	GenericEdition,
 	GenericUnstableRevision
 > {
-	const CURRENT_DEFINITION_ELEMENT = getCurrentElementDefinition<
-		GenericElement,
-		GenericEdition,
-		GenericUnstableRevision
-	>({
+	const CURRENT_DEFINITION_ELEMENT = getCurrentElementDefinition({
 		element: element.family,
 		currentEdition,
 		currentUnstableRevision

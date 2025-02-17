@@ -1,165 +1,149 @@
 <script lang="ts">
-import {
-	Button,
-	Input,
-	Select,
-	SelectWorkaround
-} from '@oscd-plugins/core-ui-svelte'
+// CORE
+import * as ed2 from '@oscd-plugins/core-standard/ed2'
+import { Button, Input, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 // STORES
-import { elementTypesStore } from '@/headless/stores/element-types.svelte'
+import { typeElementsStore } from '@/headless/stores'
 // TYPES
-import type {
-	AvailableFamilies,
-	Columns
-} from '@/headless/stores/types.element-types'
-import type { ItemsPerFamily } from './types.column'
+import type { AvailableTypeFamily, Columns } from '@/headless/stores'
 
 //====== INITIALIZATION ======//
 
 // props
 const {
-	columnKey,
-	type,
-	itemsPerFamily
+	columnKey
 }: {
-	columnKey: keyof Columns
-	type: 'input' | 'select'
-	itemsPerFamily?: ItemsPerFamily
+	columnKey: Exclude<keyof Columns, 'lNodeType'>
 } = $props()
 
-// constants
-const families = {
-	bay: {
-		value: 'bay',
-		label: 'Bay'
-	},
-	generalEquipment: {
-		value: 'generalEquipment',
-		label: 'GenEq'
-	},
-	conductingEquipment: {
-		value: 'conductingEquipment',
-		label: 'CondEq'
-	},
-	function: {
-		value: 'function',
-		label: 'Func'
-	},
-	eqFunction: {
-		value: 'eqFunction',
-		label: 'EqFunc'
-	}
-} as const
-
 // binding
-let newElementInput = $state('')
-let newElementValue = $state('')
-let newElementFamily = $state<AvailableFamilies>()
-
-const newElementName = $derived.by(() => {
-	if (type === 'select' && newElementFamily && itemsPerFamily)
-		return `${triggerContentItems}${elementTypesStore.nextElementName[newElementFamily]}`
-
-	if (!newElementInput && newElementFamily)
-		return elementTypesStore.nextElementName[newElementFamily]
-
-	return newElementInput
-})
+let newTypeInput = $state('')
+let newTypeElement = $state('')
+let newTypeFamily = $state<Exclude<AvailableTypeFamily, 'lNodeType'>>()
 
 //====== REACTIVE VARIABLES ======//
 
-const mappedFamilies = $derived(
-	Object.keys(elementTypesStore.columns[columnKey].groupedElementTypes).map(
-		(family) => families[family as AvailableFamilies]
-	)
-)
+const newElementName = $derived.by(() => {
+	if (!newTypeFamily) return
 
-const triggerContentFamilies = $derived(
-	mappedFamilies.find((family) => family.value === newElementFamily)?.label
-)
-
-const triggerContentItems = $derived.by<string>(() => {
-	if (itemsPerFamily && newElementFamily) {
-		const items = itemsPerFamily[newElementFamily]
-		const selectedItem = items?.find(
-			(item) => item.value === newElementValue
-		)
-		return selectedItem ? selectedItem.label : 'Select an equipment'
+	const namesByFamilies = {
+		bay: `Bay_${typeElementsStore.getTypeNextOccurrence({ family: 'bay', valueToTest: 'Bay', removeOccurrencePartToTestedValue: true })}`,
+		generalEquipmentType: '',
+		conductingEquipmentType: '',
+		functionTemplate: `Func_${typeElementsStore.getTypeNextOccurrence({
+			family: 'functionTemplate',
+			valueToTest: 'Func',
+			removeOccurrencePartToTestedValue: true
+		})}`
 	}
-	return 'Select an equipment'
+
+	if (newTypeInput) {
+		const numberOfOccurrence = typeElementsStore.getTypeNextOccurrence({
+			family: newTypeFamily,
+			valueToTest: newTypeInput,
+			removeOccurrencePartToTestedValue: false
+		})
+		namesByFamilies[newTypeFamily] = `${newTypeInput}_${numberOfOccurrence}`
+	}
+
+	if (
+		newTypeElement &&
+		(newTypeFamily === 'generalEquipmentType' ||
+			newTypeFamily === 'conductingEquipmentType')
+	) {
+		const selectOptionValue =
+			equipmentsSelectOptions.secondarySelect[newTypeFamily].find(
+				(option) => option.value === newTypeElement
+			)?.label || ''
+		const numberOfNameOccurrence = typeElementsStore.getTypeNextOccurrence({
+			family: newTypeFamily,
+			valueToTest: selectOptionValue,
+			removeOccurrencePartToTestedValue: true
+		})
+		namesByFamilies[newTypeFamily] =
+			`${selectOptionValue}_${numberOfNameOccurrence}`
+	}
+
+	return namesByFamilies
 })
 
 const currentAttributes = $derived({
-	name: newElementName,
-	...(newElementValue && { type: newElementValue })
+	name:
+		newTypeFamily && newElementName
+			? newElementName[newTypeFamily]
+			: 'Type_',
+	...(newTypeElement && { type: newTypeElement })
 })
+
+// equipments select options
+const generalEquipments = $derived(
+	Object.values(ed2.rev1.stable.GENERAL_EQUIPMENTS).map((equipment) => ({
+		value: equipment.type,
+		label: equipment.label
+	}))
+)
+const conductingEquipments = $derived(
+	Object.values(ed2.rev1.stable.CONDUCTING_EQUIPMENTS).map((equipment) => ({
+		value: equipment.type,
+		label: equipment.label
+	}))
+)
+const equipmentGroups = $derived({
+	generalEquipmentType: generalEquipments,
+	conductingEquipmentType: conductingEquipments
+})
+const equipmentsSelectOptions = $derived({
+	primarySelect: [
+		{ value: 'generalEquipmentType', label: 'GenEq' },
+		{ value: 'conductingEquipmentType', label: 'CondEq' }
+	],
+	secondarySelect: equipmentGroups
+})
+
 //====== FUNCTIONS ======//
 
 function handleAddNewElement() {
-	if (!newElementFamily || !newElementName) return
+	if (!newTypeFamily) return
 
-	elementTypesStore.createNewElementType({
-		family: newElementFamily,
+	typeElementsStore.createNewType({
+		family: newTypeFamily,
 		attributes: currentAttributes
 	})
-	newElementInput = ''
-	newElementValue = ''
+
+	newTypeInput = ''
+	newTypeElement = ''
 }
 
 //====== WATCHERS ======//
 
 $effect(() => {
-	if (!newElementFamily) newElementFamily = mappedFamilies[0].value
+	if (!newTypeFamily) {
+		if (columnKey === 'equipmentTypeTemplates')
+			newTypeFamily = 'generalEquipmentType'
+		else newTypeFamily = columnKey
+	}
 })
 </script>
 
-{#if mappedFamilies.length > 1 && columnKey !== 'lNodeType'}
 
-
-<!-- TODO: change workaround component to shadcn
-	<Select.Root
-		type="single"
-		bind:value={newElementFamily}
-	>
-		<Select.Trigger class="truncate lg:max-w-24">{triggerContentFamilies}</Select.Trigger>
-		<Select.Content portalProps={{ to: getContext('host').host }} >
-			{#each mappedFamilies as family}
-				<Select.Item value={family.value} label={family.label}>
-					{family.label}
-				</Select.Item>
-			{/each}
-		</Select.Content>
-	</Select.Root> -->
+{#if columnKey === 'equipmentTypeTemplates' }
 	<SelectWorkaround
-		options={mappedFamilies}
-		bind:value={newElementFamily}
+		options={equipmentsSelectOptions.primarySelect}
+		bind:value={newTypeFamily}
+		handleChange={() => {
+			newTypeElement = ''
+		}}
 	/>
-{/if}
-
-{#if type === 'input'}
-	<Input.Root
-		bind:value={newElementInput}
-		placeholder={newElementName}
-	/>
-{:else if type === 'select' && newElementFamily && itemsPerFamily}
-	<!-- TODO: change workaround component to shadcn
-	 <Select.Root
-	type="single"
-	bind:value={newElementValue}
-	>
-		<Select.Trigger class="truncate">{triggerContentItems}</Select.Trigger>
-		<Select.Content class="top-auto left-auto bottom-10 z-10">
-			{#each itemsPerFamily[newElementFamily] as item}
-				<Select.Item value={item.value} label={item.label}>
-					{item.label}
-				</Select.Item>
-			{/each}
-		</Select.Content>
-	</Select.Root> -->
 	<SelectWorkaround
-		options={itemsPerFamily[newElementFamily]}
-		bind:value={newElementValue}
+		options={(newTypeFamily === 'generalEquipmentType' || newTypeFamily === 'conductingEquipmentType') && equipmentsSelectOptions.secondarySelect[newTypeFamily] || []}
+		bind:value={newTypeElement}
 		placeholder="Select Eq"
+	/>
+
+{:else}
+	<Input.Root
+		bind:value={newTypeInput}
+		placeholder={newTypeFamily && newElementName?.[newTypeFamily]}
 	/>
 {/if}
 
@@ -167,7 +151,7 @@ $effect(() => {
 	class="w-full lg:w-auto"
 	variant="ghost"
 	onclick={handleAddNewElement}
-	disabled={!(!!itemsPerFamily && !!newElementValue) && type === 'select'}
+	disabled={columnKey === 'equipmentTypeTemplates' && !(!!newTypeElement)}
 >
 	Add
 </Button.Root>
