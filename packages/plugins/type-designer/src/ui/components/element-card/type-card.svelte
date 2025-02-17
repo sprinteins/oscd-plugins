@@ -22,18 +22,17 @@ import type { TypeElement, AvailableTypeFamily } from '@/headless/stores'
 const {
 	typeElementKey,
 	typeElementFamily,
-	typeElement
+	typeElement,
+	isElementCardOpen
 }: {
 	typeElementKey: string
 	typeElementFamily: AvailableTypeFamily
 	typeElement: TypeElement<typeof typeElementFamily>
+	isElementCardOpen: boolean
 } = $props()
 
 // actions
 const sidebar = Sidebar.useSidebar()
-
-// local states
-let isElementCardOpen = $state(false)
 
 //======= DERIVED STATES =======//
 
@@ -75,7 +74,7 @@ function handleCardClick() {
 </script>
 
 <Card.Root 
-	class="mb-2"
+	class={`mb-2 ${sidebarStore.currentElementTypeKey === typeElementKey ? 'border-primary ring ring-primary ring-offset-2 ring-offset-primary-foreground' : ''}`}
 	onclick={handleCardClick}
 	draggable={typeElementFamily !== TYPE_FAMILY_MAP.bay ? true : false} 
 	ondragstart={(event) => typeRefFamily && dndStore.handleDragStart({
@@ -93,7 +92,7 @@ function handleCardClick() {
 				{#if hasCurrentTypeElementRefs}
 					<Collapsible.Trigger
 						onclick={(event) => event.stopPropagation()}
-						class={Button.buttonVariants({ variant: "ghost", class: "h-10 p-0 mr-2 rounded-full" })}
+						class={Button.buttonVariants({ variant: "ghost", class: "size-10 rounded-full p-0 mr-2" })}
 					>
 						{#if isElementCardOpen}
 							<ChevronDown class="!size-6"/>
@@ -103,7 +102,7 @@ function handleCardClick() {
 					<span class="sr-only">Toggle</span>
 					</Collapsible.Trigger>
 				{:else}
-					<Button.Root variant="ghost" class="h-10 p-0 mr-2 rounded-full" disabled >
+					<Button.Root variant="ghost" class="size-10 rounded-full p-0 mr-2" disabled >
 						<ChevronRight class="!size-6 opacity-40"/>
 					</Button.Root>
 				{/if}

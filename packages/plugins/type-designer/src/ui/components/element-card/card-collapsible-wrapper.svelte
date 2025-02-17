@@ -7,9 +7,9 @@ import {
 	TYPE_FAMILY_MAP
 } from '@/headless/constants'
 // COMPONENTS
-import { fade } from 'svelte/transition'
+import { slide } from 'svelte/transition'
 import { Card, Collapsible } from '@oscd-plugins/core-ui-svelte'
-import CardRoot from './card-root.svelte'
+import TypeCard from './type-card.svelte'
 import CardMenu from './card-menu.svelte'
 // TYPES
 import type {
@@ -71,13 +71,13 @@ const currentRefs = $derived(
 	
 <Collapsible.Root bind:open={isElementCardOpen} class="space-y-2">
 
-	<CardRoot {typeElement} {typeElementKey} {typeElementFamily}/>
+	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen}/>
 
 	<!-- REF CARD START -->
 		<Collapsible.Content  class="space-y-2 flex flex-col items-end">
 			{#snippet child({ props, open: collapsibleContentOpen })}
 				{#if collapsibleContentOpen}
-					<div {...props} transition:fade>
+					<div {...props} transition:slide={{ duration: 100 }}>
 						{#if typeElementFamily !== TYPE_FAMILY_MAP.lNodeType}
 							{#each currentRefs as [refFamily, refElements]}
 								{#each Object.entries(refElements) as [refId, refWrapper]} 
@@ -101,7 +101,7 @@ const currentRefs = $derived(
 
 	<!-- DND PLACEHOLDER START -->
 	{#if dndStore.isDragging && isAllowedToDrop}
-		<div transition:fade class="flex justify-end">
+		<div  class="flex justify-end">
 			<Card.Root
 				class="border-gray-500 border-dashed w-5/6 "
 				ondragover={(event) => dndStore.handleDragOver(event)}
@@ -113,7 +113,7 @@ const currentRefs = $derived(
 					typeElementFamily
 				)}
 			>
-				<Card.Content class="h-14 flex items-center justify-center">
+				<Card.Content class="h-14 flex items-center justify-center min-w-0">
 					<span>Drop <i class="truncate">{currentDraggedItemLabel}</i> here</span>
 				</Card.Content>
 			</Card.Root>
