@@ -5,7 +5,6 @@ import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore} from '@/stores'
 import type {Columns, SignalType} from '@/stores'
 import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list-element/types.signal-list'
-import {signallistStore} from "@/stores"
 
 
 
@@ -54,16 +53,13 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         }
         const parsedBlockContent = JSON.parse(block.textContent) as SignalListOnSCD;
 
-        const pdfRowsWithPublisher = get(signallistStore.pdfRowValues)
-
-        const rows = pdfRowsWithPublisher.flatMap((row) => {
-            return row.matchedFilteredValuesForPdf
-        })
-
         const selectedRows = parsedBlockContent.selected
         const tableRows = parsedBlockContent.matches.matchedRowsForTablePdf
         const tableHeader = generateTableHeader(selectedRows)
-
+        
+        const rows = tableRows.flatMap((row) => {
+            return row.matchedFilteredValuesForPdf
+        })
         
     
         
@@ -71,11 +67,20 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
        
 
         autoTable(doc, {
+            startY: y+10,
             columns: tableHeader,
             body: body,
-            startY: y+10,
-            tableWidth: 'wrap',
-            styles: { cellPadding: 0.5, fontSize: 8 },
+
+            // styles
+            theme: 'grid',
+            columnStyles: {M_text: {}},
+            headStyles: {fillColor: 0, halign: 'center'},
+            styles: { cellPadding: 0.5, fontSize: 8, halign: 'center'  },
+
+            //behavior
+            rowPageBreak: 'auto', 
+            pageBreak: 'avoid',
+            horizontalPageBreak: true,
 
         })
     }
