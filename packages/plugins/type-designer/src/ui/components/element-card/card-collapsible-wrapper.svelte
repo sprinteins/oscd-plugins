@@ -10,8 +10,14 @@ import {
 import { fade } from 'svelte/transition'
 import { Card, Collapsible } from '@oscd-plugins/core-ui-svelte'
 import CardRoot from './card-root.svelte'
+import CardMenu from './card-menu.svelte'
 // TYPES
-import type { TypeElement, AvailableTypeFamily } from '@/headless/stores'
+import type {
+	TypeElement,
+	AvailableTypeFamily,
+	AvailableRefFamily,
+	RefElementByIds
+} from '@/headless/stores'
 
 //======= INITIALIZATION =======//
 
@@ -55,21 +61,12 @@ const currentDraggedItemLabel = $derived(
 		][dndStore.currentSourceTypeIdOrUuid].parameters.label
 )
 
-const sourceTypeFromRefs = $derived.by(() => {
-	const refEntries = Object.entries(typeElement.refs) as [
-		AvailableTypeFamily,
-		string[]
+const currentRefs = $derived(
+	Object.entries(typeElement.refs) as [
+		AvailableRefFamily,
+		RefElementByIds<AvailableRefFamily>
 	][]
-
-	return refEntries.reduce((acc, [typeFamily, refs]) => {
-		for (const ref of refs) {
-			const typeElement =
-				typeElementsStore.typeElementsPerFamily[typeFamily][ref]
-			if (typeElement) acc.push(typeElement)
-		}
-		return acc
-	}, [] as TypeElement<AvailableTypeFamily>[])
-})
+)
 </script>
 	
 <Collapsible.Root bind:open={isElementCardOpen} class="space-y-2">
@@ -77,22 +74,29 @@ const sourceTypeFromRefs = $derived.by(() => {
 	<CardRoot {typeElement} {typeElementKey} {typeElementFamily}/>
 
 	<!-- REF CARD START -->
-	<Collapsible.Content  class="space-y-2 flex flex-col items-end">
-		{#snippet child({ props, open: collapsibleContentOpen })}
-			{#if collapsibleContentOpen}
-				<div {...props} transition:fade>
-					{#each sourceTypeFromRefs as type}
-							<Card.Root class="w-5/6" >
-								<Card.Content class="h-14 flex items-center">
-									<span class="min-w-3 min-h-3 border-teal-700 border-2 transform rotate-45"></span>
-									<span class="ml-4 truncate">{ `Ref_${type?.parameters.label}` }</span>
-								</Card.Content>
-							</Card.Root>
-						{/each}
-				</div>
-			{/if}
-		{/snippet}
-	</Collapsible.Content>
+		<Collapsible.Content  class="space-y-2 flex flex-col items-end">
+			{#snippet child({ props, open: collapsibleContentOpen })}
+				{#if collapsibleContentOpen}
+					<div {...props} transition:fade>
+						{#if typeElementFamily !== TYPE_FAMILY_MAP.lNodeType}
+							{#each currentRefs as [refFamily, refElements]}
+								{#each Object.entries(refElements) as [refId, refWrapper]} 
+									<Card.Root class="w-5/6" >
+										<Card.Content class="h-14 flex items-center justify-between pr-2">
+											<div class="flex items-center min-w-0">
+												<span class="min-w-3 min-h-3 border-teal-700 border-2 transform rotate-45"></span>
+												<span class="ml-4 truncate">{ `Ref_${typeElementsStore.typeElementsPerFamily[refWrapper.source.family][refWrapper.source.id].parameters.label}` }</span>
+											</div>
+											<CardMenu type={{ family: typeElementFamily, id: typeElementKey}} ref={{ family: refFamily, id: refId}}/>
+										</Card.Content>
+									</Card.Root>
+									{/each}
+							{/each}
+						{/if}
+					</div>
+				{/if}
+			{/snippet}
+		</Collapsible.Content>
 	<!-- REF CARD END -->
 
 	<!-- DND PLACEHOLDER START -->

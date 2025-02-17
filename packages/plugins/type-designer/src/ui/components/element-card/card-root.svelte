@@ -2,7 +2,7 @@
 // STORE
 import { dndStore, sidebarStore, typeElementsStore } from '@/headless/stores'
 // CONSTANTS
-import { TYPE_FAMILY_MAP } from '@/headless/constants'
+import { REF_FAMILY_MAP, TYPE_FAMILY_MAP } from '@/headless/constants'
 // COMPONENTS
 import {
 	Card,
@@ -45,6 +45,12 @@ const typeRefFamily = $derived(
 		)
 )
 
+const hasCurrentTypeElementRefs = $derived.by(() => {
+	return Object.values(typeElement.refs).some(
+		(ref) => Object.keys(ref).length
+	)
+})
+
 const cursorPointer = $derived.by(() => {
 	if (typeElementFamily === TYPE_FAMILY_MAP.bay) return 'cursor-pointer'
 	if (dndStore.isDragging) return 'cursor-grabbing'
@@ -84,7 +90,7 @@ function handleCardClick() {
 
 		<div class="flex items-center min-w-0">
 			{#if typeElementFamily !== TYPE_FAMILY_MAP.lNodeType }
-				{#if Object.keys(typeElement.refs)?.length}
+				{#if hasCurrentTypeElementRefs}
 					<Collapsible.Trigger
 						onclick={(event) => event.stopPropagation()}
 						class={Button.buttonVariants({ variant: "ghost", class: "h-10 p-0 mr-2 rounded-full" })}
@@ -105,13 +111,13 @@ function handleCardClick() {
 			<div class="min-w-3 min-h-3 bg-teal-700 transform rotate-45"></div>
 			
 			<div class="ml-6 truncate capitalize">{ typeElement.parameters.label }</div>
-			{#if typeRefFamily === 'eqFunction'}
+			{#if typeRefFamily === REF_FAMILY_MAP.eqFunction}
 				<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">EQ</Badge.Root>
 			{/if}
 		</div>
 		
 		{#if typeElementFamily !== TYPE_FAMILY_MAP.lNodeType }
-			<CardMenu level="type" family={typeElementFamily} id={typeElementKey}/>
+			<CardMenu type={{ family: typeElementFamily, id: typeElementKey }}/>
 		{/if}
 	</Card.Content>
 </Card.Root>
