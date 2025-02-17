@@ -1,24 +1,24 @@
-import type { AvailableStandardVersion } from '@oscd-plugins/core-standard'
-import type { Common } from '@oscd-plugins/core-standard/ed2'
-import type { Utils } from '@/plugin/v1/utils'
+import type { IEC61850 } from '@oscd-plugins/core-standard'
 
 export namespace Xml {
 	export type SclElement<
-		GenericVersion extends AvailableStandardVersion,
-		Family extends keyof Utils.CurrentDefinition<GenericVersion>
+		GenericElement extends IEC61850.AvailableElement<
+			GenericEdition,
+			GenericUnstableRevision
+		>,
+		GenericEdition extends IEC61850.AvailableEdition,
+		GenericUnstableRevision extends
+			| IEC61850.AvailableUnstableRevision<GenericEdition>
+			| undefined = undefined
 	> = Element & {
-		tagName: Utils.CurrentDefinitionElementTag<GenericVersion, Family>
+		tagName: IEC61850.CurrentElementTag<
+			GenericElement,
+			GenericEdition,
+			GenericUnstableRevision
+		>
 	}
 
-	export type SubElementsToSclElements<
-		GenericVersion extends AvailableStandardVersion,
-		Family extends keyof Utils.CurrentDefinition<GenericVersion>
-	> = {
-		[key in keyof Utils.CurrentDefinition<GenericVersion>[Family]['subElements']]: Utils.CurrentDefinition<GenericVersion>[Family]['subElements'][key]['array'] extends boolean
-			? Array<SclElement<GenericVersion, key>>
-			: SclElement<GenericVersion, key>
-	}
-	export type CommonOptions = {
-		root?: Element
+	export type SclCustomElement<TagName> = Element & {
+		tagName: TagName
 	}
 }

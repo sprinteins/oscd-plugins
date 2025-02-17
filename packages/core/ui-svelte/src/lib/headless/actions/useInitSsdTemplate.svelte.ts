@@ -1,6 +1,6 @@
 import { mount, unmount } from 'svelte'
 // CORE
-import { xmlDocumentStore, pluginStore } from '@oscd-plugins/core-ui-svelte'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import {
 	createStandardElement,
 	createAndDispatchEditEvent
@@ -8,20 +8,44 @@ import {
 // COMPONENTS
 import { WrongFileLoaded } from '$lib/ui/index.js'
 // TYPES
-import type { Xml } from '@oscd-plugins/core-api/plugin/v1'
+import type { IEC61850 } from '@oscd-plugins/core-standard'
+import type { Ed2Rev1 } from '../stores/index.js'
 
-export function initSsdTemplate(node: HTMLElement) {
-	const isSsdFile = $derived(xmlDocumentStore.xmlDocumentExtension === 'ssd')
+export function initSsdTemplate(
+	node: HTMLElement,
+	params: {
+		definition: {
+			edition: 'ed2Rev1'
+			revision?: IEC61850.AvailableUnstableRevision<
+				typeof params.definition.edition
+			>
+		}
+		getRootElement: () => Ed2Rev1.RootElement | null | undefined
+		getRootSubElements: () => Partial<Ed2Rev1.RootSubElements> | undefined
+		getSubstationsSubElements: () => Ed2Rev1.SubstationsSubElements
+	}
+) {
+	//====== CONSTANTS ======//
+
+	// biome-ignore lint/suspicious/noExplicitAny: generic type of mounted component
+	let wrongFileLoadedPage: Record<string, any>
+	let wrongFileLoadedContainer: Element | null
+
+	//====== DERIVED STATES ======//
+
+	const isSsdFile = $derived(pluginGlobalStore.xmlDocumentExtension === 'ssd')
+
+	const host = $derived(pluginGlobalStore.host)
+	const rootElement = $derived(params.getRootElement())
+	const rootSubElements = $derived(params.getRootSubElements())
+	const substationsSubElements = $derived(params.getSubstationsSubElements())
 
 	const hasSubstationTemplate = $derived(
-		xmlDocumentStore.rootSubElements?.substation?.[0]?.getAttribute(
-			'name'
-		) === 'TEMPLATE'
+		rootSubElements?.substation?.[0]?.getAttribute('name') === 'TEMPLATE'
 	)
 	const hasVoltageLevelTemplate = $derived(
-		xmlDocumentStore.substationSubElements?.[0].voltageLevel?.[0]?.getAttribute(
-			'name'
-		) === 'TEMPLATE'
+		substationsSubElements?.[0]?.voltageLevel?.[0]?.getAttribute('name') ===
+			'TEMPLATE'
 	)
 
 	const hasSsdTemplate = $derived(
@@ -30,91 +54,101 @@ export function initSsdTemplate(node: HTMLElement) {
 
 	//====== FUNCTIONS ======//
 
-	function createTemplateElement(
-		elementToCreate: 'substation' | 'voltageLevel',
-		parent: Element,
-		reference: Xml.SclElement<'ed2', 'substation'> | null
-	) {
-		if (xmlDocumentStore.xmlDocument) {
-			const newElement = createStandardElement({
-				xmlDocument: xmlDocumentStore.xmlDocument,
-				element: elementToCreate,
-				attributes: {
-					name: 'TEMPLATE'
-				},
-				standardVersion: 'ed3'
-			}) as Xml.SclElement<'ed3', typeof elementToCreate>
+	function getSubstationPayload() {
+		if (!rootElement) throw new Error('No root element')
 
-			if (pluginStore.host) {
-				createAndDispatchEditEvent({
-					host: pluginStore.host,
-					edit: {
-						node: newElement,
-						parent,
-						reference
-					}
-				})
-			}
+		return {
+			parent: rootElement,
+			reference: rootSubElements?.substation?.[0] || null
 		}
 	}
 
-	// biome-ignore lint/suspicious/noExplicitAny: generic type of mounted component
-	let wrongFileLoadedPage: Record<string, any>
-	$effect(() => {
-		// if (!isSsdFile) {
-		// 	if (
-		// 		node.firstElementChild &&
-		// 		node.firstElementChild instanceof HTMLElement
-		// 	)
-		// 		node.firstElementChild.style.display = 'none'
+	function getVoltageLevelPayload() {
+		if (!rootSubElements?.substation?.[0])
+			throw new Error('No substation element')
 
-		// 	wrongFileLoadedPage = mount(WrongFileLoaded, {
-		// 		target: node,
-		// 		props: {
-		// 			errorMessage:
-		// 				'It seems you load the wrong type of file: it should be an SSD file.'
-		// 		}
-		// 	})
-		// } else
-		if (isSsdFile && !hasSsdTemplate) {
-			if (
-				!hasSubstationTemplate &&
-				xmlDocumentStore.rootElement &&
-				xmlDocumentStore.rootSubElements
-			)
-				createTemplateElement(
-					'substation',
-					xmlDocumentStore.rootElement,
-					xmlDocumentStore.rootSubElements.substation[0]
-				)
-			if (
-				hasSubstationTemplate &&
-				!hasVoltageLevelTemplate &&
-				xmlDocumentStore.rootSubElements?.substation?.length
-			)
-				createTemplateElement(
-					'voltageLevel',
-					xmlDocumentStore.rootSubElements?.substation?.[0],
-					null
-				)
+		return {
+			parent: rootSubElements.substation[0],
+			reference: null
 		}
-		// if (
-		// 	node.firstElementChild &&
-		// 	node.firstElementChild instanceof HTMLElement
-		// )
-		// 	node.firstElementChild.style.display = 'block'
-		// } else if (isSsdFile && wrongFileLoadedPage) {
-		// 	unmount(wrongFileLoadedPage, { outro: true })
-		// 	if (
-		// 		node.firstElementChild &&
-		// 		node.firstElementChild instanceof HTMLElement
-		// 	)
-		// 		node.firstElementChild.style.display = 'block'
-		// }
+	}
 
-		// return () => {
-		// 	if (wrongFileLoadedPage)
-		// 		unmount(wrongFileLoadedPage, { outro: true })
-		// }
+	function createTemplateElement(
+		elementToCreate: 'substation' | 'voltageLevel'
+	) {
+		if (!params.definition.revision) throw new Error('No revision provided')
+		if (!host) throw new Error('No host')
+		if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
+
+		const payload =
+			elementToCreate === 'substation'
+				? getSubstationPayload()
+				: getVoltageLevelPayload()
+
+		const newElement = createStandardElement({
+			xmlDocument: pluginGlobalStore.xmlDocument,
+			element: {
+				family: elementToCreate
+			},
+			attributes: {
+				name: 'TEMPLATE'
+			},
+			currentEdition: params.definition.edition,
+			currentUnstableRevision: params.definition.revision
+		})
+
+		createAndDispatchEditEvent({
+			host,
+			edit: {
+				node: newElement,
+				parent: payload.parent,
+				reference: payload.reference
+			}
+		})
+	}
+
+	function createContainer() {
+		const container = node.insertAdjacentElement(
+			'afterend',
+			document.createElement('div')
+		)
+		return container
+	}
+
+	function createWrongFileLoadedPage() {
+		node.style.display = 'none'
+		wrongFileLoadedContainer = createContainer()
+
+		if (wrongFileLoadedContainer)
+			wrongFileLoadedPage = mount(WrongFileLoaded, {
+				target: wrongFileLoadedContainer,
+				props: {
+					extension: 'SSD'
+				}
+			})
+	}
+
+	function removeWrongFileLoadedPage() {
+		if (wrongFileLoadedContainer) {
+			unmount(wrongFileLoadedPage, { outro: true })
+			wrongFileLoadedContainer.remove()
+			node.style.display = 'block'
+		}
+	}
+
+	$effect(() => {
+		if (!isSsdFile) createWrongFileLoadedPage()
+		else if (isSsdFile && !hasSsdTemplate) {
+			if (!hasSubstationTemplate) createTemplateElement('substation')
+			if (hasSubstationTemplate && !hasVoltageLevelTemplate)
+				createTemplateElement('voltageLevel')
+
+			node.style.display = 'block'
+		} else if (isSsdFile) removeWrongFileLoadedPage()
+
+		return () => {
+			if (wrongFileLoadedPage)
+				unmount(wrongFileLoadedPage, { outro: true })
+		}
 	})
 }

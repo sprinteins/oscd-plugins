@@ -1,94 +1,81 @@
+<svelte:options 
+	customElement={{
+		props: {
+			doc: { reflect: true, type: 'Object'},
+			docName: { reflect: true, type: 'String'},
+			editCount: { reflect: true, type: 'Number'},
+			locale: { reflect: true, type: 'String'},
+			pluginType: { reflect: true, type: 'String'},
+			isCustomInstance: { reflect: true, type: 'Boolean'},
+		}
+	}}
+/>
 
-<!-- Plugin logs -->
-<input type="hidden" name="package-name" value={jsonPackage.name} />
-<input type="hidden" name="package-version" value={jsonPackage.version} />
+<main 
+	use:initPlugin={{
+		getDoc: () => doc,
+		getDocName: () => docName,
+		getEditCount: () => editCount,
+		getIsCustomInstance: () => isCustomInstance,
+		getHost: () => $host() || window,
+		getRootElement: () => pluginLocalStore.rootElement,
+		customNamespaces: [
+			{ 
+				namespacePrefix: pluginLocalStore.pluginNamespacePrefix,
+				namespaceUri: pluginLocalStore.pluginNamespacePrefix 
+			}
+		],
+		theme: 'legacy-oscd-instance',
+		definition: {
+			edition: 'ed2Rev1',
+			revision: 'IEC61850-90-30'
+		}
+	}}
+	use:initSsdTemplate={{
+		getRootElement: () => pluginLocalStore.rootElement,
+		getRootSubElements: () => pluginLocalStore.rootSubElements,
+		getSubstationsSubElements: () => pluginLocalStore.substationsSubElements,
+		definition: {
+			edition: 'ed2Rev1',
+			revision: 'IEC61850-90-30'
+		}
+	}}
+	data-plugin-name={jsonPackage.name}
+	data-plugin-version={jsonPackage.version}
+>
+	<Sidebar.Provider
+		open={false}
+		class="overflow-hidden h-[--plugin-container-height] min-h-full"
+		style="--sidebar-width: 20rem; --sidebar-width-mobile: 20rem;"
+	>
+		<ColumnsContainer />
+		<SidebarWrapper />
+	</Sidebar.Provider>
+</main>
 
-<MaterialTheme pluginType={pluginType}>
-	<type-designer>
-		{#if xmlDocument}
-			<CustomDrawer>
-				{#if showBanner && !import.meta.env.DEV}
-					<div class="banner" style="{showBanner ? 'display:flex;' : 'display:none;'}">
-						This plugin is in test phase and not suitable for production use.
-						<CustomIconButton icon="close" color="white" on:click={() => showBanner = !showBanner} />
-					</div>
-				{/if}
-				<ElementsTypeContainer />
-			</CustomDrawer>
-		{:else}
-			<div class="no-content">
-				<p>No xml document loaded</p>
-			</div>
-		{/if}
-	</type-designer>
-</MaterialTheme>
 
 <script lang="ts">
-// COMPONENTS
-import { MaterialTheme, CustomDrawer, CustomIconButton } from '@oscd-plugins/ui'
-import ElementsTypeContainer from '@/views/elements-type-container.svelte'
 // PACKAGE
 import jsonPackage from '../package.json'
+// CORE
+import {
+	Sidebar,
+	initPlugin,
+	initSsdTemplate
+} from '@oscd-plugins/core-ui-svelte'
 // STORES
-import { dataTypeTemplatesStore } from '@/stores/data-type-templates.store'
-import { pluginStore } from '@/stores/plugin.store'
+import { pluginLocalStore } from '@/headless/stores'
+// COMPONENTS
+import ColumnsContainer from '@/ui/views/columns-container.svelte'
+import SidebarWrapper from '@/ui/components/sidebar-wrapper.svelte'
 // TYPES
-import type { PluginType } from '@oscd-plugins/core'
+import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 
-//==== INITIALIZATION ====//
-//props
-export let xmlDocument: XMLDocument | undefined = undefined
-export let pluginHostElement: Element
-export let pluginType: PluginType = 'editor'
-export let editCount: number
-
-//local
-let showBanner = true
-
-//==== REACTIVITY ====//
-
-$: triggerUpdate({
-	updateTrigger: editCount,
-	newXmlDocument: xmlDocument,
-	newPluginHostElement: pluginHostElement
-})
-//====== FUNCTIONS =====//
-
-async function triggerUpdate({
-	updateTrigger, // is not used but should be passed to the function to trigger reactivity
-	newXmlDocument,
-	newPluginHostElement
-}: {
-	updateTrigger: number
-	newXmlDocument: XMLDocument | undefined
-	newPluginHostElement: Element
-}) {
-	await pluginStore.init({
-		newXmlDocument,
-		newPluginHostElement
-	})
-	dataTypeTemplatesStore.init(xmlDocument)
-}
+// props
+const {
+	doc,
+	docName,
+	editCount,
+	isCustomInstance
+}: Plugin.CustomComponentsProps = $props()
 </script>
-
-<style>
-.no-content {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100%;
-}
-
-.banner {
-	align-items: center;
-	justify-content: space-between;
-	padding: .25rem 2rem;
-	width: 100%;
-	background-color: var(--mdc-theme-error);
-	color: white;
-	position:fixed;
-	top: var(--header-height);
-	box-sizing: border-box;
-	z-index: 50;
-}
-</style>
