@@ -1,4 +1,3 @@
-import { get } from 'svelte/store'
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type {ElementType} from "@/components/elements/types.elements"
@@ -6,17 +5,22 @@ import {docTemplatesStore} from '@/stores'
 import type {Columns, SignalType} from '@/stores'
 import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list-element/types.signal-list'
 
-
+/*
+    For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
+*/
 
 
 function generatePdf(templateTitle: string , allBlocks: Element[]){
     const doc = new jsPDF();
     doc.setFontSize(12);
-    let y = 10; 
+    const INITIAL_UPPER_PAGE_COORDINATE = 10;
+    const INITIAL_LOWER_PAGE_COORDINATE = 10;
+
+    let marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
     const pageHeight = doc.internal.pageSize.height;
     const pageSize = doc.internal.pageSize;
     const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth()
-    const marginBottom = 10; 
+    const marginBottom = INITIAL_LOWER_PAGE_COORDINATE; 
 
     const blockHandler: Record<ElementType, (block: Element) => void> = {
         text: handleTextBlock,
@@ -24,23 +28,25 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         signalList: processSignalListForPdfGeneration
     }
 
-    function incrementYPositionForNextLine() {
-        y+=7;
+    function incrementVerticalPositionForNextLine() {
+        marginTop+=7;
     }
 
-    function contentExceedsCurrentPage(y: number,pageHeight: number,marginBottom: number) {
-        return (y+10) > (pageHeight-marginBottom);
+    function contentExceedsCurrentPage(marginTop: number,pageHeight: number,marginBottom: number) {
+        const bufferToBottomPage = 10;
+        return (marginTop + bufferToBottomPage) > (pageHeight-marginBottom);
     }
 
     function handleTextBlock(block: Element){
         const wrappedText : string [] = doc.splitTextToSize(block.textContent ?? "", pageWidth-35);
             for(const line of wrappedText){
-                if (contentExceedsCurrentPage(y, pageHeight, marginBottom)) {
+                if (contentExceedsCurrentPage(marginTop, pageHeight, marginBottom)) {
                     doc.addPage();
-                    y = 10; 
+                    marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
                 }
-                doc.text(line, 10, y);
-                incrementYPositionForNextLine();
+                const horizontalSpacing = 10;
+                doc.text(line, horizontalSpacing, marginTop);
+                incrementVerticalPositionForNextLine();
             }    
     }
 
@@ -67,7 +73,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
        
 
         autoTable(doc, {
-            startY: y+10,
+            startY: (marginTop === INITIAL_UPPER_PAGE_COORDINATE) ? marginTop : marginTop + 10,
             columns: tableHeader,
             body: body,
 
