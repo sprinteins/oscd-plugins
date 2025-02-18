@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { NodeProps } from "./types.node";
+  import type { NodeProps } from "./types.canvas";
   import { CircleX } from "lucide-svelte";
 
   let {
