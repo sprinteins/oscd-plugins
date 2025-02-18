@@ -13,7 +13,7 @@
 		isConnectionSelected,
 		isIEDSelected,
 	} from "../../plugins/communication-explorer/_store-view-filter"
-import BayContainer from "./bay-container/bay-container.svelte"
+	import BayContainer from "./bay-container/bay-container.svelte"
 
 	//
 	// Inputs
