@@ -83,7 +83,9 @@
 	let draggingEnabled = false
 	let isDragging = false
 	function handleKeyDown(e: KeyboardEvent) {
-		if (e.code !== "Space") {
+		const target = e.target as HTMLElement
+
+		if (e.code !== "Space" || target.tagName !== "BODY") {
 			return
 		}
 
@@ -92,6 +94,7 @@
 		e.stopPropagation()
 		e.preventDefault()
 	}
+
 	function handleMouseDown(e: MouseEvent) {
 		if (!draggingEnabled) {
 			return
