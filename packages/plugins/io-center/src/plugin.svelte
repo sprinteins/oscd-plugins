@@ -86,7 +86,9 @@
 	<Layout>
 		<div slot="sidebar-left">
 			<IEDSelect {onSelectIED} />
-			<ObjectTree />
+			{#if store.objectTree.length > 0}
+				<ObjectTree />
+			{/if}
 		</div>
 		<div slot="content">
 			Document: {docName}
