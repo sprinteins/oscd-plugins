@@ -191,11 +191,11 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                 const isDuplicate = messagePublishers.some(publisher =>
                     publisher.M_text === desc &&
                     publisher.IEDName === IEDName &&
-                    publisher.logicalNodeInofrmation.LogicalDeviceInstance === ldInst &&
-                    publisher.logicalNodeInofrmation.LogicalNodePrefix === prefix &&
-                    publisher.logicalNodeInofrmation.LogicalNodeClass === lnClass &&
-                    publisher.logicalNodeInofrmation.LogicalNodeInstance === lnInst &&
-                    publisher.logicalNodeInofrmation.LogicalNodeType === logicalNodeInofrmation.LogicalNodeType &&
+                    publisher.logicalNodeInformation.LogicalDeviceInstance === ldInst &&
+                    publisher.logicalNodeInformation.LogicalNodePrefix === prefix &&
+                    publisher.logicalNodeInformation.LogicalNodeClass === lnClass &&
+                    publisher.logicalNodeInformation.LogicalNodeInstance === lnInst &&
+                    publisher.logicalNodeInformation.LogicalNodeType === logicalNodeInofrmation.LogicalNodeType &&
                     publisher.dataObjectInformation.DataObjectName === doName &&
                     publisher.dataObjectInformation.DataAttributeName === daName &&
                     publisher.dataObjectInformation.CommonDataClass === commonDataClass &&
@@ -203,7 +203,7 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                     publisher.dataObjectInformation.FunctionalConstraint === fc
                 );
                 if (!isDuplicate) {
-                    messagePublishers.push({ UW: substationName, VoltageLevel: voltageLevel, M_text: desc, signalType, IEDName, logicalNodeInofrmation, dataObjectInformation });
+                    messagePublishers.push({ UW: substationName, VoltageLevel: voltageLevel, M_text: desc, signalType, IEDName, logicalNodeInformation: logicalNodeInofrmation, dataObjectInformation });
                 }
             }
         }
@@ -296,10 +296,10 @@ function processInputs(input: Element, ied: Element, messagePublisher: MessagePu
 
 function matchesExtRef(extRef: Element, messagePublisher: MessagePublisher): boolean {
     return extRef.getAttribute('iedName') === messagePublisher.IEDName &&
-        extRef.getAttribute('ldInst') === messagePublisher.logicalNodeInofrmation.LogicalDeviceInstance &&
-        extRef.getAttribute('lnClass') === messagePublisher.logicalNodeInofrmation.LogicalNodeClass &&
-        extRef.getAttribute('lnInst') === messagePublisher.logicalNodeInofrmation.LogicalNodeInstance &&
-        extRef.getAttribute('prefix') === messagePublisher.logicalNodeInofrmation.LogicalNodePrefix &&
+        extRef.getAttribute('ldInst') === messagePublisher.logicalNodeInformation.LogicalDeviceInstance &&
+        extRef.getAttribute('lnClass') === messagePublisher.logicalNodeInformation.LogicalNodeClass &&
+        extRef.getAttribute('lnInst') === messagePublisher.logicalNodeInformation.LogicalNodeInstance &&
+        extRef.getAttribute('prefix') === messagePublisher.logicalNodeInformation.LogicalNodePrefix &&
         extRef.getAttribute('doName') === messagePublisher.dataObjectInformation.DataObjectName &&
         extRef.getAttribute('daName') === messagePublisher.dataObjectInformation.DataAttributeName;
 }
@@ -339,12 +339,12 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
 
 function getValueFromNestedProperty(publisher: MessagePublisher, key: keyof MessagePublisherFilter): string {
     const keyMap: Partial<Record<keyof MessagePublisherFilter, string>> = {
-        LogicalNodeIEDName: "logicalNodeInofrmation.IEDName",
-        LogicalDeviceInstance: "logicalNodeInofrmation.LogicalDeviceInstance",
-        LogicalNodePrefix: "logicalNodeInofrmation.LogicalNodePrefix",
-        LogicalNodeClass: "logicalNodeInofrmation.LogicalNodeClass",
-        LogicalNodeInstance: "logicalNodeInofrmation.LogicalNodeInstance",
-        LogicalNodeType: "logicalNodeInofrmation.LogicalNodeType",
+        LogicalNodeIEDName: "logicalNodeInformation.IEDName",
+        LogicalDeviceInstance: "logicalNodeInformation.LogicalDeviceInstance",
+        LogicalNodePrefix: "logicalNodeInformation.LogicalNodePrefix",
+        LogicalNodeClass: "logicalNodeInformation.LogicalNodeClass",
+        LogicalNodeInstance: "logicalNodeInformation.LogicalNodeInstance",
+        LogicalNodeType: "logicalNodeInformation.LogicalNodeType",
         DataObjectName: "dataObjectInformation.DataObjectName",
         DataAttributeName: "dataObjectInformation.DataAttributeName",
         CommonDataClass: "dataObjectInformation.CommonDataClass",
@@ -393,10 +393,10 @@ function setSubscriberIedNameInCorrespondingPublisher(subscriber: MessageSubscri
 
 function isSubscribedToCurrentPublisher(pdfRow: PdfRowStructure, subscriber: MessageSubscriber) {
     return (pdfRow.publisher.IEDName === subscriber.ExtRef.iedName &&
-        pdfRow.publisher.logicalNodeInofrmation.LogicalDeviceInstance === subscriber.ExtRef.ldInst &&
-        pdfRow.publisher.logicalNodeInofrmation.LogicalNodeClass === subscriber.ExtRef.lnClass &&
-        pdfRow.publisher.logicalNodeInofrmation.LogicalNodeInstance === subscriber.ExtRef.lnInst &&
-        pdfRow.publisher.logicalNodeInofrmation.LogicalNodePrefix === subscriber.ExtRef.prefix &&
+        pdfRow.publisher.logicalNodeInformation.LogicalDeviceInstance === subscriber.ExtRef.ldInst &&
+        pdfRow.publisher.logicalNodeInformation.LogicalNodeClass === subscriber.ExtRef.lnClass &&
+        pdfRow.publisher.logicalNodeInformation.LogicalNodeInstance === subscriber.ExtRef.lnInst &&
+        pdfRow.publisher.logicalNodeInformation.LogicalNodePrefix === subscriber.ExtRef.prefix &&
         pdfRow.publisher.dataObjectInformation.DataObjectName === subscriber.ExtRef.doName &&
         pdfRow.publisher.dataObjectInformation.DataAttributeName === subscriber.ExtRef.daName);
 }

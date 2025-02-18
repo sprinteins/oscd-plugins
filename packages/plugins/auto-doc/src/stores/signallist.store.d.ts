@@ -35,7 +35,7 @@ export type MessagePublisher = {
     M_text: string;
     signalType: SignalType;
     IEDName: string;
-    logicalNodeInofrmation: LogicalNodeInformation;
+    logicalNodeInformation: LogicalNodeInformation;
     dataObjectInformation: DataObjectInformation;
 }
 
