@@ -95,7 +95,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -117,7 +117,7 @@ describe('Signallist', () => {
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -144,7 +144,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -538,7 +538,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -568,7 +568,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -590,7 +590,7 @@ describe('Signallist', () => {
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -620,7 +620,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -642,7 +642,7 @@ describe('Signallist', () => {
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -661,7 +661,7 @@ describe('Signallist', () => {
     ]);
   });
 
-  it('should filter message publishers based on logicalNodeInofrmation regex', () => {
+  it('should filter message publishers based on logicalNodeInformation regex', () => {
     const filter: MessagePublisherFilter = {  LogicalDeviceInstance: "LD1"  };
     const { messagePublishers } = signallistStore.getPublishingLogicalDevices(filter);
 
@@ -672,7 +672,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -694,7 +694,7 @@ describe('Signallist', () => {
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -724,7 +724,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -761,7 +761,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -788,7 +788,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -838,7 +838,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -905,7 +905,7 @@ describe('Signallist', () => {
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
-        logicalNodeInofrmation: {
+        logicalNodeInformation: {
           IEDName: 'IED1',
           LogicalDeviceInstance: 'LD1',
           LogicalNodePrefix: '',
@@ -987,7 +987,7 @@ describe('Signallist', () => {
             DataObjectName: "do1",
             FunctionalConstraint: "FC1"
           },
-          logicalNodeInofrmation: {
+          logicalNodeInformation: {
             IEDName: "IED1",
             LogicalDeviceInstance: "LD1",
             LogicalNodeClass: "LC1",
@@ -1042,7 +1042,7 @@ describe('Signallist', () => {
             DataObjectName: "do1",
             FunctionalConstraint: "FC1"
           },
-          logicalNodeInofrmation: {
+          logicalNodeInformation: {
             IEDName: "IED1",
             LogicalDeviceInstance: "LD1",
             LogicalNodeClass: "LC1",
