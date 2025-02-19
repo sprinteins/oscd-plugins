@@ -209,6 +209,7 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                     messagePublishers.push({ 
                         [MESSAGE_PUBLISHER.UW]: substationName, 
                         [MESSAGE_PUBLISHER.VoltageLevel]: voltageLevel,
+                        [MESSAGE_PUBLISHER.Bay]: '',
                         [MESSAGE_PUBLISHER.M_text]: desc, 
                         [MESSAGE_PUBLISHER.SignalType]: signalType, 
                         [MESSAGE_PUBLISHER.IEDName]: IEDName, 

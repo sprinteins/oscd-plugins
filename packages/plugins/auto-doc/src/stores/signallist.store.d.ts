@@ -33,7 +33,7 @@ export enum Columns{
 export type MessagePublisher = {
     [MESSAGE_PUBLISHER.UW]: string;
     [MESSAGE_PUBLISHER.VoltageLevel]: string;
-    // [MESSAGE_PUBLISHER.Bay]: string;
+    [MESSAGE_PUBLISHER.Bay]: string;
     [MESSAGE_PUBLISHER.M_text]: string;
     [MESSAGE_PUBLISHER.SignalType]: string;
     [MESSAGE_PUBLISHER.IEDName]: string;
