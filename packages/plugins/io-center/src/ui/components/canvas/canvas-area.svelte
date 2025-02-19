@@ -26,16 +26,6 @@
 
 	onMount(() => {
 		window.addEventListener("resize", redrawConnections);
-		canvasStore.connections = [
-			{
-				from: { node: "DO X", side: "right" },
-				to: { node: "LC X", side: "left" },
-			},
-			{
-				from: { node: "DO Y", side: "right" },
-				to: { node: "LC X", side: "left" },
-			},
-		];
 	});
 
 	onDestroy(() => {
