@@ -1,0 +1,20 @@
+export const MESSAGE_PUBLISHER = {
+    UW : 'UW',
+    VoltageLevel : 'VoltageLevel',
+    Bay : 'Bay',
+    M_text : 'M_text',
+    IEDName : 'IEDName',
+    SignalType : 'signalType',
+    LogicalNodeInformation: "logicalNodeInformation",
+    LogicalDeviceInstance: "LogicalDeviceInstance",
+    LogicalNodePrefix: "LogicalNodePrefix",
+    LogicalNodeClass: "LogicalNodeClass",
+    LogicalNodeInstance: "LogicalNodeInstance",
+    LogicalNodeType: "LogicalNodeType",
+    DataObjectInformation: "dataObjectInformation",
+    DataObjectName: "DataObjectName",
+    DataAttributeName: "DataAttributeName",
+    CommonDataClass: "CommonDataClass",
+    AttributeType: "AttributeType",
+    FunctionalConstraint: "FunctionalConstraint"
+} as const
