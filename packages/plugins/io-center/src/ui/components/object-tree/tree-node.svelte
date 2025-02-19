@@ -2,20 +2,14 @@
     import { NODE_TYPE } from "@/headless/constants";
     import TreeNode from "./tree-node.svelte";
     import type { TreeNode as TreeNodeType } from "./types.object-tree";
-    import {
-        ChevronRight,
-        ChevronDown,
-        CheckCircleIcon,
-        Highlighter,
-        CheckIcon,
-    } from "lucide-svelte";
+    import { ChevronRight, ChevronDown, CheckIcon } from "lucide-svelte";
+    import { addDoElementToCanvas } from "@/headless/stores/canvas-operations.svelte";
+    import { canvasStore } from "../canvas/canvas-store.svelte";
 
     type Props = {
         treeNode: TreeNodeType;
         isOpen?: boolean;
         searchTerm: string;
-        selectedNodeIds: string[];
-        setSelectedNodeIds: (name: string) => void;
         onToggle?: (event: MouseEvent) => void;
         onSelect?: (event: MouseEvent) => void;
     };
@@ -24,8 +18,6 @@
         treeNode,
         isOpen = false,
         searchTerm,
-        selectedNodeIds,
-        setSelectedNodeIds,
         onToggle,
         onSelect,
     }: Props = $props();
@@ -37,13 +29,17 @@
             treeNode.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
+    let isSelected = $derived(
+        canvasStore.dataObjects.some((item) => item.id === treeNode.id),
+    );
+
     function onClick(id: string, event: MouseEvent) {
         event.preventDefault();
 
         open = !open;
 
         if (treeNode.type === NODE_TYPE.dataObjectInstance) {
-            setSelectedNodeIds(id);
+            addDoElementToCanvas(treeNode);
         }
 
         if (onToggle) {
@@ -59,9 +55,7 @@
         "font-mono cursor-pointer hover:no-underline rounded-md hover:bg-gray-100 transition-colors duration-300";
 
     function getSelectedClass() {
-        return selectedNodeIds.includes(treeNode.id)
-            ? "bg-beige hover:bg-beige"
-            : "";
+        return isSelected ? "bg-beige hover:bg-beige" : "";
     }
 
     function getSearchedClass() {
@@ -91,8 +85,6 @@
                         treeNode={node}
                         isOpen={node.isOpen}
                         {searchTerm}
-                        {selectedNodeIds}
-                        {setSelectedNodeIds}
                     />
                 {/each}
             </div>
@@ -104,7 +96,7 @@
                 onClick(treeNode.id, e);
             }}
         >
-            {#if selectedNodeIds.includes(treeNode.id)}
+            {#if isSelected}
                 <CheckIcon size={16} />
             {/if}
             {treeNode.name}

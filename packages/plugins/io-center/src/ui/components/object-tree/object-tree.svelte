@@ -4,20 +4,9 @@
 	import TreeNode from "./tree-node.svelte";
 	import { SearchIcon } from "lucide-svelte";
 
-	let selectedNodeIds: string[] = $state([]);
-
 	let searchTerm = $state("");
 
 	let filteredTree = $derived(searchTree(store.objectTree, searchTerm));
-
-	function setSelectedNodeIds(id: string) {
-		if (selectedNodeIds.includes(id)) {
-			selectedNodeIds = selectedNodeIds.filter((item) => item !== id);
-			return;
-		}
-
-		selectedNodeIds.push(id);
-	}
 </script>
 
 <div class="p-2">
@@ -37,8 +26,6 @@
 			{treeNode}
 			isOpen={treeNode.isOpen}
 			{searchTerm}
-			{selectedNodeIds}
-			{setSelectedNodeIds}
 		/>
 	{/each}
 </div>
