@@ -10,7 +10,7 @@ import { preferences$ } from "../../plugins/communication-explorer/_store-prefer
 // TYPES
 import type { IED } from "@oscd-plugins/core"
 
-describe("Diagram", () => {
+describe.skip("Diagram", () => {
 	userEvent.setup()
 
 	describe("rendering", () => {

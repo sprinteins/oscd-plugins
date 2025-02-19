@@ -1,10 +1,7 @@
-// CORE
-import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
 // STORES
 import { pluginLocalStore } from '@/headless/stores'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
-import { REF_FAMILY_MAP, TYPE_FAMILY_MAP } from '@/headless/constants'
+import { REF_FAMILY_MAP, TYPE_FAMILY_MAP, COLUMNS } from '@/headless/constants'
 // HELPERS
 import { getAndMapTypeElements } from './consolidate-types.helper'
 import {
@@ -14,9 +11,10 @@ import {
 } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
 import { getTypeNextOccurrence } from './type-naming.helper'
+import { getFilteredTypeElementByIds } from './filter.helper'
 // TYPES
 import type {
-	TypeElementsPerFamily,
+	TypeElementsByFamily,
 	Columns,
 	AvailableTypeFamily,
 	AvailableRefFamily
@@ -25,57 +23,77 @@ import type {
 class UseTypeElementsStore {
 	//====== STATES ======//
 
-	typeElementsPerFamily: TypeElementsPerFamily = $derived.by(() => ({
-		bay: getAndMapTypeElements(
+	typeElementsPerFamily: TypeElementsByFamily = $derived.by(() => ({
+		[TYPE_FAMILY_MAP.bay]: getAndMapTypeElements(
 			TYPE_FAMILY_MAP.bay,
 			pluginLocalStore.templateBaysSubElements
 		),
-		generalEquipmentType: getAndMapTypeElements(
+		[TYPE_FAMILY_MAP.generalEquipmentType]: getAndMapTypeElements(
 			TYPE_FAMILY_MAP.generalEquipmentType,
 			pluginLocalStore.equipmentTypeTemplatesSubElements
 				?.generalEquipmentType
 		),
-		conductingEquipmentType: getAndMapTypeElements(
+		[TYPE_FAMILY_MAP.conductingEquipmentType]: getAndMapTypeElements(
 			TYPE_FAMILY_MAP.conductingEquipmentType,
 			pluginLocalStore.equipmentTypeTemplatesSubElements
 				?.conductingEquipmentType
 		),
-		functionTemplate: getAndMapTypeElements(
+		[TYPE_FAMILY_MAP.functionTemplate]: getAndMapTypeElements(
 			TYPE_FAMILY_MAP.functionTemplate,
 			pluginLocalStore.rootSubElements?.functionTemplate
 		),
-		lNodeType: getAndMapTypeElements(
+		[TYPE_FAMILY_MAP.lNodeType]: getAndMapTypeElements(
 			TYPE_FAMILY_MAP.lNodeType,
 			pluginLocalStore.dataTypeTemplatesSubElements?.lNodeType
 		)
 	}))
 
+	filtersByColumns = $state({
+		[COLUMNS.bay]: '',
+		[COLUMNS.equipmentTypeTemplates]: '',
+		[COLUMNS.functionTemplate]: '',
+		[COLUMNS.lNodeType]: ''
+	})
+
 	columns: Columns = $derived({
-		bay: {
+		[COLUMNS.bay]: {
 			name: 'Bay Types',
 			groupedTypeElements: {
-				bay: this.typeElementsPerFamily.bay
+				bay: getFilteredTypeElementByIds(
+					this.filtersByColumns.bay,
+					this.typeElementsPerFamily.bay
+				)
 			}
 		},
-		equipmentTypeTemplates: {
+		[COLUMNS.equipmentTypeTemplates]: {
 			name: 'Equipment Types',
 			groupedTypeElements: {
-				generalEquipmentType:
-					this.typeElementsPerFamily.generalEquipmentType,
-				conductingEquipmentType:
+				generalEquipmentType: getFilteredTypeElementByIds(
+					this.filtersByColumns.equipmentTypeTemplates,
+					this.typeElementsPerFamily.generalEquipmentType
+				),
+				conductingEquipmentType: getFilteredTypeElementByIds(
+					this.filtersByColumns.equipmentTypeTemplates,
 					this.typeElementsPerFamily.conductingEquipmentType
+				)
 			}
 		},
-		functionTemplate: {
+		[COLUMNS.functionTemplate]: {
 			name: 'Function Types',
 			groupedTypeElements: {
-				functionTemplate: this.typeElementsPerFamily.functionTemplate
+				functionTemplate: getFilteredTypeElementByIds(
+					this.filtersByColumns.functionTemplate,
+					this.typeElementsPerFamily.functionTemplate
+				)
 			}
 		},
-		lNodeType: {
+		[COLUMNS.lNodeType]: {
 			name: 'LN Types',
 			groupedTypeElements: {
-				lNodeType: this.typeElementsPerFamily.lNodeType
+				lNodeType: getFilteredTypeElementByIds(
+					this.filtersByColumns.lNodeType,
+					this.typeElementsPerFamily.lNodeType
+				)
 			}
 		}
 	})
@@ -85,7 +103,13 @@ class UseTypeElementsStore {
 			// remove duplicates with a Set
 			new Set(
 				Object.values(this.typeElementsPerFamily[family]).flatMap(
-					(element) => element.refs?.functionTemplate || []
+					(element) =>
+						element.refs
+							? [
+									...Object.keys(element.refs.function),
+									...Object.keys(element.refs.eqFunction)
+								]
+							: []
 				)
 			)
 		)

@@ -8,6 +8,14 @@ import {
 // STORE
 import { pluginLocalStore } from '@/headless/stores/index.js'
 
+function addNamespaceToRootElement(args: { prefix: string; uri: string }) {
+	pluginLocalStore.rootElement?.setAttributeNS(
+		'http://www.w3.org/2000/xmlns/',
+		`xmlns:${args.prefix}`,
+		args.uri
+	)
+}
+
 /**
  * Creates a new root private wrapper element and dispatch an edit event to create it in the XML document.
  *
@@ -18,6 +26,10 @@ export function createCurrentUnstableRevisionRootPrivateWrapper() {
 	if (!pluginGlobalStore.host) throw new Error('No host')
 	if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
 	if (!pluginLocalStore.rootElement) throw new Error('No root element')
+
+	addNamespaceToRootElement(
+		pluginLocalStore.namespaces.currentUnstableRevision
+	)
 
 	const newPrivateWrapper = createStandardElement({
 		xmlDocument: pluginGlobalStore.xmlDocument,
@@ -38,8 +50,7 @@ export function createCurrentUnstableRevisionRootPrivateWrapper() {
 		edit: {
 			node: newPrivateWrapper,
 			parent: pluginLocalStore.rootElement,
-			reference:
-				pluginLocalStore.rootSubElements?.dataTypeTemplates || null
+			reference: pluginLocalStore.rootSubElements?.header || null
 		}
 	})
 
@@ -57,6 +68,8 @@ export function createEquipmentTypeTemplates() {
 	if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
 	if (!pluginLocalStore.rootElement) throw new Error('No root element')
 
+	addNamespaceToRootElement(pluginLocalStore.namespaces.currentPlugin)
+
 	const newEquipmentTypeTemplatesWrapper = createCustomElement({
 		xmlDocument: pluginGlobalStore.xmlDocument,
 		tagName: 'EquipmentTypeTemplates',
@@ -72,8 +85,7 @@ export function createEquipmentTypeTemplates() {
 		edit: {
 			node: newEquipmentTypeTemplatesWrapper,
 			parent: pluginLocalStore.rootElement,
-			reference:
-				pluginLocalStore.rootSubElements?.dataTypeTemplates || null
+			reference: pluginLocalStore.rootSubElements?.header || null
 		}
 	})
 

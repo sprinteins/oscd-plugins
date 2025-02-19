@@ -6,6 +6,8 @@ import {
 	checkIfRequiredAttributesArePresent,
 	checkIfAttributesAreAllowed
 } from './create-helpers'
+// CONSTANTS
+import { DEFAULT_NAMESPACE_URI } from './constants'
 // TYPES
 import type { Xml } from './types'
 import type { IEC61850 } from '@oscd-plugins/core-standard'
@@ -54,7 +56,8 @@ export function createStandardElement<
 			wrapWithPrivateElement
 		})
 	} else
-		standardElement = xmlDocument.createElement(
+		standardElement = xmlDocument.createElementNS(
+			DEFAULT_NAMESPACE_URI,
 			CURRENT_DEFINITION_ELEMENT.tag as string
 		)
 	// SET ATTRIBUTES
