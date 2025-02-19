@@ -8,8 +8,13 @@ export type Connection = {
 	to: ConnectionPoint
 }
 
+export type NodeElement = {
+	id: string
+	name: string
+}
+
 export type NodeProps = {
-	node: { name: string; attribute: string }
+	node: NodeElement
 	showLeftCircle: boolean
 	showRightCircle: boolean
 	startDrawing: (event: MouseEvent) => void

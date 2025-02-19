@@ -11,19 +11,6 @@
 		stopDrawing,
 	} from "@/headless/utils";
 
-	let dataObjects = $state<{ name: string; attribute: string }[]>([
-		{ name: "DO X", attribute: "Pwr" },
-		{ name: "DO Y", attribute: "Pos" },
-	]);
-	let logicalConditoners = $state<{ name: string; attribute: string }[]>([
-		{ name: "LC X", attribute: "attr" },
-		{ name: "LC Y", attribute: "attr" },
-	]);
-	let logicalPhyscials = $state<{ name: string; attribute: string }[]>([
-		{ name: "LP X", attribute: "attr" },
-		{ name: "LP Y", attribute: "attr" },
-	]);
-
 	onMount(() => {
 		window.addEventListener("resize", redrawConnections);
 	});
@@ -43,7 +30,7 @@
 		data-title="DO"
 	>
 		<div class="text-center">Data Objects</div>
-		{#each dataObjects as node}
+		{#each canvasStore.dataObjects as node}
 			<NodeElement
 				{node}
 				showLeftCircle={false}
@@ -58,7 +45,7 @@
 		data-title="LC"
 	>
 		<div class="text-center">Logical Conditioners</div>
-		{#each logicalConditoners as node}
+		{#each canvasStore.logicalConditioners as node}
 			<NodeElement
 				{node}
 				showLeftCircle={true}
@@ -73,7 +60,7 @@
 		data-title="LP"
 	>
 		<div class="text-center">Logical Physical Inputs/Outputs</div>
-		{#each logicalPhyscials as node}
+		{#each canvasStore.logicalPhysicals as node}
 			<NodeElement
 				{node}
 				showLeftCircle={true}
