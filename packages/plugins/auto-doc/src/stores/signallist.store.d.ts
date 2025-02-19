@@ -1,4 +1,4 @@
-import type { MESSAGE_PUBLISHER, MESSAGE_SUBSCRIBER, SUBSCRIBER_EXT_REF } from "@/constants/messages";
+import type { MESSAGE_PUBLISHER, MESSAGE_SUBSCRIBER, SUBSCRIBER_EXT_REF } from "@/constants";
 
 /* 
     The keys of SignalType and Columns are used for the searchKey in SignalRow. 

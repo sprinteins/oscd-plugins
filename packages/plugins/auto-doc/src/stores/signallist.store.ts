@@ -11,6 +11,9 @@ import type {
 
 import { SignalType } from './signallist.store.d'
 
+import { MESSAGE_PUBLISHER,  MESSAGE_SUBSCRIBER,  SUBSCRIBER_EXT_REF } from "../constants";
+
+
 
 //====== STORES ======//
 const { xmlDocument } = pluginStore
@@ -155,12 +158,12 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
             if (desc !== '') {
                 const IEDName = ied.getAttribute('name') || '';
                 const logicalNodeInofrmation: LogicalNodeInformation = {
-                    IEDName,
-                    LogicalDeviceInstance: ldInst,
-                    LogicalNodePrefix: prefix,
-                    LogicalNodeClass: lnClass,
-                    LogicalNodeInstance: lnInst,
-                    LogicalNodeType: ln.getAttribute('lnType') || ''
+                    [MESSAGE_PUBLISHER.IEDName]: IEDName,
+                    [MESSAGE_PUBLISHER.LogicalDeviceInstance]: ldInst,
+                    [MESSAGE_PUBLISHER.LogicalNodePrefix]: prefix,
+                    [MESSAGE_PUBLISHER.LogicalNodeClass]: lnClass,
+                    [MESSAGE_PUBLISHER.LogicalNodeInstance]: lnInst,
+                    [MESSAGE_PUBLISHER.LogicalNodeType]: ln.getAttribute('lnType') || ''
                 };
 
                 const LNodeType = findLNodeType(logicalNodeInofrmation.LogicalNodeType, dataTypeTemplates, IEDName, logicalNodeInofrmation, invaliditiesReports);
@@ -181,11 +184,11 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                 const attributeType = DA.getAttribute('bType') || '';
 
                 const dataObjectInformation: DataObjectInformation = {
-                    DataObjectName: doName,
-                    DataAttributeName: daName,
-                    CommonDataClass: commonDataClass,
-                    AttributeType: attributeType,
-                    FunctionalConstraint: fc
+                    [MESSAGE_PUBLISHER.DataObjectName]: doName,
+                    [MESSAGE_PUBLISHER.DataAttributeName]: daName,
+                    [MESSAGE_PUBLISHER.CommonDataClass]: commonDataClass,
+                    [MESSAGE_PUBLISHER.AttributeType]: attributeType,
+                    [MESSAGE_PUBLISHER.FunctionalConstraint]: fc,
                 };
 
                 const isDuplicate = messagePublishers.some(publisher =>
@@ -203,7 +206,16 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                     publisher.dataObjectInformation.FunctionalConstraint === fc
                 );
                 if (!isDuplicate) {
-                    messagePublishers.push({ UW: substationName, VoltageLevel: voltageLevel, M_text: desc, signalType, IEDName, logicalNodeInformation: logicalNodeInofrmation, dataObjectInformation });
+                    messagePublishers.push({ 
+                        [MESSAGE_PUBLISHER.UW]: substationName, 
+                        [MESSAGE_PUBLISHER.VoltageLevel]: voltageLevel,
+                        [MESSAGE_PUBLISHER.M_text]: desc, 
+                        [MESSAGE_PUBLISHER.SignalType]: signalType, 
+                        [MESSAGE_PUBLISHER.IEDName]: IEDName, 
+                        [MESSAGE_PUBLISHER.LogicalNodeInformation]: logicalNodeInofrmation,
+                        [MESSAGE_PUBLISHER.DataObjectInformation]: dataObjectInformation,
+                         
+                    });
                 }
             }
         }
@@ -273,20 +285,20 @@ function processInputs(input: Element, ied: Element, messagePublisher: MessagePu
     for (const extRef of ExtRefs) {
         if (matchesExtRef(extRef, messagePublisher)) {
             const subscriber: MessageSubscriber = {
-                IEDName: ied.getAttribute('name') || '',
-                ExtRef: {
-                    iedName: extRef.getAttribute('iedName') || '',
-                    serviceType: SignalType[extRef.getAttribute('serviceType') as keyof typeof SignalType] || SignalType.UNKNOWN as SignalType,
-                    ldInst: extRef.getAttribute('ldInst') || '',
-                    lnClass: extRef.getAttribute('lnClass') || '',
-                    lnInst: extRef.getAttribute('lnInst') || '',
-                    prefix: extRef.getAttribute('prefix') || '',
-                    doName: extRef.getAttribute('doName') || '',
-                    daName: extRef.getAttribute('daName') || '',
-                    srcLDInst: extRef.getAttribute('srcLDInst') || '',
-                    srcPrefix: extRef.getAttribute('srcPrefix') || '',
-                    srcLNClass: extRef.getAttribute('srcLNClass') || '',
-                    srcCBName: extRef.getAttribute('srcCBName') || ''
+                [MESSAGE_SUBSCRIBER.IEDName]: ied.getAttribute('name') || '',
+                [MESSAGE_SUBSCRIBER.ExtRef]: {
+                    [SUBSCRIBER_EXT_REF.iedName]: extRef.getAttribute('iedName') || '',
+                    [SUBSCRIBER_EXT_REF.serviceType]: SignalType[extRef.getAttribute('serviceType') as keyof typeof SignalType] || SignalType.UNKNOWN as SignalType,
+                    [SUBSCRIBER_EXT_REF.ldInst]: extRef.getAttribute('ldInst') || '',
+                    [SUBSCRIBER_EXT_REF.lnClass]: extRef.getAttribute('lnClass') || '',
+                    [SUBSCRIBER_EXT_REF.lnInst]: extRef.getAttribute('lnInst') || '',
+                    [SUBSCRIBER_EXT_REF.prefix]: extRef.getAttribute('prefix') || '',
+                    [SUBSCRIBER_EXT_REF.doName]: extRef.getAttribute('doName') || '',
+                    [SUBSCRIBER_EXT_REF.daName]: extRef.getAttribute('daName') || '',
+                    [SUBSCRIBER_EXT_REF.srcLDInst]: extRef.getAttribute('srcLDInst') || '',
+                    [SUBSCRIBER_EXT_REF.srcPrefix]: extRef.getAttribute('srcPrefix') || '',
+                    [SUBSCRIBER_EXT_REF.srcLNClass]: extRef.getAttribute('srcLNClass') || '',
+                    [SUBSCRIBER_EXT_REF.srcCBName]: extRef.getAttribute('srcCBName') || '',
                 }
             };
             messageSubscribers.push(subscriber);
