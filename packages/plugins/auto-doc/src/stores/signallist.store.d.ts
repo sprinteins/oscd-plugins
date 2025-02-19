@@ -43,7 +43,7 @@ export type MessagePublisher = {
 
 
 export type MessageSubscriber = {
-    IDEName: string;
+    IEDName: string;
     ExtRef: ExtRef
 }
 export type ExtRef = {
@@ -105,7 +105,7 @@ export type MessagePublisherFilter = {
 }
 
 export type MessageSubscriberFilter = {
-    IDEName?: string;
+    IEDName?: string;
     serviceType?: string;
 }
 

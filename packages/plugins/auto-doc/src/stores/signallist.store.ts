@@ -273,7 +273,7 @@ function processInputs(input: Element, ied: Element, messagePublisher: MessagePu
     for (const extRef of ExtRefs) {
         if (matchesExtRef(extRef, messagePublisher)) {
             const subscriber: MessageSubscriber = {
-                IDEName: ied.getAttribute('name') || '',
+                IEDName: ied.getAttribute('name') || '',
                 ExtRef: {
                     iedName: extRef.getAttribute('iedName') || '',
                     serviceType: SignalType[extRef.getAttribute('serviceType') as keyof typeof SignalType] || SignalType.UNKNOWN as SignalType,
@@ -363,9 +363,9 @@ function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filte
     const allMessageSubscribers: MessageSubscriber[] = [];
     for (const subscriber of messageSubscribers) {
 
-        const matchesIEDName = !filter.IDEName || 
-            subscriber.IDEName.toLocaleLowerCase().includes(filter.IDEName.toLocaleLowerCase()) ||
-            (filter.IDEName.trim() === '');
+        const matchesIEDName = !filter.IEDName || 
+            subscriber.IEDName.toLocaleLowerCase().includes(filter.IEDName.toLocaleLowerCase()) ||
+            (filter.IEDName.trim() === '');
 
         const matchesServiceType = !filter.serviceType ||
             subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase()) ||
@@ -384,7 +384,7 @@ function setSubscriberIedNameInCorrespondingPublisher(subscriber: MessageSubscri
     for (const pdfRow of pdfRows) {
         if(isSubscribedToCurrentPublisher(pdfRow, subscriber)){
 
-            addUniqueSubscribersIEDName(pdfRow, subscriber.IDEName);
+            addUniqueSubscribersIEDName(pdfRow, subscriber.IEDName);
             updateMatchedFilteredValues(pdfRow);
         }
     }   

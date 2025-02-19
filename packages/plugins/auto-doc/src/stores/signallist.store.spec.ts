@@ -166,7 +166,7 @@ describe('Signallist', () => {
 
     expect(messageSubscribers).toEqual([
       {
-        IDEName: 'IED2',
+        IEDName: 'IED2',
         ExtRef: {
           iedName: 'IED1',
           serviceType: 'GOOSE',
@@ -183,7 +183,7 @@ describe('Signallist', () => {
         }
       },
       {
-        IDEName: 'IED3',
+        IEDName: 'IED3',
         ExtRef: {
           iedName: 'IED1',
           serviceType: 'GOOSE',
@@ -780,7 +780,7 @@ describe('Signallist', () => {
     ]);
   });
 
-  it('should filter message subscribers based on IDEName regex', () => {
+  it('should filter message subscribers based on IEDName regex', () => {
     const messagePublishers: MessagePublisher[] = [
       {
         UW: '',
@@ -806,12 +806,12 @@ describe('Signallist', () => {
       }
     ];
 
-    const filter: MessageSubscriberFilter = { IDEName: "IED2" };
+    const filter: MessageSubscriberFilter = { IEDName: "IED2" };
     const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 
     expect(messageSubscribers).toEqual([
       {
-        IDEName: 'IED2',
+        IEDName: 'IED2',
         ExtRef: {
           iedName: 'IED1',
           serviceType: 'GOOSE',
@@ -861,7 +861,7 @@ describe('Signallist', () => {
 
     expect(messageSubscribers).toEqual([
       {
-        IDEName: 'IED2',
+        IEDName: 'IED2',
         ExtRef: {
           iedName: 'IED1',
           serviceType: 'GOOSE',
@@ -878,7 +878,7 @@ describe('Signallist', () => {
         }
       },
       {
-        IDEName: 'IED3',
+        IEDName: 'IED3',
         ExtRef: {
           iedName: 'IED1',
           serviceType: 'GOOSE',
@@ -924,14 +924,14 @@ describe('Signallist', () => {
     ];
 
     const filter : MessageSubscriberFilter = {
-      IDEName: "IED3",
+      IEDName: "IED3",
       serviceType: "GOOSE"
     };
     const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 
     expect(messageSubscribers).toEqual([
       {
-        IDEName: 'IED3',
+        IEDName: 'IED3',
         ExtRef: {
           iedName: 'IED1',
           serviceType: 'GOOSE',
@@ -961,7 +961,7 @@ describe('Signallist', () => {
 
 
     const filter : MessageSubscriberFilter = {
-      IDEName: "IED3",
+      IEDName: "IED3",
       serviceType: "GOOSE"
     };
     const { matchedRows  } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
@@ -1016,7 +1016,7 @@ describe('Signallist', () => {
 
 
     const filter : MessageSubscriberFilter = {
-      IDEName: "",
+      IEDName: "",
       serviceType: ""
     };
     const { matchedRows  } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
