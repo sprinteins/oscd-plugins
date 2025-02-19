@@ -36,7 +36,8 @@ function iedElementToIED(iedElement: Element): IED {
 	}
 }
 
-
+// Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
+// Currently hard-coded by the client request but in future we may make it dynamic and allow the user to fill the targetScd
 export function buildObjectTree(targetCdc = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']) {
 	const doc = store.doc
 	const iedSelected = store.iedSelected
@@ -77,10 +78,8 @@ export function buildObjectTree(targetCdc = ['sps', 'dps', 'dpc', 'inc', 'ins', 
 				}
 			}
 
-			if (device.children) {
-				if (node.children && node.children.length > 0) {
-					device.children.push(node)
-				}
+			if (device.children && node.children && node.children.length > 0) {
+				device.children.push(node)
 			}
 		}
 
