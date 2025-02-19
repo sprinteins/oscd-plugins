@@ -157,7 +157,7 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
             const desc = DAI.getAttribute('desc') || '';
             if (desc !== '') {
                 const IEDName = ied.getAttribute('name') || '';
-                const logicalNodeInofrmation: LogicalNodeInformation = {
+                const logicalNodeInformation: LogicalNodeInformation = {
                     [MESSAGE_PUBLISHER.IEDName]: IEDName,
                     [MESSAGE_PUBLISHER.LogicalDeviceInstance]: ldInst,
                     [MESSAGE_PUBLISHER.LogicalNodePrefix]: prefix,
@@ -166,19 +166,19 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                     [MESSAGE_PUBLISHER.LogicalNodeType]: ln.getAttribute('lnType') || ''
                 };
 
-                const LNodeType = findLNodeType(logicalNodeInofrmation.LogicalNodeType, dataTypeTemplates, IEDName, logicalNodeInofrmation, invaliditiesReports);
+                const LNodeType = findLNodeType(logicalNodeInformation.LogicalNodeType, dataTypeTemplates, IEDName, logicalNodeInformation, invaliditiesReports);
                 if (!LNodeType) continue;
 
-                const DO = findDO(doName, LNodeType, IEDName, logicalNodeInofrmation, invaliditiesReports);
+                const DO = findDO(doName, LNodeType, IEDName, logicalNodeInformation, invaliditiesReports);
                 if (!DO) continue;
 
                 const DOtypeId = DO.getAttribute('type') || '';
-                const DOtype = findDOType(DOtypeId, dataTypeTemplates, IEDName, logicalNodeInofrmation, invaliditiesReports);
+                const DOtype = findDOType(DOtypeId, dataTypeTemplates, IEDName, logicalNodeInformation, invaliditiesReports);
                 if (!DOtype) continue;
 
                 const daName = DAI.getAttribute('name') || '';
                 const commonDataClass = DOtype.getAttribute('cdc') || '';
-                const DA = findDA(daName, DOtype, IEDName, logicalNodeInofrmation, invaliditiesReports);
+                const DA = findDA(daName, DOtype, IEDName, logicalNodeInformation, invaliditiesReports);
                 if (!DA) continue;
 
                 const attributeType = DA.getAttribute('bType') || '';
@@ -198,7 +198,7 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                     publisher.logicalNodeInformation.LogicalNodePrefix === prefix &&
                     publisher.logicalNodeInformation.LogicalNodeClass === lnClass &&
                     publisher.logicalNodeInformation.LogicalNodeInstance === lnInst &&
-                    publisher.logicalNodeInformation.LogicalNodeType === logicalNodeInofrmation.LogicalNodeType &&
+                    publisher.logicalNodeInformation.LogicalNodeType === logicalNodeInformation.LogicalNodeType &&
                     publisher.dataObjectInformation.DataObjectName === doName &&
                     publisher.dataObjectInformation.DataAttributeName === daName &&
                     publisher.dataObjectInformation.CommonDataClass === commonDataClass &&
@@ -212,7 +212,7 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                         [MESSAGE_PUBLISHER.M_text]: desc, 
                         [MESSAGE_PUBLISHER.SignalType]: signalType, 
                         [MESSAGE_PUBLISHER.IEDName]: IEDName, 
-                        [MESSAGE_PUBLISHER.LogicalNodeInformation]: logicalNodeInofrmation,
+                        [MESSAGE_PUBLISHER.LogicalNodeInformation]: logicalNodeInformation,
                         [MESSAGE_PUBLISHER.DataObjectInformation]: dataObjectInformation,
                          
                     });
@@ -222,34 +222,34 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
     }
 }
 
-function findLNodeType(logicalNodeType: string, dataTypeTemplates: Element, IEDName: string, logicalNodeInofrmation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
+function findLNodeType(logicalNodeType: string, dataTypeTemplates: Element, IEDName: string, logicalNodeInformation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
     const LNodeType = dataTypeTemplates.querySelector(`LNodeType[id="${logicalNodeType}"]`);
     if (!LNodeType) {
-        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`LNodeType with id ${logicalNodeType} not found in DataTypeTemplates`] });
+        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInformation, invalidities: [`LNodeType with id ${logicalNodeType} not found in DataTypeTemplates`] });
     }
     return LNodeType;
 }
 
-function findDO(doName: string, LNodeType: Element, IEDName: string, logicalNodeInofrmation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
+function findDO(doName: string, LNodeType: Element, IEDName: string, logicalNodeInformation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
     const DO = LNodeType.querySelector(`DO[name="${doName}"]`);
     if (!DO) {
-        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`DO with name ${doName} not found in LNodeType with id ${logicalNodeInofrmation.LogicalNodeType}`] });
+        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInformation, invalidities: [`DO with name ${doName} not found in LNodeType with id ${logicalNodeInformation.LogicalNodeType}`] });
     }
     return DO;
 }
 
-function findDOType(DOtypeId: string, dataTypeTemplates: Element, IEDName: string, logicalNodeInofrmation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
+function findDOType(DOtypeId: string, dataTypeTemplates: Element, IEDName: string, logicalNodeInformation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
     const DOtype = dataTypeTemplates.querySelector(`DOType[id="${DOtypeId}"]`);
     if (!DOtype) {
-        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`DOType with id ${DOtypeId} not found in DataTypeTemplates`] });
+        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInformation, invalidities: [`DOType with id ${DOtypeId} not found in DataTypeTemplates`] });
     }
     return DOtype;
 }
 
-function findDA(daName: string, DOtype: Element, IEDName: string, logicalNodeInofrmation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
+function findDA(daName: string, DOtype: Element, IEDName: string, logicalNodeInformation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
     const DA = DOtype.querySelector(`DA[name="${daName}"]`);
     if (!DA) {
-        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInofrmation, invalidities: [`DA with name ${daName} not found in DOType with id ${DOtype.getAttribute('id')}`] });
+        invaliditiesReports.push({ IEDName, LogicalNodeInformation: logicalNodeInformation, invalidities: [`DA with name ${daName} not found in DOType with id ${DOtype.getAttribute('id')}`] });
     }
     return DA;
 }
