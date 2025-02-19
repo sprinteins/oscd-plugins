@@ -92,6 +92,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -114,6 +115,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -141,6 +143,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
@@ -535,6 +538,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -565,6 +569,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -587,6 +592,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -617,6 +623,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -639,6 +646,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -669,6 +677,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -691,6 +700,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'Abgangserder QC3-Befehl blockiert',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -721,6 +731,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -758,6 +769,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: 'GOOSE',
         IEDName: 'IED1',
@@ -980,6 +992,7 @@ describe('Signallist', () => {
           M_text: "LS SF6 Verlust",
           UW: "",
           VoltageLevel: "",
+          Bay: "",
           dataObjectInformation: {
             AttributeType: "BType1",
             CommonDataClass: "CDC1",
@@ -1035,6 +1048,7 @@ describe('Signallist', () => {
           M_text: "LS SF6 Verlust",
           UW: "",
           VoltageLevel: "",
+          Bay: "",
           dataObjectInformation: {
             AttributeType: "BType1",
             CommonDataClass: "CDC1",
