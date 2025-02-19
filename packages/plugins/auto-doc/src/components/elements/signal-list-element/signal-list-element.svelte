@@ -78,7 +78,7 @@
 		
 		function setFilterCriteriaForMessageSubscribers(searchKey: string,column2: string) {
 			subscriberFilter.serviceType = searchKey as  keyof typeof SignalType;
-			subscriberFilter.IDEName = column2;
+			subscriberFilter.IEDName = column2;
 		}
 
 		const {messagePublishers} = signallistStore.getPublishingLogicalDevices(publisherFilter);
