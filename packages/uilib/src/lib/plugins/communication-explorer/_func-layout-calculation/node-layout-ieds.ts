@@ -3,18 +3,20 @@ import type {
 	IEDConnectionWithCustomValues,
 	IEDNode
 } from '../../../components/diagram'
-import { hasActiveIEDSelection, isIEDSelected, hasActiveBaySelection, isBaySelected } from '../_store-view-filter'
+import { hasActiveIEDSelection, isIEDSelected } from '../_store-view-filter'
+import type { Preferences } from '../_store-preferences'
 import type { Config } from './config'
+
 // TYPES
 import type { IED } from '@oscd-plugins/core'
 
 export function generateIEDLayout(
 	ieds: IED.CommunicationInfo[],
 	edges: IEDConnectionWithCustomValues[],
-	config: Config
+	config: Config,
+	preferences: Preferences
 ): IEDNode[] {
-	const hasIEDSelection = hasActiveIEDSelection()
-	const hasBaySelection = hasActiveBaySelection()
+	const hasSelection = hasActiveIEDSelection()
 
 	const relevantEdges = edges.filter((edge) => edge.isRelevant)
 	const relevantNodes = new Set<string>()
@@ -26,20 +28,17 @@ export function generateIEDLayout(
 
 	const children: IEDNode[] = ieds.map((ied, ii) => {
 		let isRelevant = true
-		if (hasIEDSelection) {
+		if (hasSelection) {
 			// TODO: smells, we should be independent of the label
 			const isNodeRelevant = relevantNodes.has(ied.iedName)
 			const isNodeSelected = isIEDSelected({ label: ied.iedName })
 			isRelevant = isNodeRelevant || isNodeSelected
 		}
-		if (hasBaySelection) {
-			isRelevant = isBaySelected(ied.bays.values().next().value) //TODO: this needs to change to support multiple bays!
-		}
 
 		return {
 			id: Id(ii),
 			width: config.iedWidth,
-			height: config.iedHeight + config.bayLabelHeight + config.bayLabelGap,
+			height: config.iedHeight + (preferences.groupByBay ? 0 : config.bayLabelHeight + config.bayLabelGap),
 			label: ied.iedName,
 			isRelevant: isRelevant,
 			children: [],

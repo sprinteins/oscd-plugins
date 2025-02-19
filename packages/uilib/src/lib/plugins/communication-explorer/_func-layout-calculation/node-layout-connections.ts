@@ -1,5 +1,5 @@
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
-import { hasActiveIEDSelection, hasActiveBaySelection, isIEDSelected } from '../_store-view-filter'
+import { hasActiveIEDSelection, isIEDSelected } from '../_store-view-filter'
 // TYPES
 import type { IED, Utils } from '@oscd-plugins/core'
 import type { SelectedFilter } from '../_store-view-filter'
@@ -93,18 +93,15 @@ function convertPublishedMessagesToConnections(
 		const isRelevantMessageType: boolean =
 			selectedMessageTypes.includes(messageType) || isUnknownMessageType
 
-		//TODO: this whole function seems like a lot of duplicate code?
-		let isRelevant = !hasActiveBaySelection() 
-		if (isRelevant) {
-			if (hasSelection) {
-				isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
-				if (isRelevant && !isRelevantMessageType) {
-					isRelevant = false
-				}
-			} else {
-				if (!isRelevantMessageType) {
-					isRelevant = false
-				}
+		let isRelevant = true
+		if (hasSelection) {
+			isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
+			if (isRelevant && !isRelevantMessageType) {
+				isRelevant = false
+			}
+		} else {
+			if (!isRelevantMessageType) {
+				isRelevant = false
 			}
 		}
 
@@ -174,17 +171,16 @@ function convertReceivedMessagesToConnections(
 		const isRelevantMessageType: boolean =
 			selectedMessageTypes.includes(messageType) || isUnknownMessageType
 
-		let isRelevant = !hasActiveBaySelection()
-		if (isRelevant) {
-			if (hasSelection) {
-				isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
-				if (isRelevant && !isRelevantMessageType) {
-					isRelevant = false
-				}
-			} else {
-				if (!isRelevantMessageType) {
-					isRelevant = false
-				}
+		let isRelevant = true
+		if (hasSelection) {
+			isRelevant = checkRelevance(selectionFilter, targetIED, sourceIED)
+			if (isRelevant && !isRelevantMessageType) {
+				isRelevant = false
+			}
+		} 
+		else {
+			if (!isRelevantMessageType) {
+				isRelevant = false
 			}
 		}
 

@@ -14,25 +14,13 @@ export function selectIEDNode(node: IEDElkNode) {
 		return {
 			...selectedFilter,
 			selectedIEDs: [node],
-			selectedBays: [],
 			selectedConnection: undefined
 		}
 	})
 }
 
-export function selectBay(bay: string) {
-	filterState.update(selectedFilter => {
-		return {
-			...selectedFilter,
-			selectedBays:		[bay],
-			selectedIEDs:		[],
-			selectedConnection: undefined
-		}
-	})
-}
-
-export function toggleMultiSelectionOfIED(node: IEDElkNode){
-	filterState.update(selectedFilter => {
+export function toggleMultiSelectionOfIED(node: IEDElkNode) {
+	filterState.update((selectedFilter) => {
 
 		const selectedIEDs = selectedFilter.selectedIEDs
 		const isAlreadySelected = _isIEDSelected(node, selectedIEDs)
@@ -60,8 +48,7 @@ export function clearIEDSelection() {
 		return {
 			...selectedFilter,
 			selectedIEDs: [],
-			selectedBays: [],
-			selectedConnection: undefined,
+			selectedConnection: undefined
 		}
 	})
 }
@@ -71,8 +58,7 @@ export function selectConnection(connection: IEDConnectionWithCustomValues) {
 		return {
 			...selectedFilter,
 			selectedConnection: connection,
-			selectedIEDs: [],
-			selectedBays: []
+			selectedIEDs: []
 		}
 	})
 }
@@ -184,22 +170,16 @@ export function isIEDSelected(node: { label: string }): boolean {
 	return isSelected
 }
 
-export function isBaySelected(bay: string): boolean {
-	const selectedBays = get(filterState).selectedBays;
-	return selectedBays.some(b => b === bay)
-}
-
-function _isIEDSelected(node: {label: string}, selectedIEDs: IEDElkNode[]): boolean {
-	return selectedIEDs.some(iedNode => iedNode.label === node.label)
+function _isIEDSelected(
+	node: { label: string },
+	selectedIEDs: IEDElkNode[]
+): boolean {
+	return selectedIEDs.some((iedNode) => iedNode.label === node.label)
 }
 
 export function hasActiveIEDSelection(): boolean {
 	const selectedIEDs = get(filterState).selectedIEDs
 	return selectedIEDs.length > 0
-}
-
-export function hasActiveBaySelection(): boolean {
-	return get(filterState).selectedBays.length > 0
 }
 
 export function isConnectionSelected(

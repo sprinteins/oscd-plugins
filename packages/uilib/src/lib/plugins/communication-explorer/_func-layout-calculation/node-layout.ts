@@ -36,7 +36,7 @@ export async function calculateLayout(
 	}
 
 	let edges = generateConnectionLayout(ieds, selectionFilter)
-	let children: IEDNode[] = generateIEDLayout(ieds, edges, config)
+	let children: IEDNode[] = generateIEDLayout(ieds, edges, config, preferences)
 	if (preferences.groupByBay) {
 		children = generateBayLayout(children, edges, config)
 	}

@@ -10,7 +10,6 @@
 	import { createEventDispatcher } from "svelte"
 	import type { ElkExtendedEdge } from "elkjs"
 	import {
-    isBaySelected,
 		isConnectionSelected,
 		isIEDSelected,
 	} from "../../plugins/communication-explorer/_store-view-filter"
@@ -22,6 +21,7 @@
 	export let rootNode: RootNode
 	export let playAnimation = true
 	export let showConnectionArrows = true
+	export let showBayLabels = false
 
 	//
 	// Setup
@@ -236,8 +236,9 @@
 						>
 							<IEDElement
 								{node}
-								isBaySelected= {(node.bays && node.bays.size > 0) ? isBaySelected(node.bays.values().next().value) : false} 
+								isBaySelected= {false}
 								isIEDSelected={isIEDSelected(node)}
+								showBayLabels={showBayLabels}
 								testid={`ied-${node.label}`}
 							/>
 						</foreignObject>

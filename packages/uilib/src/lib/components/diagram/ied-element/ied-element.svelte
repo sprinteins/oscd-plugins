@@ -5,8 +5,9 @@
 	// INPUT
 	// 
 	export let node: IEDElkNode
-	export let isIEDSelected = false
 	export let isBaySelected = false
+	export let isIEDSelected = false
+	export let showBayLabels = false
 	export let disabled = false
 	export let testid = ""
 
@@ -14,7 +15,7 @@
 </script>
 
 {#if node}
-	{#if bays.length > 0}
+	{#if showBayLabels && bays.length > 0}
 		<div 
 			class="bayLabel selectable"
 			class:isIrrelevant={!node.isRelevant}

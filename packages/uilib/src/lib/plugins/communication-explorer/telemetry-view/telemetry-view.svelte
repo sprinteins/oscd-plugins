@@ -13,7 +13,6 @@ import {
 	type SelectedFilter,
 	selectConnection,
 	selectIEDNode,
-	selectBay,
 	clearIEDSelection,
 	toggleMultiSelectionOfIED
 } from '../_store-view-filter'
@@ -79,7 +78,12 @@ function handleIEDAdditiveSelect(e: CustomEvent<IEDNode>) {
 	toggleMultiSelectionOfIED(e.detail)
 }
 function handleBaySelect(e: CustomEvent<string>) {
-	selectBay(e.detail)
+	clearIEDSelection()
+    for (const node of rootNode.children) {
+        if (node.bays && node.bays.has(e.detail)) {
+            toggleMultiSelectionOfIED(node)
+        }
+    }
 }
 function handleConnectionClick(e: CustomEvent<IEDConnection>) {
 	// temp till fully migrated: map element to enhanced data model
@@ -97,6 +101,7 @@ function handleClearClick() {
 			{rootNode}
 			playAnimation={$preferences$.playConnectionAnimation}
 			showConnectionArrows={$preferences$.showConnectionArrows}
+			showBayLabels={!$preferences$.groupByBay}
 			on:iedselect={handleIEDSelect}
 			on:bayselect={handleBaySelect}
 			on:iedadditiveselect={handleIEDAdditiveSelect}
