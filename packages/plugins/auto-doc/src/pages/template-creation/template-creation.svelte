@@ -19,27 +19,37 @@
     let templateId:string|undefined = undefined
     const NO_TITLE_TEXT = "Untitled Document";
     
-    onMount(()=>{
+    onMount(() => {
         templateId = params.id;
-        if(templateId){
-            const template = docTemplatesStore.getDocumentTemplate(templateId);
-            if(template){
-                title = template.getAttribute('title') as string || "";
-                description = template.getAttribute('description') as string || "";
-            }
+        if (!templateId) {
+            return navigateToOverviewPage();
         }
-    })
+
+        const template = docTemplatesStore.getDocumentTemplate(templateId);
+        if (!template) {
+            return navigateToOverviewPage();
+        }
+
+        title = (template.getAttribute('title') as string) || "";
+        description = (template.getAttribute('description') as string) || "";
+    });
+
     
 
 
-    function navigateToOverviewPage(){
+    function askForEmptyTitleConfirmation(){
         if (!title) {
             const confirmNavigation = confirm("No title has been provided. Do you want to proceed?");
             if (!confirmNavigation) {
                 return;
             }
         }
+        navigateToOverviewPage()
+    }
+
+    function navigateToOverviewPage(){
         push('/')
+        
     }
 
     function displayTitleAndDescription(){
@@ -73,7 +83,7 @@
     <header class="header-container">
         <div class="header">
             <div class="template-title">
-                <CustomIconButton icon="arrow_back" color="black" on:click={navigateToOverviewPage}/>
+                <CustomIconButton icon="arrow_back" color="black" on:click={askForEmptyTitleConfirmation}/>
                 <div class="title" role="button" tabindex="0" on:click|stopPropagation={displayTitleAndDescription} 
                 on:keydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}
                 >
