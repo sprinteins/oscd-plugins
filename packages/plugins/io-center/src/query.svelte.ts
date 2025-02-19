@@ -36,8 +36,9 @@ function iedElementToIED(iedElement: Element): IED {
 	}
 }
 
-
-export function buildObjectTree() {
+// Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
+// Currently hard-coded by the client request but in future we may make it dynamic and allow the user to fill the targetScd
+export function buildObjectTree(targetCdc = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']) {
 	const doc = store.doc
 	const iedSelected = store.iedSelected
 
@@ -57,11 +58,19 @@ export function buildObjectTree() {
 		const lNodes = Array.from(lDevice.querySelectorAll("LN"))
 
 		for (const lNode of lNodes) {
-			const node: TreeNode = { id: crypto.randomUUID(), name: lNode.getAttribute("lnClass") || "", type: NODE_TYPE.logicalNode, isOpen: true, children: [] }
+			const node: TreeNode = { id: crypto.randomUUID(), name: `${lNode.getAttribute("lnClass") || ""}-${lNode.getAttribute("inst") || ""}`, type: NODE_TYPE.logicalNode, isOpen: true, children: [] }
 
-			const dObjects = Array.from(lNode.querySelectorAll("DOI"))
+			const lnNodeType = doc.querySelector(`LNodeType[id="${lNode.getAttribute("lnType") || ""}"]`);
+
+			if (!lnNodeType) return
+
+			const dObjects = Array.from(lnNodeType.querySelectorAll("DO"))
 
 			for (const dObject of dObjects) {
+				if (!getCDCfromDO(dObject, doc, targetCdc)) {
+					continue;
+				}
+
 				const object: TreeNode = { id: crypto.randomUUID(), name: dObject.getAttribute("name") || "", type: NODE_TYPE.dataObjectInstance }
 
 				if (node.children) {
@@ -69,13 +78,37 @@ export function buildObjectTree() {
 				}
 			}
 
-			if (device.children) {
+			if (device.children && node.children && node.children.length > 0) {
 				device.children.push(node)
 			}
 		}
 
-		tree.push(device)
+		if (device.children && device.children.length > 0) {
+			tree.push(device)
+		}
 	}
 
 	store.objectTree = tree
+}
+
+function getCDCfromDO(doElement: Element, doc: XMLDocument, targetCDC: string[]): string | undefined {
+	const type = doElement.getAttribute("type") || "";
+
+	if (type === "") {
+		return undefined;
+	}
+
+	const doType = doc.querySelector(`DOType[id="${type}"]`);
+
+	if (!doType) {
+		return undefined;
+	}
+
+	const cdc = doType.getAttribute("cdc") || "";
+
+	if (cdc === "" || !targetCDC.includes(cdc.toLowerCase())) {
+		return undefined;
+	}
+
+	return cdc;
 }
