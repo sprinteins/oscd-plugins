@@ -1,6 +1,5 @@
 <script lang="ts">
 	import NodeElement from "./node-element.svelte";
-	import { onDestroy, onMount } from "svelte";
 	import { calulateCoordinates } from "./canvas-actions.svelte";
 	import { canvasStore } from "./canvas-store.svelte";
 	import {
@@ -10,15 +9,9 @@
 		startDrawing,
 		stopDrawing,
 	} from "@/headless/utils";
-
-	onMount(() => {
-		window.addEventListener("resize", redrawConnections);
-	});
-
-	onDestroy(() => {
-		window.removeEventListener("resize", redrawConnections);
-	});
 </script>
+
+<svelte:window onresize={redrawConnections} />
 
 <div
 	use:calulateCoordinates
