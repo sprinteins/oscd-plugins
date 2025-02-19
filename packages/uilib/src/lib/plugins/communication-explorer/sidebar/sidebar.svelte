@@ -59,7 +59,7 @@
         if (bays.includes(searchQuery)) {
             clearIEDSelection()
             for (const node of rootNode.children) {
-                if (node.bays.has(searchQuery)) {
+                if (node.bays && node.bays.has(searchQuery)) {
                     toggleMultiSelectionOfIED(node)
                 }
             }
