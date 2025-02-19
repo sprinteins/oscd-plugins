@@ -21,6 +21,7 @@ export async function calculateLayout(
 	selectionFilter: SelectedFilter,
 	preferences: Preferences
 ): Promise<RootNode> {
+
 	config = {
 		...defaultConfigs,
 		...config
@@ -36,7 +37,9 @@ export async function calculateLayout(
 
 	let edges = generateConnectionLayout(ieds, selectionFilter)
 	let children: IEDNode[] = generateIEDLayout(ieds, edges, config)
-	children = generateBayLayout(children, edges, config)
+	if (preferences.groupByBay) {
+		children = generateBayLayout(children, edges, config)
+	}
 
 	if (preferences.isFocusModeOn) {
 		children = children.filter((child) => child.isRelevant)
@@ -55,7 +58,7 @@ export async function calculateLayout(
 			'org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment':
 				'RIGHTUP',
 			'org.eclipse.elk.direction': 'LEFT',
-			'org.eclipse.elk.hierarchyHandling': 'INCLUDE_CHILDREN',
+			'org.eclipse.elk.hierarchyHandling': preferences.groupByBay ? 'INCLUDE_CHILDREN' : 'SEPARATE_CHILDREN',
 
 			// default: 20; a component is when multiple nodes are connected
 			// "org.eclipse.elk.spacing.componentComponent": "20",
@@ -73,6 +76,10 @@ export async function calculateLayout(
 
 	// message type information gets lost here
 	const root = (await elk.layout(graph)) as RootNode
+
+	if (!preferences.groupByBay) {
+		return root;
+	}
 
 	// this is not ideal, ELK will calculate positions of IEDs and connections in local space of the parent bay (I didn't find a way to change that...)
 	// we are not expecting local positions but absolute positions so we have to add the position of the bay to each affected Connection
@@ -146,8 +153,8 @@ function generateBayLayout(ieds: IEDNode[], edges: IEDConnectionWithCustomValues
 			let spacing = config.spacingBase ?? 20
 			bayNode = {
 				id:         	"bay-" + (id++), //placeholder
-				width:      	config.width,
-				height:     	config.height,
+				width:      	config.iedWidth,
+				height:     	config.iedHeight + config.bayLabelHeight,
 				label:      	bayLabel,
 				isRelevant: 	ied.isRelevant,
 				isBayNode:		true,

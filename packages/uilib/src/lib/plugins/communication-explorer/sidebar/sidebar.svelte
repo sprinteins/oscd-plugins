@@ -204,6 +204,16 @@
                 <span>Play data flow animation</span>
             </label>
         </div>
+
+        <div class="checkbox-group">
+            <label>
+                <input
+                    type="checkbox"
+                    bind:checked={$preferences$.groupByBay}
+                />
+                <span>Group IEDs by bay</span>
+            </label>
+        </div>
     </div>
 </div>
 
