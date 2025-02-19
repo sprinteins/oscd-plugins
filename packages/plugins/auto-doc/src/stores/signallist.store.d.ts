@@ -1,4 +1,4 @@
-import type { MESSAGE_PUBLISHER } from "@/constants/messages";
+import type { MESSAGE_PUBLISHER, MESSAGE_SUBSCRIBER, SUBSCRIBER_EXT_REF } from "@/constants/messages";
 
 /* 
     The keys of SignalType and Columns are used for the searchKey in SignalRow. 
@@ -43,22 +43,22 @@ export type MessagePublisher = {
 
 
 export type MessageSubscriber = {
-    IEDName: string;
-    ExtRef: ExtRef
+    [MESSAGE_SUBSCRIBER.IEDName]: string;
+    [MESSAGE_SUBSCRIBER.ExtRef]: ExtRef
 }
 export type ExtRef = {
-    iedName:string;
-    serviceType:SignalType;
-    ldInst:string;
-    lnClass:string;
-    lnInst:string;
-    prefix:string;
-    doName:string;
-    daName:string;
-    srcLDInst:string;
-    srcPrefix:string;
-    srcLNClass:string;
-    srcCBName:string;
+    [SUBSCRIBER_EXT_REF.iedName]: string;
+    [SUBSCRIBER_EXT_REF.serviceType]: string;
+    [SUBSCRIBER_EXT_REF.ldInst]: string;
+    [SUBSCRIBER_EXT_REF.lnClass]: string;
+    [SUBSCRIBER_EXT_REF.lnInst]: string;
+    [SUBSCRIBER_EXT_REF.prefix]: string;
+    [SUBSCRIBER_EXT_REF.doName]: string;
+    [SUBSCRIBER_EXT_REF.daName]: string;
+    [SUBSCRIBER_EXT_REF.srcLDInst]: string;
+    [SUBSCRIBER_EXT_REF.srcPrefix]: string;
+    [SUBSCRIBER_EXT_REF.srcLNClass]: string;
+    [SUBSCRIBER_EXT_REF.srcCBName]: string;
 }
 
 export type LogicalNodeInformation = {
