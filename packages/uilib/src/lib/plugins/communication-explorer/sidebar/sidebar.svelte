@@ -1,82 +1,91 @@
 <script lang="ts">
-    import {
-    	filterState,
-    	type SelectedFilter,
-    } from "../_store-view-filter/selected-filter-store"
-    import {
-    	selectIEDNode,
-    	clearSelection,
-    	setNameFilter,
-        clearIEDSelection,
-        toggleMultiSelectionOfIED,
-    } from "../_store-view-filter/selected-filter-store-functions"
-    import ConnectionSelector from "./assets/connection-selector.svg"
-    import type { BayNode, IEDNode, RootNode } from "../../../components/diagram"
-    import { ConnectionTypeFilter } from "./connection-type-filter"
-    import { MessageTypeFilter } from "./message-type-filter"
-    import ConnectionInformation from "./connection-information/connection-information.svelte"
-    import IEDAccordion from "./ied-accordion/ied-accordion.svelte"
-    import { preferences$ } from "../_store-preferences"
+import {
+	filterState,
+	type SelectedFilter
+} from '../_store-view-filter/selected-filter-store'
+import {
+	selectIEDNode,
+	clearSelection,
+	setNameFilter,
+	clearIEDSelection,
+	toggleMultiSelectionOfIED
+} from '../_store-view-filter/selected-filter-store-functions'
+import ConnectionSelector from './assets/connection-selector.svg'
+import type { BayNode, IEDNode, RootNode } from '../../../components/diagram'
+import { ConnectionTypeFilter } from './connection-type-filter'
+import { MessageTypeFilter } from './message-type-filter'
+import ConnectionInformation from './connection-information/connection-information.svelte'
+import IEDAccordion from './ied-accordion/ied-accordion.svelte'
+import { preferences$ } from '../_store-preferences'
 
-    export let rootNode: RootNode
-    export let bays: string[]
-    let IEDs = rootNode.children;  
-    let searchQuery = ""
-    let filterTextFieldFocused = false
+export let rootNode: RootNode
+export let bays: string[]
+let IEDs = rootNode.children
+let searchQuery = ''
+let filterTextFieldFocused = false
 
-    $: IEDSelections = $filterState?.selectedIEDs
-    $: ConnectionSelection = $filterState.selectedConnection
-    $: selectedMessageTypes = $filterState.selectedMessageTypes
-    $: isIedFiltersDisabled =
-        $filterState?.selectedConnection !== undefined
-    $: isConnectionDirectionDisabled = handleConnectionDirectionDisabled(
-    	$filterState,
-    	isIedFiltersDisabled
-    )
-    $: filteredIEDs = (searchQuery && IEDs?.filter(ied => ied.label.toLowerCase().includes(searchQuery.toLowerCase()))) || IEDs
-    $: filteredBays = (searchQuery && bays?.filter(bay => bay.toLowerCase().includes(searchQuery.toLowerCase()))) || bays
+$: IEDSelections = $filterState?.selectedIEDs
+$: ConnectionSelection = $filterState.selectedConnection
+$: selectedMessageTypes = $filterState.selectedMessageTypes
+$: isIedFiltersDisabled = $filterState?.selectedConnection !== undefined
+$: isConnectionDirectionDisabled = handleConnectionDirectionDisabled(
+	$filterState,
+	isIedFiltersDisabled
+)
+$: filteredIEDs =
+	(searchQuery &&
+		IEDs?.filter((ied) =>
+			ied.label.toLowerCase().includes(searchQuery.toLowerCase())
+		)) ||
+	IEDs
+$: filteredBays =
+	(searchQuery &&
+		bays?.filter((bay) =>
+			bay.toLowerCase().includes(searchQuery.toLowerCase())
+		)) ||
+	bays
 
-    function handleConnectionDirectionDisabled(
-    	filter: SelectedFilter,
-    	iedFilterDisabled: boolean
-    ): boolean {        
-    	if (iedFilterDisabled) return true
+function handleConnectionDirectionDisabled(
+	filter: SelectedFilter,
+	iedFilterDisabled: boolean
+): boolean {
+	if (iedFilterDisabled) return true
 
-    	const selectedIEDs = filter?.selectedIEDs
-    	const selectedCon = filter?.selectedConnection?.id
+	const selectedIEDs = filter?.selectedIEDs
+	const selectedCon = filter?.selectedConnection?.id
 
-        return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
-    }
+	return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
+}
 
-    function handleNameFilterChange(e: Event) {
-    	const target = e.target as HTMLInputElement
-    	setNameFilter(target.value)
-    }
+function handleNameFilterChange(e: Event) {
+	const target = e.target as HTMLInputElement
+	setNameFilter(target.value)
+}
 
-    function handleDropdownSelect(e: Event) {
-        const target = e.target as HTMLElement;
-	    searchQuery = target.innerText|| '';
-        if (bays.includes(searchQuery)) {
-            clearIEDSelection()
-            for (const node of rootNode.children) {
-                if (node.bays.has(searchQuery)) {
-                    toggleMultiSelectionOfIED(node)
-                }
-            }
-        }
-        else {
-            let selectedNode = rootNode.children.find(node => node.label == searchQuery)
-            if (selectedNode) {
-                selectIEDNode(selectedNode)
-            }
-        }
-    }
+function handleDropdownSelect(e: Event) {
+	const target = e.target as HTMLElement
+	searchQuery = target.innerText || ''
+	if (bays.includes(searchQuery)) {
+		clearIEDSelection()
+		for (const node of rootNode.children) {
+			if (node.bays.has(searchQuery)) {
+				toggleMultiSelectionOfIED(node)
+			}
+		}
+	} else {
+		let selectedNode = rootNode.children.find(
+			(node) => node.label == searchQuery
+		)
+		if (selectedNode) {
+			selectIEDNode(selectedNode)
+		}
+	}
+}
 
-    function clearAll() {
-        searchQuery = "";
-        clearSelection();
-    }
-
+function clearAll() {
+	searchQuery = ''
+	clearSelection()
+}
 </script>
 
 <div class="sidebar sidebar-right">
@@ -220,10 +229,11 @@
 
     .sidebar .sidebar-content {
         padding: 1rem;
-        background-color: #fcf6e5;
+        background-color: var(--mdc-theme-background);
         height: calc(100% - 2rem);
         overflow: auto;
         min-width: 330px;
+				color: var(--mdc-theme-on-background);
     }
 
     .search_filter {
