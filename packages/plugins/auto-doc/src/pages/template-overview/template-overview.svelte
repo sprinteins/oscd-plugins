@@ -48,6 +48,12 @@
         pdfGenerator.downloadAsPdf(templateId)
     }
 
+    function editTemplate(event: CustomEvent<{templateId: string}>){
+        const {templateId} = event.detail
+        push(`/edit/${templateId}`)
+
+    }
+
 
 
 
@@ -67,6 +73,7 @@
             allTemplates={templatesConvertedToTableRow} 
             on:templateDelete={deleteTemplate}
             on:templateDownload={downloadTemplateContent}
+            on:editTemplate={editTemplate}
         />
     </main>
 
