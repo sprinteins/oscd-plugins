@@ -36,10 +36,10 @@
     <SearchBar bind:searchTerm />
     <p class="text-xl font-semibold pl-2 pt-3">LPDI</p>
     {#each lpdiList as lpElement (lpElement.id)}
-        <LpElement {lpElement} />
+        <LpElement {searchTerm} {lpElement} />
     {/each}
     <p class="text-xl font-semibold pl-2 pt-3">LPDO</p>
     {#each lpdoList as lpElement (lpElement.id)}
-        <LpElement {lpElement} />
+        <LpElement {searchTerm} {lpElement} />
     {/each}
 </div>
