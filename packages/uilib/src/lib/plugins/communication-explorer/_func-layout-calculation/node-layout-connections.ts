@@ -104,7 +104,6 @@ function convertPublishedMessagesToConnections(
 				isRelevant = false
 			}
 		}
-
 		// console.log({level: "dev", msg: "IEDConnectionWithCustomValues", message, checkRelevance: checkRelevance(selectionFilter, targetIED, sourceIED), isRelevant, isRelevantMessageType, selectedMessageTypes, messageType, selectionFilter, targetIED, sourceIED})
 
 		//
@@ -177,8 +176,7 @@ function convertReceivedMessagesToConnections(
 			if (isRelevant && !isRelevantMessageType) {
 				isRelevant = false
 			}
-		} 
-		else {
+		} else {
 			if (!isRelevantMessageType) {
 				isRelevant = false
 			}
