@@ -362,6 +362,8 @@ describe('DocumentTemplateStore', () => {
 		const blockElement = docDef.querySelector(`Block[id="${blockId}"]`);
 		expect(blockElement).not.toBeNull();
 		expect(blockElement?.textContent).toBe(updatedContent);
+		expect(blockElement?.getAttribute('id')).toBe(blockId);
+		expect(blockElement?.getAttribute('type')).toBe(type);
 	});
 	
 	it('should edit the description of a "DocumentTemplate" element', () => {
