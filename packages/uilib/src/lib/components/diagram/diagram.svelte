@@ -13,7 +13,7 @@
 		isConnectionSelected,
 		isIEDSelected,
 	} from "../../plugins/communication-explorer/_store-view-filter"
-import BayContainer from "./bay-container/bay-container.svelte"
+	import BayContainer from "./bay-container/bay-container.svelte"
 
 	//
 	// Inputs
@@ -83,7 +83,9 @@ import BayContainer from "./bay-container/bay-container.svelte"
 	let draggingEnabled = false
 	let isDragging = false
 	function handleKeyDown(e: KeyboardEvent) {
-		if (e.code !== "Space") {
+		const target = e.target as HTMLElement
+
+		if (e.code !== "Space" || target.tagName !== "BODY") {
 			return
 		}
 
@@ -92,6 +94,7 @@ import BayContainer from "./bay-container/bay-container.svelte"
 		e.stopPropagation()
 		e.preventDefault()
 	}
+
 	function handleMouseDown(e: MouseEvent) {
 		if (!draggingEnabled) {
 			return

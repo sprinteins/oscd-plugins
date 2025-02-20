@@ -27,6 +27,8 @@
 >
 	<option disabled selected>Select an IED</option>
 	{#each store.iedList as ied}
-		<option value={ied.name}>{ied.name}</option>
+		<option value={ied.name} selected={ied.name === store.iedSelected?.name}
+			>{ied.name}</option
+		>
 	{/each}
 </select>
