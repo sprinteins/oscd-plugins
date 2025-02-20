@@ -13,11 +13,7 @@ import {
 	TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES
 } from '@/headless/constants'
 // STORES
-import {
-	sidebarStore,
-	typeElementsStore,
-	pluginLocalStore
-} from '@/headless/stores'
+import { sidebarStore, pluginLocalStore } from '@/headless/stores'
 
 //====== REACTIVE VARIABLES ======//
 
@@ -79,9 +75,6 @@ function isAttributeReadonly(attributeKey: string) {
 						{/if}
 					</div>
 				{/each}
-				{#if isAnyAttributeAllowed}
-					<span>Any attribute allowed</span>
-				{/if}
 			</Sidebar.Content>
 			<Sidebar.Footer />
 

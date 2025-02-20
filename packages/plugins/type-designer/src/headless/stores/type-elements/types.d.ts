@@ -9,46 +9,53 @@ import type { Xml, Utils } from '@oscd-plugins/core-api/plugin/v1'
 export type AvailableTypeFamily = keyof typeof TYPE_FAMILY_MAP
 export type AvailableRefFamily = keyof typeof REF_FAMILY_MAP
 
-export type TypeElements<Family extends AvailableTypeFamily> = Record<
-	string,
-	TypeElement<Family>
->
+export type TypeRawElement<GenericTypeFamily extends AvailableTypeFamily> =
+	Xml.SclElement<
+		GenericTypeFamily,
+		typeof pluginLocalStore.currentEdition,
+		typeof pluginLocalStore.currentUnstableRevision
+	>
+export type RefRawElement<GenericRefFamily extends AvailableRefFamily> =
+	Xml.SclElement<
+		GenericRefFamily,
+		typeof pluginLocalStore.currentEdition,
+		typeof pluginLocalStore.currentUnstableRevision
+	>
+export type PluginRawElement<
+	GenericFamily extends AvailableTypeFamily | AvailableRefFamily
+> = GenericFamily extends AvailableTypeFamily
+	? TypeRawElement<GenericFamily>
+	: RefRawElement<GenericFamily>
 
-export type TypeElement<Family extends AvailableTypeFamily> = {
-	element: MapTypeFamilyToDefinitionElement[Family]
+export type TypeElementsByFamily = {
+	[key in AvailableTypeFamily]: TypeElementByIds<key>
+}
+
+export type TypeElementByIds<GenericTypeFamily extends AvailableTypeFamily> =
+	Record<string, TypeElement<GenericTypeFamily>>
+
+export type TypeElement<GenericFamily extends AvailableTypeFamily> = {
+	element: GenericTypeFamily<GenericFamily>
 	attributes: Record<string, string | null>
 	parameters: {
 		label: string
 	}
-	refs: Record<AvailableTypeFamily, string[]>
+	refs: RefElementsByFamily
 }
 
-export type MapTypeFamilyToDefinitionElement = {
-	[TYPE_FAMILY_MAP.bay]: Xml.SclElement<
-		'bay',
-		typeof pluginLocalStore.currentEdition,
-		typeof pluginLocalStore.currentUnstableRevision
-	>
-	[TYPE_FAMILY_MAP.generalEquipmentType]: Xml.SclCustomElement<'GeneralEquipmentType'>
-	[TYPE_FAMILY_MAP.conductingEquipmentType]: Xml.SclCustomElement<'ConductingEquipmentType'>
-	[TYPE_FAMILY_MAP.functionTemplate]: Xml.SclElement<
-		'functionTemplate',
-		typeof pluginLocalStore.currentEdition,
-		typeof pluginLocalStore.currentUnstableRevision
-	>
-	[TYPE_FAMILY_MAP.lNodeType]: Xml.SclElement<
-		'lNodeType',
-		typeof pluginLocalStore.currentEdition,
-		typeof pluginLocalStore.currentUnstableRevision
-	>
+export type RefElementsByFamily = {
+	[key in AvailableRefFamily]: RefElementByIds<key>
 }
 
-export type TypeElementsPerFamily = {
-	[TYPE_FAMILY_MAP.bay]: TypeElements<'bay'>
-	[TYPE_FAMILY_MAP.generalEquipmentType]: TypeElements<'generalEquipmentType'>
-	[TYPE_FAMILY_MAP.conductingEquipmentType]: TypeElements<'conductingEquipmentType'>
-	[TYPE_FAMILY_MAP.functionTemplate]: TypeElements<'functionTemplate'>
-	[TYPE_FAMILY_MAP.lNodeType]: TypeElements<'lNodeType'>
+export type RefElementByIds<GenericRefFamily extends AvailableRefFamily> =
+	Record<string, RefElement<GenericRefFamily>>
+
+export type RefElement<GenericRefFamily extends AvailableRefFamily> = {
+	element: RefRawElement<GenericRefFamily>
+	source: {
+		id: string
+		family: AvailableTypeFamily
+	}
 }
 
 export type NewTypeAttributes = {
@@ -56,9 +63,9 @@ export type NewTypeAttributes = {
 	type?: string
 }
 
-export type Column<Family extends AvailableTypeFamily> = {
+export type Column<GenericFamily extends AvailableTypeFamily> = {
 	name: string
-	groupedTypeElements: Record<Family, TypeElements<Family>>
+	groupedTypeElements: Record<GenericFamily, TypeElements<Family>>
 }
 
 export type Columns = {

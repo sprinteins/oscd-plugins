@@ -17,9 +17,13 @@ import {
 // TYPES
 import type {
 	TypeElement,
-	TypeElements,
+	TypeElementByIds,
 	AvailableTypeFamily,
-	MapTypeFamilyToDefinitionElement
+	// MapTypeFamilyToDefinitionElement,
+	// Refs
+	TypeRawElement,
+	RefRawElement,
+	RefElementsByFamily
 } from '@/headless/stores'
 
 /**
@@ -58,10 +62,7 @@ function getTypeElementAttributes(params: {
 	}
 }
 
-function getRefs(
-	element: Element
-): Record<AvailableTypeFamily, string[]> | Record<never, never> {
-	if (element.tagName === 'LNodeType') return {}
+function getRefs(element: Element): RefElementsByFamily {
 	return Array.from(element.children).reduce(
 		(acc, childElement) => {
 			if (
@@ -74,26 +75,42 @@ function getRefs(
 			const refFamily =
 				typeElementsStore.mapRefTagNameToRefFamily[childElement.tagName]
 
-			const typeFamily = REF_FAMILY_TO_TYPE_FAMILY_MAP[refFamily]
-			acc[typeFamily] = acc[typeFamily] || []
+			let typeId = ''
 
 			//get LNodeType ids
-			const lnType = childElement.getAttribute('lnType')
-			if (lnType) acc[typeFamily].push(lnType)
+			const lnTypeAttribute = childElement.getAttribute('lnType')
+			if (lnTypeAttribute) typeId = lnTypeAttribute
 
 			//get other Types uuids
-			const type =
+			const typeAttribute =
 				REF_ATTRIBUTES_KIND_BY_REF_FAMILY[refFamily] === KIND.custom
 					? childElement.getAttributeNS(
 							pluginLocalStore.namespaces.currentPlugin.uri,
 							'type'
 						)
 					: childElement.getAttribute('type')
-			if (type) acc[typeFamily].push(type)
+			if (typeAttribute) typeId = typeAttribute
 
+			if (!typeId) throw new Error('No id found for ref element')
+
+			const typeFamily = REF_FAMILY_TO_TYPE_FAMILY_MAP[refFamily]
+
+			acc[refFamily][uuidv4()] = {
+				element: childElement as RefRawElement<typeof refFamily>,
+				source: {
+					id: typeId,
+					family: typeFamily
+				}
+			} as RefElementsByFamily[typeof refFamily][string]
 			return acc
 		},
-		{} as Record<AvailableTypeFamily, string[]>
+		{
+			function: {},
+			generalEquipment: {},
+			conductingEquipment: {},
+			eqFunction: {},
+			lNode: {}
+		} as RefElementsByFamily
 	)
 }
 
@@ -101,7 +118,7 @@ export function getAndMapTypeElements<
 	GenericFamily extends AvailableTypeFamily
 >(
 	family: GenericFamily,
-	typeElements: MapTypeFamilyToDefinitionElement[GenericFamily][] | undefined
+	typeElements: TypeRawElement<GenericFamily>[] | undefined
 ) {
 	return (
 		typeElements?.reduce(
@@ -127,7 +144,7 @@ export function getAndMapTypeElements<
 				} as TypeElement<GenericFamily>
 				return acc
 			},
-			{} as TypeElements<GenericFamily>
+			{} as TypeElementByIds<GenericFamily>
 		) || {}
 	)
 }

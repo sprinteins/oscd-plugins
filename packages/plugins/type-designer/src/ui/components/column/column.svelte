@@ -3,12 +3,15 @@
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import AddElement from './add-element.svelte'
 import CardCollapsibleWrapper from '../element-card/card-collapsible-wrapper.svelte'
+import { Input } from '@oscd-plugins/core-ui-svelte'
+// STORES
+import { typeElementsStore } from '@/headless/stores'
 // TYPES
 import type {
 	AvailableTypeFamily,
 	Columns,
 	Column,
-	TypeElements
+	TypeElementByIds
 } from '@/headless/stores'
 
 //======= INITIALIZATION =======//
@@ -22,14 +25,23 @@ const {
 const groupedTypeElementsEntries = $derived(
 	Object.entries(column.groupedTypeElements) as [
 		AvailableTypeFamily,
-		TypeElements<AvailableTypeFamily>
+		TypeElementByIds<AvailableTypeFamily>
 	][]
+)
+
+const capitalizedColumnKey = $derived(
+	columnKey.charAt(0).toUpperCase() + columnKey.slice(1)
 )
 </script>
 
 <Card.Root class="{columnKey === 'lNodeType' ? 'pb-6' : ''} flex-1 flex flex-col overflow-y-hidden min-h-full " >
 	<Card.Header class="pb-6">
 		<Card.Title>{ column.name}</Card.Title>
+		<Input.Root
+			bind:value={typeElementsStore.filtersByColumns[columnKey]}
+			class="!mt-4"
+			placeholder={`Search by ${capitalizedColumnKey}`}>
+		</Input.Root>
 	</Card.Header>
 
 	<Card.Content class="overflow-y-auto space-y-2 h-full">
