@@ -76,7 +76,7 @@
         searchQuery = "";
         clearSelection();
     }
-
+  
 </script>
 
 <div class="sidebar sidebar-right">
@@ -230,10 +230,11 @@
 
     .sidebar .sidebar-content {
         padding: 1rem;
-        background-color: #fcf6e5;
+        background-color: var(--mdc-theme-background);
         height: calc(100% - 2rem);
         overflow: auto;
         min-width: 330px;
+				color: var(--mdc-theme-on-background);
     }
 
     .search_filter {
