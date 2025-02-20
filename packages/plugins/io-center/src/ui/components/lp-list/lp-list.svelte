@@ -2,6 +2,7 @@
     import { LP_TYPE } from "@/headless/constants";
     import type { LpElement as LpElementType } from "./types.lp-list";
     import LpElement from "./lp-element.svelte";
+    import SearchBar from "../search-bar.svelte";
 
     const lpList: LpElementType[] = [
         { id: "1", type: LP_TYPE.input, name: "LPDI 1", isLinked: false },
@@ -14,16 +15,25 @@
         { id: "8", type: LP_TYPE.output, name: "LPDO 4", isLinked: true },
     ];
 
+    let searchTerm = $state("");
+
+    const filteredList = $derived.by(() =>
+        lpList.filter((item) =>
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()),
+        ),
+    );
+
     const lpdiList = $derived(
-        lpList.filter((item) => item.type === LP_TYPE.input),
+        filteredList.filter((item) => item.type === LP_TYPE.input),
     );
 
     const lpdoList = $derived(
-        lpList.filter((item) => item.type === LP_TYPE.output),
+        filteredList.filter((item) => item.type === LP_TYPE.output),
     );
 </script>
 
 <div class="p-6">
+    <SearchBar bind:searchTerm />
     <p class="text-xl font-semibold pl-2 pt-3">LPDI</p>
     {#each lpdiList as lpElement (lpElement.id)}
         <LpElement {lpElement} />
