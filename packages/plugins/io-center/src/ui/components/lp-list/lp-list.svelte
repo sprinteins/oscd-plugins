@@ -3,6 +3,7 @@
     import type { LpElement as LpElementType } from "./types.lp-list";
     import LpElement from "./lp-element.svelte";
     import SearchBar from "../search-bar.svelte";
+    import FilterButtons from "./filter-buttons.svelte";
 
     const lpList: LpElementType[] = [
         { id: "1", type: LP_TYPE.input, name: "LPDI 1", isLinked: false },
@@ -17,10 +18,22 @@
 
     let searchTerm = $state("");
 
+    let showLpdi = $state(true);
+    let showLpdo = $state(true);
+    let showLinked = $state(true);
+    let showUnlinked = $state(true);
+
     const filteredList = $derived.by(() =>
-        lpList.filter((item) =>
-            item.name.toLowerCase().includes(searchTerm.toLowerCase()),
-        ),
+        lpList
+            .filter((item) =>
+                item.name.toLowerCase().includes(searchTerm.toLowerCase()),
+            )
+            .filter((item) =>
+                showLinked && !showUnlinked ? item.isLinked : true,
+            )
+            .filter((item) =>
+                showUnlinked && !showLinked ? !item.isLinked : true,
+            ),
     );
 
     const lpdiList = $derived(
@@ -34,12 +47,27 @@
 
 <div class="p-6">
     <SearchBar bind:searchTerm />
-    <p class="text-xl font-semibold pl-2 pt-3">LPDI</p>
-    {#each lpdiList as lpElement (lpElement.id)}
-        <LpElement {searchTerm} {lpElement} />
-    {/each}
-    <p class="text-xl font-semibold pl-2 pt-3">LPDO</p>
-    {#each lpdoList as lpElement (lpElement.id)}
-        <LpElement {searchTerm} {lpElement} />
-    {/each}
+
+    <div class="mt-2">
+        <FilterButtons
+            bind:showLpdi
+            bind:showLpdo
+            bind:showLinked
+            bind:showUnlinked
+        />
+    </div>
+
+    {#if showLpdi}
+        <p class="text-xl font-semibold pl-2 pt-3">LPDI</p>
+        {#each lpdiList as lpElement (lpElement.id)}
+            <LpElement {searchTerm} {lpElement} />
+        {/each}
+    {/if}
+
+    {#if showLpdo}
+        <p class="text-xl font-semibold pl-2 pt-3">LPDO</p>
+        {#each lpdoList as lpElement (lpElement.id)}
+            <LpElement {searchTerm} {lpElement} />
+        {/each}
+    {/if}
 </div>
