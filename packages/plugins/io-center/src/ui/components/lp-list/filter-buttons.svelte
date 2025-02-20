@@ -46,9 +46,10 @@
                 selectedLabel = label;
                 setFilters(values);
             }}
-            class={selectedLabel === label ? "border-4 border-indigo-600" : ""}
-            >{label}</button
+            class={{ "border-4 border-indigo-600": selectedLabel === label }}
         >
+            {label}
+        </button>
     {/each}
 </div>
 

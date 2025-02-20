@@ -23,7 +23,7 @@
     );
 
     const baseClass =
-        "font-mono cursor-pointer hover:no-underline rounded-md hover:bg-gray-100 transition-colors duration-300";
+        "flex items-center gap-2 text-lg p-1 w-full mb-1 font-mono cursor-pointer hover:no-underline rounded-md hover:bg-gray-100 transition-colors duration-300";
 
     function getSelectedClass() {
         return isSelected ? "bg-beige hover:bg-beige" : "";
@@ -35,7 +35,7 @@
 </script>
 
 <button
-    class={`flex items-center gap-2 text-lg p-1 w-full mb-1 ${baseClass} ${getSelectedClass()} ${getSearchedClass()}`}
+    class={`${baseClass} ${getSelectedClass()} ${getSearchedClass()}`}
     onclick={() => addLpElementToCanvas(lpElement)}
 >
     {#if isSelected}
