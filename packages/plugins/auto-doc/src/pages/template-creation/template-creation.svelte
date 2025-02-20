@@ -159,8 +159,8 @@
         align-items: center;
         cursor: pointer;
         & .title{
-
             min-width: 10rem;
+            color: black;
         }
     }
     .template-options{
