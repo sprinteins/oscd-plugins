@@ -1,4 +1,6 @@
 <script lang="ts">
+// CORE
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // STORE
 import { typeElementsStore } from '@/headless/stores'
 // COMPONENTS
@@ -8,35 +10,56 @@ import type { AvailableTypeFamily, AvailableRefFamily } from '@/headless/stores'
 
 //props
 let {
-	level,
-	family,
-	id
+	type,
+	ref
 }: {
-	level: 'type' | 'ref'
-	family: Exclude<AvailableTypeFamily, 'lNodeType'> | AvailableRefFamily
-	id: string
+	type: {
+		family: Exclude<AvailableTypeFamily, 'lNodeType'>
+		id: string
+	}
+	ref?: {
+		family: AvailableRefFamily
+		id: string
+	}
 } = $props()
+
+//======= DERIVED STATES =======//
+
+const level = $derived(ref ? 'ref' : 'type')
 
 //====== FUNCTIONS ======//
 
-function duplicateHandler() {
-	if (level === 'type')
-		typeElementsStore.duplicateType({
-			family: family as Exclude<AvailableTypeFamily, 'lNodeType'>,
-			id
-		})
+function duplicateTypeHandler() {
+	typeElementsStore.duplicateType({
+		family: type.family,
+		id: type.id
+	})
 }
 
-function deleteHandler() {
-	if (level === 'type')
-		typeElementsStore.deleteTypeAndRefs({
-			family: family as Exclude<AvailableTypeFamily, 'lNodeType'>,
-			id
-		})
+function deleteTypeHandler() {
+	typeElementsStore.deleteTypeAndRefs({
+		family: type.family,
+		id: type.id
+	})
+}
+
+function deleteRefHandler() {
+	if (!ref) throw new Error('Ref is not defined')
+	pluginGlobalStore.deleteElement(
+		typeElementsStore.typeElementsPerFamily[type.family][type.id].refs[
+			ref.family
+		][ref.id].element
+	)
 }
 </script>
 
-<DropdownMenuWorkaround  actions={[
-	{ label: 'Duplicate', disabled: false, callback: duplicateHandler },
-	{ label: 'Delete', disabled: false, callback: deleteHandler }
-]} />
+{#if level === 'type'}
+	<DropdownMenuWorkaround  actions={[
+		{ label: 'Duplicate', disabled: false, callback: duplicateTypeHandler },
+		{ label: 'Delete', disabled: false, callback: deleteTypeHandler }
+	]} />
+{:else if level === 'ref'}
+	<DropdownMenuWorkaround  actions={[
+		{ label: 'Delete', disabled: false, callback: deleteRefHandler }
+	]} />
+{/if}

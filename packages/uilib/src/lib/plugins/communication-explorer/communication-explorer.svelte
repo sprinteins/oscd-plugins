@@ -1,11 +1,11 @@
 <script lang="ts">
-	import Theme from "../../theme/theme.svelte"
-	import { clearSelection } from "./_store-view-filter"
-	import TelemetryView from "./telemetry-view/telemetry-view.svelte"
+import Theme from '../../theme/theme.svelte'
+import { clearSelection } from './_store-view-filter'
+import TelemetryView from './telemetry-view/telemetry-view.svelte'
 
-	export let root: Element
+export let root: Element
 
-	$: root && clearSelection()
+$: root && clearSelection()
 </script>
 
 <Theme>
@@ -22,5 +22,6 @@
 		position: relative;
 		font-size: 12px;
 		min-height: 80vh;
+		color-scheme: light;
 	}
 </style>

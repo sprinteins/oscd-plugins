@@ -37,7 +37,7 @@
 	}
 	sidebar-left {
 		grid-area: sidebar-left;
-		@apply h-full p-0 m-0 border border-green-700;
+		@apply w-full h-full p-0 m-0 border border-green-700;
 	}
 	content {
 		grid-area: content;

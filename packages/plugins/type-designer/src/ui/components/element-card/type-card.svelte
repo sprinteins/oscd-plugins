@@ -2,7 +2,7 @@
 // STORE
 import { dndStore, sidebarStore, typeElementsStore } from '@/headless/stores'
 // CONSTANTS
-import { TYPE_FAMILY_MAP } from '@/headless/constants'
+import { REF_FAMILY_MAP, TYPE_FAMILY_MAP } from '@/headless/constants'
 // COMPONENTS
 import {
 	Card,
@@ -22,18 +22,17 @@ import type { TypeElement, AvailableTypeFamily } from '@/headless/stores'
 const {
 	typeElementKey,
 	typeElementFamily,
-	typeElement
+	typeElement,
+	isElementCardOpen
 }: {
 	typeElementKey: string
 	typeElementFamily: AvailableTypeFamily
 	typeElement: TypeElement<typeof typeElementFamily>
+	isElementCardOpen: boolean
 } = $props()
 
 // actions
 const sidebar = Sidebar.useSidebar()
-
-// local states
-let isElementCardOpen = $state(false)
 
 //======= DERIVED STATES =======//
 
@@ -44,6 +43,12 @@ const typeRefFamily = $derived(
 			typeElementKey
 		)
 )
+
+const hasCurrentTypeElementRefs = $derived.by(() => {
+	return Object.values(typeElement.refs).some(
+		(ref) => Object.keys(ref).length
+	)
+})
 
 const cursorPointer = $derived.by(() => {
 	if (typeElementFamily === TYPE_FAMILY_MAP.bay) return 'cursor-pointer'
@@ -69,7 +74,7 @@ function handleCardClick() {
 </script>
 
 <Card.Root 
-	class="mb-2"
+	class={`mb-2 ${sidebarStore.currentElementTypeKey === typeElementKey ? 'border-primary ring ring-primary ring-offset-2 ring-offset-primary-foreground' : ''}`}
 	onclick={handleCardClick}
 	draggable={typeElementFamily !== TYPE_FAMILY_MAP.bay ? true : false} 
 	ondragstart={(event) => typeRefFamily && dndStore.handleDragStart({
@@ -84,10 +89,10 @@ function handleCardClick() {
 
 		<div class="flex items-center min-w-0">
 			{#if typeElementFamily !== TYPE_FAMILY_MAP.lNodeType }
-				{#if Object.keys(typeElement.refs)?.length}
+				{#if hasCurrentTypeElementRefs}
 					<Collapsible.Trigger
 						onclick={(event) => event.stopPropagation()}
-						class={Button.buttonVariants({ variant: "ghost", class: "h-10 p-0 mr-2 rounded-full" })}
+						class={Button.buttonVariants({ variant: "ghost", class: "size-10 rounded-full p-0 mr-2" })}
 					>
 						{#if isElementCardOpen}
 							<ChevronDown class="!size-6"/>
@@ -97,7 +102,7 @@ function handleCardClick() {
 					<span class="sr-only">Toggle</span>
 					</Collapsible.Trigger>
 				{:else}
-					<Button.Root variant="ghost" class="h-10 p-0 mr-2 rounded-full" disabled >
+					<Button.Root variant="ghost" class="size-10 rounded-full p-0 mr-2" disabled >
 						<ChevronRight class="!size-6 opacity-40"/>
 					</Button.Root>
 				{/if}
@@ -105,13 +110,13 @@ function handleCardClick() {
 			<div class="min-w-3 min-h-3 bg-teal-700 transform rotate-45"></div>
 			
 			<div class="ml-6 truncate capitalize">{ typeElement.parameters.label }</div>
-			{#if typeRefFamily === 'eqFunction'}
+			{#if typeRefFamily === REF_FAMILY_MAP.eqFunction}
 				<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">EQ</Badge.Root>
 			{/if}
 		</div>
 		
 		{#if typeElementFamily !== TYPE_FAMILY_MAP.lNodeType }
-			<CardMenu level="type" family={typeElementFamily} id={typeElementKey}/>
+			<CardMenu type={{ family: typeElementFamily, id: typeElementKey }}/>
 		{/if}
 	</Card.Content>
 </Card.Root>
