@@ -4,6 +4,7 @@
     import LpElement from "./lp-element.svelte";
     import SearchBar from "../search-bar.svelte";
     import FilterButtons from "./filter-buttons.svelte";
+    import { Plus } from "lucide-svelte";
 
     const lpList: LpElementType[] = [
         { id: "1", type: LP_TYPE.input, name: "LPDI 1", isLinked: false },
@@ -46,6 +47,13 @@
 </script>
 
 <div class="p-6">
+    <button
+        class="flex items-center justify-center rounded-lg py-2 gap-2 w-full bg-gray-200 mb-2 border border-gray-400"
+    >
+        <Plus size={16} />
+        <p>Add LP</p>
+    </button>
+
     <SearchBar bind:searchTerm />
 
     <div class="mt-2">
