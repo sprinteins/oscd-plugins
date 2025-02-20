@@ -3,3 +3,8 @@ export const NODE_TYPE = {
     logicalNode: 'logicalNode',
     dataObjectInstance: 'dataObjectInstance'
 } as const
+
+export const LP_TYPE = {
+    output: 'output',
+    input: 'input',
+} as const
