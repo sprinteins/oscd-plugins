@@ -13,7 +13,7 @@
 
 0
     function isInvalidDate(date: Date){
-        return isNaN(date.getTime());
+        return Number.isNaN(date.getTime());
     }
 
     function formatDate(date: Date, defaultString = "-"): string{
@@ -45,6 +45,10 @@
 
     function deleteTemplate(templateId: string){
         dispatch("templateDelete", {templateId})
+    }
+
+    function downloadTemplateContent(templateId: string){
+        dispatch("templateDownload", {templateId})
     }
 
 </script>
@@ -86,17 +90,17 @@
                     </Cell>
                     <Cell>
                     <div class="action-btns">
-                        <Tooltip text="Edit">
+                        <!-- <Tooltip text="Edit">
                             <CustomIconButton icon="edit" color="black"/>
-                        </Tooltip>
+                        </Tooltip> -->
                         <Tooltip text="Delete">
                             <CustomIconButton icon="delete" color="black" on:click={()=>{deleteTemplate(template.id)}}/>
                         </Tooltip>
-                        <Tooltip text="Duplicate">
+                        <!-- <Tooltip text="Duplicate">
                             <CustomIconButton icon="content_copy" color="black"/>
-                        </Tooltip>
+                        </Tooltip> -->
                         <Tooltip text="Download" position="left">
-                            <CustomIconButton icon="download" color="black"/>
+                            <CustomIconButton icon="download" color="black" on:click={()=>{downloadTemplateContent(template.id)}}/>
                         </Tooltip>
                     </div>
                     </Cell>

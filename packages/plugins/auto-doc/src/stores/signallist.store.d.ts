@@ -1,3 +1,9 @@
+import type { MESSAGE_PUBLISHER, MESSAGE_SUBSCRIBER, SUBSCRIBER_EXT_REF } from "@/constants";
+
+/* 
+    The keys of SignalType and Columns are used for the searchKey in SignalRow. 
+    check signal-list-element.svelte for more information
+*/
 export enum SignalType {
     GOOSE = 'GOOSE',
     MMS = 'MMS',
@@ -25,47 +31,51 @@ export enum Columns{
 }
 
 export type MessagePublisher = {
-    M_text: string;
-    signalType: SignalType;
-    IEDName: string;
-    logicalNodeInofrmation: LogicalNodeInformation;
-    dataObjectInformation: DataObjectInformation;
+    [MESSAGE_PUBLISHER.UW]: string;
+    [MESSAGE_PUBLISHER.VoltageLevel]: string;
+    [MESSAGE_PUBLISHER.Bay]: string;
+    [MESSAGE_PUBLISHER.M_text]: string;
+    [MESSAGE_PUBLISHER.SignalType]: string;
+    [MESSAGE_PUBLISHER.IEDName]: string;
+    [MESSAGE_PUBLISHER.LogicalNodeInformation]: LogicalNodeInformation;
+    [MESSAGE_PUBLISHER.DataObjectInformation]: DataObjectInformation;
 }
 
+
 export type MessageSubscriber = {
-    IDEName: string;
-    ExtRef: ExtRef
+    [MESSAGE_SUBSCRIBER.IEDName]: string;
+    [MESSAGE_SUBSCRIBER.ExtRef]: ExtRef
 }
 export type ExtRef = {
-    iedName:string;
-    serviceType:SignalType;
-    ldInst:string;
-    lnClass:string;
-    lnInst:string;
-    prefix:string;
-    doName:string;
-    daName:string;
-    srcLDInst:string;
-    srcPrefix:string;
-    srcLNClass:string;
-    srcCBName:string;
+    [SUBSCRIBER_EXT_REF.iedName]: string;
+    [SUBSCRIBER_EXT_REF.serviceType]: string;
+    [SUBSCRIBER_EXT_REF.ldInst]: string;
+    [SUBSCRIBER_EXT_REF.lnClass]: string;
+    [SUBSCRIBER_EXT_REF.lnInst]: string;
+    [SUBSCRIBER_EXT_REF.prefix]: string;
+    [SUBSCRIBER_EXT_REF.doName]: string;
+    [SUBSCRIBER_EXT_REF.daName]: string;
+    [SUBSCRIBER_EXT_REF.srcLDInst]: string;
+    [SUBSCRIBER_EXT_REF.srcPrefix]: string;
+    [SUBSCRIBER_EXT_REF.srcLNClass]: string;
+    [SUBSCRIBER_EXT_REF.srcCBName]: string;
 }
 
 export type LogicalNodeInformation = {
-    IEDName: string;
-    LogicalDeviceInstance: string;
-    LogicalNodePrefix: string;
-    LogicalNodeClass: string;
-    LogicalNodeInstance: string;
-    LogicalNodeType:string;
+    [MESSAGE_PUBLISHER.IEDName]: string;
+    [MESSAGE_PUBLISHER.LogicalDeviceInstance]: string;
+    [MESSAGE_PUBLISHER.LogicalNodePrefix]: string;
+    [MESSAGE_PUBLISHER.LogicalNodeClass]: string;
+    [MESSAGE_PUBLISHER.LogicalNodeInstance]: string;
+    [MESSAGE_PUBLISHER.LogicalNodeType]: string;
 }
 
 export type DataObjectInformation = {
-    DataObjectName: string;
-    DataAttributeName: string;
-    CommonDataClass: string;
-    AttributeType: string;
-    FunctionalConstraint: string;
+    [MESSAGE_PUBLISHER.DataObjectName]: string;
+    [MESSAGE_PUBLISHER.DataAttributeName]: string;
+    [MESSAGE_PUBLISHER.CommonDataClass]: string;
+    [MESSAGE_PUBLISHER.AttributeType]: string;
+    [MESSAGE_PUBLISHER.FunctionalConstraint]: string;
 }
 
 export type InvalditiesReport = {
@@ -75,6 +85,9 @@ export type InvalditiesReport = {
 }
 
 export type MessagePublisherFilter = {
+    UW?: string;
+    VoltageLevel?: string;
+    Bay?: string;
     M_text?: string;
     signalType?: string;
     IEDName?: string;
@@ -92,6 +105,18 @@ export type MessagePublisherFilter = {
 }
 
 export type MessageSubscriberFilter = {
-    IDEName?: string;
+    IEDName?: string;
     serviceType?: string;
+}
+
+
+export type MessageSubscriberAndPdfContent = {
+    subscribers: MessageSubscriber[];
+    matchedRows: PdfRowStructure[];
+}
+
+export type PdfRowStructure = {
+    matchedFilteredValuesForPdf: string[][],
+    publisher: MessagePublisher
+    matchedSubscribers: string[]
 }

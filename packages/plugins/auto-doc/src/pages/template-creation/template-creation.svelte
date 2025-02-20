@@ -7,6 +7,7 @@
     import {clickOutside} from "@/actions"
     import {docTemplatesStore} from '@/stores'
 	import { onMount } from "svelte"
+    import {pdfGenerator} from '@/utils'
 
 
     type Params = {id?: string}
@@ -18,27 +19,37 @@
     let templateId:string|undefined = undefined
     const NO_TITLE_TEXT = "Untitled Document";
     
-    onMount(()=>{
+    onMount(() => {
         templateId = params.id;
-        if(templateId){
-            const template = docTemplatesStore.getDocumentTemplate(templateId);
-            if(template){
-                title = template.getAttribute('title') as string || "";
-                description = template.getAttribute('description') as string || "";
-            }
+        if (!templateId) {
+            return navigateToOverviewPage();
         }
-    })
+
+        const template = docTemplatesStore.getDocumentTemplate(templateId);
+        if (!template) {
+            return navigateToOverviewPage();
+        }
+
+        title = (template.getAttribute('title') as string) || "";
+        description = (template.getAttribute('description') as string) || "";
+    });
+
     
 
 
-    function navigateToOverviewPage(){
+    function askForEmptyTitleConfirmation(){
         if (!title) {
             const confirmNavigation = confirm("No title has been provided. Do you want to proceed?");
             if (!confirmNavigation) {
                 return;
             }
         }
+        navigateToOverviewPage()
+    }
+
+    function navigateToOverviewPage(){
         push('/')
+        
     }
 
     function displayTitleAndDescription(){
@@ -59,6 +70,12 @@
        docTemplatesStore.editDocumentTemplateTitleAndDescription(templateId as string, title, description)
     }
 
+    function downloadTemplateContent(){
+        if(!templateId){return}
+            
+        pdfGenerator.downloadAsPdf(templateId)
+    }
+
 
 </script>
 
@@ -66,17 +83,18 @@
     <header class="header-container">
         <div class="header">
             <div class="template-title">
-                <CustomIconButton icon="arrow_back" color="black" on:click={navigateToOverviewPage}/>
-                <div class="title" on:click|stopPropagation={displayTitleAndDescription} 
+                <CustomIconButton icon="arrow_back" color="black" on:click={askForEmptyTitleConfirmation}/>
+                <div class="title" role="button" tabindex="0" on:click|stopPropagation={displayTitleAndDescription} 
+                on:keydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}
                 >
                     {templateTitle}
                 </div>
             </div>
-            <div class="template-options">
+            <!-- <div class="template-options">
                 <Button>open template</Button>
                 <Button>save template</Button>
-            </div>
-            <Button variant="raised">Export</Button>
+            </div> -->
+            <Button variant="raised" on:click={downloadTemplateContent}>Export</Button>
         </div>
     </header>
 
@@ -85,6 +103,8 @@
         <div class="template-metadata"
             use:clickOutside={closeTitleAndDescription}
             on:click|stopPropagation
+            role="dialog"
+            on:keydown={(e) => e.key === 'Escape' && closeTitleAndDescription()}
             >
                 <Textfield
                     bind:value={title}
@@ -139,8 +159,8 @@
         align-items: center;
         cursor: pointer;
         & .title{
-
             min-width: 10rem;
+            color: black;
         }
     }
     .template-options{

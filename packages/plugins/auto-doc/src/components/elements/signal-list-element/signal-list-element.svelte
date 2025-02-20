@@ -2,9 +2,9 @@
     import {signallistStore} from '@/stores';
 
 	import SignalRow from './signal-row.svelte';
-	import type { SignalRow as SignalRowType} from './types.signal-list';
+	import type { SignalRow as SignalRowType, PdfRows} from './types.signal-list';
 	import {Columns, SignalType} from '@/stores/';
-	import type {MessagePublisherFilter}  from '@/stores';
+	import type {MessagePublisherFilter, MessageSubscriberFilter}  from '@/stores';
 
 	export let onContentChange: (newContent: string) => void;
 	
@@ -41,9 +41,15 @@
 	$: mergedColsAndMessages = [...columns, ...messages];
 	$: selectedRows = mergedColsAndMessages.filter(row => row.isSelected);
 
+
+
+	$: results = {
+		selected: selectedRows,
+		matches: searchForMatchOnSignalList()
+	}
+
 	function updateSignalRow(index: number, key: keyof SignalRowType, value: string) {
     	mergedColsAndMessages = mergedColsAndMessages.map((row, i) => i === index ? { ...row, [key]: value } : row);
-		searchForMatchOnSignalList();
 		emitSelectedRows();
 	}
 
@@ -52,26 +58,36 @@
 		emitSelectedRows();
 	}
 
-	function emitSelectedRows() {
-		// emit the selected rows to the parent component in order to save it into SCD file
-        // onContentChange(JSON.stringify(selectedRows));
+	function emitSelectedRows() {	
+        onContentChange(JSON.stringify(results));
     }
 
 
-	function searchForMatchOnSignalList(){
-		const filter: MessagePublisherFilter = {}
+	function searchForMatchOnSignalList(): PdfRows{
+		const publisherFilter: MessagePublisherFilter = {}
+		const subscriberFilter: MessageSubscriberFilter = {}
+
 		for (const {searchKey, column2} of selectedRows) {
 			
-			if(doesItIncludeSignalType(searchKey)){			
-				filter.signalType = column2;
+			if(doesIncludeSignalType(searchKey)){			
+				setFilterCriteriaForMessageSubscribers(searchKey, column2);
 			}else{
-				filter[searchKey] = column2;
+				publisherFilter[searchKey as keyof MessagePublisherFilter] = column2;
 			}
 		}
-		signallistStore.getPublishingLogicalDevices(filter).messagePublishers;
+		
+		function setFilterCriteriaForMessageSubscribers(searchKey: string,column2: string) {
+			subscriberFilter.serviceType = searchKey as  keyof typeof SignalType;
+			subscriberFilter.IEDName = column2;
+		}
+
+		const {messagePublishers} = signallistStore.getPublishingLogicalDevices(publisherFilter);
+		const {matchedRows} = signallistStore.getSubscribingLogicalDevices(messagePublishers, subscriberFilter);
+		return {matchedRowsForTablePdf: matchedRows};
+
 	}
 
-	function doesItIncludeSignalType(searchKey: string){	
+	function doesIncludeSignalType(searchKey: string){	
 		return [
 			SignalType.GOOSE, 
 			SignalType.MMS, 
