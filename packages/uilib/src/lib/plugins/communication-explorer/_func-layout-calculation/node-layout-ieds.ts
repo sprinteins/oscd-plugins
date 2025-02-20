@@ -38,7 +38,7 @@ export function generateIEDLayout(
 		return {
 			id: Id(ii),
 			width: config.iedWidth,
-			height: config.iedHeight + (preferences.groupByBay ? 0 : config.bayLabelHeight + config.bayLabelGap),
+			height: config.iedHeight,
 			label: ied.iedName,
 			isRelevant: isRelevant,
 			children: [],

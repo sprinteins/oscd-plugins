@@ -80,7 +80,7 @@ function handleIEDAdditiveSelect(e: CustomEvent<IEDNode>) {
 function handleBaySelect(e: CustomEvent<string>) {
 	clearIEDSelection()
     for (const node of rootNode.children) {
-        if (node.bays && node.bays.has(e.detail)) {
+        if (node.bays?.has(e.detail)) {
             toggleMultiSelectionOfIED(node)
         }
     }

@@ -47,6 +47,7 @@ export async function calculateLayout(
 	}
 
 	const elk = new ELK()
+	const baylabelBuffer = config.bayLabelGap + config.bayLabelHeight
 
 	// Need more configuration options of elk.js?
 	// 👉 https://www.eclipse.org/elk/reference/algorithms.html
@@ -58,7 +59,7 @@ export async function calculateLayout(
 			'org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment':
 				'RIGHTUP',
 			'org.eclipse.elk.direction': 'LEFT',
-			'org.eclipse.elk.hierarchyHandling': preferences.groupByBay ? 'INCLUDE_CHILDREN' : 'SEPARATE_CHILDREN',
+			'org.eclipse.elk.hierarchyHandling': 'INCLUDE_CHILDREN',
 
 			// default: 20; a component is when multiple nodes are connected
 			// "org.eclipse.elk.spacing.componentComponent": "20",
@@ -68,7 +69,15 @@ export async function calculateLayout(
 			),
 			'org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers': String(
 				config.spacingBetweenNodes
-			)
+			),
+
+			//disable grouping and add padding for baylabels
+			...(!preferences.groupByBay && {
+				'org.eclipse.elk.hierarchyHandling': 'SEPARATE_CHILDREN',
+				'org.eclipse.elk.padding': `[top=${baylabelBuffer}]`,
+				'org.eclipse.elk.spacing.edgeNode': `${baylabelBuffer}`,
+				'org.eclipse.elk.spacing.nodeNode': `${baylabelBuffer + (config.spacingBase ?? 0)}`
+			})
 		},
 		children,
 		edges
@@ -90,8 +99,8 @@ export async function calculateLayout(
 			//find all connections that have both source and target IED within the same bay
 			if (root.edges) {
 				for (const edge of root.edges) {
-					if (node.children.some(ied => ied.label == edge.sourceIED.iedName) &&
-						node.children.some(ied => ied.label == edge.targetIED.iedName)) {
+					if (node.children.some(ied => ied.label === edge.sourceIED.iedName) &&
+						node.children.some(ied => ied.label === edge.targetIED.iedName)) {
 						if (edge.sections) {
 							for (const section of edge.sections) {
 								if (node.x !== undefined && node.y !== undefined) {
@@ -135,26 +144,26 @@ export async function calculateLayout(
 
 function generateBayLayout(ieds: IEDNode[], edges: IEDConnectionWithCustomValues[], config: Config): IEDNode[] {
 
-	let children: IEDNode = []
-	let bays: IEDNode = []
+	const children: IEDNode = []
+	const bays: IEDNode = []
 	let id = 0
 	for (const ied of ieds) {
-		if (ied.bays.size == 0) {
+		if (ied.bays.size === 0) {
 			children.push(ied);
 			continue;
 		}
-		let bayLabel = ied.bays.values().next().value;
+		const bayLabel = ied.bays.values().next().value;
 		let bayNode: IEDNode = (children.find(b => b.label === bayLabel && b.isBayNode))
 		if (bayNode) {
 			bayNode.children.push(ied);
 			bayNode.isRelevant |= ied.isRelevant
 		}
 		else {
-			let spacing = config.spacingBase ?? 20
+			const spacing = config.spacingBase ?? 20
 			bayNode = {
-				id:         	"bay-" + (id++), //placeholder
+				id:         	`bay-${id++}`, //placeholder
 				width:      	config.iedWidth,
-				height:     	config.iedHeight + config.bayLabelHeight,
+				height:     	config.iedHeight,
 				label:      	bayLabel,
 				isRelevant: 	ied.isRelevant,
 				isBayNode:		true,

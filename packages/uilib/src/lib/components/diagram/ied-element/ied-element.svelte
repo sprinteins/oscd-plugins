@@ -83,12 +83,15 @@ let bays = Array.from(node.bays).join(', ')
 
 	.ied {
 		display: grid;
+		position: relative;
 		place-items: center;
 		width: 100%;
 	}
 
 	.bayLabel {
+		position: absolute;
 		width: fit-content;
+		bottom: 100%;
 		font-size: 10px;
 		padding-left: 4px;
 		padding-right: 4px;

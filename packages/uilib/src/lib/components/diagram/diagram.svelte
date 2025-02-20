@@ -219,6 +219,7 @@
 							y={node.y}
 							width={node.width}
 							height={node.height}
+							overflow="visible"
 						>
 							<BayContainer
 								{node}
@@ -231,6 +232,7 @@
 							y={node.y}
 							width={node.width}
 							height={node.height}
+							overflow="visible"
 							on:click={(e) => handleIEDClick(e, node)}
 							on:keydown
 						>
