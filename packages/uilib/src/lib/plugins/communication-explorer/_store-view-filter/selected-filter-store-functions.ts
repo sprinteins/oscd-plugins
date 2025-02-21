@@ -21,6 +21,7 @@ export function selectIEDNode(node: IEDElkNode) {
 
 export function toggleMultiSelectionOfIED(node: IEDElkNode) {
 	filterState.update((selectedFilter) => {
+
 		const selectedIEDs = selectedFilter.selectedIEDs
 		const isAlreadySelected = _isIEDSelected(node, selectedIEDs)
 
@@ -72,6 +73,7 @@ export function clearSelection() {
 			outgoingMessageFilterActive: false,
 			selectedMessageTypes: Object.values(MESSAGE_TYPE),
 			selectedIEDs: [],
+			selectedBays: [],
 			selectedConnection: undefined
 		}
 	})

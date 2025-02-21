@@ -33,6 +33,10 @@ export class IEDService {
 		return communicationInfos
 	}
 
+	public Bays(): Set<string> {
+		return this.scdQueries.getBays()
+	}
+
 	public IEDCommunicationInfosByBay(): Map<string, IED.CommunicationInfo[]> {
 		const selector = 'SCL > Substation > VoltageLevel > Bay > LNode'
 		return this.IEDCommunicationInfosByAncestor({

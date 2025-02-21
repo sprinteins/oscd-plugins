@@ -5,12 +5,14 @@ export type Preferences = {
 	playConnectionAnimation: boolean;
 	showConnectionArrows: boolean;
 	isFocusModeOn: boolean;
+	groupByBay: boolean;
 }
 
 const defaultPreferences: Preferences = {
 	playConnectionAnimation: false,
 	showConnectionArrows:    true,
 	isFocusModeOn:           false,
+	groupByBay:				 true
 }
 
 
