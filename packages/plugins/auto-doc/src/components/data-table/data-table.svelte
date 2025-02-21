@@ -51,6 +51,10 @@
         dispatch("templateDownload", {templateId})
     }
 
+    function editTemplate(templateId: string){
+        dispatch("editTemplate", {templateId})
+    }
+
 </script>
 
 
@@ -90,9 +94,9 @@
                     </Cell>
                     <Cell>
                     <div class="action-btns">
-                        <!-- <Tooltip text="Edit">
-                            <CustomIconButton icon="edit" color="black"/>
-                        </Tooltip> -->
+                        <Tooltip text="Edit">
+                            <CustomIconButton icon="edit" color="black" on:click={()=>{editTemplate(template.id)}}/>
+                        </Tooltip>
                         <Tooltip text="Delete">
                             <CustomIconButton icon="delete" color="black" on:click={()=>{deleteTemplate(template.id)}}/>
                         </Tooltip>
