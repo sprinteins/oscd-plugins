@@ -77,8 +77,9 @@ function handleIEDSelect(e: CustomEvent<IEDNode>) {
 function handleIEDAdditiveSelect(e: CustomEvent<IEDNode>) {
 	toggleMultiSelectionOfIED(e.detail)
 }
-function handleBaySelect(e: CustomEvent<string>) {
+async function handleBaySelect(e: CustomEvent<string>) {
 	clearIEDSelection()
+	await initInfos(root, $filterState, $preferences$)
 	for (const node of rootNode.children) {
 		if (node.bays?.has(e.detail)) {
 			toggleMultiSelectionOfIED(node)

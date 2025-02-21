@@ -42,8 +42,13 @@ export async function calculateLayout(
 	}
 
 	if (preferences.isFocusModeOn) {
-		children = children.filter((child) => child.isRelevant)
-		edges = edges.filter((edge) => edge.isRelevant)
+		children = children.filter(child => child.isRelevant)
+		if (preferences.groupByBay) {
+			for (const bayNode of children) {
+				bayNode.children = bayNode.children?.filter(child => child.isRelevant)
+			}
+		}
+		edges = edges.filter(edge => edge.isRelevant)
 	}
 
 	const elk = new ELK()

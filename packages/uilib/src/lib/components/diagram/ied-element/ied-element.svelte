@@ -11,7 +11,7 @@ export let showBayLabels = false
 export let disabled = false
 export let testid = ''
 
-let bays = Array.from(node.bays).join(', ')
+$: bays = Array.from(node.bays).join(', ')
 </script>
 
 {#if node}
