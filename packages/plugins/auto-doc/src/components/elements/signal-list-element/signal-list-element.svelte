@@ -2,21 +2,32 @@
     import {signallistStore} from '@/stores';
 
 	import SignalRow from './signal-row.svelte';
-	import type { SignalRow as SignalRowType, PdfRows} from './types.signal-list';
+	import type { SignalRow as SignalRowType, PdfRows, SignalListOnSCD} from './types.signal-list';
 	import {Columns, SignalType} from '@/stores/';
 	import type {MessagePublisherFilter, MessageSubscriberFilter}  from '@/stores';
 
+	// prop
 	export let onContentChange: (newContent: string) => void;
+	export let content = "";
+
+
+	const parsedContent : SignalListOnSCD = JSON.parse(content);
+
+	const prevSelectedRows = parsedContent.selected;
+
 	
 
 
 	const columns: SignalRowType[] = Object.entries(Columns).map(([key, value], i) => {
+
+		const prevSelected = getSelectedRowIfPreviouslySelected(key as keyof typeof Columns);
+
 		return {
 			index: i,
 			searchKey: key as keyof typeof Columns,
-			isSelected: false,
-			column1: value,
-			column2: "",
+			isSelected: prevSelected?.isSelected ?? false,
+			column1: prevSelected?.column1 ?? value,
+			column2: prevSelected?.column2 ?? "",
 			label: {
 				col1Label: {name: value, hasSuffix: true},
 				col2Label: {name: `Filter by ${value}`, hasSuffix: false}
@@ -25,12 +36,16 @@
 	})
 
 	const messages: SignalRowType[] = Object.entries(SignalType).map(([key,value], i) => {
+
+		const prevSelected = getSelectedRowIfPreviouslySelected(key as keyof typeof SignalType);
+
+
 		return {
 			index: (columns.length + i),
 			searchKey: key as keyof typeof SignalType,
-			isSelected: false,
-			column1: value,
-			column2: "",
+			isSelected: prevSelected?.isSelected ??false,
+			column1: prevSelected?.column1 ?? value,
+			column2: prevSelected?.column2 ?? "",
 			label: {
 				col1Label: {name: value, hasSuffix: true},
 				col2Label: {name: "Filter by IED Name", hasSuffix: false}
@@ -61,7 +76,9 @@
 	function emitSelectedRows() {	
         onContentChange(JSON.stringify(results));
     }
-
+	function getSelectedRowIfPreviouslySelected (searchKey: keyof typeof Columns | keyof typeof SignalType) {
+		return prevSelectedRows.find(selected => selected.searchKey === searchKey);
+	}
 
 	function searchForMatchOnSignalList(): PdfRows{
 		const publisherFilter: MessagePublisherFilter = {}
