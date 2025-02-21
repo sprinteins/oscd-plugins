@@ -17,6 +17,8 @@
     let description = "";
     let isMetadataVisible = false
     let templateId:string|undefined = undefined
+    let template: Element | null = null;
+
     const NO_TITLE_TEXT = "Untitled Document";
     
     onMount(() => {
@@ -25,7 +27,7 @@
             return navigateToOverviewPage();
         }
 
-        const template = docTemplatesStore.getDocumentTemplate(templateId);
+        template = docTemplatesStore.getDocumentTemplate(templateId);
         if (!template) {
             return navigateToOverviewPage();
         }
@@ -127,8 +129,8 @@
 
 
     <main class="template-builder-container">
-        {#if templateId}
-            <TemplateBuilder {templateId}/>
+        {#if template}
+            <TemplateBuilder {template}/>
         {/if}
     </main>
 </div>

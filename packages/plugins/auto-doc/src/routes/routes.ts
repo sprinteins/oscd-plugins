@@ -14,5 +14,8 @@ export const routes : Route = {
 	"/create/:id" : wrap({
 		asyncComponent: ()=> import("@/pages/template-creation/template-creation.svelte")
 	}),
+	"/edit/:id" : wrap({
+		asyncComponent: ()=> import("@/pages/template-creation/template-creation.svelte")
+	}),
 	"*": TemplateOverview
 }
