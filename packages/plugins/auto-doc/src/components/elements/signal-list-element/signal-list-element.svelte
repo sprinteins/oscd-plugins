@@ -11,8 +11,7 @@
 	export let content = "";
 
 
-	const parsedContent : SignalListOnSCD = JSON.parse(content);
-
+	const parsedContent : SignalListOnSCD = isContentNotEmpty() ? JSON.parse(content) : getEmptyContent();
 	const prevSelectedRows = parsedContent.selected;
 
 	
@@ -20,7 +19,7 @@
 
 	const columns: SignalRowType[] = Object.entries(Columns).map(([key, value], i) => {
 
-		const prevSelected = getSelectedRowIfPreviouslySelected(key as keyof typeof Columns);
+		const prevSelected: SignalRowType|undefined = getSelectedRowIfPreviouslySelected(key as keyof typeof Columns);
 
 		return {
 			index: i,
@@ -37,8 +36,7 @@
 
 	const messages: SignalRowType[] = Object.entries(SignalType).map(([key,value], i) => {
 
-		const prevSelected = getSelectedRowIfPreviouslySelected(key as keyof typeof SignalType);
-
+		const prevSelected: SignalRowType|undefined = getSelectedRowIfPreviouslySelected(key as keyof typeof SignalType);
 
 		return {
 			index: (columns.length + i),
@@ -56,11 +54,17 @@
 	$: mergedColsAndMessages = [...columns, ...messages];
 	$: selectedRows = mergedColsAndMessages.filter(row => row.isSelected);
 
-
-
 	$: results = {
 		selected: selectedRows,
 		matches: searchForMatchOnSignalList()
+	}
+
+	function getEmptyContent(): SignalListOnSCD {
+		return { selected: [],matches: { matchedRowsForTablePdf: [] } };
+	}
+
+	function isContentNotEmpty() {
+		return content.trim();
 	}
 
 	function updateSignalRow(index: number, key: keyof SignalRowType, value: string) {
@@ -76,7 +80,7 @@
 	function emitSelectedRows() {	
         onContentChange(JSON.stringify(results));
     }
-	function getSelectedRowIfPreviouslySelected (searchKey: keyof typeof Columns | keyof typeof SignalType) {
+	function getSelectedRowIfPreviouslySelected (searchKey: keyof typeof Columns | keyof typeof SignalType) : SignalRowType | undefined {
 		return prevSelectedRows.find(selected => selected.searchKey === searchKey);
 	}
 
