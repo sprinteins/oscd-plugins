@@ -13,8 +13,12 @@
     const emptyTitleOrDescription = "N/A"
 
     onMount(() => {
-        allTemplates = docTemplatesStore.getAllDocumentTemplates();
+        fetchTemplates();
     });
+
+    function fetchTemplates() {
+        allTemplates=docTemplatesStore.getAllDocumentTemplates();
+    }
 
     function navigateToCreateTemplate(){
         push(`${ROUTES.Create}`);
@@ -56,6 +60,8 @@
     function duplicateTemplate(event: CustomEvent<{templateId: string}>){
         const {templateId} = event.detail
         docTemplatesStore.duplicateDocumentTemplate(templateId)
+
+       fetchTemplates();
     }
 
 
