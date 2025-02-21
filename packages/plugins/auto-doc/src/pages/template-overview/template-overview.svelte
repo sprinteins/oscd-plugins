@@ -7,6 +7,7 @@
     import {push} from 'svelte-spa-router'
     import { onMount } from 'svelte';
     import {pdfGenerator} from '@/utils'
+    import { ROUTES } from "@/constants"
 
     let newTemplateId: string | null = ""
     let allTemplates: Element[] = []
@@ -18,7 +19,7 @@
 
     function createNewTemplate(){
         newTemplateId = docTemplatesStore.addDocumentTemplate();
-        push(`/create/${newTemplateId}`);
+        push(`${ROUTES.Create}/${newTemplateId}`);
     }
 
 
@@ -50,7 +51,7 @@
 
     function editTemplate(event: CustomEvent<{templateId: string}>){
         const {templateId} = event.detail
-        push(`/edit/${templateId}`)
+        push(`${ROUTES.Edit}/${templateId}`)
 
     }
 

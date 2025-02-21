@@ -2,6 +2,7 @@ import {TemplateOverview} from "@/pages"
 import {wrap} from 'svelte-spa-router/wrap'
 import type { SvelteComponent, ComponentType } from 'svelte'
 import type { WrappedComponent } from "svelte-spa-router"
+import { ROUTES, ROUTER_PARAMS } from "@/constants"
 
 type Page = ComponentType<SvelteComponent> | WrappedComponent
 
@@ -10,12 +11,12 @@ type Route = {
 }
 
 export const routes : Route = {
-	"/" : TemplateOverview,
-	"/create/:id" : wrap({
+	[ROUTES.Home] : TemplateOverview,
+	[`${ROUTES.Create}/${ROUTER_PARAMS.id}`] : wrap({
 		asyncComponent: ()=> import("@/pages/template-creation/template-creation.svelte")
 	}),
-	"/edit/:id" : wrap({
+	[`${ROUTES.Edit}/${ROUTER_PARAMS.id}`] : wrap({
 		asyncComponent: ()=> import("@/pages/template-creation/template-creation.svelte")
 	}),
-	"*": TemplateOverview
+	[ROUTES.Not_Found]: TemplateOverview
 }
