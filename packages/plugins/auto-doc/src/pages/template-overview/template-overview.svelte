@@ -9,7 +9,6 @@
     import {pdfGenerator} from '@/utils'
     import { ROUTES } from "@/constants"
 
-    let newTemplateId: string | null = ""
     let allTemplates: Element[] = []
     const emptyTitleOrDescription = "N/A"
 
@@ -17,7 +16,7 @@
         allTemplates = docTemplatesStore.getAllDocumentTemplates();
     });
 
-    function createNewTemplate(){
+    function navigateToCreateTemplate(){
         push(`${ROUTES.Create}`);
     }
 
@@ -48,7 +47,7 @@
         pdfGenerator.downloadAsPdf(templateId)
     }
 
-    function editTemplate(event: CustomEvent<{templateId: string}>){
+    function navigateToEditTemplate(event: CustomEvent<{templateId: string}>){
         const {templateId} = event.detail
         push(`${ROUTES.Edit}/${templateId}`)
 
@@ -62,7 +61,7 @@
 
 <div class="template-overview">
     <header class="template-controls">
-        <Button variant="raised" class="btn-pill btn-pill-primary" on:click={createNewTemplate} > 
+        <Button variant="raised" class="btn-pill btn-pill-primary" on:click={navigateToCreateTemplate} > 
             <IconWrapper icon="add"/>
            <Label>Add template</Label> 
         </Button>
@@ -73,7 +72,7 @@
             allTemplates={templatesConvertedToTableRow} 
             on:templateDelete={deleteTemplate}
             on:templateDownload={downloadTemplateContent}
-            on:editTemplate={editTemplate}
+            on:editTemplate={navigateToEditTemplate}
         />
     </main>
 </div>
