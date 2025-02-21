@@ -24,7 +24,8 @@
 	import type { Nullable } from "./types";
 	import type { IED } from "./ied/ied";
 	import ObjectTree from "./ui/components/object-tree/object-tree.svelte";
-    import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
+	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
+	import LpList from "./ui/components/lp-list/lp-list.svelte";
 
 	// props
 	const {
@@ -94,6 +95,6 @@
 		<div slot="content">
 			<CanvasArea />
 		</div>
-		<div slot="sidebar-right">sidebar right</div>
+		<div slot="sidebar-right"><LpList /></div>
 	</Layout>
 </main>
