@@ -11,7 +11,7 @@
 	export let content = "";
 
 
-	const parsedContent : SignalListOnSCD = isContentNotEmpty() ? JSON.parse(content) : getEmptyContent();
+	const parsedContent : SignalListOnSCD = isContentNotEmpty() ? JSON.parse(content) : getEmptyValues();
 	const prevSelectedRows = parsedContent.selected;
 
 	
@@ -59,7 +59,7 @@
 		matches: searchForMatchOnSignalList()
 	}
 
-	function getEmptyContent(): SignalListOnSCD {
+	function getEmptyValues(): SignalListOnSCD {
 		return { selected: [],matches: { matchedRowsForTablePdf: [] } };
 	}
 
