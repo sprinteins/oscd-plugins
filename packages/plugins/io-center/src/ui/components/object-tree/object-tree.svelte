@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { searchTree } from "@/headless/utils";
-	import store from "../../../store.svelte";
+	import {store} from "../../../store.svelte";
 	import TreeNode from "./tree-node.svelte";
 	import SearchBar from "../search-bar.svelte";
 	import type { TreeNode as TreeNodeType } from "./types.object-tree";
@@ -14,7 +14,6 @@
 	 } from "@/headless/stores/canvas-operations.svelte";
 
 	let searchTerm = $state("");
-
 	let filteredTree = $derived(searchTree(store.objectTree, searchTerm));
 
 	function addObjectsRecursievlyToCanvas(treeNode: TreeNodeType){

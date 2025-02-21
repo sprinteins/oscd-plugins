@@ -71,7 +71,7 @@
 					</span>
 	
 					<p class="text-sm font-medium">
-						{treeNode.name} {treeNode.isOpen}
+						{treeNode.name}
 					</p>
 
 				</button>

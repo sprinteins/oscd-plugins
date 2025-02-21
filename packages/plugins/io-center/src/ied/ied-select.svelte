@@ -1,5 +1,5 @@
 <script lang="ts">
-	import store from "../store.svelte";
+	import {store} from "../store.svelte";
 	import type { IED } from "./ied";
 
 	type Props = {

@@ -17,8 +17,7 @@
 	import { initPlugin, initSsdTemplate } from "@oscd-plugins/core-ui-svelte";
 	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
 	import Layout from "./ui/layout.svelte";
-	import store from "./store.svelte";
-	import { buildObjectTree, initQuery } from "./query.svelte";
+	import { useQuery } from "./query.svelte";
 	import { newCommand, type Command } from "./command.svelte";
 	import IEDSelect from "./ied/ied-select.svelte";
 	import type { Nullable } from "./types";
@@ -26,6 +25,7 @@
 	import ObjectTree from "./ui/components/object-tree/object-tree.svelte";
 	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
 	import LpList from "./ui/components/lp-list/lp-list.svelte";
+	import { store } from "./store.svelte";
 
 	// props
 	const {
@@ -39,37 +39,22 @@
 	// Setup
 	//
 	let root = $state<Nullable<HTMLElement>>(null);
-	let cmd = $state<Command>(newCommand(store, () => root));
-
-	onMount(() => {
-		storeDoc(doc);
-		initQuery(store);
-	});
+	let cmd = $state<Command>(newCommand(() => root));	
+	useQuery()		
 
 	// we need to trigger a rerendering when the editCount changes
 	// this is how OpenSCD lets us know that there was a change in the document
 	$effect(() => {
 		let onlyForEffectTriggering = editCount;
-		storeDoc(doc);
+		store.doc = doc
 	});
-
-	function storeDoc(doc: Nullable<XMLDocument>) {
-		console.log("changing doc:", doc);
-		store.doc = doc;
-	}
-
-	function addIED() {
-		cmd.addIED();
-	}
-
-	function selectIED(ied: IED) {
-		cmd.selectIED(ied);
-	}
-
+	
 	function onSelectIED(ied: IED) {
-		selectIED(ied);
-		buildObjectTree();
+		store.iedSelected = ied;
 	}
+	
+	const isCustomInstance= true
+
 </script>
 
 <main
@@ -78,6 +63,7 @@
 		getDocName: () => docName,
 		getEditCount: () => editCount,
 		getIsCustomInstance: () => isCustomInstance,
+		getHost: () => $host(),
 		host: $host(),
 		theme: "legacy-oscd-instance",
 	}}
@@ -95,6 +81,8 @@
 		<div slot="content">
 			<CanvasArea />
 		</div>
-		<div slot="sidebar-right"><LpList /></div>
+		<div slot="sidebar-right">
+			<LpList />
+		</div>
 	</Layout>
 </main>

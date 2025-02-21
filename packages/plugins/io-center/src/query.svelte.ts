@@ -1,28 +1,17 @@
 import { NODE_TYPE } from "./headless/constants";
 import type { IED } from "./ied/ied";
-import type { StoreType } from "./store.svelte";
-import store from "./store.svelte"
+import { store, type Store } from "./store.svelte";
+import type { Nullable } from "./types";
 import type { TreeNode } from "./ui/components/object-tree/types.object-tree";
 
-export function initQuery(store: StoreType) {
-	runQueries(store)
 
-	$effect(() => {
-		console.log("(2) doc changed", store.doc)
-		runQueries(store)
-	})
+export function useQuery() {
+	$effect( () => collectIEDs(store.doc))
+	$effect( () => buildObjectTree(store.doc, store.iedSelected))
 }
 
-function runQueries(store: StoreType) {
-	collectIEDs(store)
-}
-
-function collectIEDs(store: StoreType) {
-	const doc = store.doc
-
-	if (!doc) {
-		return
-	}
+function collectIEDs(doc: Nullable<XMLDocument>) {
+	if (!doc) {	return }
 
 	const iedElements = Array.from(doc.querySelectorAll("IED"))
 	const ieds: IED[] = iedElements.map(iedElementToIED)
@@ -38,13 +27,11 @@ function iedElementToIED(iedElement: Element): IED {
 
 // Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
 // Currently hard-coded by the client request but in future we may make it dynamic and allow the user to fill the targetScd
-export function buildObjectTree(targetCdc = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']) {
-	const doc = store.doc
-	const iedSelected = store.iedSelected
+const TARGET_CDC = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']
+export function buildObjectTree(doc: Nullable<XMLDocument>, iedSelected: Nullable<IED>) {
+	if (!doc || !iedSelected){ return }
 
-	if (!doc || !iedSelected) return
-
-	let tree: TreeNode[] = []
+	const tree: TreeNode[] = []
 
 	const selectedIED = doc.querySelector(`IED[name="${iedSelected.name}"]`)
 
@@ -67,7 +54,7 @@ export function buildObjectTree(targetCdc = ['sps', 'dps', 'dpc', 'inc', 'ins', 
 			const dObjects = Array.from(lnNodeType.querySelectorAll("DO"))
 
 			for (const dObject of dObjects) {
-				if (!getCDCfromDO(dObject, doc, targetCdc)) {
+				if (!getCDCfromDO(dObject, doc, TARGET_CDC)) {
 					continue;
 				}
 
