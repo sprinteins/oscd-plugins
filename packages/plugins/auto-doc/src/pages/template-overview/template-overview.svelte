@@ -53,6 +53,11 @@
 
     }
 
+    function duplicateTemplate(event: CustomEvent<{templateId: string}>){
+        const {templateId} = event.detail
+        docTemplatesStore.duplicateDocumentTemplate(templateId)
+    }
+
 
 
 
@@ -73,6 +78,7 @@
             on:templateDelete={deleteTemplate}
             on:templateDownload={downloadTemplateContent}
             on:editTemplate={navigateToEditTemplate}
+            on:duplicateTemplate={duplicateTemplate}
         />
     </main>
 </div>
