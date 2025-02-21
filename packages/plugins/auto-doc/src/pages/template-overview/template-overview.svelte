@@ -18,8 +18,7 @@
     });
 
     function createNewTemplate(){
-        newTemplateId = docTemplatesStore.addDocumentTemplate();
-        push(`${ROUTES.Create}/${newTemplateId}`);
+        push(`${ROUTES.Create}`);
     }
 
 
@@ -77,7 +76,6 @@
             on:editTemplate={editTemplate}
         />
     </main>
-
 </div>
 
 

@@ -12,7 +12,7 @@ type Route = {
 
 export const routes : Route = {
 	[ROUTES.Home] : TemplateOverview,
-	[`${ROUTES.Create}/${ROUTER_PARAMS.id}`] : wrap({
+	[`${ROUTES.Create}`] : wrap({
 		asyncComponent: ()=> import("@/pages/template-creation/template-creation.svelte")
 	}),
 	[`${ROUTES.Edit}/${ROUTER_PARAMS.id}`] : wrap({
