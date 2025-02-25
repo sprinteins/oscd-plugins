@@ -8,10 +8,7 @@ import {
 	pluginGlobalStore
 } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
-import {
-	READONLY_ATTRIBUTES,
-	TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES
-} from '@/headless/constants'
+import { TYPE_FAMILY, READONLY_ATTRIBUTES } from '@/headless/constants'
 // STORES
 import { sidebarStore, pluginLocalStore } from '@/headless/stores'
 
@@ -19,10 +16,7 @@ import { sidebarStore, pluginLocalStore } from '@/headless/stores'
 
 const currentElementAttributesEntries = $derived.by(() => {
 	if (!sidebarStore.currentElementTypeFamily) return []
-	const currentTypeFamily =
-		TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES[
-			sidebarStore.currentElementTypeFamily
-		]
+	const currentTypeFamily = TYPE_FAMILY[sidebarStore.currentElementTypeFamily]
 
 	return Object.entries(
 		pluginLocalStore.currentDefinition[currentTypeFamily].attributes || {}
@@ -32,10 +26,7 @@ const currentElementAttributesEntries = $derived.by(() => {
 const isAnyAttributeAllowed = $derived.by(() => {
 	if (!sidebarStore.currentElementTypeFamily) return false
 
-	const currentTypeFamily =
-		TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES[
-			sidebarStore.currentElementTypeFamily
-		]
+	const currentTypeFamily = TYPE_FAMILY[sidebarStore.currentElementTypeFamily]
 	return pluginLocalStore.currentDefinition?.[currentTypeFamily].anyAllowed
 		.attributes
 })

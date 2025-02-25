@@ -54,12 +54,12 @@ function deleteRefHandler() {
 </script>
 
 {#if level === 'type'}
-	<DropdownMenuWorkaround  actions={[
+	<DropdownMenuWorkaround size="sm" actions={[
 		{ label: 'Duplicate', disabled: false, callback: duplicateTypeHandler },
 		{ label: 'Delete', disabled: false, callback: deleteTypeHandler }
 	]} />
 {:else if level === 'ref'}
-	<DropdownMenuWorkaround  actions={[
+	<DropdownMenuWorkaround size="sm" actions={[
 		{ label: 'Delete', disabled: false, callback: deleteRefHandler }
 	]} />
 {/if}

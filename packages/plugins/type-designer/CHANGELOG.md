@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 25-02-2025
+
+### Added
+
+- Automated SCL file attributes update to last available definition (ed2.2) : ie. `Version=""2007" Revision="C" Release="5"`
+- Add `originUuid` attribute on instantiated elements from a given template element
+- All Equipment and Function types are written in `Substation [name="TEMPLATE", desc="Template Container"]` > `VoltageLevel [name="TEMPLATE", desc="Template Container"]` > `Bay [name="TEMPLATE", desc="Template Container"]`
+- Bay Types are written in `Substation [name="TEMPLATE", desc="Template Container"]` > `VoltageLevel [name="TEMPLATE", desc="Template Container"]`
+- All types have uuid attributes (according to standard ed 2.2)
+- All refs have `templateUuid` linking to the type's uuid (according to standard ed 2.2)
+- All refs have `originUuid` (according to standard ed 2.2)
+- LNode refs have the following attributes : 
+  - `lnClass` (copy of `LNodeType`)
+	- `lnInst` (which iterate based on ref occurrence in the current type)
+	- `iedName` set to `None`
+	- `lnType` set to `LNodeType` id
+- Instance `warning` and `issue` toasts has been deactivated for now
+
+### Removed
+
+- Those elements have been deprecated : 
+  - `FunctionTemplate` (standard)
+  - `EquipmentTypeTemplates` (custom)
+  - `GeneralEquipmentType` (custom)
+	- `ConductingEquipmentType` (custom)
+
 ## [2.4.0] - 17-02-2025
 
 ### Added

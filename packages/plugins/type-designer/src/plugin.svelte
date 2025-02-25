@@ -31,15 +31,8 @@
 			revision: 'IEC61850-90-30'
 		}
 	}}
-	use:initSsdTemplate={{
-		getRootElement: () => pluginLocalStore.rootElement,
-		getRootSubElements: () => pluginLocalStore.rootSubElements,
-		getSubstationsSubElements: () => pluginLocalStore.substationsSubElements,
-		definition: {
-			edition: 'ed2Rev1',
-			revision: 'IEC61850-90-30'
-		}
-	}}
+	use:initSsdTemplate
+	use:removeInstanceWarningAndIssueToast
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
@@ -61,7 +54,9 @@ import jsonPackage from '../package.json'
 import {
 	Sidebar,
 	initPlugin,
-	initSsdTemplate
+	initSsdTemplate,
+	removeInstanceWarningAndIssueToast,
+	pluginGlobalStore
 } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { pluginLocalStore } from '@/headless/stores'

@@ -1,6 +1,6 @@
 import { typeElementsStore } from '@/headless/stores'
 // CONSTANTS
-import { REF_FAMILY_MAP, TYPE_FAMILY_MAP } from '@/headless/constants'
+import { REF_FAMILY, TYPE_FAMILY } from '@/headless/constants'
 // TYPES
 import type { AvailableTypeFamily, AvailableRefFamily } from '@/headless/stores'
 
@@ -8,91 +8,54 @@ import type { AvailableTypeFamily, AvailableRefFamily } from '@/headless/stores'
 
 class UseDnDStore {
 	isDragging = $state(false)
-	currentSourceTypeIdOrUuid = $state<string | null>(null)
-	currentSourceFamilyKey = $state<AvailableTypeFamily | null>(null)
-	currentSourceRefFamily = $state<
-		AvailableRefFamily | null | 'genericFunction'
-	>(null)
+	currentSourceTypeIdOrUuid = $state<string | undefined>(undefined)
+	currentSourceTypeFamily = $state<AvailableTypeFamily | undefined>(undefined)
+	currentSourceRefFamily = $state<AvailableRefFamily | undefined>(undefined)
 
-	addOrRemoveClassesToTarget(
-		event: DragEvent,
-		classes: string[],
-		operation: 'add' | 'remove'
-	) {
-		const target = event.target as HTMLElement
-		target.classList[operation](classes.join(','))
-	}
-
-	handleDragStart(args: {
+	handleDragStart(params: {
 		event: DragEvent
 		sourceTypeId: string
-		sourceFamilyKey: AvailableTypeFamily
-		sourceRefFamily: AvailableRefFamily | 'genericFunction'
+		sourceTypeFamily: AvailableTypeFamily
+		sourceRefFamily: AvailableRefFamily | undefined
 	}) {
 		this.isDragging = true
-		this.currentSourceTypeIdOrUuid = args.sourceTypeId
-		this.currentSourceFamilyKey = args.sourceFamilyKey
-		this.currentSourceRefFamily = args.sourceRefFamily
-
-		this.addOrRemoveClassesToTarget(
-			args.event,
-			['opacity-60', '!cursor-grabbing'],
-			'add'
-		)
+		this.currentSourceTypeIdOrUuid = params.sourceTypeId
+		this.currentSourceTypeFamily = params.sourceTypeFamily
+		this.currentSourceRefFamily = params.sourceRefFamily
 	}
 
-	handleDragEnd(event: DragEvent) {
+	handleDragEnd() {
 		this.isDragging = false
-		this.currentSourceTypeIdOrUuid = null
-		this.currentSourceFamilyKey = null
-		this.currentSourceRefFamily = null
-		this.addOrRemoveClassesToTarget(event, ['opacity-60'], 'remove')
+		this.currentSourceTypeIdOrUuid = undefined
+		this.currentSourceTypeFamily = undefined
+		this.currentSourceRefFamily = undefined
 	}
 
-	handleDragOver(event: DragEvent) {
-		event.preventDefault()
-		this.addOrRemoveClassesToTarget(
-			event,
-			['bg-gray-500', 'border-solid'],
-			'add'
-		)
-	}
+	handleDrop(params: {
+		parentTypeWrapper: Element
+		parentTypeFamily: string
+	}) {
+		let currentRefFamily = this.currentSourceRefFamily
 
-	handleDragEnter(event: DragEvent) {
-		event.preventDefault()
-		const target = event.target as HTMLElement
-		target.classList.add('border-primary', 'border-solid')
-	}
-
-	handleDragLeave(event: DragEvent) {
-		event.preventDefault()
-		const target = event.target as HTMLElement
-		target.classList.remove('border-primary', 'border-solid')
-	}
-
-	handleDrop(
-		event: DragEvent,
-		parentTypeWrapper: Element,
-		typeElementFamily: string
-	) {
-		let currentFamily = this.currentSourceRefFamily
-
-		if (!currentFamily) throw new Error('No source ref family')
-		if (!this.currentSourceTypeIdOrUuid) throw new Error('No source family')
-
-		if (currentFamily === 'genericFunction') {
+		if (
+			!currentRefFamily &&
+			this.currentSourceTypeFamily === TYPE_FAMILY.function
+		) {
 			if (
-				typeElementFamily === TYPE_FAMILY_MAP.generalEquipmentType ||
-				typeElementFamily === TYPE_FAMILY_MAP.conductingEquipmentType
+				params.parentTypeFamily === TYPE_FAMILY.generalEquipment ||
+				params.parentTypeFamily === TYPE_FAMILY.conductingEquipment
 			)
-				currentFamily = REF_FAMILY_MAP.eqFunction
-			else currentFamily = REF_FAMILY_MAP.function
+				currentRefFamily = REF_FAMILY.eqFunction
+			else currentRefFamily = REF_FAMILY.function
 		}
 
+		if (!currentRefFamily) throw new Error('No ref family')
+		if (!this.currentSourceTypeIdOrUuid) throw new Error('No source family')
+
 		typeElementsStore.createNewRef({
-			family: currentFamily,
+			family: currentRefFamily,
 			sourceTypeIdOrUuid: this.currentSourceTypeIdOrUuid,
-			parentTypeWrapper
+			parentTypeWrapper: params.parentTypeWrapper
 		})
 	}
 }
