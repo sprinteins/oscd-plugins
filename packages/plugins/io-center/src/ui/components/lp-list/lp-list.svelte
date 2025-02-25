@@ -2,9 +2,10 @@
     import { LP_TYPE } from "@/headless/constants";
     import type { LpElement as LpElementType } from "./types.lp-list";
     import LpElement from "./lp-element.svelte";
-    import SearchBar from "../search-bar.svelte";
+    import SearchBar from "../common/search-bar.svelte";
     import FilterButtons from "./filter-buttons.svelte";
     import { Plus } from "lucide-svelte";
+    import CreateLpDialog from "./create-lp-dialog.svelte";
 
     const lpList: LpElementType[] = [
         { id: "1", type: LP_TYPE.input, name: "LPDI 1", isLinked: false },
@@ -44,16 +45,19 @@
     const lpdoList = $derived(
         filteredList.filter((item) => item.type === LP_TYPE.output),
     );
+
+    let showDialogue = $state(false);
 </script>
 
 <div class="p-6">
     <button
+        onclick={() => (showDialogue = true)}
         class="flex items-center justify-center rounded-lg py-2 gap-2 w-full bg-gray-200 mb-2 border border-gray-400"
     >
         <Plus size={16} />
         <p>Add LP</p>
     </button>
-
+    <CreateLpDialog bind:isOpen={showDialogue} />
     <SearchBar bind:searchTerm />
 
     <div class="mt-2">

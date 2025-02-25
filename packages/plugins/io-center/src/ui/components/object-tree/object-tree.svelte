@@ -2,7 +2,7 @@
 	import { searchTree } from "@/headless/utils";
 	import store from "../../../store.svelte";
 	import TreeNode from "./tree-node.svelte";
-	import SearchBar from "../search-bar.svelte";
+	import SearchBar from "../common/search-bar.svelte";
 
 	let searchTerm = $state("");
 
