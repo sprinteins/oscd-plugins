@@ -4,9 +4,10 @@
 
     type Props = {
         isOpen: boolean;
+        addLp: () => void;
     };
 
-    let { isOpen = $bindable() }: Props = $props();
+    let { isOpen = $bindable(), addLp }: Props = $props();
 
     let formData = $state({
         name: "",
@@ -34,7 +35,10 @@
                     class="px-4 py-2 text-gray-600"
                     onclick={() => (isOpen = false)}>Cancel</button
                 >
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg">
+                <button
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                    onclick={addLp}
+                >
                     Add
                 </button>
             </div>

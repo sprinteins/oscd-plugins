@@ -1,9 +1,7 @@
 import type { IED } from "./ied/ied"
-import { createIED, selectIED } from "./ied/ied-command"
-import { createAndDispatchEditEvent, createStandardElement } from "@oscd-plugins/core-api/plugin/v1"
+import { createAndDispatchEditEvent, createCustomElement, createStandardElement } from "@oscd-plugins/core-api/plugin/v1"
 import type { StoreType } from "./store.svelte"
 import type { Nullable } from "./types"
-import type { TreeNode } from "./ui/components/object-tree/types.object-tree"
 
 export class Command {
 	constructor(
@@ -41,6 +39,40 @@ export class Command {
 			edit: editEvent,
 		})
 
+	}
+
+	public addLp() {
+		if (!this.store.doc) { return }
+
+		const sclRoot = this.store.doc.querySelector("SCL");
+		if (!sclRoot) { return }
+
+		const host = this.getHost()
+		if (!host) {
+			console.warn("could not find host element to dispatch event")
+			return
+		}
+
+		const lDevice0 = this.store.doc.querySelector(`IED[name="${this.store.iedSelected?.name}"] > AccessPoint > Server > LDevice[inst="LD0"]`);
+
+		if (!lDevice0) {
+			console.error('LDevice with inst="LD0" not found');
+			return
+		}
+
+		const newLP = this.store.doc.createElement("LN")
+
+		newLP.setAttribute("xmlns", "")
+		newLP.setAttribute("lnClass", "LPDI")
+		newLP.setAttribute("inst", `${lDevice0.querySelectorAll(`LN[lnType="LPDI"]`).length + 1}`)
+		newLP.setAttribute("lnType", "LPDI")
+
+		const editEvent = { node: newLP, parent: lDevice0, reference: null }
+
+		createAndDispatchEditEvent({
+			host,
+			edit: editEvent,
+		})
 	}
 }
 

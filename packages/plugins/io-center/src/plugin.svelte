@@ -58,8 +58,8 @@
 		store.doc = doc;
 	}
 
-	function addIED() {
-		cmd.addIED();
+	function addLp() {
+		cmd.addLp();
 	}
 
 	function selectIED(ied: IED) {
@@ -95,6 +95,6 @@
 		<div slot="content">
 			<CanvasArea />
 		</div>
-		<div slot="sidebar-right"><LpList /></div>
+		<div slot="sidebar-right"><LpList {addLp} /></div>
 	</Layout>
 </main>

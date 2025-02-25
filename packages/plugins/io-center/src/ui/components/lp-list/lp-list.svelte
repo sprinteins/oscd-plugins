@@ -18,6 +18,12 @@
         { id: "8", type: LP_TYPE.output, name: "LPDO 4", isLinked: true },
     ];
 
+    type Props = {
+        addLp: () => void;
+    };
+
+    let { addLp }: Props = $props();
+
     let searchTerm = $state("");
 
     let showLpdi = $state(true);
@@ -57,7 +63,7 @@
         <Plus size={16} />
         <p>Add LP</p>
     </button>
-    <CreateLpDialog bind:isOpen={showDialogue} />
+    <CreateLpDialog bind:isOpen={showDialogue} {addLp} />
     <SearchBar bind:searchTerm />
 
     <div class="mt-2">
