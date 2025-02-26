@@ -16,26 +16,34 @@
     let title = "";
     let description = "";
     let isMetadataVisible = false
-    let templateId:string|undefined = undefined
+    let templateId: string|undefined = undefined
+    let template: Element | null = null;
+    
     const NO_TITLE_TEXT = "Untitled Document";
     
     onMount(() => {
-        templateId = params.id;
-        if (!templateId) {
-            return navigateToOverviewPage();
-        }
+        templateId = params.id ?? createNewTemplate();
 
-        const template = docTemplatesStore.getDocumentTemplate(templateId);
+        template = docTemplatesStore.getDocumentTemplate(templateId);
+
         if (!template) {
             return navigateToOverviewPage();
         }
 
-        title = (template.getAttribute('title') as string) || "";
-        description = (template.getAttribute('description') as string) || "";
+        setInitialTitleAndDescription(template);
     });
 
     
 
+
+    function setInitialTitleAndDescription(template: Element) {
+        title = (template.getAttribute('title') as string)||"";
+        description = (template.getAttribute('description') as string)||"";
+    }
+
+    function createNewTemplate() : string {
+       return docTemplatesStore.addDocumentTemplate() as string;
+    }
 
     function askForEmptyTitleConfirmation(){
         if (!title) {
@@ -127,8 +135,8 @@
 
 
     <main class="template-builder-container">
-        {#if templateId}
-            <TemplateBuilder {templateId}/>
+        {#if template}
+            <TemplateBuilder {template}/>
         {/if}
     </main>
 </div>

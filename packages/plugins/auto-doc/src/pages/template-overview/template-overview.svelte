@@ -7,18 +7,21 @@
     import {push} from 'svelte-spa-router'
     import { onMount } from 'svelte';
     import {pdfGenerator} from '@/utils'
+    import { ROUTES } from "@/constants"
 
-    let newTemplateId: string | null = ""
     let allTemplates: Element[] = []
     const emptyTitleOrDescription = "N/A"
 
     onMount(() => {
-        allTemplates = docTemplatesStore.getAllDocumentTemplates();
+        fetchTemplates();
     });
 
-    function createNewTemplate(){
-        newTemplateId = docTemplatesStore.addDocumentTemplate();
-        push(`/create/${newTemplateId}`);
+    function fetchTemplates() {
+        allTemplates=docTemplatesStore.getAllDocumentTemplates();
+    }
+
+    function navigateToCreateTemplate(){
+        push(`${ROUTES.Create}`);
     }
 
 
@@ -48,6 +51,19 @@
         pdfGenerator.downloadAsPdf(templateId)
     }
 
+    function navigateToEditTemplate(event: CustomEvent<{templateId: string}>){
+        const {templateId} = event.detail
+        push(`${ROUTES.Edit}/${templateId}`)
+
+    }
+
+    function duplicateTemplate(event: CustomEvent<{templateId: string}>){
+        const {templateId} = event.detail
+        docTemplatesStore.duplicateDocumentTemplate(templateId)
+
+       fetchTemplates();
+    }
+
 
 
 
@@ -56,7 +72,7 @@
 
 <div class="template-overview">
     <header class="template-controls">
-        <Button variant="raised" class="btn-pill btn-pill-primary" on:click={createNewTemplate} > 
+        <Button variant="raised" class="btn-pill btn-pill-primary" on:click={navigateToCreateTemplate} > 
             <IconWrapper icon="add"/>
            <Label>Add template</Label> 
         </Button>
@@ -67,9 +83,10 @@
             allTemplates={templatesConvertedToTableRow} 
             on:templateDelete={deleteTemplate}
             on:templateDownload={downloadTemplateContent}
+            on:editTemplate={navigateToEditTemplate}
+            on:duplicateTemplate={duplicateTemplate}
         />
     </main>
-
 </div>
 
 
