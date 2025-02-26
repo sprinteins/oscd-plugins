@@ -53,11 +53,22 @@ export class Command {
 			return
 		}
 
-		const lDevice0 = this.store.doc.querySelector(`IED[name="${this.store.iedSelected?.name}"] > AccessPoint > Server > LDevice[inst="LD0"]`);
+		let lDevice0 = this.store.doc.querySelector(`IED[name="${this.store.iedSelected?.name}"] > AccessPoint > Server > LDevice[inst="LD0"]`);
 
 		if (!lDevice0) {
-			console.error('LDevice with inst="LD0" not found');
-			return
+			const server = this.store.doc.querySelector(`IED[name="${this.store.iedSelected?.name}"] > AccessPoint > Server`)
+
+			if (!server) { return }
+
+			const firstLDevice = server.querySelectorAll("LDevice")[0]
+
+			lDevice0 = this.store.doc.createElement("LDevice")
+			lDevice0.setAttribute("inst", "LD0")
+
+			createAndDispatchEditEvent({
+				host,
+				edit: { node: lDevice0, parent: server, reference: firstLDevice },
+			})
 		}
 
 		const newLP = this.store.doc.createElement("LN")
@@ -67,11 +78,9 @@ export class Command {
 		newLP.setAttribute("inst", `${lDevice0.querySelectorAll(`LN[lnType="LPDI"]`).length + 1}`)
 		newLP.setAttribute("lnType", "LPDI")
 
-		const editEvent = { node: newLP, parent: lDevice0, reference: null }
-
 		createAndDispatchEditEvent({
 			host,
-			edit: editEvent,
+			edit: { node: newLP, parent: lDevice0, reference: null },
 		})
 	}
 }
