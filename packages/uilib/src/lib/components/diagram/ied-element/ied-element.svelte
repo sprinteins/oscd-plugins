@@ -1,13 +1,14 @@
 <script lang="ts">
-import type { IEDElkNode } from '../nodes'
+	import type { IEDElkNode } from "../nodes"
 
-//
-// INPUT
-//
-export let node: IEDElkNode
-export let isSelected = false
-export let disabled = false
-export let testid = ''
+	// 
+	// INPUT
+	// 
+	export let node: IEDElkNode
+	export let isSelected = false
+	export let disabled = false
+	export let testid = ""
+
 </script>
 
 {#if node}
@@ -37,7 +38,6 @@ export let testid = ''
 
 		/* TODO: extract colors */
 		background: var(--color-white);
-		color: var(--color-black);
 		border: 1px solid var(--color-cyan);
 		box-shadow: inset 0px 0px 6px rgba(77, 93, 99, 0.15);
 		border-radius: 5px;
