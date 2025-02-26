@@ -18,7 +18,7 @@
 	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
 	import Layout from "./ui/layout.svelte";
 	import store from "./store.svelte";
-	import { buildObjectTree, initQuery } from "./query.svelte";
+	import { buildObjectTree, collectLPs, initQuery } from "./query.svelte";
 	import { newCommand, type Command } from "./command.svelte";
 	import IEDSelect from "./ied/ied-select.svelte";
 	import type { Nullable } from "./types";
@@ -26,7 +26,6 @@
 	import ObjectTree from "./ui/components/object-tree/object-tree.svelte";
 	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
 	import LpList from "./ui/components/lp-list/lp-list.svelte";
-    import type { LP_TYPE } from "./headless/constants";
 
 	// props
 	const {
@@ -70,6 +69,7 @@
 	function onSelectIED(ied: IED) {
 		selectIED(ied);
 		buildObjectTree();
+		collectLPs();
 	}
 </script>
 

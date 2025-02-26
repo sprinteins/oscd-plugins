@@ -3,6 +3,7 @@
     import Input from "../common/input.svelte";
     import Select from "../common/select.svelte";
     import { lpStore } from "./lp-store.svelte";
+    import { collectLPs } from "@/query.svelte";
 
     type Props = {
         isOpen: boolean;
@@ -26,6 +27,8 @@
         };
 
         isOpen = false;
+
+        collectLPs()
     }
 </script>
 

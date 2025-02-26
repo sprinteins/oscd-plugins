@@ -8,8 +8,6 @@
     import CreateLpDialog from "./create-lp-dialog.svelte";
     import store from "../../../store.svelte";
 
-    const lpList: LpElementType[] = [];
-
     type Props = {
         addLp: () => void;
     };
@@ -24,7 +22,7 @@
     let showUnlinked = $state(true);
 
     const filteredList = $derived.by(() =>
-        lpList
+        store.lpList
             .filter((item) =>
                 item.name.toLowerCase().includes(searchTerm.toLowerCase()),
             )
@@ -68,14 +66,14 @@
         />
     </div>
 
-    {#if showLpdi}
+    {#if showLpdi && lpdiList.length > 0}
         <p class="text-xl font-semibold pl-2 pt-3">LPDI</p>
         {#each lpdiList as lpElement (lpElement.id)}
             <LpElement {searchTerm} {lpElement} />
         {/each}
     {/if}
 
-    {#if showLpdo}
+    {#if showLpdo && lpdoList.length > 0}
         <p class="text-xl font-semibold pl-2 pt-3">LPDO</p>
         {#each lpdoList as lpElement (lpElement.id)}
             <LpElement {searchTerm} {lpElement} />

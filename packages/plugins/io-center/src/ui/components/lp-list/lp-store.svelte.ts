@@ -9,7 +9,6 @@ type DialogFormData = {
 }
 
 class UseLpStore {
-    lpList = $state<LpElement[]>([]);
     dialogFormData = $state<DialogFormData>({
         name: "",
         instance: "",
