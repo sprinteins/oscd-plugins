@@ -15,7 +15,8 @@ import { TYPE_FAMILY } from '@/headless/constants'
 // TYPES
 import type {
 	AvailableTypeFamily,
-	TypeToCreateAttributes
+	TypeToCreateAttributes,
+	TypeToCreateChildren
 } from '@/headless/stores'
 
 //====== CREATE ======//
@@ -33,6 +34,7 @@ import type {
 export function createNewType(params: {
 	family: Exclude<AvailableTypeFamily, 'lNodeType'>
 	attributes: TypeToCreateAttributes
+	children?: TypeToCreateChildren
 }) {
 	pluginLocalStore.updateSCLVersion()
 	ssdStore.createTemplateWrapper()
@@ -50,6 +52,22 @@ export function createNewType(params: {
 		currentEdition: pluginLocalStore.currentEdition,
 		currentUnstableRevision: pluginLocalStore.currentUnstableRevision
 	})
+
+	if (params.children)
+		for (const child of params.children) {
+			const newChildElement = createStandardElement({
+				xmlDocument: pluginGlobalStore.xmlDocument,
+				element: { family: child.family },
+				attributes: {
+					...child.attributes,
+					uuid: uuidv4()
+				},
+				currentEdition: pluginLocalStore.currentEdition,
+				currentUnstableRevision:
+					pluginLocalStore.currentUnstableRevision
+			})
+			newTypeElement.appendChild(newChildElement)
+		}
 
 	const parent =
 		params.family === TYPE_FAMILY.bay
