@@ -21,6 +21,7 @@
 	export let rootNode: RootNode
 	export let playAnimation = true
 	export let showConnectionArrows = true
+	export let showBayLabels = false
 
 	//
 	// Setup
@@ -34,12 +35,23 @@
 		if (draggingEnabled) {
 			return
 		}
+
+		const element = e.target;
+		if (!(element instanceof HTMLElement)) {
+			return;
+		}
+
 		const isAdditiveSelect = e.metaKey || e.ctrlKey || e.shiftKey
+
+		if (element.classList.contains("bayLabel")) {
+			dispatchBaySelect(element.textContent)
+			return;
+		}
+
 		if (isAdditiveSelect) {
 			dispatchIEDAdditiveSelect(node)
 			return
 		}
-
 		dispatchIEDSelect(node)
 	}
 	function dispatchIEDSelect(node: IEDElkNode) {
@@ -47,6 +59,9 @@
 	}
 	function dispatchIEDAdditiveSelect(node: IEDElkNode) {
 		dispatch("iedadditiveselect", node)
+	}
+	function dispatchBaySelect(bay: string) {
+		dispatch("bayselect", bay)
 	}
 
 	function dispatchConnectionClick(connection: ElkExtendedEdge) {
@@ -217,6 +232,7 @@
 							y={node.y}
 							width={node.width}
 							height={node.height}
+							overflow="visible"
 						>
 							<BayContainer
 								{node}
@@ -229,12 +245,15 @@
 							y={node.y}
 							width={node.width}
 							height={node.height}
+							overflow="visible"
 							on:click={(e) => handleIEDClick(e, node)}
 							on:keydown
 						>
 							<IEDElement
 								{node}
-								isSelected={isIEDSelected(node)}
+								isBaySelected= {false}
+								isIEDSelected={isIEDSelected(node)}
+								showBayLabels={showBayLabels}
 								testid={`ied-${node.label}`}
 							/>
 						</foreignObject>
