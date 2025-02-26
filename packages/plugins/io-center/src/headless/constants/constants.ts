@@ -5,6 +5,6 @@ export const NODE_TYPE = {
 } as const
 
 export const LP_TYPE = {
-    output: 'output',
-    input: 'input',
+    LPDO: 'LPDO',
+    LPDI: 'LPDI',
 } as const
