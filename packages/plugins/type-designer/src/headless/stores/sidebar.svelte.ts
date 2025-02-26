@@ -17,7 +17,7 @@ class UseSidebarStore {
 	}: {
 		key: string
 		family: AvailableTypeFamily
-		element: TypeElement<typeof family>
+		element: TypeElement<AvailableTypeFamily>
 	}) {
 		this.currentElementTypeFamily = family
 		this.currentElementTypeKey = key

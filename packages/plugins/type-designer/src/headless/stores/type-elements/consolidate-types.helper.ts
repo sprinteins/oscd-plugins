@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 // CORE
 import {
+	findAllCustomElementBySelector,
 	namedNodeMapAttributesToPlainObject,
 	typeGuard
 } from '@oscd-plugins/core-api/plugin/v1'
@@ -8,19 +9,16 @@ import {
 import { typeElementsStore, pluginLocalStore } from '@/headless/stores'
 // CONSTANTS
 import {
-	TYPE_FAMILY_MAP,
-	REF_FAMILY_TO_TYPE_FAMILY_MAP,
-	TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES,
-	REF_ATTRIBUTES_KIND_BY_REF_FAMILY,
-	KIND
+	REF_FAMILY,
+	TYPE_FAMILY,
+	REF_FAMILY_TO_TYPE_FAMILY_MAP
 } from '@/headless/constants'
 // TYPES
 import type {
+	AvailableRefFamily,
 	TypeElement,
 	TypeElementByIds,
 	AvailableTypeFamily,
-	// MapTypeFamilyToDefinitionElement,
-	// Refs
 	TypeRawElement,
 	RefRawElement,
 	RefElementsByFamily
@@ -44,7 +42,7 @@ function getTypeElementAttributes(params: {
 		| Record<'id', string>
 		| Record<'uuid', string>
 
-	if (params.family === TYPE_FAMILY_MAP.lNodeType)
+	if (params.family === TYPE_FAMILY.lNodeType)
 		enforceIdentificationAttribute = { id: params.elementId }
 	else enforceIdentificationAttribute = { uuid: params.elementId }
 
@@ -52,7 +50,7 @@ function getTypeElementAttributes(params: {
 		...namedNodeMapAttributesToPlainObject({
 			attributes: params.attributes,
 			addAttributesFromDefinition: {
-				element: TYPE_FAMILY_EQUIVALENT_FOR_ATTRIBUTES[params.family],
+				element: TYPE_FAMILY[params.family],
 				currentEdition: pluginLocalStore.currentEdition,
 				currentUnstableRevision:
 					pluginLocalStore.currentUnstableRevision
@@ -82,14 +80,9 @@ function getRefs(element: Element): RefElementsByFamily {
 			if (lnTypeAttribute) typeId = lnTypeAttribute
 
 			//get other Types uuids
-			const typeAttribute =
-				REF_ATTRIBUTES_KIND_BY_REF_FAMILY[refFamily] === KIND.custom
-					? childElement.getAttributeNS(
-							pluginLocalStore.namespaces.currentPlugin.uri,
-							'type'
-						)
-					: childElement.getAttribute('type')
-			if (typeAttribute) typeId = typeAttribute
+			const templateUuidAttribute =
+				childElement.getAttribute('templateUuid')
+			if (templateUuidAttribute) typeId = templateUuidAttribute
 
 			if (!typeId) throw new Error('No id found for ref element')
 
@@ -105,13 +98,43 @@ function getRefs(element: Element): RefElementsByFamily {
 			return acc
 		},
 		{
-			function: {},
 			generalEquipment: {},
 			conductingEquipment: {},
+			function: {},
 			eqFunction: {},
 			lNode: {}
 		} as RefElementsByFamily
 	)
+}
+
+function getRefFamilyByChildren(elementId: string) {
+	if (!pluginLocalStore.rootElement) throw new Error('No root element')
+	const match = findAllCustomElementBySelector({
+		selector: `[templateUuid="${elementId}"]`,
+		root: pluginLocalStore.rootElement
+	})
+
+	if (!match.length) return undefined
+	if (
+		typeGuard.isPropertyOfObject(
+			match[0].tagName,
+			typeElementsStore.mapRefTagNameToRefFamily
+		)
+	)
+		return typeElementsStore.mapRefTagNameToRefFamily[match[0].tagName]
+}
+
+function getRefFamily(
+	typeFamily: AvailableTypeFamily,
+	elementId: string
+): AvailableRefFamily | undefined {
+	return {
+		[TYPE_FAMILY.bay]: () => undefined,
+		[TYPE_FAMILY.generalEquipment]: () => REF_FAMILY.generalEquipment,
+		[TYPE_FAMILY.conductingEquipment]: () => REF_FAMILY.conductingEquipment,
+		[TYPE_FAMILY.function]: () => getRefFamilyByChildren(elementId),
+		[TYPE_FAMILY.lNodeType]: () => REF_FAMILY.lNode
+	}[typeFamily]()
 }
 
 export function getAndMapTypeElements<
@@ -124,7 +147,7 @@ export function getAndMapTypeElements<
 		typeElements?.reduce(
 			(acc, element) => {
 				let elementId: string
-				if (family === TYPE_FAMILY_MAP.lNodeType)
+				if (family === TYPE_FAMILY.lNodeType)
 					elementId = element.getAttribute('id') || uuidv4()
 				else elementId = element.getAttribute('uuid') || uuidv4()
 
@@ -138,7 +161,8 @@ export function getAndMapTypeElements<
 					parameters: {
 						label:
 							element.getAttribute('name') ||
-							element.getAttribute('id')
+							element.getAttribute('id'),
+						refFamily: getRefFamily(family, elementId)
 					},
 					refs: getRefs(element)
 				} as TypeElement<GenericFamily>

@@ -8,12 +8,20 @@ export namespace Substation {
 		}
 	}
 
+	export type LNode = {
+		tag: 'LNode'
+		attributes: {
+			originUuid?: string
+		}
+	}
+
 	//==== CONTAINERS
 
 	export type LNodeContainer = Common.BaseElementWithDesc & {
 		attributes: {
 			name: string
 			uuid: string
+			templateUuid?: string
 			originUuid?: string
 		}
 		subElements: {

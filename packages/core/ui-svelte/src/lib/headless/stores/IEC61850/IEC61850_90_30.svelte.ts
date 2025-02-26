@@ -32,6 +32,11 @@ class UseIEC61850_90_30Store {
 				?.documentElement as IEC61850_90_30.RootElement
 	})
 
+	hasUnstableNamespace = $derived(
+		this.rootElement?.lookupNamespaceURI(this.currentNamespacePrefix) ===
+			this.currentNamespaceUri
+	)
+
 	rootSubElements: IEC61850_90_30.RootSubElements | undefined = $derived.by(
 		() => {
 			// needed to trigger reactivity

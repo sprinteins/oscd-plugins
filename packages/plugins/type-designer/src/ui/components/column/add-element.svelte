@@ -4,6 +4,8 @@ import * as ed2 from '@oscd-plugins/core-standard/ed2'
 import { Button, Input, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { typeElementsStore } from '@/headless/stores'
+// CONSTANTS
+import { COLUMN_KEY_TO_TYPE_FAMILY } from '@/headless/constants'
 // TYPES
 import type { AvailableTypeFamily, Columns } from '@/headless/stores'
 
@@ -28,10 +30,10 @@ const newElementName = $derived.by(() => {
 
 	const namesByFamilies = {
 		bay: `Bay_${typeElementsStore.getTypeNextOccurrence({ family: 'bay', valueToTest: 'Bay', removeOccurrencePartToTestedValue: true })}`,
-		generalEquipmentType: '',
-		conductingEquipmentType: '',
-		functionTemplate: `Func_${typeElementsStore.getTypeNextOccurrence({
-			family: 'functionTemplate',
+		generalEquipment: '',
+		conductingEquipment: '',
+		function: `Func_${typeElementsStore.getTypeNextOccurrence({
+			family: 'function',
 			valueToTest: 'Func',
 			removeOccurrencePartToTestedValue: true
 		})}`
@@ -48,8 +50,8 @@ const newElementName = $derived.by(() => {
 
 	if (
 		newTypeElement &&
-		(newTypeFamily === 'generalEquipmentType' ||
-			newTypeFamily === 'conductingEquipmentType')
+		(newTypeFamily === 'generalEquipment' ||
+			newTypeFamily === 'conductingEquipment')
 	) {
 		const selectOptionValue =
 			equipmentsSelectOptions.secondarySelect[newTypeFamily].find(
@@ -71,8 +73,7 @@ const currentAttributes = $derived({
 	name:
 		newTypeFamily && newElementName
 			? newElementName[newTypeFamily]
-			: 'Type_',
-	...(newTypeElement && { type: newTypeElement })
+			: 'Type_'
 })
 
 // equipments select options
@@ -89,13 +90,13 @@ const conductingEquipments = $derived(
 	}))
 )
 const equipmentGroups = $derived({
-	generalEquipmentType: generalEquipments,
-	conductingEquipmentType: conductingEquipments
+	generalEquipment: generalEquipments,
+	conductingEquipment: conductingEquipments
 })
 const equipmentsSelectOptions = $derived({
 	primarySelect: [
-		{ value: 'generalEquipmentType', label: 'GenEq' },
-		{ value: 'conductingEquipmentType', label: 'CondEq' }
+		{ value: 'generalEquipment', label: 'GenEq' },
+		{ value: 'conductingEquipment', label: 'CondEq' }
 	],
 	secondarySelect: equipmentGroups
 })
@@ -118,15 +119,15 @@ function handleAddNewElement() {
 
 $effect(() => {
 	if (!newTypeFamily) {
-		if (columnKey === 'equipmentTypeTemplates')
-			newTypeFamily = 'generalEquipmentType'
-		else newTypeFamily = columnKey
+		newTypeFamily = Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])
+			? COLUMN_KEY_TO_TYPE_FAMILY[columnKey][0]
+			: COLUMN_KEY_TO_TYPE_FAMILY[columnKey]
 	}
 })
 </script>
 
 
-{#if columnKey === 'equipmentTypeTemplates' }
+{#if columnKey === 'equipmentType' }
 	<SelectWorkaround
 		options={equipmentsSelectOptions.primarySelect}
 		bind:value={newTypeFamily}
@@ -135,7 +136,7 @@ $effect(() => {
 		}}
 	/>
 	<SelectWorkaround
-		options={(newTypeFamily === 'generalEquipmentType' || newTypeFamily === 'conductingEquipmentType') && equipmentsSelectOptions.secondarySelect[newTypeFamily] || []}
+		options={(newTypeFamily === 'generalEquipment' || newTypeFamily === 'conductingEquipment') && equipmentsSelectOptions.secondarySelect[newTypeFamily] || []}
 		bind:value={newTypeElement}
 		placeholder="Select Eq"
 	/>
@@ -151,7 +152,7 @@ $effect(() => {
 	class="w-full lg:w-auto"
 	variant="ghost"
 	onclick={handleAddNewElement}
-	disabled={columnKey === 'equipmentTypeTemplates' && !(!!newTypeElement)}
+	disabled={columnKey === 'equipmentType' && !(!!newTypeElement)}
 >
 	Add
 </Button.Root>

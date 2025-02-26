@@ -15,6 +15,6 @@ export function getFilteredTypeElementByIds<
 			}
 			return accumulator
 		},
-		{} as TypeElementByIds<AvailableTypeFamily>
+		{} as TypeElementByIds<GenericTypeFamily>
 	)
 }

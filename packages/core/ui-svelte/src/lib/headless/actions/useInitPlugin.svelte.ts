@@ -114,12 +114,15 @@ export function initPlugin(
 		}
 	})
 	const style = document.createElement('style')
-	style.innerHTML = `
-		${selectedTheme}
-		${inlineCssFonts}
-		${inlineShadCnAdaptation}
-	`
 	node.insertAdjacentElement('beforebegin', style)
+
+	$effect(() => {
+		style.innerHTML = `
+			${selectedTheme}
+			${inlineCssFonts}
+			${inlineShadCnAdaptation}
+		`
+	})
 
 	//====== FUNCTIONS ======//
 

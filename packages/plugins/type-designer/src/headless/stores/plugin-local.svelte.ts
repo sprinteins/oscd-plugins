@@ -1,13 +1,10 @@
 // CORE
 import {
 	getCurrentDefinition,
-	findAllStandardElementsBySelector,
-	findOneCustomElement,
-	findAllCustomElement
+	findAllStandardElementsBySelector
 } from '@oscd-plugins/core-api/plugin/v1'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { pluginGlobalStore, ssdStore } from '@oscd-plugins/core-ui-svelte'
 // TYPES
-import type { Xml } from '@oscd-plugins/core-api/plugin/v1'
 import type { IEC61850 } from '@oscd-plugins/core-standard'
 
 class UsePluginLocalStore {
@@ -58,69 +55,88 @@ class UsePluginLocalStore {
 	rootSubElements = $derived({
 		...pluginGlobalStore.editionStores[this.currentEdition].rootSubElements,
 		...pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
-			.rootSubElements,
-		...(this.rootElement && {
-			equipmentTypeTemplates: findOneCustomElement({
-				selector: 'EquipmentTypeTemplates',
-				root: this.rootElement
-			})
-		})
+			.rootSubElements
 	})
 
-	substationsSubElements = $derived([
-		...(pluginGlobalStore.editionStores[this.currentEdition]
-			?.substationsSubElements || [])
-	])
-
-	templateBaysSubElements:
-		| Xml.SclElement<
-				'bay',
-				typeof this.currentEdition,
-				typeof this.currentUnstableRevision
-		  >[]
-		| undefined = $derived.by(() => {
+	bayTypeElements = $derived.by(() => {
 		if (
-			this.substationsSubElements?.[0]?.voltageLevel?.[0]?.getAttribute(
-				'name'
-			) === 'TEMPLATE' &&
-			this.currentDefinition
+			ssdStore.voltageLevelTemplateElement &&
+			`${pluginGlobalStore.editCount}`
 		)
 			return findAllStandardElementsBySelector<
 				'bay',
 				typeof this.currentEdition
 			>({
-				selector: this.currentDefinition.bay.tag,
-				root: this.substationsSubElements[0]?.voltageLevel[0]
+				selector: `${this.currentDefinition.bay.tag}[name]:not([name="TEMPLATE"])`,
+				root: ssdStore.voltageLevelTemplateElement
 			})
 	})
 
-	equipmentTypeTemplatesSubElements = $derived.by(() => {
-		// needed to trigger reactivity
-		if (
-			this.rootSubElements?.equipmentTypeTemplates &&
-			`${pluginGlobalStore.editCount}`
-		)
+	bayTemplateSubElements = $derived.by(() => {
+		if (ssdStore.bayTemplateElement && `${pluginGlobalStore.editCount}`)
 			return {
-				generalEquipmentType: findAllCustomElement({
-					selector: 'GeneralEquipmentType',
-					root: this.rootSubElements.equipmentTypeTemplates
-				}) as Xml.SclCustomElement<'GeneralEquipmentType'>[],
-				conductingEquipmentType: findAllCustomElement({
-					selector: 'ConductingEquipmentType',
-					root: this.rootSubElements?.equipmentTypeTemplates
-				}) as Xml.SclCustomElement<'ConductingEquipmentType'>[]
+				generalEquipment: findAllStandardElementsBySelector<
+					'generalEquipment',
+					typeof this.currentEdition
+				>({
+					selector: this.currentDefinition.generalEquipment.tag,
+					root: ssdStore.bayTemplateElement
+				}),
+				conductingEquipment: findAllStandardElementsBySelector<
+					'conductingEquipment',
+					typeof this.currentEdition
+				>({
+					selector: this.currentDefinition.conductingEquipment.tag,
+					root: ssdStore.bayTemplateElement
+				}),
+				function: findAllStandardElementsBySelector<
+					'function',
+					typeof this.currentEdition
+				>({
+					selector: this.currentDefinition.function.tag,
+					root: ssdStore.bayTemplateElement
+				}),
+				eqFunction: findAllStandardElementsBySelector<
+					'eqFunction',
+					typeof this.currentEdition
+				>({
+					selector: this.currentDefinition.eqFunction.tag,
+					root: ssdStore.bayTemplateElement
+				})
 			}
 	})
-
-	currentUnstableRevisionRootPrivateWrapper = $derived(
-		pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
-			.rootPrivateWrapper
-	)
 
 	dataTypeTemplatesSubElements = $derived({
 		...pluginGlobalStore.editionStores[this.currentEdition]
 			.dataTypeTemplatesSubElements
 	})
+
+	//====== METHODS ======//
+
+	updateSCLVersion() {
+		if (pluginGlobalStore.currentVersion === '2007C5') return
+		if (this.rootElement)
+			pluginGlobalStore.updateSCLVersion({
+				rootElement: this.rootElement,
+				version: '2007',
+				revision: 'C',
+				release: '5'
+			})
+	}
+
+	addUnstableNamespaceToRootElement() {
+		if (
+			pluginGlobalStore.revisionsStores[this.currentUnstableRevision]
+				.hasUnstableNamespace
+		)
+			return
+
+		if (this.rootElement)
+			pluginGlobalStore.addNamespaceToRootElement({
+				rootElement: this.rootElement,
+				namespace: this.namespaces.currentUnstableRevision
+			})
+	}
 }
 
 export const pluginLocalStore = new UsePluginLocalStore()

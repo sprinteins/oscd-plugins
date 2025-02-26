@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid'
 // CORE
 import {
 	createStandardElement,
@@ -5,15 +6,44 @@ import {
 } from '@oscd-plugins/core-api/plugin/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // STORES
-import { pluginLocalStore } from '@/headless/stores'
+import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
 // CONSTANTS
-import {
-	REF_FAMILY_MAP,
-	REF_ATTRIBUTES_KIND_BY_REF_FAMILY,
-	KIND
-} from '@/headless/constants'
+import { REF_FAMILY } from '@/headless/constants'
 // TYPES
 import type { AvailableRefFamily } from '@/headless/stores'
+
+function getRefAttributes(params: {
+	typeId: string
+	refFamily: AvailableRefFamily
+	parentTypeWrapper: Element
+}) {
+	return {
+		[REF_FAMILY.generalEquipment]: () => ({
+			templateUuid: params.typeId
+		}),
+		[REF_FAMILY.conductingEquipment]: () => ({
+			templateUuid: params.typeId
+		}),
+		[REF_FAMILY.function]: () => ({
+			templateUuid: params.typeId
+		}),
+		[REF_FAMILY.eqFunction]: () => ({
+			templateUuid: params.typeId
+		}),
+		[REF_FAMILY.lNode]: () => ({
+			lnClass:
+				typeElementsStore.typeElementsPerFamily.lNodeType[params.typeId]
+					.attributes.lnClass,
+			lnInst: (
+				Array.from(params.parentTypeWrapper.children).filter(
+					(child) => child.getAttribute('lnType') === params.typeId
+				).length + 1
+			).toString(),
+			iedName: 'None',
+			lnType: params.typeId
+		})
+	}[params.refFamily]()
+}
 
 /**
  * Creates a new reference element and dispatches an edit event.
@@ -33,46 +63,26 @@ export function createNewRef(params: {
 	if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
 	if (!pluginGlobalStore.host) throw new Error('No host')
 
-	let attributesPayload: {
-		attributes?: { lnType: string } | { type: string }
-		attributesNS?: {
-			namespace: { uri: string; prefix: string }
-			attributes: { type: string }
-		}[]
-	}
+	pluginLocalStore.addUnstableNamespaceToRootElement()
 
-	if (params.family === REF_FAMILY_MAP.lNode) {
-		attributesPayload = {
-			attributes: {
-				lnType: params.sourceTypeIdOrUuid
-			}
-		}
-	} else {
-		attributesPayload =
-			REF_ATTRIBUTES_KIND_BY_REF_FAMILY[params.family] === KIND.custom
-				? {
-						attributesNS: [
-							{
-								namespace:
-									pluginLocalStore.namespaces.currentPlugin,
-								attributes: {
-									type: params.sourceTypeIdOrUuid
-								}
-							}
-						]
-					}
-				: {
-						attributes: {
-							type: params.sourceTypeIdOrUuid
-						}
-					}
-	}
 	const newRefElement = createStandardElement({
 		xmlDocument: pluginGlobalStore.xmlDocument,
 		element: {
 			family: params.family
 		},
-		...attributesPayload,
+		attributes: getRefAttributes({
+			typeId: params.sourceTypeIdOrUuid,
+			refFamily: params.family,
+			parentTypeWrapper: params.parentTypeWrapper
+		}),
+		attributesNS: [
+			{
+				namespace: pluginLocalStore.namespaces.currentUnstableRevision,
+				attributes: {
+					originUuid: uuidv4()
+				}
+			}
+		],
 		currentEdition: pluginLocalStore.currentEdition,
 		currentUnstableRevision: pluginLocalStore.currentUnstableRevision
 	})

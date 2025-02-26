@@ -4,7 +4,7 @@ import { dndStore, typeElementsStore } from '@/headless/stores'
 // CONSTANTS
 import {
 	ALLOWED_TARGETS_BY_REF_FAMILY,
-	TYPE_FAMILY_MAP
+	TYPE_FAMILY
 } from '@/headless/constants'
 // COMPONENTS
 import { slide } from 'svelte/transition'
@@ -29,7 +29,7 @@ const {
 }: {
 	typeElementKey: string
 	typeElementFamily: AvailableTypeFamily
-	typeElement: TypeElement<typeof typeElementFamily>
+	typeElement: TypeElement<AvailableTypeFamily>
 } = $props()
 
 // local states
@@ -38,26 +38,27 @@ let isElementCardOpen = $state(false)
 //======= DERIVED STATES =======//
 
 const isAllowedToDrop = $derived.by(() => {
-	if (dndStore.currentSourceRefFamily === 'genericFunction')
-		return (
-			typeElementFamily === TYPE_FAMILY_MAP.bay ||
-			typeElementFamily === TYPE_FAMILY_MAP.generalEquipmentType ||
-			typeElementFamily === TYPE_FAMILY_MAP.conductingEquipmentType
-		)
-
 	if (dndStore.currentSourceRefFamily)
 		return ALLOWED_TARGETS_BY_REF_FAMILY[
 			dndStore.currentSourceRefFamily
 		].some(
 			(allowedTargetFamily) => allowedTargetFamily === typeElementFamily
 		)
+	// is undefined for template functions (not instantiated)
+	if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function)
+		return (
+			typeElementFamily === TYPE_FAMILY.bay ||
+			typeElementFamily === TYPE_FAMILY.generalEquipment ||
+			typeElementFamily === TYPE_FAMILY.conductingEquipment
+		)
+	return false
 })
 
 const currentDraggedItemLabel = $derived(
-	dndStore.currentSourceFamilyKey &&
+	dndStore.currentSourceTypeFamily &&
 		dndStore.currentSourceTypeIdOrUuid &&
 		typeElementsStore.typeElementsPerFamily[
-			dndStore.currentSourceFamilyKey
+			dndStore.currentSourceTypeFamily
 		][dndStore.currentSourceTypeIdOrUuid].parameters.label
 )
 
@@ -88,13 +89,13 @@ $effect(() => {
 			{#snippet child({ props, open: collapsibleContentOpen })}
 				{#if collapsibleContentOpen}
 					<div {...props} transition:slide={{ duration: 100 }}>
-						{#if typeElementFamily !== TYPE_FAMILY_MAP.lNodeType}
+						{#if typeElementFamily !== TYPE_FAMILY.lNodeType}
 							{#each currentRefs as [refFamily, refElements]}
 								{#each Object.entries(refElements) as [refId, refWrapper]} 
 									<Card.Root class="w-5/6" >
-										<Card.Content class="h-14 flex items-center justify-between pr-2">
+										<Card.Content class="h-8 p-1 flex items-center justify-between">
 											<div class="flex items-center min-w-0">
-												<span class="min-w-3 min-h-3 border-teal-700 border-2 transform rotate-45"></span>
+												<span class="ml-3 min-w-2.5 min-h-2.5 border-teal-700 border-2 transform rotate-45"></span>
 												<span class="ml-4 truncate">{ `Ref_${typeElementsStore.typeElementsPerFamily[refWrapper.source.family][refWrapper.source.id].parameters.label}` }</span>
 											</div>
 											<CardMenu type={{ family: typeElementFamily, id: typeElementKey}} ref={{ family: refFamily, id: refId}}/>
@@ -114,16 +115,13 @@ $effect(() => {
 		<div  class="flex justify-end">
 			<Card.Root
 				class="border-gray-500 border-dashed w-5/6 "
-				ondragover={(event) => dndStore.handleDragOver(event)}
-				ondragleave={(event) => dndStore.handleDragLeave(event)}
-				ondragenter={(event) => dndStore.handleDragEnter(event)}
-				ondrop={(event) => dndStore.handleDrop(
-					event,
-					typeElement.element,
-					typeElementFamily
-				)}
+				ondragover={(event) => event.preventDefault()}
+				ondrop={() => dndStore.handleDrop({
+					parentTypeWrapper: typeElement.element,
+					parentTypeFamily: typeElementFamily
+				})}
 			>
-				<Card.Content class="h-14 flex items-center justify-center">
+				<Card.Content class="h-8 p-1 flex items-center justify-center">
 					<span class="mr-1">Drop</span>
 					<div class="overflow-hidden text-ellipsis">
 						<span class="truncate font-bold">{currentDraggedItemLabel}</span>

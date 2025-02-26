@@ -1,4 +1,4 @@
-export function findOneCustomElement({
+export function findOneCustomElementBySelector({
 	selector,
 	root
 }: {
@@ -8,7 +8,7 @@ export function findOneCustomElement({
 	return root.querySelector(selector)
 }
 
-export function findAllCustomElement({
+export function findAllCustomElementBySelector({
 	selector,
 	root
 }: {

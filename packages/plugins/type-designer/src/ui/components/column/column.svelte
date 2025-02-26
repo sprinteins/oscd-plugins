@@ -20,7 +20,10 @@ import type {
 const {
 	columnKey,
 	column
-}: { columnKey: keyof Columns; column: Column<AvailableTypeFamily> } = $props()
+}: {
+	columnKey: keyof Columns
+	column: Column<AvailableTypeFamily>
+} = $props()
 
 const groupedTypeElementsEntries = $derived(
 	Object.entries(column.groupedTypeElements) as [

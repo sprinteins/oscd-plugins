@@ -16,7 +16,8 @@ import { cn } from '$lib/utils/shadcn.js'
 //props
 let {
 	class: className,
-	actions
+	actions,
+	size = 'md'
 }: {
 	class?: string
 	actions: {
@@ -24,10 +25,28 @@ let {
 		disabled: boolean
 		callback: () => void
 	}[]
+	size: 'sm' | 'md' | 'lg'
 } = $props()
 
 //refs
 let isDropdownOpen = $state(false)
+
+const buttonSize = $derived.by(() => {
+	if (size === 'sm')
+		return {
+			button: 'size-7',
+			icon: '!size-4'
+		}
+	if (size === 'lg')
+		return {
+			button: 'size-9',
+			icon: '!size-7'
+		}
+	return {
+		button: 'size-8',
+		icon: '!size-6'
+	}
+})
 
 function handleMenuOpen(event: Event) {
 	event.stopPropagation()
@@ -43,8 +62,8 @@ function handleActionClick(event: Event, action: { callback: () => void }) {
 
 <details use:clickOutside onclickoutside={() => isDropdownOpen = false} class="dropdown " open={isDropdownOpen}>
   <summary class="marker:hidden list-none">
-		<Button.Root variant="ghost" onclick={(event) => handleMenuOpen(event) } class="size-10 rounded-full">
-			<EllipsisVertical class="!size-5" />
+		<Button.Root variant="ghost" onclick={(event) => handleMenuOpen(event) } class={`${buttonSize.button} rounded-full p-0`}>
+			<EllipsisVertical class={buttonSize.icon} />
 	</Button.Root>
 	</summary>
   <ul 
