@@ -1,13 +1,18 @@
 <script lang="ts">
 // CORE
+import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 import * as ed2 from '@oscd-plugins/core-standard/ed2'
 import { Button, Input, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { typeElementsStore } from '@/headless/stores'
 // CONSTANTS
-import { COLUMN_KEY_TO_TYPE_FAMILY } from '@/headless/constants'
+import { COLUMN_KEY_TO_TYPE_FAMILY, TYPE_FAMILY } from '@/headless/constants'
 // TYPES
-import type { AvailableTypeFamily, Columns } from '@/headless/stores'
+import type {
+	AvailableTypeFamily,
+	Columns,
+	TypeToCreateChildren
+} from '@/headless/stores'
 
 //====== INITIALIZATION ======//
 
@@ -19,8 +24,8 @@ const {
 } = $props()
 
 // binding
-let newTypeInput = $state('')
-let newTypeElement = $state('')
+let newTypeInputValue = $state('')
+let newEquipmentTypeSelectValue = $state<keyof typeof rawEquipments>()
 let newTypeFamily = $state<Exclude<AvailableTypeFamily, 'lNodeType'>>()
 
 //====== REACTIVE VARIABLES ======//
@@ -39,24 +44,24 @@ const newElementName = $derived.by(() => {
 		})}`
 	}
 
-	if (newTypeInput) {
+	if (newTypeInputValue) {
 		const numberOfOccurrence = typeElementsStore.getTypeNextOccurrence({
 			family: newTypeFamily,
-			valueToTest: newTypeInput,
+			valueToTest: newTypeInputValue,
 			removeOccurrencePartToTestedValue: false
 		})
-		namesByFamilies[newTypeFamily] = `${newTypeInput}_${numberOfOccurrence}`
+		namesByFamilies[newTypeFamily] =
+			`${newTypeInputValue}_${numberOfOccurrence}`
 	}
 
 	if (
-		newTypeElement &&
-		(newTypeFamily === 'generalEquipment' ||
-			newTypeFamily === 'conductingEquipment')
+		newEquipmentTypeSelectValue &&
+		(newTypeFamily === TYPE_FAMILY.generalEquipment ||
+			newTypeFamily === TYPE_FAMILY.conductingEquipment)
 	) {
 		const selectOptionValue =
-			equipmentsSelectOptions.secondarySelect[newTypeFamily].find(
-				(option) => option.value === newTypeElement
-			)?.label || ''
+			rawEquipments[newEquipmentTypeSelectValue].label
+
 		const numberOfNameOccurrence = typeElementsStore.getTypeNextOccurrence({
 			family: newTypeFamily,
 			valueToTest: selectOptionValue,
@@ -77,42 +82,101 @@ const currentAttributes = $derived({
 })
 
 // equipments select options
-const generalEquipments = $derived(
-	Object.values(ed2.rev1.stable.GENERAL_EQUIPMENTS).map((equipment) => ({
-		value: equipment.type,
+
+const rawEquipments = {
+	...ed2.rev1.stable.GENERAL_EQUIPMENTS,
+	...ed2.rev1.stable.CONDUCTING_EQUIPMENTS
+}
+
+const generalEquipments = $derived.by(() => {
+	const generalEquipmentEntries = Object.entries(
+		ed2.rev1.stable.GENERAL_EQUIPMENTS
+	) as [
+		keyof typeof ed2.rev1.stable.GENERAL_EQUIPMENTS,
+		(typeof ed2.rev1.stable.GENERAL_EQUIPMENTS)[keyof typeof ed2.rev1.stable.GENERAL_EQUIPMENTS]
+	][]
+
+	return generalEquipmentEntries.map(([key, equipment]) => ({
+		value: key,
 		label: equipment.label
 	}))
-)
-const conductingEquipments = $derived(
-	Object.values(ed2.rev1.stable.CONDUCTING_EQUIPMENTS).map((equipment) => ({
-		value: equipment.type,
+})
+const conductingEquipments = $derived.by(() => {
+	const conductingEquipmentEntries = Object.entries(
+		ed2.rev1.stable.CONDUCTING_EQUIPMENTS
+	) as [
+		keyof typeof ed2.rev1.stable.CONDUCTING_EQUIPMENTS,
+		(typeof ed2.rev1.stable.CONDUCTING_EQUIPMENTS)[keyof typeof ed2.rev1.stable.CONDUCTING_EQUIPMENTS]
+	][]
+
+	return conductingEquipmentEntries.map(([key, equipment]) => ({
+		value: key,
 		label: equipment.label
 	}))
-)
+})
+
 const equipmentGroups = $derived({
 	generalEquipment: generalEquipments,
 	conductingEquipment: conductingEquipments
 })
 const equipmentsSelectOptions = $derived({
 	primarySelect: [
-		{ value: 'generalEquipment', label: 'GenEq' },
-		{ value: 'conductingEquipment', label: 'CondEq' }
+		{ value: TYPE_FAMILY.generalEquipment, label: 'GenEq' },
+		{ value: TYPE_FAMILY.conductingEquipment, label: 'CondEq' }
 	],
-	secondarySelect: equipmentGroups
+	secondarySelect:
+		((newTypeFamily === 'generalEquipment' ||
+			newTypeFamily === 'conductingEquipment') &&
+			equipmentGroups[newTypeFamily]) ||
+		[]
+})
+
+const conductingEquipmentChildren = $derived.by(() => {
+	let numberOfTerminals: number | undefined
+	const defaultNumberOfTerminals = 2
+	const terminalPayload = {
+		family: 'terminal' as const,
+		attributes: {
+			name: 'None',
+			connectivityNode: 'None',
+			cNodeName: 'None'
+		}
+	}
+	if (
+		newTypeFamily === TYPE_FAMILY.conductingEquipment &&
+		newEquipmentTypeSelectValue &&
+		typeGuard.isPropertyOfObject(
+			newEquipmentTypeSelectValue,
+			ed2.rev1.stable.CONDUCTING_EQUIPMENTS
+		)
+	)
+		numberOfTerminals =
+			rawEquipments[newEquipmentTypeSelectValue].numberOfTerminals
+
+	return Array.from(
+		{ length: numberOfTerminals || defaultNumberOfTerminals },
+		() => terminalPayload
+	)
 })
 
 //====== FUNCTIONS ======//
 
 function handleAddNewElement() {
 	if (!newTypeFamily) return
+	let children: undefined | TypeToCreateChildren
+
+	if (newTypeFamily === TYPE_FAMILY.conductingEquipment) {
+		children = conductingEquipmentChildren
+	}
 
 	typeElementsStore.createNewType({
 		family: newTypeFamily,
-		attributes: currentAttributes
+		attributes: currentAttributes,
+		children
 	})
 
-	newTypeInput = ''
-	newTypeElement = ''
+	newTypeInputValue = ''
+	newEquipmentTypeSelectValue = undefined
 }
 
 //====== WATCHERS ======//
@@ -132,18 +196,18 @@ $effect(() => {
 		options={equipmentsSelectOptions.primarySelect}
 		bind:value={newTypeFamily}
 		handleChange={() => {
-			newTypeElement = ''
+			newEquipmentTypeSelectValue = undefined
 		}}
 	/>
 	<SelectWorkaround
-		options={(newTypeFamily === 'generalEquipment' || newTypeFamily === 'conductingEquipment') && equipmentsSelectOptions.secondarySelect[newTypeFamily] || []}
-		bind:value={newTypeElement}
+		options={equipmentsSelectOptions.secondarySelect}
+		bind:value={newEquipmentTypeSelectValue}
 		placeholder="Select Eq"
 	/>
 
 {:else}
 	<Input.Root
-		bind:value={newTypeInput}
+		bind:value={newTypeInputValue}
 		placeholder={newTypeFamily && newElementName?.[newTypeFamily]}
 	/>
 {/if}
@@ -152,7 +216,7 @@ $effect(() => {
 	class="w-full lg:w-auto"
 	variant="ghost"
 	onclick={handleAddNewElement}
-	disabled={columnKey === 'equipmentType' && !(!!newTypeElement)}
+	disabled={columnKey === 'equipmentType' && !(!!newEquipmentTypeSelectValue)}
 >
 	Add
 </Button.Root>

@@ -16,106 +16,132 @@ export const GENERAL_EQUIPMENTS = {
 export const CONDUCTING_EQUIPMENTS = {
 	circuitBreaker: {
 		label: 'Circuit Breaker',
-		type: 'CBR'
+		type: 'CBR',
+		numberOfTerminals: 2
 	},
 	disconnectorOrEarthSwitch: {
 		label: 'Disconnector or Earth Switch',
-		type: 'DIS'
+		type: 'DIS',
+		numberOfTerminals: 2
 	},
 	currentTransformer: {
 		label: 'Current Transformer',
-		type: 'CTR'
+		type: 'CTR',
+		numberOfTerminals: 2
 	},
 	voltageTransformer: {
 		label: 'Voltage Transformer',
-		type: 'VTR'
+		type: 'VTR',
+		numberOfTerminals: 1
 	},
 	battery: {
 		label: 'Battery',
-		type: 'BAT'
+		type: 'BAT',
+		numberOfTerminals: 1
 	},
 	bushing: {
 		label: 'Bushing',
-		type: 'BSH'
+		type: 'BSH',
+		numberOfTerminals: 2
 	},
 	capacitorBank: {
 		label: 'Capacitor Bank',
-		type: 'CAP'
+		type: 'CAP',
+		numberOfTerminals: undefined
 	},
 	converter: {
 		label: 'Converter',
-		type: 'CON'
+		type: 'CON',
+		numberOfTerminals: undefined
 	},
 	earthFaultNeutralizer: {
 		label: 'Earth Fault Neutralizer',
-		type: 'EFN'
+		type: 'EFN',
+		numberOfTerminals: 1
 	},
 	fan: {
 		label: 'Fan',
-		type: 'FAN'
+		type: 'FAN',
+		numberOfTerminals: 1
 	},
 	gasInsulatedLine: {
 		label: 'Gas Insulated Line',
-		type: 'GIL'
+		type: 'GIL',
+		numberOfTerminals: 2
 	},
 	generator: {
 		label: 'Generator',
-		type: 'GEN'
+		type: 'GEN',
+		numberOfTerminals: 1
 	},
 	infeedingLine: {
 		label: 'Infeeding Line',
-		type: 'IFL'
+		type: 'IFL',
+		numberOfTerminals: 1
 	},
 	motor: {
 		label: 'Motor',
-		type: 'MOT'
+		type: 'MOT',
+		numberOfTerminals: 1
 	},
 	neutralResistor: {
 		label: 'Neutral Resistor',
-		type: 'RES'
+		type: 'RES',
+		numberOfTerminals: 2
 	},
 	reactor: {
 		label: 'Reactor',
-		type: 'REA'
+		type: 'REA',
+		numberOfTerminals: undefined
 	},
 	powerShunt: {
 		label: 'Power Shunt',
-		type: 'PSH'
+		type: 'PSH',
+		numberOfTerminals: 2
 	},
 	powerCable: {
 		label: 'Power Cable',
-		type: 'CAB'
+		type: 'CAB',
+		numberOfTerminals: 2
 	},
 	pump: {
 		label: 'Pump',
-		type: 'PMP'
+		type: 'PMP',
+		numberOfTerminals: 1
 	},
 	powerOverheadLine: {
 		label: 'Power Overhead Line',
-		type: 'LIN'
+		type: 'LIN',
+		numberOfTerminals: 2
 	},
 	rotatingReactiveComponent: {
 		label: 'Rotating Reactive Component',
-		type: 'RRC'
+		type: 'RRC',
+		numberOfTerminals: 1
 	},
 	semiconductorControlledRectifier: {
 		label: 'Semiconductor Controlled Rectifier',
-		type: 'SCR'
+		type: 'SCR',
+		numberOfTerminals: 2
 	},
 	surgeArrester: {
 		label: 'Surge Arrester',
-		type: 'SAR'
+		type: 'SAR',
+		numberOfTerminals: 1
 	},
 	synchronousMachine: {
 		label: 'Synchronous Machine',
-		type: 'SMC'
+		type: 'SMC',
+		numberOfTerminals: 1
 	},
 	thyristorControlledFrequencyConverter: {
 		label: 'Thyristor Controlled Frequency Converter',
-		type: 'TCF'
+		type: 'TCF',
+		numberOfTerminals: 2
 	},
 	thyristorControlledReactiveComponent: {
 		label: 'Thyristor Controlled Reactive Component',
-		type: 'TCR'
+		type: 'TCR',
+		numberOfTerminals: 2
 	}
 } as const
