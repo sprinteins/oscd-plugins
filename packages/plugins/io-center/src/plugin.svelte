@@ -26,6 +26,7 @@
 	import ObjectTree from "./ui/components/object-tree/object-tree.svelte";
 	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
 	import LpList from "./ui/components/lp-list/lp-list.svelte";
+    import type { LP_TYPE } from "./headless/constants";
 
 	// props
 	const {

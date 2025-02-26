@@ -2,6 +2,8 @@ import type { IED } from "./ied/ied"
 import { createAndDispatchEditEvent, createCustomElement, createStandardElement } from "@oscd-plugins/core-api/plugin/v1"
 import type { StoreType } from "./store.svelte"
 import type { Nullable } from "./types"
+import type { LP_TYPE } from "./headless/constants"
+import { lpStore } from "./ui/components/lp-list/lp-store.svelte"
 
 export class Command {
 	constructor(
@@ -53,6 +55,8 @@ export class Command {
 			return
 		}
 
+		const { type, name, desc, instance } = lpStore.dialogFormData
+
 		let lDevice0 = this.store.doc.querySelector(`IED[name="${this.store.iedSelected?.name}"] > AccessPoint > Server > LDevice[inst="LD0"]`);
 
 		if (!lDevice0) {
@@ -74,9 +78,12 @@ export class Command {
 		const newLP = this.store.doc.createElement("LN")
 
 		newLP.setAttribute("xmlns", "")
-		newLP.setAttribute("lnClass", "LPDI")
-		newLP.setAttribute("inst", `${lDevice0.querySelectorAll(`LN[lnType="LPDI"]`).length + 1}`)
-		newLP.setAttribute("lnType", "LPDI")
+		if (desc) {
+			newLP.setAttribute("desc", desc)
+		}
+		newLP.setAttribute("lnClass", name || type)
+		newLP.setAttribute("inst", instance || `${lDevice0.querySelectorAll(`LN[lnType="${type}"]`).length + 1}`)
+		newLP.setAttribute("lnType", type)
 
 		createAndDispatchEditEvent({
 			host,

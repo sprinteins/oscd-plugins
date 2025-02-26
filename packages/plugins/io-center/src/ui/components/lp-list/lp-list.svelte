@@ -6,17 +6,9 @@
     import FilterButtons from "./filter-buttons.svelte";
     import { Plus } from "lucide-svelte";
     import CreateLpDialog from "./create-lp-dialog.svelte";
+    import store from "../../../store.svelte";
 
-    const lpList: LpElementType[] = [
-        { id: "1", type: LP_TYPE.input, name: "LPDI 1", isLinked: false },
-        { id: "2", type: LP_TYPE.input, name: "LPDI 2", isLinked: false },
-        { id: "3", type: LP_TYPE.input, name: "LPDI 3", isLinked: false },
-        { id: "4", type: LP_TYPE.input, name: "LPDI 4", isLinked: true },
-        { id: "5", type: LP_TYPE.output, name: "LPDO 1", isLinked: false },
-        { id: "6", type: LP_TYPE.output, name: "LPDO 2", isLinked: true },
-        { id: "7", type: LP_TYPE.output, name: "LPDO 3", isLinked: true },
-        { id: "8", type: LP_TYPE.output, name: "LPDO 4", isLinked: true },
-    ];
+    const lpList: LpElementType[] = [];
 
     type Props = {
         addLp: () => void;
@@ -45,11 +37,11 @@
     );
 
     const lpdiList = $derived(
-        filteredList.filter((item) => item.type === LP_TYPE.input),
+        filteredList.filter((item) => item.type === LP_TYPE.LPDI),
     );
 
     const lpdoList = $derived(
-        filteredList.filter((item) => item.type === LP_TYPE.output),
+        filteredList.filter((item) => item.type === LP_TYPE.LPDO),
     );
 
     let showDialogue = $state(false);
@@ -58,7 +50,8 @@
 <div class="p-6">
     <button
         onclick={() => (showDialogue = true)}
-        class="flex items-center justify-center rounded-lg py-2 gap-2 w-full bg-gray-200 mb-2 border border-gray-400"
+        class="add-button"
+        disabled={!store.iedSelected}
     >
         <Plus size={16} />
         <p>Add LP</p>
@@ -89,3 +82,9 @@
         {/each}
     {/if}
 </div>
+
+<style lang="scss">
+    .add-button {
+        @apply flex items-center justify-center rounded-lg py-2 gap-2 w-full bg-gray-200 mb-2 border border-gray-400 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed;
+    }
+</style>

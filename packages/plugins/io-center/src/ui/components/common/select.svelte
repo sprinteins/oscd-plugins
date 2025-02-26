@@ -6,8 +6,6 @@
     };
 
     let { label, value = $bindable(), options }: Props = $props();
-
-    $inspect(value);
 </script>
 
 <div>
