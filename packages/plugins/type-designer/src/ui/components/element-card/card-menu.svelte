@@ -2,9 +2,9 @@
 // CORE
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // STORE
-import { typeElementsStore } from '@/headless/stores'
+import { sidebarStore, typeElementsStore } from '@/headless/stores'
 // COMPONENTS
-import { DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
+import { DropdownMenuWorkaround, Sidebar } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { AvailableTypeFamily, AvailableRefFamily } from '@/headless/stores'
 
@@ -22,6 +22,9 @@ let {
 		id: string
 	}
 } = $props()
+
+// actions
+const sidebar = Sidebar.useSidebar()
 
 //======= DERIVED STATES =======//
 
@@ -41,6 +44,9 @@ function deleteTypeHandler() {
 		family: type.family,
 		id: type.id
 	})
+
+	sidebarStore.resetCurrentElementType()
+	sidebar.setOpen(false)
 }
 
 function deleteRefHandler() {
