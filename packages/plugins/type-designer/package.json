@@ -9,7 +9,7 @@
 		"dev": "vite",
 		"//====== BUILD ======//": "",
 		"build": "vite build",
-		"build:watch": "NODE_ENV=development vite build --watch",
+		"build:watch": "vite build --watch",
 		"preview": "vite preview",
 		"//====== INTEGRATED ======//": "",
 		"integrated": "concurrently 'npm:build:watch' 'npm:preview'",
