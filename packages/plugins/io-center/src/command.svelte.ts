@@ -83,7 +83,7 @@ export class Command {
 		}
 		newLP.setAttribute("lnClass", type)
 		newLP.setAttribute("inst", instance || `${lDevice0.querySelectorAll(`LN[lnType="${type}"]`).length + 1}`)
-		newLP.setAttribute("lnType", type)
+		newLP.setAttribute("lnType", name || type)
 
 		createAndDispatchEditEvent({
 			host,

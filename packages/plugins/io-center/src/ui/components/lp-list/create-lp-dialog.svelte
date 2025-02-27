@@ -28,7 +28,7 @@
 
         isOpen = false;
 
-        collectLPs()
+        collectLPs();
     }
 </script>
 
@@ -38,7 +38,7 @@
             <Select
                 bind:value={lpStore.dialogFormData.type}
                 label="LP Type"
-                options={[LP_TYPE.LPDI, LP_TYPE.LPDO]}
+                options={Object.values(LP_TYPE)}
             />
             <Input bind:value={lpStore.dialogFormData.name} label="LP Name" />
             <Input
@@ -50,10 +50,10 @@
                 label="LP Description"
             />
             <div class="action-buttons">
-                <button class="cancel-button" onclick={handleCancel}
-                    >Cancel</button
-                >
-                <button class="add-button" onclick={handleSubmit}>Add</button>
+                <button class="cancel-button" onclick={handleCancel}>
+                    Cancel
+                </button>
+                <button class="add-button" onclick={handleSubmit}> Add </button>
             </div>
         </div>
     </div>

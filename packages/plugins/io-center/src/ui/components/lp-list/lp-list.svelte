@@ -1,12 +1,13 @@
 <script lang="ts">
     import { LP_TYPE } from "@/headless/constants";
-    import type { LpElement as LpElementType } from "./types.lp-list";
+    import type { LpElement as LpElementType, LpTypes } from "./types.lp-list";
     import LpElement from "./lp-element.svelte";
     import SearchBar from "../common/search-bar.svelte";
     import FilterButtons from "./filter-buttons.svelte";
     import { Plus } from "lucide-svelte";
     import CreateLpDialog from "./create-lp-dialog.svelte";
     import store from "../../../store.svelte";
+    import type { Nullable } from "@/types";
 
     type Props = {
         addLp: () => void;
@@ -16,8 +17,7 @@
 
     let searchTerm = $state("");
 
-    let showLpdi = $state(true);
-    let showLpdo = $state(true);
+    let selectedTypeToShow = $state<Nullable<LpTypes>>(null);
     let showLinked = $state(true);
     let showUnlinked = $state(true);
 
@@ -34,14 +34,6 @@
             ),
     );
 
-    const lpdiList = $derived(
-        filteredList.filter((item) => item.type === LP_TYPE.LPDI),
-    );
-
-    const lpdoList = $derived(
-        filteredList.filter((item) => item.type === LP_TYPE.LPDO),
-    );
-
     let showDialogue = $state(false);
 </script>
 
@@ -54,31 +46,27 @@
         <Plus size={16} />
         <p>Add LP</p>
     </button>
+
     <CreateLpDialog bind:isOpen={showDialogue} {addLp} />
+
     <SearchBar bind:searchTerm />
 
     <div class="mt-2">
         <FilterButtons
-            bind:showLpdi
-            bind:showLpdo
+            bind:selectedTypeToShow
             bind:showLinked
             bind:showUnlinked
         />
     </div>
 
-    {#if showLpdi && lpdiList.length > 0}
-        <p class="text-xl font-semibold pl-2 pt-3">LPDI</p>
-        {#each lpdiList as lpElement (lpElement.id)}
-            <LpElement {searchTerm} {lpElement} />
-        {/each}
-    {/if}
-
-    {#if showLpdo && lpdoList.length > 0}
-        <p class="text-xl font-semibold pl-2 pt-3">LPDO</p>
-        {#each lpdoList as lpElement (lpElement.id)}
-            <LpElement {searchTerm} {lpElement} />
-        {/each}
-    {/if}
+    {#each Object.values(LP_TYPE) as lpType}
+        {#if (selectedTypeToShow === null || selectedTypeToShow === lpType) && filteredList.length > 0}
+            <p class="text-xl font-semibold pl-2 pt-3">{lpType}</p>
+            {#each filteredList.filter((item) => item.type === lpType) as lpElement (lpElement.id)}
+                <LpElement {searchTerm} {lpElement} />
+            {/each}
+        {/if}
+    {/each}
 </div>
 
 <style lang="scss">

@@ -43,7 +43,13 @@ export function collectLPs() {
 
 	if (!doc || !iedSelected) return
 
-	const lpElements = Array.from(doc.querySelectorAll(`IED[name="${iedSelected.name}"] > AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="LPDI"],IED[name="${iedSelected.name}"] > AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="LPDO"]`));
+	let query: string[] = []
+
+	Object.values(LP_TYPE).forEach((value) => {
+		query.push(`IED[name="${iedSelected.name}"] > AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${value}"]`)
+	})
+
+	const lpElements = Array.from(doc.querySelectorAll(query.join(",")));
 
 	store.lpList = lpElements.map(lpElementToLP)
 }
@@ -52,7 +58,7 @@ function lpElementToLP(lpElement: Element): LpElement {
 	return {
 		id: crypto.randomUUID(),
 		type: lpElement.getAttribute("lnClass") as keyof typeof LP_TYPE || "unknown",
-		name: `${lpElement.getAttribute("lnClass") || ""}-${lpElement.getAttribute("inst") || ""}`,
+		name: `${lpElement.getAttribute("lnType") || ""}-${lpElement.getAttribute("inst") || ""}`,
 		isLinked: false,
 	}
 }
