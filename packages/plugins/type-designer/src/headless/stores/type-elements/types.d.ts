@@ -61,16 +61,6 @@ export type RefElement<GenericRefFamily extends AvailableRefFamily> = {
 	}
 }
 
-export type TypeToCreateAttributes = {
-	name: string
-	type?: string
-}
-
-export type TypeToCreateChildren = {
-	family: IEC61850.AvailableElement<typeof pluginLocalStore.currentEdition>
-	attributes: Record<string, string | null>
-}[]
-
 export type Column<GenericTypeFamily extends AvailableTypeFamily> = {
 	name: string
 	groupedTypeElements: Record<TypeElementByIds<GenericTypeFamily>>
