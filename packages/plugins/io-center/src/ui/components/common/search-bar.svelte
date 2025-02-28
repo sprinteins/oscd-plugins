@@ -1,14 +1,14 @@
 <script lang="ts">
     import { SearchIcon } from "lucide-svelte";
 
-    let { searchTerm = $bindable() }: { searchTerm: string } = $props();
+    let { searchTerm = $bindable(), placeholder }: { searchTerm: string, placeholder: string } = $props();
 </script>
 
 <div class="relative flex">
     <input
         class="bg-gray-50 w-full border-2 border-gray-300 rounded-lg pl-8 py-2"
         bind:value={searchTerm}
-        placeholder="Search DO"
+        {placeholder}
     />
     <SearchIcon
         size={16}
