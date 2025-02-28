@@ -295,8 +295,8 @@ describe('DocumentTemplateStore', () => {
 		// Arrange
 		const title = 'Test Title';
 		const description = 'Original Description';
-		const newTitle = 'Duplicated Title';
-		const newDescription = 'Duplicated Description';
+		const newTitle = 'Test Title_Copy';
+		const newDescription = 'Copied from Test Title\'s description: Original Description';
 		const generatedId = docTemplatesStore.addDocumentTemplate();
 	
 		if (!generatedId) {
@@ -309,14 +309,9 @@ describe('DocumentTemplateStore', () => {
 			throw new Error('DocumentTemplate not found');
 		}
 		
-		const type = "image";
-
-		// Add blocks to the document definition
-		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
-		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
 
 		// Act
-		docTemplatesStore.duplicateDocumentTemplate(generatedId, newTitle, newDescription);
+		docTemplatesStore.duplicateDocumentTemplate(generatedId);
 
 		// Assert
 		const xmlDocValue = get(xmlDocument);
