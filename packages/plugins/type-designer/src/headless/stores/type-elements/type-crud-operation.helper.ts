@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 // CORE
 import {
+	typeGuard,
 	createStandardElement,
 	createAndDispatchEditEvent,
 	findAllStandardElementsBySelector
@@ -11,50 +12,119 @@ import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
 // HELPERS
 import { getNewNameWithOccurrence } from '@/headless/stores/type-elements/type-naming.helper'
 // CONSTANTS
-import { TYPE_FAMILY } from '@/headless/constants'
+import { CONDUCTING_EQUIPMENTS, TYPE_FAMILY } from '@/headless/constants'
 // TYPES
-import type {
-	AvailableTypeFamily,
-	TypeToCreateAttributes,
-	TypeToCreateChildren
-} from '@/headless/stores'
+import type { AvailableTypeFamily } from '@/headless/stores'
 
 //====== CREATE ======//
 
+function getTypeAttributes(
+	typeFamily: Exclude<AvailableTypeFamily, 'lNodeType'>
+) {
+	return {
+		[TYPE_FAMILY.bay]: () => ({
+			name: typeElementsStore.newComputedTypeName[TYPE_FAMILY.bay],
+			uuid: uuidv4()
+		}),
+		[TYPE_FAMILY.generalEquipment]: () => ({
+			name: typeElementsStore.newComputedTypeName[
+				TYPE_FAMILY.generalEquipment
+			],
+			virtual: 'false',
+			uuid: uuidv4()
+		}),
+		[TYPE_FAMILY.conductingEquipment]: () => ({
+			name: typeElementsStore.newComputedTypeName[
+				TYPE_FAMILY.conductingEquipment
+			],
+			virtual: 'false',
+			uuid: uuidv4()
+		}),
+		[TYPE_FAMILY.function]: () => ({
+			name: typeElementsStore.newComputedTypeName[TYPE_FAMILY.function],
+			uuid: uuidv4()
+		})
+	}[typeFamily]()
+}
+
+function getTerminalOccurrence() {
+	if (!typeElementsStore.newEquipmentType)
+		throw new Error('No equipment type')
+	return (
+		(typeGuard.isPropertyOfObject(
+			typeElementsStore.newEquipmentType,
+			CONDUCTING_EQUIPMENTS
+		) &&
+			CONDUCTING_EQUIPMENTS[typeElementsStore.newEquipmentType]
+				.numberOfTerminals) ||
+		2
+	)
+}
+
+function getTypeChildTemplate(
+	typeFamily: Extract<AvailableTypeFamily, 'conductingEquipment'>
+) {
+	return {
+		[TYPE_FAMILY.conductingEquipment]: () => ({
+			family: 'terminal' as const,
+			occurrence: getTerminalOccurrence(),
+			attributes: {
+				name: 'None',
+				connectivityNode: 'None',
+				cNodeName: 'None'
+			}
+		})
+	}[typeFamily]()
+}
+
+function getTypeChildren(
+	typeFamily: Extract<AvailableTypeFamily, 'conductingEquipment'>
+) {
+	const { occurrence: childOccurrence, ...childTemplate } =
+		getTypeChildTemplate(typeFamily)
+	return Array.from({ length: childOccurrence }, () => childTemplate)
+}
+
 /**
- * Creates a new type based on the provided family and attributes.
- * Dispatches an edit event with the created type.
+ * Creates a new type element and optionally its children.
  *
- * @param params - The parameters for creating a new type.
- * @param params.family - The family of the type to be created.
- * @param params.attributes - The attributes for the new type.
+ * This function performs the following steps:
+ * 1. Updates the SCL version of the XML Document
+ * 2. Creates the TEMPLATE wrapper if needed in the XML Document.
+ * 3. Validates the presence of necessary global store properties.
+ * 4. Creates a new type element based on the provided type family.
+ * 5. If `withChildren` is true and the type family is 'conductingEquipment',
+ *    it creates and appends child elements to the new type element.
+ * 6. Determines the appropriate parent element based on the type family.
+ * 7. Dispatches an edit event to add the new element to the XML Document.
  *
- * @throws If there is no host or no parent element.
+ * @param params - The parameters for creating a new type element.
+ * @param params.family - The family of the type element to create.
+ * @param params.withChildren - Optional flag to indicate whether to create child elements.
+ * @throws Will throw an error if the host, XML document, type family, or parent element is not available.
  */
 export function createNewType(params: {
 	family: Exclude<AvailableTypeFamily, 'lNodeType'>
-	attributes: TypeToCreateAttributes
-	children?: TypeToCreateChildren
+	withChildren?: boolean
 }) {
 	pluginLocalStore.updateSCLVersion()
 	ssdStore.createTemplateWrapper()
 
 	if (!pluginGlobalStore.host) throw new Error('No host')
 	if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
+	if (!params.family) throw new Error('No type family')
 
 	const newTypeElement = createStandardElement({
 		xmlDocument: pluginGlobalStore.xmlDocument,
 		element: { family: params.family },
-		attributes: {
-			...params.attributes,
-			uuid: uuidv4()
-		},
+		attributes: getTypeAttributes(params.family),
 		currentEdition: pluginLocalStore.currentEdition,
 		currentUnstableRevision: pluginLocalStore.currentUnstableRevision
 	})
 
-	if (params.children)
-		for (const child of params.children) {
+	if (params.withChildren && params.family === 'conductingEquipment') {
+		const children = getTypeChildren(params.family)
+		for (const child of children) {
 			const newChildElement = createStandardElement({
 				xmlDocument: pluginGlobalStore.xmlDocument,
 				element: { family: child.family },
@@ -68,6 +138,7 @@ export function createNewType(params: {
 			})
 			newTypeElement.appendChild(newChildElement)
 		}
+	}
 
 	const parent =
 		params.family === TYPE_FAMILY.bay

@@ -55,8 +55,7 @@ import {
 	Sidebar,
 	initPlugin,
 	initSsdTemplate,
-	removeInstanceWarningAndIssueToast,
-	pluginGlobalStore
+	removeInstanceWarningAndIssueToast
 } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { pluginLocalStore } from '@/headless/stores'

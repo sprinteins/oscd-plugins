@@ -6,4 +6,7 @@ export namespace Utils {
 		uri: string
 		prefix: string
 	}
+	export type Entries<T> = {
+		[K in keyof T]: [K, T[K]]
+	}[keyof T][]
 }

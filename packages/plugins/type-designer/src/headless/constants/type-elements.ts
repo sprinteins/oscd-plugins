@@ -1,3 +1,13 @@
+import * as ed2 from '@oscd-plugins/core-standard/ed2'
+
+// EQUIPMENTS
+
+export const GENERAL_EQUIPMENTS = ed2.rev1.stable.GENERAL_EQUIPMENTS
+export const CONDUCTING_EQUIPMENTS = ed2.rev1.stable.CONDUCTING_EQUIPMENTS
+export const EQUIPMENTS = { ...GENERAL_EQUIPMENTS, ...CONDUCTING_EQUIPMENTS }
+
+// TYPES AND REFS
+
 export const COMMON_FAMILY = {
 	generalEquipment: 'generalEquipment',
 	conductingEquipment: 'conductingEquipment',
@@ -16,6 +26,8 @@ export const REF_FAMILY = {
 	lNode: 'lNode'
 } as const
 
+// COLUMNS
+
 export const COLUMNS = {
 	bayType: 'bayType',
 	equipmentType: 'equipmentType',
@@ -23,6 +35,7 @@ export const COLUMNS = {
 	lNodeType: 'lNodeType'
 } as const
 
+// ATTRIBUTES
 export const READONLY_ATTRIBUTES = [
 	'id',
 	'uuid',

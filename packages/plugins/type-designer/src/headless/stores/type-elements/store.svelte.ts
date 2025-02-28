@@ -1,7 +1,12 @@
 // STORES
 import { pluginLocalStore } from '@/headless/stores'
 // CONSTANTS
-import { REF_FAMILY, TYPE_FAMILY, COLUMNS } from '@/headless/constants'
+import {
+	REF_FAMILY,
+	TYPE_FAMILY,
+	COLUMNS,
+	EQUIPMENTS
+} from '@/headless/constants'
 // HELPERS
 import { getAndMapTypeElements } from './consolidate-types.helper'
 import {
@@ -16,7 +21,7 @@ import { getFilteredTypeElementByIds } from './filter.helper'
 import type { TypeElementsByFamily, Columns } from '@/headless/stores'
 
 class UseTypeElementsStore {
-	//====== STATES ======//
+	//====== INITIALIZATION ======//
 
 	typeElementsPerFamily: TypeElementsByFamily = $derived.by(() => ({
 		[TYPE_FAMILY.bay]: getAndMapTypeElements(
@@ -105,6 +110,7 @@ class UseTypeElementsStore {
 	})
 
 	//====== PROXY TO HELPERS ======//
+
 	// type
 	createNewType = createNewType
 	duplicateType = duplicateType
@@ -113,6 +119,63 @@ class UseTypeElementsStore {
 	createNewRef = createNewRef
 	// naming
 	getTypeNextOccurrence = getTypeNextOccurrence
+
+	//====== NEW TYPE ======//
+
+	newTypeNameInputValueByColumnKey = $state({
+		[COLUMNS.bayType]: '',
+		[COLUMNS.functionType]: ''
+	})
+	newEquipmentType = $state<keyof typeof EQUIPMENTS>()
+	selectedEquipmentName = $derived(
+		this.newEquipmentType && EQUIPMENTS[this.newEquipmentType].label
+	)
+	namePrefixByTypeFamily = $derived({
+		[TYPE_FAMILY.bay]: this.newTypeNameInputValueByColumnKey[
+			COLUMNS.bayType
+		]
+			? this.newTypeNameInputValueByColumnKey[COLUMNS.bayType]
+			: 'Bay',
+		[TYPE_FAMILY.generalEquipment]: this.selectedEquipmentName || '',
+		[TYPE_FAMILY.conductingEquipment]: this.selectedEquipmentName || '',
+		[TYPE_FAMILY.function]: this.newTypeNameInputValueByColumnKey[
+			COLUMNS.functionType
+		]
+			? this.newTypeNameInputValueByColumnKey[COLUMNS.functionType]
+			: 'Func'
+	})
+	nextOccurrenceByTypeFamily = $derived({
+		[TYPE_FAMILY.bay]: this.getTypeNextOccurrence({
+			family: TYPE_FAMILY.bay,
+			valueToTest: this.namePrefixByTypeFamily[TYPE_FAMILY.bay],
+			removeOccurrencePartToTestedValue: true
+		}),
+		[TYPE_FAMILY.generalEquipment]: this.getTypeNextOccurrence({
+			family: TYPE_FAMILY.generalEquipment,
+			valueToTest:
+				this.namePrefixByTypeFamily[TYPE_FAMILY.generalEquipment],
+			removeOccurrencePartToTestedValue: true
+		}),
+		[TYPE_FAMILY.conductingEquipment]: this.getTypeNextOccurrence({
+			family: TYPE_FAMILY.conductingEquipment,
+			valueToTest:
+				this.namePrefixByTypeFamily[TYPE_FAMILY.conductingEquipment],
+			removeOccurrencePartToTestedValue: true
+		}),
+		[TYPE_FAMILY.function]: this.getTypeNextOccurrence({
+			family: TYPE_FAMILY.function,
+			valueToTest: this.namePrefixByTypeFamily[TYPE_FAMILY.function],
+			removeOccurrencePartToTestedValue: true
+		})
+	})
+	newComputedTypeName = $derived.by(() => {
+		return {
+			[TYPE_FAMILY.bay]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.bay]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.bay]}`,
+			[TYPE_FAMILY.generalEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.generalEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.generalEquipment]}`,
+			[TYPE_FAMILY.conductingEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.conductingEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.conductingEquipment]}`,
+			[TYPE_FAMILY.function]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.function]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.function]}`
+		}
+	})
 }
 
 export const typeElementsStore = new UseTypeElementsStore()

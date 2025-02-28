@@ -19,9 +19,11 @@ function getRefAttributes(params: {
 }) {
 	return {
 		[REF_FAMILY.generalEquipment]: () => ({
+			virtual: 'false',
 			templateUuid: params.typeId
 		}),
 		[REF_FAMILY.conductingEquipment]: () => ({
+			virtual: 'false',
 			templateUuid: params.typeId
 		}),
 		[REF_FAMILY.function]: () => ({
