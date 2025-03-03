@@ -6,6 +6,8 @@
     import ListItem from '@tiptap/extension-list-item'
 	import Underline from '@tiptap/extension-underline'
 	import {debounce} from '@/utils';
+    import {placeholderStore} from "@/stores";
+
     let element: Element;
     let editor: unknown;
     export let content = '<p>Hello World! 🌍️ </p>';
@@ -13,7 +15,12 @@
 
 
 	const ONE_SECOND_IN_MS = 1000;
-	const debouncedContentChange = debounce(onContentChange, ONE_SECOND_IN_MS);
+	const debouncedContentChange = debounce(fillPlaceholder, ONE_SECOND_IN_MS);
+
+    function fillPlaceholder(text: string) {
+        const filledText = placeholderStore.fillPlaceholder(text);
+        onContentChange(filledText)
+    }
 
     onMount(() => {
         editor = new Editor({
@@ -30,9 +37,7 @@
             content: content,
 			autofocus: true,
             onUpdate: ({ editor }) => {
-                // console.log(editor.getText());
-                // console.log(editor.getHTML());
-				debouncedContentChange(editor.getHTML());
+                debouncedContentChange(editor.getHTML());
             },
             onTransaction: () => {
                 // force re-render so `editor.isActive` works as expected
