@@ -1,12 +1,18 @@
 <script lang="ts">
+import { onMount } from 'svelte'
 // CORE
-import * as ed2 from '@oscd-plugins/core-standard/ed2'
 import { Button, Input, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { typeElementsStore } from '@/headless/stores'
 // CONSTANTS
-import { COLUMN_KEY_TO_TYPE_FAMILY } from '@/headless/constants'
+import {
+	COLUMN_KEY_TO_TYPE_FAMILY,
+	TYPE_FAMILY,
+	GENERAL_EQUIPMENTS,
+	CONDUCTING_EQUIPMENTS
+} from '@/headless/constants'
 // TYPES
+import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 import type { AvailableTypeFamily, Columns } from '@/headless/stores'
 
 //====== INITIALIZATION ======//
@@ -18,133 +24,89 @@ const {
 	columnKey: Exclude<keyof Columns, 'lNodeType'>
 } = $props()
 
-// binding
-let newTypeInput = $state('')
-let newTypeElement = $state('')
-let newTypeFamily = $state<Exclude<AvailableTypeFamily, 'lNodeType'>>()
+let currentColumnTypeFamily =
+	$state<Exclude<AvailableTypeFamily, 'lNodeType'>>()
 
-//====== REACTIVE VARIABLES ======//
+const generalEquipmentOptions = $derived.by(() => {
+	const generalEquipmentEntries = Object.entries(
+		GENERAL_EQUIPMENTS
+	) as Utils.Entries<typeof GENERAL_EQUIPMENTS>
 
-const newElementName = $derived.by(() => {
-	if (!newTypeFamily) return
-
-	const namesByFamilies = {
-		bay: `Bay_${typeElementsStore.getTypeNextOccurrence({ family: 'bay', valueToTest: 'Bay', removeOccurrencePartToTestedValue: true })}`,
-		generalEquipment: '',
-		conductingEquipment: '',
-		function: `Func_${typeElementsStore.getTypeNextOccurrence({
-			family: 'function',
-			valueToTest: 'Func',
-			removeOccurrencePartToTestedValue: true
-		})}`
-	}
-
-	if (newTypeInput) {
-		const numberOfOccurrence = typeElementsStore.getTypeNextOccurrence({
-			family: newTypeFamily,
-			valueToTest: newTypeInput,
-			removeOccurrencePartToTestedValue: false
-		})
-		namesByFamilies[newTypeFamily] = `${newTypeInput}_${numberOfOccurrence}`
-	}
-
-	if (
-		newTypeElement &&
-		(newTypeFamily === 'generalEquipment' ||
-			newTypeFamily === 'conductingEquipment')
-	) {
-		const selectOptionValue =
-			equipmentsSelectOptions.secondarySelect[newTypeFamily].find(
-				(option) => option.value === newTypeElement
-			)?.label || ''
-		const numberOfNameOccurrence = typeElementsStore.getTypeNextOccurrence({
-			family: newTypeFamily,
-			valueToTest: selectOptionValue,
-			removeOccurrencePartToTestedValue: true
-		})
-		namesByFamilies[newTypeFamily] =
-			`${selectOptionValue}_${numberOfNameOccurrence}`
-	}
-
-	return namesByFamilies
-})
-
-const currentAttributes = $derived({
-	name:
-		newTypeFamily && newElementName
-			? newElementName[newTypeFamily]
-			: 'Type_'
-})
-
-// equipments select options
-const generalEquipments = $derived(
-	Object.values(ed2.rev1.stable.GENERAL_EQUIPMENTS).map((equipment) => ({
-		value: equipment.type,
+	return generalEquipmentEntries.map(([key, equipment]) => ({
+		value: key,
 		label: equipment.label
 	}))
-)
-const conductingEquipments = $derived(
-	Object.values(ed2.rev1.stable.CONDUCTING_EQUIPMENTS).map((equipment) => ({
-		value: equipment.type,
+})
+
+const conductingEquipmentOptions = $derived.by(() => {
+	const conductingEquipmentEntries = Object.entries(
+		CONDUCTING_EQUIPMENTS
+	) as Utils.Entries<typeof CONDUCTING_EQUIPMENTS>
+
+	return conductingEquipmentEntries.map(([key, equipment]) => ({
+		value: key,
 		label: equipment.label
 	}))
-)
-const equipmentGroups = $derived({
-	generalEquipment: generalEquipments,
-	conductingEquipment: conductingEquipments
 })
-const equipmentsSelectOptions = $derived({
-	primarySelect: [
-		{ value: 'generalEquipment', label: 'GenEq' },
-		{ value: 'conductingEquipment', label: 'CondEq' }
-	],
-	secondarySelect: equipmentGroups
+
+const equipmentFamilyOptions = [
+	{ value: TYPE_FAMILY.generalEquipment, label: 'GenEq' },
+	{ value: TYPE_FAMILY.conductingEquipment, label: 'CondEq' }
+]
+
+const equipmentTypeOptions = $derived.by(() => {
+	if (currentColumnTypeFamily === 'generalEquipment')
+		return generalEquipmentOptions
+	if (currentColumnTypeFamily === 'conductingEquipment')
+		return conductingEquipmentOptions
+	return undefined
 })
 
 //====== FUNCTIONS ======//
 
 function handleAddNewElement() {
-	if (!newTypeFamily) return
+	if (!currentColumnTypeFamily) throw new Error('No type family selected')
 
 	typeElementsStore.createNewType({
-		family: newTypeFamily,
-		attributes: currentAttributes
+		family: currentColumnTypeFamily,
+		withChildren:
+			currentColumnTypeFamily === TYPE_FAMILY.conductingEquipment
 	})
 
-	newTypeInput = ''
-	newTypeElement = ''
+	typeElementsStore.newEquipmentType = undefined
 }
 
+function getCurrentTypeFamily() {
+	return Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])
+		? COLUMN_KEY_TO_TYPE_FAMILY[columnKey][0]
+		: COLUMN_KEY_TO_TYPE_FAMILY[columnKey]
+}
 //====== WATCHERS ======//
 
-$effect(() => {
-	if (!newTypeFamily) {
-		newTypeFamily = Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])
-			? COLUMN_KEY_TO_TYPE_FAMILY[columnKey][0]
-			: COLUMN_KEY_TO_TYPE_FAMILY[columnKey]
-	}
+onMount(() => {
+	currentColumnTypeFamily = getCurrentTypeFamily()
 })
 </script>
 
 
 {#if columnKey === 'equipmentType' }
 	<SelectWorkaround
-		options={equipmentsSelectOptions.primarySelect}
-		bind:value={newTypeFamily}
+		options={equipmentFamilyOptions}
+		bind:value={currentColumnTypeFamily}
 		handleChange={() => {
-			newTypeElement = ''
+			typeElementsStore.newEquipmentType = undefined
 		}}
 	/>
 	<SelectWorkaround
-		options={(newTypeFamily === 'generalEquipment' || newTypeFamily === 'conductingEquipment') && equipmentsSelectOptions.secondarySelect[newTypeFamily] || []}
-		bind:value={newTypeElement}
+		options={equipmentTypeOptions}
+		bind:value={typeElementsStore.newEquipmentType}
 		placeholder="Select Eq"
 	/>
 
-{:else}
+{:else if columnKey === 'bayType' || columnKey === 'functionType'}
 	<Input.Root
-		bind:value={newTypeInput}
-		placeholder={newTypeFamily && newElementName?.[newTypeFamily]}
+		bind:value={typeElementsStore.newTypeNameInputValueByColumnKey[columnKey]}
+		placeholder={currentColumnTypeFamily && typeElementsStore.newComputedTypeName?.[currentColumnTypeFamily]}
 	/>
 {/if}
 
@@ -152,7 +114,7 @@ $effect(() => {
 	class="w-full lg:w-auto"
 	variant="ghost"
 	onclick={handleAddNewElement}
-	disabled={columnKey === 'equipmentType' && !(!!newTypeElement)}
+	disabled={columnKey === 'equipmentType' && !(!!typeElementsStore.newEquipmentType)}
 >
 	Add
 </Button.Root>

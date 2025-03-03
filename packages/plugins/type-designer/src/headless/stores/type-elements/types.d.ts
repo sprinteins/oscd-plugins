@@ -1,6 +1,7 @@
 import type { pluginLocalStore } from '@/headless/stores'
 import type { TYPE_FAMILY, REF_FAMILY, COLUMNS } from '@/headless/constants'
 import type { Xml, Utils } from '@oscd-plugins/core-api/plugin/v1'
+import type { IEC61850 } from '@oscd-plugins/core-standard'
 
 export type AvailableTypeFamily = keyof typeof TYPE_FAMILY
 // export type AvailableTypeFamilyWithTemplate = AvailableTypeFamily | 'template'
@@ -58,11 +59,6 @@ export type RefElement<GenericRefFamily extends AvailableRefFamily> = {
 		id: string
 		family: AvailableTypeFamily
 	}
-}
-
-export type TypeToCreateAttributes = {
-	name: string
-	type?: string
 }
 
 export type Column<GenericTypeFamily extends AvailableTypeFamily> = {
