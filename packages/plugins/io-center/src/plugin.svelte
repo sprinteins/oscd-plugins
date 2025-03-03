@@ -11,51 +11,6 @@
 	}}
 />
 
-<script lang="ts">
-	import { onMount } from "svelte";
-	import jsonPackage from "../package.json";
-	import { initPlugin, initSsdTemplate } from "@oscd-plugins/core-ui-svelte";
-	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
-	import Layout from "./ui/layout.svelte";
-	import { useQuery } from "./query.svelte";
-	import { newCommand, type Command } from "./command.svelte";
-	import IEDSelect from "./ied/ied-select.svelte";
-	import type { Nullable } from "./types";
-	import type { IED } from "./ied/ied";
-	import ObjectTree from "./ui/components/object-tree/object-tree.svelte";
-	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
-	import LpList from "./ui/components/lp-list/lp-list.svelte";
-	import { store } from "./store.svelte";
-
-	// props
-	const {
-		doc,
-		docName,
-		editCount,
-		// isCustomInstance
-	}: Utils.PluginCustomComponentsProps = $props();
-
-	//
-	// Setup
-	//
-	let root = $state<Nullable<HTMLElement>>(null);
-	let cmd = $state<Command>(newCommand(() => root));	
-	useQuery()		
-
-	// we need to trigger a rerendering when the editCount changes
-	// this is how OpenSCD lets us know that there was a change in the document
-	$effect(() => {
-		let onlyForEffectTriggering = editCount;
-		store.doc = doc
-	});
-	
-	function onSelectIED(ied: IED) {
-		store.iedSelected = ied;
-	}
-	
-	const isCustomInstance= true
-
-</script>
 
 <main
 	use:initPlugin={{
@@ -72,17 +27,69 @@
 	bind:this={root}
 >
 	<Layout>
-		<div slot="sidebar-left">
-			<IEDSelect {onSelectIED} />
-			{#if store.objectTree.length > 0}
-				<ObjectTree />
-			{/if}
-		</div>
-		<div slot="content">
-			<CanvasArea />
-		</div>
-		<div slot="sidebar-right">
-			<LpList />
-		</div>
+		<SideBarLeft slot="sidebar-left" />
+		<CanvasArea
+			slot="content"
+			{onAddLC}
+		/>
+		<LpList slot="sidebar-right" />
 	</Layout>
 </main>
+
+<style>
+	
+</style>
+
+<script lang="ts">
+	import jsonPackage from "../package.json";
+	import { initPlugin, initSsdTemplate } from "@oscd-plugins/core-ui-svelte";
+	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
+	import Layout from "./ui/layout.svelte";
+	import { useQuery } from "./query.svelte";
+	import { newCommand, type Command } from "./command.svelte";
+	
+	import type { Nullable } from "./types";
+	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
+	import LpList from "./ui/components/lp-list/lp-list.svelte";
+	import { store } from "./store.svelte";
+	import SideBarLeft from "./sidebar-left.svelte";
+    import type { LCType } from "./ui/components/canvas/add-lc-dialog/add-lc-dialog.types";
+
+	// props
+	const {
+		doc,
+		docName,
+		editCount,
+		// isCustomInstance
+	}: Utils.PluginCustomComponentsProps = $props();
+	const isCustomInstance= true
+
+	$inspect(doc).with((type, doc) => {
+		console.log(doc)
+	})
+	$inspect(editCount)
+	//
+	// Setup
+	//
+	let root = $state<Nullable<HTMLElement>>(null);
+	let cmd = $state<Command>(newCommand(() => root));	
+	useQuery()		
+
+	// we need to trigger a rerendering when the editCount changes
+	// this is how OpenSCD lets us know that there was a change in the document
+	$effect(() => {
+		console.log("edit count changed:", editCount)
+		store.editCount = editCount;
+		store.doc = doc
+	});
+
+	function onAddLC(lcType: LCType, instance: string, nrOfLRTIInputs?: number){
+		if(!store.iedSelected){ 
+			console.warn("No IED selected")
+			return
+		}
+		cmd.addLC(store.iedSelected.name, lcType, instance)
+	}
+
+
+</script>

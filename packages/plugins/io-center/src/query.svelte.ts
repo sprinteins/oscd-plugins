@@ -6,17 +6,37 @@ import type { TreeNode } from "./ui/components/object-tree/types.object-tree";
 
 
 export function useQuery() {
-	$effect( () => collectIEDs(store.doc))
-	$effect( () => buildObjectTree(store.doc, store.iedSelected))
+	$effect( () => collectIEDs(store.doc, store.editCount))
+	$effect( () => buildObjectTree(store.doc, store.iedSelected, store.editCount))
+	$effect( () => collectLogicalConditioners(store.doc, store.iedSelected, store.editCount))
 }
 
-function collectIEDs(doc: Nullable<XMLDocument>) {
+function collectIEDs(doc: Nullable<XMLDocument>, _: number) {
 	if (!doc) {	return }
 
 	const iedElements = Array.from(doc.querySelectorAll("IED"))
 	const ieds: IED[] = iedElements.map(iedElementToIED)
 
 	store.iedList = ieds
+}
+
+function collectLogicalConditioners(doc: Nullable<XMLDocument>, iedSelected: Nullable<IED>, _: number) {
+	if (!doc || !iedSelected) { console.warn("no doc or no ied selected"); return }
+
+	const selectedIED = doc.querySelector(`IED[name="${iedSelected.name}"]`)
+	if (!selectedIED) { console.warn(`IED (name:${iedSelected.name}) not found`); return }
+
+	const lnElements = Array.from(selectedIED.querySelectorAll('LN[lnClass="LRTD"], LN[lnClass="LRTI"], LN[lnClass="LRTB"]'))
+
+	const lcs = lnElements.map( (el) => {
+		return {
+			type: el.getAttribute("lnType") || "",
+			instance: el.getAttribute("inst") || ""
+		}
+	})
+
+	console.debug("saving lcs:", lcs)
+	store.logicalConditioners = lcs
 }
 
 function iedElementToIED(iedElement: Element): IED {
@@ -28,7 +48,7 @@ function iedElementToIED(iedElement: Element): IED {
 // Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
 // Currently hard-coded by the client request but in future we may make it dynamic and allow the user to fill the targetScd
 const TARGET_CDC = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']
-export function buildObjectTree(doc: Nullable<XMLDocument>, iedSelected: Nullable<IED>) {
+export function buildObjectTree(doc: Nullable<XMLDocument>, iedSelected: Nullable<IED>, _: number) {
 	if (!doc || !iedSelected){ return }
 
 	const tree: TreeNode[] = []
