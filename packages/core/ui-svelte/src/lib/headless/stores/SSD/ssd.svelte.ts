@@ -1,4 +1,3 @@
-import { tick } from 'svelte'
 // CORE
 import {
 	findOneStandardElementBySelector,

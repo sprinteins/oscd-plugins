@@ -81,9 +81,7 @@ export function initPlugin(
 	const mode = $derived({
 		isStorybook: import.meta.env.MODE === 'STORYBOOK',
 		isLegacyInstance:
-			import.meta.env.MODE !== 'STORYBOOK' &&
-			import.meta.env.MODE !== 'development' &&
-			!isCustomInstance
+			import.meta.env.MODE !== 'STORYBOOK' && !isCustomInstance
 	})
 
 	const currentMode = $derived(
