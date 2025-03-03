@@ -2,9 +2,9 @@
 // CORE
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // STORE
-import { typeElementsStore } from '@/headless/stores'
+import { sidebarStore, typeElementsStore } from '@/headless/stores'
 // COMPONENTS
-import { DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
+import { DropdownMenuWorkaround, Sidebar } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { AvailableTypeFamily, AvailableRefFamily } from '@/headless/stores'
 
@@ -22,6 +22,9 @@ let {
 		id: string
 	}
 } = $props()
+
+// actions
+const sidebar = Sidebar.useSidebar()
 
 //======= DERIVED STATES =======//
 
@@ -41,6 +44,9 @@ function deleteTypeHandler() {
 		family: type.family,
 		id: type.id
 	})
+
+	sidebarStore.resetCurrentElementType()
+	sidebar.setOpen(false)
 }
 
 function deleteRefHandler() {
@@ -54,12 +60,12 @@ function deleteRefHandler() {
 </script>
 
 {#if level === 'type'}
-	<DropdownMenuWorkaround  actions={[
+	<DropdownMenuWorkaround size="sm" actions={[
 		{ label: 'Duplicate', disabled: false, callback: duplicateTypeHandler },
 		{ label: 'Delete', disabled: false, callback: deleteTypeHandler }
 	]} />
 {:else if level === 'ref'}
-	<DropdownMenuWorkaround  actions={[
+	<DropdownMenuWorkaround size="sm" actions={[
 		{ label: 'Delete', disabled: false, callback: deleteRefHandler }
 	]} />
 {/if}
