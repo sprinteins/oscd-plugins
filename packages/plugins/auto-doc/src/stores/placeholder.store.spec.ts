@@ -11,6 +11,16 @@ describe('placeholders', () => {
         const parser = new DOMParser();
         const xmlString = `<?xml version="1.0" encoding="UTF-8"?>
     <SCL xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:sxy="http://www.iec.ch/61850/2003/SCLcoordinates" revision="B" version="2007">
+        <Header id="STS" nameStructure="IEDName" revision="R000" toolID="Helinks STS 3.8.0.7" version="V1">
+            <History>
+                <Hitem revision="R000" version="V1" what="" when="Thu Feb 29 13:53:39 CET 2024" who="TM" why=""/>
+            </History>
+        </Header>
+        <Substation sxy:x="6" sxy:y="5" desc="Neckarwestheim" name="NWHEI_">
+            <VoltageLevel desc="380kV" name="C1_">
+                <Voltage multiplier="k" unit="V">380</Voltage>
+            </VoltageLevel>
+        </Substation>
         <IED configVersion="X.X" engRight="limited" manufacturer="Anon" originalSclRevision="X" originalSclVersion="XXXX" type="DeviceType" name="Device_01">
         <Services name="XX">
             <DynAssociation max="X"/>
@@ -31,10 +41,10 @@ describe('placeholders', () => {
     });
 
     it('should replace placeholders with corresponding XML values', () => {
-        const markdownText = "This is a {{//IED[1]/@manufacturer}} and {{//IED/Services/@name}} test.";
+        const markdownText = "This is a Header: {{//Header/@id}} & VoltageLevel name: {{//VoltageLevel/@name}} {{//IED[1]/@manufacturer}} and {{//IED/Services/@name}} test.";
         const result = placeholderStore.fillPlaceholder(markdownText);
 
-        expect(result).toBe("This is a Anon and XX, XX2 test.");
+        expect(result).toBe("This is a Header: STS & VoltageLevel name: C1_ Anon and XX, XX2 test.");
     });
 
     it('should not modify text if no placeholders are provided', () => {
