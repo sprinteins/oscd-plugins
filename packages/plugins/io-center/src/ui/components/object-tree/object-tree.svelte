@@ -1,7 +1,7 @@
 
 <div class="p-2">
 	<SearchBar bind:searchTerm />
-	{#each filteredTreeV2 as treeNode (treeNode.id)}
+	{#each filteredTree as treeNode (treeNode.id)}
 		<TreeNode 
 			{searchTerm} 
 			{treeNode}
@@ -46,14 +46,16 @@
     import type { ObjectNodeDataObject, ObjectTree } from "../../../ied/object-tree.type";
 	import { gatherDataObjects } from "./utils"
 
-	let searchTerm = $state("");
-	let filteredTreeV2 = $state<TreeNodeType[]>([]); 
-	$inspect("filteredTreeV2", filteredTreeV2)
-	$inspect("objectTree", store.objectTree)
+	let tree = $state<TreeNodeType[]>([]); 
 	// Note: we use $effect instead of $derived so we can change the values of filteredTree
-	$effect( () => { filteredTreeV2 = convertToTreeNode(store.objectTreeV2) })
+	$effect( () => { tree = convertToTreeNode(store.objectTreeV2) })
 
-	function convertToTreeNode(objectTree: ObjectTree, searchTerm: string): TreeNodeType[] {
+	let searchTerm = $state("");
+	let filteredTree = $state<TreeNodeType[]>([]);
+	$effect( () => { filteredTree = filterTree(tree, searchTerm) })
+	
+
+	function convertToTreeNode(objectTree: ObjectTree): TreeNodeType[] {
 		const treeNodes: TreeNodeType[] = objectTree
 			.ied?.children.map( (ld) => {
 				return {
@@ -81,6 +83,25 @@
 		});
 
 		return treeNodes
+	}
+
+	function filterTree(nodes: TreeNodeType[], searchTerm: string): TreeNodeType[]{
+
+		if(searchTerm === ""){ return nodes }
+		return nodes.map( node => {
+			if(node.name.toLowerCase().includes(searchTerm.toLowerCase())){
+				return node
+			}
+			if(!node.children){ return }
+			if(node.children?.length === 0){ return }
+
+			const filteredChildren = filterTree(node.children, searchTerm)
+
+			if(filteredChildren.length !== 0){ 
+				return { ...node, children: filteredChildren }
+			}
+		
+		}).filter(Boolean) as TreeNodeType[]
 	}
 	
 	function addObjectsRecursievlyToCanvasV2(treeNode: TreeNodeType){

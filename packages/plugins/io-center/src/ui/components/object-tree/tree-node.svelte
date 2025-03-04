@@ -39,7 +39,6 @@
 		if(dataObjects.length === 0){
 			return false
 		}
-		console.log("#hasAllChildrenSelected::dataObjects",  dataObjects)
 		return dataObjects.every((dataObject) => store.selectedDataObjects.some((o) => o.id === dataObject.id));
 	}
 	function hasSomeSelectedChildren(children: TreeNodeType[]){
