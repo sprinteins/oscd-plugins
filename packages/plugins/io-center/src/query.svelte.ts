@@ -1,17 +1,26 @@
-import { NODE_TYPE } from "./headless/constants";
 import type { IED } from "./ied/ied";
-import { store, type Store } from "./store.svelte";
+import { 
+	NodeTypes, 
+	type ObjectNodeLogicalDevice, 
+	type ObjectTree, 
+	type ObjectNodeDataObject,
+	type ObjectNodeLogicalNode,
+} from "./ied/object-tree.type.d";
+import { store } from "./store.svelte";
 import type { Nullable } from "./types";
-import type { TreeNode } from "./ui/components/object-tree/types.object-tree";
 
 
+/**
+ * Note: the `store.editCount` is only there to trigger the effect. This is
+ * how OpenSCD lets us know that the doucment has been updated.
+ */
 export function useQuery() {
-	$effect( () => collectIEDs(store.doc, store.editCount))
-	$effect( () => buildObjectTree(store.doc, store.iedSelected, store.editCount))
-	$effect( () => collectLogicalConditioners(store.doc, store.iedSelected, store.editCount))
+	$effect( () => storeIEDs(store.doc, store.editCount))
+	$effect( () => storeObjectTree(store.doc, store.selectedIED, store.editCount))
+	$effect( () => storeLogicalConditioners(store.doc, store.selectedIED, store.editCount))
 }
 
-function collectIEDs(doc: Nullable<XMLDocument>, _: number) {
+function storeIEDs(doc: Nullable<XMLDocument>, _: unknown) {
 	if (!doc) {	return }
 
 	const iedElements = Array.from(doc.querySelectorAll("IED"))
@@ -20,13 +29,13 @@ function collectIEDs(doc: Nullable<XMLDocument>, _: number) {
 	store.iedList = ieds
 }
 
-function collectLogicalConditioners(doc: Nullable<XMLDocument>, iedSelected: Nullable<IED>, _: number) {
-	if (!doc || !iedSelected) { console.warn("no doc or no ied selected"); return }
+function storeLogicalConditioners(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
+	if (!doc || !selectedIED) { console.warn("no doc or no ied selected"); return }
 
-	const selectedIED = doc.querySelector(`IED[name="${iedSelected.name}"]`)
-	if (!selectedIED) { console.warn(`IED (name:${iedSelected.name}) not found`); return }
+	const iedElement = doc.querySelector(`IED[name="${selectedIED.name}"]`)
+	if (!iedElement) { console.warn(`IED (name:${selectedIED.name}) not found`); return }
 
-	const lnElements = Array.from(selectedIED.querySelectorAll('LN[lnClass="LRTD"], LN[lnClass="LRTI"], LN[lnClass="LRTB"]'))
+	const lnElements = Array.from(iedElement.querySelectorAll('LN[lnClass="LRTD"], LN[lnClass="LRTI"], LN[lnClass="LRTB"]'))
 
 	const lcs = lnElements.map( (el) => {
 		return {
@@ -35,7 +44,6 @@ function collectLogicalConditioners(doc: Nullable<XMLDocument>, iedSelected: Nul
 		}
 	})
 
-	console.debug("saving lcs:", lcs)
 	store.logicalConditioners = lcs
 }
 
@@ -45,77 +53,98 @@ function iedElementToIED(iedElement: Element): IED {
 	}
 }
 
-// Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
-// Currently hard-coded by the client request but in future we may make it dynamic and allow the user to fill the targetScd
-const TARGET_CDC = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']
-export function buildObjectTree(doc: Nullable<XMLDocument>, iedSelected: Nullable<IED>, _: number) {
-	if (!doc || !iedSelected){ return }
 
-	const tree: TreeNode[] = []
+function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown){
+	if (!doc || !selectedIED){ console.warn("no doc or no ied selected"); return}
 
-	const selectedIED = doc.querySelector(`IED[name="${iedSelected.name}"]`)
+	const IEDElement = doc.querySelector(`IED[name="${selectedIED.name}"]`)
+	if (!IEDElement){ console.warn(`IED (name:${selectedIED.name}) not found`); return}
 
-	if (!selectedIED) return
-
-	const lDevices = Array.from(selectedIED.querySelectorAll("LDevice"))
-
-	for (const lDevice of lDevices) {
-		const device: TreeNode = { id: crypto.randomUUID(), name: lDevice.getAttribute("inst") || "", type: NODE_TYPE.logicalDevice, isOpen: true, children: [] }
-
-		const lNodes = Array.from(lDevice.querySelectorAll("LN"))
-
-		for (const lNode of lNodes) {
-			const node: TreeNode = { id: crypto.randomUUID(), name: `${lNode.getAttribute("lnClass") || ""}-${lNode.getAttribute("inst") || ""}`, type: NODE_TYPE.logicalNode, isOpen: true, children: [] }
-
-			const lnNodeType = doc.querySelector(`LNodeType[id="${lNode.getAttribute("lnType") || ""}"]`);
-
-			if (!lnNodeType) return
-
-			const dObjects = Array.from(lnNodeType.querySelectorAll("DO"))
-
-			for (const dObject of dObjects) {
-				if (!getCDCfromDO(dObject, doc, TARGET_CDC)) {
-					continue;
-				}
-
-				const object: TreeNode = { id: crypto.randomUUID(), name: dObject.getAttribute("name") || "", type: NODE_TYPE.dataObjectInstance }
-
-				if (node.children) {
-					node.children.push(object)
-				}
-			}
-
-			if (device.children && node.children && node.children.length > 0) {
-				device.children.push(node)
-			}
-		}
-
-		if (device.children && device.children.length > 0) {
-			tree.push(device)
+	const objectTree: ObjectTree = {
+		ied: {
+			id: crypto.randomUUID(),
+			name: IEDElement.getAttribute("name") || "unknown",
+			children: [],
+			_type: NodeTypes.ied,
 		}
 	}
 
-	store.objectTree = tree
+	const lDeviceElements = Array.from(IEDElement.querySelectorAll("LDevice"))
+	objectTree.ied.children = lDeviceElements.map( (ldDeviceElement) => {
+		const ld: ObjectNodeLogicalDevice = {
+			id: crypto.randomUUID(),
+			inst: ldDeviceElement.getAttribute("inst") || "unknown",
+			children: [],
+			objectPath: {
+				ied: { id: objectTree.ied.id, name: objectTree.ied.name }
+			},
+			_type: NodeTypes.logicalDevice
+		}
+
+		ld.children = Array.from(ldDeviceElement.querySelectorAll("LN")).map( (lnElement) => {
+			const ln: ObjectNodeLogicalNode = {
+				id: crypto.randomUUID(),
+				lnClass: lnElement.getAttribute("lnClass") || "unknown",
+				inst: lnElement.getAttribute("inst") || "unknown",
+				children: [],
+				objectPath: {
+					ied: { id: objectTree.ied.id, name: objectTree.ied.name },
+					lDevice: { id: ld.id, inst: ld.inst }
+				},
+				_type: NodeTypes.logicalNode
+			}
+
+			// jumping to the LNodeType to get the DOs
+			const lnNodeType = store.doc.querySelector(`LNodeType[id="${lnElement.getAttribute("lnType") || ""}"]`);
+			if(!lnNodeType){ 
+				console.warn(`could not find LNodeType with id: ${lnElement.getAttribute("lnType")}`)
+				return ln
+			 }
+			const dos = Array.from(lnNodeType.querySelectorAll("DO"))
+
+			ln.children = dos.map( (doElement) => {
+				if(!hasCDC(doElement, doc, TARGET_CDC)){
+					return undefined
+				}
+				const dataObject: ObjectNodeDataObject = {
+					id: crypto.randomUUID(),
+					name: doElement.getAttribute("name") || "unknown",
+					objectPath: {
+						ied: { id: objectTree.ied.id, name: objectTree.ied.name },
+						lDevice: { id: ld.id, inst: ld.inst },
+						ln: { id: ln.id, lnClass: ln.lnClass, inst: ln.inst }
+					},
+					_type: NodeTypes.dataObject
+				}
+				return dataObject
+			}).filter(Boolean) as ObjectNodeDataObject[]
+			return ln
+		})
+		return ld
+	})
+	store.objectTreeV2 = objectTree
+	
 }
 
-function getCDCfromDO(doElement: Element, doc: XMLDocument, targetCDC: string[]): string | undefined {
+// TARGET_CDC: Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
+// Currently hard-coded by the client request but in future we may make it dynamic and allow the user to fill the targetScd
+const TARGET_CDC = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']
+function hasCDC(doElement: Element, doc: XMLDocument, targetCDC: string[]): boolean {
+	
 	const type = doElement.getAttribute("type") || "";
-
 	if (type === "") {
-		return undefined;
+		return false;
 	}
 
 	const doType = doc.querySelector(`DOType[id="${type}"]`);
-
 	if (!doType) {
-		return undefined;
+		return false;
 	}
 
 	const cdc = doType.getAttribute("cdc") || "";
-
 	if (cdc === "" || !targetCDC.includes(cdc.toLowerCase())) {
-		return undefined;
+		return false;
 	}
 
-	return cdc;
+	return true;
 }

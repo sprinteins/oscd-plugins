@@ -1,7 +1,7 @@
 
 <sidebar-left>
 	<IEDSelect {onSelectIED} />
-		{#if store.objectTree.length > 0}
+	{#if store.objectTreeV2.ied.children.length > 0}
 		<ObjectTree />
 	{/if}
 </sidebar-left>
@@ -13,7 +13,7 @@
 	import ObjectTree from "./ui/components/object-tree/object-tree.svelte";
 
 	function onSelectIED(ied: IED) {
-		store.iedSelected = ied;
+		store.selectedIED = ied;
 	}
 
 </script>

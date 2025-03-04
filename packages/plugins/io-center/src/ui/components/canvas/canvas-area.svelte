@@ -122,7 +122,7 @@
 
 	const { onAddLC }: Props = $props();
 
-	let isDialogOpen = $state(true); //TODO: should be false
+	let isDialogOpen = $state(false);
 	
 	function onAddLCClick() {
 		isDialogOpen = true;

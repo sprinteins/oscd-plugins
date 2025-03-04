@@ -84,11 +84,11 @@
 	});
 
 	function onAddLC(lcType: LCType, instance: string, nrOfLRTIInputs?: number){
-		if(!store.iedSelected){ 
+		if(!store.selectedIED){ 
 			console.warn("No IED selected")
 			return
 		}
-		cmd.addLC(store.iedSelected.name, lcType, instance)
+		cmd.addLC(store.selectedIED.name, lcType, instance)
 	}
 
 

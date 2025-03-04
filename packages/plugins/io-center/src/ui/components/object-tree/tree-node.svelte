@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { NODE_TYPE } from "@/headless/constants";
     import TreeNode from "./tree-node.svelte";
     import type { TreeNode as TreeNodeType } from "./types.object-tree";
-    import { ChevronRight, ChevronDown, CheckIcon, Square, SquareCheck, SquareMinus } from "lucide-svelte";
-    import { canvasStore } from "../canvas/canvas-store.svelte";
+    import { ChevronRight, ChevronDown, Square, SquareCheck, SquareMinus } from "lucide-svelte";
+    import { store } from "../../../store.svelte";
+    import { gatherDataObjects } from "./utils";
 
     type Props = {
         treeNode: TreeNodeType
@@ -27,18 +27,27 @@
 
     let isSearched = $derived(
         searchTerm !== "" &&
-            treeNode.name.toLowerCase().includes(searchTerm.toLowerCase()),
+		treeNode.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     let isSelected = $derived(
-        canvasStore.dataObjects.some((item) => item.id === treeNode.id),
+        store.selectedDataObjects.some((o) =>  o.id === treeNode.id),
     );
 
 	function hasAllChildrenSelected(children: TreeNodeType[]){
-		return children.every((child) => canvasStore.dataObjects.some((item) => item.id === child.id));
+		const dataObjects = gatherDataObjects(children)
+		if(dataObjects.length === 0){
+			return false
+		}
+		console.log("#hasAllChildrenSelected::dataObjects",  dataObjects)
+		return dataObjects.every((dataObject) => store.selectedDataObjects.some((o) => o.id === dataObject.id));
 	}
 	function hasSomeSelectedChildren(children: TreeNodeType[]){
-		return children.some((child) => canvasStore.dataObjects.some((item) => item.id === child.id));
+		const dataObjects = gatherDataObjects(children)
+		if(dataObjects.length === 0){
+			return false
+		}
+		return dataObjects.some((child) => store.selectedDataObjects.some((item) => item.id === child.id));
 	}
 
 	function disableClick(e: MouseEvent){
