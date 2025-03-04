@@ -37,14 +37,15 @@
 	}
 	sidebar-left {
 		grid-area: sidebar-left;
-		@apply w-full h-full p-0 m-0 border border-green-700;
+		overflow: hidden;
+		@apply w-full h-full p-0 m-0;
 	}
 	content {
 		grid-area: content;
-		@apply h-full p-0 m-0 border border-red-500;
+		@apply h-full p-0 m-0;
 	}
 	sidebar-right {
 		grid-area: sidebar-right;
-		@apply h-full p-0 m-0 border border-blue-700;
+		@apply h-full p-0 m-0;
 	}
 </style>
