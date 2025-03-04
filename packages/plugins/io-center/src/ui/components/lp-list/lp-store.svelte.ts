@@ -3,7 +3,7 @@ import type { LpElement } from "./types.lp-list";
 
 type DialogFormData = {
     name: string;
-    instance: string;
+    instance: number;
     desc: string;
     type: keyof typeof LP_TYPE;
 }
@@ -11,7 +11,7 @@ type DialogFormData = {
 class UseLpStore {
     dialogFormData = $state<DialogFormData>({
         name: "",
-        instance: "",
+        instance: 0,
         desc: "",
         type: LP_TYPE.LPDI,
     });

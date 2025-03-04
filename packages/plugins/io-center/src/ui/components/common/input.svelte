@@ -1,17 +1,19 @@
 <script lang="ts">
-    type Props = {
+    import type { HTMLInputAttributes } from "svelte/elements";
+
+    type Props = HTMLInputAttributes & {
         label: string;
-        value: string;
+        value: string | number;
     };
 
-    let { label, value = $bindable() }: Props = $props();
+    let { label, type, min = 0, value = $bindable() }: Props = $props();
 </script>
 
 <div>
     <label for="input">
         {label}
     </label>
-    <input type="text" id="input" bind:value />
+    <input {type} {min} id="input" bind:value />
 </div>
 
 <style lang="scss">

@@ -21,7 +21,7 @@
 
         lpStore.dialogFormData = {
             name: "",
-            instance: "",
+            instance: 0,
             desc: "",
             type: LP_TYPE.LPDI,
         };
@@ -40,14 +40,16 @@
                 label="LP Type"
                 options={Object.values(LP_TYPE)}
             />
-            <Input bind:value={lpStore.dialogFormData.name} label="LP Name" />
+            <Input bind:value={lpStore.dialogFormData.name} label="LP Name" type="text" />
             <Input
                 bind:value={lpStore.dialogFormData.instance}
                 label="LP Instance"
+                type="number"
             />
             <Input
                 bind:value={lpStore.dialogFormData.desc}
                 label="LP Description"
+                type="text"
             />
             <div class="action-buttons">
                 <button class="cancel-button" onclick={handleCancel}>

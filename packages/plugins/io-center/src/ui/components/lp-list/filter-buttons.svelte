@@ -1,12 +1,12 @@
 <script lang="ts">
+    import { LP_TYPE } from "@/headless/constants";
     import type { Nullable } from "@/types";
     import type { LpTypes } from "./types.lp-list";
-    import { LP_TYPE } from "@/headless/constants";
 
     type Props = {
         selectedTypeToShow: Nullable<LpTypes>;
-        showLinked: Boolean;
-        showUnlinked: Boolean;
+        showLinked: boolean;
+        showUnlinked: boolean;
     };
 
     let {
@@ -43,12 +43,12 @@
         { label: "Linked", values: { linked: true, unlinked: false } },
     ];
 
-    Object.values(LP_TYPE).forEach((value) => {
+    for (const value of Object.values(LP_TYPE)) {
         filterOptions.push({
             label: value,
             values: { selectedType: value },
         });
-    });
+    }
 </script>
 
 <div class="flex flex-wrap gap-1">
@@ -58,7 +58,13 @@
                 selectedLabel = label;
                 setFilters(values);
             }}
-            class={{ "border-4 border-indigo-600": selectedLabel === label }}
+            class={{
+                "border-4 border-indigo-600": selectedLabel === label,
+                "border-4 border-red-600":
+                    (label === "All LPs" && showLinked && showUnlinked) ||
+                    (label === "Unlinked" && showUnlinked && !showLinked) ||
+                    (label === "Linked" && showLinked && !showUnlinked),
+            }}
         >
             {label}
         </button>
