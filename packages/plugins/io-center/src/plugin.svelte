@@ -18,7 +18,7 @@
 	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
 	import Layout from "./ui/layout.svelte";
 	import store from "./store.svelte";
-	import { buildObjectTree, initQuery } from "./query.svelte";
+	import { buildObjectTree, collectLPs, initQuery } from "./query.svelte";
 	import { newCommand, type Command } from "./command.svelte";
 	import IEDSelect from "./ied/ied-select.svelte";
 	import type { Nullable } from "./types";
@@ -58,8 +58,8 @@
 		store.doc = doc;
 	}
 
-	function addIED() {
-		cmd.addIED();
+	function addLp() {
+		cmd.addLp();
 	}
 
 	function selectIED(ied: IED) {
@@ -69,6 +69,7 @@
 	function onSelectIED(ied: IED) {
 		selectIED(ied);
 		buildObjectTree();
+		collectLPs();
 	}
 </script>
 
@@ -95,6 +96,6 @@
 		<div slot="content">
 			<CanvasArea />
 		</div>
-		<div slot="sidebar-right"><LpList /></div>
+		<div slot="sidebar-right"><LpList {addLp} /></div>
 	</Layout>
 </main>
