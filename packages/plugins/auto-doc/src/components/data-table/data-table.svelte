@@ -54,6 +54,9 @@
     function editTemplate(templateId: string){
         dispatch("editTemplate", {templateId})
     }
+    function duplicateTemplate(templateId: string){
+        dispatch("duplicateTemplate", {templateId})
+    }
 
 </script>
 
@@ -100,9 +103,9 @@
                         <Tooltip text="Delete">
                             <CustomIconButton icon="delete" color="black" on:click={()=>{deleteTemplate(template.id)}}/>
                         </Tooltip>
-                        <!-- <Tooltip text="Duplicate">
-                            <CustomIconButton icon="content_copy" color="black"/>
-                        </Tooltip> -->
+                        <Tooltip text="Duplicate">
+                            <CustomIconButton icon="content_copy" color="black" on:click={()=>{duplicateTemplate(template.id)}}/>
+                        </Tooltip>
                         <Tooltip text="Download" position="left">
                             <CustomIconButton icon="download" color="black" on:click={()=>{downloadTemplateContent(template.id)}}/>
                         </Tooltip>
