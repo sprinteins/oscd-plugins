@@ -12,4 +12,12 @@ For more detailed information on how to use jsPDF, please refer to the [jsPDF AP
 [jsPDF AutoTable ↗](https://github.com/simonbengtsson/jsPDF-AutoTable) is a plugin for jsPDF that allows for easy generation of tables in PDF documents. This extension is currently being used to to generate tables based on the signal list element.
 
 There are many ways to format and customize the table, for a deeper insight refer to the [examples ↗](https://simonbengtsson.github.io/jsPDF-AutoTable/#), also the src code can be found [here ↗](https://github.com/simonbengtsson/jsPDF-AutoTable/blob/master/examples/examples.js)  
+##
 
+## Svelte SPA Router
+[svelte-spa-router ↗](https://github.com/ItalyPaleAle/svelte-spa-router) is being used to handle routing between the template overview and template creation page.
+
+
+
+### API Documentation
+For more detailed information on how to use svelte-spa-router, please refer to the [API documentation ↗](https://github.com/ItalyPaleAle/svelte-spa-router?tab=readme-ov-file#define-your-routes).
