@@ -1,7 +1,8 @@
-import { NODE_TYPE } from "./headless/constants";
+import { LP_TYPE, NODE_TYPE } from "./headless/constants";
 import type { IED } from "./ied/ied";
 import type { StoreType } from "./store.svelte";
 import store from "./store.svelte"
+import type { LpElement } from "./ui/components/lp-list/types.lp-list";
 import type { TreeNode } from "./ui/components/object-tree/types.object-tree";
 
 export function initQuery(store: StoreType) {
@@ -33,6 +34,32 @@ function collectIEDs(store: StoreType) {
 function iedElementToIED(iedElement: Element): IED {
 	return {
 		name: iedElement.getAttribute("name") ?? "unknown"
+	}
+}
+
+export function collectLPs() {
+	const doc = store.doc
+	const iedSelected = store.iedSelected
+
+	if (!doc || !iedSelected) return
+
+	let query: string[] = []
+
+	Object.values(LP_TYPE).forEach((value) => {
+		query.push(`IED[name="${iedSelected.name}"] > AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${value}"]`)
+	})
+
+	const lpElements = Array.from(doc.querySelectorAll(query.join(",")));
+
+	store.lpList = lpElements.map(lpElementToLP)
+}
+
+function lpElementToLP(lpElement: Element): LpElement {
+	return {
+		id: crypto.randomUUID(),
+		type: lpElement.getAttribute("lnClass") as keyof typeof LP_TYPE || "unknown",
+		name: `${lpElement.getAttribute("lnType") || ""}-${lpElement.getAttribute("inst") || ""}`,
+		isLinked: false,
 	}
 }
 
