@@ -6,7 +6,7 @@
     import SearchBar from "../common/search-bar.svelte";
     import FilterButtons from "./filter-buttons.svelte";
     import LpElement from "./lp-element.svelte";
-    import type { LpElement as LpElementType, LpTypes } from "./types.lp-list";
+    import type { LpTypes } from "./types.lp-list";
     import CreateLpDialog from "./create-lp-dialog.svelte";
 
     type Props = {

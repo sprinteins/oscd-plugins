@@ -17,7 +17,7 @@ export class Command {
 
 		const host = this.requireHost()
 
-		const { type, name, desc, instance } = lpStore.dialogFormData
+		const { type, name, desc, number } = lpStore.dialogFormData
 
 		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
 
@@ -27,20 +27,42 @@ export class Command {
 
 		const ld0 = this.ensureLD0(ied)
 
-		const newLP = store.doc.createElement("LN")
+		const currentLPNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
 
-		newLP.setAttribute("xmlns", "")
-		if (desc) {
-			newLP.setAttribute("desc", desc)
+		if (!number) {
+			const newLP = store.doc.createElement("LN")
+
+			newLP.setAttribute("xmlns", "")
+			if (desc) {
+				newLP.setAttribute("desc", desc)
+			}
+			newLP.setAttribute("lnClass", type)
+			newLP.setAttribute("inst", `${currentLPNumber + 1}`)
+			newLP.setAttribute("lnType", name || type)
+
+			createAndDispatchEditEvent({
+				host,
+				edit: { node: newLP, parent: ld0, reference: null },
+			})
+			return
 		}
-		newLP.setAttribute("lnClass", type)
-		newLP.setAttribute("inst", `${instance}` || `${ld0.querySelectorAll(`LN[lnType="${type}"]`).length + 1}`)
-		newLP.setAttribute("lnType", name || type)
 
-		createAndDispatchEditEvent({
-			host,
-			edit: { node: newLP, parent: ld0, reference: null },
-		})
+		for (let i = 1; i <= number; i++) {
+			const newLP = store.doc.createElement("LN")
+
+			newLP.setAttribute("xmlns", "")
+			if (desc) {
+				newLP.setAttribute("desc", desc)
+			}
+			newLP.setAttribute("lnClass", type)
+			newLP.setAttribute("inst", `${currentLPNumber + i}`)
+			newLP.setAttribute("lnType", name || type)
+
+			createAndDispatchEditEvent({
+				host,
+				edit: { node: newLP, parent: ld0, reference: null },
+			})
+		}
 	}
 
 	public addLC(iedName: string, type: string, instance: string) {
