@@ -7,6 +7,7 @@ import {
 	type ObjectTree,
 } from "./ied/object-tree.type.d";
 import type { Nullable } from "./types";
+import type { LpElement } from "./ui/components/lp-list/types.lp-list";
 import type { TreeNode } from "./ui/components/object-tree/types.object-tree";
 
 
@@ -16,7 +17,7 @@ export class Store {
 	iedList: IED[] = $state([])
 	selectedIED: Nullable<IED> = $state(null)
 	selectedDataObjects: ObjectNodeDataObject[] = $state([])
-	
+	lpList: LpElement[] = $state([])
 	dataObjects: DataObject[] = $state([])
 	objectTree: TreeNode[] = $state([])
 	objectTreeV2: ObjectTree = $state(NullObjectTree)

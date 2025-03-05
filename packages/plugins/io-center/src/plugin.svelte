@@ -32,7 +32,7 @@
 			slot="content"
 			{onAddLC}
 		/>
-		<LpList slot="sidebar-right" />
+		<LpList slot="sidebar-right" {addLp}/>
 	</Layout>
 </main>
 
@@ -42,7 +42,7 @@
 
 <script lang="ts">
 	import jsonPackage from "../package.json";
-	import { initPlugin, initSsdTemplate } from "@oscd-plugins/core-ui-svelte";
+	import { initPlugin } from "@oscd-plugins/core-ui-svelte";
 	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
 	import Layout from "./ui/layout.svelte";
 	import { useQuery } from "./query.svelte";
@@ -91,5 +91,8 @@
 		cmd.addLC(store.selectedIED.name, lcType, instance)
 	}
 
+	function addLp() {
+		cmd.addLp();
+	}
 
 </script>

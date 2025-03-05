@@ -1,3 +1,4 @@
+import { LP_TYPE } from "./headless/constants";
 import type { IED } from "./ied/ied";
 import { 
 	NodeTypes, 
@@ -8,6 +9,7 @@ import {
 } from "./ied/object-tree.type.d";
 import { store } from "./store.svelte";
 import type { Nullable } from "./types";
+import type { LpElement } from "./ui/components/lp-list/types.lp-list";
 
 
 /**
@@ -18,6 +20,7 @@ export function useQuery() {
 	$effect( () => storeIEDs(store.doc, store.editCount))
 	$effect( () => storeObjectTree(store.doc, store.selectedIED, store.editCount))
 	$effect( () => storeLogicalConditioners(store.doc, store.selectedIED, store.editCount))
+	$effect( () => storeLogicalPhysicals(store.doc, store.selectedIED, store.editCount))
 }
 
 function storeIEDs(doc: Nullable<XMLDocument>, _: unknown) {
@@ -53,6 +56,28 @@ function iedElementToIED(iedElement: Element): IED {
 	}
 }
 
+export function storeLogicalPhysicals(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
+	if (!doc || !selectedIED) return
+
+	const query: string[] = []
+
+	for (const value of Object.values(LP_TYPE)) {
+		query.push(`IED[name="${selectedIED.name}"] > AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${value}"]`)
+	}
+	
+	const lpElements = Array.from(doc.querySelectorAll(query.join(",")));
+
+	store.lpList = lpElements.map(lpElementToLP)
+}
+
+function lpElementToLP(lpElement: Element): LpElement {
+	return {
+		id: crypto.randomUUID(),
+		type: lpElement.getAttribute("lnClass") as keyof typeof LP_TYPE || "unknown",
+		name: `${lpElement.getAttribute("lnType") || ""}-${lpElement.getAttribute("inst") || ""}`,
+		isLinked: false,
+	}
+}
 
 function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown){
 	if (!doc || !selectedIED){ console.warn("no doc or no ied selected"); return}
