@@ -17,6 +17,7 @@ export class Store {
 	iedList: IED[] = $state([])
 	selectedIED: Nullable<IED> = $state(null)
 	selectedDataObjects: ObjectNodeDataObject[] = $state([])
+	selectedLogicalPhysicals: LpElement[] = $state([])
 	lpList: LpElement[] = $state([])
 	dataObjects: DataObject[] = $state([])
 	objectTree: TreeNode[] = $state([])

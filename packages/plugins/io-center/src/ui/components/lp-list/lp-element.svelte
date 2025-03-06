@@ -1,9 +1,9 @@
 <script lang="ts">
     import type { LpElement } from "./types.lp-list";
-    import { addLpElementToCanvas } from "@/headless/stores/canvas-operations.svelte";
     import { canvasStore } from "../canvas/canvas-store.svelte";
     import { Edit, Square, SquareCheck } from "lucide-svelte";
     import EditLpDialog from "./edit-lp-dialog.svelte";
+    import { store } from "../../../store.svelte";
 
     type Props = {
         lpElement: LpElement;
@@ -22,10 +22,26 @@
     );
 
     let isSelected = $derived(
-        canvasStore.logicalPhysicals.some((item) => item.id === lpElement.id),
+        store.selectedLogicalPhysicals.some((item) => item.id === lpElement.id),
     );
 
     let showDialog = $state(false);
+
+    function addLpElementToCanvas(element: LpElement) {
+        if (
+            store.selectedLogicalPhysicals.some(
+                (item) => item.id === element.id,
+            )
+        ) {
+            store.selectedLogicalPhysicals =
+                store.selectedLogicalPhysicals.filter(
+                    (item) => item.id !== element.id,
+                );
+            return;
+        }
+
+        store.selectedLogicalPhysicals.push(lpElement);
+    }
 </script>
 
 <div
