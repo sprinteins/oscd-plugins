@@ -74,7 +74,8 @@ function lpElementToLP(lpElement: Element): LpElement {
 	return {
 		id: crypto.randomUUID(),
 		type: lpElement.getAttribute("lnClass") as keyof typeof LP_TYPE || "unknown",
-		name: `${lpElement.getAttribute("lnType") || ""}-${lpElement.getAttribute("inst") || ""}`,
+		name: `${lpElement.getAttribute("lnType") || ""}`,
+		instance:`${lpElement.getAttribute("inst") || ""}`,
 		isLinked: false,
 	}
 }

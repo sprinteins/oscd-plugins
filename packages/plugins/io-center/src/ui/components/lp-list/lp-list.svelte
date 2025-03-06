@@ -6,14 +6,15 @@
     import SearchBar from "../common/search-bar.svelte";
     import FilterButtons from "./filter-buttons.svelte";
     import LpElement from "./lp-element.svelte";
-    import type { LpTypes } from "./types.lp-list";
+    import type { LpTypes, LpElement as LpElementType } from "./types.lp-list";
     import CreateLpDialog from "./create-lp-dialog.svelte";
 
     type Props = {
         addLp: () => void;
+        removeLP: (lpElement: LpElementType) => void
     };
 
-    let { addLp }: Props = $props();
+    let { addLp, removeLP }: Props = $props();
 
     let searchTerm = $state("");
 
@@ -34,12 +35,12 @@
             ),
     );
 
-    let showDialogue = $state(false);
+    let showDialog = $state(false);
 </script>
 
-<div class="p-6">
+<div class="py-6 pr-6">
     <button
-        onclick={() => (showDialogue = true)}
+        onclick={() => (showDialog = true)}
         class="add-button"
         disabled={!store.selectedIED}
     >
@@ -47,7 +48,7 @@
         <p>Add LP</p>
     </button>
 
-    <CreateLpDialog bind:isOpen={showDialogue} {addLp} />
+    <CreateLpDialog bind:isOpen={showDialog} {addLp} />
 
     <SearchBar bind:searchTerm placeholder="Search LP" />
 
@@ -63,7 +64,7 @@
         {#if (selectedTypeToShow === null || selectedTypeToShow === lpType) && filteredList.length > 0}
             <p class="text-xl font-semibold pl-2 pt-3">{lpType}</p>
             {#each filteredList.filter((item) => item.type === lpType) as lpElement (lpElement.id)}
-                <LpElement {searchTerm} {lpElement} />
+                <LpElement {searchTerm} {lpElement} {removeLP} />
             {/each}
         {/if}
     {/each}

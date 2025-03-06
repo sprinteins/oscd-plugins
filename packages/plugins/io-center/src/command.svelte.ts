@@ -2,6 +2,7 @@ import { createAndDispatchEditEvent } from "@oscd-plugins/core-api/plugin/v1"
 import { store } from "./store.svelte"
 import type { Nullable } from "./types"
 import { lpStore } from "./ui/components/lp-list/lp-store.svelte"
+import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
 
 export class Command {
 	constructor(
@@ -61,6 +62,48 @@ export class Command {
 			createAndDispatchEditEvent({
 				host,
 				edit: { node: newLP, parent: ld0, reference: null },
+			})
+		}
+	}
+
+	public removeLP(lpElement: LpElement) {
+		if (!store.doc) { console.warn("no doc"); return; }
+
+		const host = this.requireHost()
+
+		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
+
+		if (!ied) {
+			throw new Error(`IED with name ${store.selectedIED?.name} not found`)
+		}
+
+		//Delete target LP
+		const lpToDelete = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`)
+
+		if (!lpToDelete) {
+			throw new Error(`LP element with name ${lpElement.name}-${lpElement.instance} not found!`)
+		}
+
+		createAndDispatchEditEvent({
+			host,
+			edit: {
+				node: lpToDelete
+			}
+		})
+
+		//Correct instance attribute for any LP that's after the target
+		const remainingLPs = Array.from(ied.querySelectorAll(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lpElement.type}"]`))
+
+		const deletedLpInstance = Number.parseInt(lpElement.instance)
+
+		for (const lp of remainingLPs.slice(deletedLpInstance - 1)) {
+			createAndDispatchEditEvent({
+				host,
+				edit: {
+					element: lp,
+					attributes: { "inst": `${Number.parseInt(lp.getAttribute("inst") || "") - 1}` },
+					attributesNS: {}
+				}
 			})
 		}
 	}

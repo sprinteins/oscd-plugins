@@ -32,7 +32,7 @@
 			slot="content"
 			{onAddLC}
 		/>
-		<LpList slot="sidebar-right" {addLp}/>
+		<LpList slot="sidebar-right" {addLp} {removeLP}/>
 	</Layout>
 </main>
 
@@ -54,6 +54,7 @@
 	import { store } from "./store.svelte";
 	import SideBarLeft from "./sidebar-left.svelte";
     import type { LCType } from "./ui/components/canvas/add-lc-dialog/add-lc-dialog.types";
+    import type { LpElement } from "./ui/components/lp-list/types.lp-list";
 
 	// props
 	const {
@@ -93,6 +94,10 @@
 
 	function addLp() {
 		cmd.addLp();
+	}
+
+	function removeLP(lpElement: LpElement) {
+		cmd.removeLP(lpElement)
 	}
 
 </script>
