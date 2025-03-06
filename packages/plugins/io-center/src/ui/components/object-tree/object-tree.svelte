@@ -2,30 +2,78 @@
 	import { searchTree } from "@/headless/utils";
 	import store from "../../../store.svelte";
 	import TreeNode from "./tree-node.svelte";
-	import { SearchIcon } from "lucide-svelte";
+	import SearchBar from "../search-bar.svelte";
+	import type { TreeNode as TreeNodeType } from "./types.object-tree";
+	import { NODE_TYPE } from "@/headless/constants"
+	import { canvasStore } from "../canvas/canvas-store.svelte";
+	import { 
+		addObjectToCanvas, 
+		clearObjectCanvas, 
+		removeObjectFromCanvas, 
+		toggleObjectInCanvas,
+	 } from "@/headless/stores/canvas-operations.svelte";
 
 	let searchTerm = $state("");
 
 	let filteredTree = $derived(searchTree(store.objectTree, searchTerm));
+
+	function addObjectsRecursievlyToCanvas(treeNode: TreeNodeType){
+		if(treeNode.children && treeNode.children?.length -1 > 0){
+			for(const children of treeNode.children){
+				addObjectsRecursievlyToCanvas(children)
+			}
+		}
+		if(treeNode.type === NODE_TYPE.dataObjectInstance){
+			addObjectToCanvas(treeNode)
+		}
+	}
+
+	function removeObjectsRecursievlyFromCanvas(treeNode: TreeNodeType){
+		if(treeNode.children && treeNode.children?.length -1 > 0){
+			for(const children of treeNode.children){
+				removeObjectsRecursievlyFromCanvas(children)
+			}
+		}
+		if(treeNode.type === NODE_TYPE.dataObjectInstance){
+			removeObjectFromCanvas(treeNode)
+		}
+	}
+
+	function hasAllChildrenSelected(children: TreeNodeType[]){
+		return children.every((child) => canvasStore.dataObjects.some((o) => o.id === child.id));
+	}
+
 </script>
 
 <div class="p-2">
-	<div class="relative flex">
-		<input
-			class="bg-gray-50 w-full border-2 border-gray-300 rounded-lg pl-8 py-2"
-			bind:value={searchTerm}
-			placeholder="Search DO"
-		/>
-		<SearchIcon
-			size={16}
-			class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-		/>
-	</div>
+	<SearchBar bind:searchTerm />
 	{#each filteredTree as treeNode (treeNode.id)}
-		<TreeNode
-			{treeNode}
-			isOpen={treeNode.isOpen}
-			{searchTerm}
+		<TreeNode 
+			{searchTerm} 
+			{treeNode} 
+
+			onclickparentnode = { (treeNode) => {
+				treeNode.isOpen = !treeNode.isOpen
+			}}
+
+			onclickparentcheckbox = { (treeNode) => {
+				if(!treeNode.children){ return }
+
+				if(hasAllChildrenSelected(treeNode.children)){
+					removeObjectsRecursievlyFromCanvas(treeNode)
+				}else{
+					addObjectsRecursievlyToCanvas(treeNode)
+				}
+			}}
+
+			onclickobjectcheckbox = { (treeNode) => {
+				toggleObjectInCanvas(treeNode)
+			}}
+
+			onclickobject = { (treeNode) => {
+				clearObjectCanvas()
+				addObjectToCanvas(treeNode)
+			}}
 		/>
 	{/each}
 </div>
