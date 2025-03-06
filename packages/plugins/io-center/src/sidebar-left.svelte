@@ -1,11 +1,3 @@
-
-<sidebar-left>
-	<IEDSelect {onSelectIED} />
-	{#if store.objectTreeV2.ied.children.length > 0}
-		<ObjectTree />
-	{/if}
-</sidebar-left>
-
 <script lang="ts">
 	import { store } from "./store.svelte";
 	import IEDSelect from "./ied/ied-select.svelte";
@@ -14,6 +6,14 @@
 
 	function onSelectIED(ied: IED) {
 		store.selectedIED = ied;
+		store.selectedDataObjects = [];
+		store.selectedLogicalPhysicals = [];
 	}
-
 </script>
+
+<sidebar-left>
+	<IEDSelect {onSelectIED} />
+	{#if store.objectTreeV2.ied.children.length > 0}
+		<ObjectTree />
+	{/if}
+</sidebar-left>

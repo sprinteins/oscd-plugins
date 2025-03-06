@@ -1,17 +1,20 @@
 <script lang="ts">
-    import { CheckCircle2, Link } from "lucide-svelte";
     import type { LpElement } from "./types.lp-list";
-    import { addLpElementToCanvas } from "@/headless/stores/canvas-operations.svelte";
     import { canvasStore } from "../canvas/canvas-store.svelte";
+    import { Edit, Square, SquareCheck } from "lucide-svelte";
+    import EditLpDialog from "./edit-lp-dialog.svelte";
+    import { store } from "../../../store.svelte";
 
     type Props = {
         lpElement: LpElement;
         searchTerm: string;
+        removeLP: (lpElement: LpElement) => void;
+        editLP: (LpElement: LpElement, name: string, desc: string) => void;
     };
 
-    let { lpElement, searchTerm }: Props = $props();
+    let { lpElement, searchTerm, removeLP, editLP }: Props = $props();
 
-    const { name, isLinked } = lpElement;
+    const { name, instance } = lpElement;
 
     let isSearched = $derived(
         searchTerm !== "" &&
@@ -19,31 +22,73 @@
     );
 
     let isSelected = $derived(
-        canvasStore.logicalPhysicals.some((item) => item.id === lpElement.id),
+        store.selectedLogicalPhysicals.some((item) => item.id === lpElement.id),
     );
 
-    const baseClass =
-        "flex items-center gap-2 text-lg p-1 w-full mb-1 font-mono cursor-pointer hover:no-underline rounded-md hover:bg-gray-100 transition-colors duration-300";
+    let showDialog = $state(false);
 
-    function getSelectedClass() {
-        return isSelected ? "bg-beige hover:bg-beige" : "";
-    }
+    function addLpElementToCanvas(element: LpElement) {
+        if (
+            store.selectedLogicalPhysicals.some(
+                (item) => item.id === element.id,
+            )
+        ) {
+            store.selectedLogicalPhysicals =
+                store.selectedLogicalPhysicals.filter(
+                    (item) => item.id !== element.id,
+                );
+            return;
+        }
 
-    function getSearchedClass() {
-        return isSearched ? "bg-gray-200 hover:bg-gray-200" : "";
+        store.selectedLogicalPhysicals.push(lpElement);
     }
 </script>
 
-<button
-    class={`${baseClass} ${getSelectedClass()} ${getSearchedClass()}`}
-    onclick={() => addLpElementToCanvas(lpElement)}
+<div
+    class={{
+        "lp-element": true,
+        selected: isSelected,
+        searched: isSearched,
+    }}
 >
-    {#if isSelected}
-        <CheckCircle2 size={16} />
-    {:else if isLinked}
-        <Link size={16} />
-    {:else}
-        <div class="ml-4"></div>
-    {/if}
-    <p>{name}</p>
-</button>
+    <button onclick={() => addLpElementToCanvas(lpElement)}>
+        {#if isSelected}
+            <SquareCheck size={16} />
+        {:else}
+            <span class="show-on-hover">
+                <Square size={16} />
+            </span>
+        {/if}
+    </button>
+    <p>{name}-{instance}</p>
+    <button
+        class="ml-auto mr-2 show-on-hover"
+        onclick={() => (showDialog = true)}
+    >
+        <Edit size={16} />
+    </button>
+</div>
+
+<EditLpDialog bind:isOpen={showDialog} {lpElement} {removeLP} {editLP} />
+
+<style lang="scss">
+    .lp-element {
+        @apply flex items-center gap-1 text-lg py-1 pl-2 w-full mb-1 font-mono cursor-pointer rounded-md hover:bg-gray-100 transition-colors duration-300;
+    }
+
+    .lp-element.selected {
+        @apply bg-beige hover:bg-beige;
+    }
+
+    .lp-element.searched {
+        @apply bg-gray-200 hover:bg-gray-200;
+    }
+
+    .show-on-hover {
+        opacity: 0;
+    }
+
+    .lp-element:hover .show-on-hover {
+        opacity: 1;
+    }
+</style>

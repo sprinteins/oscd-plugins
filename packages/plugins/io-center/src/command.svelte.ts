@@ -2,6 +2,8 @@ import { createAndDispatchEditEvent } from "@oscd-plugins/core-api/plugin/v1"
 import { store } from "./store.svelte"
 import type { Nullable } from "./types"
 import { lpStore } from "./ui/components/lp-list/lp-store.svelte"
+import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
+import { createElement } from "./headless/stores/document-helpers.svelte"
 
 export class Command {
 	constructor(
@@ -17,7 +19,7 @@ export class Command {
 
 		const host = this.requireHost()
 
-		const { type, name, desc, instance } = lpStore.dialogFormData
+		const { type, name, desc, number } = lpStore.dialogFormData
 
 		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
 
@@ -27,20 +29,90 @@ export class Command {
 
 		const ld0 = this.ensureLD0(ied)
 
-		const newLP = store.doc.createElement("LN")
+		const currentLPNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
 
-		newLP.setAttribute("xmlns", "")
-		if (desc) {
-			newLP.setAttribute("desc", desc)
+		if (!number) {
+			const attributes = {
+				"xmlns": "",
+				"desc": desc || null,
+				"lnClass": type,
+				"inst": `${currentLPNumber + 1}`,
+				"lnType": name || type,
+			}
+
+			createElement(host, store.doc, "LN", attributes, ld0, null)
+
+			return
 		}
-		newLP.setAttribute("lnClass", type)
-		newLP.setAttribute("inst", `${instance}` || `${ld0.querySelectorAll(`LN[lnType="${type}"]`).length + 1}`)
-		newLP.setAttribute("lnType", name || type)
+
+		for (let i = 1; i <= number; i++) {
+			const attributes = {
+				"xmlns": "",
+				"desc": desc || null,
+				"lnClass": type,
+				"inst": `${currentLPNumber + i}`,
+				"lnType": name || type,
+			}
+
+			createElement(host, store.doc, "LN", attributes, ld0, null)
+		}
+	}
+
+	public editLP(lpElement: LpElement, name: string, desc: string) {
+		const host = this.requireHost()
+
+		const ied = this.requireSelectedIED()
+
+		const lpToEdit = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`)
+
+		if (!lpToEdit) {
+			throw new Error(`LP element with name ${lpElement.name}-${lpElement.instance} not found!`)
+		}
 
 		createAndDispatchEditEvent({
 			host,
-			edit: { node: newLP, parent: ld0, reference: null },
+			edit: {
+				element: lpToEdit,
+				attributes: { "lnType": `${name || lpToEdit.getAttribute("lnType")}`, "desc": `${desc || lpToEdit.getAttribute("desc")}` },
+				attributesNS: {}
+			}
 		})
+	}
+
+	public removeLP(lpElement: LpElement) {
+		const host = this.requireHost()
+
+		const ied = this.requireSelectedIED()
+
+		//Delete target LP
+		const lpToDelete = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`)
+
+		if (!lpToDelete) {
+			throw new Error(`LP element with name ${lpElement.name}-${lpElement.instance} not found!`)
+		}
+
+		createAndDispatchEditEvent({
+			host,
+			edit: {
+				node: lpToDelete
+			}
+		})
+
+		//Correct instance attribute for any LP that's after the target
+		const remainingLPs = Array.from(ied.querySelectorAll(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lpElement.type}"]`))
+
+		const deletedLpInstance = Number.parseInt(lpElement.instance)
+
+		for (const lp of remainingLPs.slice(deletedLpInstance - 1)) {
+			createAndDispatchEditEvent({
+				host,
+				edit: {
+					element: lp,
+					attributes: { "inst": `${Number.parseInt(lp.getAttribute("inst") || "") - 1}` },
+					attributesNS: {}
+				}
+			})
+		}
 	}
 
 	public addLC(iedName: string, type: string, instance: string) {
@@ -54,16 +126,25 @@ export class Command {
 		}
 		const ld0 = this.ensureLD0(ied)
 
-		const ln = store.doc.createElement('LN')
-		ln.setAttribute('lnType', type)
-		ln.setAttribute('lnClass', type)
-		ln.setAttribute('inst', instance)
+		const attributes = {
+			"lnClass": type,
+			"lnType": type,
+			"inst": instance,
+		}
 
-		const editEvent = { node: ln, parent: ld0, reference: null }
-		createAndDispatchEditEvent({
-			host,
-			edit: editEvent,
-		})
+		createElement(host, store.doc, "LN", attributes, ld0, null)
+	}
+
+	private requireSelectedIED(): Element {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
+
+		if (!ied) {
+			throw new Error(`IED with name ${store.selectedIED?.name} not found`)
+		}
+
+		return ied
 	}
 
 	private ensureLD0(ied: Element): Element {
