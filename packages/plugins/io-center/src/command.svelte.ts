@@ -61,7 +61,7 @@ export class Command {
 	public editLP(lpElement: LpElement, name: string, desc: string) {
 		const host = this.requireHost()
 
-		const ied = this.ensureSelectedIED()
+		const ied = this.requireSelectedIED()
 
 		const lpToEdit = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`)
 
@@ -82,7 +82,7 @@ export class Command {
 	public removeLP(lpElement: LpElement) {
 		const host = this.requireHost()
 
-		const ied = this.ensureSelectedIED()
+		const ied = this.requireSelectedIED()
 
 		//Delete target LP
 		const lpToDelete = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`)
@@ -135,7 +135,7 @@ export class Command {
 		createElement(host, store.doc, "LN", attributes, ld0, null)
 	}
 
-	private ensureSelectedIED(): Element {
+	private requireSelectedIED(): Element {
 		if (!store.doc) { throw new Error('Doc not found!') }
 
 		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
