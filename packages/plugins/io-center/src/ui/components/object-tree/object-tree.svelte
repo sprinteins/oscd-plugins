@@ -1,47 +1,141 @@
 <script lang="ts">
-	import { NODE_TYPE } from "@/headless/constants";
-	import {
-		addObjectToCanvas,
-		clearObjectCanvas,
-		removeObjectFromCanvas,
-		toggleObjectInCanvas,
-	} from "@/headless/stores/canvas-operations.svelte";
-	import { searchTree } from "@/headless/utils";
-	import store from "../../../store.svelte";
-	import { canvasStore } from "../canvas/canvas-store.svelte";
-	import SearchBar from "../common/search-bar.svelte";
+	import { store } from "../../../store.svelte";
 	import TreeNode from "./tree-node.svelte";
+	import SearchBar from "../common/search-bar.svelte";
 	import type { TreeNode as TreeNodeType } from "./types.object-tree";
+	import { NODE_TYPE } from "@/headless/constants";
+	import type {
+		ObjectNodeDataObject,
+		ObjectTree,
+	} from "../../../ied/object-tree.type";
+	import { gatherDataObjects } from "./utils";
+
+	let tree = $state<TreeNodeType[]>([]);
+
+	// Note: we use $effect instead of $derived so we can change the values of filteredTree
+	$effect(() => {
+		tree = convertToTreeNode(store.objectTreeV2);
+	});
 
 	let searchTerm = $state("");
+	let filteredTree = $state<TreeNodeType[]>([]);
 
-	let filteredTree = $derived(searchTree(store.objectTree, searchTerm));
+	$effect(() => {
+		filteredTree = filterTree(tree, searchTerm);
+	});
 
-	function addObjectsRecursivelyToCanvas(treeNode: TreeNodeType) {
-		if (treeNode.children && treeNode.children?.length - 1 > 0) {
-			for (const children of treeNode.children) {
-				addObjectsRecursivelyToCanvas(children);
-			}
+	function convertToTreeNode(objectTree: ObjectTree): TreeNodeType[] {
+		const treeNodes: TreeNodeType[] = objectTree.ied?.children.map((ld) => {
+			return {
+				id: ld.id,
+				name: ld.inst,
+				type: NODE_TYPE.logicalDevice,
+				isOpen: false,
+				children: ld.children.map((ln) => {
+					return {
+						id: ln.id,
+						name: `${ln.lnClass} - ${ln.inst}`,
+						type: NODE_TYPE.logicalNode,
+						isOpen: false,
+						children: ln.children.map((dataObject) => {
+							return {
+								id: dataObject.id,
+								name: dataObject.name,
+								type: NODE_TYPE.dataObjectInstance,
+								dataObject,
+							};
+						}),
+					};
+				}),
+			};
+		});
+
+		return treeNodes;
+	}
+
+	function filterTree(
+		nodes: TreeNodeType[],
+		searchTerm: string,
+	): TreeNodeType[] {
+		if (searchTerm === "") {
+			return nodes;
 		}
-		if (treeNode.type === NODE_TYPE.dataObjectInstance) {
-			addObjectToCanvas(treeNode);
+		return nodes
+			.map((node) => {
+				if (
+					node.name.toLowerCase().includes(searchTerm.toLowerCase())
+				) {
+					return node;
+				}
+				if (!node.children) {
+					return;
+				}
+				if (node.children?.length === 0) {
+					return;
+				}
+
+				const filteredChildren = filterTree(node.children, searchTerm);
+
+				if (filteredChildren.length !== 0) {
+					return { ...node, children: filteredChildren };
+				}
+			})
+			.filter(Boolean) as TreeNodeType[];
+	}
+
+	function addObjectsRecursivelyToCanvasV2(treeNode: TreeNodeType) {
+		if (treeNode.children && treeNode.children?.length - 1 > 0) {
+			const dataObjects = gatherDataObjects(treeNode.children);
+			for (const dataObject of dataObjects) {
+				ensureObjectIsInStore(dataObject);
+			}
 		}
 	}
 
-	function removeObjectsRecursievlyFromCanvas(treeNode: TreeNodeType) {
+	function removeObjectsRecursivelyFromCanvasV2(treeNode: TreeNodeType) {
 		if (treeNode.children && treeNode.children?.length - 1 > 0) {
-			for (const children of treeNode.children) {
-				removeObjectsRecursievlyFromCanvas(children);
-			}
-		}
-		if (treeNode.type === NODE_TYPE.dataObjectInstance) {
-			removeObjectFromCanvas(treeNode);
+			const dataObjects = gatherDataObjects(treeNode.children);
+			const indicies = dataObjects.map((dataObject) =>
+				findObjectIndexInStore(dataObject),
+			);
+			store.selectedDataObjects = store.selectedDataObjects.filter(
+				(_, index) => !indicies.includes(index),
+			);
 		}
 	}
 
 	function hasAllChildrenSelected(children: TreeNodeType[]) {
-		return children.every((child) =>
-			canvasStore.dataObjects.some((o) => o.id === child.id),
+		const dataObjects = gatherDataObjects(children);
+		return dataObjects.every((dataObject) =>
+			store.selectedDataObjects.some((o) => o.id === dataObject.id),
+		);
+	}
+
+	// #region Store Functions
+
+	function toggleObjectInStore(dataObject: ObjectNodeDataObject) {
+		const wantedDataObjectIndex = findObjectIndexInStore(dataObject);
+		const objectAlreadySelected = wantedDataObjectIndex !== -1;
+		if (objectAlreadySelected) {
+			store.selectedDataObjects.splice(wantedDataObjectIndex, 1);
+		} else {
+			store.selectedDataObjects.push(dataObject);
+		}
+	}
+
+	function ensureObjectIsInStore(dataObject: ObjectNodeDataObject) {
+		const wantedDataObjectIndex = findObjectIndexInStore(dataObject);
+		const objectAlreadySelected = wantedDataObjectIndex !== -1;
+		if (objectAlreadySelected) {
+			return;
+		}
+
+		store.selectedDataObjects.push(dataObject);
+	}
+
+	function findObjectIndexInStore(dataObject: ObjectNodeDataObject) {
+		return store.selectedDataObjects.findIndex(
+			(o) => o.id === dataObject.id,
 		);
 	}
 </script>
@@ -61,17 +155,26 @@
 				}
 
 				if (hasAllChildrenSelected(treeNode.children)) {
-					removeObjectsRecursievlyFromCanvas(treeNode);
+					removeObjectsRecursivelyFromCanvasV2(treeNode);
 				} else {
-					addObjectsRecursivelyToCanvas(treeNode);
+					addObjectsRecursivelyToCanvasV2(treeNode);
 				}
 			}}
 			onclickobjectcheckbox={(treeNode) => {
-				toggleObjectInCanvas(treeNode);
+				const dataObject = treeNode.dataObject;
+				if (!dataObject) {
+					console.warn("No dataObject found");
+					return;
+				}
+				toggleObjectInStore(dataObject);
 			}}
 			onclickobject={(treeNode) => {
-				clearObjectCanvas();
-				addObjectToCanvas(treeNode);
+				const dataObject = treeNode.dataObject;
+				if (!dataObject) {
+					console.warn("No dataObject found");
+					return;
+				}
+				store.selectedDataObjects = [dataObject];
 			}}
 		/>
 	{/each}

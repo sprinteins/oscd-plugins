@@ -1,22 +1,24 @@
 <script lang="ts">
-import store from '../store.svelte'
-import type { IED } from './ied'
+	import { store } from "../store.svelte";
+	import type { IED } from "./ied";
 
-type Props = {
-	onSelectIED: (ied: IED) => void
-}
+	type Props = {
+		onSelectIED: (ied: IED) => void;
+	};
 
-let { onSelectIED }: Props = $props()
+	let { onSelectIED }: Props = $props();
 
-function handleChange(event: Event) {
-	const target = event.target as HTMLSelectElement
+	function handleChange(event: Event) {
+		const target = event.target as HTMLSelectElement;
 
-	const selectedIED = store.iedList.find((ied) => ied.name === target.value)
+		const selectedIED = store.iedList.find(
+			(ied) => ied.name === target.value,
+		);
 
-	if (selectedIED) {
-		onSelectIED(selectedIED)
+		if (selectedIED) {
+			onSelectIED(selectedIED);
+		}
 	}
-}
 </script>
 
 <div class="flex-col mx-auto w-4/5 mt-2">
@@ -28,7 +30,9 @@ function handleChange(event: Event) {
 	>
 		<option disabled selected></option>
 		{#each store.iedList as ied}
-			<option value={ied.name} selected={ied.name === store.iedSelected?.name}
+			<option
+				value={ied.name}
+				selected={ied.name === store.selectedIED?.name}
 				>{ied.name}</option
 			>
 		{/each}
