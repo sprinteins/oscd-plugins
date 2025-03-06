@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix deployment build issue
 
+## [1.5.0] - 2025-02-24
+
+### Added
+
+- Duplicate a template
+
+## [1.4.0] - 2025-02-21
+
+### Added
+
+- Edit an already created template
+
 ## [1.3.0] - 2025-02-19
 
 ### Added
