@@ -1,5 +1,4 @@
 import { canvasStore } from "@/ui/components/canvas/canvas-store.svelte";
-import type { LpElement } from "@/ui/components/lp-list/types.lp-list";
 import type { TreeNode } from "@/ui/components/object-tree/types.object-tree";
 
 export function addObjectToCanvas(node: TreeNode) {

@@ -3,6 +3,7 @@ import { store } from "./store.svelte"
 import type { Nullable } from "./types"
 import { lpStore } from "./ui/components/lp-list/lp-store.svelte"
 import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
+import { createElement } from "./headless/stores/document-helpers.svelte"
 
 export class Command {
 	constructor(
@@ -31,38 +32,29 @@ export class Command {
 		const currentLPNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
 
 		if (!number) {
-			const newLP = store.doc.createElement("LN")
-
-			newLP.setAttribute("xmlns", "")
-			if (desc) {
-				newLP.setAttribute("desc", desc)
+			const attributes = {
+				"xmlns": "",
+				"desc": desc || null,
+				"lnClass": type,
+				"inst": `${currentLPNumber + 1}`,
+				"lnType": name || type,
 			}
-			newLP.setAttribute("lnClass", type)
-			newLP.setAttribute("inst", `${currentLPNumber + 1}`)
-			newLP.setAttribute("lnType", name || type)
 
-			createAndDispatchEditEvent({
-				host,
-				edit: { node: newLP, parent: ld0, reference: null },
-			})
+			createElement(host, store.doc, "LN", attributes, ld0, null)
+
 			return
 		}
 
 		for (let i = 1; i <= number; i++) {
-			const newLP = store.doc.createElement("LN")
-
-			newLP.setAttribute("xmlns", "")
-			if (desc) {
-				newLP.setAttribute("desc", desc)
+			const attributes = {
+				"xmlns": "",
+				"desc": desc || null,
+				"lnClass": type,
+				"inst": `${currentLPNumber + i}`,
+				"lnType": name || type,
 			}
-			newLP.setAttribute("lnClass", type)
-			newLP.setAttribute("inst", `${currentLPNumber + i}`)
-			newLP.setAttribute("lnType", name || type)
 
-			createAndDispatchEditEvent({
-				host,
-				edit: { node: newLP, parent: ld0, reference: null },
-			})
+			createElement(host, store.doc, "LN", attributes, ld0, null)
 		}
 	}
 
@@ -134,16 +126,13 @@ export class Command {
 		}
 		const ld0 = this.ensureLD0(ied)
 
-		const ln = store.doc.createElement('LN')
-		ln.setAttribute('lnType', type)
-		ln.setAttribute('lnClass', type)
-		ln.setAttribute('inst', instance)
+		const attributes = {
+			"lnClass": type,
+			"lnType": type,
+			"inst": instance,
+		}
 
-		const editEvent = { node: ln, parent: ld0, reference: null }
-		createAndDispatchEditEvent({
-			host,
-			edit: editEvent,
-		})
+		createElement(host, store.doc, "LN", attributes, ld0, null)
 	}
 
 	private ensureSelectedIED(): Element {
