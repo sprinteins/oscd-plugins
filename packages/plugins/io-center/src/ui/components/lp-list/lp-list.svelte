@@ -11,7 +11,7 @@
 
     type Props = {
         addLp: () => void;
-        removeLP: (lpElement: LpElementType) => void
+        removeLP: (lpElement: LpElementType) => void;
         editLP: (LpElement: LpElementType, name: string, desc: string) => void;
     };
 
@@ -51,24 +51,26 @@
 
     <CreateLpDialog bind:isOpen={showDialog} {addLp} />
 
-    <SearchBar bind:searchTerm placeholder="Search LP" />
+    {#if store.selectedIED}
+        <SearchBar bind:searchTerm placeholder="Search LP" />
 
-    <div class="mt-2">
-        <FilterButtons
-            bind:selectedTypeToShow
-            bind:showLinked
-            bind:showUnlinked
-        />
-    </div>
+        <div class="mt-2">
+            <FilterButtons
+                bind:selectedTypeToShow
+                bind:showLinked
+                bind:showUnlinked
+            />
+        </div>
 
-    {#each Object.values(LP_TYPE) as lpType}
-        {#if (selectedTypeToShow === null || selectedTypeToShow === lpType) && filteredList.length > 0}
-            <p class="text-xl font-semibold pl-2 pt-3">{lpType}</p>
-            {#each filteredList.filter((item) => item.type === lpType) as lpElement (lpElement.id)}
-                <LpElement {searchTerm} {lpElement} {removeLP} {editLP} />
-            {/each}
-        {/if}
-    {/each}
+        {#each Object.values(LP_TYPE) as lpType}
+            {#if (selectedTypeToShow === null || selectedTypeToShow === lpType) && filteredList.length > 0}
+                <p class="text-xl font-semibold pl-2 pt-3">{lpType}</p>
+                {#each filteredList.filter((item) => item.type === lpType) as lpElement (lpElement.id)}
+                    <LpElement {searchTerm} {lpElement} {removeLP} {editLP} />
+                {/each}
+            {/if}
+        {/each}
+    {/if}
 </div>
 
 <style lang="scss">
