@@ -1,19 +1,30 @@
 <script lang="ts">
     import Input from "../common/input.svelte";
-    import { lpStore } from "./lp-store.svelte";
+    import type { LpElement } from "./types.lp-list";
 
     type Props = {
         isOpen: boolean;
-        removeLP: () => void;
+        lpElement: LpElement;
+        removeLP: (lpElement: LpElement) => void;
+        editLP: (lpElement: LpElement, name: string, desc: string) => void;
     };
 
-    let { isOpen = $bindable(), removeLP }: Props = $props();
+    let { isOpen = $bindable(), lpElement, removeLP, editLP }: Props = $props();
+
+    let name = $state(lpElement.name);
+    let desc = $state(lpElement.description);
 
     function handleCancel() {
         isOpen = false;
     }
 
-    function handleSubmit() {
+    function handleDelete() {
+        removeLP(lpElement);
+        isOpen = false;
+    }
+
+    function handleEdit() {
+        editLP(lpElement, name, desc);
         isOpen = false;
     }
 </script>
@@ -21,22 +32,16 @@
 <dialog open={isOpen}>
     <div role="button" id="modal" class="backdrop">
         <div class="container space-y-4">
-            <Input
-                bind:value={lpStore.dialogFormData.name}
-                label="LP Name"
-                type="text"
-            />
-            <Input
-                bind:value={lpStore.dialogFormData.desc}
-                label="LP Description"
-                type="text"
-            />
+            <Input bind:value={name} label="LP Name" type="text" />
+            <Input bind:value={desc} label="LP Description" type="text" />
             <div class="action-buttons">
                 <button class="cancel-button" onclick={handleCancel}>
                     Cancel
                 </button>
-                <button class="delete-button" onclick={removeLP}> Delete </button>
-                <button class="add-button" onclick={handleSubmit}> Edit </button>
+                <button class="delete-button" onclick={handleDelete}>
+                    Delete
+                </button>
+                <button class="add-button" onclick={handleEdit}> Edit </button>
             </div>
         </div>
     </div>
@@ -59,7 +64,7 @@
         }
 
         .delete-button {
-            @apply px-4 py-2 text-white bg-red-600 rounded-lg
+            @apply px-4 py-2 text-white bg-red-600 rounded-lg;
         }
 
         .add-button {

@@ -12,9 +12,10 @@
     type Props = {
         addLp: () => void;
         removeLP: (lpElement: LpElementType) => void
+        editLP: (LpElement: LpElementType, name: string, desc: string) => void;
     };
 
-    let { addLp, removeLP }: Props = $props();
+    let { addLp, removeLP, editLP }: Props = $props();
 
     let searchTerm = $state("");
 
@@ -64,7 +65,7 @@
         {#if (selectedTypeToShow === null || selectedTypeToShow === lpType) && filteredList.length > 0}
             <p class="text-xl font-semibold pl-2 pt-3">{lpType}</p>
             {#each filteredList.filter((item) => item.type === lpType) as lpElement (lpElement.id)}
-                <LpElement {searchTerm} {lpElement} {removeLP} />
+                <LpElement {searchTerm} {lpElement} {removeLP} {editLP} />
             {/each}
         {/if}
     {/each}

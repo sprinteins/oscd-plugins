@@ -66,16 +66,31 @@ export class Command {
 		}
 	}
 
-	public removeLP(lpElement: LpElement) {
-		if (!store.doc) { console.warn("no doc"); return; }
-
+	public editLP(lpElement: LpElement, name: string, desc: string) {
 		const host = this.requireHost()
 
-		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
+		const ied = this.ensureSelectedIED()
 
-		if (!ied) {
-			throw new Error(`IED with name ${store.selectedIED?.name} not found`)
+		const lpToEdit = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`)
+
+		if (!lpToEdit) {
+			throw new Error(`LP element with name ${lpElement.name}-${lpElement.instance} not found!`)
 		}
+
+		createAndDispatchEditEvent({
+			host,
+			edit: {
+				element: lpToEdit,
+				attributes: { "lnType": `${name || lpToEdit.getAttribute("lnType")}`, "desc": `${desc || lpToEdit.getAttribute("desc")}` },
+				attributesNS: {}
+			}
+		})
+	}
+
+	public removeLP(lpElement: LpElement) {
+		const host = this.requireHost()
+
+		const ied = this.ensureSelectedIED()
 
 		//Delete target LP
 		const lpToDelete = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`)
@@ -129,6 +144,18 @@ export class Command {
 			host,
 			edit: editEvent,
 		})
+	}
+
+	private ensureSelectedIED(): Element {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
+
+		if (!ied) {
+			throw new Error(`IED with name ${store.selectedIED?.name} not found`)
+		}
+
+		return ied
 	}
 
 	private ensureLD0(ied: Element): Element {

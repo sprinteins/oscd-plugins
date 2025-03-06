@@ -32,7 +32,7 @@
 			slot="content"
 			{onAddLC}
 		/>
-		<LpList slot="sidebar-right" {addLp} {removeLP}/>
+		<LpList slot="sidebar-right" {addLp} {removeLP} {editLP}/>
 	</Layout>
 </main>
 
@@ -98,6 +98,10 @@
 
 	function removeLP(lpElement: LpElement) {
 		cmd.removeLP(lpElement)
+	}
+
+	function editLP(lpElement: LpElement, name: string, desc: string) {
+		cmd.editLP(lpElement, name, desc)
 	}
 
 </script>

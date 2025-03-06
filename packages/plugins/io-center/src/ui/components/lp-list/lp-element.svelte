@@ -9,9 +9,10 @@
         lpElement: LpElement;
         searchTerm: string;
         removeLP: (lpElement: LpElement) => void;
+        editLP: (LpElement: LpElement, name: string, desc: string) => void;
     };
 
-    let { lpElement, searchTerm, removeLP }: Props = $props();
+    let { lpElement, searchTerm, removeLP, editLP }: Props = $props();
 
     const { name, instance } = lpElement;
 
@@ -52,7 +53,7 @@
     </button>
 </div>
 
-<EditLpDialog bind:isOpen={showDialog} removeLP={() => removeLP(lpElement)} />
+<EditLpDialog bind:isOpen={showDialog} {lpElement} {removeLP} {editLP} />
 
 <style lang="scss">
     .lp-element {

@@ -5,6 +5,7 @@ export type LpElement = {
     type: keyof typeof LP_TYPE
     name: string,
     instance: string,
+    description: string,
     isLinked: boolean,
 }
 
