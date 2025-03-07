@@ -55,40 +55,6 @@
     <div class="control-group">
         <div class="button-group">
             <button
-                on:click={() => editor.chain().focus().toggleBold().run()}
-                disabled={!editor.can().chain().focus().toggleBold().run()}
-                class={editor.isActive("bold") ? "is-active" : ""}
-            >
-                Bold
-            </button>
-            <button
-                on:click={() => editor.chain().focus().toggleItalic().run()}
-                disabled={!editor.can().chain().focus().toggleItalic().run()}
-                class={editor.isActive("italic") ? "is-active" : ""}
-            >
-                Italic
-            </button>
-            <button
-                on:click={() => editor.chain().focus().toggleStrike().run()}
-                disabled={!editor.can().chain().focus().toggleStrike().run()}
-                class={editor.isActive("strike") ? "is-active" : ""}
-            >
-                Strike
-            </button>
-            <button
-                on:click={() => editor.chain().focus().toggleCode().run()}
-                disabled={!editor.can().chain().focus().toggleCode().run()}
-                class={editor.isActive("code") ? "is-active" : ""}
-            >
-                Code
-            </button>
-            <button
-                on:click={() => editor.chain().focus().setParagraph().run()}
-                class={editor.isActive("paragraph") ? "is-active" : ""}
-            >
-                Paragraph
-            </button>
-            <button
                 on:click={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
                 class={editor.isActive("heading", { level: 1 }) ? "is-active" : ""}
             >
@@ -107,6 +73,40 @@
                 H3
             </button>
             <button
+                on:click={() => editor.chain().focus().toggleBold().run()}
+                disabled={!editor.can().chain().focus().toggleBold().run()}
+                class={editor.isActive("bold") ? "is-active" : ""}
+            >
+                Bold
+            </button>
+            <button
+                on:click={() => editor.chain().focus().toggleItalic().run()}
+                disabled={!editor.can().chain().focus().toggleItalic().run()}
+                class={editor.isActive("italic") ? "is-active" : ""}
+            >
+                Italic
+            </button>
+            <!-- <button
+                on:click={() => editor.chain().focus().toggleStrike().run()}
+                disabled={!editor.can().chain().focus().toggleStrike().run()}
+                class={editor.isActive("strike") ? "is-active" : ""}
+            >
+                Strike
+            </button> -->
+            <!-- <button
+                on:click={() => editor.chain().focus().toggleCode().run()}
+                disabled={!editor.can().chain().focus().toggleCode().run()}
+                class={editor.isActive("code") ? "is-active" : ""}
+            >
+                Code
+            </button> -->
+            <button
+                on:click={() => editor.chain().focus().setParagraph().run()}
+                class={editor.isActive("paragraph") ? "is-active" : ""}
+            >
+                Paragraph
+            </button>
+            <button
                 on:click={() => editor.chain().focus().toggleBulletList().run()}
                 class={editor.isActive("bulletList") ? "is-active" : ""}
             >
@@ -118,16 +118,16 @@
             >
                 Ordered list
             </button>
-            <button
+            <!-- <button
                 on:click={() => editor.chain().focus().toggleCodeBlock().run()}
                 class={editor.isActive("codeBlock") ? "is-active" : ""}
             >
                 Code block
-            </button>
-            <button on:click={() => editor.chain().focus().setHorizontalRule().run()}>
+            </button> -->
+            <!-- <button on:click={() => editor.chain().focus().setHorizontalRule().run()}>
                 Horizontal rule
-            </button>
-            <button on:click={() => editor.chain().focus().setHardBreak().run()}>Hard break</button>
+            </button> -->
+            <!-- <button on:click={() => editor.chain().focus().setHardBreak().run()}>Hard break</button> -->
             <button
                 on:click={() => editor.chain().focus().undo().run()}
                 disabled={!editor.can().chain().focus().undo().run()}
