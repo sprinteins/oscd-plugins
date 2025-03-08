@@ -90,7 +90,7 @@
 
 		for (const {searchKey, column2} of selectedRows) {
 			
-			if(doesIncludeSignalType(searchKey)){			
+			if(doesIncludeSignalType(searchKey)){		
 				setFilterCriteriaForMessageSubscribers(searchKey, column2);
 			}else{
 				publisherFilter[searchKey as keyof MessagePublisherFilter] = column2;
@@ -98,12 +98,13 @@
 		}
 		
 		function setFilterCriteriaForMessageSubscribers(searchKey: string,column2: string) {
-			subscriberFilter.serviceType = searchKey as  keyof typeof SignalType;
-			subscriberFilter.IEDName = column2;
+			subscriberFilter[searchKey as keyof MessageSubscriberFilter] = column2;
 		}
 
 		const {messagePublishers} = signallistStore.getPublishingLogicalDevices(publisherFilter);
 		const {matchedRows} = signallistStore.getSubscribingLogicalDevices(messagePublishers, subscriberFilter);
+
+		console.log("🚀 ~ searchForMatchOnSignalList ~ matchedRows:", matchedRows)
 		return {matchedRowsForTablePdf: matchedRows};
 
 	}

@@ -106,7 +106,10 @@ export type MessagePublisherFilter = {
 
 export type MessageSubscriberFilter = {
     IEDName?: string;
-    serviceType?: string;
+    [SignalType.GOOSE]?: string;
+    [SignalType.MMS]?: string;
+    [SignalType.SV]?: string;
+    [SignalType.UNKNOWN]?: string;
 }
 
 
