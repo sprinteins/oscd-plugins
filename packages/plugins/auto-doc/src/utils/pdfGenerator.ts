@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import zipcelx from 'zipcelx';
 import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore} from '@/stores'
 import type {Columns, SignalType} from '@/stores'
@@ -52,7 +53,6 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
   
     function processSignalListForPdfGeneration(block: Element){
-        
         if(!block.textContent) {
             console.error("No content found in Signal List Block");
             return;
@@ -61,34 +61,21 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
         const selectedRows = parsedBlockContent.selected
         const tableRows = parsedBlockContent.matches.matchedRowsForTablePdf
-        const tableHeader = generateTableHeader(selectedRows)
         
         const rows = tableRows.flatMap((row) => {
             return row.matchedFilteredValuesForPdf
         })
-        
-    
-        
-        const body = generateTableBody(rows, tableHeader);
-       
+        const header = selectedRows.map(r => ({value: r.column1, type: 'string'}))
+        const individualRows = rows.map(row => row.map(r => ({value: r, type: 'string'})))
 
-        autoTable(doc, {
-            startY: (marginTop === INITIAL_UPPER_PAGE_COORDINATE) ? marginTop : marginTop + 10,
-            columns: tableHeader,
-            body: body,
-
-            // styles
-            theme: 'grid',
-            columnStyles: {M_text: {}},
-            headStyles: {fillColor: 0, halign: 'center'},
-            styles: { cellPadding: 0.5, fontSize: 8, halign: 'center'  },
-
-            //behavior
-            rowPageBreak: 'auto', 
-            pageBreak: 'avoid',
-            horizontalPageBreak: true,
-
-        })
+        const table = [header, ...individualRows]
+        const config = {
+            filename: "hello-world",
+            sheet: {
+                data: table
+            }
+        }
+        zipcelx(config)
     }
 
     for(const block of allBlocks){
@@ -101,7 +88,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
             
     }
     
-    doc.save(`${templateTitle}.pdf`);
+    // doc.save(`${templateTitle}.pdf`);
 
     
 }
