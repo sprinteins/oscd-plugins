@@ -101,7 +101,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
             
     }
     
-    // doc.save(`${templateTitle}.pdf`);
+    doc.save(`${templateTitle}.pdf`);
 
     
 }
