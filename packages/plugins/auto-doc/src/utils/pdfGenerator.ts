@@ -12,7 +12,8 @@ import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list
 
 function generatePdf(templateTitle: string , allBlocks: Element[]){
     const doc = new jsPDF();
-    doc.setFontSize(12);
+    const DEFAULT_FONT_SIZE = 10;
+    doc.setFontSize(DEFAULT_FONT_SIZE);
     const INITIAL_UPPER_PAGE_COORDINATE = 10;
     const INITIAL_LOWER_PAGE_COORDINATE = 10;
 
@@ -23,13 +24,13 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     const marginBottom = INITIAL_LOWER_PAGE_COORDINATE; 
 
     const blockHandler: Record<ElementType, (block: Element) => void> = {
-        text: handleTextBlock,
+        text: handleRichTextEditorBlock,
         image: () => {},
         signalList: processSignalListForPdfGeneration
     }
 
-    function incrementVerticalPositionForNextLine() {
-        marginTop+=7;
+    function incrementVerticalPositionForNextLine(lineHeight = 7) {
+        marginTop += lineHeight;
     }
 
     function contentExceedsCurrentPage(marginTop: number,pageHeight: number,marginBottom: number) {
@@ -37,17 +38,109 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         return (marginTop + bufferToBottomPage) > (pageHeight-marginBottom);
     }
 
-    function handleTextBlock(block: Element){
-        const wrappedText : string [] = doc.splitTextToSize(block.textContent ?? "", pageWidth-35);
-            for(const line of wrappedText){
-                if (contentExceedsCurrentPage(marginTop, pageHeight, marginBottom)) {
-                    doc.addPage();
-                    marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
+    function handleRichTextEditorBlock(block: Element){
+        const parser = new DOMParser();
+        const parsedBlockContent = parser.parseFromString(block.textContent ?? "", "text/html");
+        const HTMLElements : HTMLCollection = parsedBlockContent.body.children;
+
+
+        for (const element of HTMLElements ){
+            switch(element.tagName.toLowerCase()){
+                case "h1":
+                    handleText(element.textContent ?? "", 20, "bold");
+                    break;
+                case "h2":
+                    handleText(element.textContent ?? "", 16, "bold");
+                    break;
+                case "h3":
+                    handleText(element.textContent ?? "", 14, "bold");
+                    break;
+                case "p":
+                    processParagraph(element);
+                    break;
+                case "strong":
+                    handleText(element.textContent ?? "", DEFAULT_FONT_SIZE, "bold");
+                    break;
+                case "em":
+                    handleText(element.textContent ?? "", DEFAULT_FONT_SIZE, "italic");
+                    break;
+                case "ul":
+                case "ol":
+                    processList(element, 0);
+                    break;
+                default:
+                    console.error(`Unsupported HTML element: ${element.tagName}`);
+            }
+        }
+            
+    }
+
+    function handleText(text: string, fontSize: number, fontStyle: "normal" | "bold" | "italic", indent = 0 ){
+        doc.setFontSize(fontSize);
+        doc.setFont("helvetica", fontStyle);
+
+        const wrappedText : string [] = doc.splitTextToSize(text ?? "", pageWidth - (35 - indent));
+
+        for(const line of wrappedText){
+            if (contentExceedsCurrentPage(marginTop, pageHeight, marginBottom)) {
+                doc.addPage();
+                marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
+            }
+            const horizontalSpacing = 10;
+            doc.text(line, horizontalSpacing, marginTop);
+            incrementVerticalPositionForNextLine();
+        } 
+        
+    }
+
+    function processParagraph(paragraph: Element){
+        for(const node of paragraph.childNodes){
+            if(node.nodeType === Node.TEXT_NODE){
+                handleText(node.textContent ?? "", DEFAULT_FONT_SIZE, "normal");
+            }else if(node.nodeType === Node.ELEMENT_NODE){
+                const element = node as Element;
+                let fontStyle: "normal" | "bold" | "italic" = "normal";
+                if( element.tagName.toLowerCase() === "strong"){
+                    fontStyle = "bold";
+                }else if( element.tagName.toLowerCase() === "em"){
+                    fontStyle = "italic";
                 }
-                const horizontalSpacing = 10;
-                doc.text(line, horizontalSpacing, marginTop);
-                incrementVerticalPositionForNextLine();
-            }    
+                handleText(element.textContent ?? "", DEFAULT_FONT_SIZE, fontStyle);
+            }
+                
+        }
+
+    }
+
+
+
+    function processList(list: Element, indent = 0){
+        const isOrdered = list.tagName.toLowerCase() === "ol";
+        let itemIndex = 1;
+
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        Array.from(list.children).forEach((li) => {
+            if (li.tagName.toLowerCase() === "li") {
+                const bullet = isOrdered ? `${itemIndex}. ` : "• ";
+                itemIndex++;
+
+                const firstParagraph = li.querySelector("p");
+                if (firstParagraph) {
+                    handleText(bullet + firstParagraph.textContent, 10, "normal", indent);
+                    firstParagraph.remove(); // Prevent duplicate text processing
+                } else {
+                    handleText(bullet + (li.textContent ?? ""), 10, "normal", indent);
+                }
+                
+                // Check for nested lists inside this list item
+                // biome-ignore lint/complexity/noForEach: <explanation>
+                Array.from(li.children).forEach(child => {
+                    if (child.tagName.toLowerCase() === "ul" || child.tagName.toLowerCase() === "ol") {
+                        processList(child, indent + 10); // Increase indent for nested lists
+                    }
+                });
+            }
+        });
     }
 
   
