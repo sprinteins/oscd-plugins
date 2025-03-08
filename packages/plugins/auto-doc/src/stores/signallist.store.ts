@@ -396,21 +396,27 @@ function getValueFromNestedProperty(publisher: MessagePublisher, key: keyof Mess
 }
 
 function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filter: MessageSubscriberFilter): MessageSubscriberAndPdfContent {
+    const filterMessageTypes = Object.keys(filter) as (keyof MessageSubscriberFilter)[];
+
 
     const allMessageSubscribers: MessageSubscriber[] = [];
+
     for (const subscriber of messageSubscribers) {
+        for(const messageType of filterMessageTypes) {
+            const IEDNameSearch = filter[messageType];
 
-        const matchesIEDName = !filter.IEDName || 
-            subscriber.IEDName.toLocaleLowerCase().includes(filter.IEDName.toLocaleLowerCase()) ||
-            (filter.IEDName.trim() === '');
-
-        const matchesServiceType = !filter.serviceType ||
-            subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase()) ||
-            (filter.serviceType.trim() === '');
-
-        if(matchesIEDName && matchesServiceType){
-            allMessageSubscribers.push(subscriber);
-            setSubscriberIedNameInCorrespondingPublisher(subscriber, get(pdfRowValues))
+            const matchesServiceType = messageType &&
+            (subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(messageType.toLocaleLowerCase()) ||
+            (messageType.trim() === ''));            
+            
+            const matchesIEDName = !IEDNameSearch ||
+            subscriber.IEDName.toLocaleLowerCase().includes(IEDNameSearch.toLocaleLowerCase()) ||
+            (IEDNameSearch.trim() === '');
+            
+            if(matchesIEDName && matchesServiceType){
+                allMessageSubscribers.push(subscriber);
+                setSubscriberIedNameInCorrespondingPublisher(subscriber, get(pdfRowValues))
+            }
         }
     }
         

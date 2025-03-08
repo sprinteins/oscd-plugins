@@ -103,10 +103,13 @@ export type MessagePublisherFilter = {
     AttributeType?: string;
     FunctionalConstraint?: string;
 }
+type IEDNameSearch = string
 
 export type MessageSubscriberFilter = {
-    IEDName?: string;
-    serviceType?: string;
+    [SignalType.GOOSE]?: IEDNameSearch;
+    [SignalType.MMS]?: IEDNameSearch;
+    [SignalType.SV]?: IEDNameSearch;
+    [SignalType.UNKNOWN]?: IEDNameSearch;
 }
 
 
