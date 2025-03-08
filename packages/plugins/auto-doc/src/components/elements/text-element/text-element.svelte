@@ -86,20 +86,6 @@
             >
                 Italic
             </button>
-            <!-- <button
-                on:click={() => editor.chain().focus().toggleStrike().run()}
-                disabled={!editor.can().chain().focus().toggleStrike().run()}
-                class={editor.isActive("strike") ? "is-active" : ""}
-            >
-                Strike
-            </button> -->
-            <!-- <button
-                on:click={() => editor.chain().focus().toggleCode().run()}
-                disabled={!editor.can().chain().focus().toggleCode().run()}
-                class={editor.isActive("code") ? "is-active" : ""}
-            >
-                Code
-            </button> -->
             <button
                 on:click={() => editor.chain().focus().setParagraph().run()}
                 class={editor.isActive("paragraph") ? "is-active" : ""}
@@ -118,17 +104,7 @@
             >
                 Ordered list
             </button>
-            <!-- <button
-                on:click={() => editor.chain().focus().toggleCodeBlock().run()}
-                class={editor.isActive("codeBlock") ? "is-active" : ""}
-            >
-                Code block
-            </button> -->
-            <!-- <button on:click={() => editor.chain().focus().setHorizontalRule().run()}>
-                Horizontal rule
-            </button> -->
-            <!-- <button on:click={() => editor.chain().focus().setHardBreak().run()}>Hard break</button> -->
-            <button
+           <button
                 on:click={() => editor.chain().focus().undo().run()}
                 disabled={!editor.can().chain().focus().undo().run()}
             >
