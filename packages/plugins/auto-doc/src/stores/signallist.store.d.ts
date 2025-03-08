@@ -105,7 +105,6 @@ export type MessagePublisherFilter = {
 }
 
 export type MessageSubscriberFilter = {
-    IEDName?: string;
     [SignalType.GOOSE]?: string;
     [SignalType.MMS]?: string;
     [SignalType.SV]?: string;
