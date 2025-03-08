@@ -41,22 +41,26 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     function handleTextBlock(block: Element){
         const wrappedText : string [] = doc.splitTextToSize(block.textContent ?? "", pageWidth-35);
             for(const line of wrappedText){
-                if (contentExceedsCurrentPage(marginTop, pageHeight, marginBottom)) {
-                    doc.addPage();
-                    marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
-                }
-                const horizontalSpacing = 10;
-                doc.text(line, horizontalSpacing, marginTop);
-                incrementVerticalPositionForNextLine();
+                renderTextLine(line);
             }    
     }
 
   
+    function renderTextLine(text: string) {
+        if (contentExceedsCurrentPage(marginTop, pageHeight, marginBottom)) {
+            doc.addPage();
+            marginTop = INITIAL_UPPER_PAGE_COORDINATE;
+        }
+        const horizontalSpacing = 10;
+        doc.text(text, horizontalSpacing, marginTop);
+        incrementVerticalPositionForNextLine();
+    }
     function processSignalListForPdfGeneration(block: Element){
         if(!block.textContent) {
             console.error("No content found in Signal List Block");
             return;
         }
+        const blockId = block.getAttribute('id');
         const parsedBlockContent = JSON.parse(block.textContent) as SignalListOnSCD;
 
         const selectedRows = parsedBlockContent.selected
@@ -68,13 +72,18 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         const header = selectedRows.map(r => ({value: r.column1, type: 'string'}))
         const individualRows = rows.map(row => row.map(r => ({value: r, type: 'string'})))
 
+        const fileName = `SignalList_${blockId}`
+        const pdfHintText = `Hint: check ${fileName}.xlsx`
+
         const table = [header, ...individualRows]
         const config = {
-            filename: "hello-world",
+            filename: fileName,
             sheet: {
                 data: table
             }
         }
+
+       renderTextLine(pdfHintText);
         zipcelx(config)
     }
 
@@ -88,7 +97,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
             
     }
     
-    // doc.save(`${templateTitle}.pdf`);
+    doc.save(`${templateTitle}.pdf`);
 
     
 }
