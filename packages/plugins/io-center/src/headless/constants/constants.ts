@@ -10,3 +10,10 @@ export const LP_TYPE = {
     LPAI: 'LPAI',
     LPAO: 'LPAO',
 } as const
+
+export const LC_TYPE = {
+	LCBI: "LCBI",
+	LCBO: "LCBO",
+	LCDP: "LCDP",
+	LCIV: "LCIV",
+} as const

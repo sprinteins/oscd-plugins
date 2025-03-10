@@ -1,4 +1,4 @@
-import { LP_TYPE } from "./headless/constants";
+import { LC_TYPE, LP_TYPE } from "./headless/constants";
 import type { IED } from "./ied/ied";
 import {
 	NodeTypes,
@@ -9,6 +9,7 @@ import {
 } from "./ied/object-tree.type.d";
 import { store } from "./store.svelte";
 import type { Nullable } from "./types";
+import type { LogicalConditioner } from "./ui/components/canvas/types.canvas";
 import type { LpElement } from "./ui/components/lp-list/types.lp-list";
 
 
@@ -32,27 +33,36 @@ function storeIEDs(doc: Nullable<XMLDocument>, _: unknown) {
 	store.iedList = ieds
 }
 
+function iedElementToIED(iedElement: Element): IED {
+	return {
+		name: iedElement.getAttribute("name") ?? "unknown"
+	}
+}
+
 function storeLogicalConditioners(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
 	if (!doc || !selectedIED) { console.warn("no doc or no ied selected"); return }
 
 	const iedElement = doc.querySelector(`IED[name="${selectedIED.name}"]`)
+
 	if (!iedElement) { console.warn(`IED (name:${selectedIED.name}) not found`); return }
 
-	const lnElements = Array.from(iedElement.querySelectorAll('LN[lnClass="LRTD"], LN[lnClass="LRTI"], LN[lnClass="LRTB"]'))
+	const query: string[] = []
 
-	const lcs = lnElements.map((el) => {
-		return {
-			type: el.getAttribute("lnType") || "",
-			instance: el.getAttribute("inst") || ""
-		}
-	})
+	for (const value of Object.values(LC_TYPE)) {
+		query.push(`IED[name="${selectedIED.name}"] > AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${value}"]`)
+	}
 
-	store.logicalConditioners = lcs
+	const lcElements = Array.from(doc.querySelectorAll(query.join(",")));
+
+	store.logicalConditioners = lcElements.map(lcElementToLC)
 }
 
-function iedElementToIED(iedElement: Element): IED {
+function lcElementToLC(lcElement: Element): LogicalConditioner {
 	return {
-		name: iedElement.getAttribute("name") ?? "unknown"
+		id: crypto.randomUUID(),
+		type: lcElement.getAttribute("lnClass") as keyof typeof LC_TYPE || "unknown",
+		instance: `${lcElement.getAttribute("inst") || ""}`,
+		isLinked: false,
 	}
 }
 
@@ -157,7 +167,6 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 // Currently hard-coded by the client request but in future we may make it dynamic and allow the user to fill the targetScd
 const TARGET_CDC = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']
 function hasCDC(doElement: Element, doc: XMLDocument, targetCDC: string[]): boolean {
-
 	const type = doElement.getAttribute("type") || "";
 	if (type === "") {
 		return false;
