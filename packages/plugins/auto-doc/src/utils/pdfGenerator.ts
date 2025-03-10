@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import zipcelx from 'zipcelx';
 import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore} from '@/stores'
 import type {Columns, SignalType} from '@/stores'
@@ -144,44 +145,45 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     }
 
   
+    function renderTextLine(text: string) {
+        if (contentExceedsCurrentPage(marginTop, pageHeight, marginBottom)) {
+            doc.addPage();
+            marginTop = INITIAL_UPPER_PAGE_COORDINATE;
+        }
+        const horizontalSpacing = 10;
+        doc.text(text, horizontalSpacing, marginTop);
+        incrementVerticalPositionForNextLine();
+    }
     function processSignalListForPdfGeneration(block: Element){
-        
         if(!block.textContent) {
             console.error("No content found in Signal List Block");
             return;
         }
+        const blockId = block.getAttribute('id');
         const parsedBlockContent = JSON.parse(block.textContent) as SignalListOnSCD;
 
         const selectedRows = parsedBlockContent.selected
         const tableRows = parsedBlockContent.matches.matchedRowsForTablePdf
-        const tableHeader = generateTableHeader(selectedRows)
         
         const rows = tableRows.flatMap((row) => {
             return row.matchedFilteredValuesForPdf
         })
-        
-    
-        
-        const body = generateTableBody(rows, tableHeader);
-       
+        const header = selectedRows.map(r => ({value: r.column1, type: 'string'}))
+        const individualRows = rows.map(row => row.map(r => ({value: r, type: 'string'})))
 
-        autoTable(doc, {
-            startY: (marginTop === INITIAL_UPPER_PAGE_COORDINATE) ? marginTop : marginTop + 10,
-            columns: tableHeader,
-            body: body,
+        const fileName = `SignalList_${blockId}`
+        const pdfHintText = `Hint: check ${fileName}.xlsx`
 
-            // styles
-            theme: 'grid',
-            columnStyles: {M_text: {}},
-            headStyles: {fillColor: 0, halign: 'center'},
-            styles: { cellPadding: 0.5, fontSize: 8, halign: 'center'  },
+        const table = [header, ...individualRows]
+        const config = {
+            filename: fileName,
+            sheet: {
+                data: table
+            }
+        }
 
-            //behavior
-            rowPageBreak: 'auto', 
-            pageBreak: 'avoid',
-            horizontalPageBreak: true,
-
-        })
+       renderTextLine(pdfHintText);
+        zipcelx(config)
     }
 
     for(const block of allBlocks){

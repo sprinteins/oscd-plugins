@@ -13,6 +13,12 @@
 
     function handleCancel() {
         isOpen = false;
+
+        lpStore.dialogFormData = {
+            name: "",
+            desc: "",
+            type: LP_TYPE.LPDI,
+        };
     }
 
     function handleSubmit() {
@@ -20,7 +26,6 @@
 
         lpStore.dialogFormData = {
             name: "",
-            instance: 0,
             desc: "",
             type: LP_TYPE.LPDI,
         };
@@ -37,10 +42,14 @@
                 label="LP Type"
                 options={Object.values(LP_TYPE)}
             />
-            <Input bind:value={lpStore.dialogFormData.name} label="LP Name" type="text" />
             <Input
-                bind:value={lpStore.dialogFormData.instance}
-                label="LP Instance"
+                bind:value={lpStore.dialogFormData.name}
+                label="LP Name"
+                type="text"
+            />
+            <Input
+                bind:value={lpStore.dialogFormData.number}
+                label="LP Number"
                 type="number"
             />
             <Input

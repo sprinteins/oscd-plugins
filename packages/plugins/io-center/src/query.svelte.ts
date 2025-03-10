@@ -1,9 +1,9 @@
 import { LP_TYPE } from "./headless/constants";
 import type { IED } from "./ied/ied";
-import { 
-	NodeTypes, 
-	type ObjectNodeLogicalDevice, 
-	type ObjectTree, 
+import {
+	NodeTypes,
+	type ObjectNodeLogicalDevice,
+	type ObjectTree,
 	type ObjectNodeDataObject,
 	type ObjectNodeLogicalNode,
 } from "./ied/object-tree.type.d";
@@ -17,14 +17,14 @@ import type { LpElement } from "./ui/components/lp-list/types.lp-list";
  * how OpenSCD lets us know that the doucment has been updated.
  */
 export function useQuery() {
-	$effect( () => storeIEDs(store.doc, store.editCount))
-	$effect( () => storeObjectTree(store.doc, store.selectedIED, store.editCount))
-	$effect( () => storeLogicalConditioners(store.doc, store.selectedIED, store.editCount))
-	$effect( () => storeLogicalPhysicals(store.doc, store.selectedIED, store.editCount))
+	$effect(() => storeIEDs(store.doc, store.editCount))
+	$effect(() => storeObjectTree(store.doc, store.selectedIED, store.editCount))
+	$effect(() => storeLogicalConditioners(store.doc, store.selectedIED, store.editCount))
+	$effect(() => storeLogicalPhysicals(store.doc, store.selectedIED, store.editCount))
 }
 
 function storeIEDs(doc: Nullable<XMLDocument>, _: unknown) {
-	if (!doc) {	return }
+	if (!doc) { return }
 
 	const iedElements = Array.from(doc.querySelectorAll("IED"))
 	const ieds: IED[] = iedElements.map(iedElementToIED)
@@ -40,7 +40,7 @@ function storeLogicalConditioners(doc: Nullable<XMLDocument>, selectedIED: Nulla
 
 	const lnElements = Array.from(iedElement.querySelectorAll('LN[lnClass="LRTD"], LN[lnClass="LRTI"], LN[lnClass="LRTB"]'))
 
-	const lcs = lnElements.map( (el) => {
+	const lcs = lnElements.map((el) => {
 		return {
 			type: el.getAttribute("lnType") || "",
 			instance: el.getAttribute("inst") || ""
@@ -64,7 +64,7 @@ export function storeLogicalPhysicals(doc: Nullable<XMLDocument>, selectedIED: N
 	for (const value of Object.values(LP_TYPE)) {
 		query.push(`IED[name="${selectedIED.name}"] > AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${value}"]`)
 	}
-	
+
 	const lpElements = Array.from(doc.querySelectorAll(query.join(",")));
 
 	store.lpList = lpElements.map(lpElementToLP)
@@ -74,16 +74,18 @@ function lpElementToLP(lpElement: Element): LpElement {
 	return {
 		id: crypto.randomUUID(),
 		type: lpElement.getAttribute("lnClass") as keyof typeof LP_TYPE || "unknown",
-		name: `${lpElement.getAttribute("lnType") || ""}-${lpElement.getAttribute("inst") || ""}`,
+		name: `${lpElement.getAttribute("lnType") || ""}`,
+		instance: `${lpElement.getAttribute("inst") || ""}`,
+		description: `${lpElement.getAttribute("desc") || ""}`,
 		isLinked: false,
 	}
 }
 
-function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown){
-	if (!doc || !selectedIED){ console.warn("no doc or no ied selected"); return}
+function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
+	if (!doc || !selectedIED) { console.warn("no doc or no ied selected"); return }
 
 	const IEDElement = doc.querySelector(`IED[name="${selectedIED.name}"]`)
-	if (!IEDElement){ console.warn(`IED (name:${selectedIED.name}) not found`); return}
+	if (!IEDElement) { console.warn(`IED (name:${selectedIED.name}) not found`); return }
 
 	const objectTree: ObjectTree = {
 		ied: {
@@ -95,7 +97,7 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 	}
 
 	const lDeviceElements = Array.from(IEDElement.querySelectorAll("LDevice"))
-	objectTree.ied.children = lDeviceElements.map( (ldDeviceElement) => {
+	objectTree.ied.children = lDeviceElements.map((ldDeviceElement) => {
 		const ld: ObjectNodeLogicalDevice = {
 			id: crypto.randomUUID(),
 			inst: ldDeviceElement.getAttribute("inst") || "unknown",
@@ -106,7 +108,7 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 			_type: NodeTypes.logicalDevice
 		}
 
-		ld.children = Array.from(ldDeviceElement.querySelectorAll("LN")).map( (lnElement) => {
+		ld.children = Array.from(ldDeviceElement.querySelectorAll("LN")).map((lnElement) => {
 			const ln: ObjectNodeLogicalNode = {
 				id: crypto.randomUUID(),
 				lnClass: lnElement.getAttribute("lnClass") || "unknown",
@@ -121,14 +123,14 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 
 			// jumping to the LNodeType to get the DOs
 			const lnNodeType = store.doc.querySelector(`LNodeType[id="${lnElement.getAttribute("lnType") || ""}"]`);
-			if(!lnNodeType){ 
+			if (!lnNodeType) {
 				console.warn(`could not find LNodeType with id: ${lnElement.getAttribute("lnType")}`)
 				return ln
-			 }
+			}
 			const dos = Array.from(lnNodeType.querySelectorAll("DO"))
 
-			ln.children = dos.map( (doElement) => {
-				if(!hasCDC(doElement, doc, TARGET_CDC)){
+			ln.children = dos.map((doElement) => {
+				if (!hasCDC(doElement, doc, TARGET_CDC)) {
 					return undefined
 				}
 				const dataObject: ObjectNodeDataObject = {
@@ -148,14 +150,14 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 		return ld
 	})
 	store.objectTreeV2 = objectTree
-	
+
 }
 
 // TARGET_CDC: Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
 // Currently hard-coded by the client request but in future we may make it dynamic and allow the user to fill the targetScd
 const TARGET_CDC = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']
 function hasCDC(doElement: Element, doc: XMLDocument, targetCDC: string[]): boolean {
-	
+
 	const type = doElement.getAttribute("type") || "";
 	if (type === "") {
 		return false;

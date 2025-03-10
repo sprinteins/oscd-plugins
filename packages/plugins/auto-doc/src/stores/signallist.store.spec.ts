@@ -165,7 +165,11 @@ describe('Signallist', () => {
       }
     ];
 
-    const { messageSubscribers, invaliditiesReports } = signallistStore.getSubscribingLogicalDevices(messagePublishers);
+    const subscriberFilter : MessageSubscriberFilter ={
+      GOOSE: ""
+    } 
+
+    const { messageSubscribers, invaliditiesReports } = signallistStore.getSubscribingLogicalDevices(messagePublishers, subscriberFilter);
 
     expect(messageSubscribers).toEqual([
       {
@@ -207,6 +211,41 @@ describe('Signallist', () => {
     expect(invaliditiesReports).toEqual([]);
   });
 
+  it('shouldnot search for subscribers if filter is empty', () => {
+    const messagePublishers: MessagePublisher[] = [
+      {
+        UW: '',
+        VoltageLevel: '',
+        Bay: "",
+        M_text: 'LS SF6 Verlust',
+        signalType: SignalType.GOOSE,
+        IEDName: 'IED1',
+        logicalNodeInformation: {
+          IEDName: 'IED1',
+          LogicalDeviceInstance: 'LD1',
+          LogicalNodePrefix: '',
+          LogicalNodeClass: 'LC1',
+          LogicalNodeInstance: '1',
+          LogicalNodeType: 'LNType1'
+        },
+        dataObjectInformation: {
+          DataObjectName: 'do1',
+          DataAttributeName: 'da1',
+          CommonDataClass: 'CDC1',
+          AttributeType: 'BType1',
+          FunctionalConstraint: 'FC1'
+        }
+      }
+    ];
+
+    const subscriberFilter : MessageSubscriberFilter = {    } 
+
+    const { messageSubscribers, invaliditiesReports } = signallistStore.getSubscribingLogicalDevices(messagePublishers, subscriberFilter);
+
+    expect(messageSubscribers).toEqual([]);
+
+    expect(invaliditiesReports).toEqual([]);
+  });
   it('should return an empty array if no publishing logical devices are present', () => {
     const parser = new DOMParser();
     const xmlString = `<SCL>
@@ -797,6 +836,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
@@ -818,7 +858,7 @@ describe('Signallist', () => {
       }
     ];
 
-    const filter: MessageSubscriberFilter = { IEDName: "IED2" };
+    const filter: MessageSubscriberFilter = { GOOSE: "IED2" };
     const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 
     expect(messageSubscribers).toEqual([
@@ -847,6 +887,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
@@ -868,7 +909,7 @@ describe('Signallist', () => {
       }
     ];
 
-    const filter: MessageSubscriberFilter = { serviceType: "GOOSE" };
+    const filter: MessageSubscriberFilter = { GOOSE: "" };
     const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 
     expect(messageSubscribers).toEqual([
@@ -914,6 +955,7 @@ describe('Signallist', () => {
       {
         UW: '',
         VoltageLevel: '',
+        Bay: "",
         M_text: 'LS SF6 Verlust',
         signalType: SignalType.GOOSE,
         IEDName: 'IED1',
@@ -936,8 +978,7 @@ describe('Signallist', () => {
     ];
 
     const filter : MessageSubscriberFilter = {
-      IEDName: "IED3",
-      serviceType: "GOOSE"
+      GOOSE: "IED3"
     };
     const { messageSubscribers } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 
@@ -973,8 +1014,7 @@ describe('Signallist', () => {
 
 
     const filter : MessageSubscriberFilter = {
-      IEDName: "IED3",
-      serviceType: "GOOSE"
+      GOOSE: "IED3"
     };
     const { matchedRows  } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 
@@ -1029,8 +1069,7 @@ describe('Signallist', () => {
 
 
     const filter : MessageSubscriberFilter = {
-      IEDName: "",
-      serviceType: ""
+      GOOSE: ""
     };
     const { matchedRows  } = signallistStore.getSubscribingLogicalDevices(messagePublishers, filter);
 

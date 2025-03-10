@@ -3,11 +3,12 @@ import {store} from "../../../store.svelte"
 import type { LogicalConditioner } from "../../../ied/logical-conditioner"
 import type { DataObject } from "../../../ied/data-object"
 import type { ObjectNodeDataObject } from "../../../ied/object-tree.type"
+import type { LpElement } from "../lp-list/types.lp-list"
 
 class Store {
 	dataObjects = $derived<NodeElement[]>(store.selectedDataObjects.map(dataObjectToNodeElement))
 	logicalConditioners = $derived(store.logicalConditioners.map(LCToNodeElement))
-	logicalPhysicals = $state<NodeElement[]>([])
+	logicalPhysicals = $derived(store.selectedLogicalPhysicals.map(LPToNodeElement))
 	connections = $state<Connection[]>([])
 	container = $state<HTMLDivElement | null>(null)
 	mousePosition = $state({ x: 0, y: 0 })
@@ -18,6 +19,13 @@ class Store {
 }
 
 export const canvasStore = new Store()
+
+export function LPToNodeElement(lp: LpElement): NodeElement {
+	return {
+		id: `${lp.name}-${lp.instance}`,
+		name: `${lp.type}-${lp.instance}`
+	}
+}
 
 export function LCToNodeElement(lc: LogicalConditioner): NodeElement {
 	return {

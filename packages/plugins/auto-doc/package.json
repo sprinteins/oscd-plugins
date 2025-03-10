@@ -32,7 +32,8 @@
 		"jspdf": "^2.5.2",
 		"jspdf-autotable": "^3.8.4",
 		"svelte-spa-router": "^4.0.1",
-		"uuid": "^10.0.0"
+		"uuid": "^10.0.0",
+		"zipcelx": "^1.6.2"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
