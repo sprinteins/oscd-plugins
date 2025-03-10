@@ -73,10 +73,10 @@
 <div class="template-overview">
     <header class="template-controls">
         <Button variant="raised" class="btn-pill btn-pill-primary" on:click={navigateToCreateTemplate} > 
-            <IconWrapper icon="add"/>
+            <IconWrapper fillColor="white" icon="add"/>
            <Label>Add template</Label> 
         </Button>
-        <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button>
+        <!-- <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button> -->
     </header>  
     <main>
         <Table 

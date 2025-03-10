@@ -102,7 +102,7 @@
                 <Button>open template</Button>
                 <Button>save template</Button>
             </div> -->
-            <Button variant="raised" on:click={downloadTemplateContent}>Export</Button>
+            <Button variant="raised" on:click={downloadTemplateContent}>Generate Document</Button>
         </div>
     </header>
 
@@ -169,6 +169,11 @@
         & .title{
             min-width: 10rem;
             color: black;
+        }
+        .title:hover {
+            cursor: pointer;
+            outline: 2px solid #4285F4;
+            outline-offset: 2px;
         }
     }
     .template-options{
