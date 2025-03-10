@@ -69,9 +69,9 @@
     <DataTable>
         <Head>
             <Row>
-            <Cell checkbox>
+            <!-- <Cell checkbox>
                 <Checkbox />
-            </Cell>
+            </Cell> -->
             <Cell class="big">Name</Cell>
             <Cell>Last Edited</Cell>
             <Cell>Description</Cell>
@@ -81,13 +81,13 @@
         <Body>
             {#each allTemplates as template}
                 <Row>
-                    <Cell checkbox>
+                    <!-- <Cell checkbox>
                         <Checkbox
                             bind:group={selectedTemplates}
                             value={template}
                             valueKey={template.name}
                         />
-                    </Cell>
+                    </Cell> -->
                     <Cell>
                         <Truncate text={template.name} maxChars={40} tooltipPosition="top"/>
                     </Cell>
@@ -106,7 +106,7 @@
                         <Tooltip text="Duplicate">
                             <CustomIconButton icon="content_copy" color="black" on:click={()=>{duplicateTemplate(template.id)}}/>
                         </Tooltip>
-                        <Tooltip text="Download" position="left">
+                        <Tooltip text="Generate Document" position="left">
                             <CustomIconButton icon="download" color="black" on:click={()=>{downloadTemplateContent(template.id)}}/>
                         </Tooltip>
                     </div>
