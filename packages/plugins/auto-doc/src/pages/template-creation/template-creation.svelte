@@ -170,6 +170,11 @@
             min-width: 10rem;
             color: black;
         }
+        .title:hover {
+            cursor: pointer;
+            outline: 2px solid #4285F4;
+            outline-offset: 2px;
+        }
     }
     .template-options{
         width: 20%;
