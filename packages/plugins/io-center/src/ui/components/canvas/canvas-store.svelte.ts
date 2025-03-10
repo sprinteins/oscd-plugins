@@ -1,6 +1,5 @@
-import type { Connection, DialogFormData, NodeElement } from "./types.canvas"
+import type { Connection, DialogFormData, LogicalConditioner, NodeElement } from "./types.canvas"
 import { store } from "../../../store.svelte"
-import type { LogicalConditioner } from "../../../ied/logical-conditioner"
 import type { DataObject } from "../../../ied/data-object"
 import type { ObjectNodeDataObject } from "../../../ied/object-tree.type"
 import type { LpElement } from "../lp-list/types.lp-list"

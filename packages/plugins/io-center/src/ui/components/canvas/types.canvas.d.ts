@@ -29,4 +29,11 @@ export type DialogFormData = {
 	nbOfLCIVPorts?: number
 }
 
+export type LogicalConditioner = {
+	id: string,
+	type: LcTypes,
+	instance: string,
+	isLinked: boolean,
+}
+
 export type LcTypes = keyof typeof LC_TYPE
