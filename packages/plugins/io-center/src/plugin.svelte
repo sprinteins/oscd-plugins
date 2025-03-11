@@ -36,10 +36,6 @@
 	}: Utils.PluginCustomComponentsProps = $props();
 	const isCustomInstance = true;
 
-	$inspect(doc).with((type, doc) => {
-		console.log(doc);
-	});
-	$inspect(editCount);
 	//
 	// Setup
 	//
@@ -50,7 +46,6 @@
 	// we need to trigger a rerendering when the editCount changes
 	// this is how OpenSCD lets us know that there was a change in the document
 	$effect(() => {
-		console.log("edit count changed:", editCount);
 		store.editCount = editCount;
 		store.doc = doc;
 	});

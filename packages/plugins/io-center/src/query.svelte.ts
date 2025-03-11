@@ -46,13 +46,11 @@ function storeLogicalConditioners(doc: Nullable<XMLDocument>, selectedIED: Nulla
 
 	if (!iedElement) { console.warn(`IED (name:${selectedIED.name}) not found`); return }
 
-	const query: string[] = []
+	const lcQuery = Object.values(LC_TYPE)
+		.map(lcType => `AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lcType}"]`)
+		.join(",")
 
-	for (const value of Object.values(LC_TYPE)) {
-		query.push(`IED[name="${selectedIED.name}"] > AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${value}"]`)
-	}
-
-	const lcElements = Array.from(doc.querySelectorAll(query.join(",")));
+	const lcElements = Array.from(iedElement.querySelectorAll(lcQuery));
 
 	store.logicalConditioners = lcElements.map(lcElementToLC)
 }
@@ -69,13 +67,15 @@ function lcElementToLC(lcElement: Element): LogicalConditioner {
 export function storeLogicalPhysicals(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
 	if (!doc || !selectedIED) return
 
-	const query: string[] = []
+	const iedElement = doc.querySelector(`IED[name="${selectedIED.name}"]`)
 
-	for (const value of Object.values(LP_TYPE)) {
-		query.push(`IED[name="${selectedIED.name}"] > AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${value}"]`)
-	}
+	if (!iedElement) { console.warn(`IED (name:${selectedIED.name}) not found`); return }
 
-	const lpElements = Array.from(doc.querySelectorAll(query.join(",")));
+	const lpQuery = Object.values(LP_TYPE)
+		.map(lpType => `AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lpType}"]`)
+		.join(",")
+
+	const lpElements = Array.from(iedElement.querySelectorAll(lpQuery));
 
 	store.lpList = lpElements.map(lpElementToLP)
 }
