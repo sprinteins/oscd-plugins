@@ -1,9 +1,14 @@
 import type { Connection, NodeElement } from "./types.canvas"
+import {store} from "../../../store.svelte"
+import type { LogicalConditioner } from "../../../ied/logical-conditioner"
+import type { DataObject } from "../../../ied/data-object"
+import type { ObjectNodeDataObject } from "../../../ied/object-tree.type"
+import type { LpElement } from "../lp-list/types.lp-list"
 
-class UseCanvasStore {
-	dataObjects = $state<NodeElement[]>([])
-	logicalConditioners = $state<NodeElement[]>([])
-	logicalPhysicals = $state<NodeElement[]>([])
+class Store {
+	dataObjects = $derived<NodeElement[]>(store.selectedDataObjects.map(dataObjectToNodeElement))
+	logicalConditioners = $derived(store.logicalConditioners.map(LCToNodeElement))
+	logicalPhysicals = $derived(store.selectedLogicalPhysicals.map(LPToNodeElement))
 	connections = $state<Connection[]>([])
 	container = $state<HTMLDivElement | null>(null)
 	mousePosition = $state({ x: 0, y: 0 })
@@ -13,4 +18,37 @@ class UseCanvasStore {
 	svgElement = $state<SVGGraphicsElement | null>(null)
 }
 
-export const canvasStore = new UseCanvasStore()
+export const canvasStore = new Store()
+
+export function LPToNodeElement(lp: LpElement): NodeElement {
+	return {
+		id: `${lp.name}-${lp.instance}`,
+		name: `${lp.type}-${lp.instance}`
+	}
+}
+
+export function LCToNodeElement(lc: LogicalConditioner): NodeElement {
+	return {
+		id: `${lc.type}-${lc.instance}`,
+		name: `${lc.type}-${lc.instance}`
+	}
+}
+
+export function dataObjectToNodeElement(dataObject: ObjectNodeDataObject): NodeElement {
+
+	const id = [
+		dataObject.objectPath.ied?.name,
+		dataObject.objectPath.lDevice?.inst,
+		dataObject.objectPath.ln?.lnClass,
+		dataObject.objectPath.ln?.inst,
+		dataObject.name
+	]
+	.filter(Boolean)
+	.join("-")
+
+	const nodeElement = {
+		name: dataObject.name,
+		id,
+	}
+	return nodeElement
+}

@@ -161,14 +161,27 @@
 		draggingEnabled = false
 		isDragging = false
 	}
+	function resetZoom(width: number, height: number) {
+		//only reset zoom if rootNodeWidth / height actually changed
+		//(the rune also triggers when they didn't for some reason...)
+		if (width !== savedRootNodeWidth && height !== savedRootNodeHeight) {
+			svgWidth = width
+			svgHeight = height
+			savedRootNodeWidth = width
+			savedRootNodeHeight = height
+		}
+	}
 
 	//
 	// Zoom
 	//
 	let zoomModifier = 1
 	let zoomStep = 0.1
-	let svgWidth = rootNode.width ?? 0
-	let svgHeight = rootNode.height ?? 0
+	let svgWidth = 0
+	let svgHeight = 0
+	let savedRootNodeWidth = 0
+	let savedRootNodeHeight = 0
+	$: resetZoom(rootNode.width, rootNode.height)
 
 	async function handleMouseWheel(e: WheelEvent) {
 		if (!e.ctrlKey && !e.metaKey) {

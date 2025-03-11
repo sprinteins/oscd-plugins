@@ -144,7 +144,6 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
     }
     const substation = xmlDoc.querySelector('Substation');
     const substationName = substation ? substation.getAttribute('name') || '' : '';
-    const voltageLevel = substation?.querySelector("VoltageLevel")?.getAttribute('name')|| '';
 
     const DOIs = ln.querySelectorAll('DOI');
     for (const DOI of DOIs) {
@@ -205,11 +204,36 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                     publisher.dataObjectInformation.AttributeType === attributeType &&
                     publisher.dataObjectInformation.FunctionalConstraint === fc
                 );
+
                 if (!isDuplicate) {
+                    let voltageLevelName = ''
+                    let bayName = ''
+
+                    const voltageLevel = substation?.querySelectorAll("VoltageLevel");
+
+                    if(voltageLevel){
+                        
+                        for (const vl of voltageLevel) {
+                           const bays = vl.querySelectorAll("Bay");
+                           for (const bay of bays) {
+
+                            const lNodes = bay.querySelectorAll("LNode");
+
+                            for(const ln of lNodes){
+                                const lnIedName = ln.getAttribute("iedName")
+                                if(lnIedName === IEDName ){
+                                    bayName = bay.getAttribute("name") || ''
+                                    voltageLevelName = vl.getAttribute("name") || ''
+                                }
+                            }
+                            
+                           }
+                        }
+                    }
                     messagePublishers.push({ 
                         [MESSAGE_PUBLISHER.UW]: substationName, 
-                        [MESSAGE_PUBLISHER.VoltageLevel]: voltageLevel,
-                        [MESSAGE_PUBLISHER.Bay]: '',
+                        [MESSAGE_PUBLISHER.VoltageLevel]: voltageLevelName,
+                        [MESSAGE_PUBLISHER.Bay]: bayName,
                         [MESSAGE_PUBLISHER.M_text]: desc, 
                         [MESSAGE_PUBLISHER.SignalType]: signalType, 
                         [MESSAGE_PUBLISHER.IEDName]: IEDName, 
@@ -372,21 +396,27 @@ function getValueFromNestedProperty(publisher: MessagePublisher, key: keyof Mess
 }
 
 function filterMessageSubscribers(messageSubscribers: MessageSubscriber[], filter: MessageSubscriberFilter): MessageSubscriberAndPdfContent {
+    const filterMessageTypes = Object.keys(filter) as (keyof MessageSubscriberFilter)[];
+
 
     const allMessageSubscribers: MessageSubscriber[] = [];
+
     for (const subscriber of messageSubscribers) {
+        for(const messageType of filterMessageTypes) {
+            const IEDNameSearch = filter[messageType];
 
-        const matchesIEDName = !filter.IEDName || 
-            subscriber.IEDName.toLocaleLowerCase().includes(filter.IEDName.toLocaleLowerCase()) ||
-            (filter.IEDName.trim() === '');
-
-        const matchesServiceType = !filter.serviceType ||
-            subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(filter.serviceType.toLocaleLowerCase()) ||
-            (filter.serviceType.trim() === '');
-
-        if(matchesIEDName && matchesServiceType){
-            allMessageSubscribers.push(subscriber);
-            setSubscriberIedNameInCorrespondingPublisher(subscriber, get(pdfRowValues))
+            const matchesServiceType = messageType &&
+            (subscriber.ExtRef.serviceType.toLocaleLowerCase().includes(messageType.toLocaleLowerCase()) ||
+            (messageType.trim() === ''));            
+            
+            const matchesIEDName = !IEDNameSearch ||
+            subscriber.IEDName.toLocaleLowerCase().includes(IEDNameSearch.toLocaleLowerCase()) ||
+            (IEDNameSearch.trim() === '');
+            
+            if(matchesIEDName && matchesServiceType){
+                allMessageSubscribers.push(subscriber);
+                setSubscriberIedNameInCorrespondingPublisher(subscriber, get(pdfRowValues))
+            }
         }
     }
         

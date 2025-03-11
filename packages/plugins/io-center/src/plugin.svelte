@@ -11,65 +11,6 @@
 	}}
 />
 
-<script lang="ts">
-	import { onMount } from "svelte";
-	import jsonPackage from "../package.json";
-	import { initPlugin, initSsdTemplate } from "@oscd-plugins/core-ui-svelte";
-	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
-	import Layout from "./ui/layout.svelte";
-	import store from "./store.svelte";
-	import { buildObjectTree, initQuery } from "./query.svelte";
-	import { newCommand, type Command } from "./command.svelte";
-	import IEDSelect from "./ied/ied-select.svelte";
-	import type { Nullable } from "./types";
-	import type { IED } from "./ied/ied";
-	import ObjectTree from "./ui/components/object-tree/object-tree.svelte";
-    import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
-
-	// props
-	const {
-		doc,
-		docName,
-		editCount,
-		// isCustomInstance
-	}: Utils.PluginCustomComponentsProps = $props();
-
-	//
-	// Setup
-	//
-	let root = $state<Nullable<HTMLElement>>(null);
-	let cmd = $state<Command>(newCommand(store, () => root));
-
-	onMount(() => {
-		storeDoc(doc);
-		initQuery(store);
-	});
-
-	// we need to trigger a rerendering when the editCount changes
-	// this is how OpenSCD lets us know that there was a change in the document
-	$effect(() => {
-		let onlyForEffectTriggering = editCount;
-		storeDoc(doc);
-	});
-
-	function storeDoc(doc: Nullable<XMLDocument>) {
-		console.log("changing doc:", doc);
-		store.doc = doc;
-	}
-
-	function addIED() {
-		cmd.addIED();
-	}
-
-	function selectIED(ied: IED) {
-		cmd.selectIED(ied);
-	}
-
-	function onSelectIED(ied: IED) {
-		selectIED(ied);
-		buildObjectTree();
-	}
-</script>
 
 <main
 	use:initPlugin={{
@@ -77,6 +18,7 @@
 		getDocName: () => docName,
 		getEditCount: () => editCount,
 		getIsCustomInstance: () => isCustomInstance,
+		getHost: () => $host(),
 		host: $host(),
 		theme: "legacy-oscd-instance",
 	}}
@@ -85,15 +27,81 @@
 	bind:this={root}
 >
 	<Layout>
-		<div slot="sidebar-left">
-			<IEDSelect {onSelectIED} />
-			{#if store.objectTree.length > 0}
-				<ObjectTree />
-			{/if}
-		</div>
-		<div slot="content">
-			<CanvasArea />
-		</div>
-		<div slot="sidebar-right">sidebar right</div>
+		<SideBarLeft slot="sidebar-left" />
+		<CanvasArea
+			slot="content"
+			{onAddLC}
+		/>
+		<LpList slot="sidebar-right" {addLp} {removeLP} {editLP}/>
 	</Layout>
 </main>
+
+<style>
+	
+</style>
+
+<script lang="ts">
+	import jsonPackage from "../package.json";
+	import { initPlugin } from "@oscd-plugins/core-ui-svelte";
+	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
+	import Layout from "./ui/layout.svelte";
+	import { useQuery } from "./query.svelte";
+	import { newCommand, type Command } from "./command.svelte";
+	
+	import type { Nullable } from "./types";
+	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
+	import LpList from "./ui/components/lp-list/lp-list.svelte";
+	import { store } from "./store.svelte";
+	import SideBarLeft from "./sidebar-left.svelte";
+    import type { LCType } from "./ui/components/canvas/add-lc-dialog/add-lc-dialog.types";
+    import type { LpElement } from "./ui/components/lp-list/types.lp-list";
+
+	// props
+	const {
+		doc,
+		docName,
+		editCount,
+		// isCustomInstance
+	}: Utils.PluginCustomComponentsProps = $props();
+	const isCustomInstance= true
+
+	$inspect(doc).with((type, doc) => {
+		console.log(doc)
+	})
+	$inspect(editCount)
+	//
+	// Setup
+	//
+	let root = $state<Nullable<HTMLElement>>(null);
+	let cmd = $state<Command>(newCommand(() => root));	
+	useQuery()		
+
+	// we need to trigger a rerendering when the editCount changes
+	// this is how OpenSCD lets us know that there was a change in the document
+	$effect(() => {
+		console.log("edit count changed:", editCount)
+		store.editCount = editCount;
+		store.doc = doc
+	});
+
+	function onAddLC(lcType: LCType, instance: string, nrOfLRTIInputs?: number){
+		if(!store.selectedIED){ 
+			console.warn("No IED selected")
+			return
+		}
+		cmd.addLC(store.selectedIED.name, lcType, instance)
+	}
+
+	function addLp() {
+		cmd.addLp();
+	}
+
+	function removeLP(lpElement: LpElement) {
+		cmd.removeLP(lpElement)
+	}
+
+	function editLP(lpElement: LpElement, name: string, desc: string) {
+		cmd.editLP(lpElement, name, desc)
+	}
+
+</script>

@@ -9,12 +9,25 @@
     import type {BlockElement, ElementType, ElementMap} from '@/components/elements/types.elements'
 
     // Prop
-    export let templateId: string
+    export let template: Element
+
+
+    const allBlocks = Array.from( template.querySelectorAll("Block"))
+    
+    const mappedBlocks : BlockElement[] = allBlocks.map(block => {
+        return {
+            id: block.getAttribute("id") as string,
+            type: block.getAttribute("type") as ElementType,
+            content: block.textContent
+        }
+    })
+    
+
+    
 
 
     let isElementsChoiceVisible = false
-    let blockElements : BlockElement[] = []
-    const template = docTemplatesStore.getDocumentTemplate(templateId) as Element;
+    let blockElements : BlockElement[] = mappedBlocks
     const componentMap : ElementMap  = {
         "text": TextElement,
         "image": ImageElement,

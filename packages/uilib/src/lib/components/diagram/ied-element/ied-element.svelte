@@ -50,7 +50,6 @@ $: bays = Array.from(node.bays).join(', ')
 
 		/* TODO: extract colors */
 		background: var(--color-white);
-		color: var(--color-black);
 		border: 1px solid var(--color-cyan);
 		box-shadow: inset 0px 0px 6px rgba(77, 93, 99, 0.15);
 		border-radius: 5px;
