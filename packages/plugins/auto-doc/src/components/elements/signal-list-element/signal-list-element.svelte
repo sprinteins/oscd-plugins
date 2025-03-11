@@ -1,5 +1,6 @@
 <script lang="ts">
     import {signallistStore} from '@/stores';
+    import { signalDndStore } from '../../../stores/signal-dnd.store'
 
 	import SignalRow from './signal-row.svelte';
 	import type { SignalRow as SignalRowType, PdfRows, SignalListOnSCD} from './types.signal-list';
@@ -114,10 +115,28 @@
 		].includes(SignalType[searchKey as unknown as keyof typeof SignalType]);
 
 	}
+
+	function handleDrop() {
+        const { draggedIndex, dropIndex } = signalDndStore
+        if (draggedIndex === -1 || dropIndex === -1) return
+        
+        const newRows = [...mergedColsAndMessages]
+        const [draggedRow] = newRows.splice(draggedIndex, 1)
+        newRows.splice(dropIndex, 0, draggedRow)
+        
+        mergedColsAndMessages = newRows
+        emitSelectedRows()
+        
+        signalDndStore.handleDragEnd()
+    }
 </script>
 
 
-<article class="signal-list">
+<article 
+    class="signal-list"
+    on:dragover|preventDefault
+    on:drop={handleDrop}
+>
 	{#each mergedColsAndMessages as row (row.index)}
 		<SignalRow 
 			idx={row.index}

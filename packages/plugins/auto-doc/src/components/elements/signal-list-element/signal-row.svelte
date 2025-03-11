@@ -5,6 +5,7 @@
 	import type { SignalRow, LabelText, Label } from './types.signal-list';
 
     import {debounce} from '@/utils/';
+    import { signalDndStore } from '../../../stores/signal-dnd.store'
 
     //Props
     export let idx = 1;
@@ -48,7 +49,12 @@
 </script>
 
 
-<div class="signal-row">
+<div class="signal-row" 
+    ondragover={(e) => {
+        e.preventDefault()
+        signalDndStore.updateDropIndex(idx)
+    }}
+>
     {#if isFirstRow()}
         <div></div>
         <div>
@@ -95,23 +101,38 @@
 </div>
 
 <style lang="scss">
-    .signal-row{
+    .signal-row {
         display: grid;
-        grid-template-columns: 3% repeat(2, 1fr) auto;
+        grid-template-columns: auto 3% repeat(2, 1fr);
         grid-gap: 1rem;
         align-items: center;
         margin-bottom: 1rem;
-        position: relative;
+        padding: 0.5rem;
 
-       & :global(.mdc-text-field__input[disabled]){
+        &:hover .drag-handle {
+            opacity: 1;
+        }
+
+        & :global(.mdc-text-field__input[disabled]) {
             cursor: not-allowed;
         }
 
-        small{
+        small {
             color: #4d5d63;
             text-align: center;
         }
+    }
 
+    .drag-handle {
+        cursor: grab;
+        opacity: 0.3;
+        transition: opacity 0.2s;
+        display: flex;
+        align-items: center;
+        
+        &:active {
+            cursor: grabbing;
+        }
     }
 
     .grip-dots {
