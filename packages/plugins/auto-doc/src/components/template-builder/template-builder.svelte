@@ -47,6 +47,24 @@
         blockElements = [...blockElements, newBlockElement]
     }
 
+
+    function duplicateBlockElement(blockElement: BlockElement){
+        const {id} = blockElement;
+        const duplicatedElement = docTemplatesStore.duplicateBlockFromDocumentTemplate(template, id);
+
+        if(!duplicatedElement) {
+            return;
+        }
+
+        const newBlockElement = structuredClone(blockElement);
+        newBlockElement.id = duplicatedElement.id;
+        newBlockElement.content = duplicatedElement.textContent;
+        
+        const position = blockElements.indexOf(blockElement) + 1;
+        blockElements = [...blockElements.slice(0, position), newBlockElement, ...blockElements.slice(position)];
+}
+
+
     function deleteBlockElement(event: CustomEvent<{elementId: string}>){
         const {elementId} = event.detail
         docTemplatesStore.deleteBlockFromDocumentTemplate(template, elementId);
@@ -67,7 +85,7 @@
 
         <div class="elements-list">
             {#each blockElements as blockElement (blockElement.id)}
-                <ElementWrapper elementId={blockElement.id} on:elementDelete={deleteBlockElement}>
+                <ElementWrapper elementId={blockElement.id} on:elementDuplicate={() => duplicateBlockElement(blockElement)} on:elementDelete={deleteBlockElement}>
                     <svelte:component 
                         this={componentMap[blockElement.type]}
                         content={blockElement.content}

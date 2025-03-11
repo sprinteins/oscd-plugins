@@ -187,6 +187,21 @@ function deleteDocumentTemplate(docTemplateId: string) {
     }
 }
 
+function duplicateBlockFromDocumentTemplate(docTemplate: Element, blockId: string) {
+    const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
+    if(!blockElement || blockElement.parentNode !== docTemplate) {
+        return null;
+    }
+    
+    const duplicatedElement = blockElement.cloneNode(true) as Element;
+    duplicatedElement.setAttribute("id", uuidv4());
+
+    docTemplate.appendChild(duplicatedElement);
+    eventStore.createAndDispatchActionEvent(docTemplate, duplicatedElement);
+    
+    return duplicatedElement;
+}
+
 function duplicateDocumentTemplate(docTemplateId: string) {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -238,5 +253,6 @@ export const docTemplatesStore = {
     editBlockContentOfDocumentTemplate,
     deleteDocumentTemplate,
     deleteBlockFromDocumentTemplate,
-    duplicateDocumentTemplate
+    duplicateDocumentTemplate,
+    duplicateBlockFromDocumentTemplate,
 };
