@@ -50,6 +50,7 @@
 
 <div class="signal-row">
     {#if isFirstRow()}
+        <div></div>
         <div>
             <Checkbox 
                 on:click={toggleAllCheckboxes}
@@ -58,8 +59,22 @@
         </div>
         <small>Choose the columns you want to display and rename if needed</small>
         <small>Use the filter to limit the content of the columns to certain values</small>
-        
     {/if}
+    <div 
+        class="drag-handle"
+        draggable="true"
+        on:dragstart={() => signalDndStore.handleDragStart(idx)}
+        on:dragend={() => signalDndStore.handleDragEnd()}
+    >
+        <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
+            <circle cx="6" cy="6" r="2"/>
+            <circle cx="12" cy="6" r="2"/>
+            <circle cx="6" cy="12" r="2"/>
+            <circle cx="12" cy="12" r="2"/>
+            <circle cx="6" cy="18" r="2"/>
+            <circle cx="12" cy="18" r="2"/>
+        </svg>
+    </div>
     <Checkbox bind:checked={isSelected} />
     <Textfield
         bind:value={column1}
@@ -79,14 +94,14 @@
     </Textfield>
 </div>
 
-
 <style lang="scss">
     .signal-row{
         display: grid;
-        grid-template-columns: 3% repeat(2, 1fr);
+        grid-template-columns: 3% repeat(2, 1fr) auto;
         grid-gap: 1rem;
         align-items: center;
         margin-bottom: 1rem;
+        position: relative;
 
        & :global(.mdc-text-field__input[disabled]){
             cursor: not-allowed;
@@ -97,5 +112,9 @@
             text-align: center;
         }
 
+    }
+
+    .grip-dots {
+        fill: currentColor;
     }
 </style>
