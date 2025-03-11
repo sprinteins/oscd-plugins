@@ -23,7 +23,7 @@ export type NodeProps = {
 	stopDrawing: (node: string, side: string) => void
 }
 
-export type DialogFormData = {
+export type FormData = {
 	type: LcTypes,
 	number?: number,
 	nbOfLCIVPorts?: number

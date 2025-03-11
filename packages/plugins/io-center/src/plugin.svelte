@@ -24,7 +24,8 @@
 	import LpList from "./ui/components/lp-list/lp-list.svelte";
 	import { store } from "./store.svelte";
 	import SideBarLeft from "./sidebar-left.svelte";
-	import type { LpElement } from "./ui/components/lp-list/types.lp-list";
+	import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list";
+    import type { LcTypes } from "./ui/components/canvas/types.canvas";
 
 	// props
 	const {
@@ -54,12 +55,12 @@
 		store.doc = doc;
 	});
 
-	function onAddLC() {
-		cmd.addLC();
+	function onAddLC(type: LcTypes, number?: number) {
+		cmd.addLC(type, number);
 	}
 
-	function addLp() {
-		cmd.addLp();
+	function addLp(type: LpTypes, name: string, desc: string, number?: number) {
+		cmd.addLp(type, name, desc, number);
 	}
 
 	function removeLP(lpElement: LpElement) {

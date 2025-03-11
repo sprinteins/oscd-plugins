@@ -12,9 +12,10 @@
 	import { Plus } from "lucide-svelte";
 	import AddLCDialog from "./add-lc-dialog.svelte";
 	import { store } from "../../../store.svelte";
+    import type { LcTypes } from "./types.canvas";
 
 	type Props = {
-		onAddLC: () => void;
+		onAddLC: (type: LcTypes, number?: number) => void;
 	};
 
 	const { onAddLC }: Props = $props();

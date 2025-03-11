@@ -2,17 +2,21 @@
 	import { LC_TYPE } from "@/headless/constants";
 	import Input from "../common/input.svelte";
 	import Select from "../common/select.svelte";
-	import { canvasStore } from "./canvas-store.svelte";
+	import type { FormData, LcTypes } from "./types.canvas";
 
 	type Props = {
 		isOpen: boolean;
-		addLc: () => void;
+		addLc: (type: LcTypes, number?: number) => void;
 	};
 
 	let { isOpen = $bindable(), addLc }: Props = $props();
 
+	let formData = $state<FormData>({
+		type: LC_TYPE.LCBI,
+	});
+
 	function handleCancel() {
-		canvasStore.formData = {
+		formData = {
 			type: LC_TYPE.LCBI,
 		};
 
@@ -20,9 +24,9 @@
 	}
 
 	function handleSubmit() {
-		addLc();
+		addLc(formData.type, formData.number);
 
-		canvasStore.formData = {
+		formData = {
 			type: LC_TYPE.LCBI,
 		};
 
@@ -34,18 +38,18 @@
 	<div role="button" id="modal" class="backdrop">
 		<div class="container space-y-4">
 			<Select
-				bind:value={canvasStore.formData.type}
+				bind:value={formData.type}
 				label="LC Type"
 				options={Object.values(LC_TYPE)}
 			/>
 			<Input
-				bind:value={canvasStore.formData.number}
+				bind:value={formData.number}
 				label="LP Number"
 				type="number"
 			/>
-			{#if canvasStore.formData.type === LC_TYPE.LCIV}
+			{#if formData.type === LC_TYPE.LCIV}
 				<Input
-					bind:value={canvasStore.formData.nbOfLCIVPorts}
+					bind:value={formData.nbOfLCIVPorts}
 					label="Number of Ports"
 					type="number"
 				/>

@@ -1,17 +1,16 @@
 import { createAndDispatchEditEvent } from "@oscd-plugins/core-api/plugin/v1"
 import { store } from "./store.svelte"
 import type { Nullable } from "./types"
-import { lpStore } from "./ui/components/lp-list/lp-store.svelte"
-import type { LpElement } from "./ui/components/lp-list/types.lp-list"
+import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
 import { createElement } from "./headless/stores/document-helpers.svelte"
-import { canvasStore } from "./ui/components/canvas/canvas-store.svelte"
+import type { LcTypes } from "./ui/components/canvas/types.canvas"
 
 export class Command {
 	constructor(
 		private getHost: HostGetter,
 	) { }
 
-	public addLp() {
+	public addLp(type: LpTypes, name: string, desc: string, number?: number) {
 		if (!store.doc) { return }
 
 		const sclRoot = store.doc.querySelector("SCL");
@@ -19,8 +18,6 @@ export class Command {
 		if (!sclRoot) { return }
 
 		const host = this.requireHost()
-
-		const { type, name, desc, number } = lpStore.dialogFormData
 
 		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
 
@@ -116,7 +113,7 @@ export class Command {
 		}
 	}
 
-	public addLC() {
+	public addLC(type: LcTypes, number?: number) {
 		if (!store.doc) { console.warn("no doc"); return; }
 
 		const host = this.requireHost()
@@ -124,8 +121,6 @@ export class Command {
 		const ied = this.requireSelectedIED()
 
 		const ld0 = this.ensureLD0(ied)
-
-		const { type, number } = canvasStore.formData
 
 		const currentLPNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
 

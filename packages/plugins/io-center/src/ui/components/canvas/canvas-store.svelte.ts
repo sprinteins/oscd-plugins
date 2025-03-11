@@ -1,9 +1,7 @@
-import type { Connection, DialogFormData, LogicalConditioner, NodeElement } from "./types.canvas"
+import type { Connection, LogicalConditioner, NodeElement } from "./types.canvas"
 import { store } from "../../../store.svelte"
-import type { DataObject } from "../../../ied/data-object"
 import type { ObjectNodeDataObject } from "../../../ied/object-tree.type"
 import type { LpElement } from "../lp-list/types.lp-list"
-import { LC_TYPE } from "@/headless/constants"
 
 class Store {
 	dataObjects = $derived<NodeElement[]>(store.selectedDataObjects.map(dataObjectToNodeElement))
@@ -16,9 +14,6 @@ class Store {
 	drawStartPoint = $state<EventTarget | null>(null)
 	lastStartPoint = $state<EventTarget | null>(null)
 	svgElement = $state<SVGGraphicsElement | null>(null)
-	formData = $state<DialogFormData>({
-		type: LC_TYPE.LCBI,
-	});
 }
 
 export const canvasStore = new Store()
