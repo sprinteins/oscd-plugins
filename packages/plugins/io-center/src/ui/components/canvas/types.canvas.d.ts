@@ -24,6 +24,7 @@ export type NodeProps = {
 	showRightCircle: boolean
 	startDrawing: (event: MouseEvent) => void
 	stopDrawing: (node: string, side: string) => void
+	editLC?: (lcNode: NodeElement, newType: LcTypes) => void;
 }
 
 export type FormData = {

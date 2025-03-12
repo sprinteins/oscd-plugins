@@ -2,6 +2,7 @@
   import { NODE_ELEMENT_TYPE } from "@/headless/constants";
   import EditButton from "../common/edit-button.svelte";
   import type { NodeProps } from "./types.canvas";
+  import EditLcDialog from "./edit-lc-dialog.svelte";
 
   let {
     node,
@@ -9,17 +10,25 @@
     showRightCircle,
     startDrawing,
     stopDrawing,
+    editLC,
   }: NodeProps = $props();
 
   let isSelected = $state(false);
+  let showEditDialog = $state(false);
 
   function handleSelect() {
     isSelected = !isSelected;
   }
 </script>
 
-{#if isSelected && node.type === NODE_ELEMENT_TYPE.LC}
-  <EditButton />
+{#if isSelected && node.type === NODE_ELEMENT_TYPE.LC && editLC}
+  <EditButton onclick={() => (showEditDialog = true)} />
+  <EditLcDialog
+    bind:isOpen={showEditDialog}
+    bind:nodeSelected={isSelected}
+    lcNode={node}
+    {editLC}
+  />
 {:else}
   <!-- placeholder to prevent jumping -->
   <div class="h-8"></div>

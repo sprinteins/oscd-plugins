@@ -21,7 +21,7 @@ export const canvasStore = new Store()
 
 export function LPToNodeElement(lp: LpElement): NodeElement {
 	return {
-		id: `${lp.name}-${lp.instance}`,
+		id: lp.id,
 		type: NODE_ELEMENT_TYPE.LP,
 		name: `${lp.type}-${lp.instance}`
 	}
@@ -29,7 +29,7 @@ export function LPToNodeElement(lp: LpElement): NodeElement {
 
 export function LCToNodeElement(lc: LogicalConditioner): NodeElement {
 	return {
-		id: `${lc.type}-${lc.instance}`,
+		id: lc.id,
 		type: NODE_ELEMENT_TYPE.LC,
 		name: `${lc.type}-${lc.instance}`
 	}

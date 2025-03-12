@@ -25,7 +25,7 @@
 	import { store } from "./store.svelte";
 	import SideBarLeft from "./sidebar-left.svelte";
 	import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list";
-    import type { LcTypes } from "./ui/components/canvas/types.canvas";
+    import type { LcTypes, NodeElement } from "./ui/components/canvas/types.canvas";
 
 	// props
 	const {
@@ -52,6 +52,10 @@
 
 	function onAddLC(type: LcTypes, number?: number) {
 		cmd.addLC(type, number);
+	}
+
+	function editLC(lcNode: NodeElement, newType: LcTypes) {
+		cmd.editLC(lcNode, newType);
 	}
 
 	function addLp(type: LpTypes, name: string, desc: string, number?: number) {
@@ -83,7 +87,7 @@
 >
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
-		<CanvasArea slot="content" {onAddLC} />
+		<CanvasArea slot="content" {onAddLC} {editLC}/>
 		<LpList slot="sidebar-right" {addLp} {removeLP} {editLP} />
 	</Layout>
 </main>
