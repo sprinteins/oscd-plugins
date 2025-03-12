@@ -56,48 +56,51 @@
     }}
 >
     {#if isFirstRow()}
-        <div></div>
         <div>
-            <Checkbox 
-                on:click={toggleAllCheckboxes}
-                bind:checked={areAllCheckboxesSelected}
-            />
+            <div></div>
+            <div>
+                <Checkbox 
+                    on:click={toggleAllCheckboxes}
+                    bind:checked={areAllCheckboxesSelected}
+                />
+            </div>
+            <small>Choose the columns you want to display and rename if needed</small>
+            <small>Use the filter to limit the content of the columns to certain values</small>
         </div>
-        <small>Choose the columns you want to display and rename if needed</small>
-        <small>Use the filter to limit the content of the columns to certain values</small>
     {/if}
-    <div 
-        class="drag-handle"
-        draggable="true"
+    <div draggable="true"
         on:dragstart={() => signalDndStore.handleDragStart(idx)}
-        on:dragend={() => signalDndStore.handleDragEnd()}
-    >
-        <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
-            <circle cx="6" cy="6" r="2"/>
-            <circle cx="12" cy="6" r="2"/>
-            <circle cx="6" cy="12" r="2"/>
-            <circle cx="12" cy="12" r="2"/>
-            <circle cx="6" cy="18" r="2"/>
-            <circle cx="12" cy="18" r="2"/>
-        </svg>
+        on:dragend={() => signalDndStore.handleDragEnd()}>
+        <div 
+            class="drag-handle"
+        >
+            <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
+                <circle cx="6" cy="6" r="2"/>
+                <circle cx="12" cy="6" r="2"/>
+                <circle cx="6" cy="12" r="2"/>
+                <circle cx="12" cy="12" r="2"/>
+                <circle cx="6" cy="18" r="2"/>
+                <circle cx="12" cy="18" r="2"/>
+            </svg>
+        </div>
+        <Checkbox bind:checked={isSelected} />
+        <Textfield
+            bind:value={column1}
+            variant="outlined"
+            label={createSuffixForLabelIfNeeded(label.col1Label)}
+            on:input= {e => debounceUserInput('column1', e.target.value)}
+            disabled={!isSelected}
+            >
+        </Textfield>
+        <Textfield
+            bind:value={column2}
+            variant="outlined"
+            label={createSuffixForLabelIfNeeded(label.col2Label)}
+            on:input= {e => debounceUserInput('column2', e.target.value)}
+            disabled={!isSelected}
+            >
+        </Textfield>
     </div>
-    <Checkbox bind:checked={isSelected} />
-    <Textfield
-        bind:value={column1}
-        variant="outlined"
-        label={createSuffixForLabelIfNeeded(label.col1Label)}
-        on:input= {e => debounceUserInput('column1', e.target.value)}
-        disabled={!isSelected}
-        >
-    </Textfield>
-    <Textfield
-        bind:value={column2}
-        variant="outlined"
-        label={createSuffixForLabelIfNeeded(label.col2Label)}
-        on:input= {e => debounceUserInput('column2', e.target.value)}
-        disabled={!isSelected}
-        >
-    </Textfield>
 </div>
 
 <style lang="scss">

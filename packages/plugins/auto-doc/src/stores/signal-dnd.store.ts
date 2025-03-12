@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store'
+import { writable, get } from 'svelte/store'
 
 class SignalDndStore {
   private _draggedIndex = writable<number>(-1)
@@ -18,15 +18,11 @@ class SignalDndStore {
   }
 
   get draggedIndex() {
-    let value: number
-    this._draggedIndex.subscribe(v => value = v)()
-    return value!
+    return get(this._draggedIndex)
   }
 
   get dropIndex() {
-    let value: number
-    this._dropIndex.subscribe(v => value = v)()
-    return value
+    return get(this._dropIndex)
   }
 }
 
