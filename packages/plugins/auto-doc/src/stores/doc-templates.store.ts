@@ -196,7 +196,6 @@ function duplicateBlockFromDocumentTemplate(docTemplate: Element, blockId: strin
     const duplicatedElement = blockElement.cloneNode(true) as Element;
     duplicatedElement.setAttribute("id", uuidv4());
 
-    docTemplate.appendChild(duplicatedElement);
     eventStore.createAndDispatchActionEvent(docTemplate, duplicatedElement);
     
     return duplicatedElement;
