@@ -46,15 +46,13 @@
     dispatch('toggleAllCheckboxes', {value: areAllCheckboxesSelected});
   }
 
+  $: isDropTarget = signalDndStore.draggedIndex !== -1 && 
+                   signalDndStore.dropIndex === idx;
+
 </script>
 
 
-<div class="signal-row" 
-    ondragover={(e) => {
-        e.preventDefault()
-        signalDndStore.updateDropIndex(idx)
-    }}
->
+<div class="signal-row" class:dragging={signalDndStore.draggedIndex === idx}>
     {#if isFirstRow()}
         <div>
             <div></div>
@@ -103,14 +101,27 @@
     </div>
 </div>
 
+<div 
+    class="drop-zone" 
+    class:active={isDropTarget}
+    on:dragover|preventDefault={() => signalDndStore.updateDropIndex(idx)}
+>
+</div>
+
 <style lang="scss">
     .signal-row {
         display: grid;
         grid-template-columns: auto 3% repeat(2, 1fr);
         grid-gap: 1rem;
         align-items: center;
-        margin-bottom: 1rem;
         padding: 0.5rem;
+        border: 1px solid #ff0000;
+        border-radius: 4px;
+        background: white;
+        
+        &.dragging {
+            opacity: 0.5;
+        }
 
         &:hover .drag-handle {
             opacity: 1;
@@ -140,5 +151,18 @@
 
     .grip-dots {
         fill: currentColor;
+    }
+
+    .drop-zone {
+        height: 0;
+        transition: height 0.2s ease;
+        border: 2px dashed transparent;
+        margin: 0 0.5rem;
+        
+        &.active {
+            height: 60px;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
     }
 </style>

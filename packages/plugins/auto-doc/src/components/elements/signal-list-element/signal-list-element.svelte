@@ -118,7 +118,7 @@
 
 	function handleDrop() {
         const { draggedIndex, dropIndex } = signalDndStore
-        if (draggedIndex === -1 || dropIndex === -1) return
+        // if (draggedIndex === -1 || dropIndex === -1) return
         
         const newRows = [...mergedColsAndMessages]
         const [draggedRow] = newRows.splice(draggedIndex, 1)
@@ -134,8 +134,8 @@
 
 <article 
     class="signal-list"
+    on:drop|preventDefault={handleDrop}
     on:dragover|preventDefault
-    on:drop={handleDrop}
 >
 	{#each mergedColsAndMessages as row (row.index)}
 		<SignalRow 
@@ -151,7 +151,9 @@
 </article>
 
 <style lang="scss">
-	.signal-list{
+	.signal-list {
 		width: 99%;
+		display: flex;
+		flex-direction: column;
 	}
 </style>
