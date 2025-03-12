@@ -153,7 +153,7 @@ function generateBayLayout(ieds: IEDNode[], edges: IEDConnectionWithCustomValues
 	const bays: IEDNode = []
 	let id = 0
 	for (const ied of ieds) {
-		if (ied.bays.size === 0) {
+		if (!ied.bays || ied.bays.size === 0) {
 			children.push(ied);
 			continue;
 		}
