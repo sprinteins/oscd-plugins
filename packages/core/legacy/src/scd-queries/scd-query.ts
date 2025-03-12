@@ -66,7 +66,7 @@ export class SCDQueries {
 
 	public getBaysByIEDName(name: string): Set<string> {
 		const root = this.determineRoot()
-		const selector = `SCL Substation VoltageLevel Bay LNode[iedName='${name}']`
+		const selector = `SCL Substation VoltageLevel Bay LNode${name ? `[iedName='${name}']` : ''}`
 		// const selector = `SCL > Substation > VoltageLevel > Bay > LNode[iedName='${name}']`
 
 		const lnodes = Array.from(root.querySelectorAll(selector))
@@ -82,6 +82,10 @@ export class SCDQueries {
 		}
 
 		return connections
+	}
+
+	public getBays(): Set<string> {
+		return this.getBaysByIEDName('')
 	}
 
 	public getConnectedAPByIEDName(name: string): Set<Element> {
