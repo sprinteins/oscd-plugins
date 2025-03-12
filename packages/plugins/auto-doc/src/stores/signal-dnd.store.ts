@@ -5,17 +5,18 @@ class SignalDndStore {
   private _dropIndex = writable<number>(-1)
 
   handleDragStart(index: number) {
-    console.log('handleDragStart', index)
+    console.log('DragStart:', index);
     this._draggedIndex.set(index)
   }
 
   handleDragEnd() {
-    console.log('handleDragEnd, draggedIndex', this.draggedIndex, 'dropIndex', this.dropIndex)
+    console.log('DragEnd - draggedIndex:', this.draggedIndex, 'dropIndex:', this.dropIndex);
     this._draggedIndex.set(-1)
     this._dropIndex.set(-1)
   }
 
   updateDropIndex(index: number) {
+    console.log('UpdateDropIndex:', index);
     this._dropIndex.set(index)
   }
 

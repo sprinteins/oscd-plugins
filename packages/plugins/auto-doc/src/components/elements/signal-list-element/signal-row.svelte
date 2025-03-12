@@ -49,10 +49,18 @@
   $: isDropTarget = signalDndStore.draggedIndex !== -1 && 
                    signalDndStore.dropIndex === idx;
 
+  $: console.log('Row', idx, 'isDropTarget:', isDropTarget, 'draggedIndex:', signalDndStore.draggedIndex, 'dropIndex:', signalDndStore.dropIndex);
+
 </script>
 
 
-<div class="signal-row" class:dragging={signalDndStore.draggedIndex === idx}>
+<div class="signal-row" 
+    class:dragging={signalDndStore.draggedIndex === idx}
+    on:dragover|preventDefault={() => {
+        console.log('dragover on row:', idx);
+        signalDndStore.updateDropIndex(idx);
+    }}
+>
     {#if isFirstRow()}
         <div>
             <div></div>
@@ -68,7 +76,8 @@
     {/if}
     <div draggable="true"
         on:dragstart={() => signalDndStore.handleDragStart(idx)}
-        on:dragend={() => signalDndStore.handleDragEnd()}>
+        on:dragend={() => signalDndStore.handleDragEnd()}
+    >
         <div 
             class="drag-handle"
         >
@@ -104,7 +113,6 @@
 <div 
     class="drop-zone" 
     class:active={isDropTarget}
-    on:dragover|preventDefault={() => signalDndStore.updateDropIndex(idx)}
 >
 </div>
 
@@ -118,6 +126,7 @@
         border: 1px solid #ff0000;
         border-radius: 4px;
         background: white;
+        position: relative;
         
         &.dragging {
             opacity: 0.5;
@@ -155,13 +164,13 @@
 
     .drop-zone {
         height: 0;
+        margin: 0;
         transition: height 0.2s ease;
-        border: 2px dashed transparent;
-        margin: 0 0.5rem;
+        pointer-events: none;
         
         &.active {
             height: 60px;
-            border-color: #00ff00;
+            border: 2px dashed #00ff00;
             background: rgba(0, 255, 0, 0.1);
         }
     }
