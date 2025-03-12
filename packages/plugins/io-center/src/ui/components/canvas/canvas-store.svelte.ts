@@ -2,6 +2,7 @@ import type { Connection, LogicalConditioner, NodeElement } from "./types.canvas
 import { store } from "../../../store.svelte"
 import type { ObjectNodeDataObject } from "../../../ied/object-tree.type"
 import type { LpElement } from "../lp-list/types.lp-list"
+import { NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants"
 
 class Store {
 	dataObjects = $derived<NodeElement[]>(store.selectedDataObjects.map(dataObjectToNodeElement))
@@ -21,6 +22,7 @@ export const canvasStore = new Store()
 export function LPToNodeElement(lp: LpElement): NodeElement {
 	return {
 		id: `${lp.name}-${lp.instance}`,
+		type: NODE_ELEMENT_TYPE.LP,
 		name: `${lp.type}-${lp.instance}`
 	}
 }
@@ -28,6 +30,7 @@ export function LPToNodeElement(lp: LpElement): NodeElement {
 export function LCToNodeElement(lc: LogicalConditioner): NodeElement {
 	return {
 		id: `${lc.type}-${lc.instance}`,
+		type: NODE_ELEMENT_TYPE.LC,
 		name: `${lc.type}-${lc.instance}`
 	}
 }
@@ -46,6 +49,7 @@ export function dataObjectToNodeElement(dataObject: ObjectNodeDataObject): NodeE
 
 	const nodeElement = {
 		name: dataObject.name,
+		type: NODE_ELEMENT_TYPE.DO,
 		id,
 	}
 	return nodeElement

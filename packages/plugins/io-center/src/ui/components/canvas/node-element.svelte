@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { NODE_ELEMENT_TYPE } from "@/headless/constants";
+  import EditButton from "../common/edit-button.svelte";
   import type { NodeProps } from "./types.canvas";
-  import { X } from "lucide-svelte";
 
   let {
     node,
@@ -10,14 +11,24 @@
     stopDrawing,
   }: NodeProps = $props();
 
-  function handleClose() {
-    return;
+  let isSelected = $state(false);
+
+  function handleSelect() {
+    isSelected = !isSelected;
   }
 </script>
 
-<div
+{#if isSelected && node.type === NODE_ELEMENT_TYPE.LC}
+  <EditButton />
+{:else}
+  <!-- placeholder to prevent jumping -->
+  <div class="h-8"></div>
+{/if}
+
+<button
   data-title={node.name}
-  class="relative flex items-center bg-gray-100 border border-gray-300 rounded w-4/5"
+  class={{ "node-element": true, selected: isSelected }}
+  onclick={handleSelect}
 >
   {#if showLeftCircle}
     <div
@@ -52,13 +63,14 @@
       }}
     ></div>
   {/if}
+</button>
 
-  <button
-    type="button"
-    class="absolute top-0 right-0 cursor-pointer"
-    onclick={handleClose}
-    aria-label="Close"
-  >
-    <X size="15" />
-  </button>
-</div>
+<style lang="scss">
+  .node-element {
+    @apply relative flex items-center bg-gray-100 border border-gray-300 rounded w-4/5;
+  }
+
+  .selected {
+    @apply border-teal-600;
+  }
+</style>
