@@ -2,32 +2,36 @@
 
 All notable changes to the communication explorer plugin will be documented here
 
-The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project should adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.34] 26-02-2025
-## Changed
+## [0.0.35] - 2025-03-12
+### Fixed
+- fixing uilib examples
+
+## [0.0.34] - 2025-02-26
+### Changed
 - revert theme color fix (dark theme)
 
-## [0.0.33] 19-02-2025
+## [0.0.33] - 2025-02-19
 ### Added
 - Added option to remove grouping by bay. When selected, bays are visualized by small text labels instead. All IEDs that are part of a bay are selected when clicking a label.
 
-## [0.032] 13-02-2025
+## [0.0.32] - 2025-02-13
 ### Added
 - added outline around IEDs to visualize the bay containing them
 
 ### Changed
 - IEDs are now grouped together by their bays
 
-## [0.0.31] 12-02-2025
+## [0.0.31] - 2025-02-12
 ### Added
 - bays (aswell as IEDs) can now be selected in the 'filter' searchbar on the right
 
 ### Changed
 - filter dropdown + searchbar are now combined
 
-## [0.0.30] 
+## [0.0.30] - 2023-11-14
 ### Changed
 - accordion is now reacting to filtered service types
 
@@ -35,7 +39,6 @@ and this project should adhere to [Semantic Versioning](https://semver.org/spec/
 - align filter pills correctly
 - sampled values icon publish is missing
 - caching extracted information to improve performance
-
 
 ## [0.0.29] - 2023-07-20
 ### Fixed
