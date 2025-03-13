@@ -89,7 +89,7 @@
 <div class="template-creation-container">
     <header class="header-container">
         <div class="header">
-            <Tooltip text="Rename">
+            <Tooltip text="Rename" class="test">
                 <div class="template-title">
                     <CustomIconButton icon="arrow_back" color="black" on:click={askForEmptyTitleConfirmation}/>
                     <div class="title" role="button" tabindex="0" on:click|stopPropagation={displayTitleAndDescription} 
@@ -172,7 +172,8 @@
         }
         .title:hover {
             cursor: pointer;
-            outline: 2px solid black;
+            border-radius: 2px;
+            outline: 2px solid gray;
             outline-offset: 2px;
         }
     }
