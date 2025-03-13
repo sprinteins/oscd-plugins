@@ -1,14 +1,13 @@
 <script lang="ts">
     import Button from "@smui/button"
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-    import {TemplateBuilder} from '@/components';
+    import {TemplateBuilder, Tooltip} from '@/components';
     import {push} from 'svelte-spa-router'
     import Textfield from "@smui/textfield"
     import {clickOutside} from "@/actions"
     import {docTemplatesStore} from '@/stores'
 	import { onMount } from "svelte"
     import {pdfGenerator} from '@/utils'
-
 
     type Params = {id?: string}
     export let params:Params = {} //params passed from the router
@@ -90,14 +89,15 @@
 <div class="template-creation-container">
     <header class="header-container">
         <div class="header">
-            <div class="template-title">
-                <CustomIconButton icon="arrow_back" color="black" on:click={askForEmptyTitleConfirmation}/>
-                <div class="title" role="button" tabindex="0" on:click|stopPropagation={displayTitleAndDescription} 
-                on:keydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}
-                >
+            <Tooltip text="Rename">
+                <div class="template-title">
+                    <CustomIconButton icon="arrow_back" color="black" on:click={askForEmptyTitleConfirmation}/>
+                    <div class="title" role="button" tabindex="0" on:click|stopPropagation={displayTitleAndDescription} 
+                    on:keydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}
+                    >
                     {templateTitle}
                 </div>
-            </div>
+            </Tooltip>
             <!-- <div class="template-options">
                 <Button>open template</Button>
                 <Button>save template</Button>
@@ -172,7 +172,7 @@
         }
         .title:hover {
             cursor: pointer;
-            outline: 2px solid #4285F4;
+            outline: 2px solid black;
             outline-offset: 2px;
         }
     }
