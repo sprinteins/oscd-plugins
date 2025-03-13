@@ -47,6 +47,29 @@
         blockElements = [...blockElements, newBlockElement]
     }
 
+    function moveBlockElement(event: CustomEvent<{elementId: string, direction: number}>) {
+        const {elementId, direction} = event.detail
+
+        const blockElement = blockElements.find((element) => element.id === elementId);
+        if(!blockElement) {
+            return;
+        }
+
+        const index = blockElements.indexOf(blockElement);
+
+        const isFirst = index === 0;
+        const isLast = index === blockElements.length;
+        if(isFirst && direction === -1 || isLast && direction === 1) {
+            return;
+        }
+
+        const calculatedPosition = index + direction;
+        docTemplatesStore.moveBlockInDocumentTemplate(template, elementId, calculatedPosition);
+
+        blockElements = blockElements.filter((element) => element !== blockElement);
+        blockElements.splice(calculatedPosition, 0, blockElement);
+    }
+
     function deleteBlockElement(event: CustomEvent<{elementId: string}>){
         const {elementId} = event.detail
         docTemplatesStore.deleteBlockFromDocumentTemplate(template, elementId);
@@ -67,7 +90,7 @@
 
         <div class="elements-list">
             {#each blockElements as blockElement (blockElement.id)}
-                <ElementWrapper elementId={blockElement.id} on:elementDelete={deleteBlockElement}>
+                <ElementWrapper elementId={blockElement.id} on:elementDelete={deleteBlockElement} on:elementMove={(direction) => moveBlockElement(direction)}>
                     <svelte:component 
                         this={componentMap[blockElement.type]}
                         content={blockElement.content}
