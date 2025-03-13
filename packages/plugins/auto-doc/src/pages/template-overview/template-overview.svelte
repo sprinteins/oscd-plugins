@@ -1,5 +1,6 @@
 <script lang="ts">
-    import {Table} from '@/components';
+    import {Table, FileSelector} from '@/components';
+    import type { FileSelectorChangeEvent } from '@/components';
     import type {Template} from "./types.template-overview";
     import Button, {Label} from "@smui/button"
     import Menu from "@smui/menu"
@@ -9,9 +10,10 @@
     import {push} from 'svelte-spa-router'
     import { onMount } from 'svelte';
     import {pdfGenerator} from '@/utils'
-    import MenuBar from '@oscd-plugins/ui/src/components/dev/menu-bar.dev.svelte';
+    import {getAutoDocElement} from '@/utils'
 
     let menu: Menu
+    let fileSelector: FileSelector
     let newTemplateId: string | null = ""
     let allTemplates: Element[] = []
     const emptyTitleOrDescription = "N/A"
@@ -25,6 +27,19 @@
         push(`/create/${newTemplateId}`);
     }
 
+    async function onImportTemplate(e: FileSelectorChangeEvent) {
+        const file = e.detail.file
+
+        const fileAsString = await file.text()
+        const templateDoc = new DOMParser().parseFromString(fileAsString, 'text/xml')
+
+        const autoDocElement = getAutoDocElement(templateDoc)
+        const documentTemplates = autoDocElement.querySelectorAll('DocumentTemplate')
+
+        console.log(autoDocElement)
+        console.log(documentTemplates)
+    }
+
 
     $: templatesConvertedToTableRow = allTemplates.map(mapElementToTableRow)
 
@@ -34,7 +49,7 @@
         
         return {
             id: template.getAttribute('id') ?? "No id",
-            name: template.getAttribute('title') ?? emptyTitleOrDescription,
+            name: template.getAttrigetAutoDocElementtleOrDescription,
             description: template.getAttribute('description') ?? emptyTitleOrDescription,
             lastEdited: new Date(templateDate)
         }
@@ -64,12 +79,13 @@
             <IconWrapper icon="add"/>
            <Label>Add template</Label> 
         </Button>
+        <FileSelector bind:this={fileSelector} on:change={onImportTemplate} />
         <Menu bind:this={menu}>
             <List>
                 <Item on:SMUI:action={() => createNewTemplate()}>
                     <Text>New</Text>
                 </Item>
-                <Item on:SMUI:action={() => console.log('onSMUIAction')}>
+                <Item on:SMUI:action={() => fileSelector.open()}>
                     <Text>Import from</Text>
                 </Item>
             </List>
