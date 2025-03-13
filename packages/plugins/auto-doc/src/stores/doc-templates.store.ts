@@ -187,7 +187,7 @@ function deleteDocumentTemplate(docTemplateId: string) {
     }
 }
 
-function duplicateBlockFromDocumentTemplate(docTemplate: Element, blockId: string) {
+function duplicateBlockFromDocumentTemplate(docTemplate: Element, blockId: string, position: number) {
     const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if(!blockElement || blockElement.parentNode !== docTemplate) {
         return null;
@@ -196,6 +196,7 @@ function duplicateBlockFromDocumentTemplate(docTemplate: Element, blockId: strin
     const duplicatedElement = blockElement.cloneNode(true) as Element;
     duplicatedElement.setAttribute("id", uuidv4());
 
+    insertBlockAtPosition(docTemplate, duplicatedElement, position);
     eventStore.createAndDispatchActionEvent(docTemplate, duplicatedElement);
     
     return duplicatedElement;

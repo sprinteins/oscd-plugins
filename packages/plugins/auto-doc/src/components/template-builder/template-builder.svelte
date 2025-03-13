@@ -50,7 +50,9 @@
 
     function duplicateBlockElement(blockElement: BlockElement){
         const {id} = blockElement;
-        const duplicatedElement = docTemplatesStore.duplicateBlockFromDocumentTemplate(template, id);
+        const position = blockElements.indexOf(blockElement) + 1;
+
+        const duplicatedElement = docTemplatesStore.duplicateBlockFromDocumentTemplate(template, id, position);
 
         if(!duplicatedElement) {
             return;
@@ -59,8 +61,7 @@
         const newBlockElement = structuredClone(blockElement);
         newBlockElement.id = duplicatedElement.id;
         newBlockElement.content = duplicatedElement.textContent;
-        
-        const position = blockElements.indexOf(blockElement) + 1;
+
         blockElements = [...blockElements.slice(0, position), newBlockElement, ...blockElements.slice(position)];
 }
 
