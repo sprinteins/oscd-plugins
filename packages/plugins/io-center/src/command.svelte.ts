@@ -3,7 +3,7 @@ import { store } from "./store.svelte"
 import type { Nullable } from "./types"
 import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
 import { createElement } from "./headless/stores/document-helpers.svelte"
-import type { LcTypes } from "./ui/components/canvas/types.canvas"
+import type { LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
 
 export class Command {
 	constructor(
@@ -146,6 +146,54 @@ export class Command {
 			}
 
 			createElement(host, store.doc, "LN", attributes, ld0, null)
+		}
+	}
+
+	public editLC(lcNode: NodeElement, newType: LcTypes) {
+		const lc = store.logicalConditioners.find(lc => lc.id === lcNode.id)
+
+		if (!lc) {
+			throw new Error(`No LC found in store with id ${lcNode.id}`)
+		}
+
+		this.removeLC(lc)
+
+		this.addLC(newType)
+	}
+
+	public removeLC(lcElement: LogicalConditioner) {
+		const host = this.requireHost()
+
+		const ied = this.requireSelectedIED()
+
+		//Delete target LP
+		const lcToDelete = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lcElement.type}"][inst="${lcElement.instance}"][lnClass="${lcElement.type}"]`)
+
+		if (!lcToDelete) {
+			throw new Error(`LP element with name ${lcElement.type}-${lcElement.instance} not found!`)
+		}
+
+		createAndDispatchEditEvent({
+			host,
+			edit: {
+				node: lcToDelete
+			}
+		})
+
+		//Correct instance attribute for any LP that's after the target
+		const remainingLCs = Array.from(ied.querySelectorAll(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lcElement.type}"]`))
+
+		const deletedLcInstance = Number.parseInt(lcElement.instance)
+
+		for (const lc of remainingLCs.slice(deletedLcInstance - 1)) {
+			createAndDispatchEditEvent({
+				host,
+				edit: {
+					element: lc,
+					attributes: { "inst": `${Number.parseInt(lc.getAttribute("inst") || "") - 1}` },
+					attributesNS: {}
+				}
+			})
 		}
 	}
 

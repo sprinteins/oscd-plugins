@@ -2,7 +2,7 @@ import type { LP_TYPE } from "@/headless/constants"
 
 export type LpElement = {
     id: string,
-    type: keyof typeof LP_TYPE
+    type: LpTypes
     name: string,
     instance: string,
     description: string,
