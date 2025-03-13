@@ -103,6 +103,26 @@ function addDocumentTemplate(): string | null {
     return generatedId;
 }
 
+function importDocumentTemplates(docTemplates: Element[]) {
+    const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
+
+    const currentPrivateArea = get(autoDocArea);
+    // TODO: Create private area if it does not exist?
+
+    if (!currentPrivateArea) {
+        throw new Error('No auto doc private area found')
+    }
+
+    currentPrivateArea.append(...docTemplates);
+
+    console.log(currentPrivateArea)
+
+    // TODO: Dispatch event
+}
+
 function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle?: string, newDescription?: string) {
     const docTemplate = getDocumentTemplate(docTemplateId);
     if (docTemplate) {
@@ -235,5 +255,6 @@ export const docTemplatesStore = {
     editBlockContentOfDocumentTemplate,
     deleteDocumentTemplate,
     deleteBlockFromDocumentTemplate,
-    duplicateDocumentTemplate
+    duplicateDocumentTemplate,
+    importDocumentTemplates
 };
