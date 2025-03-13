@@ -2,12 +2,16 @@
     import {Table} from '@/components';
     import type {Template} from "./types.template-overview";
     import Button, {Label} from "@smui/button"
+    import Menu from "@smui/menu"
+    import List, { Item, Text } from "@smui/list"
     import {IconWrapper} from "@oscd-plugins/ui"
     import {docTemplatesStore} from '@/stores'
     import {push} from 'svelte-spa-router'
     import { onMount } from 'svelte';
     import {pdfGenerator} from '@/utils'
+    import MenuBar from '@oscd-plugins/ui/src/components/dev/menu-bar.dev.svelte';
 
+    let menu: Menu
     let newTemplateId: string | null = ""
     let allTemplates: Element[] = []
     const emptyTitleOrDescription = "N/A"
@@ -56,10 +60,20 @@
 
 <div class="template-overview">
     <header class="template-controls">
-        <Button variant="raised" class="btn-pill btn-pill-primary" on:click={createNewTemplate} > 
+        <Button variant="raised" class="btn-pill btn-pill-primary" on:click={() => menu.setOpen(true)} > 
             <IconWrapper icon="add"/>
            <Label>Add template</Label> 
         </Button>
+        <Menu bind:this={menu}>
+            <List>
+                <Item on:SMUI:action={() => createNewTemplate()}>
+                    <Text>New</Text>
+                </Item>
+                <Item on:SMUI:action={() => console.log('onSMUIAction')}>
+                    <Text>Import from</Text>
+                </Item>
+            </List>
+        </Menu>
         <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button>
     </header>  
     <main>

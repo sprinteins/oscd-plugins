@@ -23,6 +23,8 @@
 		"@smui/data-table": "^7.0.0",
 		"@smui/icon-button": "^7.0.0",
 		"@smui/textfield": "^7.0.0",
+		"@smui/menu": "^7.0.0",
+		"@smui/list": "^7.0.0",
 		"jspdf": "^2.5.2",
 		"jspdf-autotable": "^3.8.4",
 		"svelte-spa-router": "^4.0.1",
