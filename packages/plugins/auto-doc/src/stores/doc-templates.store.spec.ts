@@ -253,7 +253,7 @@ describe('DocumentTemplateStore', () => {
 		if (!docDef) {
 			throw new Error('DocumentTemplate not found');
 		}
-		const type = "text"
+		const type = "text";
 
 		// Add blocks to the document definition
 		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);

@@ -52,7 +52,8 @@
 
     function duplicateBlockElement(event: CustomEvent<{elementId: string}>){
         const {elementId} = event.detail;
-        docTemplatesStore.duplicateBlockFromDocumentTemplate(template, elementId);
+        const position = blockElements.findIndex((element) => element.id === elementId) + 1;
+        docTemplatesStore.duplicateBlockFromDocumentTemplate(template, elementId, position);
     }
 
 
