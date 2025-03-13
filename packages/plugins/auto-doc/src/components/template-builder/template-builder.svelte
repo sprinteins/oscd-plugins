@@ -6,28 +6,38 @@
     import SignalListElement from "@/components/elements/signal-list-element/signal-list-element.svelte"
     import ElementWrapper from "@/components/element-wrapper/element-wrapper.svelte"
     import {docTemplatesStore} from '@/stores'
+    import {pluginStore} from "@/stores/plugin.store"
     import type {BlockElement, ElementType, ElementMap} from '@/components/elements/types.elements'
 
     // Prop
     export let template: Element
 
+    const { editCount } = pluginStore
 
-    const allBlocks = Array.from( template.querySelectorAll("Block"))
-    
-    const mappedBlocks : BlockElement[] = allBlocks.map(block => {
+    const getAllBlocks = () => {
+        return Array.from(template.querySelectorAll("Block"))
+    }
+
+    let allBlocks = getAllBlocks()
+
+    $: {
+        $editCount
+        allBlocks = getAllBlocks()
+    } 
+
+    $: mappedBlocks = allBlocks.map(block => {
         return {
             id: block.getAttribute("id") as string,
             type: block.getAttribute("type") as ElementType,
             content: block.textContent
-        }
+        } as BlockElement
     })
-    
 
     
 
 
     let isElementsChoiceVisible = false
-    let blockElements : BlockElement[] = mappedBlocks
+    $: blockElements = mappedBlocks
     const componentMap : ElementMap  = {
         "text": TextElement,
         "image": ImageElement,
@@ -36,16 +46,16 @@
 
 
     function addElement(type: ElementType){
-        const elementId = docTemplatesStore.addBlockToDocumentTemplate(template, type, blockElements.length)
-        
-        const newBlockElement: BlockElement = {
-            id: elementId,
-            type: type,
-            content: ""
-        }
-
-        blockElements = [...blockElements, newBlockElement]
+        docTemplatesStore.addBlockToDocumentTemplate(template, type, blockElements.length)
     }
+
+
+    function duplicateBlockElement(event: CustomEvent<{elementId: string}>){
+        const {elementId} = event.detail;
+        const position = blockElements.findIndex((element) => element.id === elementId) + 1;
+        docTemplatesStore.duplicateBlockFromDocumentTemplate(template, elementId, position);
+    }
+
 
     function moveBlockElement(event: CustomEvent<{elementId: string, direction: number}>) {
         const {elementId, direction} = event.detail
@@ -73,7 +83,6 @@
     function deleteBlockElement(event: CustomEvent<{elementId: string}>){
         const {elementId} = event.detail
         docTemplatesStore.deleteBlockFromDocumentTemplate(template, elementId);
-        blockElements = blockElements.filter(blockElement => blockElement.id !== elementId)
     }
 
 
@@ -90,7 +99,7 @@
 
         <div class="elements-list">
             {#each blockElements as blockElement (blockElement.id)}
-                <ElementWrapper elementId={blockElement.id} on:elementDelete={deleteBlockElement} on:elementMove={(direction) => moveBlockElement(direction)}>
+                <ElementWrapper elementId={blockElement.id} on:elementDuplicate={duplicateBlockElement} on:elementDelete={deleteBlockElement} on:elementMove={(direction) => moveBlockElement(direction)}>
                     <svelte:component 
                         this={componentMap[blockElement.type]}
                         content={blockElement.content}

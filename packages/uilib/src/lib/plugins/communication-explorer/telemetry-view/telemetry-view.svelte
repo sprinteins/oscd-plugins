@@ -19,9 +19,10 @@ import {
 import type { Config } from '../_func-layout-calculation/config'
 import { preferences$, type Preferences } from '../_store-preferences'
 // SERVICES
-import { getIEDCommunicationInfos, getIEDCommunicationInfosByBay } from '../services/ied'
+import { getIEDCommunicationInfos, getBays } from '../services/ied'
 // TYPES
 import type { IED } from '@oscd-plugins/core'
+import BayContainer from '../../../components/diagram/bay-container/bay-container.svelte'
 
 //
 // INPUT
@@ -33,7 +34,7 @@ let rootNode: RootNode | undefined = undefined
 $: initInfos(root, $filterState, $preferences$)
 let lastUsedRoot: Element | undefined = undefined
 let lastExtractedInfos: IED.CommunicationInfo[] = []
-let lastExtractedBays: string[] = []
+let lastExtractedBays: Set<string>
 
 // Note: maybe have a mutex if there are too many changes
 async function initInfos(
@@ -49,7 +50,7 @@ async function initInfos(
 	if (root !== lastUsedRoot) {
 		const iedInfos = getIEDCommunicationInfos(root)
 		lastExtractedInfos = iedInfos
-		lastExtractedBays = Array.from(getIEDCommunicationInfosByBay(root).keys());
+		lastExtractedBays = getBays(root)
 		lastUsedRoot = root
 	}
 	rootNode = await calculateLayout(
@@ -61,8 +62,10 @@ async function initInfos(
 }
 
 const config: Config = {
-	width: 150,
-	height: 40
+	iedWidth: 150,
+	iedHeight: 40,
+	bayLabelHeight: 15,
+	bayLabelGap: 2
 	// spacingBetweenNodes: 100,
 	// spacingBase: 40,
 	// heightPerConnection: 20,
@@ -73,6 +76,15 @@ function handleIEDSelect(e: CustomEvent<IEDNode>) {
 }
 function handleIEDAdditiveSelect(e: CustomEvent<IEDNode>) {
 	toggleMultiSelectionOfIED(e.detail)
+}
+async function handleBaySelect(e: CustomEvent<string>) {
+	clearIEDSelection()
+	await initInfos(root, $filterState, $preferences$)
+	for (const node of rootNode.children) {
+		if (node.bays?.has(e.detail)) {
+			toggleMultiSelectionOfIED(node)
+		}
+	}
 }
 function handleConnectionClick(e: CustomEvent<IEDConnection>) {
 	// temp till fully migrated: map element to enhanced data model
@@ -90,13 +102,15 @@ function handleClearClick() {
 			{rootNode}
 			playAnimation={$preferences$.playConnectionAnimation}
 			showConnectionArrows={$preferences$.showConnectionArrows}
+			showBayLabels={!$preferences$.groupByBay}
 			on:iedselect={handleIEDSelect}
+			on:bayselect={handleBaySelect}
 			on:iedadditiveselect={handleIEDAdditiveSelect}
 			on:connectionclick={handleConnectionClick}
 			on:clearclick={handleClearClick}
 		/>
 		{#if showSidebar}
-			<Sidebar {rootNode} bays={lastExtractedBays}/>
+			<Sidebar {rootNode} bays={Array.from(lastExtractedBays)}/>
 		{/if}
 	{/if}
 </div>

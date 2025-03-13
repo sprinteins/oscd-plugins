@@ -195,24 +195,34 @@ function clearAll() {
 			<h2>Preferences</h2>
 
 			<div class="arrows-visible">
-					<label>
-							<input
-									type="checkbox"
-									bind:checked={$preferences$.showConnectionArrows}
-							/>
-							<span>Show arrows on connections</span>
-					</label>
+				<label>
+					<input
+						type="checkbox"
+						bind:checked={$preferences$.showConnectionArrows}
+					/>
+					<span>Show arrows on connections</span>
+				</label>
 			</div>
 
-			<div class="checkbox-group">
-					<label>
-							<input
-									type="checkbox"
-									bind:checked={$preferences$.playConnectionAnimation}
-							/>
-							<span>Play data flow animation</span>
-					</label>
-			</div>
+		<div class="checkbox-group">
+			<label>
+				<input
+					type="checkbox"
+					bind:checked={$preferences$.playConnectionAnimation}
+				/>
+				<span>Play data flow animation</span>
+			</label>
+		</div>
+
+		<div class="checkbox-group">
+			<label>
+				<input
+					type="checkbox"
+					bind:checked={$preferences$.groupByBay}
+				/>
+				<span>Group IEDs by bay</span>
+			</label>
+		</div>
 	</div>
 </div>
 

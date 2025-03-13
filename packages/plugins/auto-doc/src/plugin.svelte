@@ -28,16 +28,18 @@
 	$: triggerUpdate({
 		updateTrigger: editCount,
 		newXMLDocument: xmlDocument,
-		newPluginHostElement: pluginHostElement
+		newPluginHostElement: pluginHostElement,
+		newEditCount: editCount,
 	})
 	
 	async function triggerUpdate(
-		{updateTrigger, newXMLDocument, newPluginHostElement} : 
-		{updateTrigger: number, newXMLDocument: XMLDocument|undefined, newPluginHostElement: Element}
+		{updateTrigger, newXMLDocument, newPluginHostElement, newEditCount} : 
+		{updateTrigger: number, newXMLDocument: XMLDocument|undefined, newPluginHostElement: Element, newEditCount: number}
 	){
 		await pluginStore.init({
 			newXMLDocument,
-			newPluginHostElement
+			newPluginHostElement,
+			newEditCount,
 		})
 		docTemplatesStore.init()
 	}
