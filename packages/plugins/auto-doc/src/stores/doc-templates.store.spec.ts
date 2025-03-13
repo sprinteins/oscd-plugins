@@ -271,13 +271,13 @@ describe('DocumentTemplateStore', () => {
 		expect(blockElements[1].getAttribute('id')).toBe(idBlock2);
 		expect(blockElements[3]?.getAttribute('id')).toBe(idBlock3);
 
-		const copyFromElement = blockElements[1];
-		const duplicatedElement = blockElements[2];
+		const duplicationSourceElement = blockElements[1];
+		const duplicationResultElement = blockElements[2];
 
-		expect(duplicatedElement).not.toBeNull();
-		expect(duplicatedElement?.getAttribute("id")).not.toBe(copyFromElement.getAttribute("id"));
-		expect(duplicatedElement?.getAttribute("type")).toBe(type);
-		expect(duplicatedElement?.textContent).toBe(copyFromElement.textContent);
+		expect(duplicationResultElement).not.toBeNull();
+		expect(duplicationResultElement?.getAttribute("id")).not.toBe(duplicationSourceElement.getAttribute("id"));
+		expect(duplicationResultElement?.getAttribute("type")).toBe(type);
+		expect(duplicationResultElement?.textContent).toBe(duplicationSourceElement.textContent);
 	});
 
 	it('should delete a block from the document definition', () => {
