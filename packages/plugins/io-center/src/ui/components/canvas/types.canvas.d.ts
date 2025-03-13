@@ -1,3 +1,5 @@
+import type { LC_TYPE } from "@/headless/constants"
+
 export type ConnectionPoint = {
 	node: string
 	side: string
@@ -20,3 +22,18 @@ export type NodeProps = {
 	startDrawing: (event: MouseEvent) => void
 	stopDrawing: (node: string, side: string) => void
 }
+
+export type FormData = {
+	type: LcTypes,
+	number?: number,
+	nbOfLCIVPorts?: number
+}
+
+export type LogicalConditioner = {
+	id: string,
+	type: LcTypes,
+	instance: string,
+	isLinked: boolean,
+}
+
+export type LcTypes = keyof typeof LC_TYPE

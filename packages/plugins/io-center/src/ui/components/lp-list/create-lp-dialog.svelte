@@ -2,19 +2,30 @@
     import { LP_TYPE } from "@/headless/constants";
     import Input from "../common/input.svelte";
     import Select from "../common/select.svelte";
-    import { lpStore } from "./lp-store.svelte";
+    import type { FormData, LpTypes } from "./types.lp-list";
 
     type Props = {
         isOpen: boolean;
-        addLp: () => void;
+        addLp: (
+            type: LpTypes,
+            name: string,
+            desc: string,
+            number?: number,
+        ) => void;
     };
 
     let { isOpen = $bindable(), addLp }: Props = $props();
 
+    let formData = $state<FormData>({
+        name: "",
+        desc: "",
+        type: LP_TYPE.LPDI,
+    });
+
     function handleCancel() {
         isOpen = false;
 
-        lpStore.dialogFormData = {
+        formData = {
             name: "",
             desc: "",
             type: LP_TYPE.LPDI,
@@ -22,9 +33,9 @@
     }
 
     function handleSubmit() {
-        addLp();
+        addLp(formData.type, formData.name, formData.desc, formData.number);
 
-        lpStore.dialogFormData = {
+        formData = {
             name: "",
             desc: "",
             type: LP_TYPE.LPDI,
@@ -38,22 +49,18 @@
     <div role="button" id="modal" class="backdrop">
         <div class="container space-y-4">
             <Select
-                bind:value={lpStore.dialogFormData.type}
+                bind:value={formData.type}
                 label="LP Type"
                 options={Object.values(LP_TYPE)}
             />
+            <Input bind:value={formData.name} label="LP Name" type="text" />
             <Input
-                bind:value={lpStore.dialogFormData.name}
-                label="LP Name"
-                type="text"
-            />
-            <Input
-                bind:value={lpStore.dialogFormData.number}
+                bind:value={formData.number}
                 label="LP Number"
                 type="number"
             />
             <Input
-                bind:value={lpStore.dialogFormData.desc}
+                bind:value={formData.desc}
                 label="LP Description"
                 type="text"
             />

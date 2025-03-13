@@ -10,7 +10,7 @@
     import CreateLpDialog from "./create-lp-dialog.svelte";
 
     type Props = {
-        addLp: () => void;
+        addLp: (type: LpTypes, name: string, desc: string, number?: number) => void;
         removeLP: (lpElement: LpElementType) => void;
         editLP: (LpElement: LpElementType, name: string, desc: string) => void;
     };
