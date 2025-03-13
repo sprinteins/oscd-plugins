@@ -7,6 +7,10 @@
 
     const dispatch = createEventDispatcher()
 
+    function duplicateBlockElement(){
+        dispatch("elementDuplicate", {elementId})
+    }
+
     function deleteBlockElement(){
         dispatch("elementDelete", {elementId})
     }
@@ -17,7 +21,7 @@
 
 <div class="element-wrapper">
     <div class="action-btns">
-        <CustomIconButton icon="content_copy" color="black" size="small"/>
+        <CustomIconButton icon="content_copy" color="black" size="small" on:click={duplicateBlockElement}/>
         <CustomIconButton icon="delete" color="black" size="small" on:click={deleteBlockElement}/>
         <CustomIconButton icon="arrow_upward" color="black" size="small"/>
         <CustomIconButton icon="arrow_downward" color="black" size="small"/>
