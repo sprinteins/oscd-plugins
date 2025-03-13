@@ -89,7 +89,7 @@
 <div class="template-creation-container">
     <header class="header-container">
         <div class="header">
-            <Tooltip text="Rename" class="test">
+            <Tooltip text="Rename">
                 <div class="template-title">
                     <CustomIconButton icon="arrow_back" color="black" on:click={askForEmptyTitleConfirmation}/>
                     <div class="title" role="button" tabindex="0" on:click|stopPropagation={displayTitleAndDescription} 
