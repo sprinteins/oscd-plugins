@@ -1,112 +1,214 @@
 <script lang="ts">
-    import { NODE_TYPE } from "@/headless/constants";
     import TreeNode from "./tree-node.svelte";
     import type { TreeNode as TreeNodeType } from "./types.object-tree";
-    import { ChevronRight, ChevronDown, CheckIcon } from "lucide-svelte";
-    import { addDoElementToCanvas } from "@/headless/stores/canvas-operations.svelte";
-    import { canvasStore } from "../canvas/canvas-store.svelte";
+    import { ChevronRight, ChevronDown, Square, SquareCheck, SquareMinus } from "lucide-svelte";
+    import { store } from "../../../store.svelte";
+    import { gatherDataObjects } from "./utils";
 
     type Props = {
-        treeNode: TreeNodeType;
-        isOpen?: boolean;
-        searchTerm: string;
-        onToggle?: (event: MouseEvent) => void;
-        onSelect?: (event: MouseEvent) => void;
+        treeNode: TreeNodeType
+        searchTerm: string
+		onclickobjectcheckbox?: (node: TreeNodeType) => void
+		onclickobject?: (node: TreeNodeType) => void
+		onclickparentcheckbox?: (node: TreeNodeType) => void
+		onclickparentnode?: (node: TreeNodeType) => void
     };
 
     let {
         treeNode,
-        isOpen = false,
         searchTerm,
-        onToggle,
-        onSelect,
+		onclickobjectcheckbox = noopFn,
+		onclickobject = noopFn,
+		onclickparentcheckbox = noopFn,
+		onclickparentnode = noopFn,
     }: Props = $props();
-
-    let open = $state(isOpen);
+	
+	function noopFn() {}
 
     let isSearched = $derived(
         searchTerm !== "" &&
-            treeNode.name.toLowerCase().includes(searchTerm.toLowerCase()),
+		treeNode.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     let isSelected = $derived(
-        canvasStore.dataObjects.some((item) => item.id === treeNode.id),
+        store.selectedDataObjects.some((o) =>  o.id === treeNode.id),
     );
 
-    function onClick(id: string, event: MouseEvent) {
-        event.preventDefault();
+	function hasAllChildrenSelected(children: TreeNodeType[]){
+		const dataObjects = gatherDataObjects(children)
+		if(dataObjects.length === 0){
+			return false
+		}
+		return dataObjects.every((dataObject) => store.selectedDataObjects.some((o) => o.id === dataObject.id));
+	}
+	function hasSomeSelectedChildren(children: TreeNodeType[]){
+		const dataObjects = gatherDataObjects(children)
+		if(dataObjects.length === 0){
+			return false
+		}
+		return dataObjects.some((child) => store.selectedDataObjects.some((item) => item.id === child.id));
+	}
 
-        open = !open;
-
-        if (treeNode.type === NODE_TYPE.dataObjectInstance) {
-            addDoElementToCanvas(treeNode);
-        }
-
-        if (onToggle) {
-            onToggle(event);
-        }
-
-        if (onSelect) {
-            onSelect(event);
-        }
-    }
-
-    const baseClass =
-        "font-mono cursor-pointer hover:no-underline rounded-md hover:bg-gray-100 transition-colors duration-300";
-
-    function getSelectedClass() {
-        return isSelected ? "bg-beige hover:bg-beige" : "";
-    }
-
-    function getSearchedClass() {
-        return isSearched ? "bg-gray-200 hover:bg-gray-200" : "";
-    }
+	function disableClick(e: MouseEvent){
+		e.stopPropagation();
+		e.preventDefault();
+	}
 </script>
 
 <div class="tree-node">
     {#if treeNode.children}
-        <details {open}>
+        <details open={treeNode.isOpen}>
             <summary
-                onclick={(e) => {
-                    onClick(treeNode.id, e);
-                }}
-                class={`flex items-center gap-1 text-lg p-2 ${baseClass} ${getSelectedClass()} ${getSearchedClass()}`}
+                class={{
+					"tree-summary": true,
+					"selected": isSelected,
+				 	"searched": isSearched,
+				}}
+				onclick={disableClick}
             >
-                {#if open}
-                    <ChevronDown size={14} />
-                {:else}
-                    <ChevronRight size={14} />
-                {/if}
-                <p class="text-sm font-medium">{treeNode.name}</p>
+				<button 
+					onclick={(e) => onclickparentnode(treeNode)}
+					class="tree-summary-button"
+				>
+					<span>
+						{#if treeNode.isOpen}
+							<ChevronDown size={14} />
+						{:else}
+							<ChevronRight size={14} />
+						{/if}
+					</span>
+	
+					<p class="text-sm font-medium">
+						{treeNode.name}
+					</p>
+
+				</button>
+				
+				<button class="tree-select-all" onclick={() => onclickparentcheckbox(treeNode)}>
+					{#if hasAllChildrenSelected(treeNode.children)}
+						<SquareCheck size={16}/>
+					{:else if hasSomeSelectedChildren(treeNode.children)}
+						<SquareMinus size={16}/>
+					{:else}
+						<span class="show-on-hover">
+							<Square size={16}/>
+						</span>
+					{/if}
+				</button>
+
             </summary>
-            <div class="ml-4 border-l">
+            <div class="tree-details">
                 {#each treeNode.children as node (node.id)}
                     <TreeNode
                         treeNode={node}
-                        isOpen={node.isOpen}
-                        {searchTerm}
+						{searchTerm}
+                        {onclickobjectcheckbox}
+						{onclickobject}
+						{onclickparentcheckbox}
+						{onclickparentnode}
                     />
                 {/each}
             </div>
         </details>
+
     {:else}
-        <button
-            class={`p-2 w-full text-sm text-left flex items-center gap-1 ${baseClass} ${getSelectedClass()} ${getSearchedClass()}`}
-            onclick={(e) => {
-                onClick(treeNode.id, e);
-            }}
-        >
-            {#if isSelected}
-                <CheckIcon size={16} />
-            {/if}
-            {treeNode.name}
-        </button>
+		<div class={{
+			"object": true, 
+			"selected": isSelected, 
+			"searched": isSearched,
+		}}>
+			<button
+				class="p-2 w-full text-sm text-left flex items-center gap-1"
+				onclick={() => onclickobject(treeNode)}
+			>
+				{treeNode.name}
+			</button>
+			<button class="select-button" onclick={() => onclickobjectcheckbox(treeNode)}>	
+				{#if isSelected}
+					<SquareCheck size={16}/>
+				{:else}
+					<span class="show-on-hover">
+						<Square size={16} />	
+					</span>
+				{/if}
+			</button>
+		</div>
     {/if}
 </div>
 
-<style>
+<style lang="scss">
     .tree-node {
         user-select: none;
         -webkit-user-select: none;
+		@apply font-mono cursor-pointer rounded-md  transition-colors duration-300 hover:no-underline;
     }
+	.tree-summary{
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: center;
+		justify-items: left;
+		padding-left: 0.5rem;
+		border-radius: 6px;
+	}
+	.tree-summary:hover{
+		@apply bg-gray-100;
+	}
+	.tree-summary.selected{
+		@apply bg-beige hover:bg-beige;
+	}
+	.tree-summary.searched{
+		@apply bg-gray-200 hover:bg-gray-200;
+	}
+	
+	.tree-summary-button{
+		width: 100%;
+		display: grid;
+		grid-template-columns: auto 1fr;
+		align-items: center;
+		justify-items: start;
+	}
+
+	.tree-details{
+		border-left: 1px gray solid;
+		grid-column: span 2;
+		margin-left: 0.9rem;
+	}
+
+	.tree-select-all{
+		padding: 0.5rem 1rem;
+		/* padding: 0 1rem; */
+	}
+
+	.object {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		place-items: center;
+		border-radius: 6px;
+	}
+	.object:hover{
+		@apply bg-gray-100;
+	}
+	.object.selected{
+		@apply bg-white 
+	}
+	.object.searched{
+		@apply bg-gray-200 
+	}
+	.select-button{
+		padding: 0.25rem 1rem;
+		/* padding: 0.5rem 1rem; */
+	}
+
+	.show-on-hover{
+		opacity: 0.0;
+	}
+	.tree-summary:hover .tree-select-all:hover .show-on-hover,
+	.object:hover .select-button:hover .show-on-hover{
+		opacity: 1;
+	}
+	.tree-summary:hover .show-on-hover,
+	.object:hover .show-on-hover{
+		opacity: 0.2;
+	}
 </style>
+

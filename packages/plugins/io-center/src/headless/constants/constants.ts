@@ -5,6 +5,15 @@ export const NODE_TYPE = {
 } as const
 
 export const LP_TYPE = {
-    output: 'output',
-    input: 'input',
+    LPDO: 'LPDO',
+    LPDI: 'LPDI',
+    LPAI: 'LPAI',
+    LPAO: 'LPAO',
+} as const
+
+export const LC_TYPE = {
+	LCBI: "LCBI",
+	LCBO: "LCBO",
+	LCDP: "LCDP",
+	LCIV: "LCIV",
 } as const

@@ -12,20 +12,20 @@
 />
 
 <script lang="ts">
-	import { onMount } from "svelte";
 	import jsonPackage from "../package.json";
-	import { initPlugin, initSsdTemplate } from "@oscd-plugins/core-ui-svelte";
+	import { initPlugin } from "@oscd-plugins/core-ui-svelte";
 	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
 	import Layout from "./ui/layout.svelte";
-	import store from "./store.svelte";
-	import { buildObjectTree, initQuery } from "./query.svelte";
+	import { useQuery } from "./query.svelte";
 	import { newCommand, type Command } from "./command.svelte";
-	import IEDSelect from "./ied/ied-select.svelte";
+
 	import type { Nullable } from "./types";
-	import type { IED } from "./ied/ied";
-	import ObjectTree from "./ui/components/object-tree/object-tree.svelte";
 	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
 	import LpList from "./ui/components/lp-list/lp-list.svelte";
+	import { store } from "./store.svelte";
+	import SideBarLeft from "./sidebar-left.svelte";
+	import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list";
+    import type { LcTypes } from "./ui/components/canvas/types.canvas";
 
 	// props
 	const {
@@ -34,41 +34,36 @@
 		editCount,
 		// isCustomInstance
 	}: Utils.PluginCustomComponentsProps = $props();
+	const isCustomInstance = true;
 
 	//
 	// Setup
 	//
 	let root = $state<Nullable<HTMLElement>>(null);
-	let cmd = $state<Command>(newCommand(store, () => root));
-
-	onMount(() => {
-		storeDoc(doc);
-		initQuery(store);
-	});
+	let cmd = $state<Command>(newCommand(() => root));
+	useQuery();
 
 	// we need to trigger a rerendering when the editCount changes
 	// this is how OpenSCD lets us know that there was a change in the document
 	$effect(() => {
-		let onlyForEffectTriggering = editCount;
-		storeDoc(doc);
+		store.editCount = editCount;
+		store.doc = doc;
 	});
 
-	function storeDoc(doc: Nullable<XMLDocument>) {
-		console.log("changing doc:", doc);
-		store.doc = doc;
+	function onAddLC(type: LcTypes, number?: number) {
+		cmd.addLC(type, number);
 	}
 
-	function addIED() {
-		cmd.addIED();
+	function addLp(type: LpTypes, name: string, desc: string, number?: number) {
+		cmd.addLp(type, name, desc, number);
 	}
 
-	function selectIED(ied: IED) {
-		cmd.selectIED(ied);
+	function removeLP(lpElement: LpElement) {
+		cmd.removeLP(lpElement);
 	}
 
-	function onSelectIED(ied: IED) {
-		selectIED(ied);
-		buildObjectTree();
+	function editLP(lpElement: LpElement, name: string, desc: string) {
+		cmd.editLP(lpElement, name, desc);
 	}
 </script>
 
@@ -78,6 +73,7 @@
 		getDocName: () => docName,
 		getEditCount: () => editCount,
 		getIsCustomInstance: () => isCustomInstance,
+		getHost: () => $host(),
 		host: $host(),
 		theme: "legacy-oscd-instance",
 	}}
@@ -86,15 +82,11 @@
 	bind:this={root}
 >
 	<Layout>
-		<div slot="sidebar-left">
-			<IEDSelect {onSelectIED} />
-			{#if store.objectTree.length > 0}
-				<ObjectTree />
-			{/if}
-		</div>
-		<div slot="content">
-			<CanvasArea />
-		</div>
-		<div slot="sidebar-right"><LpList /></div>
+		<SideBarLeft slot="sidebar-left" />
+		<CanvasArea slot="content" {onAddLC} />
+		<LpList slot="sidebar-right" {addLp} {removeLP} {editLP} />
 	</Layout>
 </main>
+
+<style>
+</style>

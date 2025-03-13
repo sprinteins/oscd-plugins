@@ -1,16 +1,20 @@
 import type {
+	isBayNode,
 	IEDConnectionWithCustomValues,
 	IEDNode
 } from '../../../components/diagram'
 import { hasActiveIEDSelection, isIEDSelected } from '../_store-view-filter'
+import type { Preferences } from '../_store-preferences'
 import type { Config } from './config'
+
 // TYPES
 import type { IED } from '@oscd-plugins/core'
 
 export function generateIEDLayout(
 	ieds: IED.CommunicationInfo[],
 	edges: IEDConnectionWithCustomValues[],
-	config: Config
+	config: Config,
+	preferences: Preferences
 ): IEDNode[] {
 	const hasSelection = hasActiveIEDSelection()
 
@@ -33,13 +37,16 @@ export function generateIEDLayout(
 
 		return {
 			id: Id(ii),
-			width: config.width,
-			height: config.height,
+			width: config.iedWidth,
+			height: config.iedHeight,
 			label: ied.iedName,
 			isRelevant: isRelevant,
 			children: [],
 			details: ied.iedDetails,
-			bays: ied.bays
+			bays: ied.bays,
+			bayLabelHeight: config.bayLabelHeight,
+			bayLabelGap: config.bayLabelGap,
+			iedHeight: config.iedHeight
 		}
 	})
 

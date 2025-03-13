@@ -1,31 +1,30 @@
 <script lang="ts">
     import { LP_TYPE } from "@/headless/constants";
-    import type { LpElement as LpElementType } from "./types.lp-list";
-    import LpElement from "./lp-element.svelte";
-    import SearchBar from "../search-bar.svelte";
-    import FilterButtons from "./filter-buttons.svelte";
+    import type { Nullable } from "@/types";
     import { Plus } from "lucide-svelte";
+    import { store } from "../../../store.svelte";
+    import SearchBar from "../common/search-bar.svelte";
+    import FilterButtons from "./filter-buttons.svelte";
+    import LpElement from "./lp-element.svelte";
+    import type { LpTypes, LpElement as LpElementType } from "./types.lp-list";
+    import CreateLpDialog from "./create-lp-dialog.svelte";
 
-    const lpList: LpElementType[] = [
-        { id: "1", type: LP_TYPE.input, name: "LPDI 1", isLinked: false },
-        { id: "2", type: LP_TYPE.input, name: "LPDI 2", isLinked: false },
-        { id: "3", type: LP_TYPE.input, name: "LPDI 3", isLinked: false },
-        { id: "4", type: LP_TYPE.input, name: "LPDI 4", isLinked: true },
-        { id: "5", type: LP_TYPE.output, name: "LPDO 1", isLinked: false },
-        { id: "6", type: LP_TYPE.output, name: "LPDO 2", isLinked: true },
-        { id: "7", type: LP_TYPE.output, name: "LPDO 3", isLinked: true },
-        { id: "8", type: LP_TYPE.output, name: "LPDO 4", isLinked: true },
-    ];
+    type Props = {
+        addLp: (type: LpTypes, name: string, desc: string, number?: number) => void;
+        removeLP: (lpElement: LpElementType) => void;
+        editLP: (LpElement: LpElementType, name: string, desc: string) => void;
+    };
+
+    let { addLp, removeLP, editLP }: Props = $props();
 
     let searchTerm = $state("");
 
-    let showLpdi = $state(true);
-    let showLpdo = $state(true);
+    let selectedTypeToShow = $state<Nullable<LpTypes>>(null);
     let showLinked = $state(true);
     let showUnlinked = $state(true);
 
     const filteredList = $derived.by(() =>
-        lpList
+        store.lpList
             .filter((item) =>
                 item.name.toLowerCase().includes(searchTerm.toLowerCase()),
             )
@@ -37,45 +36,45 @@
             ),
     );
 
-    const lpdiList = $derived(
-        filteredList.filter((item) => item.type === LP_TYPE.input),
-    );
-
-    const lpdoList = $derived(
-        filteredList.filter((item) => item.type === LP_TYPE.output),
-    );
+    let showDialog = $state(false);
 </script>
 
-<div class="p-6">
+<div class="py-6 pr-6">
     <button
-        class="flex items-center justify-center rounded-lg py-2 gap-2 w-full bg-gray-200 mb-2 border border-gray-400"
+        onclick={() => (showDialog = true)}
+        class="add-button"
+        disabled={!store.selectedIED}
     >
         <Plus size={16} />
         <p>Add LP</p>
     </button>
 
-    <SearchBar bind:searchTerm />
+    <CreateLpDialog bind:isOpen={showDialog} {addLp} />
 
-    <div class="mt-2">
-        <FilterButtons
-            bind:showLpdi
-            bind:showLpdo
-            bind:showLinked
-            bind:showUnlinked
-        />
-    </div>
+    {#if store.selectedIED}
+        <SearchBar bind:searchTerm placeholder="Search LP" />
 
-    {#if showLpdi}
-        <p class="text-xl font-semibold pl-2 pt-3">LPDI</p>
-        {#each lpdiList as lpElement (lpElement.id)}
-            <LpElement {searchTerm} {lpElement} />
-        {/each}
-    {/if}
+        <div class="mt-2">
+            <FilterButtons
+                bind:selectedTypeToShow
+                bind:showLinked
+                bind:showUnlinked
+            />
+        </div>
 
-    {#if showLpdo}
-        <p class="text-xl font-semibold pl-2 pt-3">LPDO</p>
-        {#each lpdoList as lpElement (lpElement.id)}
-            <LpElement {searchTerm} {lpElement} />
+        {#each Object.values(LP_TYPE) as lpType}
+            {#if (selectedTypeToShow === null || selectedTypeToShow === lpType) && filteredList.length > 0}
+                <p class="text-xl font-semibold pl-2 pt-3">{lpType}</p>
+                {#each filteredList.filter((item) => item.type === lpType) as lpElement (lpElement.id)}
+                    <LpElement {searchTerm} {lpElement} {removeLP} {editLP} />
+                {/each}
+            {/if}
         {/each}
     {/if}
 </div>
+
+<style lang="scss">
+    .add-button {
+        @apply flex items-center justify-center rounded-lg py-2 gap-2 w-full bg-gray-200 mb-2 border border-gray-400 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed;
+    }
+</style>

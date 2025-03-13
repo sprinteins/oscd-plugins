@@ -1,13 +1,11 @@
 import type { pluginLocalStore } from '@/headless/stores'
-import type {
-	TYPE_FAMILY_MAP,
-	REF_FAMILY_MAP,
-	COLUMNS
-} from '@/headless/constants'
+import type { TYPE_FAMILY, REF_FAMILY, COLUMNS } from '@/headless/constants'
 import type { Xml, Utils } from '@oscd-plugins/core-api/plugin/v1'
+import type { IEC61850 } from '@oscd-plugins/core-standard'
 
-export type AvailableTypeFamily = keyof typeof TYPE_FAMILY_MAP
-export type AvailableRefFamily = keyof typeof REF_FAMILY_MAP
+export type AvailableTypeFamily = keyof typeof TYPE_FAMILY
+// export type AvailableTypeFamilyWithTemplate = AvailableTypeFamily | 'template'
+export type AvailableRefFamily = keyof typeof REF_FAMILY
 
 export type TypeRawElement<GenericTypeFamily extends AvailableTypeFamily> =
 	Xml.SclElement<
@@ -34,11 +32,16 @@ export type TypeElementsByFamily = {
 export type TypeElementByIds<GenericTypeFamily extends AvailableTypeFamily> =
 	Record<string, TypeElement<GenericTypeFamily>>
 
-export type TypeElement<GenericFamily extends AvailableTypeFamily> = {
-	element: GenericTypeFamily<GenericFamily>
+export type TypeElement<GenericTypeFamily extends AvailableTypeFamily> = {
+	element: Xml.SclElement<
+		GenericTypeFamily,
+		typeof pluginLocalStore.currentEdition,
+		typeof pluginLocalStore.currentUnstableRevision
+	>
 	attributes: Record<string, string | null>
 	parameters: {
 		label: string
+		refFamily: AvailableRefFamily | undefined
 	}
 	refs: RefElementsByFamily
 }
@@ -58,21 +61,16 @@ export type RefElement<GenericRefFamily extends AvailableRefFamily> = {
 	}
 }
 
-export type NewTypeAttributes = {
+export type Column<GenericTypeFamily extends AvailableTypeFamily> = {
 	name: string
-	type?: string
-}
-
-export type Column<GenericFamily extends AvailableTypeFamily> = {
-	name: string
-	groupedTypeElements: Record<GenericFamily, TypeElements<Family>>
+	groupedTypeElements: Record<TypeElementByIds<GenericTypeFamily>>
 }
 
 export type Columns = {
-	[COLUMNS.bay]: Column<'bay'>
-	[COLUMNS.equipmentTypeTemplates]:
-		| Column<'generalEquipmentType'>
-		| Column<'conductingEquipmentType'>
-	[COLUMNS.functionTemplate]: Column<'functionTemplate'>
+	[COLUMNS.bayType]: Column<'bay'>
+	[COLUMNS.equipmentType]:
+		| Column<'generalEquipment'>
+		| Column<'conductingEquipment'>
+	[COLUMNS.functionType]: Column<'function'> | Column<'eqFunction'>
 	[COLUMNS.lNodeType]: Column<'lNodeType'>
 }

@@ -21,6 +21,7 @@
 	export let rootNode: RootNode
 	export let playAnimation = true
 	export let showConnectionArrows = true
+	export let showBayLabels = false
 
 	//
 	// Setup
@@ -34,12 +35,23 @@
 		if (draggingEnabled) {
 			return
 		}
+
+		const element = e.target;
+		if (!(element instanceof HTMLElement)) {
+			return;
+		}
+
 		const isAdditiveSelect = e.metaKey || e.ctrlKey || e.shiftKey
+
+		if (element.classList.contains("bayLabel")) {
+			dispatchBaySelect(element.textContent)
+			return;
+		}
+
 		if (isAdditiveSelect) {
 			dispatchIEDAdditiveSelect(node)
 			return
 		}
-
 		dispatchIEDSelect(node)
 	}
 	function dispatchIEDSelect(node: IEDElkNode) {
@@ -47,6 +59,9 @@
 	}
 	function dispatchIEDAdditiveSelect(node: IEDElkNode) {
 		dispatch("iedadditiveselect", node)
+	}
+	function dispatchBaySelect(bay: string) {
+		dispatch("bayselect", bay)
 	}
 
 	function dispatchConnectionClick(connection: ElkExtendedEdge) {
@@ -146,14 +161,27 @@
 		draggingEnabled = false
 		isDragging = false
 	}
+	function resetZoom(width: number, height: number) {
+		//only reset zoom if rootNodeWidth / height actually changed
+		//(the rune also triggers when they didn't for some reason...)
+		if (width !== savedRootNodeWidth && height !== savedRootNodeHeight) {
+			svgWidth = width
+			svgHeight = height
+			savedRootNodeWidth = width
+			savedRootNodeHeight = height
+		}
+	}
 
 	//
 	// Zoom
 	//
 	let zoomModifier = 1
 	let zoomStep = 0.1
-	let svgWidth = rootNode.width ?? 0
-	let svgHeight = rootNode.height ?? 0
+	let svgWidth = 0
+	let svgHeight = 0
+	let savedRootNodeWidth = 0
+	let savedRootNodeHeight = 0
+	$: resetZoom(rootNode.width, rootNode.height)
 
 	async function handleMouseWheel(e: WheelEvent) {
 		if (!e.ctrlKey && !e.metaKey) {
@@ -204,6 +232,7 @@
 							y={node.y}
 							width={node.width}
 							height={node.height}
+							overflow="visible"
 						>
 							<BayContainer
 								{node}
@@ -216,12 +245,15 @@
 							y={node.y}
 							width={node.width}
 							height={node.height}
+							overflow="visible"
 							on:click={(e) => handleIEDClick(e, node)}
 							on:keydown
 						>
 							<IEDElement
 								{node}
-								isSelected={isIEDSelected(node)}
+								isBaySelected= {false}
+								isIEDSelected={isIEDSelected(node)}
+								showBayLabels={showBayLabels}
 								testid={`ied-${node.label}`}
 							/>
 						</foreignObject>

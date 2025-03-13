@@ -24,6 +24,11 @@ class UsePluginGlobalStore {
 		'IEC61850-90-30': IEC61850_90_30Store
 	})
 
+	currentVersion = $derived.by(() => {
+		if (`${pluginGlobalStore.editCount}`)
+			return `${this.xmlDocument?.documentElement.getAttribute('version')}${this.xmlDocument?.documentElement.getAttribute('revision')}${this.xmlDocument?.documentElement.getAttribute('release')}`
+	})
+
 	updateElement(params: {
 		element: Element
 		attributes?: Record<string, string | null>
@@ -49,6 +54,31 @@ class UsePluginGlobalStore {
 				node: element
 			}
 		})
+	}
+
+	addNamespaceToRootElement(args: {
+		rootElement: Element
+		namespace: {
+			prefix: string
+			uri: string
+		}
+	}) {
+		args.rootElement.setAttributeNS(
+			'http://www.w3.org/2000/xmlns/',
+			`xmlns:${args.namespace.prefix}`,
+			args.namespace.uri
+		)
+	}
+
+	updateSCLVersion(args: {
+		rootElement: Element
+		version: string
+		revision: string
+		release: string
+	}) {
+		args.rootElement.setAttribute('version', args.version)
+		args.rootElement.setAttribute('revision', args.revision)
+		args.rootElement.setAttribute('release', args.release)
 	}
 }
 

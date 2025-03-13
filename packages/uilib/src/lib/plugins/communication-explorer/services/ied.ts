@@ -6,8 +6,13 @@ export function getIEDCommunicationInfos(root: Element) {
 	return iedService.IEDCommunicationInfos()
 }
 
-//why is this necessary? can't i just expose the IEDService?
+//this function fails sometimes
 export function getIEDCommunicationInfosByBay(root: Element) {
 	const iedService = new IEDService(root)
 	return iedService.IEDCommunicationInfosByBay()
+}
+
+export function getBays(root: Element): Set<string> {
+	const iedService = new IEDService(root)
+	return iedService.Bays()
 }

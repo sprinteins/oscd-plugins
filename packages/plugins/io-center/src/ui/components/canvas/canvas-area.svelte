@@ -9,9 +9,19 @@
 		startDrawing,
 		stopDrawing,
 	} from "@/headless/utils";
-</script>
+	import { Plus } from "lucide-svelte";
+	import AddLCDialog from "./add-lc-dialog.svelte";
+	import { store } from "../../../store.svelte";
+    import type { LcTypes } from "./types.canvas";
 
-<svelte:window onresize={redrawConnections} />
+	type Props = {
+		onAddLC: (type: LcTypes, number?: number) => void;
+	};
+
+	const { onAddLC }: Props = $props();
+
+	let isDialogOpen = $state(false);
+</script>
 
 <div
 	use:calulateCoordinates
@@ -22,7 +32,9 @@
 		class="flex flex-col items-center w-full gap-2 bg-gray-50"
 		data-title="DO"
 	>
-		<div class="text-center">Data Objects</div>
+		<div class="text-center font-mono bg-gray-300 w-full py-2">
+			Data Objects
+		</div>
 		{#each canvasStore.dataObjects as node}
 			<NodeElement
 				{node}
@@ -37,7 +49,18 @@
 		class="flex flex-col items-center w-full gap-2 bg-gray-50"
 		data-title="LC"
 	>
-		<div class="text-center">Logical Conditioners</div>
+		<div
+			class="flex justify-center gap-2 font-mono bg-gray-300 w-full py-2 items-center"
+		>
+			Logical Conditioners
+			<button
+				class="bg-white rounded-sm p-1 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed"
+				onclick={() => (isDialogOpen = true)}
+				disabled={!store.selectedIED}
+			>
+				<Plus size={16} />
+			</button>
+		</div>
 		{#each canvasStore.logicalConditioners as node}
 			<NodeElement
 				{node}
@@ -52,7 +75,9 @@
 		class="flex flex-col items-center w-full gap-2 bg-gray-50"
 		data-title="LP"
 	>
-		<div class="text-center">Logical Physical Inputs/Outputs</div>
+		<div class="text-center font-mono bg-gray-300 w-full py-2">
+			Logical Physical I/O
+		</div>
 		{#each canvasStore.logicalPhysicals as node}
 			<NodeElement
 				{node}
@@ -87,3 +112,10 @@
 		/>
 	{/if}
 </svg>
+
+<AddLCDialog bind:isOpen={isDialogOpen} addLc={onAddLC} />
+
+<svelte:window onresize={redrawConnections} />
+
+<style>
+</style>

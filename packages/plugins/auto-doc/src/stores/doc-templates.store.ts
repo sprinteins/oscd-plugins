@@ -207,7 +207,7 @@ function deleteDocumentTemplate(docTemplateId: string) {
     }
 }
 
-function duplicateDocumentTemplate(docTemplateId: string, newTitle: string, newDescription: string) {
+function duplicateDocumentTemplate(docTemplateId: string) {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
@@ -217,11 +217,14 @@ function duplicateDocumentTemplate(docTemplateId: string, newTitle: string, newD
     if (currentPrivateArea) {
         const docTemplate = getDocumentTemplate(docTemplateId);
         if (docTemplate) {
+            const title = docTemplate.getAttribute('title');
+            const description = docTemplate.getAttribute('description');
+
             const newDocTemplate = docTemplate.cloneNode(true) as Element;
             newDocTemplate.setAttribute('id', uuidv4());
             newDocTemplate.setAttribute('date', new Date().toISOString());
-            newDocTemplate.setAttribute('title', newTitle);
-            newDocTemplate.setAttribute('description', newDescription);
+            newDocTemplate.setAttribute('title', `${title}_Copy`);
+            newDocTemplate.setAttribute('description', `Copied from ${title}'s description: ${description}`);
 
             const blocks = newDocTemplate.querySelectorAll('Block');
             for (const block of blocks) {

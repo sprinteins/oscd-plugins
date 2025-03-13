@@ -11,20 +11,25 @@
     import { onMount } from 'svelte';
     import {pdfGenerator} from '@/utils'
     import {getAutoDocElement} from '@/utils'
+      import { ROUTES } from "@/constants"
 
     let menu: Menu
     let fileSelector: FileSelector
     let newTemplateId: string | null = ""
+
     let allTemplates: Element[] = []
     const emptyTitleOrDescription = "N/A"
 
     onMount(() => {
-        allTemplates = docTemplatesStore.getAllDocumentTemplates();
+        fetchTemplates();
     });
 
-    function createNewTemplate(){
-        newTemplateId = docTemplatesStore.addDocumentTemplate();
-        push(`/create/${newTemplateId}`);
+    function fetchTemplates() {
+        allTemplates=docTemplatesStore.getAllDocumentTemplates();
+    }
+
+    function navigateToCreateTemplate(){
+        push(`${ROUTES.Create}`);
     }
 
     async function onImportTemplate(e: FileSelectorChangeEvent) {
@@ -71,6 +76,19 @@
         pdfGenerator.downloadAsPdf(templateId)
     }
 
+    function navigateToEditTemplate(event: CustomEvent<{templateId: string}>){
+        const {templateId} = event.detail
+        push(`${ROUTES.Edit}/${templateId}`)
+
+    }
+
+    function duplicateTemplate(event: CustomEvent<{templateId: string}>){
+        const {templateId} = event.detail
+        docTemplatesStore.duplicateDocumentTemplate(templateId)
+
+       fetchTemplates();
+    }
+
 
 
 
@@ -86,7 +104,7 @@
         <FileSelector bind:this={fileSelector} on:change={onImportTemplate} />
         <Menu bind:this={menu}>
             <List>
-                <Item on:SMUI:action={() => createNewTemplate()}>
+                <Item on:SMUI:action={() => navigateToCreateTemplate()}>
                     <Text>New</Text>
                 </Item>
                 <Item on:SMUI:action={() => fileSelector.open()}>
@@ -101,9 +119,10 @@
             allTemplates={templatesConvertedToTableRow} 
             on:templateDelete={deleteTemplate}
             on:templateDownload={downloadTemplateContent}
+            on:editTemplate={navigateToEditTemplate}
+            on:duplicateTemplate={duplicateTemplate}
         />
     </main>
-
 </div>
 
 
