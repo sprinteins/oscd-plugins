@@ -58,7 +58,7 @@
         
         return {
             id: template.getAttribute('id') ?? "No id",
-            name: template.getAttrigetAutoDocElementtleOrDescription,
+            name: template.getAttribute('title') ?? emptyTitleOrDescription,
             description: template.getAttribute('description') ?? emptyTitleOrDescription,
             lastEdited: new Date(templateDate)
         }
