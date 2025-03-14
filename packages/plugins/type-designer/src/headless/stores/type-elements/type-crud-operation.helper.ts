@@ -31,14 +31,20 @@ function getTypeAttributes(
 				TYPE_FAMILY.generalEquipment
 			],
 			virtual: 'false',
-			uuid: uuidv4()
+			uuid: uuidv4(),
+			type:
+				typeElementsStore.newEquipmentType &&
+				EQUIPMENTS[typeElementsStore.newEquipmentType].type
 		}),
 		[TYPE_FAMILY.conductingEquipment]: () => ({
 			name: typeElementsStore.newComputedTypeName[
 				TYPE_FAMILY.conductingEquipment
 			],
 			virtual: 'false',
-			uuid: uuidv4()
+			uuid: uuidv4(),
+			type:
+				typeElementsStore.newEquipmentType &&
+				EQUIPMENTS[typeElementsStore.newEquipmentType].type
 		}),
 		[TYPE_FAMILY.function]: () => ({
 			name: typeElementsStore.newComputedTypeName[TYPE_FAMILY.function],

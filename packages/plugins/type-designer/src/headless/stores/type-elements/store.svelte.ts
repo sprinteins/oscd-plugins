@@ -24,26 +24,34 @@ class UseTypeElementsStore {
 	//====== INITIALIZATION ======//
 
 	typeElementsPerFamily: TypeElementsByFamily = $derived.by(() => ({
-		[TYPE_FAMILY.bay]: getAndMapTypeElements(
-			TYPE_FAMILY.bay,
-			pluginLocalStore.bayTypeElements
-		),
-		[TYPE_FAMILY.generalEquipment]: getAndMapTypeElements(
-			TYPE_FAMILY.generalEquipment,
-			pluginLocalStore.bayTemplateSubElements?.generalEquipment
-		),
-		[TYPE_FAMILY.conductingEquipment]: getAndMapTypeElements(
-			TYPE_FAMILY.conductingEquipment,
-			pluginLocalStore.bayTemplateSubElements?.conductingEquipment
-		),
-		[TYPE_FAMILY.function]: getAndMapTypeElements(
-			TYPE_FAMILY.function,
-			pluginLocalStore.bayTemplateSubElements?.function
-		),
-		[TYPE_FAMILY.lNodeType]: getAndMapTypeElements(
-			TYPE_FAMILY.lNodeType,
-			pluginLocalStore.dataTypeTemplatesSubElements?.lNodeType
-		)
+		[TYPE_FAMILY.bay]: getAndMapTypeElements({
+			family: TYPE_FAMILY.bay,
+			typeElements: pluginLocalStore.bayTypeElements,
+			rootElement: pluginLocalStore.rootElement
+		}),
+		[TYPE_FAMILY.generalEquipment]: getAndMapTypeElements({
+			family: TYPE_FAMILY.generalEquipment,
+			typeElements:
+				pluginLocalStore.bayTemplateSubElements?.generalEquipment,
+			rootElement: pluginLocalStore.rootElement
+		}),
+		[TYPE_FAMILY.conductingEquipment]: getAndMapTypeElements({
+			family: TYPE_FAMILY.conductingEquipment,
+			typeElements:
+				pluginLocalStore.bayTemplateSubElements?.conductingEquipment,
+			rootElement: pluginLocalStore.rootElement
+		}),
+		[TYPE_FAMILY.function]: getAndMapTypeElements({
+			family: TYPE_FAMILY.function,
+			typeElements: pluginLocalStore.bayTemplateSubElements?.function,
+			rootElement: pluginLocalStore.rootElement
+		}),
+		[TYPE_FAMILY.lNodeType]: getAndMapTypeElements({
+			family: TYPE_FAMILY.lNodeType,
+			typeElements:
+				pluginLocalStore.dataTypeTemplatesSubElements?.lNodeType,
+			rootElement: pluginLocalStore.rootElement
+		})
 	}))
 
 	filtersByColumns = $state({
