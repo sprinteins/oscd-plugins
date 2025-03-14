@@ -1,6 +1,7 @@
 <script lang="ts">
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
     import {createEventDispatcher} from "svelte"
+    import {MOVE_BLOCK_DIRECTION} from "@/constants"
 
     //Prop
     export let elementId: string
@@ -27,8 +28,8 @@
     <div class="action-btns">
         <CustomIconButton icon="content_copy" color="black" size="small" on:click={duplicateBlockElement}/>
         <CustomIconButton icon="delete" color="black" size="small" on:click={deleteBlockElement}/>
-        <CustomIconButton icon="arrow_upward" color="black" size="small" on:click={() => moveBlockElement(-1)}/>
-        <CustomIconButton icon="arrow_downward" color="black" size="small" on:click={() => moveBlockElement(1)}/>
+        <CustomIconButton icon="arrow_upward" color="black" size="small" on:click={() => moveBlockElement(MOVE_BLOCK_DIRECTION.UP)}/>
+        <CustomIconButton icon="arrow_downward" color="black" size="small" on:click={() => moveBlockElement(MOVE_BLOCK_DIRECTION.DOWN)}/>
     </div>
     <slot/>
 </div>

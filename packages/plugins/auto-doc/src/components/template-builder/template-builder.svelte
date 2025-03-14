@@ -8,6 +8,7 @@
     import {docTemplatesStore} from '@/stores'
     import {pluginStore} from "@/stores/plugin.store"
     import type {BlockElement, ElementType, ElementMap} from '@/components/elements/types.elements'
+    import {MOVE_BLOCK_DIRECTION} from "@/constants"
 
     // Prop
     export let template: Element
@@ -66,18 +67,21 @@
         }
 
         const index = blockElements.indexOf(blockElement);
-
         const isFirst = index === 0;
-        const isLast = index === blockElements.length;
-        if(isFirst && direction === -1 || isLast && direction === 1) {
+        const isLast = index === blockElements.length -1;
+
+        const preventMoveUp = isFirst && direction === MOVE_BLOCK_DIRECTION.UP;
+        const preventMoveDown = isLast && direction === MOVE_BLOCK_DIRECTION.DOWN;
+        if(preventMoveUp || preventMoveDown) {
             return;
         }
 
         const calculatedPosition = index + direction;
         docTemplatesStore.moveBlockInDocumentTemplate(template, elementId, calculatedPosition);
 
-        blockElements = blockElements.filter((element) => element !== blockElement);
-        blockElements.splice(calculatedPosition, 0, blockElement);
+        // Temporary fix: trigger update manually because moveBlockInDocumentTemplate does not
+        const content = template.querySelector(`Block[id="${elementId}"]`)?.textContent;
+        docTemplatesStore.editBlockContentOfDocumentTemplate(template, elementId, content || "");
     }
 
     function deleteBlockElement(event: CustomEvent<{elementId: string}>){
