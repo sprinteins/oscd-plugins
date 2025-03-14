@@ -200,6 +200,9 @@ importers:
       '@oscd-plugins/core':
         specifier: workspace:^
         version: link:../../core/legacy
+      '@oscd-plugins/core-api':
+        specifier: workspace:^
+        version: link:../../core/api
       '@oscd-plugins/ui':
         specifier: workspace:^
         version: link:../../ui

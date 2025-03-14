@@ -115,7 +115,7 @@ function importDocumentTemplates(docTemplates: Element[]) {
     }
 
     // Import to own doc, so there are no references to the original doc
-    const importedDocTemplates = docTemplates.map(docTemplate => xmlDoc.importNode(docTemplate))
+    const importedDocTemplates = docTemplates.map(docTemplate => xmlDoc.importNode(docTemplate, true))
 
     eventStore.createMultipleAndDispatchActionEvent(currentPrivateArea, importedDocTemplates, 'Import auto doc templates');
 }

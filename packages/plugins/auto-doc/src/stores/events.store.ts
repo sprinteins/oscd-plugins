@@ -5,6 +5,13 @@ import { newActionEvent, createUpdateAction } from '@oscd-plugins/core'
 // STORES
 import { pluginStore } from './index'
 
+import {
+	typeGuard,
+	createStandardElement,
+	createAndDispatchEditEvent,
+	findAllStandardElementsBySelector
+} from '@oscd-plugins/core-api/plugin/v1'
+
 //====== STORES ======//
 const { pluginHostElement } = pluginStore
 

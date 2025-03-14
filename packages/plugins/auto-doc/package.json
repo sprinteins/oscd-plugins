@@ -16,6 +16,7 @@
 	},
 	"dependencies": {
 		"@oscd-plugins/core": "workspace:^",
+		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/ui": "workspace:^",
 		"@oscd-plugins/uilib": "workspace:^",
 		"@smui/button": "7.0.0",
