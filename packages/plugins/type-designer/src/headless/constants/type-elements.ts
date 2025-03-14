@@ -26,6 +26,22 @@ export const REF_FAMILY = {
 	lNode: 'lNode'
 } as const
 
+export const TYPE_ID_ATTRIBUTE = {
+	[TYPE_FAMILY.bay]: 'uuid',
+	[TYPE_FAMILY.generalEquipment]: 'uuid',
+	[TYPE_FAMILY.conductingEquipment]: 'uuid',
+	[TYPE_FAMILY.function]: 'uuid',
+	[TYPE_FAMILY.lNodeType]: 'id'
+}
+
+export const REF_ID_TO_TYPE_ID_ATTRIBUTE = {
+	[REF_FAMILY.generalEquipment]: 'templateUuid',
+	[REF_FAMILY.conductingEquipment]: 'templateUuid',
+	[REF_FAMILY.function]: 'templateUuid',
+	[REF_FAMILY.eqFunction]: 'templateUuid',
+	[REF_FAMILY.lNode]: 'lnType'
+}
+
 // COLUMNS
 
 export const COLUMNS = {
@@ -41,6 +57,23 @@ export const READONLY_ATTRIBUTES = [
 	'uuid',
 	'templateUuid',
 	'originUuid'
+] as const
+
+// ALLOWED
+
+export const ALLOWED_IMPORTED_TYPE = [
+	TYPE_FAMILY.function,
+	TYPE_FAMILY.lNodeType
+] as const
+
+export const ALLOWED_IMPORTED_REF = [
+	REF_FAMILY.function,
+	REF_FAMILY.lNode
+] as const
+
+export const ALLOWED_IMPORT_FUNCTIONALITY_BY_COLUMNS = [
+	COLUMNS.functionType,
+	COLUMNS.lNodeType
 ] as const
 
 //====== MAPPERS ======//
