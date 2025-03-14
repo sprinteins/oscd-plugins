@@ -22,6 +22,8 @@
         }
 
         dispatch('change', { file })
+
+        input.value = ''
     }
 </script>
 
