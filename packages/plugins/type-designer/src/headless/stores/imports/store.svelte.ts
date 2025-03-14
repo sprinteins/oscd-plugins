@@ -7,6 +7,7 @@ import {
 	importElements,
 	getAvailableElementsToImport,
 	addImportedElement,
+	addAllImportedElements,
 	removeImportedElements
 } from './imported-type-crud-operation.helper'
 import { loadFromCompas, loadFromLocal } from './load-file.helper'
@@ -106,6 +107,7 @@ class UseImportsStore {
 	loadFromCompas = loadFromCompas
 	loadFromLocal = loadFromLocal
 	addImportedElement = addImportedElement
+	addAllImportedElements = addAllImportedElements
 	removeImportedElements = removeImportedElements
 }
 

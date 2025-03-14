@@ -1,5 +1,5 @@
 // STORES
-import { pluginLocalStore } from '@/headless/stores'
+import { importsStore, pluginLocalStore } from '@/headless/stores'
 // CONSTANTS
 import {
 	REF_FAMILY,
@@ -11,6 +11,7 @@ import {
 import { getAndMapTypeElements } from './consolidate-types.helper'
 import {
 	createNewType,
+	createNewTypeBasedOnImport,
 	duplicateType,
 	deleteTypeAndRefs
 } from './type-crud-operation.helper'
@@ -104,6 +105,19 @@ class UseTypeElementsStore {
 					this.filtersByColumns.functionType,
 					this.typeElementsPerFamily.function
 				)
+			},
+			importedTypeElements: {
+				function: {
+					available: getFilteredTypeElementByIds(
+						this.filtersByColumns.functionType,
+						importsStore.importedTypeElementsPerFamily.function
+							.available
+					),
+					all: getFilteredTypeElementByIds(
+						this.filtersByColumns.functionType,
+						importsStore.importedTypeElementsPerFamily.function.all
+					)
+				}
 			}
 		},
 		[COLUMNS.lNodeType]: {
@@ -113,6 +127,19 @@ class UseTypeElementsStore {
 					this.filtersByColumns.lNodeType,
 					this.typeElementsPerFamily.lNodeType
 				)
+			},
+			importedTypeElements: {
+				lNodeType: {
+					available: getFilteredTypeElementByIds(
+						this.filtersByColumns.lNodeType,
+						importsStore.importedTypeElementsPerFamily.lNodeType
+							.available
+					),
+					all: getFilteredTypeElementByIds(
+						this.filtersByColumns.lNodeType,
+						importsStore.importedTypeElementsPerFamily.lNodeType.all
+					)
+				}
 			}
 		}
 	})
@@ -121,6 +148,7 @@ class UseTypeElementsStore {
 
 	// type
 	createNewType = createNewType
+	createNewTypeBasedOnImport = createNewTypeBasedOnImport
 	duplicateType = duplicateType
 	deleteTypeAndRefs = deleteTypeAndRefs
 	// ref
