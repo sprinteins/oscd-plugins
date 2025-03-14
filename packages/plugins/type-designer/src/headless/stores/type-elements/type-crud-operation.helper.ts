@@ -10,13 +10,23 @@ import { pluginGlobalStore, ssdStore } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
 // HELPERS
-import { getNewNameWithOccurrence } from '@/headless/stores/type-elements/type-naming.helper'
+import {
+	getNewNameWithOccurrence,
+	getElementsWithSameNameBase
+} from '@/headless/stores/type-elements/type-naming.helper'
 // CONSTANTS
-import { CONDUCTING_EQUIPMENTS, TYPE_FAMILY } from '@/headless/constants'
+import {
+	CONDUCTING_EQUIPMENTS,
+	TYPE_FAMILY,
+	EQUIPMENTS
+} from '@/headless/constants'
 // TYPES
-import type { AvailableTypeFamily } from '@/headless/stores'
+import type {
+	AvailableImportedTypeFamily,
+	AvailableTypeFamily
+} from '@/headless/stores'
 
-//====== CREATE ======//
+//====== LOCAL HELPERS ======//
 
 function getTypeAttributes(
 	typeFamily: Exclude<AvailableTypeFamily, 'lNodeType'>
@@ -91,6 +101,89 @@ function getTypeChildren(
 	return Array.from({ length: childOccurrence }, () => childTemplate)
 }
 
+function getTypeParent(family: AvailableTypeFamily) {
+	return {
+		[TYPE_FAMILY.bay]: () => ssdStore.voltageLevelTemplateElement,
+		[TYPE_FAMILY.generalEquipment]: () => ssdStore.bayTemplateElement,
+		[TYPE_FAMILY.conductingEquipment]: () => ssdStore.bayTemplateElement,
+		[TYPE_FAMILY.function]: () => ssdStore.bayTemplateElement,
+		[TYPE_FAMILY.lNodeType]: () =>
+			pluginLocalStore.rootSubElements.dataTypeTemplates
+	}[family]()
+}
+
+function getTypeInsertBeforeReference(
+	family: AvailableTypeFamily
+): Element | null {
+	return {
+		[TYPE_FAMILY.bay]: () => null,
+		[TYPE_FAMILY.generalEquipment]: () =>
+			ssdStore.bayTemplateElement?.getElementsByTagName(
+				'ConductingEquipment'
+			)[0] ||
+			getTypeInsertBeforeReference(TYPE_FAMILY.conductingEquipment),
+		[TYPE_FAMILY.conductingEquipment]: () =>
+			ssdStore.bayTemplateElement?.getElementsByTagName('Function')[0] ||
+			null,
+		[TYPE_FAMILY.function]: () => null,
+		[TYPE_FAMILY.lNodeType]: () => null
+	}[family]()
+}
+
+/**
+ * BUSINESS RULES: ~ refers to revision 90-30 page 182
+ * This function follow the definition in terms of uuid attributes
+ * The use case is not really covered : we are importing templates into templates
+ * originUuid attribute is created to keep track of the original template
+ * only if the element does not have an originUuid attribute (coming from another import)
+ * @param element
+ * @returns
+ */
+function setUuidAttributes(element: Element) {
+	const uuid = element.getAttribute('uuid')
+	const templateUuid = element.getAttribute('templateUuid')
+	const originUuid = element.getAttributeNS(
+		pluginLocalStore.namespaces.currentUnstableRevision.uri,
+		'originUuid'
+	)
+
+	if (!originUuid && uuid)
+		element.setAttributeNS(
+			pluginLocalStore.namespaces.currentUnstableRevision.uri,
+			'originUuid',
+			templateUuid || uuid
+		)
+	element.setAttribute('uuid', uuidv4())
+
+	return element
+}
+
+function setNameAttribute(family: AvailableTypeFamily, element: Element) {
+	if (family === TYPE_FAMILY.lNodeType) return
+	let elementsWithSameName = []
+
+	const currentName = element.getAttribute('name')
+
+	if (currentName)
+		elementsWithSameName = getElementsWithSameNameBase({
+			family,
+			valueToTest: currentName,
+			removeOccurrencePartToTestedValue: false
+		})
+
+	if (elementsWithSameName.length === 0) return
+
+	const newName = getNewNameWithOccurrence({
+		element,
+		family,
+		suffix: 'Imported',
+		skipFirstOccurrence: true
+	})
+	return element.setAttribute('name', newName)
+}
+
+//====== CREATE ======//
+
 /**
  * Creates a new type element and optionally its children.
  *
@@ -146,10 +239,7 @@ export async function createNewType(params: {
 		}
 	}
 
-	const parent =
-		params.family === TYPE_FAMILY.bay
-			? ssdStore.voltageLevelTemplateElement
-			: ssdStore.bayTemplateElement
+	const parent = getTypeParent(params.family)
 	if (!parent) throw new Error('No parent element available for the new type')
 
 	createAndDispatchEditEvent({
@@ -157,7 +247,37 @@ export async function createNewType(params: {
 		edit: {
 			parent,
 			node: newTypeElement,
-			reference: null
+			reference: getTypeInsertBeforeReference(params.family)
+		}
+	})
+}
+
+export async function createNewTypeBasedOnImport(params: {
+	typeElementFamily: AvailableImportedTypeFamily
+	elementToAdd: Element
+}) {
+	if (!pluginGlobalStore.host) throw new Error('No host')
+
+	pluginLocalStore.updateSCLVersion()
+	pluginLocalStore.addUnstableNamespaceToRootElement()
+	await ssdStore.createTemplateWrapper()
+
+	setNameAttribute(params.typeElementFamily, params.elementToAdd)
+	const elementWithUuidAttributes = setUuidAttributes(params.elementToAdd)
+	if (params.typeElementFamily !== TYPE_FAMILY.lNodeType)
+		for (const child of Array.from(elementWithUuidAttributes.children)) {
+			setUuidAttributes(child)
+		}
+
+	const parent = getTypeParent(params.typeElementFamily)
+	if (!parent) throw new Error('No parent element available for the new type')
+
+	createAndDispatchEditEvent({
+		host: pluginGlobalStore.host,
+		edit: {
+			parent,
+			node: params.elementToAdd,
+			reference: getTypeInsertBeforeReference(params.typeElementFamily)
 		}
 	})
 }
@@ -182,7 +302,11 @@ export function duplicateType({
 	clonedElement.setAttribute('uuid', uuidv4())
 	clonedElement.setAttribute(
 		'name',
-		getNewNameWithOccurrence({ elementToClone, family })
+		getNewNameWithOccurrence({
+			element: elementToClone,
+			family,
+			suffix: 'Copy'
+		})
 	)
 
 	if (!pluginGlobalStore.host) throw new Error('No host')
