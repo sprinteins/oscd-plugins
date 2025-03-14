@@ -40,7 +40,7 @@ const {
 }: Plugin.CustomComponentsProps = $props()
 </script>
 
-<main 
+<main
 	id="plugin-container"
 	use:initPlugin={{
 		getDoc: () => doc,
@@ -74,6 +74,8 @@ const {
 		<ColumnsContainer />
 		<SidebarWrapper />
 	</Sidebar.Provider>
+	<DialogWorkaround innerComponent={ImportDialog}/>
+
 </main>
 
 
