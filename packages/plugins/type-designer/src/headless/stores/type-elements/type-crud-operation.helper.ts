@@ -103,12 +103,12 @@ function getTypeChildren(
  * @param params.withChildren - Optional flag to indicate whether to create child elements.
  * @throws Will throw an error if the host, XML document, type family, or parent element is not available.
  */
-export function createNewType(params: {
+export async function createNewType(params: {
 	family: Exclude<AvailableTypeFamily, 'lNodeType'>
 	withChildren?: boolean
 }) {
 	pluginLocalStore.updateSCLVersion()
-	ssdStore.createTemplateWrapper()
+	await ssdStore.createTemplateWrapper()
 
 	if (!pluginGlobalStore.host) throw new Error('No host')
 	if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
