@@ -89,15 +89,15 @@
 <div class="template-creation-container">
     <header class="header-container">
         <div class="header">
-            <Tooltip text="Rename">
                 <div class="template-title">
                     <CustomIconButton icon="arrow_back" color="black" on:click={askForEmptyTitleConfirmation}/>
-                    <div class="title" role="button" tabindex="0" on:click|stopPropagation={displayTitleAndDescription} 
-                    on:keydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}
-                    >
-                    {templateTitle}
+                    <Tooltip text="Rename">
+                        <div class="title" role="button" tabindex="0" on:click|stopPropagation={displayTitleAndDescription} 
+                        on:keydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}
+                        >
+                        {templateTitle}
+                    </Tooltip>
                 </div>
-            </Tooltip>
             <!-- <div class="template-options">
                 <Button>open template</Button>
                 <Button>save template</Button>
