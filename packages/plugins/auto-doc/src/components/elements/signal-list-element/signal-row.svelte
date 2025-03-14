@@ -1,140 +1,140 @@
 <script lang="ts">
-import Checkbox from '@smui/checkbox'
-import Textfield from '@smui/textfield'
-import { createEventDispatcher } from 'svelte'
-import type { SignalRow, LabelText, Label } from './types.signal-list'
-
-import { debounce } from '@/utils/'
-import { signalDndStore } from '../../../stores/signal-dnd.store'
-
-//Props
-export let idx = 1
-export let label: LabelText = {
-	col1Label: { name: '', hasSuffix: false },
-	col2Label: { name: '', hasSuffix: false }
-}
-export let isSelected = false
-export let column1 = ''
-export let column2 = ''
-
-let areAllCheckboxesSelected = false
-
-const ONE_SECOND_IN_MS = 1000
-
-const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
-
-const dispatch = createEventDispatcher()
-
-function handleInputChange(key: keyof SignalRow, value: string) {
-	column1 = key === 'column1' ? value : column1
-	column2 = key === 'column2' ? value : column2
-	dispatch('update', { key, value })
-}
-
-function isFirstRow() {
-	return idx === 0
-}
-
-function createSuffixForLabelIfNeeded(label: Label) {
-	const { name, hasSuffix } = label
-	return hasSuffix ? `Column ${idx + 1} "${name}"` : name
-}
-
-$: if (isSelected || !isSelected) {
-	dispatch('update', { key: 'isSelected', value: isSelected })
-}
-
-function toggleAllCheckboxes() {
-	dispatch('toggleAllCheckboxes', { value: areAllCheckboxesSelected })
-}
-
-$: isDropTarget =
-	signalDndStore.draggedIndex !== -1 && signalDndStore.dropIndex === idx
-
-$: console.log(
-	'Row',
-	idx,
-	'isDropTarget:',
-	isDropTarget,
-	'draggedIndex:',
-	signalDndStore.draggedIndex,
-	'dropIndex:',
-	signalDndStore.dropIndex
-)
-
-function handleDrop(event: Event, index: number) {
-	// console.log('handleDrop', {
-	// 	idx: idx,
-	// 	draggedIndex: signalDndStore.draggedIndex,
-	// 	dropIndex: signalDndStore.dropIndex
-	// })
-
-	const { draggedIndex } = signalDndStore
-	// if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) {
-	// 	return
-	// }
-
-	dispatch('reorder', { draggedIndex, dropIndex: index })
-	// signalDndStore.handleDragEnd()
-	console.log(event)
-	console.log(index)
-}
-
-// let dragged
-
-// /* events fired on the draggable target */
-// const source = document.getElementById('draggable')
-// source?.addEventListener('drag', (event) => {
-// 	console.log('dragging')
-// })
-
-// source?.addEventListener('dragstart', (event) => {
-// 	// store a ref. on the dragged elem
-// 	dragged = event.target
-// 	// make it half transparent
-// 	event.target.classList.add('dragging')
-// })
-
-// source?.addEventListener('dragend', (event) => {
-// 	// reset the transparency
-// 	event.target.classList.remove('dragging')
-// })
-
-// /* events fired on the drop targets */
-// const target = document.getElementById('drop-target')
-// target?.addEventListener(
-// 	'dragover',
-// 	(event) => {
-// 		// prevent default to allow drop
-// 		event.preventDefault()
-// 	},
-// 	false
-// )
-
-// target?.addEventListener('dragenter', (event) => {
-// 	// highlight potential drop target when the draggable element enters it
-// 	if (event.target?.classList.contains('dropzone')) {
-// 		event.target.classList.add('dragover')
-// 	}
-// })
-
-// target?.addEventListener('dragleave', (event) => {
-// 	// reset background of potential drop target when the draggable element leaves it
-// 	if (event.target?.classList.contains('dropzone')) {
-// 		event.target.classList.remove('dragover')
-// 	}
-// })
-
-// target?.addEventListener('drop', (event) => {
-// 	// prevent default action (open as link for some elements)
-// 	event.preventDefault()
-// 	// move dragged element to the selected drop target
-// 	if (event.target?.classList.contains('dropzone')) {
-// 		event.target.classList.remove('dragover')
-// 		event.target.appendChild(dragged)
-// 	}
-// })
-</script>
+    import Checkbox from '@smui/checkbox'
+    import Textfield from '@smui/textfield'
+    import { createEventDispatcher } from 'svelte'
+    import type { SignalRow, LabelText, Label } from './types.signal-list'
+    
+    import { debounce } from '@/utils/'
+    import { signalDndStore } from '../../../stores/signal-dnd.store'
+    
+    //Props
+    export let idx = 1
+    export let label: LabelText = {
+        col1Label: { name: '', hasSuffix: false },
+        col2Label: { name: '', hasSuffix: false }
+    }
+    export let isSelected = false
+    export let column1 = ''
+    export let column2 = ''
+    
+    let areAllCheckboxesSelected = false
+    
+    const ONE_SECOND_IN_MS = 1000
+    
+    const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
+    
+    const dispatch = createEventDispatcher()
+    
+    function handleInputChange(key: keyof SignalRow, value: string) {
+        column1 = key === 'column1' ? value : column1
+        column2 = key === 'column2' ? value : column2
+        dispatch('update', { key, value })
+    }
+    
+    function isFirstRow() {
+        return idx === 0
+    }
+    
+    function createSuffixForLabelIfNeeded(label: Label) {
+        const { name, hasSuffix } = label
+        return hasSuffix ? `Column ${idx + 1} "${name}"` : name
+    }
+    
+    $: if (isSelected || !isSelected) {
+        dispatch('update', { key: 'isSelected', value: isSelected })
+    }
+    
+    function toggleAllCheckboxes() {
+        dispatch('toggleAllCheckboxes', { value: areAllCheckboxesSelected })
+    }
+    
+    $: isDropTarget =
+        signalDndStore.draggedIndex !== -1 && signalDndStore.dropIndex === idx
+    
+    $: console.log(
+        'Row',
+        idx,
+        'isDropTarget:',
+        isDropTarget,
+        'draggedIndex:',
+        signalDndStore.draggedIndex,
+        'dropIndex:',
+        signalDndStore.dropIndex
+    )
+    
+    function handleDrop(event: Event, index: number) {
+        // console.log('handleDrop', {
+        // 	idx: idx,
+        // 	draggedIndex: signalDndStore.draggedIndex,
+        // 	dropIndex: signalDndStore.dropIndex
+        // })
+    
+        const { draggedIndex } = signalDndStore
+        // if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) {
+        // 	return
+        // }
+    
+        dispatch('reorder', { draggedIndex, dropIndex: index })
+        // signalDndStore.handleDragEnd()
+        console.log(event)
+        console.log(index)
+    }
+    
+    // let dragged
+    
+    // /* events fired on the draggable target */
+    // const source = document.getElementById('draggable')
+    // source?.addEventListener('drag', (event) => {
+    // 	console.log('dragging')
+    // })
+    
+    // source?.addEventListener('dragstart', (event) => {
+    // 	// store a ref. on the dragged elem
+    // 	dragged = event.target
+    // 	// make it half transparent
+    // 	event.target.classList.add('dragging')
+    // })
+    
+    // source?.addEventListener('dragend', (event) => {
+    // 	// reset the transparency
+    // 	event.target.classList.remove('dragging')
+    // })
+    
+    // /* events fired on the drop targets */
+    // const target = document.getElementById('drop-target')
+    // target?.addEventListener(
+    // 	'dragover',
+    // 	(event) => {
+    // 		// prevent default to allow drop
+    // 		event.preventDefault()
+    // 	},
+    // 	false
+    // )
+    
+    // target?.addEventListener('dragenter', (event) => {
+    // 	// highlight potential drop target when the draggable element enters it
+    // 	if (event.target?.classList.contains('dropzone')) {
+    // 		event.target.classList.add('dragover')
+    // 	}
+    // })
+    
+    // target?.addEventListener('dragleave', (event) => {
+    // 	// reset background of potential drop target when the draggable element leaves it
+    // 	if (event.target?.classList.contains('dropzone')) {
+    // 		event.target.classList.remove('dragover')
+    // 	}
+    // })
+    
+    // target?.addEventListener('drop', (event) => {
+    // 	// prevent default action (open as link for some elements)
+    // 	event.preventDefault()
+    // 	// move dragged element to the selected drop target
+    // 	if (event.target?.classList.contains('dropzone')) {
+    // 		event.target.classList.remove('dragover')
+    // 		event.target.appendChild(dragged)
+    // 	}
+    // })
+    </script>
     
     
     <div>
@@ -200,6 +200,10 @@ function handleDrop(event: Event, index: number) {
     >
     </div>
     </div>
+    <!-- <div class="dropzone">
+      
+    </div>
+    <div class="dropzone" id="drop-target"></div> -->
     
     
     <style lang="scss">
