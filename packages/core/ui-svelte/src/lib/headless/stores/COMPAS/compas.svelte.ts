@@ -1,13 +1,14 @@
-import type { AvailableFileType } from './types.js'
+import type { Compas } from './types.js'
 
 class UseCompasStore {
 	private basePath = '/compas-scl-data-service'
 	private readinessPath = `${this.basePath}/q/health/ready`
 	private sclPath = `${this.basePath}/scl/v1`
+	private commonPath = `${this.basePath}/common/v1`
 	private sdsNamespaceUri =
 		'https://www.lfenergy.org/compas/SclDataService/v1'
 	//====== STATES ======//
-	isUsingCompas = $derived(this.getReadiness())
+	isCompasEnabled = $derived(this.getReadiness())
 
 	//====== PRIVATE METHODS ======//
 	private async getReadiness() {
@@ -18,19 +19,22 @@ class UseCompasStore {
 		return new DOMParser().parseFromString(listResponse, 'application/xml')
 	}
 
-	private formatListResponse(xmlDocument: XMLDocument) {
+	private formatListResponse(
+		xmlDocument: XMLDocument,
+		tagname: 'Item' | 'Type'
+	) {
 		const items = xmlDocument.getElementsByTagNameNS(
 			this.sdsNamespaceUri,
-			'Item'
+			tagname
 		)
 		const files = Array.from(items).map((item) => {
 			return Array.from(item.children).reduce(
 				(acc, child) => {
 					const key = child.tagName.split(':')[1].toLowerCase()
-					acc[key] = child.textContent
+					if (child.textContent) acc[key] = child.textContent
 					return acc
 				},
-				{} as Record<string, string | null>
+				{} as Record<string, string>
 			)
 		})
 		return files
@@ -47,18 +51,41 @@ class UseCompasStore {
 	}
 
 	//====== PUBLIC METHODS ======//
-	async getFilesByType(type: AvailableFileType) {
+
+	async getFileTypes(): Promise<Compas.FileTypeResponse | undefined> {
+		const response = await fetch(`${this.commonPath}/type/list`).catch(
+			(error) => console.error(error)
+		)
+		if (response?.ok) {
+			const text = await response.text()
+			const xmlDocument = this.parseResponseToXml(text)
+			return this.formatListResponse(
+				xmlDocument,
+				'Type'
+			) as Compas.FileTypeResponse
+		}
+	}
+
+	async getFilesByType(
+		type: Compas.AvailableFileType
+	): Promise<Compas.FileByTypeResponse | undefined> {
 		const response = await fetch(`${this.sclPath}/${type}/list`).catch(
 			(error) => console.error(error)
 		)
 		if (response?.ok) {
 			const text = await response.text()
 			const xmlDocument = this.parseResponseToXml(text)
-			return this.formatListResponse(xmlDocument)
+			return this.formatListResponse(
+				xmlDocument,
+				'Item'
+			) as Compas.FileByTypeResponse
 		}
 	}
 
-	async getFileByTypeAndId(type: AvailableFileType, id: string) {
+	async getFileByTypeAndId(
+		type: Compas.AvailableFileType,
+		id: string
+	): Promise<XMLDocument | undefined> {
 		const response = await fetch(`${this.sclPath}/${type}/${id}`).catch(
 			(error) => console.error(error)
 		)
