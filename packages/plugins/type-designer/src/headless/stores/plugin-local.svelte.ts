@@ -21,8 +21,6 @@ class UsePluginLocalStore {
 
 	//====== STATES ======//
 
-	host = $state<HTMLElement>()
-
 	namespaces = $derived({
 		currentPlugin: {
 			uri: this.pluginNamespaceUri,

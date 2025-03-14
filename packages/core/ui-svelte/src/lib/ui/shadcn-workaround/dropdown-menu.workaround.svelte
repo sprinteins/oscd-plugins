@@ -12,12 +12,15 @@ import { Button } from '$lib/ui/shadcn/index.js'
 import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical'
 // UTILS
 import { cn } from '$lib/utils/shadcn.js'
+// TYPES
+import type { Component, ComponentType } from 'svelte'
 
 //props
 let {
 	class: className,
 	actions,
-	size = 'md'
+	size = 'md',
+	icon = EllipsisVertical
 }: {
 	class?: string
 	actions: {
@@ -26,6 +29,7 @@ let {
 		callback: () => void
 	}[]
 	size: 'sm' | 'md' | 'lg'
+	icon?: Component | ComponentType
 } = $props()
 
 //refs
@@ -40,11 +44,11 @@ const buttonSize = $derived.by(() => {
 	if (size === 'lg')
 		return {
 			button: 'size-9',
-			icon: '!size-7'
+			icon: '!size-6'
 		}
 	return {
 		button: 'size-8',
-		icon: '!size-6'
+		icon: '!size-5'
 	}
 })
 
@@ -58,19 +62,21 @@ function handleActionClick(event: Event, action: { callback: () => void }) {
 	action.callback()
 	isDropdownOpen = false
 }
+
+const IconComponent = icon
 </script>
 
 <details use:clickOutside onclickoutside={() => isDropdownOpen = false} class="dropdown " open={isDropdownOpen}>
   <summary class="marker:hidden list-none">
 		<Button.Root variant="ghost" onclick={(event) => handleMenuOpen(event) } class={`${buttonSize.button} rounded-full p-0`}>
-			<EllipsisVertical class={buttonSize.icon} />
-	</Button.Root>
+			<IconComponent class={buttonSize.icon}></IconComponent>
+		</Button.Root>
 	</summary>
   <ul 
 		data-state={isDropdownOpen ? 'open' : 'closed'}
 		data-side="top"
 		class={cn(
-		"right-0 menu dropdown-content bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 z-50 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-md",
+		"right-0 menu dropdown-content bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 z-50 min-w-max overflow-hidden rounded-md border p-1 shadow-md",
 		className
 	)}>
 		{#if actions?.length}

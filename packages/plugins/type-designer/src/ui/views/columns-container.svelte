@@ -1,6 +1,6 @@
 <script lang="ts">
 // COMPONENTS
-import Column from '@/ui/components/column/column.svelte'
+import SingleColumn from '@/ui/components/column/single-column.svelte'
 // STORES
 import { typeElementsStore } from '@/headless/stores'
 // TYPES
@@ -16,9 +16,10 @@ const columnsEntries = $derived(Object.entries(typeElementsStore.columns)) as [
 ][]
 </script>
 
+
 <div  class="grid grid-cols-4 min-h-full gap-4 w-full p-4">
 {#each columnsEntries as [key, column]}
-	<Column columnKey={key} {column} />
+	<SingleColumn columnKey={key} {column} />
 {/each}
 </div>
 

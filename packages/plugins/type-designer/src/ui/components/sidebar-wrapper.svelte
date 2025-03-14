@@ -84,10 +84,11 @@ const attributesNeedingOneLineLayout = ['virtual']
 										setVirtualValue
 									}
 									oninput={onChangeHandler}
+									disabled={sidebarStore.isCurrentElementImported}
 								/>
 							{:else}
 								<Input.Root 
-									disabled={isAttributeReadonly(attributeKey)}
+									disabled={isAttributeReadonly(attributeKey) || sidebarStore.isCurrentElementImported}
 									class="mt-1"
 									required={attributeProperties.required}
 									type="text"
