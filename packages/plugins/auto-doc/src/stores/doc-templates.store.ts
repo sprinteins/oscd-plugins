@@ -110,17 +110,14 @@ function importDocumentTemplates(docTemplates: Element[]) {
     }
 
     const currentPrivateArea = get(autoDocArea);
-    // TODO: Create private area if it does not exist?
-
     if (!currentPrivateArea) {
         throw new Error('No auto doc private area found')
     }
 
-    currentPrivateArea.append(...docTemplates);
+    // Import to own doc, so there are no references to the original doc
+    const importedDocTemplates = docTemplates.map(docTemplate => xmlDoc.importNode(docTemplate))
 
-    console.log(currentPrivateArea)
-
-    // TODO: Dispatch event
+    eventStore.createMultipleAndDispatchActionEvent(currentPrivateArea, importedDocTemplates, 'Import auto doc templates');
 }
 
 function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle?: string, newDescription?: string) {

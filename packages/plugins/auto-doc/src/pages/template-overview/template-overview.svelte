@@ -39,13 +39,16 @@
         const templateDoc = new DOMParser().parseFromString(fileAsString, 'text/xml')
 
         const autoDocElement = getAutoDocElement(templateDoc)
+
+        if (autoDocElement === null) {
+            return
+        }
+
         const documentTemplates = Array.from(autoDocElement.querySelectorAll('DocumentTemplate'))
 
-        console.log(autoDocElement)
-        console.log(documentTemplates)
-
         docTemplatesStore.importDocumentTemplates(documentTemplates)
-        // TODO: is there a better way to refresh the ui?
+        
+        // TODO: the ui should update itself after any doc change
         allTemplates = docTemplatesStore.getAllDocumentTemplates()
     }
 

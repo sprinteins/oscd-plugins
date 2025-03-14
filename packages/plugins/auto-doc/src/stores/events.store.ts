@@ -20,6 +20,22 @@ function createAndDispatchActionEvent(parent: Element, element: Element) {
 	get(pluginHostElement).dispatchEvent(event)
 }
 
+function createMultipleAndDispatchActionEvent(parent: Element, elements: Element[], title: string) {
+	const creates = elements.map(element => ({
+		new: {
+			parent,
+			element
+		}
+	}))
+
+	const event = newActionEvent({
+		title,
+		actions: creates
+	})
+
+	get(pluginHostElement).dispatchEvent(event)
+}
+
 function deleteAndDispatchActionEvent(parent: Element, element: Element) {
 	const event = newActionEvent({
 		old: {
@@ -57,6 +73,7 @@ function updateAndDispatchActionEvent(element: Element, newAttributes: Record<st
 export const eventStore = {
 	//actions
 	createAndDispatchActionEvent,
+	createMultipleAndDispatchActionEvent,
 	updateAndDispatchActionEvent,
 	deleteAndDispatchActionEvent,
 	moveAndDispatchActionEvent
