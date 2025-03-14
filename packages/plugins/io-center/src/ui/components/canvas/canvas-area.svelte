@@ -12,13 +12,17 @@
 	import { Plus } from "lucide-svelte";
 	import AddLCDialog from "./add-lc-dialog.svelte";
 	import { store } from "../../../store.svelte";
-    import type { LcTypes } from "./types.canvas";
+	import type {
+		LcTypes,
+		NodeElement as NodeElementType,
+	} from "./types.canvas";
 
 	type Props = {
 		onAddLC: (type: LcTypes, number?: number) => void;
+		editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
 	};
 
-	const { onAddLC }: Props = $props();
+	const { onAddLC, editLC }: Props = $props();
 
 	let isDialogOpen = $state(false);
 </script>
@@ -68,6 +72,7 @@
 				showRightCircle={true}
 				{startDrawing}
 				{stopDrawing}
+				{editLC}
 			/>
 		{/each}
 	</div>

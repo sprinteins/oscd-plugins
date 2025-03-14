@@ -1,4 +1,4 @@
-import type { LC_TYPE } from "@/headless/constants"
+import type { LC_TYPE, NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants"
 
 export type ConnectionPoint = {
 	node: string
@@ -10,8 +10,11 @@ export type Connection = {
 	to: ConnectionPoint
 }
 
+export type NodeElementType = keyof typeof NODE_ELEMENT_TYPE
+
 export type NodeElement = {
 	id: string
+	type: NodeElementType
 	name: string
 }
 
@@ -21,6 +24,7 @@ export type NodeProps = {
 	showRightCircle: boolean
 	startDrawing: (event: MouseEvent) => void
 	stopDrawing: (node: string, side: string) => void
+	editLC?: (lcNode: NodeElement, newType: LcTypes) => void;
 }
 
 export type FormData = {
