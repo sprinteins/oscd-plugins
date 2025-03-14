@@ -10,6 +10,10 @@ const { pluginHostElement } = pluginStore
 
 //====== ACTIONS ======//
 function createAndDispatchActionEvent(parent: Element, element: Element, reference?: Node | null) {
+	if(reference === undefined) {
+		reference = null;
+	}
+
 	const event = newActionEvent({
 		new: {
 			parent,
@@ -36,12 +40,12 @@ function moveAndDispatchActionEvent(oldParent: Element, newParent: Element, elem
 	const event = newActionEvent({
 		old: {
 			parent: oldParent,
-			element
+			element,
 		},
 		new: {
 			parent: newParent,
 			element,
-			position
+			position,
 		}
 	})
 

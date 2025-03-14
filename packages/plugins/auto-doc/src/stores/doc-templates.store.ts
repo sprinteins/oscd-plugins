@@ -197,7 +197,7 @@ function duplicateBlockFromDocumentTemplate(docTemplate: Element, blockId: strin
     duplicatedElement.setAttribute("id", uuidv4());
 
     insertBlockAtPosition(docTemplate, duplicatedElement, position);
-    eventStore.createAndDispatchActionEvent(docTemplate, duplicatedElement, blockElement);
+    eventStore.createAndDispatchActionEvent(docTemplate, duplicatedElement, duplicatedElement);
     
     return duplicatedElement;
 }
