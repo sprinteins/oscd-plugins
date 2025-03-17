@@ -77,11 +77,9 @@
         }
 
         const calculatedPosition = index + direction;
-        docTemplatesStore.moveBlockInDocumentTemplate(template, elementId, calculatedPosition);
-
-        // Temporary fix: trigger update manually because moveBlockInDocumentTemplate does not
-        const content = template.querySelector(`Block[id="${elementId}"]`)?.textContent;
-        docTemplatesStore.editBlockContentOfDocumentTemplate(template, elementId, content || "");
+        const referenceBlock = blockElements[calculatedPosition];
+        const reference = template.querySelector(`Block[id="${referenceBlock?.id}"]`);
+        docTemplatesStore.moveBlockInDocumentTemplate(template, elementId, calculatedPosition, reference);
     }
 
     function deleteBlockElement(event: CustomEvent<{elementId: string}>){
