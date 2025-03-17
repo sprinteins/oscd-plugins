@@ -97,17 +97,17 @@
                     </Cell>
                     <Cell>
                     <div class="action-btns">
-                        <Tooltip text="Edit" position="right">
+                        <Tooltip text="Edit" position="right" isPositionModified={true}>
                             <CustomIconButton icon="edit" color="black" on:click={()=>{editTemplate(template.id)}}/>
                         </Tooltip>
-                        <Tooltip text="Delete" position="left">
+                        <Tooltip text="Delete" position="left" isPositionModified={true}>
                             <CustomIconButton icon="delete" color="black" on:click={()=>{deleteTemplate(template.id)}}/>
                         </Tooltip>
-                        <Tooltip text="Duplicate" position="left">
+                        <Tooltip text="Duplicate" position="left" isPositionModified={true}>
                             <CustomIconButton icon="content_copy" color="black" on:click={()=>{duplicateTemplate(template.id)}}/>
                         </Tooltip>
                         <!-- ! &nbsp; - No-Break Space. Verhindert den Umbruch des Tooltips. Wenn nicht verwendet, wird das zweite Wort vom Border der Zeile(Spalte) abgeschnitten. -->
-                        <Tooltip text="Generate&nbsp;Document" position="left">
+                        <Tooltip text="Generate&nbsp;Document" position="left" isPositionModified={true}>
                             <CustomIconButton icon="download" color="black" on:click={()=>{downloadTemplateContent(template.id)}}/>
                         </Tooltip>
                     </div>
