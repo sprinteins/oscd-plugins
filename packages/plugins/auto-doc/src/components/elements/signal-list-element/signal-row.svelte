@@ -64,8 +64,11 @@
         signalDndStore._dropIndex.set(idx);
     };
 
-    const handleDragLeave = () => {
-        isDraggedOver = false;
+    const handleDragLeave = (e: DragEvent) => {
+        const relatedTarget = e.relatedTarget as HTMLElement;
+        if (!e.currentTarget.contains(relatedTarget)) {
+            isDraggedOver = false;
+        }
     };
 
     const handleDrop = (event: DragEvent) => {
@@ -86,11 +89,13 @@
 
     <!-- TODO remove a11 jammers and fix the issues they are complaining about -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="row-container"
+        on:dragover={handleDragOver}
+        on:dragleave={handleDragLeave}>
         <div class="signal-row"
                 data-row-id={id}
                 class:dragging={signalDndStore.draggedIndex === idx}
-                on:dragover={handleDragOver}
-                on:dragleave={handleDragLeave}>
+        >
                         <div>
                                 <div draggable="true"
                                         on:dragstart={() => signalDndStore.handleDragStart(idx)}
@@ -141,6 +146,7 @@
                 on:dragover|preventDefault
         >
         </div>
+    </div>
     </div>
     
     
