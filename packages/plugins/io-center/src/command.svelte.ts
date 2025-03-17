@@ -28,6 +28,8 @@ export class Command {
 
 		const ld0 = this.ensureLD0(ied)
 
+		this.createLNodeType(type)
+
 		const currentLPNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
 
 		if (!number) {
@@ -200,7 +202,7 @@ export class Command {
 		}
 	}
 
-	private createLNodeType(type: LcTypes) {
+	private createLNodeType(type: LcTypes | LpTypes) {
 		if (!store.doc) { throw new Error('Doc not found!') }
 
 		const host = this.requireHost()

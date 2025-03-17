@@ -29,7 +29,11 @@ export const L_NODE_TYPE_CONTENT = {
     LCBO: '<DO name="OutInd" type="SPS"/>',
     LCDP: '<DO name="OutPos" type="DPS"/>',
     LCIV: '<DO name="OutPos" type="INS"/>',
+    LPDO: '',
+    LPDI: '<DO name="Ind" type="SPS"/>',
+    LPAI: '<DO name="Ind" type="SPS"/>',
+    LPAO: '<DO name="Ind" type="SPS"/>',
 } as const
 
 export const L_NODE_TYPE_HELPER_TEXT =
-    "The selected type has no matching LNodeType in the document and will be created automatically, or you can create one using the Template Plugin.";
+    "The selected type has no matching LNodeType, which will be created automatically, or you can create one using the Template Plugin.";
