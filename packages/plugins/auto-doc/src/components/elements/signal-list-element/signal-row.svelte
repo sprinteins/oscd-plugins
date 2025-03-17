@@ -31,10 +31,6 @@
         dispatch('update', { key, value })
     }
     
-    function isFirstRow() {
-        return idx === 0
-    }
-    
     function createSuffixForLabelIfNeeded(label: Label) {
         const { name, hasSuffix } = label
         return hasSuffix ? `Column ${idx + 1} "${name}"` : name

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { signallistStore } from '@/stores'
 	import Checkbox from '@smui/checkbox'
-	import { signalDndStore } from '../../../stores/signal-dnd.store'
 	
 	import SignalRow from './signal-row.svelte'
 	import type {
