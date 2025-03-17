@@ -72,13 +72,9 @@
     };
 
     const handleDrop = (event: DragEvent) => {
-        event.preventDefault();
+        isDraggedOver = false;
         const { draggedIndex, dropIndex } = signalDndStore;
-        
-        if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) {
-            return;
-        }
-
+        if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) return;
         dispatch('reorder', { draggedIndex, dropIndex });
         signalDndStore.handleDragEnd(idx);
     }
@@ -86,67 +82,59 @@
     
     
     <div>
-
-    <!-- TODO remove a11 jammers and fix the issues they are complaining about -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="row-container"
-        on:dragover={handleDragOver}
-        on:dragleave={handleDragLeave}>
-        <div class="signal-row"
-                data-row-id={id}
-                class:dragging={signalDndStore.draggedIndex === idx}
-        >
-                        <div>
-                                <div draggable="true"
-                                        on:dragstart={() => signalDndStore.handleDragStart(idx)}
-                                        on:dragend={() => signalDndStore.handleDragEnd(idx)}>
-                                        <div class="drag-handle">
-                                                <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
-                                                        <circle cx="6" cy="6" r="2"/>
-                                                        <circle cx="12" cy="6" r="2"/>
-                                                        <circle cx="6" cy="12" r="2"/>
-                                                        <circle cx="12" cy="12" r="2"/>
-                                                        <circle cx="6" cy="18" r="2"/>
-                                                        <circle cx="12" cy="18" r="2"/>
-                                                </svg>
+        <!-- TODO remove a11 jammers and fix the issues they are complaining about -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div class="row-container"
+                on:dragover={handleDragOver}
+                on:dragleave={handleDragLeave}>
+                <div class="signal-row"
+                        data-row-id={id}
+                        class:dragging={signalDndStore.draggedIndex === idx}
+                >
+                                <div>
+                                        <div draggable="true"
+                                                on:dragstart={() => signalDndStore.handleDragStart(idx)}
+                                                on:dragend={() => signalDndStore.handleDragEnd(idx)}>
+                                                <div class="drag-handle">
+                                                        <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
+                                                                <circle cx="6" cy="6" r="2"/>
+                                                                <circle cx="12" cy="6" r="2"/>
+                                                                <circle cx="6" cy="12" r="2"/>
+                                                                <circle cx="12" cy="12" r="2"/>
+                                                                <circle cx="6" cy="18" r="2"/>
+                                                                <circle cx="12" cy="18" r="2"/>
+                                                        </svg>
+                                                </div>
                                         </div>
+                                        <Checkbox bind:checked={isSelected} />
                                 </div>
-                                <Checkbox bind:checked={isSelected} />
-                        </div>
-                        <Textfield
-                                bind:value={column1}
-                                variant="outlined"
-                                label={createSuffixForLabelIfNeeded(label.col1Label)}
-                                on:input= {e => debounceUserInput('column1', e.target.value)}
-                                disabled={!isSelected}
-                        >
-                        </Textfield>
-                        <Textfield
-                                bind:value={column2}
-                                variant="outlined"
-                                label={createSuffixForLabelIfNeeded(label.col2Label)}
-                                on:input= {e => debounceUserInput('column2', e.target.value)}
+                                <Textfield
+                                        bind:value={column1}
+                                        variant="outlined"
+                                        label={createSuffixForLabelIfNeeded(label.col1Label)}
+                                        on:input= {e => debounceUserInput('column1', e.target.value)}
                                         disabled={!isSelected}
-                                        >
-                        </Textfield>
+                                >
+                                </Textfield>
+                                <Textfield
+                                        bind:value={column2}
+                                        variant="outlined"
+                                        label={createSuffixForLabelIfNeeded(label.col2Label)}
+                                        on:input= {e => debounceUserInput('column2', e.target.value)}
+                                                disabled={!isSelected}
+                                                >
+                                </Textfield>
+                </div>
+        
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <div
+                        class="drop-zone"
+                        class:active={isDraggedOver && signalDndStore.draggedIndex !== -1}
+                        on:drop|preventDefault={(e) => {handleDrop(e)}}
+                        on:dragover|preventDefault
+                >
+                </div>
         </div>
-    
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <div
-                class="drop-zone"
-                class:active={isDraggedOver && signalDndStore.draggedIndex !== -1}
-                on:drop={(e) => {
-                    e.preventDefault();
-                    isDraggedOver = false;
-                    const { draggedIndex, dropIndex } = signalDndStore;
-                    if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) return;
-                    dispatch('reorder', { draggedIndex, dropIndex });
-                    signalDndStore.handleDragEnd();
-                }}
-                on:dragover|preventDefault
-        >
-        </div>
-    </div>
     </div>
     
     
@@ -162,10 +150,6 @@
             cursor: not-allowed;
         }
 
-        small{
-            color: #4d5d63;
-            text-align: center;
-        }
 
     }
     
@@ -193,6 +177,7 @@
                 
                 &.active {
                     height: 60px;
+                    margin-bottom: 24px;
                     opacity: 1;
                     border: 2px dashed #00ff00;
                     background: rgba(0, 255, 0, 0.1);
