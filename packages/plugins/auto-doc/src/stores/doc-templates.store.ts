@@ -143,7 +143,7 @@ function addBlockToDocumentTemplate(docTemplate: Element, type: ElementType, pos
 
     insertBlockAtPosition(docTemplate, blockElement, position);
     eventStore.createAndDispatchActionEvent(docTemplate, blockElement);
-    eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockElement, position);
+    eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockElement);
 
     return generatedId;
 }
@@ -160,11 +160,11 @@ function editBlockContentOfDocumentTemplate(docTemplate: Element, blockId: strin
     }
 }
 
-function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, position: number) {
+function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, position: number, reference?: Element | null) {
     const blockIdElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockIdElement) {
         insertBlockAtPosition(docTemplate, blockIdElement, position);
-        eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockIdElement, position);
+        eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockIdElement, reference);
     }
 }
 
@@ -197,7 +197,7 @@ function duplicateBlockFromDocumentTemplate(docTemplate: Element, blockId: strin
     duplicatedElement.setAttribute("id", uuidv4());
 
     insertBlockAtPosition(docTemplate, duplicatedElement, position);
-    eventStore.createAndDispatchActionEvent(docTemplate, duplicatedElement, blockElement);
+    eventStore.createAndDispatchActionEvent(docTemplate, duplicatedElement, duplicatedElement);
     
     return duplicatedElement;
 }
