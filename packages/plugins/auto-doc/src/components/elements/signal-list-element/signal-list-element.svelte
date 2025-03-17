@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { signallistStore } from '@/stores'
+	import Checkbox from '@smui/checkbox'
 	import { signalDndStore } from '../../../stores/signal-dnd.store'
 	
 	import SignalRow from './signal-row.svelte'
@@ -87,6 +88,7 @@
 		emitSelectedRows()
 	}
 	
+    let areAllCheckboxesSelected = false
 	function toggleAllCheckboxes(newValue: boolean) {
 		mergedColsAndMessages = mergedColsAndMessages.map((row) => ({
 			...row,
@@ -158,14 +160,17 @@
 	<article 
 		class="signal-list"
 	>
-	<!-- <div>
-		<Checkbox 
-		on:click={toggleAllCheckboxes}
-		bind:checked={areAllCheckboxesSelected}
-		/>
+	<div class="signal-list-header">
+		<div>
+			<Checkbox
+			on:click={() => toggleAllCheckboxes(areAllCheckboxesSelected)}
+			bind:checked={areAllCheckboxesSelected}
+			/>
+		</div>
+		<small>Choose the columns you want to display and rename if needed</small>
+		<small>Use the filter to limit the content of the columns to certain values</small>
 	</div>
-	<small>Choose the columns you want to display and rename if needed</small>
-	<small>Use the filter to limit the content of the columns to certain values</small> -->
+	
 	{#each mergedColsAndMessages as row (row.id)}
 		<SignalRow 
 			idx={row.index}
@@ -186,6 +191,19 @@
 		width: 99%;
 		display: flex;
 		flex-direction: column;
+	}
+
+	.signal-list-header{
+        display: grid;
+        grid-template-columns: 3% repeat(2, 1fr);
+        grid-gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        small{
+            color: #4d5d63;
+            text-align: center;
+        }
 	}
 	</style>
 	

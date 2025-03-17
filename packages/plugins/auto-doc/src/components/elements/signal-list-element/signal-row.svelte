@@ -18,7 +18,6 @@
     export let column1 = ''
     export let column2 = ''
     
-    let areAllCheckboxesSelected = false
     
     const ONE_SECOND_IN_MS = 1000
     
@@ -45,9 +44,7 @@
         dispatch('update', { key: 'isSelected', value: isSelected })
     }
     
-    function toggleAllCheckboxes() {
-        dispatch('toggleAllCheckboxes', { value: areAllCheckboxesSelected })
-    }
+    
     
     $: isDropTarget =
         signalDndStore.draggedIndex !== -1 && signalDndStore.dropIndex === idx
