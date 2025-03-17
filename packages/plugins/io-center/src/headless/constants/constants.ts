@@ -30,3 +30,6 @@ export const L_NODE_TYPE_CONTENT = {
     LCDP: '<DO name="OutPos" type="DPS"/>',
     LCIV: '<DO name="OutPos" type="INS"/>',
 } as const
+
+export const L_NODE_TYPE_HELPER_TEXT =
+    "The selected type has no matching LNodeType in the document and will be created automatically, or you can create one using the Template Plugin.";

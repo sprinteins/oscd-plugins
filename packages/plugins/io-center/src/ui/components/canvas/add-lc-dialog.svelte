@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LC_TYPE } from "@/headless/constants";
+	import { L_NODE_TYPE_HELPER_TEXT, LC_TYPE } from "@/headless/constants";
 	import Input from "../common/input.svelte";
 	import Select from "../common/select.svelte";
 	import type { LcTypes } from "./types.canvas";
@@ -16,15 +16,12 @@
 	let number = $state<number | undefined>(undefined);
 	let numberOfLCIVPorts = $state<number | undefined>(undefined);
 
-	let typePresenttInDoc = $state(false);
+	let typePresentInDoc = $state(false);
 
 	$effect(() => {
 		if (!type) return;
-		typePresenttInDoc = hasLNodeType(type);
+		typePresentInDoc = hasLNodeType(type);
 	});
-
-	const helperText =
-		"The selected type has no matching LNodeType in the document and will be created automatically, or you can create one using the Template Plugin.";
 
 	function handleCancel() {
 		type = "";
@@ -50,7 +47,9 @@
 				bind:value={type}
 				label="LC Type"
 				options={Object.values(LC_TYPE)}
-				helperText={type && !typePresenttInDoc ? helperText : undefined}
+				helperText={type && !typePresentInDoc
+					? L_NODE_TYPE_HELPER_TEXT
+					: undefined}
 			/>
 			<Input bind:value={number} label="LC Number" type="number" />
 			{#if type === LC_TYPE.LCIV}
