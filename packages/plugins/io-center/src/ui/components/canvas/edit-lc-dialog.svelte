@@ -1,47 +1,33 @@
 <script lang="ts">
-    import { LP_TYPE } from "@/headless/constants";
-    import Input from "../common/input.svelte";
+    import { LC_TYPE } from "@/headless/constants";
     import Select from "../common/select.svelte";
-    import type { FormData, LpTypes } from "./types.lp-list";
+    import type {
+        FormData,
+        LcTypes,
+        NodeElement as NodeElementType,
+    } from "./types.canvas";
 
     type Props = {
         isOpen: boolean;
-        addLp: (
-            type: LpTypes,
-            name: string,
-            desc: string,
-            number?: number,
-        ) => void;
+        nodeSelected: boolean;
+        lcNode: NodeElementType;
+        editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
     };
 
-    let { isOpen = $bindable(), addLp }: Props = $props();
+    let { isOpen = $bindable(), nodeSelected = $bindable(), lcNode, editLC }: Props = $props();
 
-    let formData = $state<FormData>({
-        name: "",
-        desc: "",
-        type: LP_TYPE.LPDI,
-    });
+    let newType = $state<LcTypes>(LC_TYPE.LCBI);
 
     function handleCancel() {
         isOpen = false;
-
-        formData = {
-            name: "",
-            desc: "",
-            type: LP_TYPE.LPDI,
-        };
+        nodeSelected = false;
     }
 
     function handleSubmit() {
-        addLp(formData.type, formData.name, formData.desc, formData.number);
-
-        formData = {
-            name: "",
-            desc: "",
-            type: LP_TYPE.LPDI,
-        };
+        editLC(lcNode, newType);
 
         isOpen = false;
+        nodeSelected = false;
     }
 </script>
 
@@ -49,20 +35,9 @@
     <div role="button" id="modal" class="backdrop">
         <div class="container space-y-4">
             <Select
-                bind:value={formData.type}
-                label="LP Type"
-                options={Object.values(LP_TYPE)}
-            />
-            <Input bind:value={formData.name} label="LP Name" type="text" />
-            <Input
-                bind:value={formData.number}
-                label="LP Number"
-                type="number"
-            />
-            <Input
-                bind:value={formData.desc}
-                label="LP Description"
-                type="text"
+                bind:value={newType}
+                label="LC Type"
+                options={Object.values(LC_TYPE)}
             />
             <div class="action-buttons">
                 <button class="cancel-button" onclick={handleCancel}>

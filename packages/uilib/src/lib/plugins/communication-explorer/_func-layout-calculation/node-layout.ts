@@ -21,6 +21,7 @@ export async function calculateLayout(
 	selectionFilter: SelectedFilter,
 	preferences: Preferences
 ): Promise<RootNode> {
+
 	config = {
 		...defaultConfigs,
 		...config
@@ -35,15 +36,23 @@ export async function calculateLayout(
 	}
 
 	let edges = generateConnectionLayout(ieds, selectionFilter)
-	let children: IEDNode[] = generateIEDLayout(ieds, edges, config)
-	children = generateBayLayout(children, edges, config)
+	let children: IEDNode[] = generateIEDLayout(ieds, edges, config, preferences)
+	if (preferences.groupByBay) {
+		children = generateBayLayout(children, edges, config)
+	}
 
 	if (preferences.isFocusModeOn) {
-		children = children.filter((child) => child.isRelevant)
-		edges = edges.filter((edge) => edge.isRelevant)
+		children = children.filter(child => child.isRelevant)
+		if (preferences.groupByBay) {
+			for (const bayNode of children) {
+				bayNode.children = bayNode.children?.filter(child => child.isRelevant)
+			}
+		}
+		edges = edges.filter(edge => edge.isRelevant)
 	}
 
 	const elk = new ELK()
+	const baylabelBuffer = config.bayLabelGap + config.bayLabelHeight
 
 	// Need more configuration options of elk.js?
 	// 👉 https://www.eclipse.org/elk/reference/algorithms.html
@@ -65,7 +74,15 @@ export async function calculateLayout(
 			),
 			'org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers': String(
 				config.spacingBetweenNodes
-			)
+			),
+
+			//disable grouping and add padding for baylabels
+			...(!preferences.groupByBay && {
+				'org.eclipse.elk.hierarchyHandling': 'SEPARATE_CHILDREN',
+				'org.eclipse.elk.padding': `[top=${baylabelBuffer}]`,
+				'org.eclipse.elk.spacing.edgeNode': `${baylabelBuffer}`,
+				'org.eclipse.elk.spacing.nodeNode': `${baylabelBuffer + (config.spacingBase ?? 0)}`
+			})
 		},
 		children,
 		edges
@@ -73,6 +90,10 @@ export async function calculateLayout(
 
 	// message type information gets lost here
 	const root = (await elk.layout(graph)) as RootNode
+
+	if (!preferences.groupByBay) {
+		return root;
+	}
 
 	// this is not ideal, ELK will calculate positions of IEDs and connections in local space of the parent bay (I didn't find a way to change that...)
 	// we are not expecting local positions but absolute positions so we have to add the position of the bay to each affected Connection
@@ -83,8 +104,8 @@ export async function calculateLayout(
 			//find all connections that have both source and target IED within the same bay
 			if (root.edges) {
 				for (const edge of root.edges) {
-					if (node.children.some(ied => ied.label == edge.sourceIED.iedName) &&
-						node.children.some(ied => ied.label == edge.targetIED.iedName)) {
+					if (node.children.some(ied => ied.label === edge.sourceIED.iedName) &&
+						node.children.some(ied => ied.label === edge.targetIED.iedName)) {
 						if (edge.sections) {
 							for (const section of edge.sections) {
 								if (node.x !== undefined && node.y !== undefined) {
@@ -128,26 +149,26 @@ export async function calculateLayout(
 
 function generateBayLayout(ieds: IEDNode[], edges: IEDConnectionWithCustomValues[], config: Config): IEDNode[] {
 
-	let children: IEDNode = []
-	let bays: IEDNode = []
+	const children: IEDNode = []
+	const bays: IEDNode = []
 	let id = 0
 	for (const ied of ieds) {
-		if (ied.bays.size == 0) {
+		if (!ied.bays || ied.bays.size === 0) {
 			children.push(ied);
 			continue;
 		}
-		let bayLabel = ied.bays.values().next().value;
+		const bayLabel = ied.bays.values().next().value;
 		let bayNode: IEDNode = (children.find(b => b.label === bayLabel && b.isBayNode))
 		if (bayNode) {
 			bayNode.children.push(ied);
 			bayNode.isRelevant |= ied.isRelevant
 		}
 		else {
-			let spacing = config.spacingBase ?? 20
+			const spacing = config.spacingBase ?? 20
 			bayNode = {
-				id:         	"bay-" + (id++), //placeholder
-				width:      	config.width,
-				height:     	config.height,
+				id:         	`bay-${id++}`, //placeholder
+				width:      	config.iedWidth,
+				height:     	config.iedHeight,
 				label:      	bayLabel,
 				isRelevant: 	ied.isRelevant,
 				isBayNode:		true,

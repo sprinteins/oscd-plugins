@@ -11,6 +11,65 @@
 	}}
 />
 
+<script lang="ts">
+	import jsonPackage from "../package.json";
+	import { initPlugin } from "@oscd-plugins/core-ui-svelte";
+	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
+	import Layout from "./ui/layout.svelte";
+	import { useQuery } from "./query.svelte";
+	import { newCommand, type Command } from "./command.svelte";
+
+	import type { Nullable } from "./types";
+	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
+	import LpList from "./ui/components/lp-list/lp-list.svelte";
+	import { store } from "./store.svelte";
+	import SideBarLeft from "./sidebar-left.svelte";
+	import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list";
+    import type { LcTypes, NodeElement } from "./ui/components/canvas/types.canvas";
+
+	// props
+	const {
+		doc,
+		docName,
+		editCount,
+		// isCustomInstance
+	}: Utils.PluginCustomComponentsProps = $props();
+	const isCustomInstance = true;
+
+	//
+	// Setup
+	//
+	let root = $state<Nullable<HTMLElement>>(null);
+	let cmd = $state<Command>(newCommand(() => root));
+	useQuery();
+
+	// we need to trigger a rerendering when the editCount changes
+	// this is how OpenSCD lets us know that there was a change in the document
+	$effect(() => {
+		store.editCount = editCount;
+		store.doc = doc;
+	});
+
+	function onAddLC(type: LcTypes, number?: number) {
+		cmd.addLC(type, number);
+	}
+
+	function editLC(lcNode: NodeElement, newType: LcTypes) {
+		cmd.editLC(lcNode, newType);
+	}
+
+	function addLp(type: LpTypes, name: string, desc: string, number?: number) {
+		cmd.addLp(type, name, desc, number);
+	}
+
+	function removeLP(lpElement: LpElement) {
+		cmd.removeLP(lpElement);
+	}
+
+	function editLP(lpElement: LpElement, name: string, desc: string) {
+		cmd.editLP(lpElement, name, desc);
+	}
+</script>
 
 <main
 	use:initPlugin={{
@@ -28,80 +87,10 @@
 >
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
-		<CanvasArea
-			slot="content"
-			{onAddLC}
-		/>
-		<LpList slot="sidebar-right" {addLp} {removeLP} {editLP}/>
+		<CanvasArea slot="content" {onAddLC} {editLC}/>
+		<LpList slot="sidebar-right" {addLp} {removeLP} {editLP} />
 	</Layout>
 </main>
 
 <style>
-	
 </style>
-
-<script lang="ts">
-	import jsonPackage from "../package.json";
-	import { initPlugin } from "@oscd-plugins/core-ui-svelte";
-	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
-	import Layout from "./ui/layout.svelte";
-	import { useQuery } from "./query.svelte";
-	import { newCommand, type Command } from "./command.svelte";
-	
-	import type { Nullable } from "./types";
-	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
-	import LpList from "./ui/components/lp-list/lp-list.svelte";
-	import { store } from "./store.svelte";
-	import SideBarLeft from "./sidebar-left.svelte";
-    import type { LCType } from "./ui/components/canvas/add-lc-dialog/add-lc-dialog.types";
-    import type { LpElement } from "./ui/components/lp-list/types.lp-list";
-
-	// props
-	const {
-		doc,
-		docName,
-		editCount,
-		// isCustomInstance
-	}: Utils.PluginCustomComponentsProps = $props();
-	const isCustomInstance= true
-
-	$inspect(doc).with((type, doc) => {
-		console.log(doc)
-	})
-	$inspect(editCount)
-	//
-	// Setup
-	//
-	let root = $state<Nullable<HTMLElement>>(null);
-	let cmd = $state<Command>(newCommand(() => root));	
-	useQuery()		
-
-	// we need to trigger a rerendering when the editCount changes
-	// this is how OpenSCD lets us know that there was a change in the document
-	$effect(() => {
-		console.log("edit count changed:", editCount)
-		store.editCount = editCount;
-		store.doc = doc
-	});
-
-	function onAddLC(lcType: LCType, instance: string, nrOfLRTIInputs?: number){
-		if(!store.selectedIED){ 
-			console.warn("No IED selected")
-			return
-		}
-		cmd.addLC(store.selectedIED.name, lcType, instance)
-	}
-
-	function addLp() {
-		cmd.addLp();
-	}
-
-	function removeLP(lpElement: LpElement) {
-		cmd.removeLP(lpElement)
-	}
-
-	function editLP(lpElement: LpElement, name: string, desc: string) {
-		cmd.editLP(lpElement, name, desc)
-	}
-
-</script>
