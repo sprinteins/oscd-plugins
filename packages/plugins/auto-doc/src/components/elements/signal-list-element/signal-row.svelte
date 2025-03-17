@@ -78,25 +78,15 @@
     
     
     <div>
+
+    <!-- TODO remove a11 jammers and fix the issues they are complaining about -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div class="signal-row"
                 data-row-id={id}
                 class:dragging={signalDndStore.draggedIndex === idx}
                 on:dragover|preventDefault={(e) => {
-                e.preventDefault();
-                signalDndStore._dropIndex.set(idx);
+                        signalDndStore._dropIndex.set(idx);
                 }}>
-                {#if isFirstRow()}
-                        <div>
-                                <Checkbox 
-                                on:click={toggleAllCheckboxes}
-                                bind:checked={areAllCheckboxesSelected}
-                                />
-                        </div>
-                        <small>Choose the columns you want to display and rename if needed</small>
-                        <small>Use the filter to limit the content of the columns to certain values</small>
-                        
-                {/if}
                         <div>
                                 <div draggable="true"
                                         on:dragstart={() => signalDndStore.handleDragStart(idx)}

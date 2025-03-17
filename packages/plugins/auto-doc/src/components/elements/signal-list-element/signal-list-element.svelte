@@ -158,6 +158,14 @@
 	<article 
 		class="signal-list"
 	>
+	<!-- <div>
+		<Checkbox 
+		on:click={toggleAllCheckboxes}
+		bind:checked={areAllCheckboxesSelected}
+		/>
+	</div>
+	<small>Choose the columns you want to display and rename if needed</small>
+	<small>Use the filter to limit the content of the columns to certain values</small> -->
 	{#each mergedColsAndMessages as row (row.id)}
 		<SignalRow 
 			idx={row.index}
