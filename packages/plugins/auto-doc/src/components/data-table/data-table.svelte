@@ -96,19 +96,19 @@
                         <Truncate text={template.description} maxChars={100} tooltipPosition="top"/>
                     </Cell>
                     <Cell>
-                    <div class="action-btns">
+                    <div class="action-btns center-action-btns">
                         <Tooltip text="Edit" position="right" isPositionModified={true}>
-                            <CustomIconButton icon="edit" color="black" on:click={()=>{editTemplate(template.id)}}/>
+                            <CustomIconButton icon="edit" color="black" size="small" on:click={()=>{editTemplate(template.id)}}/>
                         </Tooltip>
                         <Tooltip text="Delete" position="left" isPositionModified={true}>
-                            <CustomIconButton icon="delete" color="black" on:click={()=>{deleteTemplate(template.id)}}/>
+                            <CustomIconButton icon="delete" color="black" size="small" on:click={()=>{deleteTemplate(template.id)}}/>
                         </Tooltip>
                         <Tooltip text="Duplicate" position="left" isPositionModified={true}>
-                            <CustomIconButton icon="content_copy" color="black" on:click={()=>{duplicateTemplate(template.id)}}/>
+                            <CustomIconButton icon="content_copy" color="black" size="small" on:click={()=>{duplicateTemplate(template.id)}}/>
                         </Tooltip>
                         <!-- ! &nbsp; - No-Break Space. Verhindert den Umbruch des Tooltips. Wenn nicht verwendet, wird das zweite Wort vom Border der Zeile(Spalte) abgeschnitten. -->
                         <Tooltip text="Generate&nbsp;Document" position="left" isPositionModified={true}>
-                            <CustomIconButton icon="download" color="black" on:click={()=>{downloadTemplateContent(template.id)}}/>
+                            <CustomIconButton icon="download" color="black" size="small" on:click={()=>{downloadTemplateContent(template.id)}}/>
                         </Tooltip>
                     </div>
                     </Cell>
@@ -125,6 +125,9 @@
        display: flex;
        flex-direction: column;
        align-items: center;
+    }
+    .center-action-btns {
+        padding-top: 0.5rem;
     }
     .table-container{
 
