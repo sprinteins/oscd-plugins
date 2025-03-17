@@ -4,6 +4,7 @@ import type { Nullable } from "./types"
 import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
 import { createElement } from "./headless/stores/document-helpers.svelte"
 import type { LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
+import { L_NODE_TYPE_CONTENT } from "./headless/constants"
 
 export class Command {
 	constructor(
@@ -122,13 +123,15 @@ export class Command {
 
 		const ld0 = this.ensureLD0(ied)
 
-		const currentLPNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
+		this.createLNodeType(type)
+
+		const currentLCNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
 
 		if (!number) {
 			const attributes = {
 				"xmlns": "",
 				"lnClass": type,
-				"inst": `${currentLPNumber + 1}`,
+				"inst": `${currentLCNumber + 1}`,
 				"lnType": type,
 			}
 
@@ -141,7 +144,7 @@ export class Command {
 			const attributes = {
 				"xmlns": "",
 				"lnClass": type,
-				"inst": `${currentLPNumber + i}`,
+				"inst": `${currentLCNumber + i}`,
 				"lnType": type,
 			}
 
@@ -195,6 +198,27 @@ export class Command {
 				}
 			})
 		}
+	}
+
+	private createLNodeType(type: LcTypes) {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const host = this.requireHost()
+
+		if (this.hasLNodeType(type)) {
+			return
+		}
+
+		const dataTypeTemplates = store.doc.querySelector("DataTypeTemplates")
+
+		if (!dataTypeTemplates) { throw new Error('DataTypeTemplates element not found!') }
+
+		const attributes = {
+			"id": `IOCenter.${type}`,
+			"lnClass": type,
+		}
+
+		createElement(host, store.doc, "LNodeType", attributes, dataTypeTemplates, null, L_NODE_TYPE_CONTENT[type])
 	}
 
 	public hasLNodeType(type: LcTypes | LpTypes): boolean {

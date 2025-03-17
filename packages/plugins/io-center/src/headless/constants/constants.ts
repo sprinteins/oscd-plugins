@@ -23,3 +23,10 @@ export const LC_TYPE = {
     LCDP: "LCDP",
     LCIV: "LCIV",
 } as const
+
+export const L_NODE_TYPE_CONTENT = {
+    LCBI: '<DO name="OutInd" type="SPS"/>',
+    LCBO: '<DO name="OutInd" type="SPS"/>',
+    LCDP: '<DO name="OutPos" type="DPS"/>',
+    LCIV: '<DO name="OutPos" type="INS"/>',
+} as const

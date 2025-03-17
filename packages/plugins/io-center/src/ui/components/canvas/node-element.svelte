@@ -1,8 +1,18 @@
 <script lang="ts">
   import { NODE_ELEMENT_TYPE } from "@/headless/constants";
   import EditButton from "../common/edit-button.svelte";
-  import type { NodeProps } from "./types.canvas";
   import EditLcDialog from "./edit-lc-dialog.svelte";
+  import type { LcTypes, NodeElement as NodeElementType } from "./types.canvas";
+
+  type Props = {
+    node: NodeElementType;
+    showLeftCircle: boolean;
+    showRightCircle: boolean;
+    startDrawing: (event: MouseEvent) => void;
+    stopDrawing: (node: string, side: string) => void;
+    editLC?: (lcNode: NodeElementType, newType: LcTypes) => void;
+    hasLNodeType?: (type: LcTypes) => boolean;
+  };
 
   let {
     node,
@@ -11,7 +21,8 @@
     startDrawing,
     stopDrawing,
     editLC,
-  }: NodeProps = $props();
+    hasLNodeType,
+  }: Props = $props();
 
   let isSelected = $state(false);
   let showEditDialog = $state(false);
