@@ -9,6 +9,7 @@ export type LabelText = {
 }
 
 export type SignalRow = {
+	id: string;
 	index: number
 	isSelected: boolean
 	column1: string

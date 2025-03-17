@@ -8,7 +8,8 @@
     import { signalDndStore } from '../../../stores/signal-dnd.store'
     
     //Props
-    export let idx = 1
+    export let idx: number;
+    export let id: string;
     export let label: LabelText = {
         col1Label: { name: '', hasSuffix: false },
         col2Label: { name: '', hasSuffix: false }
@@ -62,22 +63,16 @@
         signalDndStore.dropIndex
     )
     
-    function handleDrop(event: Event, index: number) {
-        // console.log('handleDrop', {
-        // 	idx: idx,
-        // 	draggedIndex: signalDndStore.draggedIndex,
-        // 	dropIndex: signalDndStore.dropIndex
-        // })
-    
-        const { draggedIndex } = signalDndStore
-        // if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) {
-        // 	return
-        // }
-    
-        dispatch('reorder', { draggedIndex, dropIndex: index })
-        // signalDndStore.handleDragEnd()
-        console.log(event)
-        console.log(index)
+    const handleDrop = (event: DragEvent) => {
+        event.preventDefault();
+        const { draggedIndex, dropIndex } = signalDndStore;
+        
+        if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) {
+            return;
+        }
+
+        dispatch('reorder', { draggedIndex, dropIndex });
+        signalDndStore.handleDragEnd();
     }
     
     // let dragged
@@ -139,7 +134,12 @@
     
     <div>
     <div class="signal-row" 
+        data-row-id={id}
         class:dragging={signalDndStore.draggedIndex === idx}
+        on:dragover|preventDefault={(e) => {
+            e.preventDefault();
+            signalDndStore._dropIndex.set(idx);
+        }}
     >
         {#if isFirstRow()}
                 <div>
@@ -195,8 +195,15 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
         class="drop-zone"
+        class:active={isDropTarget}
+        on:drop={(e) => {
+            e.preventDefault();
+            const { draggedIndex, dropIndex } = signalDndStore;
+            if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) return;
+            dispatch('reorder', { draggedIndex, dropIndex });
+            signalDndStore.handleDragEnd(idx);
+        }}
         on:dragover|preventDefault
-        on:drop|preventDefault={(event) => handleDrop(event, idx)}
     >
     </div>
     </div>

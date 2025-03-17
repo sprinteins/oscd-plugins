@@ -26,6 +26,7 @@
 				getSelectedRowIfPreviouslySelected(key as keyof typeof Columns)
 	
 			return {
+				id: `col-${key}`,
 				index: i,
 				searchKey: key as keyof typeof Columns,
 				isSelected: prevSelected?.isSelected ?? false,
@@ -45,6 +46,7 @@
 				getSelectedRowIfPreviouslySelected(key as keyof typeof SignalType)
 	
 			return {
+				id: `msg-${key}`,
 				index: columns.length + i,
 				searchKey: key as keyof typeof SignalType,
 				isSelected: prevSelected?.isSelected ?? false,
@@ -143,6 +145,10 @@
 		const [draggedRow] = newRows.splice(draggedIndex, 1)
 		newRows.splice(dropIndex, 0, draggedRow)
 	
+		newRows.forEach((row, index) => {
+			row.index = index
+		})
+	
 		mergedColsAndMessages = newRows
 		emitSelectedRows()
 	}
@@ -152,9 +158,10 @@
 	<article 
 		class="signal-list"
 	>
-	{#each mergedColsAndMessages as row (row.index)}
+	{#each mergedColsAndMessages as row (row.id)}
 		<SignalRow 
 			idx={row.index}
+			id={row.id}
 			label={row.label}
 			bind:isSelected={row.isSelected}
 			bind:column1={row.column1}
