@@ -69,6 +69,10 @@
 	function editLP(lpElement: LpElement, name: string, desc: string) {
 		cmd.editLP(lpElement, name, desc);
 	}
+
+	function hasLNodeType(type: LcTypes | LpTypes): boolean {
+		return cmd.hasLNodeType(type)
+	}
 </script>
 
 <main
@@ -87,7 +91,7 @@
 >
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
-		<CanvasArea slot="content" {onAddLC} {editLC}/>
+		<CanvasArea slot="content" {onAddLC} {editLC} {hasLNodeType}/>
 		<LpList slot="sidebar-right" {addLp} {removeLP} {editLP} />
 	</Layout>
 </main>

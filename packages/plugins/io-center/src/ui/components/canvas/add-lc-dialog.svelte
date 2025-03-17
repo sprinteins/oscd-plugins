@@ -2,33 +2,42 @@
 	import { LC_TYPE } from "@/headless/constants";
 	import Input from "../common/input.svelte";
 	import Select from "../common/select.svelte";
-	import type { FormData, LcTypes } from "./types.canvas";
+	import type { LcTypes } from "./types.canvas";
 
 	type Props = {
 		isOpen: boolean;
 		addLc: (type: LcTypes, number?: number) => void;
+		hasLNodeType: (type: LcTypes) => boolean;
 	};
 
-	let { isOpen = $bindable(), addLc }: Props = $props();
+	let { isOpen = $bindable(), addLc, hasLNodeType }: Props = $props();
 
-	let formData = $state<FormData>({
-		type: LC_TYPE.LCBI,
+	let type = $state<LcTypes | "">("");
+	let number = $state<number | undefined>(undefined);
+	let numberOfLCIVPorts = $state<number | undefined>(undefined);
+
+	let typePresenttInDoc = $state(false);
+
+	$effect(() => {
+		if (!type) return;
+		typePresenttInDoc = hasLNodeType(type);
 	});
 
+	const helperText =
+		"The selected type has no matching LNodeType in the document and will be created automatically, or you can create one using the Template Plugin.";
+
 	function handleCancel() {
-		formData = {
-			type: LC_TYPE.LCBI,
-		};
+		type = "";
 
 		isOpen = false;
 	}
 
 	function handleSubmit() {
-		addLc(formData.type, formData.number);
+		if (!type) return;
 
-		formData = {
-			type: LC_TYPE.LCBI,
-		};
+		addLc(type, number);
+
+		type = "";
 
 		isOpen = false;
 	}
@@ -38,18 +47,15 @@
 	<div role="button" id="modal" class="backdrop">
 		<div class="container space-y-4">
 			<Select
-				bind:value={formData.type}
+				bind:value={type}
 				label="LC Type"
 				options={Object.values(LC_TYPE)}
+				helperText={type && !typePresenttInDoc ? helperText : undefined}
 			/>
-			<Input
-				bind:value={formData.number}
-				label="LP Number"
-				type="number"
-			/>
-			{#if formData.type === LC_TYPE.LCIV}
+			<Input bind:value={number} label="LC Number" type="number" />
+			{#if type === LC_TYPE.LCIV}
 				<Input
-					bind:value={formData.nbOfLCIVPorts}
+					bind:value={numberOfLCIVPorts}
 					label="Number of Ports"
 					type="number"
 				/>

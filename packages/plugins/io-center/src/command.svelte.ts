@@ -197,6 +197,14 @@ export class Command {
 		}
 	}
 
+	public hasLNodeType(type: LcTypes | LpTypes): boolean {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const lnType = store.doc.querySelector(`DataTypeTemplates > LNodeType[lnClass="${type}"]`)
+
+		return Boolean(lnType)
+	}
+
 	private requireSelectedIED(): Element {
 		if (!store.doc) { throw new Error('Doc not found!') }
 

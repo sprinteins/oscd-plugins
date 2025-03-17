@@ -1,11 +1,14 @@
 <script lang="ts">
+    import { Info } from "lucide-svelte";
+
     type Props = {
         label: string;
         value: string;
         options: string[];
+        helperText?: string;
     };
 
-    let { label, value = $bindable(), options }: Props = $props();
+    let { label, value = $bindable(), options, helperText }: Props = $props();
 </script>
 
 <div>
@@ -17,6 +20,14 @@
             <option value={option}>{option}</option>
         {/each}
     </select>
+    {#if helperText}
+        <div class="helper-text">
+            <div class="w-[10%] mt-1">
+                <Info size={16} />
+            </div>
+            {helperText}
+        </div>
+    {/if}
 </div>
 
 <style lang="scss">
@@ -26,5 +37,9 @@
 
     select {
         @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+    }
+
+    .helper-text {
+        @apply flex mt-1.5 gap-1 w-full text-xs text-slate-500;
     }
 </style>

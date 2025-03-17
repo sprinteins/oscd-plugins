@@ -18,21 +18,6 @@ export type NodeElement = {
 	name: string
 }
 
-export type NodeProps = {
-	node: NodeElement
-	showLeftCircle: boolean
-	showRightCircle: boolean
-	startDrawing: (event: MouseEvent) => void
-	stopDrawing: (node: string, side: string) => void
-	editLC?: (lcNode: NodeElement, newType: LcTypes) => void;
-}
-
-export type FormData = {
-	type: LcTypes,
-	number?: number,
-	nbOfLCIVPorts?: number
-}
-
 export type LogicalConditioner = {
 	id: string,
 	type: LcTypes,
