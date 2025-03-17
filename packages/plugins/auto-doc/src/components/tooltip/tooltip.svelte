@@ -1,30 +1,30 @@
 <script lang="ts">
-    import { onDestroy } from 'svelte';
-    import type {TooltipPosition} from "./types.tooltip"
+import { onDestroy } from 'svelte'
+import type { TooltipPosition } from './types.tooltip'
 
-  
-    export let text = ''; 
-    export let position: TooltipPosition = 'top'; 
-    export let delayInMS = 500; 
-  
-    let isTooltipVisible = false;
-    let timeoutId: ReturnType<typeof setTimeout>;
-  
-    const showTooltip = () => {
-      timeoutId = setTimeout(() => {
-        isTooltipVisible = true;
-      }, delayInMS);
-    };
-  
-    const hideTooltip = () => {
-      clearTimeout(timeoutId);
-      isTooltipVisible = false;
-    };
-  
-    onDestroy(() => {
-      clearTimeout(timeoutId);
-    });
-  </script>
+export let text = ''
+export let position: TooltipPosition = 'top'
+export let isPositionModified = false
+export let delayInMS = 500
+
+let isTooltipVisible = false
+let timeoutId: ReturnType<typeof setTimeout>
+
+const showTooltip = () => {
+	timeoutId = setTimeout(() => {
+		isTooltipVisible = true
+	}, delayInMS)
+}
+
+const hideTooltip = () => {
+	clearTimeout(timeoutId)
+	isTooltipVisible = false
+}
+
+onDestroy(() => {
+	clearTimeout(timeoutId)
+})
+</script>
 
   <div
         class="tooltip-container"
@@ -35,7 +35,7 @@
         <slot></slot>
 
         {#if isTooltipVisible}
-            <div class="tooltip {position} visible">
+            <div class="tooltip {position} {isPositionModified ? 'modified' : ''} visible">
                 {text}
             </div>
         {/if}
@@ -48,6 +48,7 @@
     }
   
     .tooltip {
+      bottom: 2999;
       position: absolute;
       padding: 0.5em 1em;
       background-color: #333;
@@ -61,6 +62,7 @@
       transition: opacity 0.2s ease, transform 0.2s ease;
       max-width: 500px;
       text-wrap: auto;
+      z-index: 5000 !important;
     }
   
     .tooltip.top {
@@ -80,11 +82,21 @@
       top: 50%;
       transform: translate(-10px, -50%);
     }
+
+    .tooltip.left.modified{
+      top: 30%;
+      transform: translate(0px, 0%);
+    }
   
     .tooltip.right {
       left: 100%;
       top: 50%;
       transform: translate(10px, -50%);
+    }
+
+    .tooltip.right.modified{
+      top: 30%;
+      transform: translate(0px, 0%);
     }
   
     .tooltip.visible {
