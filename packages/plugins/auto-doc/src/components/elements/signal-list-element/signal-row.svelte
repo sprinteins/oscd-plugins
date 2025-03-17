@@ -56,6 +56,18 @@
         signalDndStore.dropIndex
     )
     
+    let isDraggedOver = false;
+
+    const handleDragOver = (e: DragEvent) => {
+        e.preventDefault();
+        isDraggedOver = true;
+        signalDndStore._dropIndex.set(idx);
+    };
+
+    const handleDragLeave = () => {
+        isDraggedOver = false;
+    };
+
     const handleDrop = (event: DragEvent) => {
         event.preventDefault();
         const { draggedIndex, dropIndex } = signalDndStore;
@@ -77,9 +89,8 @@
         <div class="signal-row"
                 data-row-id={id}
                 class:dragging={signalDndStore.draggedIndex === idx}
-                on:dragover|preventDefault={(e) => {
-                        signalDndStore._dropIndex.set(idx);
-                }}>
+                on:dragover={handleDragOver}
+                on:dragleave={handleDragLeave}>
                         <div>
                                 <div draggable="true"
                                         on:dragstart={() => signalDndStore.handleDragStart(idx)}
@@ -118,8 +129,15 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
                 class="drop-zone"
-                class:active={isDropTarget}
-                on:drop={(e) => handleDrop(e)}
+                class:active={isDraggedOver && signalDndStore.draggedIndex !== -1}
+                on:drop={(e) => {
+                    e.preventDefault();
+                    isDraggedOver = false;
+                    const { draggedIndex, dropIndex } = signalDndStore;
+                    if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) return;
+                    dispatch('reorder', { draggedIndex, dropIndex });
+                    signalDndStore.handleDragEnd();
+                }}
                 on:dragover|preventDefault
         >
         </div>
@@ -162,17 +180,16 @@
         }
     
         .drop-zone {
-                height: 60px;
-                width: 100%;
-                border: 1px dashed #00ff00;
-                // &.active {
-                // 		height: 60px;
-                // 		border: 2px dashed #00ff00;
-                // 		background: rgba(0, 255, 0, 0.1);
-                // }
-    
-                // &:hover {
-                // 		background: rgba(255, 0, 0, 1);
-                // }
+                height: 0;
+                margin: 0;
+                opacity: 0;
+                transition: all 0.2s ease;
+                
+                &.active {
+                    height: 60px;
+                    opacity: 1;
+                    border: 2px dashed #00ff00;
+                    background: rgba(0, 255, 0, 0.1);
+                }
         }
     </style>
