@@ -1,8 +1,8 @@
 import { writable, get } from 'svelte/store'
 
 class SignalDndStore {
-	private _draggedIndex = writable<number>(-1)
-	private _dropIndex = writable<number>(-1)
+	_draggedIndex = writable<number>(-1)
+	_dropIndex = writable<number>(-1)
 
 	handleDragStart(index: number) {
 		console.log('DragStart:', index)

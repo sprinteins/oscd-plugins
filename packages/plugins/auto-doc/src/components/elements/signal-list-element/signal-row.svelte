@@ -133,115 +133,95 @@
     
     
     <div>
-    <div class="signal-row" 
-        data-row-id={id}
-        class:dragging={signalDndStore.draggedIndex === idx}
-        on:dragover|preventDefault={(e) => {
-            e.preventDefault();
-            signalDndStore._dropIndex.set(idx);
-        }}
-    >
-        {#if isFirstRow()}
-                <div>
-                        <div></div>
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div class="signal-row"
+                data-row-id={id}
+                class:dragging={signalDndStore.draggedIndex === idx}
+                on:dragover|preventDefault={(e) => {
+                e.preventDefault();
+                signalDndStore._dropIndex.set(idx);
+                }}>
+                {#if isFirstRow()}
                         <div>
                                 <Checkbox 
-                                        on:click={toggleAllCheckboxes}
-                                        bind:checked={areAllCheckboxesSelected}
+                                on:click={toggleAllCheckboxes}
+                                bind:checked={areAllCheckboxesSelected}
                                 />
                         </div>
                         <small>Choose the columns you want to display and rename if needed</small>
                         <small>Use the filter to limit the content of the columns to certain values</small>
-                </div>
-        {/if}
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        
-        <div draggable="true"
-                on:dragstart={() => signalDndStore.handleDragStart(idx)}
-                on:dragend={() => signalDndStore.handleDragEnd(idx)}
+                        
+                {/if}
+                        <div>
+                                <div draggable="true"
+                                        on:dragstart={() => signalDndStore.handleDragStart(idx)}
+                                        on:dragend={() => signalDndStore.handleDragEnd(idx)}>
+                                        <div class="drag-handle">
+                                                <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
+                                                        <circle cx="6" cy="6" r="2"/>
+                                                        <circle cx="12" cy="6" r="2"/>
+                                                        <circle cx="6" cy="12" r="2"/>
+                                                        <circle cx="12" cy="12" r="2"/>
+                                                        <circle cx="6" cy="18" r="2"/>
+                                                        <circle cx="12" cy="18" r="2"/>
+                                                </svg>
+                                        </div>
+                                </div>
+                                <Checkbox bind:checked={isSelected} />
+                        </div>
+                        <Textfield
+                                bind:value={column1}
+                                variant="outlined"
+                                label={createSuffixForLabelIfNeeded(label.col1Label)}
+                                on:input= {e => debounceUserInput('column1', e.target.value)}
+                                disabled={!isSelected}
+                        >
+                        </Textfield>
+                        <Textfield
+                                bind:value={column2}
+                                variant="outlined"
+                                label={createSuffixForLabelIfNeeded(label.col2Label)}
+                                on:input= {e => debounceUserInput('column2', e.target.value)}
+                                        disabled={!isSelected}
+                                        >
+                        </Textfield>
+        </div>
+    
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div
+                class="drop-zone"
+                class:active={isDropTarget}
+                on:drop={(e) => {
+                e.preventDefault();
+                const { draggedIndex, dropIndex } = signalDndStore;
+                if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) return;
+                dispatch('reorder', { draggedIndex, dropIndex });
+                signalDndStore.handleDragEnd(idx);
+                }}
+                on:dragover|preventDefault
         >
-                <div 
-                        class="drag-handle"
-                >
-                        <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
-                                <circle cx="6" cy="6" r="2"/>
-                                <circle cx="12" cy="6" r="2"/>
-                                <circle cx="6" cy="12" r="2"/>
-                                <circle cx="12" cy="12" r="2"/>
-                                <circle cx="6" cy="18" r="2"/>
-                                <circle cx="12" cy="18" r="2"/>
-                        </svg>
-                </div>
-                <Checkbox bind:checked={isSelected} />
-                <Textfield
-                        bind:value={column1}
-                        variant="outlined"
-                        label={createSuffixForLabelIfNeeded(label.col1Label)}
-                        on:input= {e => debounceUserInput('column1', e.target.value)}
-                        disabled={!isSelected}
-                        >
-                </Textfield>
-                <Textfield
-                        bind:value={column2}
-                        variant="outlined"
-                        label={createSuffixForLabelIfNeeded(label.col2Label)}
-                        on:input= {e => debounceUserInput('column2', e.target.value)}
-                        disabled={!isSelected}
-                        >
-                </Textfield>
         </div>
     </div>
     
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div
-        class="drop-zone"
-        class:active={isDropTarget}
-        on:drop={(e) => {
-            e.preventDefault();
-            const { draggedIndex, dropIndex } = signalDndStore;
-            if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) return;
-            dispatch('reorder', { draggedIndex, dropIndex });
-            signalDndStore.handleDragEnd(idx);
-        }}
-        on:dragover|preventDefault
-    >
-    </div>
-    </div>
-    <!-- <div class="dropzone">
-      
-    </div>
-    <div class="dropzone" id="drop-target"></div> -->
-    
     
     <style lang="scss">
-        .signal-row {
-                display: grid;
-                grid-template-columns: auto 3% repeat(2, 1fr);
-                grid-gap: 1rem;
-                align-items: center;
-                padding: 0.5rem;
-                border: 1px solid #ff0000;
-                border-radius: 4px;
-                background: white;
-                position: relative;
-                
-                &.dragging {
-                        opacity: 0.5;
-                }
-    
-                &:hover .drag-handle {
-                        opacity: 1;
-                }
-    
-                & :global(.mdc-text-field__input[disabled]) {
-                        cursor: not-allowed;
-                }
-    
-                small {
-                        color: #4d5d63;
-                        text-align: center;
-                }
+        .signal-row{
+        display: grid;
+        grid-template-columns: 3% repeat(2, 1fr);
+        grid-gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+
+       & :global(.mdc-text-field__input[disabled]){
+            cursor: not-allowed;
         }
+
+        small{
+            color: #4d5d63;
+            text-align: center;
+        }
+
+    }
     
         .drag-handle {
                 cursor: grab;
