@@ -140,7 +140,6 @@
 	function handleReorder(
 		event: CustomEvent<{ draggedIndex: number; dropIndex: number }>
 	) {
-		console.log('handleReorder', event.detail)
 		const { draggedIndex, dropIndex } = event.detail
 		const newRows = [...mergedColsAndMessages]
 		const [draggedRow] = newRows.splice(draggedIndex, 1)

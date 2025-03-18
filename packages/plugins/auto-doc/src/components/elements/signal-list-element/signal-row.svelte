@@ -40,22 +40,6 @@
         dispatch('update', { key: 'isSelected', value: isSelected })
     }
     
-    
-    
-    $: isDropTarget =
-        signalDndStore.draggedIndex !== -1 && signalDndStore.dropIndex === idx
-    
-    $: console.log(
-        'Row',
-        idx,
-        'isDropTarget:',
-        isDropTarget,
-        'draggedIndex:',
-        signalDndStore.draggedIndex,
-        'dropIndex:',
-        signalDndStore.dropIndex
-    )
-    
     let isDraggedOver = false;
 
     const handleDragOver = (e: DragEvent) => {
@@ -66,12 +50,12 @@
 
     const handleDragLeave = (e: DragEvent) => {
         const relatedTarget = e.relatedTarget as HTMLElement;
-        if (!e.currentTarget.contains(relatedTarget)) {
+        if (e.currentTarget && !(e.currentTarget as HTMLElement)?.contains?.(relatedTarget)) {
             isDraggedOver = false;
         }
     };
 
-    const handleDrop = (event: DragEvent) => {
+    const handleDrop = () => {
         isDraggedOver = false;
         const { draggedIndex, dropIndex } = signalDndStore;
         if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) return;
@@ -82,9 +66,10 @@
     
     
     <div>
-        <!-- TODO remove a11 jammers and fix the issues they are complaining about -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div class="row-container"
+                role="row"
+                tabindex="0"
+                aria-label="Draggable signal row"
                 on:dragover={handleDragOver}
                 on:dragleave={handleDragLeave}>
                 <div class="signal-row"
@@ -93,6 +78,9 @@
                 >
                                 <div>
                                         <div draggable="true"
+                                                role="button"
+                                                tabindex="0"
+                                                aria-label="Drag handle"
                                                 on:dragstart={() => signalDndStore.handleDragStart(idx)}
                                                 on:dragend={() => signalDndStore.handleDragEnd(idx)}>
                                                 <div class="drag-handle">
@@ -130,7 +118,7 @@
                 <div
                         class="drop-zone"
                         class:active={isDraggedOver && signalDndStore.draggedIndex !== -1}
-                        on:drop|preventDefault={(e) => {handleDrop(e)}}
+                        on:drop|preventDefault={handleDrop}
                         on:dragover|preventDefault
                 >
                 </div>
