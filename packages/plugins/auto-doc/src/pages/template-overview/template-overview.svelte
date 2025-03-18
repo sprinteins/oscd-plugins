@@ -101,7 +101,7 @@
 <div class="template-overview">
     <header class="template-controls">
         <Button variant="raised" class="btn-pill btn-pill-primary" on:click={() => menu.setOpen(true)} > 
-            <IconWrapper icon="add"/>
+            <IconWrapper fillColor="white" icon="add"/>
            <Label>Add template</Label> 
         </Button>
         <FileSelector bind:this={fileSelector} on:change={onImportTemplate} />
