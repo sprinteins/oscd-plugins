@@ -115,7 +115,7 @@
                 </Item>
             </List>
         </Menu>
-        <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button>
+        <!-- <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button> -->
     </header>  
     <main>
         <Table 

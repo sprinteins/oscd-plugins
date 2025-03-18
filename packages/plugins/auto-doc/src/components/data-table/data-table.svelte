@@ -69,9 +69,9 @@
     <DataTable>
         <Head>
             <Row>
-            <Cell checkbox>
+            <!-- <Cell checkbox>
                 <Checkbox />
-            </Cell>
+            </Cell> -->
             <Cell class="big">Name</Cell>
             <Cell>Last Edited</Cell>
             <Cell>Description</Cell>
@@ -81,13 +81,13 @@
         <Body>
             {#each allTemplates as template}
                 <Row>
-                    <Cell checkbox>
+                    <!-- <Cell checkbox>
                         <Checkbox
                             bind:group={selectedTemplates}
                             value={template}
                             valueKey={template.name}
                         />
-                    </Cell>
+                    </Cell> -->
                     <Cell>
                         <Truncate text={template.name} maxChars={40} tooltipPosition="top"/>
                     </Cell>
@@ -96,18 +96,19 @@
                         <Truncate text={template.description} maxChars={100} tooltipPosition="top"/>
                     </Cell>
                     <Cell>
-                    <div class="action-btns">
-                        <Tooltip text="Edit">
-                            <CustomIconButton icon="edit" color="black" on:click={()=>{editTemplate(template.id)}}/>
+                    <div class="action-btns center-action-btns">
+                        <Tooltip text="Edit" position="right" isPositionModified={true}>
+                            <CustomIconButton icon="edit" color="black" size="small" on:click={()=>{editTemplate(template.id)}}/>
                         </Tooltip>
-                        <Tooltip text="Delete">
-                            <CustomIconButton icon="delete" color="black" on:click={()=>{deleteTemplate(template.id)}}/>
+                        <Tooltip text="Delete" position="left" isPositionModified={true}>
+                            <CustomIconButton icon="delete" color="black" size="small" on:click={()=>{deleteTemplate(template.id)}}/>
                         </Tooltip>
-                        <Tooltip text="Duplicate">
-                            <CustomIconButton icon="content_copy" color="black" on:click={()=>{duplicateTemplate(template.id)}}/>
+                        <Tooltip text="Duplicate" position="left" isPositionModified={true}>
+                            <CustomIconButton icon="content_copy" color="black" size="small" on:click={()=>{duplicateTemplate(template.id)}}/>
                         </Tooltip>
-                        <Tooltip text="Download" position="left">
-                            <CustomIconButton icon="download" color="black" on:click={()=>{downloadTemplateContent(template.id)}}/>
+                        <!-- ! &nbsp; - No-Break Space. Verhindert den Umbruch des Tooltips. Wenn nicht verwendet, wird das zweite Wort vom Border der Zeile(Spalte) abgeschnitten. -->
+                        <Tooltip text="Generate&nbsp;Document" position="left" isPositionModified={true}>
+                            <CustomIconButton icon="download" color="black" size="small" on:click={()=>{downloadTemplateContent(template.id)}}/>
                         </Tooltip>
                     </div>
                     </Cell>
@@ -124,6 +125,9 @@
        display: flex;
        flex-direction: column;
        align-items: center;
+    }
+    .center-action-btns {
+        padding-top: 0.5rem;
     }
     .table-container{
 

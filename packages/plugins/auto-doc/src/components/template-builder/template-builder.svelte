@@ -8,6 +8,7 @@
     import {docTemplatesStore} from '@/stores'
     import {pluginStore} from "@/stores/plugin.store"
     import type {BlockElement, ElementType, ElementMap} from '@/components/elements/types.elements'
+    import {MOVE_BLOCK_DIRECTION} from "@/constants"
 
     // Prop
     export let template: Element
@@ -57,6 +58,30 @@
     }
 
 
+    function moveBlockElement(event: CustomEvent<{elementId: string, direction: number}>) {
+        const {elementId, direction} = event.detail
+
+        const blockElement = blockElements.find((element) => element.id === elementId);
+        if(!blockElement) {
+            return;
+        }
+
+        const index = blockElements.indexOf(blockElement);
+        const isFirst = index === 0;
+        const isLast = index === blockElements.length -1;
+
+        const preventMoveUp = isFirst && direction === MOVE_BLOCK_DIRECTION.UP;
+        const preventMoveDown = isLast && direction === MOVE_BLOCK_DIRECTION.DOWN;
+        if(preventMoveUp || preventMoveDown) {
+            return;
+        }
+
+        const calculatedPosition = index + direction;
+        const referenceBlock = blockElements[calculatedPosition];
+        const reference = template.querySelector(`Block[id="${referenceBlock?.id}"]`);
+        docTemplatesStore.moveBlockInDocumentTemplate(template, elementId, calculatedPosition, reference);
+    }
+
     function deleteBlockElement(event: CustomEvent<{elementId: string}>){
         const {elementId} = event.detail
         docTemplatesStore.deleteBlockFromDocumentTemplate(template, elementId);
@@ -76,7 +101,7 @@
 
         <div class="elements-list">
             {#each blockElements as blockElement (blockElement.id)}
-                <ElementWrapper elementId={blockElement.id} on:elementDuplicate={duplicateBlockElement} on:elementDelete={deleteBlockElement}>
+                <ElementWrapper elementId={blockElement.id} on:elementDuplicate={duplicateBlockElement} on:elementDelete={deleteBlockElement} on:elementMove={(direction) => moveBlockElement(direction)}>
                     <svelte:component 
                         this={componentMap[blockElement.type]}
                         content={blockElement.content}
