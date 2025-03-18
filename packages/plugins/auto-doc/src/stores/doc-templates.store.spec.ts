@@ -1,7 +1,7 @@
 import { docTemplatesStore } from './doc-templates.store';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { get, writable, type Writable } from 'svelte/store';
-import { pluginStore } from './index';
+import { pluginStore, eventStore } from './index';
 
 describe('DocumentTemplateStore', () => {
   let xmlDocument: Writable<XMLDocument | undefined>;;
@@ -478,6 +478,38 @@ describe('DocumentTemplateStore', () => {
 		expect(updatedDocDef?.getAttribute('description')).toBe(newDescription);
 		expect(updatedDocDef?.getAttribute('id')).toBe(initialId);
 		expect(updatedDocDef?.getAttribute('date')).toBe(initialDate);
+	  });
+
+	  it('should import templates from another doc', () => {
+		vi.spyOn(eventStore, 'createMultipleAndDispatchActionEvent');
+
+		const parser = new DOMParser();
+		const importXml = `<SCL>
+			<Private type="AUTO_DOC">
+			</Private>
+		</SCL>`;
+		const importDoc = parser.parseFromString(importXml, 'application/xml');
+
+		const temp01 = importDoc.createElement('DocumentTemplate');
+		temp01.setAttribute('title', 'TEMP_01');
+		temp01.setAttribute('description', 'Has a text Element');
+		temp01.setAttribute('id', '1');
+		temp01.setAttribute('date', '2025-02-25T12:09:02.523Z');
+
+		const temp02 = importDoc.createElement('DocumentTemplate');
+		temp02.setAttribute('title', 'TEMP_02');
+		temp02.setAttribute('description', 'Has other text Element');
+		temp02.setAttribute('id', '2');
+		temp02.setAttribute('date', '2025-03-27T12:09:02.523Z');
+
+		importDoc.documentElement.querySelector('Private')?.append(temp01, temp02);
+
+		const templates = Array.from(importDoc.querySelectorAll('DocumentTemplate'));
+
+		docTemplatesStore.importDocumentTemplates(templates);
+
+		const autoDocArea = get(docTemplatesStore.privateArea);
+		expect(eventStore.createMultipleAndDispatchActionEvent).toHaveBeenCalledWith(autoDocArea, templates, 'Import auto doc templates');
 	  });
 });
 
