@@ -6,9 +6,16 @@
         value: string;
         options: string[];
         helperText?: string;
+        helperTextDetails?: string;
     };
 
-    let { label, value = $bindable(), options, helperText }: Props = $props();
+    let {
+        label,
+        value = $bindable(),
+        options,
+        helperText,
+        helperTextDetails,
+    }: Props = $props();
 </script>
 
 <div>
@@ -21,12 +28,14 @@
         {/each}
     </select>
     {#if helperText}
-        <div class="helper-text">
-            <div class="w-[10%] mt-1">
-                <Info size={16} />
-            </div>
-            {helperText}
-        </div>
+        <details>
+            <summary>
+                {helperText}
+            </summary>
+            {helperTextDetails}
+        </details>
+    {:else}
+        <div class="h-6"></div>
     {/if}
 </div>
 
@@ -39,7 +48,26 @@
         @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
     }
 
-    .helper-text {
-        @apply flex mt-1.5 gap-1 w-full text-xs text-slate-500;
+    summary {
+        outline: none;
+        position: relative;
+        cursor: pointer;
+    }
+    details {
+        @apply ps-2 pt-2 text-slate-500 text-xs;
+        box-sizing: border-box;
+    }
+
+    details[open] > summary:before {
+        transform: rotate(90deg);
+    }
+    summary:before {
+        content: "";
+        position: absolute;
+        top: 1.3rem;
+        left: 1rem;
+        transform: rotate(0);
+        transform-origin: 0.2rem 50%;
+        transition: 0.25s transform ease;
     }
 </style>

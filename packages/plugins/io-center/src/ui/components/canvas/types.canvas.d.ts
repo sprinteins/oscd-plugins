@@ -25,4 +25,10 @@ export type LogicalConditioner = {
 	isLinked: boolean,
 }
 
+export type AddLCFormData = {
+	type: LcTypes | "",
+	number?: number,
+	numberOfLCIVPorts?: number
+}
+
 export type LcTypes = keyof typeof LC_TYPE

@@ -2,7 +2,7 @@
 	import { L_NODE_TYPE_HELPER_TEXT, LC_TYPE } from "@/headless/constants";
 	import Input from "../common/input.svelte";
 	import Select from "../common/select.svelte";
-	import type { LcTypes } from "./types.canvas";
+	import type { AddLCFormData, LcTypes } from "./types.canvas";
 
 	type Props = {
 		isOpen: boolean;
@@ -12,31 +12,39 @@
 
 	let { isOpen = $bindable(), addLc, hasLNodeType }: Props = $props();
 
-	let type = $state<LcTypes | "">("");
-	let number = $state<number | undefined>(undefined);
-	let numberOfLCIVPorts = $state<number | undefined>(undefined);
+	let formData = $state<AddLCFormData>({
+		type: "",
+		number: undefined,
+		numberOfLCIVPorts: undefined,
+	});
 
-	let typePresentInDoc = $state(false);
-
-	$effect(() => {
-		if (!type) return;
-		typePresentInDoc = hasLNodeType(type);
+	const typePresentInDoc = $derived.by(() => {
+		if (!formData.type) {
+			return;
+		}
+		return hasLNodeType(formData.type);
 	});
 
 	function handleCancel() {
-		type = "";
+		formData.type = "";
 
 		isOpen = false;
 	}
 
 	function handleSubmit() {
-		if (!type) return;
+		if (!formData.type) return;
 
-		addLc(type, number);
+		addLc(formData.type, formData.number);
 
-		type = "";
+		formData.type = "";
 
 		isOpen = false;
+	}
+
+	function getHelperText() {
+		return formData.type && !typePresentInDoc
+			? `⚠︎ Missing ${formData.type} LNodeType`
+			: undefined;
 	}
 </script>
 
@@ -44,17 +52,20 @@
 	<div role="button" id="modal" class="backdrop">
 		<div class="container space-y-4">
 			<Select
-				bind:value={type}
+				bind:value={formData.type}
 				label="LC Type"
 				options={Object.values(LC_TYPE)}
-				helperText={type && !typePresentInDoc
-					? L_NODE_TYPE_HELPER_TEXT
-					: undefined}
+				helperText={getHelperText()}
+				helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
 			/>
-			<Input bind:value={number} label="LC Number" type="number" />
-			{#if type === LC_TYPE.LCIV}
+			<Input
+				bind:value={formData.number}
+				label="LC Number"
+				type="number"
+			/>
+			{#if formData.type === LC_TYPE.LCIV}
 				<Input
-					bind:value={numberOfLCIVPorts}
+					bind:value={formData.numberOfLCIVPorts}
 					label="Number of Ports"
 					type="number"
 				/>

@@ -23,11 +23,11 @@
         type: "",
     });
 
-    let typePresentInDoc = $state(false);
-
-    $effect(() => {
-        if (!formData.type) return;
-        typePresentInDoc = hasLNodeType(formData.type);
+    const typePresentInDoc = $derived.by(() => {
+        if (!formData.type) {
+            return;
+        }
+        return hasLNodeType(formData.type);
     });
 
     function handleCancel() {
@@ -53,6 +53,12 @@
 
         isOpen = false;
     }
+
+    function getHelperText() {
+        return formData.type && !typePresentInDoc
+            ? `⚠︎ Missing ${formData.type} LNodeType`
+            : undefined;
+    }
 </script>
 
 <dialog open={isOpen}>
@@ -62,9 +68,8 @@
                 bind:value={formData.type}
                 label="LP Type"
                 options={Object.values(LP_TYPE)}
-                helperText={formData.type && !typePresentInDoc
-                    ? L_NODE_TYPE_HELPER_TEXT
-                    : undefined}
+                helperText={getHelperText()}
+                helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
             />
             <Input bind:value={formData.name} label="LP Name" type="text" />
             <Input

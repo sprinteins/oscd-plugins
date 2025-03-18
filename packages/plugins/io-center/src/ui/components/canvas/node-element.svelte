@@ -32,8 +32,8 @@
   }
 </script>
 
-{#if isSelected && node.type === NODE_ELEMENT_TYPE.LC && editLC}
-  <EditButton onclick={() => (showEditDialog = true)} />
+<!-- {#if isSelected && node.type === NODE_ELEMENT_TYPE.LC && editLC}
+  <EditButton onclick={() => (showEditDialog = true)}/>
   <EditLcDialog
     bind:isOpen={showEditDialog}
     bind:nodeSelected={isSelected}
@@ -41,9 +41,8 @@
     {editLC}
   />
 {:else}
-  <!-- placeholder to prevent jumping -->
   <div class="h-8"></div>
-{/if}
+{/if} -->
 
 <button
   data-title={node.name}
