@@ -13,7 +13,7 @@ export type FormData = {
     name: string;
     number?: number;
     desc: string;
-    type: keyof typeof LP_TYPE;
+    type: keyof typeof LP_TYPE | "";
 }
 
 export type LpTypes = keyof typeof LP_TYPE

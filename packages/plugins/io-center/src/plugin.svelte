@@ -24,8 +24,14 @@
 	import LpList from "./ui/components/lp-list/lp-list.svelte";
 	import { store } from "./store.svelte";
 	import SideBarLeft from "./sidebar-left.svelte";
-	import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list";
-    import type { LcTypes, NodeElement } from "./ui/components/canvas/types.canvas";
+	import type {
+		LpElement,
+		LpTypes,
+	} from "./ui/components/lp-list/types.lp-list";
+	import type {
+		LcTypes,
+		NodeElement,
+	} from "./ui/components/canvas/types.canvas";
 
 	// props
 	const {
@@ -69,6 +75,10 @@
 	function editLP(lpElement: LpElement, name: string, desc: string) {
 		cmd.editLP(lpElement, name, desc);
 	}
+
+	function hasLNodeType(type: LcTypes | LpTypes): boolean {
+		return cmd.hasLNodeType(type);
+	}
 </script>
 
 <main
@@ -87,8 +97,14 @@
 >
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
-		<CanvasArea slot="content" {onAddLC} {editLC}/>
-		<LpList slot="sidebar-right" {addLp} {removeLP} {editLP} />
+		<CanvasArea slot="content" {onAddLC} {editLC} {hasLNodeType} />
+		<LpList
+			slot="sidebar-right"
+			{addLp}
+			{removeLP}
+			{editLP}
+			{hasLNodeType}
+		/>
 	</Layout>
 </main>
 
