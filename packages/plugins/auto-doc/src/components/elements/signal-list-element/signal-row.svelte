@@ -166,10 +166,9 @@
                 
                 &.active {
                     height: 60px;
-                    margin-bottom: 24px;
                     opacity: 1;
-                    border: 2px dashed #00ff00;
-                    background: rgba(0, 255, 0, 0.1);
+                    border: 2px dashed rgb(42, 161, 152);
+                    background: rgba(42, 161, 152, 0.1);
                 }
         }
     
