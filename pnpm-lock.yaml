@@ -255,6 +255,12 @@ importers:
         specifier: ^1.6.2
         version: 1.6.2
     devDependencies:
+      '@oscd-plugins/core-api':
+        specifier: workspace:^
+        version: link:../../core/api
+      '@oscd-plugins/core-ui-svelte':
+        specifier: workspace:^
+        version: link:../../core/ui-svelte
       '@playwright/test':
         specifier: ^1.28.1
         version: 1.49.1
