@@ -77,22 +77,26 @@
                         class:dragging={signalDndStore.draggedIndex === idx}
                 >
                                 <div class="controls-container">
-                                        <div draggable="true"
+                                        <div class="drag-handle"
+                                                draggable="true"
                                                 role="button"
                                                 tabindex="0"
                                                 aria-label="Drag handle"
-                                                on:dragstart={() => signalDndStore.handleDragStart(idx)}
-                                                on:dragend={() => signalDndStore.handleDragEnd(idx)}>
-                                                <div class="drag-handle">
-                                                        <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
-                                                                <circle cx="6" cy="6" r="2"/>
-                                                                <circle cx="12" cy="6" r="2"/>
-                                                                <circle cx="6" cy="12" r="2"/>
-                                                                <circle cx="12" cy="12" r="2"/>
-                                                                <circle cx="6" cy="18" r="2"/>
-                                                                <circle cx="12" cy="18" r="2"/>
-                                                        </svg>
-                                                </div>
+                                                on:dragstart={(event) => {
+                                                    const row = event.target.closest('.signal-row');
+                                                    event.dataTransfer?.setDragImage(row, 0, 0);
+                                                    signalDndStore.handleDragStart(idx);
+                                                }}
+                                                on:dragend={() => signalDndStore.handleDragEnd(idx)}
+                                        >
+                                                <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
+                                                        <circle cx="6" cy="6" r="2"/>
+                                                        <circle cx="12" cy="6" r="2"/>
+                                                        <circle cx="6" cy="12" r="2"/>
+                                                        <circle cx="12" cy="12" r="2"/>
+                                                        <circle cx="6" cy="18" r="2"/>
+                                                        <circle cx="12" cy="18" r="2"/>
+                                                </svg>
                                         </div>
                                         <Checkbox bind:checked={isSelected} />
                                 </div>
