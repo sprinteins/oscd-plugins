@@ -20,9 +20,10 @@
 	type Props = {
 		onAddLC: (type: LcTypes, number?: number) => void;
 		editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
+		hasLNodeType: (type: LcTypes) => boolean;
 	};
 
-	const { onAddLC, editLC }: Props = $props();
+	const { onAddLC, editLC, hasLNodeType }: Props = $props();
 
 	let isDialogOpen = $state(false);
 </script>
@@ -73,6 +74,7 @@
 				{startDrawing}
 				{stopDrawing}
 				{editLC}
+				{hasLNodeType}
 			/>
 		{/each}
 	</div>
@@ -118,7 +120,7 @@
 	{/if}
 </svg>
 
-<AddLCDialog bind:isOpen={isDialogOpen} addLc={onAddLC} />
+<AddLCDialog bind:isOpen={isDialogOpen} addLc={onAddLC} {hasLNodeType}/>
 
 <svelte:window onresize={redrawConnections} />
 

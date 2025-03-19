@@ -4,6 +4,7 @@ import type { Nullable } from "./types"
 import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
 import { createElement } from "./headless/stores/document-helpers.svelte"
 import type { LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
+import { L_NODE_TYPE_CONTENT } from "./headless/constants"
 
 export class Command {
 	constructor(
@@ -27,6 +28,8 @@ export class Command {
 
 		const ld0 = this.ensureLD0(ied)
 
+		this.ensureLNodeType(type)
+
 		const currentLPNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
 
 		if (!number) {
@@ -38,7 +41,7 @@ export class Command {
 				"lnType": name || type,
 			}
 
-			createElement(host, store.doc, "LN", attributes, ld0, null)
+			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
 
 			return
 		}
@@ -52,7 +55,7 @@ export class Command {
 				"lnType": name || type,
 			}
 
-			createElement(host, store.doc, "LN", attributes, ld0, null)
+			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
 		}
 	}
 
@@ -122,17 +125,19 @@ export class Command {
 
 		const ld0 = this.ensureLD0(ied)
 
-		const currentLPNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
+		this.ensureLNodeType(type)
+
+		const currentLCNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
 
 		if (!number) {
 			const attributes = {
 				"xmlns": "",
 				"lnClass": type,
-				"inst": `${currentLPNumber + 1}`,
+				"inst": `${currentLCNumber + 1}`,
 				"lnType": type,
 			}
 
-			createElement(host, store.doc, "LN", attributes, ld0, null)
+			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
 
 			return
 		}
@@ -141,11 +146,11 @@ export class Command {
 			const attributes = {
 				"xmlns": "",
 				"lnClass": type,
-				"inst": `${currentLPNumber + i}`,
+				"inst": `${currentLCNumber + i}`,
 				"lnType": type,
 			}
 
-			createElement(host, store.doc, "LN", attributes, ld0, null)
+			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
 		}
 	}
 
@@ -197,6 +202,33 @@ export class Command {
 		}
 	}
 
+	private ensureLNodeType(type: LcTypes | LpTypes) {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const host = this.requireHost()
+
+		if (this.hasLNodeType(type)) {
+			return
+		}
+
+		const dataTypeTemplates = this.ensureDataTypeTemplates()
+
+		const attributes = {
+			"id": `IOCenter.${type}`,
+			"lnClass": type,
+		}
+
+		createElement({ host, doc: store.doc, tagName: "LNodeType", attributes, parent: dataTypeTemplates, reference: null, innerHTML: L_NODE_TYPE_CONTENT[type] })
+	}
+
+	public hasLNodeType(type: LcTypes | LpTypes): boolean {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const lnType = store.doc.querySelector(`DataTypeTemplates > LNodeType[lnClass="${type}"]`)
+
+		return Boolean(lnType)
+	}
+
 	private requireSelectedIED(): Element {
 		if (!store.doc) { throw new Error('Doc not found!') }
 
@@ -207,6 +239,30 @@ export class Command {
 		}
 
 		return ied
+	}
+
+	private ensureDataTypeTemplates(): Element {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const sclRoot = store.doc.querySelector("SCL");
+
+		if (!sclRoot) { throw new Error('SCL Root not found!') }
+
+		const host = this.requireHost()
+
+		let dTT = store.doc.querySelector('DataTypeTemplates')
+
+		if (dTT) {
+			return dTT
+		}
+
+		createElement({ host, doc: store.doc, tagName: "DataTypeTemplates", parent: sclRoot, reference: null })
+
+		dTT = store.doc.querySelector('DataTypeTemplates')
+
+		if (!dTT) { throw new Error('DataTypeTemplates still does not exist!') }
+
+		return dTT
 	}
 
 	private ensureLD0(ied: Element): Element {

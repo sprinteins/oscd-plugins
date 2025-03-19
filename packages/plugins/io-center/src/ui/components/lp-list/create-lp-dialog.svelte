@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { LP_TYPE } from "@/headless/constants";
+    import { L_NODE_TYPE_HELPER_TEXT, LP_TYPE } from "@/headless/constants";
     import Input from "../common/input.svelte";
     import Select from "../common/select.svelte";
     import type { FormData, LpTypes } from "./types.lp-list";
@@ -12,14 +12,22 @@
             desc: string,
             number?: number,
         ) => void;
+        hasLNodeType: (type: LpTypes) => boolean;
     };
 
-    let { isOpen = $bindable(), addLp }: Props = $props();
+    let { isOpen = $bindable(), addLp, hasLNodeType }: Props = $props();
 
     let formData = $state<FormData>({
         name: "",
         desc: "",
-        type: LP_TYPE.LPDI,
+        type: "",
+    });
+
+    const typePresentInDoc = $derived.by(() => {
+        if (!formData.type) {
+            return;
+        }
+        return hasLNodeType(formData.type);
     });
 
     function handleCancel() {
@@ -28,20 +36,28 @@
         formData = {
             name: "",
             desc: "",
-            type: LP_TYPE.LPDI,
+            type: "",
         };
     }
 
     function handleSubmit() {
+        if (!formData.type) return;
+
         addLp(formData.type, formData.name, formData.desc, formData.number);
 
         formData = {
             name: "",
             desc: "",
-            type: LP_TYPE.LPDI,
+            type: "",
         };
 
         isOpen = false;
+    }
+
+    function getHelperText() {
+        return formData.type && !typePresentInDoc
+            ? `⚠︎ Missing ${formData.type} LNodeType`
+            : undefined;
     }
 </script>
 
@@ -52,6 +68,8 @@
                 bind:value={formData.type}
                 label="LP Type"
                 options={Object.values(LP_TYPE)}
+                helperText={getHelperText()}
+                helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
             />
             <Input bind:value={formData.name} label="LP Name" type="text" />
             <Input

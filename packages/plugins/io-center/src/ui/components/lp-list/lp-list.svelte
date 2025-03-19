@@ -10,12 +10,18 @@
     import CreateLpDialog from "./create-lp-dialog.svelte";
 
     type Props = {
-        addLp: (type: LpTypes, name: string, desc: string, number?: number) => void;
+        addLp: (
+            type: LpTypes,
+            name: string,
+            desc: string,
+            number?: number,
+        ) => void;
         removeLP: (lpElement: LpElementType) => void;
         editLP: (LpElement: LpElementType, name: string, desc: string) => void;
+        hasLNodeType: (type: LpTypes) => boolean;
     };
 
-    let { addLp, removeLP, editLP }: Props = $props();
+    let { addLp, removeLP, editLP, hasLNodeType }: Props = $props();
 
     let searchTerm = $state("");
 
@@ -49,7 +55,7 @@
         <p>Add LP</p>
     </button>
 
-    <CreateLpDialog bind:isOpen={showDialog} {addLp} />
+    <CreateLpDialog bind:isOpen={showDialog} {addLp} {hasLNodeType}/>
 
     {#if store.selectedIED}
         <SearchBar bind:searchTerm placeholder="Search LP" />
