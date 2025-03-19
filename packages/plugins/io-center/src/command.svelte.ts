@@ -1,16 +1,17 @@
 import { createAndDispatchEditEvent } from "@oscd-plugins/core-api/plugin/v1"
 import { store } from "./store.svelte"
 import type { Nullable } from "./types"
-import { lpStore } from "./ui/components/lp-list/lp-store.svelte"
 import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
 import { createElement } from "./headless/stores/document-helpers.svelte"
+import type { LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
+import { L_NODE_TYPE_CONTENT } from "./headless/constants"
 
 export class Command {
 	constructor(
 		private getHost: HostGetter,
 	) { }
 
-	public addLp() {
+	public addLp(type: LpTypes, name: string, desc: string, number?: number) {
 		if (!store.doc) { return }
 
 		const sclRoot = store.doc.querySelector("SCL");
@@ -19,8 +20,6 @@ export class Command {
 
 		const host = this.requireHost()
 
-		const { type, name, desc, number } = lpStore.dialogFormData
-
 		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
 
 		if (!ied) {
@@ -28,6 +27,8 @@ export class Command {
 		}
 
 		const ld0 = this.ensureLD0(ied)
+
+		this.ensureLNodeType(type)
 
 		const currentLPNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
 
@@ -40,7 +41,7 @@ export class Command {
 				"lnType": name || type,
 			}
 
-			createElement(host, store.doc, "LN", attributes, ld0, null)
+			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
 
 			return
 		}
@@ -54,7 +55,7 @@ export class Command {
 				"lnType": name || type,
 			}
 
-			createElement(host, store.doc, "LN", attributes, ld0, null)
+			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
 		}
 	}
 
@@ -115,24 +116,117 @@ export class Command {
 		}
 	}
 
-	public addLC(iedName: string, type: string, instance: string) {
+	public addLC(type: LcTypes, number?: number) {
 		if (!store.doc) { console.warn("no doc"); return; }
 
 		const host = this.requireHost()
 
-		const ied = store.doc.querySelector(`IED[name="${iedName}"]`)
-		if (!ied) {
-			throw new Error(`IED with name ${iedName} not found`)
-		}
+		const ied = this.requireSelectedIED()
+
 		const ld0 = this.ensureLD0(ied)
 
-		const attributes = {
-			"lnClass": type,
-			"lnType": type,
-			"inst": instance,
+		this.ensureLNodeType(type)
+
+		const currentLCNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
+
+		if (!number) {
+			const attributes = {
+				"xmlns": "",
+				"lnClass": type,
+				"inst": `${currentLCNumber + 1}`,
+				"lnType": type,
+			}
+
+			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
+
+			return
 		}
 
-		createElement(host, store.doc, "LN", attributes, ld0, null)
+		for (let i = 1; i <= number; i++) {
+			const attributes = {
+				"xmlns": "",
+				"lnClass": type,
+				"inst": `${currentLCNumber + i}`,
+				"lnType": type,
+			}
+
+			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
+		}
+	}
+
+	public editLC(lcNode: NodeElement, newType: LcTypes) {
+		const lc = store.logicalConditioners.find(lc => lc.id === lcNode.id)
+
+		if (!lc) {
+			throw new Error(`No LC found in store with id ${lcNode.id}`)
+		}
+
+		this.removeLC(lc)
+
+		this.addLC(newType)
+	}
+
+	public removeLC(lcElement: LogicalConditioner) {
+		const host = this.requireHost()
+
+		const ied = this.requireSelectedIED()
+
+		//Delete target LP
+		const lcToDelete = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lcElement.type}"][inst="${lcElement.instance}"][lnClass="${lcElement.type}"]`)
+
+		if (!lcToDelete) {
+			throw new Error(`LP element with name ${lcElement.type}-${lcElement.instance} not found!`)
+		}
+
+		createAndDispatchEditEvent({
+			host,
+			edit: {
+				node: lcToDelete
+			}
+		})
+
+		//Correct instance attribute for any LP that's after the target
+		const remainingLCs = Array.from(ied.querySelectorAll(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lcElement.type}"]`))
+
+		const deletedLcInstance = Number.parseInt(lcElement.instance)
+
+		for (const lc of remainingLCs.slice(deletedLcInstance - 1)) {
+			createAndDispatchEditEvent({
+				host,
+				edit: {
+					element: lc,
+					attributes: { "inst": `${Number.parseInt(lc.getAttribute("inst") || "") - 1}` },
+					attributesNS: {}
+				}
+			})
+		}
+	}
+
+	private ensureLNodeType(type: LcTypes | LpTypes) {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const host = this.requireHost()
+
+		if (this.hasLNodeType(type)) {
+			return
+		}
+
+		const dataTypeTemplates = this.ensureDataTypeTemplates()
+
+		const attributes = {
+			"id": `IOCenter.${type}`,
+			"lnClass": type,
+		}
+
+		createElement({ host, doc: store.doc, tagName: "LNodeType", attributes, parent: dataTypeTemplates, reference: null, innerHTML: L_NODE_TYPE_CONTENT[type] })
+	}
+
+	public hasLNodeType(type: LcTypes | LpTypes): boolean {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const lnType = store.doc.querySelector(`DataTypeTemplates > LNodeType[lnClass="${type}"]`)
+
+		return Boolean(lnType)
 	}
 
 	private requireSelectedIED(): Element {
@@ -145,6 +239,30 @@ export class Command {
 		}
 
 		return ied
+	}
+
+	private ensureDataTypeTemplates(): Element {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const sclRoot = store.doc.querySelector("SCL");
+
+		if (!sclRoot) { throw new Error('SCL Root not found!') }
+
+		const host = this.requireHost()
+
+		let dTT = store.doc.querySelector('DataTypeTemplates')
+
+		if (dTT) {
+			return dTT
+		}
+
+		createElement({ host, doc: store.doc, tagName: "DataTypeTemplates", parent: sclRoot, reference: null })
+
+		dTT = store.doc.querySelector('DataTypeTemplates')
+
+		if (!dTT) { throw new Error('DataTypeTemplates still does not exist!') }
+
+		return dTT
 	}
 
 	private ensureLD0(ied: Element): Element {

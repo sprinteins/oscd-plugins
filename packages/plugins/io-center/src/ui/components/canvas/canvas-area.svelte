@@ -1,3 +1,32 @@
+<script lang="ts">
+	import NodeElement from "./node-element.svelte";
+	import { calulateCoordinates } from "./canvas-actions.svelte";
+	import { canvasStore } from "./canvas-store.svelte";
+	import {
+		getCirclePosition,
+		getCoordinates,
+		redrawConnections,
+		startDrawing,
+		stopDrawing,
+	} from "@/headless/utils";
+	import { Plus } from "lucide-svelte";
+	import AddLCDialog from "./add-lc-dialog.svelte";
+	import { store } from "../../../store.svelte";
+	import type {
+		LcTypes,
+		NodeElement as NodeElementType,
+	} from "./types.canvas";
+
+	type Props = {
+		onAddLC: (type: LcTypes, number?: number) => void;
+		editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
+		hasLNodeType: (type: LcTypes) => boolean;
+	};
+
+	const { onAddLC, editLC, hasLNodeType }: Props = $props();
+
+	let isDialogOpen = $state(false);
+</script>
 
 <div
 	use:calulateCoordinates
@@ -8,7 +37,9 @@
 		class="flex flex-col items-center w-full gap-2 bg-gray-50"
 		data-title="DO"
 	>
-		<div class="text-center">Data Objects</div>
+		<div class="text-center font-mono bg-gray-300 w-full py-2">
+			Data Objects
+		</div>
 		{#each canvasStore.dataObjects as node}
 			<NodeElement
 				{node}
@@ -23,15 +54,17 @@
 		class="flex flex-col items-center w-full gap-2 bg-gray-50"
 		data-title="LC"
 	>
-		<div class="text-center">
+		<div
+			class="flex justify-center gap-2 font-mono bg-gray-300 w-full py-2 items-center"
+		>
 			Logical Conditioners
 			<button
-				class="flex items-center justify-center rounded-lg py-2 gap-2 w-full bg-gray-200 mb-2 border border-gray-400"
-				onclick={onAddLCClick}
+				class="bg-white rounded-sm p-1 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed"
+				onclick={() => (isDialogOpen = true)}
+				disabled={!store.selectedIED}
 			>
 				<Plus size={16} />
-				<p>Add Logical Conditioner</p>
-    		</button>
+			</button>
 		</div>
 		{#each canvasStore.logicalConditioners as node}
 			<NodeElement
@@ -40,6 +73,8 @@
 				showRightCircle={true}
 				{startDrawing}
 				{stopDrawing}
+				{editLC}
+				{hasLNodeType}
 			/>
 		{/each}
 	</div>
@@ -47,7 +82,9 @@
 		class="flex flex-col items-center w-full gap-2 bg-gray-50"
 		data-title="LP"
 	>
-		<div class="text-center">Logical Physical Inputs/Outputs</div>
+		<div class="text-center font-mono bg-gray-300 w-full py-2">
+			Logical Physical I/O
+		</div>
 		{#each canvasStore.logicalPhysicals as node}
 			<NodeElement
 				{node}
@@ -83,54 +120,9 @@
 	{/if}
 </svg>
 
-
-{#if isDialogOpen}
-<AddLCDialog
-	open 
-	onAdd={(newLC) => {
-		onAddLC(newLC.type, newLC.instance, newLC.nrOfLRTIInputs);
-		isDialogOpen = false;
-	}}
-	onCancel={() => isDialogOpen = false}
-/>
-{/if}
-
-<style>
-	
-</style>
-  
-
-
-<script lang="ts">
-	import NodeElement from "./node-element.svelte";
-	import { calulateCoordinates } from "./canvas-actions.svelte";
-	import { canvasStore } from "./canvas-store.svelte";
-	import {
-		getCirclePosition,
-		getCoordinates,
-		redrawConnections,
-		startDrawing,
-		stopDrawing,
-	} from "@/headless/utils";
-	import { Plus } from "lucide-svelte";
-	import AddLCDialog from "./add-lc-dialog/add-lc-dialog.svelte";
-    import type { LCType } from "./add-lc-dialog/add-lc-dialog.types";
-
-	type Props = {
-		onAddLC: (lcType: LCType, instance: string, nrOfLRTIInputs?: number) => void;
-	}
-
-	const { onAddLC }: Props = $props();
-
-	let isDialogOpen = $state(false);
-	
-	function onAddLCClick() {
-		isDialogOpen = true;
-	}
-	
-
-
-
-</script>
+<AddLCDialog bind:isOpen={isDialogOpen} addLc={onAddLC} {hasLNodeType}/>
 
 <svelte:window onresize={redrawConnections} />
+
+<style>
+</style>

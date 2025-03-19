@@ -241,6 +241,44 @@ describe('DocumentTemplateStore', () => {
 		expect(idBlock1).toBe(blockElements?.[1]?.getAttribute('id'));
 		expect(idBlock2).toBe(blockElements?.[2]?.getAttribute('id'));
 	});
+	
+	it('should duplicate a block from the document definition', () => {
+		// Arrange
+		docTemplatesStore.init();
+		const generatedId = docTemplatesStore.addDocumentTemplate();
+		if (!generatedId) {
+			throw new Error('adding DocumentTemplate failed');
+		}
+		const docDef = docTemplatesStore.getDocumentTemplate(generatedId);
+		if (!docDef) {
+			throw new Error('DocumentTemplate not found');
+		}
+		const type = "text";
+
+		// Add blocks to the document definition
+		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
+		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
+		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 2);
+
+		// Act
+		docTemplatesStore.duplicateBlockFromDocumentTemplate(docDef, idBlock2, 2);
+
+		// Assert
+		const blockElements = getAllBlockElements(docDef);
+		expect(blockElements.length).toBe(4);
+
+		expect(blockElements[0].getAttribute('id')).toBe(idBlock1);
+		expect(blockElements[1].getAttribute('id')).toBe(idBlock2);
+		expect(blockElements[3]?.getAttribute('id')).toBe(idBlock3);
+
+		const duplicationSourceElement = blockElements[1];
+		const duplicationResultElement = blockElements[2];
+
+		expect(duplicationResultElement).not.toBeNull();
+		expect(duplicationResultElement?.getAttribute("id")).not.toBe(duplicationSourceElement.getAttribute("id"));
+		expect(duplicationResultElement?.getAttribute("type")).toBe(type);
+		expect(duplicationResultElement?.textContent).toBe(duplicationSourceElement.textContent);
+	});
 
 	it('should delete a block from the document definition', () => {
 		// Arrange
