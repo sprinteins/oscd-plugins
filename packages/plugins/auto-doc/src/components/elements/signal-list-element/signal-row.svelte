@@ -76,7 +76,7 @@
                         data-row-id={id}
                         class:dragging={signalDndStore.draggedIndex === idx}
                 >
-                                <div>
+                                <div class="controls-container">
                                         <div draggable="true"
                                                 role="button"
                                                 tabindex="0"
@@ -127,19 +127,18 @@
     
     
     <style lang="scss">
-        .signal-row{
-        display: grid;
-        grid-template-columns: 3% repeat(2, 1fr);
-        grid-gap: 1rem;
-        align-items: center;
-        margin-bottom: 1rem;
-
-       & :global(.mdc-text-field__input[disabled]){
-            cursor: not-allowed;
+        .signal-row {
+            display: grid;
+            grid-template-columns: 100px repeat(2, 1fr);
+            grid-gap: 1rem;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 4px;
+            position: relative;
+            & :global(.mdc-text-field__input[disabled]){
+                cursor: not-allowed;
+            }
         }
-
-
-    }
     
         .drag-handle {
                 cursor: grab;
@@ -147,6 +146,8 @@
                 transition: opacity 0.2s;
                 display: flex;
                 align-items: center;
+                justify-content: center;
+                width: 100%;
                 
                 &:active {
                         cursor: grabbing;
@@ -170,5 +171,11 @@
                     border: 2px dashed #00ff00;
                     background: rgba(0, 255, 0, 0.1);
                 }
+        }
+    
+        .controls-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
     </style>
