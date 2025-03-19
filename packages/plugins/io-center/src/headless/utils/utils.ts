@@ -1,5 +1,4 @@
 import { canvasStore } from "@/ui/components/canvas/canvas-store.svelte";
-import type { ConnectionPoint } from "@/ui/components/canvas/types.canvas";
 import type { TreeNode } from "@/ui/components/object-tree/types.object-tree";
 
 export function searchTree(tree: TreeNode[], searchTerm: string): TreeNode[] {
@@ -75,10 +74,10 @@ export function isSameSide(startSide: string, targetSide: string) {
 export function connectionExists(fromNode: string, toNode: string) {
     return canvasStore.connections.some(
         (connection) =>
-            (connection.from.node === fromNode &&
-                connection.to.node === toNode) ||
-            (connection.from.node === toNode &&
-                connection.to.node === fromNode),
+            (connection.from === fromNode &&
+                connection.to === toNode) ||
+            (connection.from === toNode &&
+                connection.to === fromNode),
     );
 }
 
@@ -91,7 +90,7 @@ export function stopDrawing(targetNode: string, targetSide: string) {
     }
 
     const target = canvasStore.container.querySelector(
-        `[data-title="${targetNode}"]`,
+        `[data-title="${targetNode}-${targetSide}"]`,
     ) as HTMLElement | null;
 
     if (startCircle && target && startCircle !== target) {
@@ -99,7 +98,8 @@ export function stopDrawing(targetNode: string, targetSide: string) {
         if (!fromNode) {
             return;
         }
-        let toNode = targetNode;
+
+        let toNode = `${targetNode}-${targetSide}`;
 
         if (startCircle instanceof HTMLElement)
             if (
@@ -121,21 +121,21 @@ export function stopDrawing(targetNode: string, targetSide: string) {
             canvasStore.connections = [
                 ...canvasStore.connections,
                 {
-                    from: { node: fromNode, side: "right" },
-                    to: { node: toNode, side: "left" },
+                    id: `${fromNode}-${toNode}`,
+                    from: fromNode,
+                    to: toNode,
                 },
             ];
         }
     }
 }
 
-export function getCoordinates(connectionPoint: ConnectionPoint) {
+export function getCoordinates(connectionPoint: string) {
     if (!canvasStore.svgElement || !canvasStore.container) {
         return { x: 0, y: 0 };
     }
-
     const target = canvasStore.container.querySelector(
-        `[data-title="${connectionPoint.node}"]`,
+        `[data-title="${connectionPoint}"]`,
     ) as HTMLElement | null;
 
     if (!target) {
@@ -143,8 +143,9 @@ export function getCoordinates(connectionPoint: ConnectionPoint) {
     }
 
     const circle = target.querySelector(
-        connectionPoint.side === "left" ? "#left-circle" : "#right-circle",
+        connectionPoint.includes("left") ? "#left-circle" : "#right-circle",
     );
+
 
     if (!circle) {
         return { x: 0, y: 0 };

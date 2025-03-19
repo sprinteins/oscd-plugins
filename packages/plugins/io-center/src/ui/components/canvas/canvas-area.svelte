@@ -101,18 +101,16 @@
 	class="absolute top-0 left-0 w-full h-full pointer-events-none"
 	bind:this={canvasStore.svgElement}
 >
-	{#key canvasStore.connections}
-		{#each canvasStore.connections as connection}
-			<path
-				class="stroke-black stroke-2 fill-none"
-				d={`M ${getCoordinates(connection.from).x},${getCoordinates(connection.from).y} 
+	{#each canvasStore.connections as connection (connection.id)}
+		<path
+			class="stroke-black stroke-2 fill-none"
+			d={`M ${getCoordinates(connection.from).x},${getCoordinates(connection.from).y} 
 					 C ${(getCoordinates(connection.from).x + getCoordinates(connection.to).x) / 2},${getCoordinates(connection.from).y} 
 					 ${(getCoordinates(connection.from).x + getCoordinates(connection.to).x) / 2},${getCoordinates(connection.to).y} 
 					 ${getCoordinates(connection.to).x},${getCoordinates(connection.to).y}`}
-			/>
-		{/each}
-	{/key}
-	{#if canvasStore.drawStartPoint}
+		/>
+	{/each}
+	{#if canvasStore.drawStartPoint}F
 		<path
 			class="stroke-black stroke-2"
 			d={`M ${getCirclePosition(canvasStore.drawStartPoint).x},${getCirclePosition(canvasStore.drawStartPoint).y} L ${canvasStore.mousePosition.x},${canvasStore.mousePosition.y}`}
@@ -120,7 +118,7 @@
 	{/if}
 </svg>
 
-<AddLCDialog bind:isOpen={isDialogOpen} addLc={onAddLC} {hasLNodeType}/>
+<AddLCDialog bind:isOpen={isDialogOpen} addLc={onAddLC} {hasLNodeType} />
 
 <svelte:window onresize={redrawConnections} />
 
