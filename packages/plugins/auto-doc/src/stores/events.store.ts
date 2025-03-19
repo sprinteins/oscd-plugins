@@ -10,10 +10,8 @@ const { pluginHostElement } = pluginStore
 
 //====== ACTIONS ======//
 function createAndDispatchActionEvent(parent: Element, element: Element, reference?: Node | null) {
-	if(reference === undefined) {
-		reference = null;
-	}
-
+	reference = reference ?? null;
+	
 	createAndDispatchEditEvent({
 		host: get(pluginHostElement),
 		edit: {
@@ -34,9 +32,7 @@ function deleteAndDispatchActionEvent(_: Element, element: Element) {
 }
 
 function moveAndDispatchActionEvent(parent: Element, element: Element, reference?: Node | null) {
-	if(reference === undefined) {
-		reference = null;
-	}
+	reference = reference ?? null;
 
 	createAndDispatchEditEvent({
 		host: get(pluginHostElement),
