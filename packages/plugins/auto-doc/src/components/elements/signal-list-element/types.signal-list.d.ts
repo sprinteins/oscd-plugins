@@ -10,13 +10,12 @@ export type LabelText = {
 
 export type SignalRow = {
 	id: string;
-	index: number
-	isSelected: boolean
-	column1: string
-	column2: string
-	label: LabelText
-	searchKey: keyof typeof SignalType | keyof  typeof Columns
-
+	index: number;
+	isSelected: boolean;
+	column1: string;
+	column2: string;
+	label: LabelText;
+	searchKey: keyof typeof SignalType | keyof typeof Columns;
 }
 
 export type PdfRows = {
@@ -24,8 +23,8 @@ export type PdfRows = {
 }
 
 export type SignalListOnSCD = {
-	selected: SignalRow[]
-	matches: PdfRows
+	selected: SignalRow[];
+	matches: PdfRows;
 }
 
 

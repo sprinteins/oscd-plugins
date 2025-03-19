@@ -27,7 +27,7 @@
 	
 			return {
 				id: `col-${key}`,
-				index: i,
+				index: prevSelected?.index ?? i,
 				searchKey: key as keyof typeof Columns,
 				isSelected: prevSelected?.isSelected ?? false,
 				column1: prevSelected?.column1 ?? value,
@@ -47,7 +47,7 @@
 	
 			return {
 				id: `msg-${key}`,
-				index: columns.length + i,
+				index: prevSelected?.index ?? (columns.length + i),
 				searchKey: key as keyof typeof SignalType,
 				isSelected: prevSelected?.isSelected ?? false,
 				column1: prevSelected?.column1 ?? value,
@@ -60,7 +60,7 @@
 		}
 	)
 	
-	$: mergedColsAndMessages = [...columns, ...messages]
+	$: mergedColsAndMessages = [...columns, ...messages].sort((a, b) => a.index - b.index)
 	$: selectedRows = mergedColsAndMessages.filter((row) => row.isSelected)
 	
 	$: results = {
@@ -97,6 +97,16 @@
 	}
 	
 	function emitSelectedRows() {
+		const selectedWithOrder = selectedRows.map(row => ({
+			...row,
+			index: mergedColsAndMessages.findIndex(r => r.id === row.id)
+		}))
+		
+		const results = {
+			selected: selectedWithOrder,
+			matches: searchForMatchOnSignalList()
+		}
+		
 		onContentChange(JSON.stringify(results))
 	}
 	function getSelectedRowIfPreviouslySelected(
@@ -144,11 +154,11 @@
 		const newRows = [...mergedColsAndMessages]
 		const [draggedRow] = newRows.splice(draggedIndex, 1)
 		newRows.splice(dropIndex, 0, draggedRow)
-	
+		
 		newRows.forEach((row, index) => {
 			row.index = index
 		})
-	
+		
 		mergedColsAndMessages = newRows
 		emitSelectedRows()
 	}
