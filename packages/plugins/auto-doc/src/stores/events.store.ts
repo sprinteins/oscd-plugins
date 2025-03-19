@@ -1,9 +1,9 @@
 // SVELTE
 import { get } from 'svelte/store'
 // OPENSCD
+import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1';
 // STORES
 import { pluginStore } from './index'
-import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1';
 
 //====== STORES ======//
 const { pluginHostElement } = pluginStore
