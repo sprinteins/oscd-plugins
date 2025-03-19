@@ -37,7 +37,6 @@
 	},
 	"devDependencies": {
 		"@oscd-plugins/core-api": "workspace:^",
-		"@oscd-plugins/core-ui-svelte": "workspace:^",
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/vite-plugin-svelte": "^3.1.1",
 		"@tsconfig/svelte": "^5.0.4",
