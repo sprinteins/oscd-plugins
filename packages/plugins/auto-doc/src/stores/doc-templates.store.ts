@@ -148,7 +148,7 @@ function editBlockContentOfDocumentTemplate(docTemplate: Element, blockId: strin
 function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, reference?: Element | null) {
     const blockIdElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockIdElement) {
-        eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockIdElement, reference);
+        eventStore.moveAndDispatchActionEvent(docTemplate, blockIdElement, reference);
     }
 }
 

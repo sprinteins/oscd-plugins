@@ -1,9 +1,9 @@
 // SVELTE
 import { get } from 'svelte/store'
 // OPENSCD
-import { newActionEvent, createUpdateAction } from '@oscd-plugins/core'
 // STORES
 import { pluginStore } from './index'
+import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1';
 
 //====== STORES ======//
 const { pluginHostElement } = pluginStore
@@ -14,53 +14,49 @@ function createAndDispatchActionEvent(parent: Element, element: Element, referen
 		reference = null;
 	}
 
-	const event = newActionEvent({
-		new: {
-			parent,
-			element,
-			reference,
+	createAndDispatchEditEvent({
+		host: get(pluginHostElement),
+		edit: {
+			parent: parent, 
+			node: element,
+			reference: reference
 		}
-	})
-
-	get(pluginHostElement).dispatchEvent(event)
+	});
 }
 
-function deleteAndDispatchActionEvent(parent: Element, element: Element) {
-	const event = newActionEvent({
-		old: {
-			parent,
-			element
-		}
+function deleteAndDispatchActionEvent(_: Element, element: Element) {
+	createAndDispatchEditEvent({
+		host: get(pluginHostElement), 
+		edit: {
+			node: element
+		}	
 	})
-
-	get(pluginHostElement).dispatchEvent(event)
 }
 
-function moveAndDispatchActionEvent(oldParent: Element, newParent: Element, element: Element, reference?: Node | null) {
+function moveAndDispatchActionEvent(parent: Element, element: Element, reference?: Node | null) {
 	if(reference === undefined) {
 		reference = null;
 	}
 
-	const event = newActionEvent({
-		old: {
-			parent: oldParent,
-			element,
-			reference
-		},
-		new: {
-			parent: newParent,
-			reference 
+	createAndDispatchEditEvent({
+		host: get(pluginHostElement),
+		edit: {
+			parent: parent,
+			node: element,
+			reference: reference
 		}
-	})
-
-	get(pluginHostElement).dispatchEvent(event)
+	});
 }
 
 function updateAndDispatchActionEvent(element: Element, newAttributes: Record<string, string | null>) {
-	const updateAction = createUpdateAction(element, newAttributes)
-	const event = newActionEvent(updateAction)
-
-	get(pluginHostElement).dispatchEvent(event)
+	createAndDispatchEditEvent({
+		host: get(pluginHostElement),
+		edit: {
+			element: element,
+			attributes: newAttributes,
+			attributesNS: {}
+		}
+	});
 }
 
 export const eventStore = {

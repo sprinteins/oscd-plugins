@@ -39,8 +39,8 @@ describe('DocumentTemplateStore', () => {
 						}
 					),
 					moveAndDispatchActionEvent: vi.fn().mockImplementation(
-						(_: Element, newDocTemplate: Element, blockElement: Element, reference?: Node | null) => {
-							insertBlock(newDocTemplate, blockElement, reference);
+						(docTemplate: Element, blockElement: Element, reference?: Node | null) => {
+							insertBlock(docTemplate, blockElement, reference);
 						}
 					),
 					deleteAndDispatchActionEvent: vi.fn().mockImplementation(
