@@ -155,14 +155,13 @@
 	</script>
 	
 	
-	<article 
-		class="signal-list"
-	>
-	<div class="signal-list-header">
-		<div>
-			<Checkbox
-			on:click={() => toggleAllCheckboxes(areAllCheckboxesSelected)}
-			bind:checked={areAllCheckboxesSelected}
+	<article>
+	<div class="header">
+		<div class="controls-column">
+			<div></div>
+			<Checkbox 
+				on:click={() => toggleAllCheckboxes(areAllCheckboxesSelected)}
+				bind:checked={areAllCheckboxesSelected}
 			/>
 		</div>
 		<small>Choose the columns you want to display and rename if needed</small>
@@ -185,23 +184,23 @@
 	</article>
 	
 	<style lang="scss">
-	.signal-list {
-		width: 99%;
-		display: flex;
-		flex-direction: column;
+	.header {
+		display: grid;
+		grid-template-columns: 100px repeat(2, 1fr);
+		grid-gap: 1rem;
+		margin-left: 0.6rem;
+		margin-bottom: 0.5rem;
 	}
 
-	.signal-list-header{
-        display: grid;
-        grid-template-columns: 3% repeat(2, 1fr);
-        grid-gap: 1rem;
-        align-items: center;
-        margin-bottom: 1rem;
+	.controls-column {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 
-        small{
-            color: #4d5d63;
-            text-align: center;
-        }
+	small {
+		color: #4d5d63;
+		text-align: left;
 	}
 	</style>
 	
