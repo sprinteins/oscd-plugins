@@ -76,9 +76,8 @@
                         data-row-id={id}
                         class:dragging={signalDndStore.draggedIndex === idx}
                 >
-                                <div class="controls-container">
-                                        <div class="drag-handle"
-                                                draggable="true"
+                                <div class="controls-container" style:cursor={signalDndStore.draggedIndex === idx ? 'grabbing' : 'grab'}>
+                                        <div draggable="true"
                                                 role="button"
                                                 tabindex="0"
                                                 aria-label="Drag handle"
