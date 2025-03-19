@@ -33,18 +33,8 @@ function createAutoDocArea(xmlDocument: Document): Element {
     }
 
     const newPrivateArea = createElement(xmlDocument, 'Private', { type: 'AUTO_DOC' });
-    rootElement.appendChild(newPrivateArea);
-
     eventStore.createAndDispatchActionEvent(rootElement, newPrivateArea);
     return newPrivateArea;
-}
-
-function insertBlockAtPosition(docDef: Element, blockIdElement: Element, position: number) {
-    if (position >= 0 && position < docDef.children.length) {
-        docDef.insertBefore(blockIdElement, docDef.children[position]);
-    } else {
-        docDef.appendChild(blockIdElement);
-    }
 }
 
 //==== PUBLIC ACTIONS
@@ -95,7 +85,7 @@ function addDocumentTemplate(): string | null {
             id: id,
             date: new Date().toISOString()
         });
-        currentPrivateArea.appendChild(newDocDef);
+
         eventStore.createAndDispatchActionEvent(currentPrivateArea, newDocDef);
         generatedId = id;
     }
@@ -108,11 +98,9 @@ function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle
     if (docTemplate) {
         const updates: { title?: string; description?: string, id?: string; date?: string } = {};
         if (newTitle) {
-            docTemplate.setAttribute('title', newTitle);
             updates.title = newTitle;
         }
         if (newDescription) {
-            docTemplate.setAttribute('description', newDescription);
             updates.description = newDescription;
         }
         const id = docTemplate.getAttribute('id');
@@ -129,7 +117,7 @@ function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle
     }
 }
 
-function addBlockToDocumentTemplate(docTemplate: Element, type: ElementType, position: number) {
+function addBlockToDocumentTemplate(docTemplate: Element, type: ElementType, reference?: Element | null) {
     const generatedId = uuidv4();
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -139,11 +127,8 @@ function addBlockToDocumentTemplate(docTemplate: Element, type: ElementType, pos
         id: generatedId,
         type: type 
     });
-    docTemplate.appendChild(blockElement);
 
-    insertBlockAtPosition(docTemplate, blockElement, position);
-    eventStore.createAndDispatchActionEvent(docTemplate, blockElement);
-    eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockElement);
+    eventStore.createAndDispatchActionEvent(docTemplate, blockElement, reference);
 
     return generatedId;
 }
@@ -160,10 +145,9 @@ function editBlockContentOfDocumentTemplate(docTemplate: Element, blockId: strin
     }
 }
 
-function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, position: number, reference?: Element | null) {
+function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, reference?: Element | null) {
     const blockIdElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockIdElement) {
-        insertBlockAtPosition(docTemplate, blockIdElement, position);
         eventStore.moveAndDispatchActionEvent(docTemplate, docTemplate, blockIdElement, reference);
     }
 }
@@ -171,7 +155,6 @@ function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, posi
 function deleteBlockFromDocumentTemplate(docTemplate: Element, blockId: string) {
     const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockElement && blockElement.parentNode === docTemplate) {
-        docTemplate.removeChild(blockElement);
         eventStore.deleteAndDispatchActionEvent(docTemplate, blockElement);
     }
 }
@@ -181,7 +164,6 @@ function deleteDocumentTemplate(docTemplateId: string) {
     if (currentPrivateArea) {
         const docTemplate = getDocumentTemplate(docTemplateId);
         if (docTemplate) {
-            currentPrivateArea.removeChild(docTemplate);
             eventStore.deleteAndDispatchActionEvent(currentPrivateArea, docTemplate);
         }
     }
@@ -196,8 +178,13 @@ function duplicateBlockFromDocumentTemplate(docTemplate: Element, blockId: strin
     const duplicatedElement = blockElement.cloneNode(true) as Element;
     duplicatedElement.setAttribute("id", uuidv4());
 
-    insertBlockAtPosition(docTemplate, duplicatedElement, position);
-    eventStore.createAndDispatchActionEvent(docTemplate, duplicatedElement, duplicatedElement);
+    let reference: Element | null = null;
+    if(position > 0) {
+        const blocks = docTemplate.querySelectorAll("Block");
+        reference = blocks[position];
+    }
+
+    eventStore.createAndDispatchActionEvent(docTemplate, duplicatedElement, reference);
     
     return duplicatedElement;
 }
@@ -226,7 +213,6 @@ function duplicateDocumentTemplate(docTemplateId: string) {
                 block.setAttribute('id', uuidv4());
             }
 
-            currentPrivateArea.appendChild(newDocTemplate);
             eventStore.createAndDispatchActionEvent(currentPrivateArea, newDocTemplate);
         }
     }

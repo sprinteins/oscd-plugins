@@ -40,11 +40,12 @@ function moveAndDispatchActionEvent(oldParent: Element, newParent: Element, elem
 	if(reference === undefined) {
 		reference = null;
 	}
-	
+
 	const event = newActionEvent({
 		old: {
 			parent: oldParent,
 			element,
+			reference
 		},
 		new: {
 			parent: newParent,

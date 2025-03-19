@@ -47,7 +47,7 @@
 
 
     function addElement(type: ElementType){
-        docTemplatesStore.addBlockToDocumentTemplate(template, type, blockElements.length)
+        docTemplatesStore.addBlockToDocumentTemplate(template, type)
     }
 
 
@@ -79,7 +79,7 @@
         const calculatedPosition = index + direction;
         const referenceBlock = blockElements[calculatedPosition];
         const reference = template.querySelector(`Block[id="${referenceBlock?.id}"]`);
-        docTemplatesStore.moveBlockInDocumentTemplate(template, elementId, calculatedPosition, reference);
+        docTemplatesStore.moveBlockInDocumentTemplate(template, elementId, reference);
     }
 
     function deleteBlockElement(event: CustomEvent<{elementId: string}>){

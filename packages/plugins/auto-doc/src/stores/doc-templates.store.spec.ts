@@ -1,12 +1,12 @@
 import { docTemplatesStore } from './doc-templates.store';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { get, writable, type Writable } from 'svelte/store';
 import { pluginStore } from './index';
 
 describe('DocumentTemplateStore', () => {
-  let xmlDocument: Writable<XMLDocument | undefined>;;
+  	let xmlDocument: Writable<XMLDocument | undefined>;;
 
-  beforeEach(() => {
+  	beforeEach(() => {
 		xmlDocument = writable<XMLDocument | undefined>(undefined);
 		const parser = new DOMParser();
 		const xmlString = "<SCL></SCL>";
@@ -18,9 +18,54 @@ describe('DocumentTemplateStore', () => {
 		});
 
 		docTemplatesStore.init();
-  });
+	});
 
-  it('should create a "private" element with type="AUTO_DOC" if it does not exist', () => {
+	function mockEventStore() {
+		vi.mock(import("./events.store.js"), async (importOriginal) => {
+			const insertBlock = (parent: Element, element: Element, reference?: Node | null) => {
+				parent.appendChild(element);
+				if(reference) {
+					parent.insertBefore(element, reference);
+				}
+			}
+						
+			const mod = await importOriginal();
+			return {
+				eventStore: {
+					...mod.eventStore, 
+					createAndDispatchActionEvent: vi.fn().mockImplementation(
+						(docTemplate: Element, blockElement: Element, reference?: Node | null) => {
+							insertBlock(docTemplate, blockElement, reference);
+						}
+					),
+					moveAndDispatchActionEvent: vi.fn().mockImplementation(
+						(_: Element, newDocTemplate: Element, blockElement: Element, reference?: Node | null) => {
+							insertBlock(newDocTemplate, blockElement, reference);
+						}
+					),
+					deleteAndDispatchActionEvent: vi.fn().mockImplementation(
+						(docTemplate: Element, blockElement: Element) => {
+							docTemplate.removeChild(blockElement);
+						}
+					),
+					updateAndDispatchActionEvent: vi.fn().mockImplementation(
+						(docTemplate: Element, updates: Record<string, string | null>) => {
+							const { title, description } = updates;
+							if(title) {
+								docTemplate.setAttribute("title", title);
+							}
+
+							if(description) {
+								docTemplate.setAttribute("description", description);
+							}
+						}
+					),
+				}	
+			};
+		});
+	}
+
+	it('should create a "private" element with type="AUTO_DOC" if it does not exist', () => {
     	// Act
 		const autoDocArea = docTemplatesStore.privateArea;
 
@@ -31,9 +76,9 @@ describe('DocumentTemplateStore', () => {
 			expect(value?.getAttribute('type')).toBe('AUTO_DOC');
 		})();
 
-  });
+	});
 
-  it('should not create a new "private" element if one already exists', () => {
+	it('should not create a new "private" element if one already exists', () => {
 		// Act
 		docTemplatesStore.init();
 		const autoDocArea = docTemplatesStore.privateArea;
@@ -43,7 +88,7 @@ describe('DocumentTemplateStore', () => {
 				const xmlDocValue = get(xmlDocument);
 		expect(xmlDocValue?.documentElement.querySelectorAll('Private[type="AUTO_DOC"]').length).toBe(1);
 		})();
-  });
+	});
 
 	it('should add a new "DocumentTemplate" element with current date, description, and id attributes', () => {
 		// Arrange
@@ -118,7 +163,7 @@ describe('DocumentTemplateStore', () => {
 		const type = "text";
 
 		// Act
-		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
+		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
 
 		// Assert
 		const blockElements = getAllBlockElements(docDef);
@@ -140,7 +185,7 @@ describe('DocumentTemplateStore', () => {
 			throw new Error('DocumentTemplate not found');
 		}
 		const type = "text";
-		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
+		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
 
 		// Act
 		const retrievedBlock = docTemplatesStore.getBlockOfDocumentTemplate(generatedId, blockId);
@@ -164,9 +209,9 @@ describe('DocumentTemplateStore', () => {
 		const type = "image";
 
 		// Add blocks to the document definition
-		docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
-		docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
-		docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 2);
+		docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
+		docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
+		docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
 
 		// Act
 		const blocks = docTemplatesStore.getAllBlocksOfDocumentTemplate(generatedId);
@@ -189,12 +234,13 @@ describe('DocumentTemplateStore', () => {
 		const type = "text";
 
 		// Act
-		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
-		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
-		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
+		let blockElements = docDef?.querySelectorAll('Block');
+		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
+		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
+		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, docDef.children[1]);
 
 		// Assert
-		const blockElements = docDef?.querySelectorAll('Block');
+		blockElements = docDef?.querySelectorAll('Block');
 		if(!blockElements) {
 			throw new Error('Block elements not found');
 		}
@@ -220,9 +266,9 @@ describe('DocumentTemplateStore', () => {
 		const type = "signalList";
 
 		// Add blocks to the document definition
-		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
-		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
-		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 2);
+		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
+		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
+		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
 
 		// Assert
 		let blockElements = getAllBlockElements(docDef);
@@ -232,7 +278,8 @@ describe('DocumentTemplateStore', () => {
 		expect(idBlock3).toBe(blockElements?.[2]?.getAttribute('id'));
 
 		// Act
-		docTemplatesStore.moveBlockInDocumentTemplate(docDef, idBlock3, 0);
+		const block1Reference = docDef.querySelector(`Block[id="${idBlock1}"]`);
+		docTemplatesStore.moveBlockInDocumentTemplate(docDef, idBlock3, block1Reference);
 
 		// Assert
 		blockElements = getAllBlockElements(docDef);
@@ -241,6 +288,8 @@ describe('DocumentTemplateStore', () => {
 		expect(idBlock1).toBe(blockElements?.[1]?.getAttribute('id'));
 		expect(idBlock2).toBe(blockElements?.[2]?.getAttribute('id'));
 	});
+
+	
 	
 	it('should duplicate a block from the document definition', () => {
 		// Arrange
@@ -256,9 +305,9 @@ describe('DocumentTemplateStore', () => {
 		const type = "text";
 
 		// Add blocks to the document definition
-		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
-		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
-		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 2);
+		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
+		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
+		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
 
 		// Act
 		docTemplatesStore.duplicateBlockFromDocumentTemplate(docDef, idBlock2, 2);
@@ -294,9 +343,9 @@ describe('DocumentTemplateStore', () => {
 		const type = "text";
 
 		// Add blocks to the document definition
-		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
-		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 1);
-		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 2);
+		const idBlock1 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
+		const idBlock2 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
+		const idBlock3 = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
 
 		// Act
 		docTemplatesStore.deleteBlockFromDocumentTemplate(docDef, idBlock2);
@@ -386,7 +435,7 @@ describe('DocumentTemplateStore', () => {
 		}
 		const updatedContent = 'Updated block content';
 		const type = "signalList";
-		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type, 0);
+		const blockId = docTemplatesStore.addBlockToDocumentTemplate(docDef, type);
 	
 		// Act
 		docTemplatesStore.editBlockContentOfDocumentTemplate(docDef, blockId, updatedContent);
