@@ -44,8 +44,23 @@ describe('DocumentTemplateStore', () => {
 						}
 					),
 					deleteAndDispatchActionEvent: vi.fn().mockImplementation(
-						(docTemplate: Element, blockElement: Element) => {
-							docTemplate.removeChild(blockElement);
+						(blockElement: Element) => {
+    						const privateArea = get(docTemplatesStore.privateArea);
+							if(!privateArea) {
+								return;
+							}
+							
+							const docDef = privateArea.querySelector('DocumentTemplate');
+							if(!docDef) {
+								throw new Error("DocumentTemplate not found");
+							}
+							
+							const isDocTemplate = privateArea.querySelector(`DocumentTemplate[id="${blockElement.id}"]`);
+							if(isDocTemplate) {
+								privateArea.removeChild(blockElement);
+							} else {
+								docDef.removeChild(blockElement);
+							}
 						}
 					),
 					updateAndDispatchActionEvent: vi.fn().mockImplementation(

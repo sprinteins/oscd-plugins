@@ -22,7 +22,7 @@ function createAndDispatchActionEvent(parent: Element, element: Element, referen
 	});
 }
 
-function deleteAndDispatchActionEvent(_: Element, element: Element) {
+function deleteAndDispatchActionEvent(element: Element) {
 	createAndDispatchEditEvent({
 		host: get(pluginHostElement), 
 		edit: {

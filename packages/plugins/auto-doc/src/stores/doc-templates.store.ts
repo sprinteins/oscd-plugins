@@ -155,7 +155,7 @@ function moveBlockInDocumentTemplate(docTemplate: Element, blockId: string, refe
 function deleteBlockFromDocumentTemplate(docTemplate: Element, blockId: string) {
     const blockElement = docTemplate.querySelector(`Block[id="${blockId}"]`);
     if (blockElement && blockElement.parentNode === docTemplate) {
-        eventStore.deleteAndDispatchActionEvent(docTemplate, blockElement);
+        eventStore.deleteAndDispatchActionEvent(blockElement);
     }
 }
 
@@ -164,7 +164,7 @@ function deleteDocumentTemplate(docTemplateId: string) {
     if (currentPrivateArea) {
         const docTemplate = getDocumentTemplate(docTemplateId);
         if (docTemplate) {
-            eventStore.deleteAndDispatchActionEvent(currentPrivateArea, docTemplate);
+            eventStore.deleteAndDispatchActionEvent(docTemplate);
         }
     }
 }
