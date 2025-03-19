@@ -63,11 +63,6 @@
 	$: mergedColsAndMessages = [...columns, ...messages].sort((a, b) => a.index - b.index)
 	$: selectedRows = mergedColsAndMessages.filter((row) => row.isSelected)
 	
-	$: results = {
-		selected: selectedRows,
-		matches: searchForMatchOnSignalList()
-	}
-	
 	function getEmptyValues(): SignalListOnSCD {
 		return { selected: [], matches: { matchedRowsForTablePdf: [] } }
 	}
