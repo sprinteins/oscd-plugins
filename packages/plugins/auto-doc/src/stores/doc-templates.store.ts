@@ -93,6 +93,23 @@ function addDocumentTemplate(): string | null {
     return generatedId;
 }
 
+function importDocumentTemplates(docTemplates: Element[]) {
+    const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
+
+    const currentPrivateArea = get(autoDocArea);
+    if (!currentPrivateArea) {
+        throw new Error('No auto doc private area found')
+    }
+
+    // Import to own doc, so there are no references to the original doc
+    const importedDocTemplates = docTemplates.map(docTemplate => xmlDoc.importNode(docTemplate, true))
+
+    eventStore.createMultipleAndDispatchActionEvent(currentPrivateArea, importedDocTemplates, 'Import auto doc templates');
+}
+
 function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle?: string, newDescription?: string) {
     const docTemplate = getDocumentTemplate(docTemplateId);
     if (docTemplate) {
@@ -240,5 +257,6 @@ export const docTemplatesStore = {
     deleteDocumentTemplate,
     deleteBlockFromDocumentTemplate,
     duplicateDocumentTemplate,
+    importDocumentTemplates,
     duplicateBlockFromDocumentTemplate,
 };

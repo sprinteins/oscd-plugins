@@ -218,6 +218,12 @@ importers:
       '@smui/icon-button':
         specifier: ^7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.6.3)
+      '@smui/list':
+        specifier: ^7.0.0
+        version: 7.0.0(svelte@4.2.19)(typescript@5.6.3)
+      '@smui/menu':
+        specifier: ^7.0.0
+        version: 7.0.0(svelte@4.2.19)(typescript@5.6.3)
       '@smui/textfield':
         specifier: ^7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.6.3)
@@ -9628,7 +9634,7 @@ snapshots:
       '@material/list': 14.0.0
       '@smui/common': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/ripple': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
-      svelte2tsx: 0.7.30(svelte@3.59.2)(typescript@5.6.3)
+      svelte2tsx: 0.7.34(svelte@3.59.2)(typescript@5.6.3)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -9640,7 +9646,7 @@ snapshots:
       '@material/list': 14.0.0
       '@smui/common': 7.0.0(svelte@4.2.19)(typescript@5.6.3)
       '@smui/ripple': 7.0.0(svelte@4.2.19)(typescript@5.6.3)
-      svelte2tsx: 0.7.30(svelte@4.2.19)(typescript@5.6.3)
+      svelte2tsx: 0.7.34(svelte@4.2.19)(typescript@5.6.3)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -9684,7 +9690,7 @@ snapshots:
       '@smui/common': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/list': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/menu-surface': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
-      svelte2tsx: 0.7.30(svelte@3.59.2)(typescript@5.6.3)
+      svelte2tsx: 0.7.34(svelte@3.59.2)(typescript@5.6.3)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -9696,7 +9702,7 @@ snapshots:
       '@smui/common': 7.0.0(svelte@4.2.19)(typescript@5.6.3)
       '@smui/list': 7.0.0(svelte@4.2.19)(typescript@5.6.3)
       '@smui/menu-surface': 7.0.0(svelte@4.2.19)(typescript@5.6.3)
-      svelte2tsx: 0.7.30(svelte@4.2.19)(typescript@5.6.3)
+      svelte2tsx: 0.7.34(svelte@4.2.19)(typescript@5.6.3)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -9859,7 +9865,7 @@ snapshots:
       '@smui/common': 7.0.0-beta.8(svelte@3.59.2)(typescript@5.6.3)
       '@smui/floating-label': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/line-ripple': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
-      '@smui/list': 7.0.0-beta.8(svelte@3.59.2)(typescript@5.6.3)
+      '@smui/list': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/menu': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/menu-surface': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/notched-outline': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
@@ -14823,7 +14829,7 @@ snapshots:
       '@smui/layout-grid': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/line-ripple': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/linear-progress': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
-      '@smui/list': 7.0.0-beta.8(svelte@3.59.2)(typescript@5.6.3)
+      '@smui/list': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/menu': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/menu-surface': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
       '@smui/notched-outline': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
@@ -14957,6 +14963,20 @@ snapshots:
       dedent-js: 1.0.1
       pascal-case: 3.1.2
       svelte: 5.20.1
+      typescript: 5.6.3
+
+  svelte2tsx@0.7.34(svelte@3.59.2)(typescript@5.6.3):
+    dependencies:
+      dedent-js: 1.0.1
+      pascal-case: 3.1.2
+      svelte: 3.59.2
+      typescript: 5.6.3
+
+  svelte2tsx@0.7.34(svelte@4.2.19)(typescript@5.6.3):
+    dependencies:
+      dedent-js: 1.0.1
+      pascal-case: 3.1.2
+      svelte: 4.2.19
       typescript: 5.6.3
 
   svelte2tsx@0.7.34(svelte@5.20.1)(typescript@5.6.3):

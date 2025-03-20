@@ -22,6 +22,22 @@ function createAndDispatchActionEvent(parent: Element, element: Element, referen
 	});
 }
 
+function createMultipleAndDispatchActionEvent(parent: Element, elements: Element[], title: string) {
+	const creates = elements.map(element => ({
+		parent,
+		node: element,
+		reference: null
+	}));
+
+	createAndDispatchEditEvent({
+		host: get(pluginHostElement),
+		edit: creates,
+		options: {
+			title
+		}
+	});
+}
+
 function deleteAndDispatchActionEvent(element: Element) {
 	createAndDispatchEditEvent({
 		host: get(pluginHostElement), 
@@ -58,6 +74,7 @@ function updateAndDispatchActionEvent(element: Element, newAttributes: Record<st
 export const eventStore = {
 	//actions
 	createAndDispatchActionEvent,
+	createMultipleAndDispatchActionEvent,
 	updateAndDispatchActionEvent,
 	deleteAndDispatchActionEvent,
 	moveAndDispatchActionEvent
