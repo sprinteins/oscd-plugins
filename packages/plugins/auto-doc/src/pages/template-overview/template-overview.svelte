@@ -11,11 +11,10 @@
     import { onMount } from 'svelte';
     import {pdfGenerator} from '@/utils'
     import {getAutoDocElement} from '@/utils'
-      import { ROUTES } from "@/constants"
+    import { ROUTES } from "@/constants"
 
     let menu: Menu
     let fileSelector: FileSelector
-    let newTemplateId: string | null = ""
 
     let allTemplates: Element[] = []
     const emptyTitleOrDescription = "N/A"
