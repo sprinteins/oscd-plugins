@@ -1,7 +1,9 @@
 import { dialogStore } from '@oscd-plugins/core-ui-svelte'
-import { importElements } from './imported-type-crud-operation.helper'
+import { loadElements } from './imported-type-crud-operation.helper'
 // STORES
 import { importsStore } from '@/headless/stores'
+// COMPONENTS
+import ImportDialog from '@/ui/components/import/compas/import-dialog.svelte'
 // TYPES
 import type {
 	Columns,
@@ -13,6 +15,7 @@ export function loadFromCompas(
 ) {
 	importsStore.currentImportColumnKey = currentColumnKey
 	importsStore.lastImportSource = 'compas'
+	dialogStore.innerComponent = ImportDialog
 	dialogStore.openDialog()
 }
 
@@ -30,7 +33,7 @@ export async function loadFromLocal(
 		await file.text(),
 		'application/xml'
 	)
-	importElements()
+	loadElements()
 
 	if (importsStore.fileInput[currentColumnKey])
 		importsStore.fileInput[currentColumnKey].value = ''

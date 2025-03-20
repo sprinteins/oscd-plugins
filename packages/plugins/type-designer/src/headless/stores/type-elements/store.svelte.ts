@@ -11,7 +11,6 @@ import {
 import { getAndMapTypeElements } from './consolidate-types.helper'
 import {
 	createNewType,
-	createNewTypeBasedOnImport,
 	duplicateType,
 	deleteTypeAndRefs
 } from './type-crud-operation.helper'
@@ -110,12 +109,12 @@ class UseTypeElementsStore {
 				function: {
 					available: getFilteredTypeElementByIds(
 						this.filtersByColumns.functionType,
-						importsStore.importedTypeElementsPerFamily.function
+						importsStore.loadedTypeElementsPerFamily.function
 							.available
 					),
 					all: getFilteredTypeElementByIds(
 						this.filtersByColumns.functionType,
-						importsStore.importedTypeElementsPerFamily.function.all
+						importsStore.loadedTypeElementsPerFamily.function.all
 					)
 				}
 			}
@@ -132,12 +131,12 @@ class UseTypeElementsStore {
 				lNodeType: {
 					available: getFilteredTypeElementByIds(
 						this.filtersByColumns.lNodeType,
-						importsStore.importedTypeElementsPerFamily.lNodeType
+						importsStore.loadedTypeElementsPerFamily.lNodeType
 							.available
 					),
 					all: getFilteredTypeElementByIds(
 						this.filtersByColumns.lNodeType,
-						importsStore.importedTypeElementsPerFamily.lNodeType.all
+						importsStore.loadedTypeElementsPerFamily.lNodeType.all
 					)
 				}
 			}
@@ -148,7 +147,6 @@ class UseTypeElementsStore {
 
 	// type
 	createNewType = createNewType
-	createNewTypeBasedOnImport = createNewTypeBasedOnImport
 	duplicateType = duplicateType
 	deleteTypeAndRefs = deleteTypeAndRefs
 	// ref

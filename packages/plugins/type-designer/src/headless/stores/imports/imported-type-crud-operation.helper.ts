@@ -15,14 +15,14 @@ import type {
 
 //====== LOCAL HELPERS ======//
 
-function importFunction() {
-	importsStore.importedFunction.elementByIds = getAndMapTypeElements({
+function loadFunction() {
+	importsStore.loadedFunction.elementByIds = getAndMapTypeElements({
 		family: TYPE_FAMILY.function,
 		typeElements: importsStore.functionFromBayTemplateElements,
 		rootElement: importsStore.importedXmlDocument?.documentElement
 	})
 
-	importsStore.importedFunction.dependencies = getAndMapTypeElements({
+	importsStore.loadedFunction.dependencies = getAndMapTypeElements({
 		family: TYPE_FAMILY.lNodeType,
 		typeElements: importsStore.lNodeTypeElements,
 		rootElement: importsStore.importedXmlDocument?.documentElement
@@ -32,8 +32,8 @@ function importFunction() {
 	importsStore.isContainerOpen.lNodeType = true
 }
 
-function importLNodeType() {
-	importsStore.importedLNodeType = getAndMapTypeElements({
+function loadLNodeType() {
+	importsStore.loadedLNodeType = getAndMapTypeElements({
 		family: TYPE_FAMILY.lNodeType,
 		typeElements: importsStore.lNodeTypeElements,
 		rootElement: importsStore.importedXmlDocument?.documentElement
@@ -44,15 +44,13 @@ function importLNodeType() {
 
 //====== READ ======//
 
-export function importElements() {
+export function loadElements() {
 	const currentTypeFamily =
 		importsStore.currentImportColumnKey &&
 		COLUMN_KEY_TO_TYPE_FAMILY[importsStore.currentImportColumnKey]
 
-	if (currentTypeFamily === TYPE_FAMILY.function) importFunction()
-	if (currentTypeFamily === TYPE_FAMILY.lNodeType) importLNodeType()
-
-	importsStore.importedXmlDocument = undefined
+	if (currentTypeFamily === TYPE_FAMILY.function) loadFunction()
+	if (currentTypeFamily === TYPE_FAMILY.lNodeType) loadLNodeType()
 }
 
 export function getAvailableElementsToImport<
@@ -123,12 +121,12 @@ export function removeImportedElements(
 	const currentTypeFamily = COLUMN_KEY_TO_TYPE_FAMILY[currentColumnKey]
 
 	if (currentTypeFamily === TYPE_FAMILY.function) {
-		importsStore.importedFunction.elementByIds = {}
-		importsStore.importedFunction.dependencies = {}
+		importsStore.loadedFunction.elementByIds = {}
+		importsStore.loadedFunction.dependencies = {}
 		importsStore.isContainerOpen.functionType = false
 	}
 	if (currentTypeFamily === TYPE_FAMILY.lNodeType) {
-		importsStore.importedLNodeType = {}
+		importsStore.loadedLNodeType = {}
 		importsStore.isContainerOpen.lNodeType = false
 	}
 }

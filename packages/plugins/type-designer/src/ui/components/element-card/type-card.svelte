@@ -87,7 +87,10 @@ async function handleImport(event: Event) {
 			ALLOWED_IMPORTED_TYPE
 		)
 	)
-		await importsStore.addImportedElement(typeElementKey, typeElementFamily)
+		await importsStore.handleImportsAndFireDialogDecision(
+			typeElementKey,
+			typeElementFamily
+		)
 }
 </script>
 

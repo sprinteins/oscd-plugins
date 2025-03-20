@@ -48,11 +48,10 @@ function fireLoader() {
 
 async function handleImportAll() {
 	const currentTypeFamily = COLUMN_KEY_TO_TYPE_FAMILY[columnKey]
-	await importsStore.addAllImportedElements(currentTypeFamily)
+	await importsStore.handleAllImportsAndFireDialogDecision(currentTypeFamily)
 }
 </script>
 	
-
 	<Card.Root class="flex-1 flex flex-col p-2 -m-2 bg-background/50 rounded-none overflow-hidden h-full">
 		<Card.Header class="p-0 flex flex-row justify-between items-center mb-2 space-y-0">
 			<span class="px-2 truncate font-black">{importsStore.currentFilenameByColumnKey[columnKey]}</span>
@@ -80,5 +79,4 @@ async function handleImportAll() {
 				<Button.Root variant="ghost" size="sm" class="text-primary !my-0 w-full" onclick={fireLoader}>Select new file</Button.Root>
 			{/if}
 		</Card.Footer>
-		
 	</Card.Root>
