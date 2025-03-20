@@ -23,20 +23,19 @@ function createAndDispatchActionEvent(parent: Element, element: Element, referen
 }
 
 function createMultipleAndDispatchActionEvent(parent: Element, elements: Element[], title: string) {
-  // TODO: Edit api v3
 	const creates = elements.map(element => ({
-		new: {
-			parent,
-			element
+		parent,
+		node: element,
+		reference: null
+	}));
+
+	createAndDispatchEditEvent({
+		host: get(pluginHostElement),
+		edit: creates,
+		options: {
+			title
 		}
-	}))
-
-	const event = newActionEvent({
-		title,
-		actions: creates
-	})
-
-	get(pluginHostElement).dispatchEvent(event)
+	});
 }
 
 function deleteAndDispatchActionEvent(element: Element) {
