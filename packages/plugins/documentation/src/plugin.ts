@@ -19,6 +19,10 @@ export default class NewPlugin extends HTMLElement {
 		this.shadowRoot.appendChild(style)
 	}
 
+	disconnectedCallback() {
+		this.plugin.$destroy()
+	}
+
 	private _doc: XMLDocument
 	public set doc(newDoc: XMLDocument) {
 		this._doc = newDoc
