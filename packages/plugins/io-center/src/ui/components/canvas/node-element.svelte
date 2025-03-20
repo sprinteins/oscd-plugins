@@ -2,7 +2,11 @@
   import { NODE_ELEMENT_TYPE } from "@/headless/constants";
   import EditButton from "../common/edit-button.svelte";
   import EditLcDialog from "./edit-lc-dialog.svelte";
-  import type { LcTypes, NodeElement as NodeElementType } from "./types.canvas";
+  import type {
+    Connection,
+    LcTypes,
+    NodeElement as NodeElementType,
+  } from "./types.canvas";
   import Ports from "./ports.svelte";
   import { canvasStore } from "./canvas-store.svelte";
 
@@ -13,7 +17,13 @@
     leftPortsNumber?: number;
     rightPortsNumber?: number;
     startDrawing: (event: MouseEvent) => void;
-    stopDrawing: (node: string, side: string, index: number) => void;
+    stopDrawing: (
+      node: string,
+      side: string,
+      index: number,
+      addConnection: (connection: Connection) => void,
+    ) => void;
+    addConnection: (connection: Connection) => void;
     editLC?: (lcNode: NodeElementType, newType: LcTypes) => void;
     hasLNodeType?: (type: LcTypes) => boolean;
   };
@@ -26,6 +36,7 @@
     rightPortsNumber = 1,
     startDrawing,
     stopDrawing,
+    addConnection,
     editLC,
     hasLNodeType,
   }: Props = $props();
@@ -61,6 +72,7 @@
       {node}
       {startDrawing}
       {stopDrawing}
+      {addConnection}
       number={leftPortsNumber}
     />
   {/if}
@@ -75,6 +87,7 @@
       {node}
       {startDrawing}
       {stopDrawing}
+      {addConnection}
       number={rightPortsNumber}
     />
   {/if}

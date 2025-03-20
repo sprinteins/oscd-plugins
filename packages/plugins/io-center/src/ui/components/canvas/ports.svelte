@@ -1,15 +1,28 @@
 <script lang="ts">
-    import type { NodeElement } from "./types.canvas";
+    import type { Connection, NodeElement } from "./types.canvas";
 
     type Props = {
         side: "right" | "left";
         node: NodeElement;
         number: number;
         startDrawing: (event: MouseEvent) => void;
-        stopDrawing: (node: string, side: string, index: number) => void;
+        stopDrawing: (
+            node: string,
+            side: string,
+            index: number,
+            addConnection: (connection: Connection) => void,
+        ) => void;
+        addConnection: (connection: Connection) => void;
     };
 
-    let { side, node, startDrawing, number, stopDrawing }: Props = $props();
+    let {
+        side,
+        node,
+        startDrawing,
+        number,
+        stopDrawing,
+        addConnection,
+    }: Props = $props();
 </script>
 
 <div
@@ -26,7 +39,7 @@
                 startDrawing(event);
             }}
             onmouseup={() => {
-                stopDrawing(node.name, side, index);
+                stopDrawing(node.name, side, index, addConnection);
             }}
         ></div>
     {/each}

@@ -1,5 +1,6 @@
+import { store } from "@/store.svelte";
 import { canvasStore } from "@/ui/components/canvas/canvas-store.svelte";
-import type { ConnectionPoint } from "@/ui/components/canvas/types.canvas";
+import type { Connection, ConnectionPoint } from "@/ui/components/canvas/types.canvas";
 import type { TreeNode } from "@/ui/components/object-tree/types.object-tree";
 
 export function searchTree(tree: TreeNode[], searchTerm: string): TreeNode[] {
@@ -73,7 +74,7 @@ export function isSameSide(startSide: string, targetSide: string) {
 }
 
 export function connectionExists(fromNode: string, fromIndex: number, toNode: string, toIndex: number) {
-    return canvasStore.connections.some(
+    return store.connections.some(
         (connection) =>
             (connection.from.name === fromNode &&
                 connection.to.name === toNode) &&
@@ -86,7 +87,7 @@ export function connectionExists(fromNode: string, fromIndex: number, toNode: st
     );
 }
 
-export function stopDrawing(targetNode: string, targetSide: string, index: number) {
+export function stopDrawing(targetNode: string, targetSide: string, index: number, addConnection: (connection: Connection) => void) {
     const startCircle = canvasStore.lastStartPoint;
     canvasStore.lastStartPoint = null;
 
@@ -129,13 +130,17 @@ export function stopDrawing(targetNode: string, targetSide: string, index: numbe
         }
 
         if (startCircleIndex !== null && !connectionExists(fromNode, startCircleIndex, toNode, index)) {
-            canvasStore.connections = [
-                ...canvasStore.connections,
-                {
-                    id: `${fromNode}-${startCircleIndex}-${toNode}-${index}`,
-                    from: { name: fromNode, index: startCircleIndex },
-                    to: { name: toNode, index: index },
-                },
+            const connection = {
+                id: `${fromNode}-${startCircleIndex}-${toNode}-${index}`,
+                from: { name: fromNode, index: startCircleIndex },
+                to: { name: toNode, index: index },
+            }
+
+            addConnection(connection);
+
+            store.connections = [
+                ...store.connections,
+                connection,
             ];
         }
     }
@@ -196,5 +201,5 @@ export function getCirclePosition(target: EventTarget | null) {
 }
 
 export function redrawConnections() {
-    canvasStore.connections = [...canvasStore.connections];
+    store.connections = [...store.connections];
 }

@@ -3,8 +3,8 @@ import { store } from "./store.svelte"
 import type { Nullable } from "./types"
 import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
 import { createElement } from "./headless/stores/document-helpers.svelte"
-import type { LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
-import { L_NODE_TYPE_CONTENT } from "./headless/constants"
+import type { Connection, LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
+import { L_NODE_TYPE_CONTENT, LC_TYPE } from "./headless/constants"
 
 export class Command {
 	constructor(
@@ -227,6 +227,76 @@ export class Command {
 		const lnType = store.doc.querySelector(`DataTypeTemplates > LNodeType[lnClass="${type}"]`)
 
 		return Boolean(lnType)
+	}
+
+	public addConnection(connection: Connection) {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const host = this.requireHost()
+
+		const ied = this.requireSelectedIED()
+
+		const ld0 = this.ensureLD0(ied)
+
+		const [sourceLnClass, sourceInst] = connection.from.name.replace(/-left|-right/g, '').split('-')
+		const [destinationLnClass, destinationInst] = connection.to.name.replace(/-left|-right/g, '').split('-')
+
+		let connectionType: "input" | "output" = "input";
+
+
+		/* 	Explanation:
+			Two types of connections:
+				DO ---> LC (output)
+				LC ---> LP (input) */
+		if (Object.values(LC_TYPE).includes(destinationLnClass as LcTypes)) {
+			connectionType = "output";
+		}
+
+		const connectorLC = connectionType === "input"
+			? ld0.querySelector(`LN[lnClass="${sourceLnClass}"][inst="${sourceInst}"]`)
+			: ld0.querySelector(`LN[lnClass="${destinationLnClass}"][inst="${destinationInst}"]`)
+
+		if (!connectorLC) {
+			throw new Error('Connector LC LN not found!')
+		}
+
+		createElement({
+			host,
+			doc: store.doc,
+			tagName: "DOI",
+			attributes: {
+				/* name attribute will be added when the ports are named */
+				"desc": connectionType
+			},
+			parent: connectorLC,
+			reference: null
+		})
+
+		const doi = connectorLC.querySelector('DOI')
+
+		if (!doi) {
+			throw new Error('DOI not created!')
+		}
+
+		if (connectionType === "input") {
+			createElement({
+				host,
+				doc: store.doc,
+				tagName: "LNRef",
+				attributes: {
+					"refLDIn": "LD0",
+					"refLNClass": destinationLnClass,
+					"refLnInst": destinationInst,
+					/* refDO will be set to the port name once that issue is done */
+				},
+				parent: doi,
+				reference: null
+			})
+		}
+
+		if (connectionType === "output") {
+			/* To be implemented */
+		}
 	}
 
 	private requireSelectedIED(): Element {

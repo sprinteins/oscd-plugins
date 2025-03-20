@@ -13,6 +13,7 @@
 	import AddLCDialog from "./add-lc-dialog.svelte";
 	import { store } from "../../../store.svelte";
 	import type {
+    Connection,
 		LcTypes,
 		NodeElement as NodeElementType,
 	} from "./types.canvas";
@@ -21,9 +22,10 @@
 		onAddLC: (type: LcTypes, number?: number) => void;
 		editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
 		hasLNodeType: (type: LcTypes) => boolean;
+		addConnection: (connection: Connection) => void;
 	};
 
-	const { onAddLC, editLC, hasLNodeType }: Props = $props();
+	const { onAddLC, editLC, hasLNodeType, addConnection }: Props = $props();
 
 	let isDialogOpen = $state(false);
 </script>
@@ -47,6 +49,7 @@
 				showRightCircle={true}
 				{startDrawing}
 				{stopDrawing}
+				{addConnection}
 			/>
 		{/each}
 	</div>
@@ -75,6 +78,7 @@
 				rightPortsNumber={3}
 				{startDrawing}
 				{stopDrawing}
+				{addConnection}
 				{editLC}
 				{hasLNodeType}
 			/>
@@ -95,6 +99,7 @@
 				showRightCircle={false}
 				{startDrawing}
 				{stopDrawing}
+				{addConnection}
 			/>
 		{/each}
 	</div>
@@ -104,7 +109,7 @@
 	class="absolute top-0 left-0 w-full h-full pointer-events-none"
 	bind:this={canvasStore.svgElement}
 >
-	{#each canvasStore.connections as connection (connection.id)}
+	{#each store.connections as connection (connection.id)}
 		<path
 			class="stroke-black stroke-2 fill-none"
 			d={`M ${getCoordinates(connection.from).x},${getCoordinates(connection.from).y} 
