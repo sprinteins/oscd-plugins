@@ -1,4 +1,3 @@
-import { unmount } from 'svelte'
 import Plugin from './plugin.svelte'
 import * as pkg from '../package.json'
 
@@ -21,7 +20,7 @@ export default class NewPlugin extends HTMLElement {
 	}
 
 	disconnectedCallback() {
-		unmount(this.plugin)
+		this.plugin.$destroy()
 	}
 
 	private _doc: XMLDocument
