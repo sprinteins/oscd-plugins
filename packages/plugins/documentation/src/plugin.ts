@@ -1,3 +1,4 @@
+import { unmount } from 'svelte'
 import Plugin from './plugin.svelte'
 import * as pkg from '../package.json'
 
@@ -17,6 +18,10 @@ export default class NewPlugin extends HTMLElement {
 		const style = document.createElement('style')
 		style.innerHTML = globalThis.pluginStyle[pkg.name]
 		this.shadowRoot.appendChild(style)
+	}
+
+	disconnectedCallback() {
+		unmount(this.plugin)
 	}
 
 	private _doc: XMLDocument
