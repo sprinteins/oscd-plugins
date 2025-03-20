@@ -1,4 +1,5 @@
 import { canvasStore } from "@/ui/components/canvas/canvas-store.svelte";
+import type { ConnectionPoint } from "@/ui/components/canvas/types.canvas";
 import type { TreeNode } from "@/ui/components/object-tree/types.object-tree";
 
 export function searchTree(tree: TreeNode[], searchTerm: string): TreeNode[] {
@@ -66,22 +67,26 @@ export function isWrongColumn(node1: string, node2: string) {
 
 export function isSameSide(startSide: string, targetSide: string) {
     return (
-        (startSide === "left-circle" && targetSide === "left") ||
-        (startSide === "right-circle" && targetSide === "right")
+        (startSide.includes("left-circle") && targetSide.includes("left")) ||
+        (startSide.includes("right-circle") && targetSide.includes("right"))
     );
 }
 
-export function connectionExists(fromNode: string, toNode: string) {
+export function connectionExists(fromNode: string, fromIndex: number, toNode: string, toIndex: number) {
     return canvasStore.connections.some(
         (connection) =>
-            (connection.from === fromNode &&
-                connection.to === toNode) ||
-            (connection.from === toNode &&
-                connection.to === fromNode),
+            (connection.from.name === fromNode &&
+                connection.to.name === toNode) &&
+            (connection.from.index === fromIndex &&
+                connection.to.index === toIndex) ||
+            (connection.from.name === toNode &&
+                connection.to.name === fromNode) &&
+            (connection.from.index === toIndex &&
+                connection.to.index === fromIndex),
     );
 }
 
-export function stopDrawing(targetNode: string, targetSide: string) {
+export function stopDrawing(targetNode: string, targetSide: string, index: number) {
     const startCircle = canvasStore.lastStartPoint;
     canvasStore.lastStartPoint = null;
 
@@ -117,35 +122,39 @@ export function stopDrawing(targetNode: string, targetSide: string) {
             [fromNode, toNode] = [toNode, fromNode];
         }
 
-        if (!connectionExists(fromNode, toNode)) {
+        let startCircleIndex = null
+
+        if (startCircle instanceof HTMLElement) {
+            startCircleIndex = Number.parseInt(startCircle.id.split("-")[2]);
+        }
+
+        if (startCircleIndex !== null && !connectionExists(fromNode, startCircleIndex, toNode, index)) {
             canvasStore.connections = [
                 ...canvasStore.connections,
                 {
-                    id: `${fromNode}-${toNode}`,
-                    from: fromNode,
-                    to: toNode,
+                    id: `${fromNode}-${startCircleIndex}-${toNode}-${index}`,
+                    from: { name: fromNode, index: startCircleIndex },
+                    to: { name: toNode, index: index },
                 },
             ];
         }
     }
 }
 
-export function getCoordinates(connectionPoint: string) {
+export function getCoordinates(connectionPoint: ConnectionPoint) {
     if (!canvasStore.svgElement || !canvasStore.container) {
         return { x: 0, y: 0 };
     }
+
     const target = canvasStore.container.querySelector(
-        `[data-title="${connectionPoint}"]`,
+        `[data-title="${connectionPoint.name}"]`,
     ) as HTMLElement | null;
 
     if (!target) {
         return { x: 0, y: 0 };
     }
 
-    const circle = target.querySelector(
-        connectionPoint.includes("left") ? "#left-circle" : "#right-circle",
-    );
-
+    const circle = target.querySelector(`#${connectionPoint.name.includes("left") ? "left" : "right"}-circle-${connectionPoint.index}`);
 
     if (!circle) {
         return { x: 0, y: 0 };

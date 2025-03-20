@@ -1,10 +1,14 @@
 import type { LC_TYPE, NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants"
 
+export type ConnectionPoint = {
+	index: number
+	name: string
+}
 
 export type Connection = {
 	id: string
-	from: string
-	to: string
+	from: ConnectionPoint
+	to: ConnectionPoint
 }
 
 export type NodeElementType = keyof typeof NODE_ELEMENT_TYPE

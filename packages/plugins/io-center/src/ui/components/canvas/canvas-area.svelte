@@ -71,6 +71,8 @@
 				{node}
 				showLeftCircle={true}
 				showRightCircle={true}
+				leftPortsNumber={3}
+				rightPortsNumber={3}
 				{startDrawing}
 				{stopDrawing}
 				{editLC}
@@ -89,6 +91,7 @@
 			<NodeElement
 				{node}
 				showLeftCircle={true}
+				leftPortsNumber={2}
 				showRightCircle={false}
 				{startDrawing}
 				{stopDrawing}

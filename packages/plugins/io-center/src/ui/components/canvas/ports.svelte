@@ -4,29 +4,32 @@
     type Props = {
         side: "right" | "left";
         node: NodeElement;
+        number: number;
         startDrawing: (event: MouseEvent) => void;
-        stopDrawing: (node: string, side: string) => void;
+        stopDrawing: (node: string, side: string, index: number) => void;
     };
 
-    let { side, node, startDrawing, stopDrawing }: Props = $props();
+    let { side, node, startDrawing, number, stopDrawing }: Props = $props();
 </script>
 
 <div
     data-title={`${node.name}-${side}`}
     class={`container absolute ${side}-0 top-1/2 transform -translate-y-1/2 ${side === "left" ? "-" : ""}translate-x-1/2`}
 >
-    <div
-        role="button"
-        tabindex="-1"
-        id={`${side}-circle`}
-        class={`bg-white border border-black w-2 h-2 rounded-full`}
-        onmousedown={(event) => {
-            startDrawing(event);
-        }}
-        onmouseup={() => {
-            stopDrawing(node.name, side);
-        }}
-    ></div>
+    {#each Array.from({ length: number }) as _, index}
+        <div
+            role="button"
+            tabindex="-1"
+            id={`${side}-circle-${index}`}
+            class={`bg-white border border-black w-2 h-2 rounded-full`}
+            onmousedown={(event) => {
+                startDrawing(event);
+            }}
+            onmouseup={() => {
+                stopDrawing(node.name, side, index);
+            }}
+        ></div>
+    {/each}
 </div>
 
 <style lang="scss">

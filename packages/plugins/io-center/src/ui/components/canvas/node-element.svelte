@@ -4,14 +4,16 @@
   import EditLcDialog from "./edit-lc-dialog.svelte";
   import type { LcTypes, NodeElement as NodeElementType } from "./types.canvas";
   import Ports from "./ports.svelte";
-    import { canvasStore } from "./canvas-store.svelte";
+  import { canvasStore } from "./canvas-store.svelte";
 
   type Props = {
     node: NodeElementType;
     showLeftCircle: boolean;
     showRightCircle: boolean;
+    leftPortsNumber?: number;
+    rightPortsNumber?: number;
     startDrawing: (event: MouseEvent) => void;
-    stopDrawing: (node: string, side: string) => void;
+    stopDrawing: (node: string, side: string, index: number) => void;
     editLC?: (lcNode: NodeElementType, newType: LcTypes) => void;
     hasLNodeType?: (type: LcTypes) => boolean;
   };
@@ -20,6 +22,8 @@
     node,
     showLeftCircle,
     showRightCircle,
+    leftPortsNumber = 1,
+    rightPortsNumber = 1,
     startDrawing,
     stopDrawing,
     editLC,
@@ -34,6 +38,7 @@
   }
 </script>
 
+<!-- Disabled edit button for now, might be enabled later. -->
 <!-- {#if isSelected && node.type === NODE_ELEMENT_TYPE.LC && editLC}
   <EditButton onclick={() => (showEditDialog = true)}/>
   <EditLcDialog
@@ -51,7 +56,13 @@
   onclick={handleSelect}
 >
   {#if showLeftCircle}
-    <Ports side="left" {node} {startDrawing} {stopDrawing} />
+    <Ports
+      side="left"
+      {node}
+      {startDrawing}
+      {stopDrawing}
+      number={leftPortsNumber}
+    />
   {/if}
 
   <div class="flex-1 text-center p-4">
@@ -59,7 +70,13 @@
   </div>
 
   {#if showRightCircle}
-    <Ports side="right" {node} {startDrawing} {stopDrawing} />
+    <Ports
+      side="right"
+      {node}
+      {startDrawing}
+      {stopDrawing}
+      number={rightPortsNumber}
+    />
   {/if}
 </button>
 
