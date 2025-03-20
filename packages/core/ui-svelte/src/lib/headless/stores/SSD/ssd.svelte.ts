@@ -63,6 +63,14 @@ class UseSsdStore {
 		}
 	})
 
+	hasTemplateWrapper = $derived(
+		!!(
+			this.substationTemplateElement &&
+			this.voltageLevelTemplateElement &&
+			this.bayTemplateElement
+		)
+	)
+
 	//====== METHODS ======//
 
 	getTemplateElement<Family extends 'substation' | 'voltageLevel' | 'bay'>(
