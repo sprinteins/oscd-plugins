@@ -1,36 +1,50 @@
 <script lang="ts">
-	import { LC_TYPE } from "@/headless/constants";
+	import { L_NODE_TYPE_HELPER_TEXT, LC_TYPE } from "@/headless/constants";
 	import Input from "../common/input.svelte";
 	import Select from "../common/select.svelte";
-	import type { FormData, LcTypes } from "./types.canvas";
+	import type { AddLCFormData, LcTypes } from "./types.canvas";
 
 	type Props = {
 		isOpen: boolean;
 		addLc: (type: LcTypes, number?: number) => void;
+		hasLNodeType: (type: LcTypes) => boolean;
 	};
 
-	let { isOpen = $bindable(), addLc }: Props = $props();
+	let { isOpen = $bindable(), addLc, hasLNodeType }: Props = $props();
 
-	let formData = $state<FormData>({
-		type: LC_TYPE.LCBI,
+	let formData = $state<AddLCFormData>({
+		type: "",
+		number: undefined,
+		numberOfLCIVPorts: undefined,
+	});
+
+	const typePresentInDoc = $derived.by(() => {
+		if (!formData.type) {
+			return;
+		}
+		return hasLNodeType(formData.type);
 	});
 
 	function handleCancel() {
-		formData = {
-			type: LC_TYPE.LCBI,
-		};
+		formData.type = "";
 
 		isOpen = false;
 	}
 
 	function handleSubmit() {
+		if (!formData.type) return;
+
 		addLc(formData.type, formData.number);
 
-		formData = {
-			type: LC_TYPE.LCBI,
-		};
+		formData.type = "";
 
 		isOpen = false;
+	}
+
+	function getHelperText() {
+		return formData.type && !typePresentInDoc
+			? `⚠︎ Missing ${formData.type} LNodeType`
+			: undefined;
 	}
 </script>
 
@@ -41,15 +55,17 @@
 				bind:value={formData.type}
 				label="LC Type"
 				options={Object.values(LC_TYPE)}
+				helperText={getHelperText()}
+				helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
 			/>
 			<Input
 				bind:value={formData.number}
-				label="LP Number"
+				label="LC Number"
 				type="number"
 			/>
 			{#if formData.type === LC_TYPE.LCIV}
 				<Input
-					bind:value={formData.nbOfLCIVPorts}
+					bind:value={formData.numberOfLCIVPorts}
 					label="Number of Ports"
 					type="number"
 				/>
