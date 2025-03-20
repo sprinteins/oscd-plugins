@@ -1,17 +1,29 @@
+// CORE
+import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
+import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
-import { TYPE_FAMILY, COLUMN_KEY_TO_TYPE_FAMILY } from '@/headless/constants'
+import {
+	TYPE_FAMILY,
+	COLUMN_KEY_TO_TYPE_FAMILY,
+	ALLOWED_USER_DECISIONS
+} from '@/headless/constants'
 // HELPERS
 import { getAndMapTypeElements } from '../type-elements/consolidate-types.helper'
-import { createNewTypeBasedOnImport } from '../type-elements/type-crud-operation.helper'
-import { addImportedChildElements } from './imported-refs-crud-operation.helper'
+import { handleImportOfAnyElement } from './imported-tree-handler.helper'
 // STORES
 import { importsStore, typeElementsStore } from '@/headless/stores'
+// COMPONENTS
+import UpdateConfirmationDialog from '@/ui/components/import/update-confirmation-dialog.svelte'
 // TYPES
 import type {
 	TypeElementByIds,
 	AvailableColumnsWhereImportIsAllowed,
-	AvailableImportedTypeFamily
+	AvailableImportedTypeFamily,
+	UserDecision,
+	EditEvent,
+	RemoveEvent
 } from '@/headless/stores'
+import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
 
 //====== LOCAL HELPERS ======//
 
@@ -84,33 +96,71 @@ export function getAvailableElementsToImport<
 
 //====== CREATE ======//
 
-export async function addImportedElement(
+function addImportedType(params: { forceCreate: boolean }) {
+	const host = pluginGlobalStore.host
+	if (!host) throw new Error('Host is not defined')
+
+	const flattenedActions: (EditEvent | RemoveEvent)[] = []
+	for (const [editEvent, removeEvent] of importsStore.currentImportActions) {
+		flattenedActions.push(editEvent)
+		if (!params.forceCreate && removeEvent)
+			flattenedActions.push(removeEvent)
+	}
+
+	createAndDispatchEditEvent({
+		host,
+		edit: flattenedActions
+	})
+
+	importsStore.currentImportActionsByElementIds = []
+}
+
+function handleUserDecision(decision: UserDecision) {
+	return {
+		proceed: () => addImportedType({ forceCreate: false }),
+		forceCreate: () => addImportedType({ forceCreate: true }),
+		cancel: () => {
+			importsStore.currentImportActionsByElementIds = []
+		}
+	}[decision]()
+}
+
+async function fireUserDecisionDialog() {
+	dialogStore.innerComponent = UpdateConfirmationDialog
+	const decision = await dialogStore.openDialog()
+
+	if (
+		decision &&
+		typeGuard.isTuplesIncludingString(decision, ALLOWED_USER_DECISIONS)
+	)
+		handleUserDecision(decision)
+}
+
+export async function handleImportsAndFireDialogDecision(
 	typeElementKey: string,
 	typeElementFamily: AvailableImportedTypeFamily
 ) {
-	const { element } =
-		importsStore.importedTypeElementsPerFamily[typeElementFamily].available[
+	const { element: currentImportedRootElement } =
+		importsStore.loadedTypeElementsPerFamily[typeElementFamily].available[
 			typeElementKey
 		]
 
-	const childElementsToAdd = Array.from(element.children)
-	if (childElementsToAdd.length)
-		await addImportedChildElements(childElementsToAdd)
-
-	await createNewTypeBasedOnImport({
-		typeElementFamily,
-		elementToAdd: element
-	})
+	await handleImportOfAnyElement(currentImportedRootElement)
+	await fireUserDecisionDialog()
 }
 
-export async function addAllImportedElements(
+export async function handleAllImportsAndFireDialogDecision(
 	typeElementFamily: AvailableImportedTypeFamily
 ) {
-	for (const importedTypeElementKey of Object.keys(
-		importsStore.importedTypeElementsPerFamily[typeElementFamily].available
+	for (const loadedTypeElementKey of Object.keys(
+		importsStore.loadedTypeElementsPerFamily[typeElementFamily].available
 	)) {
-		await addImportedElement(importedTypeElementKey, typeElementFamily)
+		const { element: currentImportedRootElement } =
+			importsStore.loadedTypeElementsPerFamily[typeElementFamily]
+				.available[loadedTypeElementKey]
+		await handleImportOfAnyElement(currentImportedRootElement)
 	}
+	await fireUserDecisionDialog()
 }
 
 //====== DELETE ======//
