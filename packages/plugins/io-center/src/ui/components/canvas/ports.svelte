@@ -1,15 +1,20 @@
 <script lang="ts">
-    import type { Connection, NodeElement } from "./types.canvas";
+    import type {
+        Connection,
+        NodeElement,
+        NodeElementType,
+    } from "./types.canvas";
 
     type Props = {
         side: "right" | "left";
         node: NodeElement;
         number: number;
-        startDrawing: (event: MouseEvent) => void;
+        startDrawing: (event: MouseEvent, type: NodeElementType) => void;
         stopDrawing: (
             node: string,
             side: string,
             index: number,
+            type: NodeElementType,
             addConnection: (connection: Connection) => void,
         ) => void;
         addConnection: (connection: Connection) => void;
@@ -36,10 +41,10 @@
             id={`${side}-circle-${index}`}
             class={`bg-white border border-black w-2 h-2 rounded-full`}
             onmousedown={(event) => {
-                startDrawing(event);
+                startDrawing(event, node.type);
             }}
             onmouseup={() => {
-                stopDrawing(node.name, side, index, addConnection);
+                stopDrawing(node.name, side, index, node.type, addConnection);
             }}
         ></div>
     {/each}

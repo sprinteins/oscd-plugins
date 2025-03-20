@@ -1,6 +1,6 @@
 import { store } from "@/store.svelte";
 import { canvasStore } from "@/ui/components/canvas/canvas-store.svelte";
-import type { Connection, ConnectionPoint } from "@/ui/components/canvas/types.canvas";
+import type { Connection, ConnectionPoint, NodeElementType } from "@/ui/components/canvas/types.canvas";
 import type { TreeNode } from "@/ui/components/object-tree/types.object-tree";
 
 export function searchTree(tree: TreeNode[], searchTerm: string): TreeNode[] {
@@ -20,7 +20,7 @@ export function searchTree(tree: TreeNode[], searchTerm: string): TreeNode[] {
         .filter(node => node !== null);
 }
 
-export function startDrawing(event: MouseEvent) {
+export function startDrawing(event: MouseEvent, type: NodeElementType) {
     event.preventDefault();
     if (!event.target || !event.currentTarget) {
         return;
@@ -31,6 +31,7 @@ export function startDrawing(event: MouseEvent) {
         return;
     }
     canvasStore.startNode = currentTarget.parentElement.getAttribute("data-title");
+    canvasStore.startNodeType = type
 }
 
 export function isWrongColumn(node1: string, node2: string) {
@@ -87,9 +88,11 @@ export function connectionExists(fromNode: string, fromIndex: number, toNode: st
     );
 }
 
-export function stopDrawing(targetNode: string, targetSide: string, index: number, addConnection: (connection: Connection) => void) {
+export function stopDrawing(targetNode: string, targetSide: string, index: number, type: NodeElementType, addConnection: (connection: Connection) => void) {
     const startCircle = canvasStore.lastStartPoint;
+    const startNodeType = canvasStore.startNodeType;
     canvasStore.lastStartPoint = null;
+    canvasStore.startNodeType = null;
 
     if (!canvasStore.container) {
         return;
@@ -129,11 +132,11 @@ export function stopDrawing(targetNode: string, targetSide: string, index: numbe
             startCircleIndex = Number.parseInt(startCircle.id.split("-")[2]);
         }
 
-        if (startCircleIndex !== null && !connectionExists(fromNode, startCircleIndex, toNode, index)) {
+        if (startCircleIndex !== null && startNodeType && !connectionExists(fromNode, startCircleIndex, toNode, index)) {
             const connection = {
                 id: `${fromNode}-${startCircleIndex}-${toNode}-${index}`,
-                from: { name: fromNode, index: startCircleIndex },
-                to: { name: toNode, index: index },
+                from: { name: fromNode, index: startCircleIndex, type: startNodeType },
+                to: { name: toNode, index: index, type: type },
             }
 
             addConnection(connection);

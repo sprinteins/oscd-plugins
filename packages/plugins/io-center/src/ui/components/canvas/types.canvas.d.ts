@@ -3,6 +3,7 @@ import type { LC_TYPE, NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants
 export type ConnectionPoint = {
 	index: number
 	name: string
+	type: NodeElementType
 }
 
 export type Connection = {

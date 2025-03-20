@@ -6,6 +6,7 @@
     Connection,
     LcTypes,
     NodeElement as NodeElementType,
+    NodeElementType as NodeElementClass,
   } from "./types.canvas";
   import Ports from "./ports.svelte";
   import { canvasStore } from "./canvas-store.svelte";
@@ -16,11 +17,12 @@
     showRightCircle: boolean;
     leftPortsNumber?: number;
     rightPortsNumber?: number;
-    startDrawing: (event: MouseEvent) => void;
+    startDrawing: (event: MouseEvent, type: NodeElementClass) => void;
     stopDrawing: (
       node: string,
       side: string,
       index: number,
+      type: NodeElementClass,
       addConnection: (connection: Connection) => void,
     ) => void;
     addConnection: (connection: Connection) => void;
