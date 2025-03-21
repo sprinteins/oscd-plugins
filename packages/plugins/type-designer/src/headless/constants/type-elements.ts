@@ -32,15 +32,15 @@ export const TYPE_ID_ATTRIBUTE = {
 	[TYPE_FAMILY.conductingEquipment]: 'uuid',
 	[TYPE_FAMILY.function]: 'uuid',
 	[TYPE_FAMILY.lNodeType]: 'id'
-}
+} as const
 
-export const REF_ID_TO_TYPE_ID_ATTRIBUTE = {
+export const REF_FAMILY_TO_TYPE_ID_ATTRIBUTE = {
 	[REF_FAMILY.generalEquipment]: 'templateUuid',
 	[REF_FAMILY.conductingEquipment]: 'templateUuid',
 	[REF_FAMILY.function]: 'templateUuid',
 	[REF_FAMILY.eqFunction]: 'templateUuid',
 	[REF_FAMILY.lNode]: 'lnType'
-}
+} as const
 
 // COLUMNS
 
@@ -74,6 +74,12 @@ export const ALLOWED_IMPORTED_REF = [
 export const ALLOWED_IMPORT_FUNCTIONALITY_BY_COLUMNS = [
 	COLUMNS.functionType,
 	COLUMNS.lNodeType
+] as const
+
+export const ALLOWED_USER_DECISIONS = [
+	'proceed',
+	'forceCreate',
+	'cancel'
 ] as const
 
 //====== MAPPERS ======//

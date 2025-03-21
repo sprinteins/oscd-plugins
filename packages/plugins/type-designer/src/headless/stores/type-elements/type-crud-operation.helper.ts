@@ -10,10 +10,7 @@ import { pluginGlobalStore, ssdStore } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
 // HELPERS
-import {
-	getNewNameWithOccurrence,
-	getElementsWithSameNameBase
-} from '@/headless/stores/type-elements/type-naming.helper'
+import { getNewNameWithOccurrence } from '@/headless/stores/type-elements/type-naming.helper'
 // CONSTANTS
 import {
 	CONDUCTING_EQUIPMENTS,
@@ -21,10 +18,7 @@ import {
 	EQUIPMENTS
 } from '@/headless/constants'
 // TYPES
-import type {
-	AvailableImportedTypeFamily,
-	AvailableTypeFamily
-} from '@/headless/stores'
+import type { AvailableTypeFamily } from '@/headless/stores'
 
 //====== LOCAL HELPERS ======//
 
@@ -101,7 +95,7 @@ function getTypeChildren(
 	return Array.from({ length: childOccurrence }, () => childTemplate)
 }
 
-function getTypeParent(family: AvailableTypeFamily) {
+export function getTypeParent(family: AvailableTypeFamily) {
 	return {
 		[TYPE_FAMILY.bay]: () => ssdStore.voltageLevelTemplateElement,
 		[TYPE_FAMILY.generalEquipment]: () => ssdStore.bayTemplateElement,
@@ -112,7 +106,7 @@ function getTypeParent(family: AvailableTypeFamily) {
 	}[family]()
 }
 
-function getTypeInsertBeforeReference(
+export function getTypeInsertBeforeReference(
 	family: AvailableTypeFamily
 ): Element | null {
 	return {
@@ -128,58 +122,6 @@ function getTypeInsertBeforeReference(
 		[TYPE_FAMILY.function]: () => null,
 		[TYPE_FAMILY.lNodeType]: () => null
 	}[family]()
-}
-
-/**
- * BUSINESS RULES: ~ refers to revision 90-30 page 182
- * This function follow the definition in terms of uuid attributes
- * The use case is not really covered : we are importing templates into templates
- * originUuid attribute is created to keep track of the original template
- * only if the element does not have an originUuid attribute (coming from another import)
- * @param element
- * @returns
- */
-function setUuidAttributes(element: Element) {
-	const uuid = element.getAttribute('uuid')
-	const templateUuid = element.getAttribute('templateUuid')
-	const originUuid = element.getAttributeNS(
-		pluginLocalStore.namespaces.currentUnstableRevision.uri,
-		'originUuid'
-	)
-
-	if (!originUuid && uuid)
-		element.setAttributeNS(
-			pluginLocalStore.namespaces.currentUnstableRevision.uri,
-			'originUuid',
-			templateUuid || uuid
-		)
-	element.setAttribute('uuid', uuidv4())
-
-	return element
-}
-
-function setNameAttribute(family: AvailableTypeFamily, element: Element) {
-	if (family === TYPE_FAMILY.lNodeType) return
-	let elementsWithSameName = []
-
-	const currentName = element.getAttribute('name')
-
-	if (currentName)
-		elementsWithSameName = getElementsWithSameNameBase({
-			family,
-			valueToTest: currentName,
-			removeOccurrencePartToTestedValue: false
-		})
-
-	if (elementsWithSameName.length === 0) return
-
-	const newName = getNewNameWithOccurrence({
-		element,
-		family,
-		suffix: 'Imported',
-		skipFirstOccurrence: true
-	})
-	return element.setAttribute('name', newName)
 }
 
 //====== CREATE ======//
@@ -248,36 +190,6 @@ export async function createNewType(params: {
 			parent,
 			node: newTypeElement,
 			reference: getTypeInsertBeforeReference(params.family)
-		}
-	})
-}
-
-export async function createNewTypeBasedOnImport(params: {
-	typeElementFamily: AvailableImportedTypeFamily
-	elementToAdd: Element
-}) {
-	if (!pluginGlobalStore.host) throw new Error('No host')
-
-	pluginLocalStore.updateSCLVersion()
-	pluginLocalStore.addUnstableNamespaceToRootElement()
-	await ssdStore.createTemplateWrapper()
-
-	setNameAttribute(params.typeElementFamily, params.elementToAdd)
-	const elementWithUuidAttributes = setUuidAttributes(params.elementToAdd)
-	if (params.typeElementFamily !== TYPE_FAMILY.lNodeType)
-		for (const child of Array.from(elementWithUuidAttributes.children)) {
-			setUuidAttributes(child)
-		}
-
-	const parent = getTypeParent(params.typeElementFamily)
-	if (!parent) throw new Error('No parent element available for the new type')
-
-	createAndDispatchEditEvent({
-		host: pluginGlobalStore.host,
-		edit: {
-			parent,
-			node: params.elementToAdd,
-			reference: getTypeInsertBeforeReference(params.typeElementFamily)
 		}
 	})
 }

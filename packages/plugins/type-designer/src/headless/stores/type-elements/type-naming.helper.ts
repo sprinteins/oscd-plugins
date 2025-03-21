@@ -9,12 +9,12 @@ import type { AvailableTypeFamily, TypeElement } from '@/headless/stores'
  *
  * @param params - The parameters for generating the new name.
  * @param params.elementToClone - The element to clone and generate a new name for.
- * @param params.family - The family type of the element, excluding 'lNodeType'.
+ * @param params.family - The family type of the element.
  * @returns The new name with an occurrence number appended.
  */
 export function getNewNameWithOccurrence(params: {
 	element: Element
-	family: AvailableTypeFamily
+	family?: AvailableTypeFamily
 	suffix: string
 	skipFirstOccurrence?: boolean
 }) {
@@ -57,7 +57,7 @@ export function getNewNameWithOccurrence(params: {
  * @returns The next occurrence number for a type element with the same name base.
  */
 export function getTypeNextOccurrence(params: {
-	family: AvailableTypeFamily
+	family?: AvailableTypeFamily
 	valueToTest: string
 	removeOccurrencePartToTestedValue: boolean
 }): number {
@@ -72,19 +72,28 @@ export function getTypeNextOccurrence(params: {
  * Retrieves elements with the same name base.
  *
  * @param params - The parameters for the function.
- * @param params.family - The family of the type element, excluding 'lNodeType'.
+ * @param params.family - The family of the type element
  * @param params.valueToTest - The value to test against existing type elements.
  * @param params.removeOccurrencePartToTestedValue - A boolean indicating whether to remove the occurrence part from the tested value.
  * @returns An array of type elements with the same name base.
  */
 export function getElementsWithSameNameBase(params: {
-	family: AvailableTypeFamily
+	family?: AvailableTypeFamily
 	valueToTest: string
 	removeOccurrencePartToTestedValue: boolean
-}): TypeElement<typeof params.family>[] {
-	return Object.values(
-		typeElementsStore.typeElementsPerFamily[params.family]
-	).filter((typeElement) => {
+}) {
+	let elementsToFilter: TypeElement<AvailableTypeFamily>[] = []
+
+	if (params.family)
+		elementsToFilter = Object.values(
+			typeElementsStore.typeElementsPerFamily[params.family]
+		)
+	else
+		elementsToFilter = Object.values(
+			typeElementsStore.typeElementsPerFamily
+		).flatMap((typeElements) => Object.values(typeElements))
+
+	return elementsToFilter.filter((typeElement) => {
 		if (params.removeOccurrencePartToTestedValue) {
 			const numberOfCharactersToRemove =
 				getNumberOfCharactersToRemoveOccurrencePart({

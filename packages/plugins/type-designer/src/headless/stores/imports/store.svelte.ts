@@ -4,10 +4,10 @@ import { findAllStandardElementsBySelector } from '@oscd-plugins/core-api/plugin
 import { TYPE_FAMILY, COLUMNS } from '@/headless/constants'
 // HELPERS
 import {
-	importElements,
+	loadElements,
 	getAvailableElementsToImport,
-	addImportedElement,
-	addAllImportedElements,
+	handleImportsAndFireDialogDecision,
+	handleAllImportsAndFireDialogDecision,
 	removeImportedElements
 } from './imported-type-crud-operation.helper'
 import { loadFromCompas, loadFromLocal } from './load-file.helper'
@@ -16,12 +16,52 @@ import type {
 	TypeElementByIds,
 	AvailableColumnsWhereImportIsAllowed
 } from '@/headless/stores'
+import type { EditEvent, RemoveEvent } from './types'
 
 class UseImportsStore {
 	//====== STATES ======//
 
 	importedXmlDocument = $state<XMLDocument>()
 	currentImportColumnKey = $state<AvailableColumnsWhereImportIsAllowed>()
+
+	currentImportActionsByElementIds = $state<
+		Record<string, [EditEvent, RemoveEvent | undefined]>[]
+	>([])
+
+	currentImportActions = $derived(
+		this.currentImportActionsByElementIds.flatMap(
+			(currentImportActionByElementIds) =>
+				Object.values(currentImportActionByElementIds)
+		)
+	)
+
+	currentImportedElementGroupedByActions = $derived.by(() => {
+		return this.currentImportActionsByElementIds.reduce(
+			(groupedActions, currentImportActionByElementIds) => {
+				for (const [
+					elementId,
+					[editEvent, removeEvent]
+				] of Object.entries(currentImportActionByElementIds)) {
+					const elementTagName = editEvent.node.tagName
+					const elementNameOrId =
+						editEvent.node.getAttribute('name') || elementId
+
+					const fullLabel = `${elementTagName} - ${elementNameOrId}`
+
+					if (removeEvent) {
+						groupedActions.replace.push(fullLabel)
+					} else {
+						groupedActions.create.push(fullLabel)
+					}
+				}
+				return groupedActions
+			},
+			{ create: [], replace: [] } as {
+				create: string[]
+				replace: string[]
+			}
+		)
+	})
 
 	fileInput: Record<
 		AvailableColumnsWhereImportIsAllowed,
@@ -44,6 +84,7 @@ class UseImportsStore {
 		functionType: false,
 		lNodeType: false
 	})
+
 	//====== COMPUTED ======//
 
 	functionFromBayTemplateElements = $derived.by(() => {
@@ -62,7 +103,7 @@ class UseImportsStore {
 			})
 	})
 
-	importedFunction: {
+	loadedFunction: {
 		elementByIds: TypeElementByIds<typeof TYPE_FAMILY.function>
 		dependencies: TypeElementByIds<typeof TYPE_FAMILY.lNodeType>
 	} = $state({
@@ -70,32 +111,30 @@ class UseImportsStore {
 		dependencies: {}
 	})
 
-	importedLNodeType: TypeElementByIds<typeof TYPE_FAMILY.lNodeType> = $state(
-		{}
-	)
+	loadedLNodeType: TypeElementByIds<typeof TYPE_FAMILY.lNodeType> = $state({})
 
-	importedTypeElementsPerFamily = $derived({
+	loadedTypeElementsPerFamily = $derived({
 		[TYPE_FAMILY.function]: {
 			available: getAvailableElementsToImport(
 				TYPE_FAMILY.function,
-				this.importedFunction.elementByIds
+				this.loadedFunction.elementByIds
 			),
-			all: this.importedFunction.elementByIds
+			all: this.loadedFunction.elementByIds
 		},
 		[TYPE_FAMILY.lNodeType]: {
 			available: {
 				...getAvailableElementsToImport(
 					TYPE_FAMILY.lNodeType,
-					this.importedLNodeType
+					this.loadedLNodeType
 				),
 				...getAvailableElementsToImport(
 					TYPE_FAMILY.lNodeType,
-					this.importedFunction.dependencies
+					this.loadedFunction.dependencies
 				)
 			},
 			all: {
-				...this.importedFunction.dependencies,
-				...this.importedLNodeType
+				...this.loadedFunction.dependencies,
+				...this.loadedLNodeType
 			}
 		}
 	})
@@ -103,11 +142,12 @@ class UseImportsStore {
 	//====== PROXY TO HELPERS ======//
 
 	// imports
-	importElements = importElements
+	loadElements = loadElements
 	loadFromCompas = loadFromCompas
 	loadFromLocal = loadFromLocal
-	addImportedElement = addImportedElement
-	addAllImportedElements = addAllImportedElements
+	handleImportsAndFireDialogDecision = handleImportsAndFireDialogDecision
+	handleAllImportsAndFireDialogDecision =
+		handleAllImportsAndFireDialogDecision
 	removeImportedElements = removeImportedElements
 }
 

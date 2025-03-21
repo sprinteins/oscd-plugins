@@ -8,22 +8,43 @@ SEE: https://github.com/huntabyte/bits-ui/issues/828
 // STORES
 import { dialogStore } from '$lib/headless/stores/index.js'
 // TYPES
-import type { Component } from 'svelte'
+import type { Component, SvelteComponent } from 'svelte'
 
 let {
 	class: className,
 	innerComponent
 }: {
 	class?: string
-	innerComponent: Component
+	innerComponent:
+		| Component<
+				Record<string, never>,
+				{
+					closeCallback?: () => void
+				},
+				''
+		  >
+		| undefined
 } = $props()
 
-const InnerComponent = innerComponent
+const InnerComponent = $derived(innerComponent)
+let innerComponentRef = $state<
+	| (SvelteComponent<Record<string, never>, never, never> & {
+			closeCallback?: (() => void) | undefined
+	  } & { $$bindings: '' })
+	| null
+>(null)
+
+function handleClose() {
+	innerComponentRef?.closeCallback?.()
+	dialogStore.isOpen = false
+}
 </script>
 
-<dialog bind:this={dialogStore.dialogRef} onclose={() => dialogStore.isOpen = false} id="open-scd-dialog" class={`dialog ${className}`} >
+<dialog bind:this={dialogStore.dialogRef} onclose={handleClose} id="open-scd-dialog" class={`dialog ${className ? className : ''}`} >
   <div class="dialog-box">
-      <InnerComponent />
+		{#if InnerComponent}
+      <InnerComponent bind:this={innerComponentRef}/>
+		{/if}
   </div>
 </dialog>
 

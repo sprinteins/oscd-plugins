@@ -1,4 +1,6 @@
 <script lang="ts">
+// CORE
+import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 // STORE
 import { dndStore, typeElementsStore, importsStore } from '@/headless/stores'
 // CONSTANTS
@@ -19,7 +21,6 @@ import type {
 	AvailableRefFamily,
 	RefElementByIds
 } from '@/headless/stores'
-import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 
 //======= INITIALIZATION =======//
 
@@ -101,7 +102,7 @@ $effect(() => {
 											<div class="flex items-center min-w-0">
 												<span class="ml-3 min-w-2.5 min-h-2.5 border-teal-700 border-2 transform rotate-45"></span>
 												{#if isImportContainer && typeGuard.isTuplesIncludingString(refWrapper.source.family, ALLOWED_IMPORTED_TYPE)}
-													<span class="ml-4 truncate">{ `Ref_${importsStore.importedTypeElementsPerFamily[refWrapper.source.family].all[refWrapper.source.id].parameters.label}` }</span>
+													<span class="ml-4 truncate">{ `Ref_${importsStore.loadedTypeElementsPerFamily[refWrapper.source.family].all[refWrapper.source.id].parameters.label}` }</span>
 												{:else}
 													<span class="ml-4 truncate">{ `Ref_${typeElementsStore.typeElementsPerFamily[refWrapper.source.family][refWrapper.source.id].parameters.label}` }</span>
 												{/if}
