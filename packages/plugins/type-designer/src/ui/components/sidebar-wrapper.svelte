@@ -38,8 +38,11 @@ function isAttributeReadonly(attributeKey: string) {
 	return READONLY_ATTRIBUTES.some((attributes) => attributes === attributeKey)
 }
 
-function onChangeHandler() {
-	sidebarStore.currentElementType &&
+function onChangeHandler(attributeKey: string) {
+	if (
+		sidebarStore.currentElementType &&
+		sidebarStore.isInputValidByAttributeKey?.[attributeKey]
+	)
 		pluginGlobalStore.updateElement({
 			element: sidebarStore.currentElementType.element,
 			attributes: sidebarStore.currentElementType.attributes
@@ -55,7 +58,7 @@ function setVirtualValue(value: boolean) {
 		sidebarStore.currentElementType.attributes.virtual = value
 			? 'true'
 			: 'false'
-	onChangeHandler()
+	onChangeHandler('virtual')
 }
 
 const attributesNeedingOneLineLayout = ['virtual']
@@ -75,7 +78,7 @@ const attributesNeedingOneLineLayout = ['virtual']
 								class="mt-2"
 								bind:value={sidebarStore.currentElementType.attributes[attributeKey]}
 							/>
-						{:else if sidebarStore.currentElementTypeKey && sidebarStore.currentElementTypeFamily}
+						{:else if sidebarStore.currentElementTypeKey && sidebarStore.currentElementTypeFamily && sidebarStore.isInputValidByAttributeKey}
 							{#if attributeKey === 'virtual'}
 								<Switch.Root
 									class="mt-1 self-end"
@@ -83,20 +86,23 @@ const attributesNeedingOneLineLayout = ['virtual']
 										getVirtualValue,
 										setVirtualValue
 									}
-									oninput={onChangeHandler}
+									oninput={() => onChangeHandler(attributeKey)}
 									disabled={sidebarStore.isCurrentElementImported}
 								/>
 							{:else}
 								<Input.Root 
 									disabled={isAttributeReadonly(attributeKey) || sidebarStore.isCurrentElementImported}
-									class="mt-1"
+									class={`mt-1 ${sidebarStore.isInputValidByAttributeKey[attributeKey] ? '' : 'border-destructive focus-visible:ring-destructive'}`}
 									required={attributeProperties.required}
 									type="text"
 									id={attributeKey}
 									placeholder={isAttributeReadonly(attributeKey) ? '' : attributeKey}
 									bind:value={sidebarStore.currentElementType.attributes[attributeKey]}
-									onchange={onChangeHandler}
+									onchange={() => onChangeHandler(attributeKey)}
 								/>
+								{#if !sidebarStore.isInputValidByAttributeKey[attributeKey]}
+									<p class="text-destructive text-xs mt-1">This value should be unique</p>
+								{/if}
 							{/if}
 						{/if}
 					</div>

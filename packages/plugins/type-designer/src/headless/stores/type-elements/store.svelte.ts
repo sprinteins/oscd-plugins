@@ -15,7 +15,10 @@ import {
 	deleteTypeAndRefs
 } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
-import { getTypeNextOccurrence } from './type-naming.helper'
+import {
+	getTypeNextOccurrence,
+	getElementsWithSameNameBase
+} from './type-naming.helper'
 import { getFilteredTypeElementByIds } from './filter.helper'
 // TYPES
 import type { TypeElementsByFamily, Columns } from '@/headless/stores'
@@ -153,6 +156,7 @@ class UseTypeElementsStore {
 	createNewRef = createNewRef
 	// naming
 	getTypeNextOccurrence = getTypeNextOccurrence
+	getElementsWithSameNameBase = getElementsWithSameNameBase
 
 	//====== NEW TYPE ======//
 
