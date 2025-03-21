@@ -11,6 +11,7 @@ import { typeElementsStore, pluginLocalStore } from '@/headless/stores'
 import {
 	REF_FAMILY,
 	TYPE_FAMILY,
+	TYPE_ID_ATTRIBUTE,
 	REF_FAMILY_TO_TYPE_FAMILY_MAP
 } from '@/headless/constants'
 // TYPES
@@ -77,12 +78,12 @@ function getRefs(element: Element): RefElementsByFamily {
 
 			//get LNodeType ids
 			const lnTypeAttribute = childElement.getAttribute('lnType')
-			if (lnTypeAttribute) typeId = lnTypeAttribute
-
 			//get other Types uuids
 			const templateUuidAttribute =
 				childElement.getAttribute('templateUuid')
-			if (templateUuidAttribute) typeId = templateUuidAttribute
+
+			if (lnTypeAttribute) typeId = lnTypeAttribute
+			else if (templateUuidAttribute) typeId = templateUuidAttribute
 
 			if (!typeId) throw new Error('No id found for ref element')
 
@@ -107,11 +108,11 @@ function getRefs(element: Element): RefElementsByFamily {
 	)
 }
 
-function getRefFamilyByChildren(elementId: string) {
-	if (!pluginLocalStore.rootElement) throw new Error('No root element')
+function getRefFamilyByChildren(elementId: string, rootElement?: Element) {
+	if (!rootElement) throw new Error('No root element')
 	const match = findAllCustomElementBySelector({
 		selector: `[templateUuid="${elementId}"]`,
-		root: pluginLocalStore.rootElement
+		root: rootElement
 	})
 
 	if (!match.length) return undefined
@@ -126,43 +127,50 @@ function getRefFamilyByChildren(elementId: string) {
 
 function getRefFamily(
 	typeFamily: AvailableTypeFamily,
-	elementId: string
+	elementId: string,
+	rootElement?: Element
 ): AvailableRefFamily | undefined {
 	return {
 		[TYPE_FAMILY.bay]: () => undefined,
 		[TYPE_FAMILY.generalEquipment]: () => REF_FAMILY.generalEquipment,
 		[TYPE_FAMILY.conductingEquipment]: () => REF_FAMILY.conductingEquipment,
-		[TYPE_FAMILY.function]: () => getRefFamilyByChildren(elementId),
+		[TYPE_FAMILY.function]: () =>
+			getRefFamilyByChildren(elementId, rootElement),
 		[TYPE_FAMILY.lNodeType]: () => REF_FAMILY.lNode
 	}[typeFamily]()
 }
 
 export function getAndMapTypeElements<
 	GenericFamily extends AvailableTypeFamily
->(
-	family: GenericFamily,
+>(params: {
+	family: GenericFamily
 	typeElements: TypeRawElement<GenericFamily>[] | undefined
-) {
+	rootElement?: Element
+}) {
 	return (
-		typeElements?.reduce(
+		params.typeElements?.reduce(
 			(acc, element) => {
-				let elementId: string
-				if (family === TYPE_FAMILY.lNodeType)
-					elementId = element.getAttribute('id') || uuidv4()
-				else elementId = element.getAttribute('uuid') || uuidv4()
+				const elementId =
+					element.getAttribute(TYPE_ID_ATTRIBUTE[params.family]) ||
+					uuidv4()
 
 				acc[elementId] = {
 					element,
 					attributes: getTypeElementAttributes({
-						family,
+						family: params.family,
 						attributes: element.attributes,
 						elementId
 					}),
 					parameters: {
 						label:
 							element.getAttribute('name') ||
-							element.getAttribute('id'),
-						refFamily: getRefFamily(family, elementId)
+							element.getAttribute('id') ||
+							'This element has no name or no id',
+						refFamily: getRefFamily(
+							params.family,
+							elementId,
+							params.rootElement
+						)
 					},
 					refs: getRefs(element)
 				} as TypeElement<GenericFamily>

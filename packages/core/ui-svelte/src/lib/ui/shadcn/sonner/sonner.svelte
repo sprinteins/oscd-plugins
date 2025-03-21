@@ -9,7 +9,7 @@ let {
 	...restProps
 }: {
 	mode: 'light' | 'dark' | 'system' | undefined
-	restProps: SonnerProps
+	restProps?: SonnerProps
 } = $props()
 </script>
 	
@@ -24,6 +24,7 @@ let {
 				cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
 			},
 		}}
+		richColors
 		{...restProps}
 	/>
 	

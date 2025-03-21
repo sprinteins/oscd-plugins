@@ -20,17 +20,21 @@ function getRefAttributes(params: {
 	return {
 		[REF_FAMILY.generalEquipment]: () => ({
 			virtual: 'false',
-			templateUuid: params.typeId
+			templateUuid: params.typeId,
+			uuid: uuidv4()
 		}),
 		[REF_FAMILY.conductingEquipment]: () => ({
 			virtual: 'false',
-			templateUuid: params.typeId
+			templateUuid: params.typeId,
+			uuid: uuidv4()
 		}),
 		[REF_FAMILY.function]: () => ({
-			templateUuid: params.typeId
+			templateUuid: params.typeId,
+			uuid: uuidv4()
 		}),
 		[REF_FAMILY.eqFunction]: () => ({
-			templateUuid: params.typeId
+			templateUuid: params.typeId,
+			uuid: uuidv4()
 		}),
 		[REF_FAMILY.lNode]: () => ({
 			lnClass:
@@ -42,7 +46,8 @@ function getRefAttributes(params: {
 				).length + 1
 			).toString(),
 			iedName: 'None',
-			lnType: params.typeId
+			lnType: params.typeId,
+			uuid: uuidv4()
 		})
 	}[params.refFamily]()
 }
@@ -77,14 +82,6 @@ export function createNewRef(params: {
 			refFamily: params.family,
 			parentTypeWrapper: params.parentTypeWrapper
 		}),
-		attributesNS: [
-			{
-				namespace: pluginLocalStore.namespaces.currentUnstableRevision,
-				attributes: {
-					originUuid: uuidv4()
-				}
-			}
-		],
 		currentEdition: pluginLocalStore.currentEdition,
 		currentUnstableRevision: pluginLocalStore.currentUnstableRevision
 	})

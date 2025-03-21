@@ -11,6 +11,8 @@ export namespace Substation {
 	export type LNode = {
 		tag: 'LNode'
 		attributes: {
+			uuid: string
+			templateUuid?: string
 			originUuid?: string
 		}
 	}

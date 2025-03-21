@@ -4,7 +4,10 @@ import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // COMPONENTS
 import { WrongFileLoaded } from '$lib/ui/index.js'
 
-export function initSsdTemplate(node: HTMLElement) {
+export function initSsdTemplate(
+	node: HTMLElement,
+	params: { pluginName: string }
+) {
 	//====== CONSTANTS ======//
 
 	// biome-ignore lint/suspicious/noExplicitAny: generic type of mounted component
@@ -31,6 +34,7 @@ export function initSsdTemplate(node: HTMLElement) {
 			wrongFileLoadedPage = mount(WrongFileLoaded, {
 				target: wrongFileLoadedContainer,
 				props: {
+					pluginName: params.pluginName,
 					extension: 'SSD'
 				}
 			})
