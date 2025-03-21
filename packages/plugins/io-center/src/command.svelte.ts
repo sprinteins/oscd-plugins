@@ -3,8 +3,8 @@ import { store } from "./store.svelte"
 import type { Nullable } from "./types"
 import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
 import { createElement } from "./headless/stores/document-helpers.svelte"
-import type { LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
-import { L_NODE_TYPE_CONTENT } from "./headless/constants"
+import type { Connection, LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
+import { L_NODE_TYPE_CONTENT, NODE_ELEMENT_TYPE } from "./headless/constants"
 
 export class Command {
 	constructor(
@@ -227,6 +227,131 @@ export class Command {
 		const lnType = store.doc.querySelector(`DataTypeTemplates > LNodeType[lnClass="${type}"]`)
 
 		return Boolean(lnType)
+	}
+
+	public addConnection(connection: Connection) {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const host = this.requireHost()
+
+		const ied = this.requireSelectedIED()
+
+		const ld0 = this.ensureLD0(ied)
+
+		let connectionType: Nullable<"input" | "output"> = null;
+
+		console.log("connection: ", connection)
+
+		if (connection.from.type === NODE_ELEMENT_TYPE.DO || connection.to.type === NODE_ELEMENT_TYPE.DO) {
+			connectionType = "output"
+		}
+
+		if (connection.from.type === NODE_ELEMENT_TYPE.LP || connection.to.type === NODE_ELEMENT_TYPE.LP) {
+			connectionType = "input"
+		}
+
+		if (!connectionType) {
+			throw new Error('Could not figure out connection type!')
+		}
+
+		let doName: string | null = null
+
+		if (connection.from.type === NODE_ELEMENT_TYPE.DO) {
+			doName = connection.from.name.replace(/-left|-right/g, '')
+		}
+
+		if (connection.to.type === NODE_ELEMENT_TYPE.DO) {
+			doName = connection.to.name.replace(/-left|-right/g, '')
+		}
+
+		let lcLnClass: string | null = null
+		let lcInst: string | null = null
+
+		if (connection.from.type === NODE_ELEMENT_TYPE.LC) {
+			[lcLnClass, lcInst] = connection.from.name.replace(/-left|-right/g, '').split('-')
+			console.log("from lcLnClass, lcInst: ", lcLnClass, lcInst)
+		}
+
+		if (connection.to.type === NODE_ELEMENT_TYPE.LC) {
+			[lcLnClass, lcInst] = connection.to.name.replace(/-left|-right/g, '').split('-')
+			console.log("to lcLnClass, lcInst: ", lcLnClass, lcInst)
+
+		}
+
+		let lpLnClass: string | null = null
+		let lpInst: string | null = null
+
+		if (connection.from.type === NODE_ELEMENT_TYPE.LP) {
+			[lpLnClass, lpInst] = connection.from.name.replace(/-left|-right/g, '').split('-')
+			console.log("from lp: ", lpLnClass, lpInst)
+		}
+
+		if (connection.to.type === NODE_ELEMENT_TYPE.LP) {
+			[lpLnClass, lpInst] = connection.to.name.replace(/-left|-right/g, '').split('-')
+			console.log("to lp: ", lpLnClass, lpInst)
+		}
+
+		const connectorLC = ld0.querySelector(`LN[lnClass="${lcLnClass}"][inst="${lcInst}"]`)
+
+		if (!connectorLC) {
+			throw new Error('Connector LC LN not found!')
+		}
+
+		createElement({
+			host,
+			doc: store.doc,
+			tagName: "DOI",
+			attributes: {
+				/* name attribute will be added when the ports are named */
+				"desc": connectionType
+			},
+			parent: connectorLC,
+			reference: null
+		})
+
+		const doi = connectorLC.querySelector(`DOI[desc="${connectionType}"]`)
+
+		if (!doi) {
+			throw new Error('DOI not created!')
+		}
+
+		if (connectionType === "input") {
+			createElement({
+				host,
+				doc: store.doc,
+				tagName: "LNRef",
+				attributes: {
+					"refLDIn": "LD0",
+					"refLNClass": lpLnClass,
+					"refLNInst": lpInst,
+					/* refDO will be set to the port name once that issue is done */
+				},
+				parent: doi,
+				reference: null
+			})
+		}
+
+		if (connectionType === "output") {
+			const connectedDO = store.selectedDataObjects.filter(doElement => doElement.name === doName)[0]
+
+			if (!connectedDO) {
+				throw new Error(`DO with name ${doName} not found!`)
+			}
+
+			createElement({
+				host,
+				doc: store.doc,
+				tagName: "LNRef",
+				attributes: {
+					"refLDInst": connectedDO.objectPath.lDevice?.inst || "unknown",
+					"refLNClass": connectedDO.objectPath.ln?.lnClass || "unknown",
+					"refLNInst": connectedDO.objectPath.ln?.inst || "unknown",
+					"refDO": doName,
+				},
+				parent: doi,
+				reference: null
+			})
+		}
 	}
 
 	private requireSelectedIED(): Element {

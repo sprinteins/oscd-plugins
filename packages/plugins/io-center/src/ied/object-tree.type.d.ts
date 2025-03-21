@@ -34,15 +34,15 @@ export type ObjectNodeDataObject = {
 }
 
 export type ObjectPath = {
-	ied?: { 
-		id:string 
+	ied?: {
+		id: string
 		name: string
 	}
-	lDevice?: { 
+	lDevice?: {
 		id: string
-		inst: string 
+		inst: string
 	}
-	ln?: { 
+	ln?: {
 		id: string
 		lnClass: string
 		inst: string
@@ -50,9 +50,9 @@ export type ObjectPath = {
 }
 export const NodeTypes = {
 	ied: 'ied',
-    logicalDevice: 'logicalDevice',
-    logicalNode: 'logicalNode',
-    dataObject: 'dataObject'
+	logicalDevice: 'logicalDevice',
+	logicalNode: 'logicalNode',
+	dataObject: 'dataObject'
 } as const
 export type NodeType = typeof NodeTypes[keyof typeof NodeTypes]
 

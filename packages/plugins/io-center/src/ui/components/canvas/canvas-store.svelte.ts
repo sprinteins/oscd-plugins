@@ -1,4 +1,4 @@
-import type { Connection, LogicalConditioner, NodeElement } from "./types.canvas"
+import type { Connection, LogicalConditioner, NodeElement, NodeElementType } from "./types.canvas"
 import { store } from "../../../store.svelte"
 import type { ObjectNodeDataObject } from "../../../ied/object-tree.type"
 import type { LpElement } from "../lp-list/types.lp-list"
@@ -8,10 +8,10 @@ class Store {
 	dataObjects = $derived<NodeElement[]>(store.selectedDataObjects.map(dataObjectToNodeElement))
 	logicalConditioners = $derived(store.logicalConditioners.map(LCToNodeElement))
 	logicalPhysicals = $derived(store.selectedLogicalPhysicals.map(LPToNodeElement))
-	connections = $state<Connection[]>([])
 	container = $state<HTMLDivElement | null>(null)
 	mousePosition = $state({ x: 0, y: 0 })
 	startNode = $state<string | null>("");
+	startNodeType = $state<NodeElementType | null>(null)
 	drawStartPoint = $state<EventTarget | null>(null)
 	lastStartPoint = $state<EventTarget | null>(null)
 	svgElement = $state<SVGGraphicsElement | null>(null)

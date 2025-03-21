@@ -2,14 +2,30 @@
   import { NODE_ELEMENT_TYPE } from "@/headless/constants";
   import EditButton from "../common/edit-button.svelte";
   import EditLcDialog from "./edit-lc-dialog.svelte";
-  import type { LcTypes, NodeElement as NodeElementType } from "./types.canvas";
+  import type {
+    Connection,
+    LcTypes,
+    NodeElement as NodeElementType,
+    NodeElementType as NodeElementClass,
+  } from "./types.canvas";
+  import Ports from "./ports.svelte";
+  import { canvasStore } from "./canvas-store.svelte";
 
   type Props = {
     node: NodeElementType;
     showLeftCircle: boolean;
     showRightCircle: boolean;
-    startDrawing: (event: MouseEvent) => void;
-    stopDrawing: (node: string, side: string) => void;
+    leftPortsNumber?: number;
+    rightPortsNumber?: number;
+    startDrawing: (event: MouseEvent, type: NodeElementClass) => void;
+    stopDrawing: (
+      node: string,
+      side: string,
+      index: number,
+      type: NodeElementClass,
+      addConnection: (connection: Connection) => void,
+    ) => void;
+    addConnection: (connection: Connection) => void;
     editLC?: (lcNode: NodeElementType, newType: LcTypes) => void;
     hasLNodeType?: (type: LcTypes) => boolean;
   };
@@ -18,8 +34,11 @@
     node,
     showLeftCircle,
     showRightCircle,
+    leftPortsNumber = 1,
+    rightPortsNumber = 1,
     startDrawing,
     stopDrawing,
+    addConnection,
     editLC,
     hasLNodeType,
   }: Props = $props();
@@ -32,6 +51,7 @@
   }
 </script>
 
+<!-- Disabled edit button for now, might be enabled later. -->
 <!-- {#if isSelected && node.type === NODE_ELEMENT_TYPE.LC && editLC}
   <EditButton onclick={() => (showEditDialog = true)}/>
   <EditLcDialog
@@ -45,23 +65,18 @@
 {/if} -->
 
 <button
-  data-title={node.name}
   class={{ "node-element": true, selected: isSelected }}
   onclick={handleSelect}
 >
   {#if showLeftCircle}
-    <div
-      role="button"
-      tabindex="-1"
-      id="left-circle"
-      class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-2 h-2 bg-black rounded-full"
-      onmousedown={(event) => {
-        startDrawing(event);
-      }}
-      onmouseup={() => {
-        stopDrawing(node.name, "left");
-      }}
-    ></div>
+    <Ports
+      side="left"
+      {node}
+      {startDrawing}
+      {stopDrawing}
+      {addConnection}
+      number={leftPortsNumber}
+    />
   {/if}
 
   <div class="flex-1 text-center p-4">
@@ -69,18 +84,14 @@
   </div>
 
   {#if showRightCircle}
-    <div
-      role="button"
-      tabindex="-1"
-      id="right-circle"
-      class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 w-2 h-2 bg-black rounded-full"
-      onmousedown={(event) => {
-        startDrawing(event);
-      }}
-      onmouseup={() => {
-        stopDrawing(node.name, "right");
-      }}
-    ></div>
+    <Ports
+      side="right"
+      {node}
+      {startDrawing}
+      {stopDrawing}
+      {addConnection}
+      number={rightPortsNumber}
+    />
   {/if}
 </button>
 
