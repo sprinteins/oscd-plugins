@@ -1,13 +1,20 @@
 <script lang="ts">
-    import {Table} from '@/components';
+    import {Table, FileSelector} from '@/components';
+    import type { FileSelectorChangeEvent } from '@/components';
     import type {Template} from "./types.template-overview";
     import Button, {Label} from "@smui/button"
+    import Menu from "@smui/menu"
+    import List, { Item, Text } from "@smui/list"
     import {IconWrapper} from "@oscd-plugins/ui"
     import {docTemplatesStore} from '@/stores'
     import {push} from 'svelte-spa-router'
     import { onMount } from 'svelte';
     import {pdfGenerator} from '@/utils'
+    import {getAutoDocElement} from '@/utils'
     import { ROUTES } from "@/constants"
+
+    let menu: Menu
+    let fileSelector: FileSelector
 
     let allTemplates: Element[] = []
     const emptyTitleOrDescription = "N/A"
@@ -22,6 +29,26 @@
 
     function navigateToCreateTemplate(){
         push(`${ROUTES.Create}`);
+    }
+
+    async function onImportTemplate(e: FileSelectorChangeEvent) {
+        const file = e.detail.file
+
+        const fileAsString = await file.text()
+        const templateDoc = new DOMParser().parseFromString(fileAsString, 'text/xml')
+
+        const autoDocElement = getAutoDocElement(templateDoc)
+
+        if (autoDocElement === null) {
+            return
+        }
+
+        const documentTemplates = Array.from(autoDocElement.querySelectorAll('DocumentTemplate'))
+
+        docTemplatesStore.importDocumentTemplates(documentTemplates)
+        
+        // TODO: the ui should update itself after any doc change
+        allTemplates = docTemplatesStore.getAllDocumentTemplates()
     }
 
 
@@ -72,10 +99,21 @@
 
 <div class="template-overview">
     <header class="template-controls">
-        <Button variant="raised" class="btn-pill btn-pill-primary" on:click={navigateToCreateTemplate} > 
+        <Button variant="raised" class="btn-pill btn-pill-primary" on:click={() => menu.setOpen(true)} > 
             <IconWrapper fillColor="white" icon="add"/>
            <Label>Add template</Label> 
         </Button>
+        <FileSelector bind:this={fileSelector} on:change={onImportTemplate} />
+        <Menu bind:this={menu}>
+            <List>
+                <Item on:SMUI:action={() => navigateToCreateTemplate()}>
+                    <Text>New</Text>
+                </Item>
+                <Item on:SMUI:action={() => fileSelector.open()}>
+                    <Text>Import from</Text>
+                </Item>
+            </List>
+        </Menu>
         <!-- <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button> -->
     </header>  
     <main>
