@@ -1,33 +1,41 @@
 <script lang="ts">
-	import NodeElement from "./node-element.svelte";
-	import { calulateCoordinates } from "./canvas-actions.svelte";
-	import { canvasStore } from "./canvas-store.svelte";
-	import {
-		getCirclePosition,
-		getCoordinates,
-		redrawConnections,
-		startDrawing,
-		stopDrawing,
-	} from "@/headless/utils";
-	import { Plus } from "lucide-svelte";
-	import AddLCDialog from "./add-lc-dialog.svelte";
-	import { store } from "../../../store.svelte";
-	import type {
-    Connection,
-		LcTypes,
-		NodeElement as NodeElementType,
-	} from "./types.canvas";
+import NodeElement from './node-element.svelte'
+import { calulateCoordinates } from './canvas-actions.svelte'
+import { canvasStore } from './canvas-store.svelte'
+import {
+	getCirclePosition,
+	getCoordinates,
+	redrawConnections,
+	startDrawing,
+	stopDrawing
+} from '@/headless/utils'
+import { Plus } from 'lucide-svelte'
+import AddLCDialog from './add-lc-dialog.svelte'
+import { store } from '../../../store.svelte'
+import type {
+	Connection,
+	LcTypes,
+	NodeElement as NodeElementType
+} from './types.canvas'
 
-	type Props = {
-		onAddLC: (type: LcTypes, number?: number) => void;
-		editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
-		hasLNodeType: (type: LcTypes) => boolean;
-		addConnection: (connection: Connection) => void;
-	};
+type Props = {
+	onAddLC: (type: LcTypes, number?: number) => void
+	editLC: (lcNode: NodeElementType, newType: LcTypes) => void
+	hasLNodeType: (type: LcTypes) => boolean
+	addConnection: (connection: Connection) => void
+}
 
-	const { onAddLC, editLC, hasLNodeType, addConnection }: Props = $props();
+const { onAddLC, editLC, hasLNodeType, addConnection }: Props = $props()
 
-	let isDialogOpen = $state(false);
+let isDialogOpen = $state(false)
+
+async function getCurrentCoordinates(connection: Connection) {
+	const fromXToY = `${(await getCoordinates(connection.from)).x},${(await getCoordinates(connection.from)).y}`
+	const fromXToXFromY = `${((await getCoordinates(connection.from)).x + (await getCoordinates(connection.to)).x) / 2},${(await getCoordinates(connection.from)).y}`
+	const fromXToXToY = `${((await getCoordinates(connection.from)).x + (await getCoordinates(connection.to)).x) / 2},${(await getCoordinates(connection.to)).y}`
+	const toXToY = `${(await getCoordinates(connection.to)).x},${(await getCoordinates(connection.to)).y}`
+	return `M ${fromXToY} C ${fromXToXFromY} ${fromXToXToY} ${toXToY}`
+}
 </script>
 
 <div
@@ -110,13 +118,12 @@
 	bind:this={canvasStore.svgElement}
 >
 	{#each store.connections as connection (connection.id)}
-		<path
-			class="stroke-black stroke-2 fill-none"
-			d={`M ${getCoordinates(connection.from).x},${getCoordinates(connection.from).y} 
-					 C ${(getCoordinates(connection.from).x + getCoordinates(connection.to).x) / 2},${getCoordinates(connection.from).y} 
-					 ${(getCoordinates(connection.from).x + getCoordinates(connection.to).x) / 2},${getCoordinates(connection.to).y} 
-					 ${getCoordinates(connection.to).x},${getCoordinates(connection.to).y}`}
-		/>
+		{#await getCurrentCoordinates(connection) then d}
+			<path
+				class="stroke-black stroke-2 fill-none"
+				d={d}
+			/>
+		{/await}
 	{/each}
 	{#if canvasStore.drawStartPoint}F
 		<path
