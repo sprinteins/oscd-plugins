@@ -1,6 +1,8 @@
+import type { ObjectNodeDataObject, ObjectTree } from "@/ied/object-tree.type";
 import { store } from "@/store.svelte";
 import { canvasStore } from "@/ui/components/canvas/canvas-store.svelte";
 import type { Connection, ConnectionPoint, NodeElementType } from "@/ui/components/canvas/types.canvas";
+import type { LpElement } from "@/ui/components/lp-list/types.lp-list";
 import type { TreeNode } from "@/ui/components/object-tree/types.object-tree";
 
 export function searchTree(tree: TreeNode[], searchTerm: string): TreeNode[] {
@@ -18,6 +20,41 @@ export function searchTree(tree: TreeNode[], searchTerm: string): TreeNode[] {
             return null;
         })
         .filter(node => node !== null);
+}
+
+export function findDataObject(
+    tree: ObjectTree,
+    targetDoName: string,
+    targetIedName: string,
+    targetLDeviceInst: string,
+    targetLnClass: string,
+    targetLnInst: string
+): ObjectNodeDataObject | null {
+    if (tree.ied.name !== targetIedName) { return null; }
+    for (const lDevice of tree.ied.children) {
+        if (lDevice.inst !== targetLDeviceInst) { continue; }
+
+        for (const ln of lDevice.children) {
+            if (ln.lnClass !== targetLnClass || ln.inst !== targetLnInst) { continue; }
+
+            const targetDo = ln.children.find(doElement => doElement.name === targetDoName);
+
+            if (targetDo) return targetDo;
+        }
+    }
+    return null;
+}
+
+export function findLogicalPhysical(
+    list: LpElement[],
+    targetLnClass: string,
+    targetLnInst: string
+): LpElement | null {
+    const targetLP = list.find(element => element.type === targetLnClass && element.instance === targetLnInst);
+
+    if (targetLP) return targetLP;
+
+    return null;
 }
 
 export function startDrawing(event: MouseEvent, type: NodeElementType) {

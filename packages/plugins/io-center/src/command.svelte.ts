@@ -309,7 +309,7 @@ export class Command {
 			reference: null
 		})
 
-		const doi = connectorLC.querySelector('DOI')
+		const doi = connectorLC.querySelector(`DOI[desc="${connectionType}"]`)
 
 		if (!doi) {
 			throw new Error('DOI not created!')
@@ -323,7 +323,7 @@ export class Command {
 				attributes: {
 					"refLDIn": "LD0",
 					"refLNClass": lpLnClass,
-					"refLnInst": lpInst,
+					"refLNInst": lpInst,
 					/* refDO will be set to the port name once that issue is done */
 				},
 				parent: doi,
@@ -345,7 +345,7 @@ export class Command {
 				attributes: {
 					"refLDInst": connectedDO.objectPath.lDevice?.inst || "unknown",
 					"refLNClass": connectedDO.objectPath.ln?.lnClass || "unknown",
-					"refLnInst": connectedDO.objectPath.ln?.inst || "unknown",
+					"refLNInst": connectedDO.objectPath.ln?.inst || "unknown",
 					"refDO": doName,
 				},
 				parent: doi,
