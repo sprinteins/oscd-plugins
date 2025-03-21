@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [3.4.1] - 21.03.2025
+
+### Fixed 
+
+- Sidebar input validation on names : i.e. changing to a non-unique value is no longer allowed
+
 ## [3.4.0] - 20.03.2025
 
 ### Added 
