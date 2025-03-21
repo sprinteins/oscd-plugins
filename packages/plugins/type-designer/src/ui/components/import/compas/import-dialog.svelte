@@ -67,8 +67,8 @@ $effect(() => {
 
 <section>
 	<header class="space-y-2 mb-5">
-		<h1 class="text-xl font-bold">Import elements from a { selectedType ? `${selectedType} file` : "file"} </h1>
-		<p class="text-sm text-muted-foreground">To import new functions and logical nodes, select a { selectedType ? "file" : "type file"}.</p>
+		<h1 class="text-xl font-bold">Select a file</h1>
+		<p class="text-sm text-muted-foreground">After selecting a file you can import your needed Functions or LNodeTypes in the specific columns.</p>
 	</header>
 
 	<Separator.Root class="mb-5" />
@@ -140,6 +140,6 @@ $effect(() => {
 
 	<footer class="flex justify-end space-x-2 mt-5">
 		<Button.Root variant="outline" class="hover:bg-secondary hover:text-secondary-foreground" onclick={() => { dialogStore.closeDialog(); resetSelectInputs();}}>Cancel</Button.Root>
-		<Button.Root disabled={!selectedFileId} onclick={loadSelectedFile}>Import</Button.Root>
+		<Button.Root disabled={!selectedFileId} onclick={loadSelectedFile}>Select</Button.Root>
 	</footer>
 </section>
