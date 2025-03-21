@@ -11,10 +11,17 @@
 	import { gatherDataObjects } from "./utils";
 
 	let tree = $state<TreeNodeType[]>([]);
+	let openIDs: string[] = []
 
 	// Note: we use $effect instead of $derived so we can change the values of filteredTree
 	$effect(() => {
 		tree = convertToTreeNode(store.objectTreeV2);
+	});
+	// Note: we use $effect instead of $derived because $derived makes
+	//		 `openIDs` a reactive value, which we don't want 
+	// 		 because it  causes an infinite reactive loop
+	$effect(() => {
+		openIDs = tree.flatMap((node) => idsOfOpenNodes(node));
 	});
 
 	let searchTerm = $state("");
@@ -25,18 +32,19 @@
 	});
 
 	function convertToTreeNode(objectTree: ObjectTree): TreeNodeType[] {
+
 		const treeNodes: TreeNodeType[] = objectTree.ied?.children.map((ld) => {
 			return {
 				id: ld.id,
 				name: ld.inst,
 				type: NODE_TYPE.logicalDevice,
-				isOpen: false,
+				isOpen: wasNodeAlreadyOpen(ld.id),
 				children: ld.children.map((ln) => {
 					return {
 						id: ln.id,
 						name: `${ln.lnClass} - ${ln.inst}`,
 						type: NODE_TYPE.logicalNode,
-						isOpen: false,
+						isOpen: wasNodeAlreadyOpen(ln.id),
 						children: ln.children.map((dataObject) => {
 							return {
 								id: dataObject.id,
@@ -51,6 +59,24 @@
 		});
 
 		return treeNodes;
+	}
+
+	function idsOfOpenNodes(node: TreeNodeType): string[] {
+		const ids: string[] = [];
+		if (node.isOpen) {
+			ids.push(node.id);
+		}
+		if (node.children) {
+			for (const child of node.children) {
+				ids.push(...idsOfOpenNodes(child));
+			}
+		}
+		return ids;
+	}
+
+	function wasNodeAlreadyOpen(id: string){
+		console.log("wasNodeAlreadyOpen", {openIDS: openIDs, id, included: openIDs.includes(id)})
+		return openIDs.includes(id);
 	}
 
 	function filterTree(

@@ -231,7 +231,7 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 
 	const objectTree: ObjectTree = {
 		ied: {
-			id: crypto.randomUUID(),
+			id: `IED_${IEDElement.getAttribute("name")}`,
 			name: IEDElement.getAttribute("name") || "unknown",
 			children: [],
 			_type: NodeTypes.ied,
@@ -242,7 +242,7 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 	const lDeviceElements = Array.from(IEDElement.querySelectorAll(SelectorLDevicesWithoutLD0))
 	objectTree.ied.children = lDeviceElements.map((ldDeviceElement) => {
 		const ld: ObjectNodeLogicalDevice = {
-			id: crypto.randomUUID(),
+			id: `${objectTree.ied.id}::LD_${ldDeviceElement.getAttribute("inst")}`,
 			inst: ldDeviceElement.getAttribute("inst") || "unknown",
 			children: [],
 			objectPath: {
@@ -253,7 +253,7 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 
 		ld.children = Array.from(ldDeviceElement.querySelectorAll("LN")).map((lnElement) => {
 			const ln: ObjectNodeLogicalNode = {
-				id: crypto.randomUUID(),
+				id: `${ld.id}::LN_${lnElement.getAttribute("lnClass")}+LN_${lnElement.getAttribute("inst")}`,
 				lnClass: lnElement.getAttribute("lnClass") || "unknown",
 				inst: lnElement.getAttribute("inst") || "unknown",
 				children: [],
@@ -277,7 +277,7 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 					return undefined
 				}
 				const dataObject: ObjectNodeDataObject = {
-					id: crypto.randomUUID(),
+					id: `${ln.id}::DO_${doElement.getAttribute("name")}`,
 					name: doElement.getAttribute("name") || "unknown",
 					objectPath: {
 						ied: { id: objectTree.ied.id, name: objectTree.ied.name },
