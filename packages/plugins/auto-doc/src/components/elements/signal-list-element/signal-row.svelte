@@ -44,7 +44,11 @@
 
     const handleDragOver = (e: DragEvent) => {
         e.preventDefault();
-        isDraggedOver = true;
+        if (idx === signalDndStore.draggedIndex) {
+            isDraggedOver = false;
+            return;
+        }
+        isDraggedOver = true; 
         signalDndStore._dropIndex.set(idx);
     };
 
@@ -60,7 +64,7 @@
         const { draggedIndex, dropIndex } = signalDndStore;
         if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) return;
         dispatch('reorder', { draggedIndex, dropIndex });
-        signalDndStore.handleDragEnd(idx);
+        signalDndStore.handleDragEnd();
     }
     </script>
     
@@ -120,7 +124,9 @@
         <!-- svelte-ignore a11y-no-static-element-interactions -->
                 <div
                         class="drop-zone"
-                        class:active={isDraggedOver && signalDndStore.draggedIndex !== -1}
+                        class:active={isDraggedOver && 
+                                     signalDndStore.draggedIndex !== -1 && 
+                                     idx !== signalDndStore.draggedIndex}
                         on:drop|preventDefault={handleDrop}
                         on:dragover|preventDefault
                 >

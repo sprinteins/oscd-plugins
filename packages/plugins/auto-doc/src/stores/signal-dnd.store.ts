@@ -8,7 +8,7 @@ class SignalDndStore {
 		this._draggedIndex.set(index)
 	}
 
-	handleDragEnd(index: number) {
+	handleDragEnd() {
 		this._draggedIndex.set(-1)
 	}
 
