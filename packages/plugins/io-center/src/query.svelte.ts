@@ -238,7 +238,8 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 		}
 	}
 
-	const lDeviceElements = Array.from(IEDElement.querySelectorAll("LDevice"))
+	const SelectorLDevicesWithoutLD0 = "LDevice:not([inst='LD0'])"
+	const lDeviceElements = Array.from(IEDElement.querySelectorAll(SelectorLDevicesWithoutLD0))
 	objectTree.ied.children = lDeviceElements.map((ldDeviceElement) => {
 		const ld: ObjectNodeLogicalDevice = {
 			id: crypto.randomUUID(),
