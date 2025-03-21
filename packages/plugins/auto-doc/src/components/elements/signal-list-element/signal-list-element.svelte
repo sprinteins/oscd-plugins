@@ -62,6 +62,7 @@
 	
 	$: mergedColsAndMessages = [...columns, ...messages].sort((a, b) => a.index - b.index)
 	$: selectedRows = mergedColsAndMessages.filter((row) => row.isSelected)
+	$: columnsLength = columns.length
 	
 	function getEmptyValues(): SignalListOnSCD {
 		return { selected: [], matches: { matchedRowsForTablePdf: [] } }
@@ -157,7 +158,11 @@
 		mergedColsAndMessages = newRows
 		emitSelectedRows()
 	}
-	</script>
+	
+	function isInColumnsZone(index: number): boolean {
+		return index < columns.length;
+	}
+</script>
 	
 	
 	<article>
@@ -173,15 +178,17 @@
 		<small>Use the filter to limit the content of the columns to certain values</small>
 	</div>
 	
-	{#each mergedColsAndMessages as row (row.id)}
+	{#each mergedColsAndMessages as row, i (row.id)}
 		<SignalRow 
-			idx={row.index}
+			idx={i}
 			id={row.id}
+			isInColumnsZone={isInColumnsZone(i)}
+			columnsLength={columnsLength}
 			label={row.label}
 			bind:isSelected={row.isSelected}
 			bind:column1={row.column1}
 			bind:column2={row.column2}
-			on:update={e => updateSignalRow(row.index, e.detail.key, e.detail.value)}
+			on:update={e => updateSignalRow(i, e.detail.key, e.detail.value)}
 			on:toggleAllCheckboxes={e => toggleAllCheckboxes(e.detail.value)}
 			on:reorder={handleReorder}
 		/>

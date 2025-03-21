@@ -17,6 +17,8 @@
     export let isSelected = false
     export let column1 = ''
     export let column2 = ''
+    export let isInColumnsZone: boolean;
+    export let columnsLength: number;
     
     
     const ONE_SECOND_IN_MS = 1000
@@ -42,13 +44,20 @@
     
     let isDraggedOver = false;
 
+    function isDropAllowed(): boolean {
+        const draggedIsInColumnsZone = signalDndStore.draggedIndex < columnsLength;
+        const targetIsInColumnsZone = idx < columnsLength;
+        
+        return draggedIsInColumnsZone === targetIsInColumnsZone;
+    }
+
     const handleDragOver = (e: DragEvent) => {
         e.preventDefault();
-        if (idx === signalDndStore.draggedIndex) {
+        if (idx === signalDndStore.draggedIndex || !isDropAllowed()) {
             isDraggedOver = false;
             return;
         }
-        isDraggedOver = true; 
+        isDraggedOver = true;
         signalDndStore._dropIndex.set(idx);
     };
 
@@ -62,11 +71,15 @@
     const handleDrop = () => {
         isDraggedOver = false;
         const { draggedIndex, dropIndex } = signalDndStore;
-        if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) return;
+        if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex || !isDropAllowed()) return;
         dispatch('reorder', { draggedIndex, dropIndex });
         signalDndStore.handleDragEnd();
     }
-    </script>
+
+    $: isDragging = signalDndStore.draggedIndex === idx;
+    $: isBlockedZone = signalDndStore.draggedIndex !== -1 && 
+                       (signalDndStore.draggedIndex < columnsLength) !== (idx < columnsLength);
+</script>
     
     
     <div>
@@ -78,9 +91,12 @@
                 on:dragleave={handleDragLeave}>
                 <div class="signal-row"
                         data-row-id={id}
-                        class:dragging={signalDndStore.draggedIndex === idx}
+                        class:dragging={isDragging}
+                        class:columns-zone={isInColumnsZone}
+                        class:messages-zone={!isInColumnsZone}
+                        class:blocked-zone={isBlockedZone}
                 >
-                                <div class="controls-container" style:cursor={signalDndStore.draggedIndex === idx ? 'grabbing' : 'grab'}>
+                                <div class="controls-container" style:cursor={isDragging ? 'grabbing' : 'grab'}>
                                         <div draggable="true"
                                                 role="button"
                                                 tabindex="0"
@@ -126,7 +142,8 @@
                         class="drop-zone"
                         class:active={isDraggedOver && 
                                      signalDndStore.draggedIndex !== -1 && 
-                                     idx !== signalDndStore.draggedIndex}
+                                     idx !== signalDndStore.draggedIndex &&
+                                     isDropAllowed()}
                         on:drop|preventDefault={handleDrop}
                         on:dragover|preventDefault
                 >
@@ -144,6 +161,18 @@
             padding: 0.5rem;
             border-radius: 4px;
             position: relative;
+
+            &.dragging {
+                border: 1px solid #ff0000;
+                opacity: 0.5;
+            }
+
+            &.blocked-zone {
+                background-color: #f5f5f5;
+                opacity: 0.7;
+                pointer-events: none;
+            }
+
             & :global(.mdc-text-field__input[disabled]){
                 cursor: not-allowed;
             }
