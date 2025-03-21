@@ -67,10 +67,8 @@ describe("IED", () => {
 			children:   [],
 		}
 
-		render(IEDElement, { node, isSelected: true })
+		render(IEDElement, { node, isIEDSelected: true })
 		const stuff = screen.getByText(label)
 		expect(stuff.classList.contains("selected")).toBeTruthy()
-
-
 	})
 })
