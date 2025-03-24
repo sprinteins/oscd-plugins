@@ -48,7 +48,7 @@ async function loadSelectedFile() {
 			importsStore.currentFilenameByColumnKey[
 				importsStore.currentImportColumnKey
 			] = selectedFilename
-		importsStore.importElements()
+		importsStore.loadElements()
 		dialogStore.closeDialog()
 		resetSelectInputs()
 	}

@@ -11,12 +11,14 @@ import {
 import { getAndMapTypeElements } from './consolidate-types.helper'
 import {
 	createNewType,
-	createNewTypeBasedOnImport,
 	duplicateType,
 	deleteTypeAndRefs
 } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
-import { getTypeNextOccurrence } from './type-naming.helper'
+import {
+	getTypeNextOccurrence,
+	getElementsWithSameNameBase
+} from './type-naming.helper'
 import { getFilteredTypeElementByIds } from './filter.helper'
 // TYPES
 import type { TypeElementsByFamily, Columns } from '@/headless/stores'
@@ -110,12 +112,12 @@ class UseTypeElementsStore {
 				function: {
 					available: getFilteredTypeElementByIds(
 						this.filtersByColumns.functionType,
-						importsStore.importedTypeElementsPerFamily.function
+						importsStore.loadedTypeElementsPerFamily.function
 							.available
 					),
 					all: getFilteredTypeElementByIds(
 						this.filtersByColumns.functionType,
-						importsStore.importedTypeElementsPerFamily.function.all
+						importsStore.loadedTypeElementsPerFamily.function.all
 					)
 				}
 			}
@@ -132,12 +134,12 @@ class UseTypeElementsStore {
 				lNodeType: {
 					available: getFilteredTypeElementByIds(
 						this.filtersByColumns.lNodeType,
-						importsStore.importedTypeElementsPerFamily.lNodeType
+						importsStore.loadedTypeElementsPerFamily.lNodeType
 							.available
 					),
 					all: getFilteredTypeElementByIds(
 						this.filtersByColumns.lNodeType,
-						importsStore.importedTypeElementsPerFamily.lNodeType.all
+						importsStore.loadedTypeElementsPerFamily.lNodeType.all
 					)
 				}
 			}
@@ -148,13 +150,13 @@ class UseTypeElementsStore {
 
 	// type
 	createNewType = createNewType
-	createNewTypeBasedOnImport = createNewTypeBasedOnImport
 	duplicateType = duplicateType
 	deleteTypeAndRefs = deleteTypeAndRefs
 	// ref
 	createNewRef = createNewRef
 	// naming
 	getTypeNextOccurrence = getTypeNextOccurrence
+	getElementsWithSameNameBase = getElementsWithSameNameBase
 
 	//====== NEW TYPE ======//
 

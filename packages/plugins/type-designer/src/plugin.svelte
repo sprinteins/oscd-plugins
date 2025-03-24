@@ -20,14 +20,14 @@ import {
 	initPlugin,
 	initSsdTemplate,
 	removeInstanceWarningAndIssueToast,
-	DialogWorkaround
+	DialogWorkaround,
+	dialogStore
 } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { pluginLocalStore } from '@/headless/stores'
 // COMPONENTS
 import ColumnsContainer from '@/ui/views/columns-container.svelte'
 import SidebarWrapper from '@/ui/components/sidebar-wrapper.svelte'
-import ImportDialog from '@/ui/components/import/compas/import-dialog.svelte'
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 
@@ -74,7 +74,8 @@ const {
 		<ColumnsContainer />
 		<SidebarWrapper />
 	</Sidebar.Provider>
-	<DialogWorkaround innerComponent={ImportDialog}/>
+	
+	<DialogWorkaround innerComponent={dialogStore.innerComponent}/>
 
 </main>
 
