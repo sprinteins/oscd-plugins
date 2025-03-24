@@ -1,5 +1,5 @@
-import { LC_TYPE, LP_TYPE, NODE_ELEMENT_TYPE } from "./headless/constants";
-import { findDataObject, findLogicalPhysical } from "./headless/utils";
+import { LC_TYPE, LP_TYPE, NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE } from "./headless/constants";
+import { findDataObject, findLogicalPhysical, getPortsConfig } from "./headless/utils";
 import type { IED } from "./ied/ied";
 import {
 	NodeTypes,
@@ -10,7 +10,7 @@ import {
 } from "./ied/object-tree.type.d";
 import { store } from "./store.svelte";
 import type { Nullable } from "./types";
-import type { Connection, ConnectionPoint, LogicalConditioner } from "./ui/components/canvas/types.canvas";
+import type { Connection, ConnectionPoint, ConnectionPort, LogicalConditioner } from "./ui/components/canvas/types.canvas";
 import type { LpElement } from "./ui/components/lp-list/types.lp-list";
 
 
@@ -199,16 +199,16 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 					name: connectionType === "output"
 						? `${refDO}-right`
 						: `${lnClass}-${inst}-right`,
-					index,
-					type: connectionType === "output" ? NODE_ELEMENT_TYPE.DO : NODE_ELEMENT_TYPE.LC
+					type: connectionType === "output" ? NODE_ELEMENT_TYPE.DO : NODE_ELEMENT_TYPE.LC,
+					port: connectionType === "output" ? { name: refDO, side: "right" } as ConnectionPort : PORTS_CONFIG_PER_TYPE[lnClass][0]
 				};
 
 				const to = {
 					name: connectionType === "output"
 						? `${lnClass}-${inst}-left`
 						: `${refLNClass}-${refLNInst}-left`,
-					index,
-					type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP
+					type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP,
+					port: PORTS_CONFIG_PER_TYPE[lnClass][0]
 				};
 
 				const connection: Connection = {

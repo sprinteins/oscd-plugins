@@ -1,4 +1,4 @@
-import type { Connection, LogicalConditioner, NodeElement, NodeElementType } from "./types.canvas"
+import type { ConnectionPort, LogicalConditioner, NodeElement, NodeElementType } from "./types.canvas"
 import { store } from "../../../store.svelte"
 import type { ObjectNodeDataObject } from "../../../ied/object-tree.type"
 import type { LpElement } from "../lp-list/types.lp-list"
@@ -11,6 +11,7 @@ class Store {
 	container = $state<HTMLDivElement | null>(null)
 	mousePosition = $state({ x: 0, y: 0 })
 	startNode = $state<string | null>("");
+	startPort = $state<ConnectionPort | null>(null);
 	startNodeType = $state<NodeElementType | null>(null)
 	drawStartPoint = $state<EventTarget | null>(null)
 	lastStartPoint = $state<EventTarget | null>(null)
@@ -23,7 +24,8 @@ export function LPToNodeElement(lp: LpElement): NodeElement {
 	return {
 		id: lp.id,
 		type: NODE_ELEMENT_TYPE.LP,
-		name: `${lp.type}-${lp.instance}`
+		name: `${lp.type}-${lp.instance}`,
+		lnClass: lp.type
 	}
 }
 
@@ -31,7 +33,8 @@ export function LCToNodeElement(lc: LogicalConditioner): NodeElement {
 	return {
 		id: lc.id,
 		type: NODE_ELEMENT_TYPE.LC,
-		name: `${lc.type}-${lc.instance}`
+		name: `${lc.type}-${lc.instance}`,
+		lnClass: lc.type
 	}
 }
 

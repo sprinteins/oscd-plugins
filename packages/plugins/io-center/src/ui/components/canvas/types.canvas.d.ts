@@ -1,9 +1,15 @@
 import type { LC_TYPE, NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants"
+import type { LpTypes } from "../lp-list/types.lp-list"
+
+export type ConnectionPort = {
+	side: "right" | "left"
+	name: string
+}
 
 export type ConnectionPoint = {
-	index: number
 	name: string
 	type: NodeElementType
+	port: ConnectionPort
 }
 
 export type Connection = {
@@ -14,11 +20,18 @@ export type Connection = {
 
 export type NodeElementType = keyof typeof NODE_ELEMENT_TYPE
 
-export type NodeElement = {
-	id: string
-	type: NodeElementType
-	name: string
-}
+export type NodeElement =
+	| {
+		id: string
+		type: "DO",
+		name: string
+	}
+	| {
+		id: string
+		type: "LC" | "LP",
+		name: string
+		lnClass: LcTypes | LpTypes
+	}
 
 export type LogicalConditioner = {
 	id: string,
