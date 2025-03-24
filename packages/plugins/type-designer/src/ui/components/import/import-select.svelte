@@ -36,8 +36,6 @@ const localActions = [
 		callback: () => importsStore.fileInput[columnKey]?.click()
 	}
 ]
-
-//====== FUNCTIONS ======//
 </script>
 
 {#await compasStore.isCompasEnabled}
