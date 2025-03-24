@@ -89,12 +89,18 @@ function getRefs(element: Element): RefElementsByFamily {
 
 			const typeFamily = REF_FAMILY_TO_TYPE_FAMILY_MAP[refFamily]
 
+			const refOccurrence =
+				Object.values(acc[refFamily]).filter(
+					(ref) => ref.source.id === typeId
+				).length + 1
+
 			acc[refFamily][uuidv4()] = {
 				element: childElement as RefRawElement<typeof refFamily>,
 				source: {
 					id: typeId,
 					family: typeFamily
-				}
+				},
+				occurrence: refOccurrence
 			} as RefElementsByFamily[typeof refFamily][string]
 			return acc
 		},
