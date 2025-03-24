@@ -1,10 +1,13 @@
 <script lang="ts">
+// CORE
+import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 // STORE
-import { dndStore, typeElementsStore } from '@/headless/stores'
+import { dndStore, typeElementsStore, importsStore } from '@/headless/stores'
 // CONSTANTS
 import {
 	ALLOWED_TARGETS_BY_REF_FAMILY,
-	TYPE_FAMILY
+	TYPE_FAMILY,
+	ALLOWED_IMPORTED_TYPE
 } from '@/headless/constants'
 // COMPONENTS
 import { slide } from 'svelte/transition'
@@ -25,11 +28,13 @@ import type {
 const {
 	typeElementKey,
 	typeElementFamily,
-	typeElement
+	typeElement,
+	isImportContainer
 }: {
 	typeElementKey: string
 	typeElementFamily: AvailableTypeFamily
 	typeElement: TypeElement<AvailableTypeFamily>
+	isImportContainer?: boolean
 } = $props()
 
 // local states
@@ -82,7 +87,7 @@ $effect(() => {
 	
 <Collapsible.Root bind:open={isElementCardOpen} class="space-y-2">
 
-	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen}/>
+	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {isImportContainer}/>
 
 	<!-- REF CARD START -->
 		<Collapsible.Content  class="space-y-2 flex flex-col items-end">
@@ -96,9 +101,15 @@ $effect(() => {
 										<Card.Content class="h-8 p-1 flex items-center justify-between">
 											<div class="flex items-center min-w-0">
 												<span class="ml-3 min-w-2.5 min-h-2.5 border-teal-700 border-2 transform rotate-45"></span>
-												<span class="ml-4 truncate">{ `Ref_${typeElementsStore.typeElementsPerFamily[refWrapper.source.family][refWrapper.source.id].parameters.label}` }</span>
+												{#if isImportContainer && typeGuard.isTuplesIncludingString(refWrapper.source.family, ALLOWED_IMPORTED_TYPE)}
+													<span class="ml-4 truncate">{ `Ref_${importsStore.loadedTypeElementsPerFamily[refWrapper.source.family].all[refWrapper.source.id].parameters.label}` }</span>
+												{:else}
+													<span class="ml-4 truncate">{ `Ref_${typeElementsStore.typeElementsPerFamily[refWrapper.source.family][refWrapper.source.id].parameters.label}` }</span>
+												{/if}
 											</div>
-											<CardMenu type={{ family: typeElementFamily, id: typeElementKey}} ref={{ family: refFamily, id: refId}}/>
+											{#if !isImportContainer}
+												<CardMenu type={{ family: typeElementFamily, id: typeElementKey}} ref={{ family: refFamily, id: refId}}/>
+											{/if}
 										</Card.Content>
 									</Card.Root>
 									{/each}
@@ -111,7 +122,7 @@ $effect(() => {
 	<!-- REF CARD END -->
 
 	<!-- DND PLACEHOLDER START -->
-	{#if dndStore.isDragging && isAllowedToDrop}
+	{#if dndStore.isDragging && isAllowedToDrop && !isImportContainer}
 		<div  class="flex justify-end">
 			<Card.Root
 				class="border-gray-500 border-dashed w-5/6 "
