@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install Dependencies
-        run: pnpm run dependencies:install+build" && pnpm --filter @oscd-plugins/${{ inputs.plugin-name }} i --frozen-lockfile
+        run: pnpm run dependencies:install+build && pnpm --filter @oscd-plugins/${{ inputs.plugin-name }} i --frozen-lockfile
 
       - name: Run Tests
         run: (cd ./packages/uilib ; npm run test)
