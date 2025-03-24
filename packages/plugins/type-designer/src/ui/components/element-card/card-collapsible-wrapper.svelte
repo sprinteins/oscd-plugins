@@ -114,7 +114,7 @@ $effect(() => {
 });
 </script>
 	
-<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2" on:dragover={handleDragOver}>
+<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2" on:dragover|preventDefault={handleDragOver}>
 
 	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen}/>
 
