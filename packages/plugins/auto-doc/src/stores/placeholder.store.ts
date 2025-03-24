@@ -18,15 +18,32 @@ interface PlaceholderTable {
 }
 
 //==== PRIVATE ACTIONS
-const namespaceResolver = (prefix: string | null): string | null => {
-    const namespaces: { [key: string]: string } = {
-        'default': 'http://www.iec.ch/61850/2003/SCL',
-        'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-        'sxy': 'http://www.iec.ch/61850/2003/SCLcoordinates'
+const NAMESPACE_ATTRIBUTE = 'xmlns';
+
+function extractNamespaces(xmlDocument: XMLDocument) {
+    const namespaces: { [key: string]: string } = {};
+
+    const attributes = xmlDocument.documentElement.attributes;
+    for (let i = 0; i < attributes.length; i++) {
+        const attr = attributes[i];
+        if (attr.name.startsWith(`${NAMESPACE_ATTRIBUTE}:`)) {
+            const prefix = attr.name.split(":")[1]; 
+            namespaces[prefix] = attr.value; 
+        }else if (attr.name === `${NAMESPACE_ATTRIBUTE}`) {
+            namespaces.default = attr.value;
+        }
+    }
+
+    return namespaces;
+}
+
+function createNamespaceResolver(xmlDocument: XMLDocument): (prefix: string | null) => string| null{
+    const namespaces = extractNamespaces(xmlDocument);
+    return (prefix: string | null): string | null => {
+        if (prefix === null) return null;
+        return namespaces[prefix] || namespaces.default || null;
     };
-    if (prefix === null) return null;
-    return namespaces[prefix] || null;
-};
+}
 
 //==== PUBLIC ACTIONS
 // Example usage
@@ -40,6 +57,8 @@ function fillPlaceholder(markdownText: string): string {
         throw new Error("XML Document is not defined");
     }
 
+    const namespaceResolver = createNamespaceResolver(xmlDoc);
+ 
     return markdownText.replace(/{{(.*?)}}/g, (match, placeholder) => {
 
         try {
