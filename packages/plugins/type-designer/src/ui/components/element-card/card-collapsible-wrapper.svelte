@@ -1,4 +1,5 @@
 <script lang="ts">
+import { onMount } from 'svelte';
 // STORE
 import { dndStore, typeElementsStore } from '@/headless/stores'
 // CONSTANTS
@@ -78,9 +79,42 @@ const hasRefs = $derived.by(() => {
 $effect(() => {
 	if (!hasRefs) isElementCardOpen = false
 })
+
+let scrollableContainer: HTMLElement;
+let lastScrollPosition = 0;
+
+let isCurrentDropTarget = false;
+
+const handleDragOver = (event: DragEvent) => {
+	event.preventDefault();
+	scrollableContainer = event.currentTarget?.closest('.overflow-y-auto');
+	if (scrollableContainer) {
+		lastScrollPosition = scrollableContainer.scrollTop;
+	}
+	
+	if (dndStore.isDragging && isAllowedToDrop) {
+		window.dispatchEvent(new CustomEvent('hideAllDropZones'));
+		isCurrentDropTarget = true;
+	}
+};
+
+onMount(() => {
+	const hideHandler = () => {
+		isCurrentDropTarget = false;
+	};
+	window.addEventListener('hideAllDropZones', hideHandler);
+	return () => window.removeEventListener('hideAllDropZones', hideHandler);
+});
+
+// not sure
+$effect(() => {
+	if (!isCurrentDropTarget) {
+		isElementCardOpen = false;
+	}
+});
 </script>
 	
-<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2">
+<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2" on:dragover={handleDragOver}>
 
 	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen}/>
 
@@ -111,15 +145,24 @@ $effect(() => {
 	<!-- REF CARD END -->
 
 	<!-- DND PLACEHOLDER START -->
-	{#if dndStore.isDragging && isAllowedToDrop}
+	{#if dndStore.isDragging && isAllowedToDrop && isCurrentDropTarget}
 		<div  class="flex justify-end">
 			<Card.Root
 				class="border-gray-500 border-dashed w-5/6 "
 				ondragover={(event) => event.preventDefault()}
-				ondrop={() => dndStore.handleDrop({
-					parentTypeWrapper: typeElement.element,
-					parentTypeFamily: typeElementFamily
-				})}
+				ondrop={(event) => {
+					event.preventDefault();
+					isCurrentDropTarget = false;
+					dndStore.handleDrop({
+						parentTypeWrapper: typeElement.element,
+						parentTypeFamily: typeElementFamily
+					});
+					if (scrollableContainer) {
+						setTimeout(() => {
+							scrollableContainer.scrollTop = lastScrollPosition;
+						}, 0);
+					}
+				}}
 			>
 				<Card.Content class="h-8 p-1 flex items-center justify-center">
 					<span class="mr-1">Drop</span>
