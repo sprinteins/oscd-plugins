@@ -32,7 +32,7 @@
     role="button"
     tabindex="-1"
     id={`${port.side}-circle-${port.name}`}
-    class={`relative bg-white border border-black w-2 h-2 rounded-full`}
+    class={`relative bg-black border border-black w-2 h-2 rounded-full`}
     onmousedown={(event) => {
         startDrawing(event, port, node.type);
     }}

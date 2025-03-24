@@ -240,8 +240,6 @@ export class Command {
 
 		let connectionType: Nullable<"input" | "output"> = null;
 
-		console.log("connection: ", connection)
-
 		if (connection.from.type === NODE_ELEMENT_TYPE.DO || connection.to.type === NODE_ELEMENT_TYPE.DO) {
 			connectionType = "output"
 		}
@@ -269,13 +267,10 @@ export class Command {
 
 		if (connection.from.type === NODE_ELEMENT_TYPE.LC) {
 			[lcLnClass, lcInst] = connection.from.name.replace(/-left|-right/g, '').split('-')
-			console.log("from lcLnClass, lcInst: ", lcLnClass, lcInst)
 		}
 
 		if (connection.to.type === NODE_ELEMENT_TYPE.LC) {
 			[lcLnClass, lcInst] = connection.to.name.replace(/-left|-right/g, '').split('-')
-			console.log("to lcLnClass, lcInst: ", lcLnClass, lcInst)
-
 		}
 
 		let lpLnClass: string | null = null
@@ -283,12 +278,10 @@ export class Command {
 
 		if (connection.from.type === NODE_ELEMENT_TYPE.LP) {
 			[lpLnClass, lpInst] = connection.from.name.replace(/-left|-right/g, '').split('-')
-			console.log("from lp: ", lpLnClass, lpInst)
 		}
 
 		if (connection.to.type === NODE_ELEMENT_TYPE.LP) {
 			[lpLnClass, lpInst] = connection.to.name.replace(/-left|-right/g, '').split('-')
-			console.log("to lp: ", lpLnClass, lpInst)
 		}
 
 		const connectorLC = ld0.querySelector(`LN[lnClass="${lcLnClass}"][inst="${lcInst}"]`)
@@ -297,22 +290,24 @@ export class Command {
 			throw new Error('Connector LC LN not found!')
 		}
 
+		const doiName = connection.from.type === NODE_ELEMENT_TYPE.LC ? connection.from.port.name : connection.to.port.name
+
 		createElement({
 			host,
 			doc: store.doc,
 			tagName: "DOI",
 			attributes: {
-				/* name attribute will be added when the ports are named */
+				"name": doiName,
 				"desc": connectionType
 			},
 			parent: connectorLC,
 			reference: null
 		})
 
-		const doi = connectorLC.querySelector(`DOI[desc="${connectionType}"]`)
+		const doi = connectorLC.querySelector(`DOI[name="${doiName}"][desc="${connectionType}"]`)
 
 		if (!doi) {
-			throw new Error('DOI not created!')
+			throw new Error(`DOI[name="${doiName}",desc="${connectionType}"] not created!`)
 		}
 
 		if (connectionType === "input") {
@@ -324,7 +319,7 @@ export class Command {
 					"refLDIn": "LD0",
 					"refLNClass": lpLnClass,
 					"refLNInst": lpInst,
-					/* refDO will be set to the port name once that issue is done */
+					"refDO": connection.from.type === NODE_ELEMENT_TYPE.LP ? connection.from.port.name : connection.to.port.name,
 				},
 				parent: doi,
 				reference: null

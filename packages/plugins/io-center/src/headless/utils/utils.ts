@@ -193,7 +193,7 @@ export function stopDrawing(
 
         if (
             startCircle instanceof HTMLElement &&
-            startCircle.id === 'left-circle'
+            startCircle.id.includes('left-circle')
         ) {
             [fromNode, toNode] = [toNode, fromNode]
         }
@@ -240,7 +240,7 @@ export async function getCoordinates(connectionPoint: ConnectionPoint) {
     }
 
     const circle = target.querySelector(
-        `#${connectionPoint.name.includes('left') ? 'left' : 'right'}-circle-${connectionPoint.port.name}`
+        `#${connectionPoint.port.side}-circle-${connectionPoint.port.name}`
     )
 
     if (!circle) {

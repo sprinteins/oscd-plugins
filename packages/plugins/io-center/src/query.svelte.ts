@@ -121,6 +121,7 @@ function storeSelectedDataObjects(doc: Nullable<XMLDocument>, selectedIED: Nulla
 		const dataObject = findDataObject(store.objectTreeV2, refDO, selectedIED.name, refLDInst, refLNClass, refLNInst);
 
 		if (dataObject && !uniqueObjects.some(doObject => doObject.id === dataObject.id)) {
+			dataObject.isLinked = true;
 			uniqueObjects.push(dataObject);
 		}
 
@@ -152,6 +153,7 @@ function storeSelectedLogicalPhysicals(doc: Nullable<XMLDocument>, selectedIED: 
 		const logicalPhysical = findLogicalPhysical(store.lpList, refLNClass, refLNInst);
 
 		if (logicalPhysical && !uniqueObjects.some(lp => lp.id === logicalPhysical.id)) {
+			logicalPhysical.isLinked = true;
 			uniqueObjects.push(logicalPhysical);
 		}
 
@@ -180,14 +182,15 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 
 	store.connections = lnRefElements.flatMap(lcElement => {
 		return lcElement.dois.flatMap(doiElement => {
+			const doiName = doiElement.doi.getAttribute("name");
 			const connectionType = doiElement.doi.getAttribute("desc");
 
-			if (!connectionType) {
-				console.warn("Connection type not found");
+			if (!connectionType || !doiName) {
+				console.warn("connection type or name not defined!");
 				return;
 			}
 
-			return doiElement.lnRefs.flatMap((lnRefElement, index) => {
+			return doiElement.lnRefs.flatMap(lnRefElement => {
 				const lcAttrs = lcElement.lc;
 				const refDO = lnRefElement.getAttribute("refDO") || "";
 				const refLNClass = lnRefElement.getAttribute("refLNClass") || "";
@@ -200,7 +203,7 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 						? `${refDO}-right`
 						: `${lnClass}-${inst}-right`,
 					type: connectionType === "output" ? NODE_ELEMENT_TYPE.DO : NODE_ELEMENT_TYPE.LC,
-					port: connectionType === "output" ? { name: refDO, side: "right" } as ConnectionPort : PORTS_CONFIG_PER_TYPE[lnClass][0]
+					port: connectionType === "output" ? { name: refDO, side: "right" } as ConnectionPort : PORTS_CONFIG_PER_TYPE[lnClass].filter(port => port.name === doiName)[0]
 				};
 
 				const to = {
@@ -208,7 +211,7 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 						? `${lnClass}-${inst}-left`
 						: `${refLNClass}-${refLNInst}-left`,
 					type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP,
-					port: PORTS_CONFIG_PER_TYPE[lnClass][0]
+					port: connectionType === "output" ? PORTS_CONFIG_PER_TYPE[lnClass].filter(port => port.name === doiName)[0] : PORTS_CONFIG_PER_TYPE[refLNClass].filter(port => port.name === refDO)[0]
 				};
 
 				const connection: Connection = {

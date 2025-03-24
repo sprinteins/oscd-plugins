@@ -25,6 +25,7 @@ export function LPToNodeElement(lp: LpElement): NodeElement {
 		id: lp.id,
 		type: NODE_ELEMENT_TYPE.LP,
 		name: `${lp.type}-${lp.instance}`,
+		isLinked: lp.isLinked,
 		lnClass: lp.type
 	}
 }
@@ -53,6 +54,7 @@ export function dataObjectToNodeElement(dataObject: ObjectNodeDataObject): NodeE
 	const nodeElement = {
 		name: dataObject.name,
 		type: NODE_ELEMENT_TYPE.DO,
+		isLinked: dataObject.isLinked,
 		id,
 	}
 	return nodeElement

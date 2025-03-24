@@ -25,11 +25,13 @@ export type NodeElement =
 		id: string
 		type: "DO",
 		name: string
+		isLinked?: boolean
 	}
 	| {
 		id: string
 		type: "LC" | "LP",
 		name: string
+		isLinked?: boolean
 		lnClass: LcTypes | LpTypes
 	}
 
