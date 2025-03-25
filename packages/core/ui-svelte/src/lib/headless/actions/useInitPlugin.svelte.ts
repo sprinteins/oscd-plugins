@@ -35,6 +35,12 @@ export function initPlugin(
 		customNamespaces?: Record<'namespacePrefix' | 'namespaceUri', string>[]
 	}
 ) {
+	const isInitialized = $derived(
+		Array.from(node.children).some(
+			(child) => child.getAttribute('id') === 'plugin-style'
+		)
+	)
+
 	//====== INIT GETTERS ======//
 
 	const doc = $derived(params.getDoc())
@@ -110,16 +116,6 @@ export function initPlugin(
 			default:
 				return ''
 		}
-	})
-	const style = document.createElement('style')
-	node.insertAdjacentElement('beforebegin', style)
-
-	$effect(() => {
-		style.innerHTML = `
-			${selectedTheme}
-			${inlineCssFonts}
-			${inlineShadCnAdaptation}
-		`
 	})
 
 	//====== FUNCTIONS ======//
@@ -237,23 +233,45 @@ export function initPlugin(
 
 	// set main inline style
 	$effect(() => {
-		node.style.cssText = `
-			${cssVariables};
-			font-family: "Roboto", sans-serif;
-			height: var(--plugin-container-height);
-			display: block;
-			position: relative;
-		`
+		let style: HTMLElement
+
+		if (
+			!isInitialized &&
+			selectedTheme &&
+			inlineCssFonts &&
+			inlineShadCnAdaptation &&
+			cssVariables
+		) {
+			style = document.createElement('style')
+			style.setAttribute('id', 'plugin-style')
+			node.insertAdjacentElement('beforebegin', style)
+
+			style.innerHTML = `
+				${selectedTheme}
+				${inlineCssFonts}
+				${inlineShadCnAdaptation}
+				main {
+					${cssVariables};
+					font-family: "Roboto", sans-serif;
+					height: var(--plugin-container-height);
+					display: block;
+					position: relative;
+				}
+			`
+		}
+		return () => {
+			if (style) host?.shadowRoot?.removeChild(style)
+		}
 	})
 
 	// add toaster sonner component
-	// TODO: not working for now
 	// biome-ignore lint/suspicious/noExplicitAny: generic type of mounted component
 	let toaster: Record<string, any>
 	$effect(() => {
 		if (!toaster && host?.shadowRoot)
 			toaster = mount(Toaster, {
-				target: host.shadowRoot
+				target: node,
+				props: { mode: 'light' }
 			})
 
 		return () => {

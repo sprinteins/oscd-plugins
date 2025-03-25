@@ -11,7 +11,37 @@
 	}}
 />
 
-<main 
+<script lang="ts">
+// PACKAGE
+import jsonPackage from '../package.json'
+// CORE
+import {
+	Sidebar,
+	initPlugin,
+	initSsdTemplate,
+	removeInstanceWarningAndIssueToast,
+	DialogWorkaround,
+	dialogStore
+} from '@oscd-plugins/core-ui-svelte'
+// STORES
+import { pluginLocalStore } from '@/headless/stores'
+// COMPONENTS
+import ColumnsContainer from '@/ui/views/columns-container.svelte'
+import SidebarWrapper from '@/ui/components/sidebar-wrapper.svelte'
+// TYPES
+import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
+
+// props
+const {
+	doc,
+	docName,
+	editCount,
+	isCustomInstance
+}: Plugin.CustomComponentsProps = $props()
+</script>
+
+<main
+	id="plugin-container"
 	use:initPlugin={{
 		getDoc: () => doc,
 		getDocName: () => docName,
@@ -31,7 +61,7 @@
 			revision: 'IEC61850-90-30'
 		}
 	}}
-	use:initSsdTemplate
+	use:initSsdTemplate={{pluginName: 'TypeDesigner'}}
 	use:removeInstanceWarningAndIssueToast
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
@@ -44,32 +74,9 @@
 		<ColumnsContainer />
 		<SidebarWrapper />
 	</Sidebar.Provider>
+	
+	<DialogWorkaround innerComponent={dialogStore.innerComponent}/>
+
 </main>
 
 
-<script lang="ts">
-// PACKAGE
-import jsonPackage from '../package.json'
-// CORE
-import {
-	Sidebar,
-	initPlugin,
-	initSsdTemplate,
-	removeInstanceWarningAndIssueToast
-} from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { pluginLocalStore } from '@/headless/stores'
-// COMPONENTS
-import ColumnsContainer from '@/ui/views/columns-container.svelte'
-import SidebarWrapper from '@/ui/components/sidebar-wrapper.svelte'
-// TYPES
-import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
-
-// props
-const {
-	doc,
-	docName,
-	editCount,
-	isCustomInstance
-}: Plugin.CustomComponentsProps = $props()
-</script>

@@ -1,3 +1,4 @@
+import { tick } from 'svelte'
 // CORE
 import {
 	findOneStandardElementBySelector,
@@ -62,6 +63,14 @@ class UseSsdStore {
 		}
 	})
 
+	hasTemplateWrapper = $derived(
+		!!(
+			this.substationTemplateElement &&
+			this.voltageLevelTemplateElement &&
+			this.bayTemplateElement
+		)
+	)
+
 	//====== METHODS ======//
 
 	getTemplateElement<Family extends 'substation' | 'voltageLevel' | 'bay'>(
@@ -77,11 +86,13 @@ class UseSsdStore {
 			})
 	}
 
-	createTemplateElement(
+	async createTemplateElement(
 		templateElementToCreate: 'substation' | 'voltageLevel' | 'bay'
 	) {
 		const host = pluginGlobalStore.host
 		if (!host) throw new Error('No host')
+
+		await tick()
 
 		const parent =
 			this.templateElementPayload[templateElementToCreate].parent
@@ -117,12 +128,12 @@ class UseSsdStore {
 		return newTemplateElement
 	}
 
-	createTemplateWrapper() {
+	async createTemplateWrapper() {
 		if (!this.substationTemplateElement)
-			this.createTemplateElement('substation')
+			await this.createTemplateElement('substation')
 		if (!this.voltageLevelTemplateElement)
-			this.createTemplateElement('voltageLevel')
-		if (!this.bayTemplateElement) this.createTemplateElement('bay')
+			await this.createTemplateElement('voltageLevel')
+		if (!this.bayTemplateElement) await this.createTemplateElement('bay')
 	}
 
 	cleanTemplateWrapper() {
