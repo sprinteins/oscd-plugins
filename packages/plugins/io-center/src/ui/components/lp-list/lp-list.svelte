@@ -45,7 +45,7 @@
     let showDialog = $state(false);
 </script>
 
-<div class="py-6 pr-6">
+<div class="py-6 pr-6" data-name="lp-list">
     <button
         onclick={() => (showDialog = true)}
         class="add-button"

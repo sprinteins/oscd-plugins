@@ -24,7 +24,7 @@ export function useQuery() {
 	$effect(() => storeLogicalConditioners(store.doc, store.selectedIED, store.editCount))
 	$effect(() => storeLogicalPhysicals(store.doc, store.selectedIED, store.editCount))
 	$effect(() => storeSelectedDataObjects(store.doc, store.selectedIED, store.editCount))
-	$effect(() => storeSelectedLogicalPhysicals(store.doc, store.selectedIED, store.editCount))
+	// $effect(() => storeSelectedLogicalPhysicals(store.doc, store.selectedIED, store.editCount))
 	$effect(() => storeConnections(store.doc, store.selectedIED, store.editCount))
 }
 
@@ -80,13 +80,23 @@ export function storeLogicalPhysicals(doc: Nullable<XMLDocument>, selectedIED: N
 		.join(",")
 
 	const lpElements = Array.from(iedElement.querySelectorAll(lpQuery));
+	const iedName = iedElement.getAttribute("name") || "unknown"
 
-	store.lpList = lpElements.map(lpElementToLP)
+	store.lpList = lpElements.map((el) => lpElementToLP(iedName, el))
 }
 
-function lpElementToLP(lpElement: Element): LpElement {
+function lpElementToLP(iedName: string, lpElement: Element): LpElement {
+
+	const id = [
+		iedName,
+		lpElement.getAttribute("inst") || "",
+		lpElement.getAttribute("lnClass") || "",
+		lpElement.getAttribute("lnType") || "",
+		lpElement.getAttribute("desc") || ""
+	].join("-")
+
 	return {
-		id: crypto.randomUUID(),
+		id,
 		type: lpElement.getAttribute("lnClass") as keyof typeof LP_TYPE || "unknown",
 		name: `${lpElement.getAttribute("lnType") || ""}`,
 		instance: `${lpElement.getAttribute("inst") || ""}`,

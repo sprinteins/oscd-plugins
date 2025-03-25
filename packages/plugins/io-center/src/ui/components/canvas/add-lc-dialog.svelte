@@ -3,6 +3,7 @@
 	import Input from "../common/input.svelte";
 	import Select from "../common/select.svelte";
 	import type { AddLCFormData, LcTypes } from "./types.canvas";
+    import type { Optional } from "../../../types";
 
 	type Props = {
 		isOpen: boolean;
@@ -12,73 +13,89 @@
 
 	let { isOpen = $bindable(), addLc, hasLNodeType }: Props = $props();
 
-	let formData = $state<AddLCFormData>({
-		type: "",
-		number: undefined,
-		numberOfLCIVPorts: undefined,
-	});
+	// let formData = $state<AddLCFormData>({
+	// 	type: "",
+	// 	number: undefined,
+	// 	numberOfLCIVPorts: undefined,
+	// });
+
+	let tempTypeOfLC: LcTypes | "" = $state("")
 
 	const typePresentInDoc = $derived.by(() => {
-		if (!formData.type) {
+		if (!tempTypeOfLC) {
 			return;
 		}
-		return hasLNodeType(formData.type);
+		return hasLNodeType(tempTypeOfLC);
 	});
 
 	function handleCancel() {
-		formData.type = "";
-
+		tempTypeOfLC = ""
 		isOpen = false;
 	}
 
-	function handleSubmit() {
-		if (!formData.type) return;
+	function handleSubmit(event: SubmitEvent) {
+		event.preventDefault();
+		tempTypeOfLC = ""
+		if(!event.target) { return }
 
-		addLc(formData.type, formData.number);
+		const formElement = event.target as HTMLFormElement
+		const formData = new FormData(formElement);
+		
+		const typeOfLC = formData.get("typeOfLC") as Optional<LcTypes> ;
+		const numberOfLCs = Number(formData.get("number")) as Optional<number>;
+		const numberOfLCIVPorts = Number(formData.get("numberOfLCIVPorts")) as Optional<number>;
+		
+		if (!typeOfLC || !numberOfLCs){ return }
 
-		formData.type = "";
-
+		addLc(typeOfLC, numberOfLCs);
 		isOpen = false;
 	}
 
 	function getHelperText() {
-		return formData.type && !typePresentInDoc
-			? `⚠︎ Missing ${formData.type} LNodeType`
+		return tempTypeOfLC && !typePresentInDoc
+			? `⚠︎ Missing ${tempTypeOfLC} LNodeType`
 			: undefined;
 	}
 </script>
 
-<dialog open={isOpen}>
+{#if isOpen}
+<dialog open data-name="add-lc-dialog">
 	<div role="button" id="modal" class="backdrop">
 		<div class="container space-y-4">
-			<Select
-				bind:value={formData.type}
-				label="LC Type"
-				options={Object.values(LC_TYPE)}
-				helperText={getHelperText()}
-				helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
-			/>
-			<Input
-				bind:value={formData.number}
-				label="LC Number"
-				type="number"
-			/>
-			{#if formData.type === LC_TYPE.LCIV}
-				<Input
-					bind:value={formData.numberOfLCIVPorts}
-					label="Number of Ports"
-					type="number"
+			<form onsubmit={handleSubmit}>
+				<Select
+					bind:value={tempTypeOfLC}
+					name="typeOfLC"
+					label="Type of LC"
+					options={Object.values(LC_TYPE)}
+					helperText={getHelperText()}
+					helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
 				/>
-			{/if}
-			<div class="action-buttons">
-				<button class="cancel-button" onclick={handleCancel}>
-					Cancel
-				</button>
-				<button class="add-button" onclick={handleSubmit}> Add </button>
-			</div>
+				<Input
+					name="number"
+					label="Number of LCs"
+					type="number"
+					value=1
+				/>
+				{#if tempTypeOfLC === LC_TYPE.LCIV}
+					<Input
+						name="numberOfLCIVPorts"
+						label="Number of Ports"
+						type="number"
+					/>
+				{/if}
+				<div class="action-buttons">
+					<button class="cancel-button" onclick={handleCancel}>
+						Cancel
+					</button>
+					<button type="submit" class="add-button"> Add </button>
+				</div>
+			</form>
+
 		</div>
 	</div>
 </dialog>
+{/if}
 
 <style lang="scss">
 	.backdrop {
