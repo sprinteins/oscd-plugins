@@ -1,5 +1,5 @@
 // STORES
-import { pluginLocalStore } from '@/headless/stores'
+import { importsStore, pluginLocalStore } from '@/headless/stores'
 // CONSTANTS
 import {
 	REF_FAMILY,
@@ -15,7 +15,10 @@ import {
 	deleteTypeAndRefs
 } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
-import { getTypeNextOccurrence } from './type-naming.helper'
+import {
+	getTypeNextOccurrence,
+	getElementsWithSameNameBase
+} from './type-naming.helper'
 import { getFilteredTypeElementByIds } from './filter.helper'
 // TYPES
 import type { TypeElementsByFamily, Columns } from '@/headless/stores'
@@ -24,26 +27,34 @@ class UseTypeElementsStore {
 	//====== INITIALIZATION ======//
 
 	typeElementsPerFamily: TypeElementsByFamily = $derived.by(() => ({
-		[TYPE_FAMILY.bay]: getAndMapTypeElements(
-			TYPE_FAMILY.bay,
-			pluginLocalStore.bayTypeElements
-		),
-		[TYPE_FAMILY.generalEquipment]: getAndMapTypeElements(
-			TYPE_FAMILY.generalEquipment,
-			pluginLocalStore.bayTemplateSubElements?.generalEquipment
-		),
-		[TYPE_FAMILY.conductingEquipment]: getAndMapTypeElements(
-			TYPE_FAMILY.conductingEquipment,
-			pluginLocalStore.bayTemplateSubElements?.conductingEquipment
-		),
-		[TYPE_FAMILY.function]: getAndMapTypeElements(
-			TYPE_FAMILY.function,
-			pluginLocalStore.bayTemplateSubElements?.function
-		),
-		[TYPE_FAMILY.lNodeType]: getAndMapTypeElements(
-			TYPE_FAMILY.lNodeType,
-			pluginLocalStore.dataTypeTemplatesSubElements?.lNodeType
-		)
+		[TYPE_FAMILY.bay]: getAndMapTypeElements({
+			family: TYPE_FAMILY.bay,
+			typeElements: pluginLocalStore.bayTypeElements,
+			rootElement: pluginLocalStore.rootElement
+		}),
+		[TYPE_FAMILY.generalEquipment]: getAndMapTypeElements({
+			family: TYPE_FAMILY.generalEquipment,
+			typeElements:
+				pluginLocalStore.bayTemplateSubElements?.generalEquipment,
+			rootElement: pluginLocalStore.rootElement
+		}),
+		[TYPE_FAMILY.conductingEquipment]: getAndMapTypeElements({
+			family: TYPE_FAMILY.conductingEquipment,
+			typeElements:
+				pluginLocalStore.bayTemplateSubElements?.conductingEquipment,
+			rootElement: pluginLocalStore.rootElement
+		}),
+		[TYPE_FAMILY.function]: getAndMapTypeElements({
+			family: TYPE_FAMILY.function,
+			typeElements: pluginLocalStore.bayTemplateSubElements?.function,
+			rootElement: pluginLocalStore.rootElement
+		}),
+		[TYPE_FAMILY.lNodeType]: getAndMapTypeElements({
+			family: TYPE_FAMILY.lNodeType,
+			typeElements:
+				pluginLocalStore.dataTypeTemplatesSubElements?.lNodeType,
+			rootElement: pluginLocalStore.rootElement
+		})
 	}))
 
 	filtersByColumns = $state({
@@ -96,6 +107,19 @@ class UseTypeElementsStore {
 					this.filtersByColumns.functionType,
 					this.typeElementsPerFamily.function
 				)
+			},
+			importedTypeElements: {
+				function: {
+					available: getFilteredTypeElementByIds(
+						this.filtersByColumns.functionType,
+						importsStore.loadedTypeElementsPerFamily.function
+							.available
+					),
+					all: getFilteredTypeElementByIds(
+						this.filtersByColumns.functionType,
+						importsStore.loadedTypeElementsPerFamily.function.all
+					)
+				}
 			}
 		},
 		[COLUMNS.lNodeType]: {
@@ -105,6 +129,19 @@ class UseTypeElementsStore {
 					this.filtersByColumns.lNodeType,
 					this.typeElementsPerFamily.lNodeType
 				)
+			},
+			importedTypeElements: {
+				lNodeType: {
+					available: getFilteredTypeElementByIds(
+						this.filtersByColumns.lNodeType,
+						importsStore.loadedTypeElementsPerFamily.lNodeType
+							.available
+					),
+					all: getFilteredTypeElementByIds(
+						this.filtersByColumns.lNodeType,
+						importsStore.loadedTypeElementsPerFamily.lNodeType.all
+					)
+				}
 			}
 		}
 	})
@@ -119,6 +156,7 @@ class UseTypeElementsStore {
 	createNewRef = createNewRef
 	// naming
 	getTypeNextOccurrence = getTypeNextOccurrence
+	getElementsWithSameNameBase = getElementsWithSameNameBase
 
 	//====== NEW TYPE ======//
 

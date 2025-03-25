@@ -11,7 +11,7 @@
     const dispatch = createEventDispatcher()
     let selectedTemplates : Template[] = [];
 
-0
+
     function isInvalidDate(date: Date){
         return Number.isNaN(date.getTime());
     }

@@ -29,6 +29,7 @@
 		LpTypes,
 	} from "./ui/components/lp-list/types.lp-list";
 	import type {
+    Connection,
 		LcTypes,
 		NodeElement,
 	} from "./ui/components/canvas/types.canvas";
@@ -79,6 +80,10 @@
 	function hasLNodeType(type: LcTypes | LpTypes): boolean {
 		return cmd.hasLNodeType(type);
 	}
+
+	function addConnection(connection: Connection) {
+		cmd.addConnection(connection);
+	}
 </script>
 
 <main
@@ -97,7 +102,7 @@
 >
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
-		<CanvasArea slot="content" {onAddLC} {editLC} {hasLNodeType} />
+		<CanvasArea slot="content" {onAddLC} {editLC} {hasLNodeType} {addConnection} />
 		<LpList
 			slot="sidebar-right"
 			{addLp}

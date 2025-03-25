@@ -1,31 +1,41 @@
 <script lang="ts">
-	import NodeElement from "./node-element.svelte";
-	import { calulateCoordinates } from "./canvas-actions.svelte";
-	import { canvasStore } from "./canvas-store.svelte";
-	import {
-		getCirclePosition,
-		getCoordinates,
-		redrawConnections,
-		startDrawing,
-		stopDrawing,
-	} from "@/headless/utils";
-	import { Plus } from "lucide-svelte";
-	import AddLCDialog from "./add-lc-dialog.svelte";
-	import { store } from "../../../store.svelte";
-	import type {
-		LcTypes,
-		NodeElement as NodeElementType,
-	} from "./types.canvas";
+import NodeElement from './node-element.svelte'
+import { calulateCoordinates } from './canvas-actions.svelte'
+import { canvasStore } from './canvas-store.svelte'
+import {
+	getCirclePosition,
+	getCoordinates,
+	redrawConnections,
+	startDrawing,
+	stopDrawing
+} from '@/headless/utils'
+import { Plus } from 'lucide-svelte'
+import AddLCDialog from './add-lc-dialog.svelte'
+import { store } from '../../../store.svelte'
+import type {
+	Connection,
+	LcTypes,
+	NodeElement as NodeElementType
+} from './types.canvas'
 
-	type Props = {
-		onAddLC: (type: LcTypes, number?: number) => void;
-		editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
-		hasLNodeType: (type: LcTypes) => boolean;
-	};
+type Props = {
+	onAddLC: (type: LcTypes, number?: number) => void
+	editLC: (lcNode: NodeElementType, newType: LcTypes) => void
+	hasLNodeType: (type: LcTypes) => boolean
+	addConnection: (connection: Connection) => void
+}
 
-	const { onAddLC, editLC, hasLNodeType }: Props = $props();
+const { onAddLC, editLC, hasLNodeType, addConnection }: Props = $props()
 
-	let isDialogOpen = $state(false);
+let isDialogOpen = $state(false)
+
+async function getCurrentCoordinates(connection: Connection) {
+	const fromXToY = `${(await getCoordinates(connection.from)).x},${(await getCoordinates(connection.from)).y}`
+	const fromXToXFromY = `${((await getCoordinates(connection.from)).x + (await getCoordinates(connection.to)).x) / 2},${(await getCoordinates(connection.from)).y}`
+	const fromXToXToY = `${((await getCoordinates(connection.from)).x + (await getCoordinates(connection.to)).x) / 2},${(await getCoordinates(connection.to)).y}`
+	const toXToY = `${(await getCoordinates(connection.to)).x},${(await getCoordinates(connection.to)).y}`
+	return `M ${fromXToY} C ${fromXToXFromY} ${fromXToXToY} ${toXToY}`
+}
 </script>
 
 <div
@@ -47,6 +57,7 @@
 				showRightCircle={true}
 				{startDrawing}
 				{stopDrawing}
+				{addConnection}
 			/>
 		{/each}
 	</div>
@@ -71,8 +82,11 @@
 				{node}
 				showLeftCircle={true}
 				showRightCircle={true}
+				leftPortsNumber={3}
+				rightPortsNumber={3}
 				{startDrawing}
 				{stopDrawing}
+				{addConnection}
 				{editLC}
 				{hasLNodeType}
 			/>
@@ -89,9 +103,11 @@
 			<NodeElement
 				{node}
 				showLeftCircle={true}
+				leftPortsNumber={2}
 				showRightCircle={false}
 				{startDrawing}
 				{stopDrawing}
+				{addConnection}
 			/>
 		{/each}
 	</div>
@@ -101,18 +117,15 @@
 	class="absolute top-0 left-0 w-full h-full pointer-events-none"
 	bind:this={canvasStore.svgElement}
 >
-	{#key canvasStore.connections}
-		{#each canvasStore.connections as connection}
+	{#each store.connections as connection (connection.id)}
+		{#await getCurrentCoordinates(connection) then d}
 			<path
 				class="stroke-black stroke-2 fill-none"
-				d={`M ${getCoordinates(connection.from).x},${getCoordinates(connection.from).y} 
-					 C ${(getCoordinates(connection.from).x + getCoordinates(connection.to).x) / 2},${getCoordinates(connection.from).y} 
-					 ${(getCoordinates(connection.from).x + getCoordinates(connection.to).x) / 2},${getCoordinates(connection.to).y} 
-					 ${getCoordinates(connection.to).x},${getCoordinates(connection.to).y}`}
+				d={d}
 			/>
-		{/each}
-	{/key}
-	{#if canvasStore.drawStartPoint}
+		{/await}
+	{/each}
+	{#if canvasStore.drawStartPoint}F
 		<path
 			class="stroke-black stroke-2"
 			d={`M ${getCirclePosition(canvasStore.drawStartPoint).x},${getCirclePosition(canvasStore.drawStartPoint).y} L ${canvasStore.mousePosition.x},${canvasStore.mousePosition.y}`}
@@ -120,7 +133,7 @@
 	{/if}
 </svg>
 
-<AddLCDialog bind:isOpen={isDialogOpen} addLc={onAddLC} {hasLNodeType}/>
+<AddLCDialog bind:isOpen={isDialogOpen} addLc={onAddLC} {hasLNodeType} />
 
 <svelte:window onresize={redrawConnections} />
 

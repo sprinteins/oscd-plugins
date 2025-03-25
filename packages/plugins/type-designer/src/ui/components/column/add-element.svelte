@@ -64,10 +64,10 @@ const equipmentTypeOptions = $derived.by(() => {
 
 //====== FUNCTIONS ======//
 
-function handleAddNewElement() {
+async function handleAddNewElement() {
 	if (!currentColumnTypeFamily) throw new Error('No type family selected')
 
-	typeElementsStore.createNewType({
+	await typeElementsStore.createNewType({
 		family: currentColumnTypeFamily,
 		withChildren:
 			currentColumnTypeFamily === TYPE_FAMILY.conductingEquipment

@@ -5,12 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.1.0] - 27-02-2025
+
+## [3.4.1] - 21.03.2025
+
+### Fixed 
+
+- Sidebar input validation on names : i.e. changing to a non-unique value is no longer allowed
+
+## [3.4.0] - 20.03.2025
+
+### Added 
+
+- Add user decision dialog thats displays the imports/changes to be made
+- Deep import (resolves all nested and related elements - ref to type)
+
+## [3.3.0] - 14.03-2025
+
+### Added
+
+- Load file from Com-pas
+- Load file locally
+- Import `Function` or `LNodeType` from another SSD file
+- Add container components for imported elements
+- Rename imported type when same name arise (suffixed with `Imported`)
+- Disable details for imported types in the sidebar view
+
+### Changed
+
+- Wrong page component : new UI
+
+### Fixed
+
+- Reactive creation of the `TEMPLATE` structure
+
+## [3.2.0] - 27-02-2025
 
 ### Added
 
 - Virtual attribute is added on equipment creation (default to 'false')
 - Sidebar close on type deletion
+- Names are unique (custom or automated) - each iteration is assigned a new occurrence
 
 ## [3.1.0] - 26-02-2025
 

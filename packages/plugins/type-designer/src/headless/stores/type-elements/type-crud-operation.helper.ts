@@ -12,11 +12,15 @@ import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
 // HELPERS
 import { getNewNameWithOccurrence } from '@/headless/stores/type-elements/type-naming.helper'
 // CONSTANTS
-import { CONDUCTING_EQUIPMENTS, TYPE_FAMILY } from '@/headless/constants'
+import {
+	CONDUCTING_EQUIPMENTS,
+	TYPE_FAMILY,
+	EQUIPMENTS
+} from '@/headless/constants'
 // TYPES
 import type { AvailableTypeFamily } from '@/headless/stores'
 
-//====== CREATE ======//
+//====== LOCAL HELPERS ======//
 
 function getTypeAttributes(
 	typeFamily: Exclude<AvailableTypeFamily, 'lNodeType'>
@@ -31,14 +35,20 @@ function getTypeAttributes(
 				TYPE_FAMILY.generalEquipment
 			],
 			virtual: 'false',
-			uuid: uuidv4()
+			uuid: uuidv4(),
+			type:
+				typeElementsStore.newEquipmentType &&
+				EQUIPMENTS[typeElementsStore.newEquipmentType].type
 		}),
 		[TYPE_FAMILY.conductingEquipment]: () => ({
 			name: typeElementsStore.newComputedTypeName[
 				TYPE_FAMILY.conductingEquipment
 			],
 			virtual: 'false',
-			uuid: uuidv4()
+			uuid: uuidv4(),
+			type:
+				typeElementsStore.newEquipmentType &&
+				EQUIPMENTS[typeElementsStore.newEquipmentType].type
 		}),
 		[TYPE_FAMILY.function]: () => ({
 			name: typeElementsStore.newComputedTypeName[TYPE_FAMILY.function],
@@ -85,6 +95,37 @@ function getTypeChildren(
 	return Array.from({ length: childOccurrence }, () => childTemplate)
 }
 
+export function getTypeParent(family: AvailableTypeFamily) {
+	return {
+		[TYPE_FAMILY.bay]: () => ssdStore.voltageLevelTemplateElement,
+		[TYPE_FAMILY.generalEquipment]: () => ssdStore.bayTemplateElement,
+		[TYPE_FAMILY.conductingEquipment]: () => ssdStore.bayTemplateElement,
+		[TYPE_FAMILY.function]: () => ssdStore.bayTemplateElement,
+		[TYPE_FAMILY.lNodeType]: () =>
+			pluginLocalStore.rootSubElements.dataTypeTemplates
+	}[family]()
+}
+
+export function getTypeInsertBeforeReference(
+	family: AvailableTypeFamily
+): Element | null {
+	return {
+		[TYPE_FAMILY.bay]: () => null,
+		[TYPE_FAMILY.generalEquipment]: () =>
+			ssdStore.bayTemplateElement?.getElementsByTagName(
+				'ConductingEquipment'
+			)[0] ||
+			getTypeInsertBeforeReference(TYPE_FAMILY.conductingEquipment),
+		[TYPE_FAMILY.conductingEquipment]: () =>
+			ssdStore.bayTemplateElement?.getElementsByTagName('Function')[0] ||
+			null,
+		[TYPE_FAMILY.function]: () => null,
+		[TYPE_FAMILY.lNodeType]: () => null
+	}[family]()
+}
+
+//====== CREATE ======//
+
 /**
  * Creates a new type element and optionally its children.
  *
@@ -103,12 +144,12 @@ function getTypeChildren(
  * @param params.withChildren - Optional flag to indicate whether to create child elements.
  * @throws Will throw an error if the host, XML document, type family, or parent element is not available.
  */
-export function createNewType(params: {
+export async function createNewType(params: {
 	family: Exclude<AvailableTypeFamily, 'lNodeType'>
 	withChildren?: boolean
 }) {
 	pluginLocalStore.updateSCLVersion()
-	ssdStore.createTemplateWrapper()
+	await ssdStore.createTemplateWrapper()
 
 	if (!pluginGlobalStore.host) throw new Error('No host')
 	if (!pluginGlobalStore.xmlDocument) throw new Error('No XML document')
@@ -140,10 +181,7 @@ export function createNewType(params: {
 		}
 	}
 
-	const parent =
-		params.family === TYPE_FAMILY.bay
-			? ssdStore.voltageLevelTemplateElement
-			: ssdStore.bayTemplateElement
+	const parent = getTypeParent(params.family)
 	if (!parent) throw new Error('No parent element available for the new type')
 
 	createAndDispatchEditEvent({
@@ -151,7 +189,7 @@ export function createNewType(params: {
 		edit: {
 			parent,
 			node: newTypeElement,
-			reference: null
+			reference: getTypeInsertBeforeReference(params.family)
 		}
 	})
 }
@@ -176,7 +214,11 @@ export function duplicateType({
 	clonedElement.setAttribute('uuid', uuidv4())
 	clonedElement.setAttribute(
 		'name',
-		getNewNameWithOccurrence({ elementToClone, family })
+		getNewNameWithOccurrence({
+			element: elementToClone,
+			family,
+			suffix: 'Copy'
+		})
 	)
 
 	if (!pluginGlobalStore.host) throw new Error('No host')

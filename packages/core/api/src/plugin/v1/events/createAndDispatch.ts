@@ -1,6 +1,13 @@
 import { newEditEvent } from '@openenergytools/open-scd-core'
 // TYPES
-import type { EditV2, EditEventOptions } from '@openenergytools/open-scd-core'
+import type {
+	Insert,
+	SetAttributes,
+	SetTextContent,
+	Remove,
+	EditV2,
+	EditEventOptions
+} from '@openenergytools/open-scd-core'
 
 export function createAndDispatchEditEvent({
 	host,
@@ -8,7 +15,7 @@ export function createAndDispatchEditEvent({
 	options
 }: {
 	host: Element
-	edit: EditV2
+	edit: Insert | SetAttributes | SetTextContent | Remove | EditV2[]
 	options?: EditEventOptions
 }) {
 	host.dispatchEvent(newEditEvent(edit, options))

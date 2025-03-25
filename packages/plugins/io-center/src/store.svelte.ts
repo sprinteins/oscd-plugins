@@ -6,7 +6,7 @@ import {
 	type ObjectTree,
 } from "./ied/object-tree.type.d";
 import type { Nullable } from "./types";
-import type { LogicalConditioner } from "./ui/components/canvas/types.canvas";
+import type { Connection, LogicalConditioner } from "./ui/components/canvas/types.canvas";
 import type { LpElement } from "./ui/components/lp-list/types.lp-list";
 import type { TreeNode } from "./ui/components/object-tree/types.object-tree";
 
@@ -23,6 +23,7 @@ export class Store {
 	objectTree: TreeNode[] = $state([])
 	objectTreeV2: ObjectTree = $state(NullObjectTree)
 	logicalConditioners: LogicalConditioner[] = $state([])
+	connections = $state<Connection[]>([])
 }
 
 export const store = new Store()

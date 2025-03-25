@@ -67,38 +67,86 @@ export function getCurrentElementDefinition<
 	}
 }
 
-// TODO: handle multiple unstable version
+export function getAttributes(element: Element) {
+	const attributes = Array.from(element.attributes)
+	const attributesObject: Record<string, string> = {}
 
-// export function flattenUnstableDefinition({
-// 	currentEdition,
-// 	currentUnstableRevisions
-// }: {
-// 	currentEdition: IEC61850.AvailableEdition
-// 	currentUnstableRevisions: IEC61850.UnstableRevisions<typeof currentEdition>
-// }) {
-// 	const CURRENT_EDITION_DEFINITION = IEC61850_DEFINITIONS[currentEdition]
-// 	let mergedUnstableRevision =
-// 		CURRENT_EDITION_DEFINITION.unstable[currentUnstableRevisions[0]]
+	for (const attribute of attributes)
+		attributesObject[attribute.name] = attribute.value
 
-// 	if (currentUnstableRevisions.length > 1)
-// 		for (const revision of currentUnstableRevisions.slice(1)) {
-// 			mergedUnstableRevision = deepMerge(
-// 				mergedUnstableRevision,
-// 				CURRENT_EDITION_DEFINITION.unstable[revision]
-// 			)
-// 		}
+	return attributesObject
+}
 
-// 	return mergedUnstableRevision
-// }
+export function getAttributesNS(element: Element) {
+	const attributes = Array.from(element.attributes)
+	const attributesObject: Record<string, Record<string, string | null>> = {}
 
-// // biome-ignore lint/suspicious/noExplicitAny: this is a generic helper function
-// export function deepMerge(target: any, source: any): any {
-// 	for (const key of Object.keys(source)) {
-// 		if (source[key] instanceof Object && key in target) {
-// 			Object.assign(source[key], deepMerge(target[key], source[key]))
-// 		}
-// 	}
-// 	// Join `target` and modified `source`
-// 	Object.assign(target || {}, source)
-// 	return target
-// }
+	for (const attribute of attributes) {
+		if (attribute.namespaceURI) {
+			if (!attributesObject[attribute.namespaceURI]) {
+				attributesObject[attribute.namespaceURI] = {}
+			}
+			attributesObject[attribute.namespaceURI][attribute.localName] =
+				attribute.value
+		}
+	}
+
+	return attributesObject
+}
+
+/**
+ * Deep nested comparison of two elements
+ * tagName, attributes and children are compared
+ * @param firstElement
+ * @param secondElement
+ * @returns
+ */
+export function areElementsIdentical(
+	firstElement: Element,
+	secondElement: Element
+) {
+	// Compare tag names
+	if (firstElement.tagName !== secondElement.tagName) return false
+
+	// Compare attributes
+	const firstElementAttributes = firstElement.attributes
+	const secondElementAttributes = secondElement.attributes
+
+	if (firstElementAttributes.length !== secondElementAttributes.length)
+		return false
+
+	for (let i = 0; i < firstElementAttributes.length; i++) {
+		const currentAttributeFromFirstElement = firstElementAttributes[i]
+
+		const currentAttributeFromSecondElement =
+			secondElementAttributes.getNamedItem(
+				currentAttributeFromFirstElement.name
+			)
+
+		if (
+			!currentAttributeFromSecondElement ||
+			currentAttributeFromFirstElement.value !==
+				currentAttributeFromSecondElement.value
+		)
+			return false
+	}
+
+	// Compare child elements
+	const firstElementChildren = firstElement.children
+	const secondElementChildren = secondElement.children
+
+	if (firstElementChildren.length !== secondElementChildren.length)
+		return false
+
+	for (let i = 0; i < firstElementChildren.length; i++) {
+		if (
+			!areElementsIdentical(
+				firstElementChildren[i],
+				secondElementChildren[i]
+			)
+		)
+			return false
+	}
+
+	return true
+}
