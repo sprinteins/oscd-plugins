@@ -83,20 +83,32 @@ $effect(() => {
 let scrollableContainer: HTMLElement;
 let lastScrollPosition = 0;
 
-let isCurrentDropTarget = false;
+let isCurrentDropTarget = $state(false);
 
 const handleDragOver = (event: DragEvent) => {
 	event.preventDefault();
-	scrollableContainer = event.currentTarget?.closest('.overflow-y-auto');
-	if (scrollableContainer) {
-		lastScrollPosition = scrollableContainer.scrollTop;
+	console.log('DragOver triggered');
+	
+	if (dndStore.isDragging && isAllowedToDrop) {
+		isCurrentDropTarget = true;
+		isElementCardOpen = true;
+		
+		scrollableContainer = event.currentTarget?.closest('.overflow-y-auto');
+		if (scrollableContainer) {
+			lastScrollPosition = scrollableContainer.scrollTop;
+	}
 	}
 	
 	if (dndStore.isDragging && isAllowedToDrop) {
 		window.dispatchEvent(new CustomEvent('hideAllDropZones'));
 		isCurrentDropTarget = true;
+		}
+	
+	if (dndStore.isDragging && isAllowedToDrop) {
+		window.dispatchEvent(new CustomEvent('hideAllDropZones'));
+		isCurrentDropTarget = true;
 	}
-};
+}
 
 onMount(() => {
 	const hideHandler = () => {
@@ -114,7 +126,7 @@ $effect(() => {
 });
 </script>
 	
-<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2" on:dragover|preventDefault={handleDragOver}>
+<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2" ondragover={(e) => handleDragOver(e)} ondragleave={() => {isElementCardOpen = false; console.log('dragleave')}} ondrop={() => isElementCardOpen = true }>
 
 	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen}/>
 

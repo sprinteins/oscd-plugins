@@ -18,10 +18,18 @@ class UseDnDStore {
 		sourceTypeFamily: AvailableTypeFamily
 		sourceRefFamily: AvailableRefFamily | undefined
 	}) {
+		console.log('DndStore: handleDragStart', params)
 		this.isDragging = true
 		this.currentSourceTypeIdOrUuid = params.sourceTypeId
 		this.currentSourceTypeFamily = params.sourceTypeFamily
 		this.currentSourceRefFamily = params.sourceRefFamily
+		
+		console.log('DndStore state after start:', {
+			isDragging: this.isDragging,
+			currentSourceTypeIdOrUuid: this.currentSourceTypeIdOrUuid,
+			currentSourceTypeFamily: this.currentSourceTypeFamily,
+			currentSourceRefFamily: this.currentSourceRefFamily
+		})
 	}
 
 	handleDragEnd() {
