@@ -33,12 +33,7 @@
     hasLNodeType?: (type: LcTypes) => boolean;
   };
 
-  let {
-    node,
-    startDrawing,
-    stopDrawing,
-    addConnection,
-  }: Props = $props();
+  let { node, startDrawing, stopDrawing, addConnection }: Props = $props();
 
   let isSelected = $state(false);
 
@@ -78,7 +73,7 @@
 
 <style lang="scss">
   .node-element {
-    @apply relative flex pt-2 px-4 h-20 bg-gray-100 border border-gray-300 rounded w-4/5;
+    @apply relative flex pt-2 px-4 min-h-[7.5rem] bg-gray-100 border border-gray-300 rounded w-4/5;
   }
 
   .selected {

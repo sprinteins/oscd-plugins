@@ -19,13 +19,13 @@
 	} from "./types.canvas";
 
 	type Props = {
-		onAddLC: (type: LcTypes, number?: number) => void;
+		addLC: (type: LcTypes, number?: number, numberOfLCIVPorts?: number) => void;
 		editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
 		hasLNodeType: (type: LcTypes) => boolean;
 		addConnection: (connection: Connection) => void;
 	};
 
-	const { onAddLC, editLC, hasLNodeType, addConnection }: Props = $props();
+	const { addLC, editLC, hasLNodeType, addConnection }: Props = $props();
 
 	let isDialogOpen = $state(false);
 
@@ -124,7 +124,7 @@
 	{/if}
 </svg>
 
-<AddLCDialog bind:isOpen={isDialogOpen} addLc={onAddLC} {hasLNodeType} />
+<AddLCDialog bind:isOpen={isDialogOpen} {addLC} {hasLNodeType} />
 
 <svelte:window onresize={redrawConnections} />
 

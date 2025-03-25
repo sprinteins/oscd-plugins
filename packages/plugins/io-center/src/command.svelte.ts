@@ -116,7 +116,7 @@ export class Command {
 		}
 	}
 
-	public addLC(type: LcTypes, number?: number) {
+	public addLC(type: LcTypes, number?: number, numberOfLCIVPorts?: number) {
 		if (!store.doc) { console.warn("no doc"); return; }
 
 		const host = this.requireHost()
@@ -135,6 +135,10 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLCNumber + 1}`,
 				"lnType": type,
+				/* SUBJECT TO BE CHANGED: since the flow for LC will be changed to not save to scd file until a connection happens,
+				this is a temporary solution as the current flow is (save to file -> read from file -> update local state) and will change to
+				(update local state -> save to file) and then we can change where we save the LCIV ports number. */
+				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -148,6 +152,10 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLCNumber + i}`,
 				"lnType": type,
+				/* SUBJECT TO BE CHANGED: since the flow for LC will be changed to not save to scd file until a connection happens,
+				this is a temporary solution as the current flow is (save to file -> read from file -> update local state) and will change to
+				(update local state -> save to file) and then we can change where we save the LCIV ports number. */
+				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -290,7 +298,9 @@ export class Command {
 			throw new Error('Connector LC LN not found!')
 		}
 
-		const doiName = connection.from.type === NODE_ELEMENT_TYPE.LC ? connection.from.port.name : connection.to.port.name
+		const doiName = connection.from.type === NODE_ELEMENT_TYPE.LC
+			? `${connection.from.port.name}${connection.from.port.index ?? ""}`
+			: `${connection.to.port.name}${connection.to.port.index ?? ""}`
 
 		createElement({
 			host,

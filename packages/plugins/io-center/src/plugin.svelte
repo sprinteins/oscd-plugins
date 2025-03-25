@@ -57,8 +57,8 @@
 		store.doc = doc;
 	});
 
-	function onAddLC(type: LcTypes, number?: number) {
-		cmd.addLC(type, number);
+	function addLC(type: LcTypes, number?: number, numberOfLCIVPorts?: number) {
+		cmd.addLC(type, number, numberOfLCIVPorts);
 	}
 
 	function editLC(lcNode: NodeElement, newType: LcTypes) {
@@ -102,7 +102,7 @@
 >
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
-		<CanvasArea slot="content" {onAddLC} {editLC} {hasLNodeType} {addConnection} />
+		<CanvasArea slot="content" {addLC} {editLC} {hasLNodeType} {addConnection} />
 		<LpList
 			slot="sidebar-right"
 			{addLp}

@@ -175,12 +175,12 @@ export function stopDrawing(
     ) as HTMLElement | null
 
     if (startCircle && target && startCircle !== target) {
-        let fromNode = canvasStore.startNode
+        const fromNode = canvasStore.startNode
         if (!fromNode) {
             return
         }
 
-        let toNode = `${targetNode}-${port.side}`
+        const toNode = `${targetNode}-${port.side}`
 
         if (startCircle instanceof HTMLElement)
             if (
@@ -192,19 +192,12 @@ export function stopDrawing(
             }
 
         if (
-            startCircle instanceof HTMLElement &&
-            startCircle.id.includes('left-circle')
-        ) {
-            [fromNode, toNode] = [toNode, fromNode]
-        }
-
-        if (
             startPort &&
             startNodeType &&
             !connectionExists(fromNode, toNode)
         ) {
             const connection = {
-                id: `${fromNode}-${startPort.name}-${toNode}-${port.name}`,
+                id: `${fromNode}-${startPort.name}${startPort.index ?? ""}-${toNode}-${port.name}${port.index ?? ""}`,
                 from: {
                     name: fromNode,
                     type: startNodeType,
@@ -239,8 +232,10 @@ export async function getCoordinates(connectionPoint: ConnectionPoint) {
         return { x: 0, y: 0 }
     }
 
+    const portNumber = connectionPoint.port.index || connectionPoint.port.index === 0 ? `${connectionPoint.port.index}` : "";
+
     const circle = target.querySelector(
-        `#${connectionPoint.port.side}-circle-${connectionPoint.port.name}`
+        `#${connectionPoint.port.side}-circle-${connectionPoint.port.name}${portNumber}`
     )
 
     if (!circle) {

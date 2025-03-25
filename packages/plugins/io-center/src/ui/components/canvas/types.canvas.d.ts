@@ -3,6 +3,7 @@ import type { LpTypes } from "../lp-list/types.lp-list"
 
 export type ConnectionPort = {
 	side: "right" | "left"
+	index?: number
 	name: string
 }
 
@@ -33,6 +34,7 @@ export type NodeElement =
 		name: string
 		isLinked?: boolean
 		lnClass: LcTypes | LpTypes
+		numberOfDynamicPorts?: number
 	}
 
 export type LogicalConditioner = {
@@ -40,6 +42,7 @@ export type LogicalConditioner = {
 	type: LcTypes,
 	instance: string,
 	isLinked: boolean,
+	numberOfLCIVPorts?: number,
 }
 
 export type AddLCFormData = {

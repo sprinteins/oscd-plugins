@@ -9,7 +9,6 @@
     type Props = {
         node: NodeElement;
         port: ConnectionPort;
-        number: number;
         startDrawing: (
             event: MouseEvent,
             port: ConnectionPort,
@@ -26,12 +25,14 @@
 
     let { node, port, startDrawing, stopDrawing, addConnection }: Props =
         $props();
+
+    const portNumber = port.index || port.index === 0 ? `${port.index}` : "";
 </script>
 
 <div
     role="button"
     tabindex="-1"
-    id={`${port.side}-circle-${port.name}`}
+    id={`${port.side}-circle-${port.name}${portNumber}`}
     class={`relative bg-black border border-black w-2 h-2 rounded-full`}
     onmousedown={(event) => {
         startDrawing(event, port, node.type);
@@ -40,5 +41,7 @@
         stopDrawing(port, node.name, node.type, addConnection);
     }}
 >
-    <p class={`absolute ${port.side}-1 -bottom-[125%] px-3`}>{port.name}</p>
+    <p class={`absolute ${port.side}-1 -bottom-[125%] px-3`}>
+        {`${port.name}${portNumber}`}
+    </p>
 </div>

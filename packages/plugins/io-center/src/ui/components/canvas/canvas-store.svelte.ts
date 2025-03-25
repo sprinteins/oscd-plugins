@@ -26,7 +26,7 @@ export function LPToNodeElement(lp: LpElement): NodeElement {
 		type: NODE_ELEMENT_TYPE.LP,
 		name: `${lp.type}-${lp.instance}`,
 		isLinked: lp.isLinked,
-		lnClass: lp.type
+		lnClass: lp.type,
 	}
 }
 
@@ -35,7 +35,8 @@ export function LCToNodeElement(lc: LogicalConditioner): NodeElement {
 		id: lc.id,
 		type: NODE_ELEMENT_TYPE.LC,
 		name: `${lc.type}-${lc.instance}`,
-		lnClass: lc.type
+		lnClass: lc.type,
+		numberOfDynamicPorts: lc.numberOfLCIVPorts
 	}
 }
 

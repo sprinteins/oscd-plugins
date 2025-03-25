@@ -65,6 +65,7 @@ function lcElementToLC(lcElement: Element): LogicalConditioner {
 		type: lcElement.getAttribute("lnClass") as keyof typeof LC_TYPE || "unknown",
 		instance: `${lcElement.getAttribute("inst") || ""}`,
 		isLinked: false,
+		numberOfLCIVPorts: Number.parseInt(lcElement.getAttribute("numberOfLCIVPorts") || "") || undefined,
 	}
 }
 
@@ -203,7 +204,7 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 						? `${refDO}-right`
 						: `${lnClass}-${inst}-right`,
 					type: connectionType === "output" ? NODE_ELEMENT_TYPE.DO : NODE_ELEMENT_TYPE.LC,
-					port: connectionType === "output" ? { name: refDO, side: "right" } as ConnectionPort : PORTS_CONFIG_PER_TYPE[lnClass].filter(port => port.name === doiName)[0]
+					port: connectionType === "output" ? { name: refDO, side: "right" } as ConnectionPort : { name: doiName, side: "right" } as ConnectionPort
 				};
 
 				const to = {
@@ -211,7 +212,7 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 						? `${lnClass}-${inst}-left`
 						: `${refLNClass}-${refLNInst}-left`,
 					type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP,
-					port: connectionType === "output" ? PORTS_CONFIG_PER_TYPE[lnClass].filter(port => port.name === doiName)[0] : PORTS_CONFIG_PER_TYPE[refLNClass].filter(port => port.name === refDO)[0]
+					port: connectionType === "output" ? PORTS_CONFIG_PER_TYPE[lnClass].filter(port => doiName.includes(port.name))[0] : PORTS_CONFIG_PER_TYPE[refLNClass].filter(port => port.name === refDO)[0]
 				};
 
 				const connection: Connection = {

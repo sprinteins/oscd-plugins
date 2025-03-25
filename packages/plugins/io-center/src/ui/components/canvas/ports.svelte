@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { LC_TYPE, NODE_ELEMENT_TYPE } from "@/headless/constants";
     import Port from "./port.svelte";
     import type {
         Connection,
@@ -28,7 +29,7 @@
     let { side, node, ports, startDrawing, stopDrawing, addConnection }: Props =
         $props();
 
-    const containerTopPos = ports.length > 2 ? "top-[60%]" : "top-[70%]";
+    const containerTopPos = ports.length > 2 ? "top-[60%]" : "top-[60%]";
     const containerTranslateX =
         side === "left" ? "-translate-x-1/2" : "translate-x-1/2";
 </script>
@@ -37,16 +38,21 @@
     data-title={`${node.name}-${side}`}
     class={`container absolute ${side}-0 ${containerTopPos} transform -translate-y-1/2 ${containerTranslateX}`}
 >
-    {#each ports as port, index}
-        <Port
-            {port}
-            {node}
-            {startDrawing}
-            {stopDrawing}
-            {addConnection}
-            number={index}
-        />
-    {/each}
+    {#if node.type === NODE_ELEMENT_TYPE.LC && side === "right" && node.lnClass === LC_TYPE.LCIV && node.numberOfDynamicPorts}
+        {#each Array.from({ length: node.numberOfDynamicPorts }, (_, i) => i) as index (index)}
+            <Port
+                port={{...ports[0], index}}
+                {node}
+                {startDrawing}
+                {stopDrawing}
+                {addConnection}
+            />
+        {/each}
+    {:else}
+        {#each ports as port}
+            <Port {port} {node} {startDrawing} {stopDrawing} {addConnection} />
+        {/each}
+    {/if}
 </div>
 
 <style lang="scss">
