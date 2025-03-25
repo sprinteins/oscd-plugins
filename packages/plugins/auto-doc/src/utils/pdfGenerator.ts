@@ -191,12 +191,12 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     function processTableForPdfGeneration(block: Element) {
         const content = block.textContent;
         if(!content) {
-            console.error("No content found in Signal List Block");
+            console.error("No content found in Table Block");
             return;
         }
 
         const data = JSON.parse(content);
-        
+
         const formattedHeader: string[][] = [data.map((row: String[]) => row[0])];
         const formattedBody: string[][] = [data.map((row: String[]) => row[1])];
 
