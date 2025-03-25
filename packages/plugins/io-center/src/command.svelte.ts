@@ -11,7 +11,7 @@ export class Command {
 		private getHost: HostGetter,
 	) { }
 
-	public addLp(type: LpTypes, name: string, desc: string, number?: number) {
+	public addLP(type: LpTypes, name: string, desc: string, number?: number, numberOfLPDOPorts?: number) {
 		if (!store.doc) { return }
 
 		const sclRoot = store.doc.querySelector("SCL");
@@ -39,6 +39,7 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLPNumber + 1}`,
 				"lnType": name || type,
+				"numberOfLPDOPorts": `${numberOfLPDOPorts}` || "",
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -53,6 +54,7 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLPNumber + i}`,
 				"lnType": name || type,
+				"numberOfLPDOPorts": `${numberOfLPDOPorts}` || "",
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -329,7 +331,9 @@ export class Command {
 					"refLDIn": "LD0",
 					"refLNClass": lpLnClass,
 					"refLNInst": lpInst,
-					"refDO": connection.from.type === NODE_ELEMENT_TYPE.LP ? connection.from.port.name : connection.to.port.name,
+					"refDO": connection.from.type === NODE_ELEMENT_TYPE.LP
+						? `${connection.from.port.name}${connection.from.port.index ?? ""}`
+						: `${connection.to.port.name}${connection.to.port.index ?? ""}`
 				},
 				parent: doi,
 				reference: null

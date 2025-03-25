@@ -27,6 +27,7 @@ export function LPToNodeElement(lp: LpElement): NodeElement {
 		name: `${lp.type}-${lp.instance}`,
 		isLinked: lp.isLinked,
 		lnClass: lp.type,
+		numberOfDynamicPorts: lp.numberOfLPDOPorts
 	}
 }
 

@@ -65,8 +65,8 @@
 		cmd.editLC(lcNode, newType);
 	}
 
-	function addLp(type: LpTypes, name: string, desc: string, number?: number) {
-		cmd.addLp(type, name, desc, number);
+	function addLP(type: LpTypes, name: string, desc: string, number?: number, numberOfLPDOPorts?: number) {
+		cmd.addLP(type, name, desc, number, numberOfLPDOPorts);
 	}
 
 	function removeLP(lpElement: LpElement) {
@@ -105,7 +105,7 @@
 		<CanvasArea slot="content" {addLC} {editLC} {hasLNodeType} {addConnection} />
 		<LpList
 			slot="sidebar-right"
-			{addLp}
+			{addLP}
 			{removeLP}
 			{editLP}
 			{hasLNodeType}

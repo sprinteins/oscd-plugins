@@ -93,6 +93,7 @@ function lpElementToLP(lpElement: Element): LpElement {
 		instance: `${lpElement.getAttribute("inst") || ""}`,
 		description: `${lpElement.getAttribute("desc") || ""}`,
 		isLinked: false,
+		numberOfLPDOPorts: Number.parseInt(lpElement.getAttribute("numberOfLPDOPorts") || "") || undefined,
 	}
 }
 
@@ -212,7 +213,7 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 						? `${lnClass}-${inst}-left`
 						: `${refLNClass}-${refLNInst}-left`,
 					type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP,
-					port: connectionType === "output" ? PORTS_CONFIG_PER_TYPE[lnClass].filter(port => doiName.includes(port.name))[0] : PORTS_CONFIG_PER_TYPE[refLNClass].filter(port => port.name === refDO)[0]
+					port: connectionType === "output" ? PORTS_CONFIG_PER_TYPE[lnClass].filter(port => doiName.includes(port.name))[0] : { name: refDO, side: "left" } as ConnectionPort
 				};
 
 				const connection: Connection = {

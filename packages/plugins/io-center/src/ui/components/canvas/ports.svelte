@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { LC_TYPE, NODE_ELEMENT_TYPE } from "@/headless/constants";
+    import { LC_TYPE, LP_TYPE, NODE_ELEMENT_TYPE } from "@/headless/constants";
     import Port from "./port.svelte";
     import type {
         Connection,
@@ -32,16 +32,24 @@
     const containerTopPos = ports.length > 2 ? "top-[60%]" : "top-[60%]";
     const containerTranslateX =
         side === "left" ? "-translate-x-1/2" : "translate-x-1/2";
+
+    const useDynamicPorts =
+        (node.type === NODE_ELEMENT_TYPE.LC &&
+            side === "right" &&
+            node.lnClass === LC_TYPE.LCIV) ||
+        (node.type === NODE_ELEMENT_TYPE.LP &&
+            side === "left" &&
+            node.lnClass === LP_TYPE.LPDO);
 </script>
 
 <div
     data-title={`${node.name}-${side}`}
     class={`container absolute ${side}-0 ${containerTopPos} transform -translate-y-1/2 ${containerTranslateX}`}
 >
-    {#if node.type === NODE_ELEMENT_TYPE.LC && side === "right" && node.lnClass === LC_TYPE.LCIV && node.numberOfDynamicPorts}
+    {#if useDynamicPorts && node.numberOfDynamicPorts}
         {#each Array.from({ length: node.numberOfDynamicPorts }, (_, i) => i) as index (index)}
             <Port
-                port={{...ports[0], index}}
+                port={{ ...ports[0], index }}
                 {node}
                 {startDrawing}
                 {stopDrawing}

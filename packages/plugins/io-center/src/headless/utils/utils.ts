@@ -12,6 +12,7 @@ import type { LpElement } from '@/ui/components/lp-list/types.lp-list'
 import type { TreeNode } from '@/ui/components/object-tree/types.object-tree'
 import { tick } from 'svelte'
 import { NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE } from '../constants'
+import _ from "lodash"
 
 export function searchTree(tree: TreeNode[], searchTerm: string): TreeNode[] {
     return tree
@@ -145,11 +146,13 @@ export function isSameSide(startSide: string, targetSide: string) {
 export function connectionExists(
     fromNode: string,
     toNode: string,
+    fromPort: ConnectionPort,
+    toPort: ConnectionPort,
 ) {
     return store.connections.some(
         (connection) =>
-            (connection.from.name === fromNode && connection.to.name === toNode) ||
-            (connection.from.name === toNode && connection.to.name === fromNode)
+            (connection.from.name === fromNode && connection.to.name === toNode && _.isEqual(connection.from.port, fromPort) && _.isEqual(connection.to.port, toPort)) ||
+            (connection.from.name === toNode && connection.to.name === fromNode) && _.isEqual(connection.from.port, toPort) && _.isEqual(connection.to.port, fromPort)
     )
 }
 
@@ -194,7 +197,7 @@ export function stopDrawing(
         if (
             startPort &&
             startNodeType &&
-            !connectionExists(fromNode, toNode)
+            !connectionExists(fromNode, toNode, startPort, port)
         ) {
             const connection = {
                 id: `${fromNode}-${startPort.name}${startPort.index ?? ""}-${toNode}-${port.name}${port.index ?? ""}`,
