@@ -141,17 +141,14 @@ onMount(() => {
 	
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore event_directive_deprecated -->
-<div class="wrapper"
-	ondragover={handleDragOver}
+<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2" ondragover={handleDragOver}
 	ondragleave={handleDragLeave}
 	ondrop={() => {
 		if (dragLeaveTimeout) {
 			clearTimeout(dragLeaveTimeout);
 		}
 		isElementCardOpen = true;
-	}}
->
-	<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2">
+	}}>
 		<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {isImportContainer}/>
 
 		<!-- REF CARD START -->
@@ -217,6 +214,5 @@ onMount(() => {
 		</div>
 	{/if}
 	<!-- DND PLACEHOLDER END -->
-	</Collapsible.Root>
+</Collapsible.Root>
 
-</div>
