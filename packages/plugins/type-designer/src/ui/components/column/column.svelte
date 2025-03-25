@@ -52,13 +52,13 @@ const isColumnDisabled = $derived.by(() => {
     }
     
     // Funktion
-    // if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function) {
-    //     const allowedFamilies = [TYPE_FAMILY.bay, TYPE_FAMILY.generalEquipment, TYPE_FAMILY.conductingEquipment];
-    //     if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
-    //         return !COLUMN_KEY_TO_TYPE_FAMILY[columnKey].some(family => allowedFamilies.includes(family));
-    //     }
-    //     return !allowedFamilies.includes(COLUMN_KEY_TO_TYPE_FAMILY[columnKey] as AvailableTypeFamily);
-    // }
+    if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function) {
+        const allowedFamilies = [TYPE_FAMILY.bay, TYPE_FAMILY.generalEquipment, TYPE_FAMILY.conductingEquipment];
+        if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
+            return !COLUMN_KEY_TO_TYPE_FAMILY[columnKey].some(family => allowedFamilies.includes(family));
+        }
+        return !allowedFamilies.includes(COLUMN_KEY_TO_TYPE_FAMILY[columnKey]);
+    }
     
     return true;
 });
