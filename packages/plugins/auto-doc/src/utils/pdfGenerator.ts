@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import autoTable, { applyPlugin } from 'jspdf-autotable';
 import zipcelx from 'zipcelx';
 import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore} from '@/stores'
@@ -27,7 +27,8 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     const blockHandler: Record<ElementType, (block: Element) => void> = {
         text: handleRichTextEditorBlock,
         image: () => {},
-        signalList: processSignalListForPdfGeneration
+        signalList: processSignalListForPdfGeneration,
+        table: processTableForPdfGeneration,
     }
 
     function incrementVerticalPositionForNextLine(lineHeight = 7) {
@@ -154,6 +155,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         doc.text(text, horizontalSpacing, marginTop);
         incrementVerticalPositionForNextLine();
     }
+    
     function processSignalListForPdfGeneration(block: Element){
         if(!block.textContent) {
             console.error("No content found in Signal List Block");
@@ -184,6 +186,24 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
        renderTextLine(pdfHintText);
         zipcelx(config)
+    }
+
+    function processTableForPdfGeneration(block: Element) {
+        const content = block.textContent;
+        if(!content) {
+            console.error("No content found in Signal List Block");
+            return;
+        }
+
+        const data = JSON.parse(content);
+        
+        const formattedHeader: string[][] = [data.map((row: String[]) => row[0])];
+        const formattedBody: string[][] = [data.map((row: String[]) => row[1])];
+
+        autoTable(doc, {
+            head: formattedHeader,
+            body: formattedBody
+        });
     }
 
     for(const block of allBlocks){
