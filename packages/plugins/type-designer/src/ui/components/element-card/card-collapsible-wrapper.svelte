@@ -139,8 +139,6 @@ onMount(() => {
 });
 </script>
 	
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<!-- svelte-ignore event_directive_deprecated -->
 <Collapsible.Root bind:open={isElementCardOpen} class="space-y-2" ondragover={handleDragOver}
 	ondragleave={handleDragLeave}
 	ondrop={() => {
