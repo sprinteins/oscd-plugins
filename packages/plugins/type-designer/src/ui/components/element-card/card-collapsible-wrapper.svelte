@@ -87,28 +87,17 @@ let isCurrentDropTarget = $state(false);
 
 const handleDragOver = (event: DragEvent) => {
 	event.preventDefault();
-	console.log('DragOver triggered');
-	
 	if (dndStore.isDragging && isAllowedToDrop) {
+		window.dispatchEvent(new CustomEvent('hideAllDropZones'));
 		isCurrentDropTarget = true;
 		isElementCardOpen = true;
 		
 		scrollableContainer = event.currentTarget?.closest('.overflow-y-auto');
 		if (scrollableContainer) {
 			lastScrollPosition = scrollableContainer.scrollTop;
-	}
-	}
-	
-	if (dndStore.isDragging && isAllowedToDrop) {
-		window.dispatchEvent(new CustomEvent('hideAllDropZones'));
-		isCurrentDropTarget = true;
 		}
-	
-	if (dndStore.isDragging && isAllowedToDrop) {
-		window.dispatchEvent(new CustomEvent('hideAllDropZones'));
-		isCurrentDropTarget = true;
 	}
-}
+};
 
 onMount(() => {
 	const hideHandler = () => {
@@ -117,28 +106,25 @@ onMount(() => {
 	window.addEventListener('hideAllDropZones', hideHandler);
 	return () => window.removeEventListener('hideAllDropZones', hideHandler);
 });
-
-// not sure
-$effect(() => {
-	if (!isCurrentDropTarget) {
-		isElementCardOpen = false;
-	}
-});
 </script>
 	
-<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2" ondragover={(e) => handleDragOver(e)} ondragleave={() => {isElementCardOpen = false; console.log('dragleave')}} ondrop={() => isElementCardOpen = true }>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore event_directive_deprecated -->
+<div class="wrapper"
+	ondragover={(e) => handleDragOver(e)} ondragleave={() => {isElementCardOpen = false; console.log('dragleave')}} ondrop={() => isElementCardOpen = true }
+>
+	<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2">
+		<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen}/>
 
-	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen}/>
-
-	<!-- REF CARD START -->
-		<Collapsible.Content  class="space-y-2 flex flex-col items-end">
+		<!-- REF CARD START -->
+		<Collapsible.Content class="space-y-2 flex flex-col items-end">
 			{#snippet child({ props, open: collapsibleContentOpen })}
 				{#if collapsibleContentOpen}
 					<div {...props} transition:slide={{ duration: 100 }}>
 						{#if typeElementFamily !== TYPE_FAMILY.lNodeType}
 							{#each currentRefs as [refFamily, refElements]}
 								{#each Object.entries(refElements) as [refId, refWrapper]} 
-									<Card.Root class="w-5/6" >
+									<Card.Root class="w-5/6">
 										<Card.Content class="h-8 p-1 flex items-center justify-between">
 											<div class="flex items-center min-w-0">
 												<span class="ml-3 min-w-2.5 min-h-2.5 border-teal-700 border-2 transform rotate-45"></span>
@@ -147,7 +133,7 @@ $effect(() => {
 											<CardMenu type={{ family: typeElementFamily, id: typeElementKey}} ref={{ family: refFamily, id: refId}}/>
 										</Card.Content>
 									</Card.Root>
-									{/each}
+								{/each}
 							{/each}
 						{/if}
 					</div>
@@ -187,5 +173,6 @@ $effect(() => {
 		</div>
 	{/if}
 	<!-- DND PLACEHOLDER END -->
+	</Collapsible.Root>
 
-</Collapsible.Root>
+</div>
