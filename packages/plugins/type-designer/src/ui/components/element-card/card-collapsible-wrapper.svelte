@@ -84,19 +84,40 @@ let scrollableContainer: HTMLElement;
 let lastScrollPosition = 0;
 
 let isCurrentDropTarget = $state(false);
+let dragLeaveTimeout: number | undefined;
 
 const handleDragOver = (event: DragEvent) => {
 	event.preventDefault();
 	if (dndStore.isDragging && isAllowedToDrop) {
+		if (dragLeaveTimeout) {
+			clearTimeout(dragLeaveTimeout);
+			dragLeaveTimeout = undefined;
+		}
+		
 		window.dispatchEvent(new CustomEvent('hideAllDropZones'));
 		isCurrentDropTarget = true;
 		isElementCardOpen = true;
 		
-		scrollableContainer = event.currentTarget?.closest('.overflow-y-auto');
+		const target = event.target as HTMLElement;
+		scrollableContainer = target.closest('.overflow-y-auto') as HTMLElement;
 		if (scrollableContainer) {
 			lastScrollPosition = scrollableContainer.scrollTop;
 		}
 	}
+};
+
+const handleDragLeave = (event: DragEvent) => {
+	const target = event.target as HTMLElement;
+	const relatedTarget = event.relatedTarget as HTMLElement;
+	
+	if (relatedTarget && target.contains(relatedTarget)) {
+		return;
+	}
+	
+	// prevents flickering of the collapsible element, otherwise it jumps like crazy when dragging over the refs
+	dragLeaveTimeout = window.setTimeout(() => {
+		isElementCardOpen = false;
+	}, 50);
 };
 
 onMount(() => {
@@ -104,14 +125,26 @@ onMount(() => {
 		isCurrentDropTarget = false;
 	};
 	window.addEventListener('hideAllDropZones', hideHandler);
-	return () => window.removeEventListener('hideAllDropZones', hideHandler);
+	return () => {
+		window.removeEventListener('hideAllDropZones', hideHandler);
+		if (dragLeaveTimeout) {
+			clearTimeout(dragLeaveTimeout);
+		}
+	};
 });
 </script>
 	
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore event_directive_deprecated -->
 <div class="wrapper"
-	ondragover={(e) => handleDragOver(e)} ondragleave={() => {isElementCardOpen = false; console.log('dragleave')}} ondrop={() => isElementCardOpen = true }
+	ondragover={handleDragOver}
+	ondragleave={handleDragLeave}
+	ondrop={() => {
+		if (dragLeaveTimeout) {
+			clearTimeout(dragLeaveTimeout);
+		}
+		isElementCardOpen = true;
+	}}
 >
 	<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2">
 		<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen}/>
