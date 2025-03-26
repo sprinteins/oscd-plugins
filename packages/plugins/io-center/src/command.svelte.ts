@@ -11,7 +11,7 @@ export class Command {
 		private getHost: HostGetter,
 	) { }
 
-	public addLp(type: LpTypes, name: string, desc: string, number?: number) {
+	public addLP(type: LpTypes, name: string, desc: string, number?: number, numberOfLPDOPorts?: number) {
 		if (!store.doc) { return }
 
 		const sclRoot = store.doc.querySelector("SCL");
@@ -39,6 +39,7 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLPNumber + 1}`,
 				"lnType": name || type,
+				"numberOfLPDOPorts": `${numberOfLPDOPorts}` || "",
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -53,6 +54,7 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLPNumber + i}`,
 				"lnType": name || type,
+				"numberOfLPDOPorts": `${numberOfLPDOPorts}` || "",
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -116,7 +118,7 @@ export class Command {
 		}
 	}
 
-	public addLC(type: LcTypes, number?: number) {
+	public addLC(type: LcTypes, number?: number, numberOfLCIVPorts?: number) {
 		if (!store.doc) { console.warn("no doc"); return; }
 
 		const host = this.requireHost()
@@ -135,6 +137,10 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLCNumber + 1}`,
 				"lnType": type,
+				/* SUBJECT TO BE CHANGED: since the flow for LC will be changed to not save to scd file until a connection happens,
+				this is a temporary solution as the current flow is (save to file -> read from file -> update local state) and will change to
+				(update local state -> save to file) and then we can change where we save the LCIV ports number. */
+				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -148,6 +154,10 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLCNumber + i}`,
 				"lnType": type,
+				/* SUBJECT TO BE CHANGED: since the flow for LC will be changed to not save to scd file until a connection happens,
+				this is a temporary solution as the current flow is (save to file -> read from file -> update local state) and will change to
+				(update local state -> save to file) and then we can change where we save the LCIV ports number. */
+				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -240,8 +250,6 @@ export class Command {
 
 		let connectionType: Nullable<"input" | "output"> = null;
 
-		console.log("connection: ", connection)
-
 		if (connection.from.type === NODE_ELEMENT_TYPE.DO || connection.to.type === NODE_ELEMENT_TYPE.DO) {
 			connectionType = "output"
 		}
@@ -269,13 +277,10 @@ export class Command {
 
 		if (connection.from.type === NODE_ELEMENT_TYPE.LC) {
 			[lcLnClass, lcInst] = connection.from.name.replace(/-left|-right/g, '').split('-')
-			console.log("from lcLnClass, lcInst: ", lcLnClass, lcInst)
 		}
 
 		if (connection.to.type === NODE_ELEMENT_TYPE.LC) {
 			[lcLnClass, lcInst] = connection.to.name.replace(/-left|-right/g, '').split('-')
-			console.log("to lcLnClass, lcInst: ", lcLnClass, lcInst)
-
 		}
 
 		let lpLnClass: string | null = null
@@ -283,12 +288,10 @@ export class Command {
 
 		if (connection.from.type === NODE_ELEMENT_TYPE.LP) {
 			[lpLnClass, lpInst] = connection.from.name.replace(/-left|-right/g, '').split('-')
-			console.log("from lp: ", lpLnClass, lpInst)
 		}
 
 		if (connection.to.type === NODE_ELEMENT_TYPE.LP) {
 			[lpLnClass, lpInst] = connection.to.name.replace(/-left|-right/g, '').split('-')
-			console.log("to lp: ", lpLnClass, lpInst)
 		}
 
 		const connectorLC = ld0.querySelector(`LN[lnClass="${lcLnClass}"][inst="${lcInst}"]`)
@@ -297,22 +300,26 @@ export class Command {
 			throw new Error('Connector LC LN not found!')
 		}
 
+		const doiName = connection.from.type === NODE_ELEMENT_TYPE.LC
+			? `${connection.from.port.name}${connection.from.port.index ?? ""}`
+			: `${connection.to.port.name}${connection.to.port.index ?? ""}`
+
 		createElement({
 			host,
 			doc: store.doc,
 			tagName: "DOI",
 			attributes: {
-				/* name attribute will be added when the ports are named */
+				"name": doiName,
 				"desc": connectionType
 			},
 			parent: connectorLC,
 			reference: null
 		})
 
-		const doi = connectorLC.querySelector(`DOI[desc="${connectionType}"]`)
+		const doi = connectorLC.querySelector(`DOI[name="${doiName}"][desc="${connectionType}"]`)
 
 		if (!doi) {
-			throw new Error('DOI not created!')
+			throw new Error(`DOI[name="${doiName}",desc="${connectionType}"] not created!`)
 		}
 
 		if (connectionType === "input") {
@@ -324,7 +331,9 @@ export class Command {
 					"refLDIn": "LD0",
 					"refLNClass": lpLnClass,
 					"refLNInst": lpInst,
-					/* refDO will be set to the port name once that issue is done */
+					"refDO": connection.from.type === NODE_ELEMENT_TYPE.LP
+						? `${connection.from.port.name}${connection.from.port.index ?? ""}`
+						: `${connection.to.port.name}${connection.to.port.index ?? ""}`
 				},
 				parent: doi,
 				reference: null

@@ -6,11 +6,11 @@
 
 	type Props = {
 		isOpen: boolean;
-		addLc: (type: LcTypes, number?: number) => void;
+		addLC: (type: LcTypes, number?: number, numberOfLCIVPorts?: number) => void;
 		hasLNodeType: (type: LcTypes) => boolean;
 	};
 
-	let { isOpen = $bindable(), addLc, hasLNodeType }: Props = $props();
+	let { isOpen = $bindable(), addLC, hasLNodeType }: Props = $props();
 
 	let formData = $state<AddLCFormData>({
 		type: "",
@@ -34,7 +34,7 @@
 	function handleSubmit() {
 		if (!formData.type) return;
 
-		addLc(formData.type, formData.number);
+		addLC(formData.type, formData.number, formData.numberOfLCIVPorts);
 
 		formData.type = "";
 
