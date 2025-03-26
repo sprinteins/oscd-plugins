@@ -11,7 +11,7 @@ import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list
 */
 
 
-function generatePdf(templateTitle: string , allBlocks: Element[]){
+async function generatePdf(templateTitle: string , allBlocks: Element[]){
     const doc = new jsPDF();
     const DEFAULT_FONT_SIZE = 10;
     doc.setFontSize(DEFAULT_FONT_SIZE);
@@ -27,7 +27,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
     const blockHandler: Record<ElementType, (block: Element) => void> = {
         text: handleRichTextEditorBlock,
-        image: () => {},
+        image: processImageForPdfGeneration,
         signalList: processSignalListForPdfGeneration,
         table: processTableForPdfGeneration,
     }
@@ -156,6 +156,44 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         doc.text(text, horizontalSpacing, marginTop);
         incrementVerticalPositionForNextLine();
     }
+
+    async function loadImage(base64: string): Promise<HTMLImageElement> {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                resolve(img);
+            }
+            img.onerror = (error) => reject(error);
+            img.src = base64;
+        });
+    }
+
+    async function processImageForPdfGeneration(block: Element) {
+        const content = block.textContent;
+        if(!content) {
+            console.error("No content found in Image Block");
+            return;
+        }
+
+        const image = await loadImage(content);
+        const format = content.split(";")[0].split("/")[1];
+
+        let scaledWidth = image.width;
+        let scaledHeight = image.height;
+
+        const scaleWidth = pageWidth / image.width;
+        const scaleHeight = pageHeight / image.height;
+
+        const scaleFactor = Math.min(scaleWidth, scaleHeight) * 0.3;
+
+        scaledWidth *= scaleFactor;
+        scaledHeight *= scaleFactor;
+
+        doc.addImage(content, format.toUpperCase(), 10, marginTop, scaledWidth, scaledHeight);
+
+        const padding = Math.round(scaledHeight * 1.12);
+        incrementVerticalPositionForNextLine(padding);
+    }
     
     function processSignalListForPdfGeneration(block: Element){
         if(!block.textContent) {
@@ -208,7 +246,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
             doc.addPage();
             marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
         }
-
+        
         autoTable(doc, {
             head: formattedHeader,
             body: formattedBody,
@@ -228,10 +266,10 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         const blockType = block.getAttribute('type') as ElementType;
         
         if(blockType && blockHandler[blockType]){
-            blockHandler[blockType](block);
+            await blockHandler[blockType](block);
         }
     }
-    
+
     doc.save(`${templateTitle}.pdf`);
 
     
