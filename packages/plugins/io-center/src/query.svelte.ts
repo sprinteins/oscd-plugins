@@ -1,5 +1,5 @@
-import { LC_TYPE, LP_TYPE, NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE } from "./headless/constants";
-import { findDataObject, findLogicalPhysical, getPortsConfig } from "./headless/utils";
+import { LC_TYPE, LP_TYPE, NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE, TARGET_CDC_TYPES } from "./headless/constants";
+import { findDataObject, findLogicalPhysical } from "./headless/utils";
 import type { IED } from "./ied/ied";
 import {
 	NodeTypes,
@@ -11,7 +11,7 @@ import {
 } from "./ied/object-tree.type.d";
 import { store } from "./store.svelte";
 import type { Nullable } from "./types";
-import type { Connection, ConnectionPoint, ConnectionPort, LogicalConditioner } from "./ui/components/canvas/types.canvas";
+import type { Connection, ConnectionPort, LogicalConditioner } from "./ui/components/canvas/types.canvas";
 import type { LpElement } from "./ui/components/lp-list/types.lp-list";
 
 
@@ -209,14 +209,11 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 			return doiElement.lnRefs.flatMap(lnRefElement => {
 				const lcAttrs = lcElement.lc;
 				const refDO = lnRefElement.getAttribute("refDO") || "";
+				const refLDInst = lnRefElement.getAttribute("refLDInst") || "";
 				const refLNClass = lnRefElement.getAttribute("refLNClass") || "";
 				const refLNInst = lnRefElement.getAttribute("refLNInst") || "";
 				const lnClass = lcAttrs.getAttribute("lnClass") || "";
 				const inst = lcAttrs.getAttribute("inst") || "";
-
-				if (connectionType === "output" && refDO !== selectedDataObject.name && refLNClass !== selectedDataObject.objectPath.ln?.lnClass && refLNInst !== selectedDataObject.objectPath.lDevice?.inst) {
-					return undefined;
-				}
 
 				const from = {
 					name: connectionType === "output"
@@ -240,7 +237,9 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 					to
 				};
 
-				return connection
+				if (connectionType === "output" && refDO === selectedDataObject.name && refLNClass === selectedDataObject.objectPath.ln?.lnClass && refLNInst === selectedDataObject.objectPath.ln?.inst && refLDInst === selectedDataObject.objectPath.lDevice?.inst) {
+					return connection
+				}
 			});
 		});
 	}).filter(connection => connection !== undefined);
@@ -307,10 +306,13 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 				const dos = Array.from(lnNodeType.querySelectorAll("DO"))
 
 				ln.children = dos.map((doElement) => {
-					if (!hasCDC(doElement, doc, TARGET_CDC)) {
+					const [isAllowedCDC, cdc] = hasCDC(doElement, doc, TARGET_CDC_TYPES)
+
+				if (!isAllowedCDC) {
 						return undefined
 					}
-					const dataObject: ObjectNodeDataObject = {
+	
+				const dataObject: ObjectNodeDataObject = {
 						id: `${ln.id}::DO_${doElement.getAttribute("name")}`,
 						name: doElement.getAttribute("name") || "unknown",
 						objectPath: {
@@ -319,7 +321,8 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 							lDevice: { id: ld.id, inst: ld.inst },
 							ln: { id: ln.id, lnClass: ln.lnClass, inst: ln.inst }
 						},
-						_type: NodeTypes.dataObject
+						cdcType: cdc,
+					_type: NodeTypes.dataObject
 					}
 					return dataObject
 				}).filter(Boolean) as ObjectNodeDataObject[]
@@ -332,24 +335,21 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 	store.objectTree = objectTree
 }
 
-// TARGET_CDC: Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
-// Currently hard-coded by the client request but in future we may make it dynamic and allow the user to fill the targetScd
-const TARGET_CDC = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']
-function hasCDC(doElement: Element, doc: XMLDocument, targetCDC: string[]): boolean {
+function hasCDC(doElement: Element, doc: XMLDocument, targetCDC: string[]): [boolean, string] {
 	const type = doElement.getAttribute("type") || "";
 	if (type === "") {
-		return false;
+		return [false, ""];
 	}
 
 	const doType = doc.querySelector(`DOType[id="${type}"]`);
 	if (!doType) {
-		return false;
+		return [false, ""];
 	}
 
 	const cdc = doType.getAttribute("cdc") || "";
 	if (cdc === "" || !targetCDC.includes(cdc.toLowerCase())) {
-		return false;
+		return [false, ""];
 	}
 
-	return true;
+	return [true, cdc.toLowerCase()];
 }

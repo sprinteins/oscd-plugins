@@ -328,7 +328,7 @@ export class Command {
 				doc: store.doc,
 				tagName: "LNRef",
 				attributes: {
-					"refLDIn": "LD0",
+					"refLDInst": "LD0",
 					"refLNClass": lpLnClass,
 					"refLNInst": lpInst,
 					"refDO": connection.from.type === NODE_ELEMENT_TYPE.LP
