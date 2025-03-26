@@ -24,11 +24,6 @@
 		openIDs = tree.flatMap((node) => idsOfOpenNodes(node));
 	});
 
-	// Reset connections on selected DO change
-	$effect(() => {
-		store.resetConnections(store.selectedDataObject);
-	});
-
 	let searchTerm = $state("");
 	let filteredTree = $state<TreeNodeType[]>([]);
 
@@ -79,11 +74,6 @@
 	}
 
 	function wasNodeAlreadyOpen(id: string) {
-		console.log("wasNodeAlreadyOpen", {
-			openIDS: openIDs,
-			id,
-			included: openIDs.includes(id),
-		});
 		return openIDs.includes(id);
 	}
 

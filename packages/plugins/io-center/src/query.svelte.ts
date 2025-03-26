@@ -25,7 +25,7 @@ export function useQuery() {
 	$effect(() => storeLogicalPhysicals(store.doc, store.selectedIED, store.editCount))
 	// $effect(() => storeSelectedDataObject(store.doc, store.selectedIED, store.editCount))
 	// $effect(() => storeSelectedLogicalPhysicals(store.doc, store.selectedIED, store.editCount))
-	$effect(() => storeConnections(store.doc, store.selectedIED, store.editCount))
+	$effect(() => storeConnections(store.doc, store.selectedIED, store.selectedDataObject, store.editCount))
 }
 
 function storeIEDs(doc: Nullable<XMLDocument>, _: unknown) {
@@ -172,7 +172,7 @@ function storeSelectedLogicalPhysicals(doc: Nullable<XMLDocument>, selectedIED: 
 	}, [] as LpElement[]);
 }
 
-function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
+function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, selectedDataObject: ObjectNodeDataObject | null, _: unknown) {
 	if (!doc || !selectedIED) { console.warn("no doc or no ied selected"); return }
 
 	const iedElement = doc.querySelector(`IED[name="${selectedIED.name}"]`)
@@ -201,6 +201,10 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 				return;
 			}
 
+			if (!selectedDataObject) {
+				return;
+			}
+
 			return doiElement.lnRefs.flatMap(lnRefElement => {
 				const lcAttrs = lcElement.lc;
 				const refDO = lnRefElement.getAttribute("refDO") || "";
@@ -208,6 +212,10 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 				const refLNInst = lnRefElement.getAttribute("refLNInst") || "";
 				const lnClass = lcAttrs.getAttribute("lnClass") || "";
 				const inst = lcAttrs.getAttribute("inst") || "";
+
+				if (connectionType === "output" && refDO !== selectedDataObject.name && refLNClass !== selectedDataObject.objectPath.ln?.lnClass && refLNInst !== selectedDataObject.objectPath.lDevice?.inst) {
+					return undefined;
+				}
 
 				const from = {
 					name: connectionType === "output"
