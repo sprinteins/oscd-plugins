@@ -2,7 +2,7 @@
 	import { L_NODE_TYPE_HELPER_TEXT, LC_TYPE } from "@/headless/constants";
 	import Input from "../common/input.svelte";
 	import Select from "../common/select.svelte";
-	import type { AddLCFormData, LcTypes } from "./types.canvas";
+	import type { LcTypes } from "./types.canvas";
     import type { Optional } from "../../../types";
 
 	type Props = {
@@ -12,13 +12,6 @@
 	};
 
 	let { isOpen = $bindable(), addLC, hasLNodeType }: Props = $props();
-
-	// let formData = $state<AddLCFormData>({
-	// 	type: "",
-	// 	number: undefined,
-	// 	numberOfLCIVPorts: undefined,
-	// });
-
 	let tempTypeOfLC: LcTypes | "" = $state("")
 
 	const typePresentInDoc = $derived.by(() => {
@@ -28,11 +21,7 @@
 		return hasLNodeType(tempTypeOfLC);
 	});
 
-	function handleCancel() {
-		tempTypeOfLC = ""
-		isOpen = false;
-	}
-
+	
 	function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 		tempTypeOfLC = ""
@@ -48,6 +37,11 @@
 		if (!typeOfLC || !numberOfLCs){ return }
 
 		addLC(typeOfLC, numberOfLCs, numberOfLCIVPorts);
+		isOpen = false;
+	}
+
+	function handleCancel() {
+		tempTypeOfLC = ""
 		isOpen = false;
 	}
 
