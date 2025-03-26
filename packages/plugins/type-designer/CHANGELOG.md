@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.6.0] - 26.03.2025
+
+### Added 
+
+- One can now modify the number of `Terminal` of a `ConductingEquipment` via the sidebar.
+Note that :
+  - some of them have a fix number defined by the standard, and thus the dropdown is disabled
+	- the default number at creation has been fixed to two.
+
+
 ## [3.5.0] - 24.03.2025
 
 ### Added 
