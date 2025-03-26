@@ -19,7 +19,8 @@ import type {
 	TypeElement,
 	AvailableTypeFamily,
 	AvailableRefFamily,
-	RefElementByIds
+	RefElementByIds,
+	RefElement
 } from '@/headless/stores'
 
 //======= INITIALIZATION =======//
@@ -80,6 +81,31 @@ const hasRefs = $derived.by(() => {
 	)
 })
 
+//======= FUNCTIONS =======//
+
+function getCurrentRefFullLabel(refWrapper: RefElement<AvailableRefFamily>) {
+	let currentLabel: string
+	if (
+		isImportContainer &&
+		typeGuard.isTuplesIncludingString(
+			refWrapper.source.family,
+			ALLOWED_IMPORTED_TYPE
+		)
+	)
+		currentLabel =
+			importsStore.loadedTypeElementsPerFamily[refWrapper.source.family]
+				.all[refWrapper.source.id].parameters.label
+	else
+		currentLabel =
+			typeElementsStore.typeElementsPerFamily[refWrapper.source.family][
+				refWrapper.source.id
+			].parameters.label
+
+	return `${currentLabel}_Ref_${refWrapper.occurrence}`
+}
+
+//======= EFFECTS =======//
+
 $effect(() => {
 	if (!hasRefs) isElementCardOpen = false
 })
@@ -101,11 +127,7 @@ $effect(() => {
 										<Card.Content class="h-8 p-1 flex items-center justify-between">
 											<div class="flex items-center min-w-0">
 												<span class="ml-3 min-w-2.5 min-h-2.5 border-teal-700 border-2 transform rotate-45"></span>
-												{#if isImportContainer && typeGuard.isTuplesIncludingString(refWrapper.source.family, ALLOWED_IMPORTED_TYPE)}
-													<span class="ml-4 truncate">{ `Ref_${importsStore.loadedTypeElementsPerFamily[refWrapper.source.family].all[refWrapper.source.id].parameters.label}` }</span>
-												{:else}
-													<span class="ml-4 truncate">{ `Ref_${typeElementsStore.typeElementsPerFamily[refWrapper.source.family][refWrapper.source.id].parameters.label}` }</span>
-												{/if}
+												<span class="ml-4 truncate">{ getCurrentRefFullLabel(refWrapper) }</span>
 											</div>
 											{#if !isImportContainer}
 												<CardMenu type={{ family: typeElementFamily, id: typeElementKey}} ref={{ family: refFamily, id: refId}}/>
