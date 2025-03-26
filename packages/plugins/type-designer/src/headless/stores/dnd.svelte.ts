@@ -45,22 +45,6 @@ class UseDnDStore {
 		return true
 	}
 
-	handleDragLeave({ targetId, relatedTarget }: { 
-		targetId: string, 
-		relatedTarget: Element | null 
-	}) {
-		if (relatedTarget?.closest(`[data-dnd-id="${targetId}"]`)) {
-			return
-		}
-		
-		this.dragLeaveTimeout = window.setTimeout(() => {
-			if (this.currentDropTargetId === targetId) {
-				this.isDropZoneVisible = false
-				this.currentDropTargetId = undefined
-			}
-		}, 50)
-	}
-
 	handleDrop({ parentTypeWrapper, parentTypeFamily }: {
 		parentTypeWrapper: Element
 		parentTypeFamily: AvailableTypeFamily
