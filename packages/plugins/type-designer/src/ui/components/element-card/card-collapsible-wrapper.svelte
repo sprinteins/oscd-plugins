@@ -93,21 +93,21 @@ let dragLeaveTimeout: number | undefined;
 
 const handleDragOver = (event: DragEvent) => {
 	event.preventDefault();
-	if (dndStore.isDragging && isAllowedToDrop) {
+	console.log('over', typeElementKey, isAllowedToDrop)
+	if (dndStore.handleDragOver({ targetId: typeElementKey, isAllowedToDrop })) {
 		if (dragLeaveTimeout) {
 			clearTimeout(dragLeaveTimeout);
 			dragLeaveTimeout = undefined;
 		}
-		
-		window.dispatchEvent(new CustomEvent('hideAllDropZones'));
-		isCurrentDropTarget = true;
-		isElementCardOpen = true;
 		
 		const target = event.target as HTMLElement;
 		scrollableContainer = target.closest('.overflow-y-auto') as HTMLElement;
 		if (scrollableContainer) {
 			lastScrollPosition = scrollableContainer.scrollTop;
 		}
+		
+		isCurrentDropTarget = true;
+		isElementCardOpen = true;
 	}
 };
 
@@ -139,15 +139,27 @@ onMount(() => {
 });
 </script>
 	
-<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2" ondragover={handleDragOver}
+<Collapsible.Root 
+	bind:open={isElementCardOpen} 
+	class="space-y-2"
+	ondragover={handleDragOver}
 	ondragleave={handleDragLeave}
 	ondrop={() => {
-		if (dragLeaveTimeout) {
-			clearTimeout(dragLeaveTimeout);
+		if (dndStore.currentDropTargetId === typeElementKey) {
+			isCurrentDropTarget = false;
+			dndStore.handleDrop({
+				parentTypeWrapper: typeElement.element,
+				parentTypeFamily: typeElementFamily
+			});
+			if (scrollableContainer) {
+				setTimeout(() => {
+					scrollableContainer.scrollTop = lastScrollPosition;
+				}, 0);
+			}
 		}
-		isElementCardOpen = true;
-	}}>
-		<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {isImportContainer}/>
+	}}
+>
+	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {isImportContainer}/>
 
 		<!-- REF CARD START -->
 		<Collapsible.Content class="space-y-2 flex flex-col items-end">
