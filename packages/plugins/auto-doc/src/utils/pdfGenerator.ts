@@ -178,20 +178,17 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
         const image = await loadImage(content);
         const format = content.split(";")[0].split("/")[1];
 
-        let scaledWidth = image.width;
-        let scaledHeight = image.height;
+        const maxWidth = 186;
+        const scaleFactor = 0.25;
+        
+        const aspectRatio = image.height / image.width;
+        
+        const width = scaleFactor * maxWidth;
+        const height = width * aspectRatio;
 
-        const scaleWidth = pageWidth / image.width;
-        const scaleHeight = pageHeight / image.height;
-
-        const scaleFactor = Math.min(scaleWidth, scaleHeight) * 0.3;
-
-        scaledWidth *= scaleFactor;
-        scaledHeight *= scaleFactor;
-
-        doc.addImage(content, format.toUpperCase(), 10, marginTop, scaledWidth, scaledHeight);
-
-        const padding = Math.round(scaledHeight * 1.12);
+        doc.addImage(content, format.toUpperCase(), 10, marginTop, width, height);
+        
+        const padding = Math.round(height) + DEFAULT_LINE_HEIGHT;
         incrementVerticalPositionForNextLine(padding);
     }
     
