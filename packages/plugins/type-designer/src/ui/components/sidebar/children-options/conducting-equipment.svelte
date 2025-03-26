@@ -30,15 +30,8 @@ function getTerminalValue() {
 	)
 }
 
-function setTerminalValue(value: number) {
+async function setTerminalValue(value: number) {
 	if (!sidebarStore.currentElementType) return
-
-	if (
-		sidebarStore.currentElementType.parameters.childrenOptions
-			?.conductingEquipment?.currentValue
-	)
-		sidebarStore.currentElementType.parameters.childrenOptions.conductingEquipment.currentValue =
-			value
 
 	if (!pluginGlobalStore.host) throw new Error('Host not found')
 
@@ -68,6 +61,8 @@ function setTerminalValue(value: number) {
 			}
 		})
 	}
+
+	await sidebarStore.refreshCurrentElementType()
 }
 </script>
 
