@@ -5,9 +5,12 @@ import {
 	Sidebar,
 	Input,
 	Label,
-	pluginGlobalStore,
-	Switch
+	pluginGlobalStore
 } from '@oscd-plugins/core-ui-svelte'
+// SPECIAL ATTRIBUTES
+import VirtualAttribute from '@/ui/components/sidebar/special-attributes/virtual-attribute.svelte'
+// CHILDREN OPTIONS
+import ConductingEquipmentChildrenOptions from '@/ui/components/sidebar/children-options/conducting-equipment.svelte'
 // CONSTANTS
 import { TYPE_FAMILY, READONLY_ATTRIBUTES } from '@/headless/constants'
 // STORES
@@ -49,18 +52,6 @@ function onChangeHandler(attributeKey: string) {
 		})
 }
 
-function getVirtualValue() {
-	return sidebarStore.currentElementType?.attributes.virtual === 'true'
-}
-
-function setVirtualValue(value: boolean) {
-	if (sidebarStore.currentElementType)
-		sidebarStore.currentElementType.attributes.virtual = value
-			? 'true'
-			: 'false'
-	onChangeHandler('virtual')
-}
-
 function isCurrentInputDisabled(attributeKey: string) {
 	return (
 		isAttributeReadonly(attributeKey) ||
@@ -73,11 +64,13 @@ function isAttributeReadonly(attributeKey: string) {
 }
 </script>
 
-<Sidebar.Root side="right" class="sidebar-root z-0">
+<Sidebar.Root side="right" class="sidebar-root z-0" >
 	{#if sidebarStore.currentElementType}
 
-			<Sidebar.Header>Edit {sidebarStore.currentElementType.attributes?.name}</Sidebar.Header>
-			<Sidebar.Content class="p-4 space-y-5">
+		<Sidebar.Header class="text-xl font-black">Edit {sidebarStore.currentElementType.attributes?.name || sidebarStore.currentElementType.attributes?.id}</Sidebar.Header>
+		<Sidebar.Content class="p-4 space-y-5">
+			<div class="space-y-3">
+				<Label.Root class="text-lg font-bold">Attributes details:</Label.Root>
 				{#each currentElementAttributesEntries as [attributeKey, attributeProperties]}
 					<div class={`flex justify-center ${attributesNeedingOneLineLayout.includes(attributeKey) ? "justify-between items-center" : "flex-col"}`}>
 						<Label.Root for={attributeKey} class="capitalize">{attributeKey}</Label.Root>
@@ -89,15 +82,7 @@ function isAttributeReadonly(attributeKey: string) {
 							/>
 						{:else if sidebarStore.currentElementTypeKey && sidebarStore.currentElementTypeFamily && sidebarStore.isInputValidByAttributeKey}
 							{#if attributeKey === 'virtual'}
-								<Switch.Root
-									class="mt-1 self-end"
-									bind:checked={
-										getVirtualValue,
-										setVirtualValue
-									}
-									oninput={() => onChangeHandler(attributeKey)}
-									disabled={sidebarStore.isCurrentElementImported}
-								/>
+								<VirtualAttribute onChangeHandler={onChangeHandler} />
 							{:else}
 								<Input.Root 
 									disabled={isCurrentInputDisabled(attributeKey)}
@@ -116,8 +101,16 @@ function isAttributeReadonly(attributeKey: string) {
 						{/if}
 					</div>
 				{/each}
-			</Sidebar.Content>
-			<Sidebar.Footer />
+			</div>
+			
+			{#if Object.values(sidebarStore.currentElementType?.parameters.childrenOptions).length}
+				<div class="space-y-3">
+					<Label.Root class="text-lg font-bold">Child Elements Options:</Label.Root>
+					<ConductingEquipmentChildrenOptions />
+				</div>
+			{/if}
+		</Sidebar.Content>
+		<Sidebar.Footer />
 
 	{/if}
 </Sidebar.Root>
