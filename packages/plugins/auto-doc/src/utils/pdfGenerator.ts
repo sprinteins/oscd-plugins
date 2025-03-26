@@ -198,8 +198,8 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
         const data = JSON.parse(content);
 
-        const formattedHeader: string[][] = [data.map((row: String[]) => row[0])];
-        const formattedBody: string[][] = [data.map((row: String[]) => row[1])];
+        const formattedHeader: string[][] = [data.map((row: string[]) => row[0])];
+        const formattedBody: string[][] = [data.map((row: string[]) => row[1])];
 
         const rows = data[0].length;
         const tableHeight = rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT;
