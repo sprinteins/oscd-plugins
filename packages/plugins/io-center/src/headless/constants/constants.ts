@@ -1,3 +1,6 @@
+import type { ConnectionPort, LcTypes } from "@/ui/components/canvas/types.canvas"
+import type { LpTypes } from "@/ui/components/lp-list/types.lp-list"
+
 export const NODE_TYPE = {
     logicalDevice: 'logicalDevice',
     logicalNode: 'logicalNode',
@@ -107,3 +110,27 @@ export const L_NODE_TYPE_CONTENT = {
 
 export const L_NODE_TYPE_HELPER_TEXT =
     "The selected type has no matching LNodeType, which will be created automatically, or you can create one using the Template Plugin.";
+
+export const PORTS_CONFIG_PER_TYPE: Record<string, ConnectionPort[]> = {
+    LCBI: [
+        { name: 'OutInd', side: 'left' },
+        { name: 'In', side: 'right' },
+    ],
+    LCBO: [
+        { name: 'In', side: 'left' },
+        { name: 'OutInd', side: 'right' },
+    ],
+    LCDP: [
+        { name: 'OutPos', side: 'left' },
+        { name: 'InOn', side: 'right' },
+        { name: 'InOff', side: 'right' }
+    ],
+    LCIV: [
+        { name: 'OutInd', side: 'left' },
+        { name: 'In', side: 'right' },
+    ],
+    LPDO: [{ name: 'In', side: 'left' }],
+    LPDI: [{ name: 'Ind', side: 'left' }],
+    LPAI: [{ name: 'Ind', side: 'left' }],
+    LPAO: [{ name: 'Ind', side: 'left' }],
+}

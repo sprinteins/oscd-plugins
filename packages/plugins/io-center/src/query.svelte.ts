@@ -1,5 +1,5 @@
-import { LC_TYPE, LP_TYPE, NODE_ELEMENT_TYPE } from "./headless/constants";
-import { findDataObject, findLogicalPhysical } from "./headless/utils";
+import { LC_TYPE, LP_TYPE, NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE } from "./headless/constants";
+import { findDataObject, findLogicalPhysical, getPortsConfig } from "./headless/utils";
 import type { IED } from "./ied/ied";
 import {
 	NodeTypes,
@@ -10,7 +10,7 @@ import {
 } from "./ied/object-tree.type.d";
 import { store } from "./store.svelte";
 import type { Nullable } from "./types";
-import type { Connection, ConnectionPoint, LogicalConditioner } from "./ui/components/canvas/types.canvas";
+import type { Connection, ConnectionPoint, ConnectionPort, LogicalConditioner } from "./ui/components/canvas/types.canvas";
 import type { LpElement } from "./ui/components/lp-list/types.lp-list";
 
 
@@ -65,6 +65,7 @@ function lcElementToLC(lcElement: Element): LogicalConditioner {
 		type: lcElement.getAttribute("lnClass") as keyof typeof LC_TYPE || "unknown",
 		instance: `${lcElement.getAttribute("inst") || ""}`,
 		isLinked: false,
+		numberOfLCIVPorts: Number.parseInt(lcElement.getAttribute("numberOfLCIVPorts") || "") || undefined,
 	}
 }
 
@@ -102,6 +103,7 @@ function lpElementToLP(iedName: string, lpElement: Element): LpElement {
 		instance: `${lpElement.getAttribute("inst") || ""}`,
 		description: `${lpElement.getAttribute("desc") || ""}`,
 		isLinked: false,
+		numberOfLPDOPorts: Number.parseInt(lpElement.getAttribute("numberOfLPDOPorts") || "") || undefined,
 	}
 }
 
@@ -131,6 +133,7 @@ function storeSelectedDataObjects(doc: Nullable<XMLDocument>, selectedIED: Nulla
 		const dataObject = findDataObject(store.objectTreeV2, refDO, selectedIED.name, refLDInst, refLNClass, refLNInst);
 
 		if (dataObject && !uniqueObjects.some(doObject => doObject.id === dataObject.id)) {
+			dataObject.isLinked = true;
 			uniqueObjects.push(dataObject);
 		}
 
@@ -162,6 +165,7 @@ function storeSelectedLogicalPhysicals(doc: Nullable<XMLDocument>, selectedIED: 
 		const logicalPhysical = findLogicalPhysical(store.lpList, refLNClass, refLNInst);
 
 		if (logicalPhysical && !uniqueObjects.some(lp => lp.id === logicalPhysical.id)) {
+			logicalPhysical.isLinked = true;
 			uniqueObjects.push(logicalPhysical);
 		}
 
@@ -190,14 +194,15 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 
 	store.connections = lnRefElements.flatMap(lcElement => {
 		return lcElement.dois.flatMap(doiElement => {
+			const doiName = doiElement.doi.getAttribute("name");
 			const connectionType = doiElement.doi.getAttribute("desc");
 
-			if (!connectionType) {
-				console.warn("Connection type not found");
+			if (!connectionType || !doiName) {
+				console.warn("connection type or name not defined!");
 				return;
 			}
 
-			return doiElement.lnRefs.flatMap((lnRefElement, index) => {
+			return doiElement.lnRefs.flatMap(lnRefElement => {
 				const lcAttrs = lcElement.lc;
 				const refDO = lnRefElement.getAttribute("refDO") || "";
 				const refLNClass = lnRefElement.getAttribute("refLNClass") || "";
@@ -209,16 +214,16 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 					name: connectionType === "output"
 						? `${refDO}-right`
 						: `${lnClass}-${inst}-right`,
-					index,
-					type: connectionType === "output" ? NODE_ELEMENT_TYPE.DO : NODE_ELEMENT_TYPE.LC
+					type: connectionType === "output" ? NODE_ELEMENT_TYPE.DO : NODE_ELEMENT_TYPE.LC,
+					port: connectionType === "output" ? { name: refDO, side: "right" } as ConnectionPort : { name: doiName, side: "right" } as ConnectionPort
 				};
 
 				const to = {
 					name: connectionType === "output"
 						? `${lnClass}-${inst}-left`
 						: `${refLNClass}-${refLNInst}-left`,
-					index,
-					type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP
+					type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP,
+					port: connectionType === "output" ? PORTS_CONFIG_PER_TYPE[lnClass].filter(port => doiName.includes(port.name))[0] : { name: refDO, side: "left" } as ConnectionPort
 				};
 
 				const connection: Connection = {
