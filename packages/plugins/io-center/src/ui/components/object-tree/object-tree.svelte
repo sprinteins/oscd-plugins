@@ -15,7 +15,7 @@
 
 	// Note: we use $effect instead of $derived so we can change the values of filteredTree
 	$effect(() => {
-		tree = convertToTreeNode(store.objectTreeV2);
+		tree = convertToTreeNode(store.objectTree);
 	});
 	// Note: we use $effect instead of $derived because $derived makes
 	//		 `openIDs` a reactive value, which we don't want 
