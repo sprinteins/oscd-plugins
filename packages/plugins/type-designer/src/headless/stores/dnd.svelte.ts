@@ -23,7 +23,6 @@ class UseDnDStore {
 		sourceTypeFamily: AvailableTypeFamily
 		sourceRefFamily?: AvailableRefFamily
 	}) {
-		console.log('start', sourceTypeId, sourceTypeFamily, sourceRefFamily)
 		this.isDragging = true
 		this.currentSourceTypeIdOrUuid = sourceTypeId
 		this.currentSourceTypeFamily = sourceTypeFamily
@@ -41,7 +40,6 @@ class UseDnDStore {
 		targetId: string, 
 		isAllowedToDrop: boolean 
 	}) {
-		console.log('over insied', targetId, isAllowedToDrop)
 		if (!this.isDragging || !isAllowedToDrop) return false
 		window.dispatchEvent(new CustomEvent('hideAllDropZones'))
 		return true

@@ -93,7 +93,6 @@ let dragLeaveTimeout: number | undefined;
 
 const handleDragOver = (event: DragEvent) => {
 	event.preventDefault();
-	console.log('over', typeElementKey, isAllowedToDrop)
 	if (dndStore.handleDragOver({ targetId: typeElementKey, isAllowedToDrop })) {
 		if (dragLeaveTimeout) {
 			clearTimeout(dragLeaveTimeout);
