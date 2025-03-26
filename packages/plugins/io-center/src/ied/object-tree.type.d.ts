@@ -29,6 +29,7 @@ export type ObjectNodeLogicalNode = {
 export type ObjectNodeDataObject = {
 	id: string,
 	name: string,
+	isLinked?: boolean,
 	objectPath: ObjectPath
 	_type: NodeTypes.dataObject
 }

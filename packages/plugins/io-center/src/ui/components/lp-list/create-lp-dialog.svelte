@@ -6,16 +6,17 @@
 
     type Props = {
         isOpen: boolean;
-        addLp: (
+        addLP: (
             type: LpTypes,
             name: string,
             desc: string,
             number?: number,
+            numberOfLPDOPorts?: number,
         ) => void;
         hasLNodeType: (type: LpTypes) => boolean;
     };
 
-    let { isOpen = $bindable(), addLp, hasLNodeType }: Props = $props();
+    let { isOpen = $bindable(), addLP, hasLNodeType }: Props = $props();
 
     let formData = $state<FormData>({
         name: "",
@@ -43,7 +44,13 @@
     function handleSubmit() {
         if (!formData.type) return;
 
-        addLp(formData.type, formData.name, formData.desc, formData.number);
+        addLP(
+            formData.type,
+            formData.name,
+            formData.desc,
+            formData.number,
+            formData.numberOfLPDOPorts,
+        );
 
         formData = {
             name: "",
@@ -72,11 +79,19 @@
                 helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
             />
             <Input bind:value={formData.name} label="LP Name" type="text" />
-            <Input
-                bind:value={formData.number}
-                label="LP Number"
-                type="number"
-            />
+            {#if formData.type === LP_TYPE.LPDO}
+                <Input
+                    bind:value={formData.numberOfLPDOPorts}
+                    label="Number of Ports"
+                    type="number"
+                />
+            {:else}
+                <Input
+                    bind:value={formData.number}
+                    label="Number of LPs"
+                    type="number"
+                />
+            {/if}
             <Input
                 bind:value={formData.desc}
                 label="LP Description"

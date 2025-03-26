@@ -14,7 +14,6 @@ Note that :
   - some of them have a fix number defined by the standard, and thus the dropdown is disabled
 	- the default number at creation has been fixed to two.
 
-
 ## [3.5.0] - 24.03.2025
 
 ### Added 
