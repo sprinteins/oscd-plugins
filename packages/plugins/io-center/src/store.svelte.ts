@@ -31,8 +31,7 @@ export class Store {
 	// 
 	selectedDataObjects: ObjectNodeDataObject[] = $state([])
 	dataObjects: DataObject[] = $state([])
-	objectTree: TreeNode[] = $state([])
-	objectTreeV2: ObjectTree = $state(NullObjectTree)
+	objectTree: ObjectTree = $state(NullObjectTree)
 	
 	logicalConditioners: LogicalConditioner[] = $state([])
 	

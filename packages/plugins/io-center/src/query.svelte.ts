@@ -130,7 +130,7 @@ function storeSelectedDataObjects(doc: Nullable<XMLDocument>, selectedIED: Nulla
 		const refLNInst = lnRefElement.getAttribute("refLNInst") || "";
 		const refLDInst = lnRefElement.getAttribute("refLDInst") || "";
 
-		const dataObject = findDataObject(store.objectTreeV2, refDO, selectedIED.name, refLDInst, refLNClass, refLNInst);
+		const dataObject = findDataObject(store.objectTree, refDO, selectedIED.name, refLDInst, refLNClass, refLNInst);
 
 		if (dataObject && !uniqueObjects.some(doObject => doObject.id === dataObject.id)) {
 			dataObject.isLinked = true;
@@ -307,7 +307,7 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 		})
 		return ld
 	})
-	store.objectTreeV2 = objectTree
+	store.objectTree = objectTree
 
 }
 
