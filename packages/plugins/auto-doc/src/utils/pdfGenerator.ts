@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import autoTable, { applyPlugin } from 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import zipcelx from 'zipcelx';
 import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore} from '@/stores'
@@ -17,6 +17,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     doc.setFontSize(DEFAULT_FONT_SIZE);
     const INITIAL_UPPER_PAGE_COORDINATE = 10;
     const INITIAL_LOWER_PAGE_COORDINATE = 10;
+    const DEFAULT_LINE_HEIGHT = 7;
 
     let marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
     const pageHeight = doc.internal.pageSize.height;
@@ -31,12 +32,12 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         table: processTableForPdfGeneration,
     }
 
-    function incrementVerticalPositionForNextLine(lineHeight = 7) {
-        marginTop += lineHeight;
+    function incrementVerticalPositionForNextLine(lineHeight?: number) {
+        marginTop += lineHeight || DEFAULT_LINE_HEIGHT;
     }
 
-    function contentExceedsCurrentPage(marginTop: number,pageHeight: number,marginBottom: number) {
-        const bufferToBottomPage = 10;
+    function contentExceedsCurrentPage(height?: number) {
+        const bufferToBottomPage = height || 10;
         return (marginTop + bufferToBottomPage) > (pageHeight-marginBottom);
     }
 
@@ -84,7 +85,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         const wrappedText : string [] = doc.splitTextToSize(text ?? "", pageWidth - (35 - indent));
 
         for(const line of wrappedText){
-            if (contentExceedsCurrentPage(marginTop, pageHeight, marginBottom)) {
+            if (contentExceedsCurrentPage()) {
                 doc.addPage();
                 marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
             }
@@ -147,7 +148,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
   
     function renderTextLine(text: string) {
-        if (contentExceedsCurrentPage(marginTop, pageHeight, marginBottom)) {
+        if (contentExceedsCurrentPage()) {
             doc.addPage();
             marginTop = INITIAL_UPPER_PAGE_COORDINATE;
         }
@@ -200,20 +201,35 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         const formattedHeader: string[][] = [data.map((row: String[]) => row[0])];
         const formattedBody: string[][] = [data.map((row: String[]) => row[1])];
 
+        const rows = data[0].length;
+        const tableHeight = rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT;
+
+        if (contentExceedsCurrentPage(tableHeight)) {
+            doc.addPage();
+            marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
+        }
+
         autoTable(doc, {
             head: formattedHeader,
-            body: formattedBody
+            body: formattedBody,
+            startY: marginTop,
+            margin: {
+                left: 10
+            },
+            styles: {
+                fillColor: "black"
+            },
         });
+
+        incrementVerticalPositionForNextLine(tableHeight);
     }
 
     for(const block of allBlocks){
-
         const blockType = block.getAttribute('type') as ElementType;
         
         if(blockType && blockHandler[blockType]){
             blockHandler[blockType](block);
         }
-            
     }
     
     doc.save(`${templateTitle}.pdf`);
