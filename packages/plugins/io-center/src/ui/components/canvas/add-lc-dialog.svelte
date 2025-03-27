@@ -41,12 +41,16 @@
 		const formData = new FormData(formElement);
 
 		const typeOfLC = formData.get("typeOfLC") as Optional<LcTypes>;
-		const numberOfLCs = Number(formData.get("number")) as Optional<number>;
+		let numberOfLCs = Number(formData.get("number")) as Optional<number>;
 		const numberOfLCIVPorts = Number(
 			formData.get("numberOfLCIVPorts"),
 		) as Optional<number>;
 
-		if (!typeOfLC || !numberOfLCs) {
+		if (numberOfLCIVPorts) {
+			numberOfLCs = 1;
+		}
+
+		if (!typeOfLC) {
 			return;
 		}
 
@@ -96,17 +100,19 @@
 						helperText={getHelperText()}
 						helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
 					/>
-					<Input
-						name="number"
-						label="Number of LCs"
-						type="number"
-						value="1"
-					/>
 					{#if tempTypeOfLC === LC_TYPE.LCIV}
 						<Input
 							name="numberOfLCIVPorts"
 							label="Number of Ports"
 							type="number"
+							value="1"
+						/>
+					{:else}
+						<Input
+							name="number"
+							label="Number of LCs"
+							type="number"
+							value="1"
 						/>
 					{/if}
 					<div class="action-buttons">
