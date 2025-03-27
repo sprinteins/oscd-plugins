@@ -268,6 +268,7 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 
 								if (isConnectedLcConnectedToSelectedDo) {
 									if (!lpsToSelect.includes(targetLP)) {
+										targetLP.isLinked = true
 										lpsToSelect.push(targetLP)
 									}
 									return connection
