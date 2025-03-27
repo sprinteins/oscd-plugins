@@ -9,7 +9,7 @@ import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { getNewNameWithOccurrence } from '@/headless/stores/type-elements/type-naming.helper'
 // TYPES
 import type { AvailableTypeFamily, AvailableRefFamily } from '@/headless/stores'
-import { REF_FAMILY } from '@/headless/constants'
+import { REF_FAMILY, TYPE_FAMILY } from '@/headless/constants'
 
 //====== LOCAL HELPERS ======//
 
@@ -51,6 +51,7 @@ function handleDuplicationSpecificationPerRefFamily(params: {
  * @throws If there is no host or parent element.
  */
 export function duplicateElement(params: {
+	kind: 'type' | 'ref'
 	element: Element
 	family: Exclude<AvailableTypeFamily, 'lNodeType'> | AvailableRefFamily
 }) {
@@ -59,13 +60,20 @@ export function duplicateElement(params: {
 
 	clonedElement.setAttribute('uuid', uuidv4())
 
-	if (typeGuard.isPropertyOfObject(params.family, REF_FAMILY))
+	if (
+		typeGuard.isPropertyOfObject(params.family, REF_FAMILY) &&
+		params.kind === 'ref'
+	)
 		handleDuplicationSpecificationPerRefFamily({
 			family: params.family,
 			elementToClone,
 			clonedElement
 		})
-	else
+
+	if (
+		typeGuard.isPropertyOfObject(params.family, TYPE_FAMILY) &&
+		params.kind === 'type'
+	)
 		clonedElement.setAttribute(
 			'name',
 			getNewNameWithOccurrence({

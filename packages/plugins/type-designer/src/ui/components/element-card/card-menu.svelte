@@ -39,7 +39,8 @@ function duplicateTypeHandler() {
 		element:
 			typeElementsStore.typeElementsPerFamily[type.family][type.id]
 				.element,
-		family: type.family
+		family: type.family,
+		kind: 'type'
 	})
 }
 
@@ -62,7 +63,8 @@ function duplicateRefHandler() {
 			typeElementsStore.typeElementsPerFamily[type.family][type.id].refs[
 				ref.family
 			][ref.id].element,
-		family: ref.family
+		family: ref.family,
+		kind: 'ref'
 	})
 }
 
