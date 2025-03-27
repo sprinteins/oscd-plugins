@@ -31,10 +31,22 @@ function createAutoDocArea(xmlDocument: Document): Element {
     if (existingAutoDocArea) {
         return existingAutoDocArea;
     }
-
     const newPrivateArea = createElement(xmlDocument, 'Private', { type: 'AUTO_DOC' });
     eventStore.createAndDispatchActionEvent(rootElement, newPrivateArea);
     return newPrivateArea;
+}
+function getAutoDocArea() {
+    const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
+
+    const privateArea = get(autoDocArea);
+    if (!privateArea) {
+        throw new Error("AutoDoc area is not defined");
+    }
+
+    return privateArea;
 }
 
 //==== PUBLIC ACTIONS
@@ -235,6 +247,22 @@ function duplicateDocumentTemplate(docTemplateId: string) {
     }
 }
 
+function setMasterTemplateFlag(isMaster: boolean) {
+    const currentPrivateArea = getAutoDocArea();
+
+    const updates : {masterTemplate: string, type: string} = { masterTemplate: String(isMaster), type: 'AUTO_DOC' }
+    eventStore.updateAndDispatchActionEvent(currentPrivateArea, updates);
+}
+
+function getMasterTemplateFlag() : boolean {
+    const currentPrivateArea = getAutoDocArea()
+
+    const flag = currentPrivateArea.getAttribute('masterTemplate');
+
+    if(!flag) {return false}
+
+    return flag === 'true';
+}
 //==== INITIALIZATION
 function init() {
     setAutoDocArea();
@@ -259,4 +287,6 @@ export const docTemplatesStore = {
     duplicateDocumentTemplate,
     importDocumentTemplates,
     duplicateBlockFromDocumentTemplate,
+    setMasterTemplateFlag,
+    getMasterTemplateFlag
 };
