@@ -36,11 +36,6 @@ function createAutoDocArea(xmlDocument: Document): Element {
     return newPrivateArea;
 }
 function getAutoDocArea() {
-    const xmlDoc = get(xmlDocument);
-    if (!xmlDoc) {
-        throw new Error("XML Document is not defined");
-    }
-
     const privateArea = get(autoDocArea);
     if (!privateArea) {
         throw new Error("AutoDoc area is not defined");

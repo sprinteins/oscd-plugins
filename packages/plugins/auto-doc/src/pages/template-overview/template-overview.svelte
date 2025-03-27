@@ -55,6 +55,7 @@
 
     $: templatesConvertedToTableRow = allTemplates.map(mapElementToTableRow)
     $: docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
+    $: importToolTipText = isMasterTemplate ? "No import allowed for master templates" : ""
 
 
     function mapElementToTableRow(template: Element):Template{
@@ -119,7 +120,9 @@
                 <Item on:SMUI:action={() => navigateToCreateTemplate()}>
                     <Text>New</Text>
                 </Item>
-                <Item on:SMUI:action={() => openFileSelectorIfNotMasterTemplate()}>
+                <Item on:SMUI:action={() => openFileSelectorIfNotMasterTemplate()}
+                    title={importToolTipText}
+                >
                     <Text class={isMasterTemplate ? "strike-through": ""}>Import from</Text>
                 </Item>
             </List>
@@ -186,7 +189,6 @@
 
     :global(.strike-through){
         cursor: not-allowed;
-        text-decoration: line-through;
-        color: gray;
+        color: #a6a6a6;
     }
 </style>
