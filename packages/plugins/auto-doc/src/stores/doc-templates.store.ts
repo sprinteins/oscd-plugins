@@ -250,7 +250,7 @@ function duplicateDocumentTemplate(docTemplateId: string) {
 function setMasterTemplateFlag(isMaster: boolean) {
     const currentPrivateArea = getAutoDocArea();
 
-    const updates : {masterTemplate: string, type: string} = { masterTemplate: String(isMaster), type: 'AUTO_DOC' }
+    const updates : {masterTemplate: string, type: string} = { masterTemplate: isMaster.toString(), type: 'AUTO_DOC' }
     eventStore.updateAndDispatchActionEvent(currentPrivateArea, updates);
 }
 

@@ -120,7 +120,7 @@
                     <Text>New</Text>
                 </Item>
                 <Item on:SMUI:action={() => openFileSelectorIfNotMasterTemplate()}>
-                    <Text>Import from</Text>
+                    <Text class={isMasterTemplate ? "strike-through": ""}>Import from</Text>
                 </Item>
             </List>
         </Menu>
@@ -182,5 +182,11 @@
     .master-template-checkbox{
         display: flex;
         align-items: center;
+    }
+
+    :global(.strike-through){
+        cursor: not-allowed;
+        text-decoration: line-through;
+        color: gray;
     }
 </style>
