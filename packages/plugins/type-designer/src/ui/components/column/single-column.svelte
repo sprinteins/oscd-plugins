@@ -18,7 +18,11 @@ import type {
 	Column,
 	TypeElementByIds
 } from '@/headless/stores'
-import { ALLOWED_TARGETS_BY_REF_FAMILY, COLUMN_KEY_TO_TYPE_FAMILY, TYPE_FAMILY } from '@/headless/constants';
+import {
+	ALLOWED_TARGETS_BY_REF_FAMILY,
+	COLUMN_KEY_TO_TYPE_FAMILY,
+	TYPE_FAMILY
+} from '@/headless/constants'
 
 //======= INITIALIZATION =======//
 
@@ -56,6 +60,7 @@ const groupedImportedTypeElementsEntries = $derived.by(() => {
 			SortedImportedTypeElements<AvailableImportedTypeFamily>
 		][]
 })
+
 const hasImportedTypeElements = $derived.by(() => {
 	return groupedImportedTypeElementsEntries?.some(
 		([, importedTypeElements]) =>
@@ -75,30 +80,41 @@ const capitalizedColumnKey = $derived(
 )
 
 const isColumnDisabled = $derived.by(() => {
-    if (!dndStore.isDragging) return false;
-    
-    // Ref
-    if (dndStore.currentSourceRefFamily) {
-        return !ALLOWED_TARGETS_BY_REF_FAMILY[dndStore.currentSourceRefFamily]
-            .some(allowedFamily => {
-                if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
-                    return COLUMN_KEY_TO_TYPE_FAMILY[columnKey].includes(allowedFamily);
-                }
-                return COLUMN_KEY_TO_TYPE_FAMILY[columnKey] === allowedFamily;
-            });
-    }
-    
-    // Funktion
-    if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function) {
-        const allowedFamilies = [TYPE_FAMILY.bay, TYPE_FAMILY.generalEquipment, TYPE_FAMILY.conductingEquipment];
-        if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
-            return !COLUMN_KEY_TO_TYPE_FAMILY[columnKey].some(family => allowedFamilies.includes(family));
-        }
-        return !allowedFamilies.includes(COLUMN_KEY_TO_TYPE_FAMILY[columnKey]);
-    }
-    
-    return true;
-});
+	if (!dndStore.isDragging) return false
+
+	// Ref
+	if (dndStore.currentSourceRefFamily) {
+		return !ALLOWED_TARGETS_BY_REF_FAMILY[
+			dndStore.currentSourceRefFamily
+		].some((allowedFamily) => {
+			if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
+				return COLUMN_KEY_TO_TYPE_FAMILY[columnKey].includes(
+					allowedFamily
+				)
+			}
+			return COLUMN_KEY_TO_TYPE_FAMILY[columnKey] === allowedFamily
+		})
+	}
+
+	// Funktion
+	if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function) {
+		const allowedFamilies = [
+			TYPE_FAMILY.bay,
+			TYPE_FAMILY.generalEquipment,
+			TYPE_FAMILY.conductingEquipment
+		]
+		if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
+			return !COLUMN_KEY_TO_TYPE_FAMILY[columnKey].some((family) =>
+				allowedFamilies.includes(family)
+			)
+		}
+		return !allowedFamilies.includes(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])
+	}
+
+	return true
+})
+
+$inspect(importsStore.loadedLNodeType.elementByIds)
 </script>
 
 <Card.Root class="{columnKey === 'lNodeType' ? 'pb-4' : ''} flex-1 flex flex-col min-h-full {isColumnDisabled ? 'opacity-40' : ''}" >
