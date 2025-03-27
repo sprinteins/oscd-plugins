@@ -171,7 +171,6 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
     async function processImageForPdfGeneration(block: Element) {
         const content = block.textContent;
         if(!content) {
-            console.error("No content found in Image Block");
             return;
         }
 
