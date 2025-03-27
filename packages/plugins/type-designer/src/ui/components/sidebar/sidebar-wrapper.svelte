@@ -22,6 +22,13 @@ const attributesNeedingOneLineLayout = ['virtual']
 
 //====== REACTIVE VARIABLES ======//
 
+const hasChildrenOptions = $derived(
+	sidebarStore.currentElementType &&
+		Object.values(
+			sidebarStore.currentElementType.parameters.childrenOptions
+		).some((option) => option)
+)
+
 const currentElementAttributesEntries = $derived.by(() => {
 	if (!sidebarStore.currentElementTypeFamily) return []
 	const currentTypeFamily = TYPE_FAMILY[sidebarStore.currentElementTypeFamily]
@@ -102,8 +109,7 @@ function isAttributeReadonly(attributeKey: string) {
 					</div>
 				{/each}
 			</div>
-			
-			{#if Object.values(sidebarStore.currentElementType?.parameters.childrenOptions).length}
+			{#if hasChildrenOptions}
 				<div class="space-y-3">
 					<Label.Root class="text-lg font-bold">Child Elements Options:</Label.Root>
 					<ConductingEquipmentChildrenOptions />
