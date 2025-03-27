@@ -31,22 +31,23 @@
     );
 
     let isSelected = $derived(
-        store.selectedDataObjects.some((o) =>  o.id === treeNode.id),
+        store.selectedDataObject?.id === treeNode.id,
     );
 
-	function hasAllChildrenSelected(children: TreeNodeType[]){
+/* 	function hasAllChildrenSelected(children: TreeNodeType[]){
 		const dataObjects = gatherDataObjects(children)
 		if(dataObjects.length === 0){
 			return false
 		}
 		return dataObjects.every((dataObject) => store.selectedDataObjects.some((o) => o.id === dataObject.id));
-	}
+	} */
+
 	function hasSomeSelectedChildren(children: TreeNodeType[]){
 		const dataObjects = gatherDataObjects(children)
 		if(dataObjects.length === 0){
 			return false
 		}
-		return dataObjects.some((child) => store.selectedDataObjects.some((item) => item.id === child.id));
+		return dataObjects.some((child) => store.selectedDataObject?.id === child.id);
 	}
 
 	function disableClick(e: MouseEvent){
@@ -85,9 +86,9 @@
 				</button>
 				
 				<button class="tree-select-all" onclick={() => onclickparentcheckbox(treeNode)}>
-					{#if hasAllChildrenSelected(treeNode.children)}
-						<SquareCheck size={16}/>
-					{:else if hasSomeSelectedChildren(treeNode.children)}
+<!-- 				{#if hasAllChildrenSelected(treeNode.children)}
+						<SquareCheck size={16}/> -->
+					{#if hasSomeSelectedChildren(treeNode.children)}
 						<SquareMinus size={16}/>
 					{:else}
 						<span class="show-on-hover">

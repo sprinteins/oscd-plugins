@@ -8,11 +8,10 @@ import {
 import type { Nullable } from "./types";
 import type { Connection, LogicalConditioner } from "./ui/components/canvas/types.canvas";
 import type { LpElement } from "./ui/components/lp-list/types.lp-list";
-import type { TreeNode } from "./ui/components/object-tree/types.object-tree";
 
 
 export class Store {
-	
+
 	// 
 	// #region OpenSCD
 	// 
@@ -28,16 +27,20 @@ export class Store {
 
 	// 
 	// #region Object Tree
-	// 
-	selectedDataObjects: ObjectNodeDataObject[] = $state([])
+	//
+	//Multiple Selection "Disabled for now" 
+	//selectedDataObjects: ObjectNodeDataObject[] = $state([])
+	selectedDataObject: ObjectNodeDataObject | null = $state(null)
 	dataObjects: DataObject[] = $state([])
 	objectTree: ObjectTree = $state(NullObjectTree)
-	
+
 	logicalConditioners: LogicalConditioner[] = $state([])
-	
+
 	connections = $state<Connection[]>([])
-	
-	
+	public resetConnections(_: unknown) {
+		this.connections = []
+	}
+
 	// 
 	// #region Logical Physicals
 	// 
@@ -47,16 +50,16 @@ export class Store {
 	public selectLP(lp: LpElement) {
 		this._selectedLogicalPhysicals.push(lp)
 	}
-	public deselectLP(element: LpElement){
-		this._selectedLogicalPhysicals = this._selectedLogicalPhysicals.filter( (item) => item.id !== element.id );
+	public deselectLP(element: LpElement) {
+		this._selectedLogicalPhysicals = this._selectedLogicalPhysicals.filter((item) => item.id !== element.id);
 	}
 	public isLPSelected(lp: LpElement) {
 		return this._selectedLogicalPhysicals.some((selectedLP) => selectedLP.id === lp.id)
 	}
 	public toggleElementSelection(element: LpElement) {
 		if (this.isLPSelected(element)) {
-            this.deselectLP(element);
-        }else {
+			this.deselectLP(element);
+		} else {
 			this.selectLP(element);
 		}
 	}

@@ -11,14 +11,14 @@
 	import { gatherDataObjects } from "./utils";
 
 	let tree = $state<TreeNodeType[]>([]);
-	let openIDs: string[] = []
+	let openIDs: string[] = [];
 
 	// Note: we use $effect instead of $derived so we can change the values of filteredTree
 	$effect(() => {
 		tree = convertToTreeNode(store.objectTree);
 	});
 	// Note: we use $effect instead of $derived because $derived makes
-	//		 `openIDs` a reactive value, which we don't want 
+	//		 `openIDs` a reactive value, which we don't want
 	// 		 because it  causes an infinite reactive loop
 	$effect(() => {
 		openIDs = tree.flatMap((node) => idsOfOpenNodes(node));
@@ -32,7 +32,6 @@
 	});
 
 	function convertToTreeNode(objectTree: ObjectTree): TreeNodeType[] {
-
 		const treeNodes: TreeNodeType[] = objectTree.ied?.children.map((ld) => {
 			return {
 				id: ld.id,
@@ -74,8 +73,7 @@
 		return ids;
 	}
 
-	function wasNodeAlreadyOpen(id: string){
-		console.log("wasNodeAlreadyOpen", {openIDS: openIDs, id, included: openIDs.includes(id)})
+	function wasNodeAlreadyOpen(id: string) {
 		return openIDs.includes(id);
 	}
 
@@ -109,16 +107,16 @@
 			.filter(Boolean) as TreeNodeType[];
 	}
 
-	function addObjectsRecursivelyToCanvasV2(treeNode: TreeNodeType) {
+	/* 	function addObjectsRecursivelyToCanvasV2(treeNode: TreeNodeType) {
 		if (treeNode.children && treeNode.children?.length - 1 > 0) {
 			const dataObjects = gatherDataObjects(treeNode.children);
 			for (const dataObject of dataObjects) {
 				ensureObjectIsInStore(dataObject);
 			}
 		}
-	}
+	} */
 
-	function removeObjectsRecursivelyFromCanvasV2(treeNode: TreeNodeType) {
+	/*  function removeObjectsRecursivelyFromCanvasV2(treeNode: TreeNodeType) {
 		if (treeNode.children && treeNode.children?.length - 1 > 0) {
 			const dataObjects = gatherDataObjects(treeNode.children);
 			const indicies = dataObjects.map((dataObject) =>
@@ -128,42 +126,38 @@
 				(_, index) => !indicies.includes(index),
 			);
 		}
-	}
+	} */
 
-	function hasAllChildrenSelected(children: TreeNodeType[]) {
+	/* 	function hasAllChildrenSelected(children: TreeNodeType[]) {
 		const dataObjects = gatherDataObjects(children);
 		return dataObjects.every((dataObject) =>
 			store.selectedDataObjects.some((o) => o.id === dataObject.id),
 		);
-	}
+	} */
 
 	// #region Store Functions
 
 	function toggleObjectInStore(dataObject: ObjectNodeDataObject) {
-		const wantedDataObjectIndex = findObjectIndexInStore(dataObject);
-		const objectAlreadySelected = wantedDataObjectIndex !== -1;
-		if (objectAlreadySelected) {
-			store.selectedDataObjects.splice(wantedDataObjectIndex, 1);
+		if (dataObject.id === store.selectedDataObject?.id) {
+			store.selectedDataObject = null;
 		} else {
-			store.selectedDataObjects.push(dataObject);
+			store.selectedDataObject = dataObject;
 		}
 	}
 
 	function ensureObjectIsInStore(dataObject: ObjectNodeDataObject) {
-		const wantedDataObjectIndex = findObjectIndexInStore(dataObject);
-		const objectAlreadySelected = wantedDataObjectIndex !== -1;
-		if (objectAlreadySelected) {
+		if (dataObject.id === store.selectedDataObject?.id) {
 			return;
 		}
 
-		store.selectedDataObjects.push(dataObject);
+		store.selectedDataObject = dataObject;
 	}
 
-	function findObjectIndexInStore(dataObject: ObjectNodeDataObject) {
+	/* 	function findObjectIndexInStore(dataObject: ObjectNodeDataObject) {
 		return store.selectedDataObjects.findIndex(
 			(o) => o.id === dataObject.id,
 		);
-	}
+	} */
 </script>
 
 <div class="p-2">
@@ -176,7 +170,7 @@
 				treeNode.isOpen = !treeNode.isOpen;
 			}}
 			onclickparentcheckbox={(treeNode) => {
-				if (!treeNode.children) {
+				/* if (!treeNode.children) {
 					return;
 				}
 
@@ -184,7 +178,7 @@
 					removeObjectsRecursivelyFromCanvasV2(treeNode);
 				} else {
 					addObjectsRecursivelyToCanvasV2(treeNode);
-				}
+				} */
 			}}
 			onclickobjectcheckbox={(treeNode) => {
 				const dataObject = treeNode.dataObject;
@@ -200,7 +194,7 @@
 					console.warn("No dataObject found");
 					return;
 				}
-				store.selectedDataObjects = [dataObject];
+				ensureObjectIsInStore(dataObject);
 			}}
 		/>
 	{/each}
