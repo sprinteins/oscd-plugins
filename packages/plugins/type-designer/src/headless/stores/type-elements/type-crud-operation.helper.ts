@@ -9,8 +9,6 @@ import {
 import { pluginGlobalStore, ssdStore } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
-// HELPERS
-import { getNewNameWithOccurrence } from '@/headless/stores/type-elements/type-naming.helper'
 // CONSTANTS
 import {
 	CONDUCTING_EQUIPMENTS,
@@ -190,46 +188,6 @@ export async function createNewType(params: {
 			parent,
 			node: newTypeElement,
 			reference: getTypeInsertBeforeReference(params.family)
-		}
-	})
-}
-
-/**
- * Duplicates a type element by cloning it and assigning a new unique identifier and name.
- *
- * @param params - The parameters for the duplication.
- * @param params.family - The family of the type element to duplicate.
- * @param params.id - The identifier of the type element to duplicate.
- *
- * @throws If there is no host or parent element.
- */
-export function duplicateType({
-	family,
-	id
-}: { family: Exclude<AvailableTypeFamily, 'lNodeType'>; id: string }) {
-	const elementToClone =
-		typeElementsStore.typeElementsPerFamily[family][id].element
-	const clonedElement = elementToClone.cloneNode(true) as Element
-
-	clonedElement.setAttribute('uuid', uuidv4())
-	clonedElement.setAttribute(
-		'name',
-		getNewNameWithOccurrence({
-			element: elementToClone,
-			family,
-			suffix: 'Copy'
-		})
-	)
-
-	if (!pluginGlobalStore.host) throw new Error('No host')
-	if (!elementToClone.parentElement) throw new Error('No parent element')
-
-	createAndDispatchEditEvent({
-		host: pluginGlobalStore.host,
-		edit: {
-			parent: elementToClone.parentElement,
-			node: clonedElement,
-			reference: elementToClone.nextElementSibling
 		}
 	})
 }
