@@ -1,6 +1,9 @@
 <script lang="ts">
+    import { LC_TYPE, LP_TYPE, NODE_ELEMENT_TYPE } from "@/headless/constants";
+    import Port from "./port.svelte";
     import type {
         Connection,
+        ConnectionPort,
         NodeElement,
         NodeElementType,
     } from "./types.canvas";
@@ -8,50 +11,60 @@
     type Props = {
         side: "right" | "left";
         node: NodeElement;
-        number: number;
-        startDrawing: (event: MouseEvent, type: NodeElementType) => void;
+        ports: ConnectionPort[];
+        startDrawing: (
+            event: MouseEvent,
+            port: ConnectionPort,
+            type: NodeElementType,
+        ) => void;
         stopDrawing: (
-            node: string,
-            side: string,
-            index: number,
+            port: ConnectionPort,
+            targetNode: string,
             type: NodeElementType,
             addConnection: (connection: Connection) => void,
         ) => void;
         addConnection: (connection: Connection) => void;
     };
 
-    let {
-        side,
-        node,
-        startDrawing,
-        number,
-        stopDrawing,
-        addConnection,
-    }: Props = $props();
+    let { side, node, ports, startDrawing, stopDrawing, addConnection }: Props =
+        $props();
+
+    const containerTopPos = ports.length > 2 ? "top-[60%]" : "top-[60%]";
+    const containerTranslateX =
+        side === "left" ? "-translate-x-1/2" : "translate-x-1/2";
+
+    const useDynamicPorts =
+        (node.type === NODE_ELEMENT_TYPE.LC &&
+            side === "right" &&
+            node.lnClass === LC_TYPE.LCIV) ||
+        (node.type === NODE_ELEMENT_TYPE.LP &&
+            side === "left" &&
+            node.lnClass === LP_TYPE.LPDO);
 </script>
 
 <div
     data-title={`${node.name}-${side}`}
-    class={`container absolute ${side}-0 top-1/2 transform -translate-y-1/2 ${side === "left" ? "-" : ""}translate-x-1/2`}
+    class={`container absolute ${side}-0 ${containerTopPos} transform -translate-y-1/2 ${containerTranslateX}`}
 >
-    {#each Array.from({ length: number }) as _, index}
-        <div
-            role="button"
-            tabindex="-1"
-            id={`${side}-circle-${index}`}
-            class={`bg-white border border-black w-2 h-2 rounded-full`}
-            onmousedown={(event) => {
-                startDrawing(event, node.type);
-            }}
-            onmouseup={() => {
-                stopDrawing(node.name, side, index, node.type, addConnection);
-            }}
-        ></div>
-    {/each}
+    {#if useDynamicPorts && node.numberOfDynamicPorts}
+        {#each Array.from({ length: node.numberOfDynamicPorts }, (_, i) => i) as index (index)}
+            <Port
+                port={{ ...ports[0], index }}
+                {node}
+                {startDrawing}
+                {stopDrawing}
+                {addConnection}
+            />
+        {/each}
+    {:else}
+        {#each ports as port}
+            <Port {port} {node} {startDrawing} {stopDrawing} {addConnection} />
+        {/each}
+    {/if}
 </div>
 
 <style lang="scss">
     .container {
-        @apply grid place-items-center gap-1 rounded-full p-1 bg-white border border-gray-300 w-[10%];
+        @apply grid place-items-center gap-2 rounded-full p-1 bg-white border border-gray-300 w-[10%];
     }
 </style>

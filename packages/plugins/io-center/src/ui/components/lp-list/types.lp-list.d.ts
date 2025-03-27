@@ -7,11 +7,13 @@ export type LpElement = {
     instance: string,
     description: string,
     isLinked: boolean,
+    numberOfLPDOPorts?: number;
 }
 
 export type FormData = {
     name: string;
     number?: number;
+    numberOfLPDOPorts?: number;
     desc: string;
     type: keyof typeof LP_TYPE | "";
 }

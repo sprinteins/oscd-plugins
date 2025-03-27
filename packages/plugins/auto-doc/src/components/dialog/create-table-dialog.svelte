@@ -35,16 +35,18 @@
     <Content id="create-table-dialog-content">
         Specify the dimensions. 
         <div id="create-table-dialog__input">
-            <Textfield 
-                class="mdc-text-field--with-leading-icon"
-                bind:value={rows}
-                variant="outlined"
-                label={"Rows"}
-                type="number"
-                input$min={minRows}
-                input$max={maxRows}
-            >
-            </Textfield>
+            {#if false}
+                <Textfield 
+                    class="mdc-text-field--with-leading-icon"
+                    bind:value={rows}
+                    variant="outlined"
+                    label={"Rows"}
+                    type="number"
+                    input$min={minRows}
+                    input$max={maxRows}
+                >
+                </Textfield>
+            {/if}
             <Textfield 
                 bind:value={columns}
                 variant="outlined"

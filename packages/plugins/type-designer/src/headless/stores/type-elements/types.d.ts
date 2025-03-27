@@ -69,6 +69,7 @@ export type RefElement<GenericRefFamily extends AvailableRefFamily> = {
 		id: string
 		family: AvailableTypeFamily
 	}
+	occurrence: number
 }
 
 export type SortedImportedTypeElements<
