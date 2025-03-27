@@ -13,7 +13,7 @@
 
 <sidebar-left>
 	<IEDSelect {onSelectIED} />
-	{#if store.objectTreeV2.ied.children.length > 0}
+	{#if store.objectTree.ied.children.length > 0}
 		<ObjectTree />
 	{/if}
 </sidebar-left>

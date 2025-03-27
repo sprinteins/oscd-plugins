@@ -50,8 +50,8 @@ export function dataObjectToNodeElement(dataObject: ObjectNodeDataObject): NodeE
 		dataObject.objectPath.ln?.inst,
 		dataObject.name
 	]
-		.filter(Boolean)
-		.join("-")
+	.filter(Boolean)
+	.join("-")
 
 	const nodeElement = {
 		name: dataObject.name,
