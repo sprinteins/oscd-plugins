@@ -61,7 +61,7 @@
         const id = addElement("table");
 
         const setDimensions = () => {
-            const data: String[][] = [];
+            const data: string[][] = [];
 
             for(let i = 0; i < columns; i++) {
                 data[i] = [];
