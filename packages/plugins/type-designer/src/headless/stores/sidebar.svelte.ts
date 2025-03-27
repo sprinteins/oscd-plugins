@@ -1,3 +1,4 @@
+import { tick } from 'svelte'
 // STORES
 import { typeElementsStore } from '@/headless/stores'
 // TYPES
@@ -66,6 +67,18 @@ class UseSidebarStore {
 		this.currentElementTypeKey = key
 		this.currentElementType = element
 		this.isCurrentElementImported = isImported
+	}
+
+	async refreshCurrentElementType() {
+		if (!this.currentElementTypeKey || !this.currentElementTypeFamily)
+			return
+
+		await tick()
+
+		this.currentElementType =
+			typeElementsStore.typeElementsPerFamily[
+				this.currentElementTypeFamily
+			][this.currentElementTypeKey]
 	}
 
 	resetCurrentElementType() {
