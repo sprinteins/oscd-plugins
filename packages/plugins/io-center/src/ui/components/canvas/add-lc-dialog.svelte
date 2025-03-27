@@ -1,18 +1,27 @@
 <script lang="ts">
-	import { L_NODE_TYPE_HELPER_TEXT, LC_TYPE } from "@/headless/constants";
+	import {
+		ALLOWED_LC_FOR_CDC,
+		L_NODE_TYPE_HELPER_TEXT,
+		LC_TYPE,
+	} from "@/headless/constants";
 	import Input from "../common/input.svelte";
 	import Select from "../common/select.svelte";
 	import type { LcTypes } from "./types.canvas";
-    import type { Optional } from "../../../types";
+	import type { Optional } from "../../../types";
+	import { store } from "@/store.svelte";
 
 	type Props = {
 		isOpen: boolean;
-		addLC: (type: LcTypes, number?: number, numberOfLCIVPorts?: number) => void;
+		addLC: (
+			type: LcTypes,
+			number?: number,
+			numberOfLCIVPorts?: number,
+		) => void;
 		hasLNodeType: (type: LcTypes) => boolean;
 	};
 
 	let { isOpen = $bindable(), addLC, hasLNodeType }: Props = $props();
-	let tempTypeOfLC: LcTypes | "" = $state("")
+	let tempTypeOfLC: LcTypes | "" = $state("");
 
 	const typePresentInDoc = $derived.by(() => {
 		if (!tempTypeOfLC) {
@@ -21,27 +30,32 @@
 		return hasLNodeType(tempTypeOfLC);
 	});
 
-	
 	function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
-		tempTypeOfLC = ""
-		if(!event.target) { return }
+		tempTypeOfLC = "";
+		if (!event.target) {
+			return;
+		}
 
-		const formElement = event.target as HTMLFormElement
+		const formElement = event.target as HTMLFormElement;
 		const formData = new FormData(formElement);
-		
-		const typeOfLC = formData.get("typeOfLC") as Optional<LcTypes> ;
+
+		const typeOfLC = formData.get("typeOfLC") as Optional<LcTypes>;
 		const numberOfLCs = Number(formData.get("number")) as Optional<number>;
-		const numberOfLCIVPorts = Number(formData.get("numberOfLCIVPorts")) as Optional<number>;
-		
-		if (!typeOfLC || !numberOfLCs){ return }
+		const numberOfLCIVPorts = Number(
+			formData.get("numberOfLCIVPorts"),
+		) as Optional<number>;
+
+		if (!typeOfLC || !numberOfLCs) {
+			return;
+		}
 
 		addLC(typeOfLC, numberOfLCs, numberOfLCIVPorts);
 		isOpen = false;
 	}
 
 	function handleCancel() {
-		tempTypeOfLC = ""
+		tempTypeOfLC = "";
 		isOpen = false;
 	}
 
@@ -50,45 +64,61 @@
 			? `⚠︎ Missing ${tempTypeOfLC} LNodeType`
 			: undefined;
 	}
+
+	function getOptions() {
+		if (!store.selectedDataObject) {
+			return [];
+		}
+
+		if (
+			store.selectedDataObject.cdcType &&
+			Object.keys(ALLOWED_LC_FOR_CDC).includes(
+				store.selectedDataObject.cdcType,
+			)
+		) {
+			return ALLOWED_LC_FOR_CDC[store.selectedDataObject.cdcType];
+		}
+
+		return Object.values(LC_TYPE);
+	}
 </script>
 
 {#if isOpen}
-<dialog open data-name="add-lc-dialog">
-	<div role="button" id="modal" class="backdrop">
-		<div class="container space-y-4">
-			<form onsubmit={handleSubmit}>
-				<Select
-					bind:value={tempTypeOfLC}
-					name="typeOfLC"
-					label="Type of LC"
-					options={Object.values(LC_TYPE)}
-					helperText={getHelperText()}
-					helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
-				/>
-				<Input
-					name="number"
-					label="Number of LCs"
-					type="number"
-					value=1
-				/>
-				{#if tempTypeOfLC === LC_TYPE.LCIV}
-					<Input
-						name="numberOfLCIVPorts"
-						label="Number of Ports"
-						type="number"
+	<dialog open data-name="add-lc-dialog">
+		<div role="button" id="modal" class="backdrop">
+			<div class="container space-y-4">
+				<form onsubmit={handleSubmit}>
+					<Select
+						bind:value={tempTypeOfLC}
+						name="typeOfLC"
+						label="Type of LC"
+						options={getOptions()}
+						helperText={getHelperText()}
+						helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
 					/>
-				{/if}
-				<div class="action-buttons">
-					<button class="cancel-button" onclick={handleCancel}>
-						Cancel
-					</button>
-					<button type="submit" class="add-button"> Add </button>
-				</div>
-			</form>
-
+					<Input
+						name="number"
+						label="Number of LCs"
+						type="number"
+						value="1"
+					/>
+					{#if tempTypeOfLC === LC_TYPE.LCIV}
+						<Input
+							name="numberOfLCIVPorts"
+							label="Number of Ports"
+							type="number"
+						/>
+					{/if}
+					<div class="action-buttons">
+						<button class="cancel-button" onclick={handleCancel}>
+							Cancel
+						</button>
+						<button type="submit" class="add-button"> Add </button>
+					</div>
+				</form>
+			</div>
 		</div>
-	</div>
-</dialog>
+	</dialog>
 {/if}
 
 <style lang="scss">

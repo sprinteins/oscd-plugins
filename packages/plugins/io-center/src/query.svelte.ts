@@ -237,7 +237,13 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 					to
 				};
 
-				if (connectionType === "output" && refDO === selectedDataObject.name && refLNClass === selectedDataObject.objectPath.ln?.lnClass && refLNInst === selectedDataObject.objectPath.ln?.inst && refLDInst === selectedDataObject.objectPath.lDevice?.inst) {
+				if (
+					connectionType === "output"
+					&& refDO === selectedDataObject.name
+					&& refLNClass === selectedDataObject.objectPath.ln?.lnClass
+					&& refLNInst === selectedDataObject.objectPath.ln?.inst
+					&& refLDInst === selectedDataObject.objectPath.lDevice?.inst
+				) {
 					return connection
 				}
 			});

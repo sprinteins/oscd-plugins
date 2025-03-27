@@ -136,6 +136,11 @@ export const PORTS_CONFIG_PER_TYPE: Record<string, ConnectionPort[]> = {
     LPAO: [{ name: 'Ind', side: 'left' }],
 }
 
+export const ALLOWED_LC_FOR_CDC: Record<string, LcTypes[]> = {
+    "dps": [LC_TYPE.LCDP],
+    "sps": [LC_TYPE.LCBI, LC_TYPE.LCBO],
+}
+
 // TARGET_CDC: Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
 // Currently hard-coded per client request but in future we may make it dynamic and allow the user to fill the targetScd
 export const TARGET_CDC_TYPES = ['dps', 'sps', 'ins', 'ens']
