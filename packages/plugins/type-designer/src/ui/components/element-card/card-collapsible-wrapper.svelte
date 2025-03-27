@@ -1,5 +1,4 @@
 <script lang="ts">
-import { onMount } from 'svelte';
 // CORE
 import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 // STORE
@@ -110,91 +109,21 @@ function getCurrentRefFullLabel(refWrapper: RefElement<AvailableRefFamily>) {
 $effect(() => {
 	if (!hasRefs) isElementCardOpen = false
 })
-
-let scrollableContainer: HTMLElement;
-let lastScrollPosition = 0;
-
-let isCurrentDropTarget = $state(false);
-let dragLeaveTimeout: number | undefined;
-
-const handleDragOver = (event: DragEvent) => {
-	event.preventDefault();
-	if (dndStore.handleDragOver({ targetId: typeElementKey, isAllowedToDrop })) {
-		if (dragLeaveTimeout) {
-			clearTimeout(dragLeaveTimeout);
-			dragLeaveTimeout = undefined;
-		}
-		
-		const target = event.target as HTMLElement;
-		scrollableContainer = target.closest('.overflow-y-auto') as HTMLElement;
-		if (scrollableContainer) {
-			lastScrollPosition = scrollableContainer.scrollTop;
-		}
-		
-		isCurrentDropTarget = true;
-		isElementCardOpen = true;
-	}
-};
-
-const handleDragLeave = (event: DragEvent) => {
-	const target = event.target as HTMLElement;
-	const relatedTarget = event.relatedTarget as HTMLElement;
-	
-	if (relatedTarget && target.contains(relatedTarget)) {
-		return;
-	}
-	
-	// prevents flickering of the collapsible element, otherwise it jumps like crazy when dragging over the refs
-	dragLeaveTimeout = window.setTimeout(() => {
-		isElementCardOpen = false;
-	}, 50);
-};
-
-onMount(() => {
-	const hideHandler = () => {
-		isCurrentDropTarget = false;
-	};
-	window.addEventListener('hideAllDropZones', hideHandler);
-	return () => {
-		window.removeEventListener('hideAllDropZones', hideHandler);
-		if (dragLeaveTimeout) {
-			clearTimeout(dragLeaveTimeout);
-		}
-	};
-});
 </script>
 	
-<Collapsible.Root 
-	bind:open={isElementCardOpen} 
-	class="space-y-2"
-	ondragover={handleDragOver}
-	ondragleave={handleDragLeave}
-	ondrop={() => {
-		if (dndStore.currentDropTargetId === typeElementKey) {
-			isCurrentDropTarget = false;
-			dndStore.handleDrop({
-				parentTypeWrapper: typeElement.element,
-				parentTypeFamily: typeElementFamily
-			});
-			if (scrollableContainer) {
-				setTimeout(() => {
-					scrollableContainer.scrollTop = lastScrollPosition;
-				}, 0);
-			}
-		}
-	}}
->
+<Collapsible.Root bind:open={isElementCardOpen} class="space-y-2">
+
 	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {isImportContainer}/>
 
-		<!-- REF CARD START -->
-		<Collapsible.Content class="space-y-2 flex flex-col items-end">
+	<!-- REF CARD START -->
+		<Collapsible.Content  class="space-y-2 flex flex-col items-end">
 			{#snippet child({ props, open: collapsibleContentOpen })}
 				{#if collapsibleContentOpen}
 					<div {...props} transition:slide={{ duration: 100 }}>
 						{#if typeElementFamily !== TYPE_FAMILY.lNodeType}
 							{#each currentRefs as [refFamily, refElements]}
 								{#each Object.entries(refElements) as [refId, refWrapper]} 
-									<Card.Root class="w-5/6">
+									<Card.Root class="w-5/6" >
 										<Card.Content class="h-8 p-1 flex items-center justify-between">
 											<div class="flex items-center min-w-0">
 												<span class="ml-3 min-w-2.5 min-h-2.5 border-teal-700 border-2 transform rotate-45"></span>
@@ -205,7 +134,7 @@ onMount(() => {
 											{/if}
 										</Card.Content>
 									</Card.Root>
-								{/each}
+									{/each}
 							{/each}
 						{/if}
 					</div>
@@ -215,24 +144,15 @@ onMount(() => {
 	<!-- REF CARD END -->
 
 	<!-- DND PLACEHOLDER START -->
-	{#if dndStore.isDragging && isAllowedToDrop && isCurrentDropTarget && !isImportContainer}
+	{#if dndStore.isDragging && isAllowedToDrop && !isImportContainer}
 		<div  class="flex justify-end">
 			<Card.Root
 				class="border-gray-500 border-dashed w-5/6 "
 				ondragover={(event) => event.preventDefault()}
-				ondrop={(event) => {
-					event.preventDefault();
-					isCurrentDropTarget = false;
-					dndStore.handleDrop({
-						parentTypeWrapper: typeElement.element,
-						parentTypeFamily: typeElementFamily
-					});
-					if (scrollableContainer) {
-						setTimeout(() => {
-							scrollableContainer.scrollTop = lastScrollPosition;
-						}, 0);
-					}
-				}}
+				ondrop={() => dndStore.handleDrop({
+					parentTypeWrapper: typeElement.element,
+					parentTypeFamily: typeElementFamily
+				})}
 			>
 				<Card.Content class="h-8 p-1 flex items-center justify-center">
 					<span class="mr-1">Drop</span>
@@ -245,5 +165,5 @@ onMount(() => {
 		</div>
 	{/if}
 	<!-- DND PLACEHOLDER END -->
-</Collapsible.Root>
 
+</Collapsible.Root>

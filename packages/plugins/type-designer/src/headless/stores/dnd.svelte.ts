@@ -8,25 +8,20 @@ import type { AvailableTypeFamily, AvailableRefFamily } from '@/headless/stores'
 
 class UseDnDStore {
 	isDragging = $state(false)
-	currentSourceTypeIdOrUuid = $state<string>()
-	currentSourceTypeFamily = $state<AvailableTypeFamily>()
-	currentSourceRefFamily = $state<AvailableRefFamily>()
-	
-	currentDropTargetId = $state<string>()
-	isDropZoneVisible = $state(false)
-	
-	private dragLeaveTimeout: number | undefined
+	currentSourceTypeIdOrUuid = $state<string | undefined>(undefined)
+	currentSourceTypeFamily = $state<AvailableTypeFamily | undefined>(undefined)
+	currentSourceRefFamily = $state<AvailableRefFamily | undefined>(undefined)
 
-	handleDragStart({ event, sourceTypeId, sourceTypeFamily, sourceRefFamily }: {
+	handleDragStart(params: {
 		event: DragEvent
 		sourceTypeId: string
 		sourceTypeFamily: AvailableTypeFamily
-		sourceRefFamily?: AvailableRefFamily
+		sourceRefFamily: AvailableRefFamily | undefined
 	}) {
 		this.isDragging = true
-		this.currentSourceTypeIdOrUuid = sourceTypeId
-		this.currentSourceTypeFamily = sourceTypeFamily
-		this.currentSourceRefFamily = sourceRefFamily
+		this.currentSourceTypeIdOrUuid = params.sourceTypeId
+		this.currentSourceTypeFamily = params.sourceTypeFamily
+		this.currentSourceRefFamily = params.sourceRefFamily
 	}
 
 	handleDragEnd() {
@@ -36,18 +31,9 @@ class UseDnDStore {
 		this.currentSourceRefFamily = undefined
 	}
 
-	handleDragOver({ targetId, isAllowedToDrop }: { 
-		targetId: string, 
-		isAllowedToDrop: boolean 
-	}) {
-		if (!this.isDragging || !isAllowedToDrop) return false
-		window.dispatchEvent(new CustomEvent('hideAllDropZones'))
-		return true
-	}
-
-	handleDrop({ parentTypeWrapper, parentTypeFamily }: {
+	handleDrop(params: {
 		parentTypeWrapper: Element
-		parentTypeFamily: AvailableTypeFamily
+		parentTypeFamily: string
 	}) {
 		let currentRefFamily = this.currentSourceRefFamily
 
@@ -56,8 +42,8 @@ class UseDnDStore {
 			this.currentSourceTypeFamily === TYPE_FAMILY.function
 		) {
 			if (
-				parentTypeFamily === TYPE_FAMILY.generalEquipment ||
-				parentTypeFamily === TYPE_FAMILY.conductingEquipment
+				params.parentTypeFamily === TYPE_FAMILY.generalEquipment ||
+				params.parentTypeFamily === TYPE_FAMILY.conductingEquipment
 			)
 				currentRefFamily = REF_FAMILY.eqFunction
 			else currentRefFamily = REF_FAMILY.function
@@ -69,24 +55,8 @@ class UseDnDStore {
 		typeElementsStore.createNewRef({
 			family: currentRefFamily,
 			sourceTypeIdOrUuid: this.currentSourceTypeIdOrUuid,
-			parentTypeWrapper: parentTypeWrapper
+			parentTypeWrapper: params.parentTypeWrapper
 		})
-
-		this.resetDragState()
-	}
-
-	private resetDragState() {
-		this.isDragging = false
-		this.currentSourceTypeIdOrUuid = undefined
-		this.currentSourceTypeFamily = undefined
-		this.currentSourceRefFamily = undefined
-		this.currentDropTargetId = undefined
-		this.isDropZoneVisible = false
-		
-		if (this.dragLeaveTimeout) {
-			clearTimeout(this.dragLeaveTimeout)
-			this.dragLeaveTimeout = undefined
-		}
 	}
 }
 
