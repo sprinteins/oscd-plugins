@@ -123,12 +123,12 @@
                 <Item on:SMUI:action={() => openFileSelectorIfNotMasterTemplate()}
                     title={importToolTipText}
                 >
-                    <Text class={isMasterTemplate ? "strike-through": ""}>Import from</Text>
+                    <Text class={isMasterTemplate ? "cursor-not-allowed": ""}>Import from</Text>
                 </Item>
             </List>
         </Menu>
         <!-- <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button> -->
-         <div class="master-template-checkbox">
+         <div class="master-template-checkbox-area">
             <Checkbox bind:checked={isMasterTemplate} />
             <span>Master Template</span>
          </div>
@@ -182,12 +182,12 @@
         }
     }
 
-    .master-template-checkbox{
+    .master-template-checkbox-area{
         display: flex;
         align-items: center;
     }
 
-    :global(.strike-through){
+    :global(.cursor-not-allowed){
         cursor: not-allowed;
         color: #a6a6a6;
     }
