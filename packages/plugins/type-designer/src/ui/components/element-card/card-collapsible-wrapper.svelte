@@ -7,11 +7,12 @@ import { dndStore, typeElementsStore, importsStore } from '@/headless/stores'
 import {
 	ALLOWED_TARGETS_BY_REF_FAMILY,
 	TYPE_FAMILY,
-	ALLOWED_IMPORTED_TYPE
+	ALLOWED_IMPORTED_TYPE,
+	REF_FAMILY
 } from '@/headless/constants'
 // COMPONENTS
 import { slide } from 'svelte/transition'
-import { Card, Collapsible } from '@oscd-plugins/core-ui-svelte'
+import { Card, Collapsible, Badge } from '@oscd-plugins/core-ui-svelte'
 import TypeCard from './type-card.svelte'
 import CardMenu from './card-menu.svelte'
 // TYPES
@@ -128,6 +129,12 @@ $effect(() => {
 											<div class="flex items-center min-w-0">
 												<span class="ml-3 min-w-2.5 min-h-2.5 border-teal-700 border-2 transform rotate-45"></span>
 												<span class="ml-4 truncate">{ getCurrentRefFullLabel(refWrapper) }</span>
+												{#if refFamily === REF_FAMILY.conductingEquipment || refFamily === REF_FAMILY.generalEquipment}
+													<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">#EqRef</Badge.Root>
+												{/if}
+												{#if refFamily === REF_FAMILY.function}
+													<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">#FunctionRef</Badge.Root>
+												{/if}
 											</div>
 											{#if !isImportContainer}
 												<CardMenu type={{ family: typeElementFamily, id: typeElementKey}} ref={{ family: refFamily, id: refId}}/>
