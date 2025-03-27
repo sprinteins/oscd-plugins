@@ -32,10 +32,14 @@ const level = $derived(ref ? 'ref' : 'type')
 
 //====== FUNCTIONS ======//
 
+//====== TYPES
+
 function duplicateTypeHandler() {
-	typeElementsStore.duplicateType({
-		family: type.family,
-		id: type.id
+	typeElementsStore.duplicateElement({
+		element:
+			typeElementsStore.typeElementsPerFamily[type.family][type.id]
+				.element,
+		family: type.family
 	})
 }
 
@@ -47,6 +51,19 @@ function deleteTypeHandler() {
 
 	sidebarStore.resetCurrentElementType()
 	sidebar.setOpen(false)
+}
+
+//====== REFS
+
+function duplicateRefHandler() {
+	if (!ref) throw new Error('Ref is not defined')
+	typeElementsStore.duplicateElement({
+		element:
+			typeElementsStore.typeElementsPerFamily[type.family][type.id].refs[
+				ref.family
+			][ref.id].element,
+		family: ref.family
+	})
 }
 
 function deleteRefHandler() {
@@ -66,6 +83,7 @@ function deleteRefHandler() {
 	]} />
 {:else if level === 'ref'}
 	<DropdownMenuWorkaround size="sm" actions={[
+		{ label: 'Duplicate', disabled: false, callback: duplicateRefHandler },
 		{ label: 'Delete', disabled: false, callback: deleteRefHandler }
 	]} />
 {/if}
