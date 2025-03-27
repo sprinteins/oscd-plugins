@@ -16,8 +16,8 @@
 
     const { name, instance } = lpElement;
 
-	let showDialog = $state(false);
-	let isSelected = $derived(store.isLPSelected(lpElement));
+    let showDialog = $state(false);
+    let isSelected = $derived(store.isLPSelected(lpElement));
 
     let isSearched = $derived(
         searchTerm !== "" &&
@@ -25,20 +25,22 @@
     );
 
     function addLpElementToCanvas(element: LpElement) {
-		store.toggleElementSelection(element);
+        store.toggleElementSelection(element);
     }
-
 </script>
 
 <div
-	data-name="lp-element"
+    data-name="lp-element"
     class={{
         "lp-element": true,
         selected: isSelected,
         searched: isSearched,
     }}
 >
-    <button onclick={() => addLpElementToCanvas(lpElement)}>
+    <button
+        disabled={store.connectionExistsFor(lpElement)}
+        onclick={() => addLpElementToCanvas(lpElement)}
+    >
         {#if isSelected}
             <SquareCheck size={16} />
         {:else}

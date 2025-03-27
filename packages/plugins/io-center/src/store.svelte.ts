@@ -44,6 +44,9 @@ export class Store {
 	public resetConnections(_: unknown) {
 		this.connections = []
 	}
+	public connectionExistsFor(lp: LpElement) {
+		return this.connections.some(connection => connection.to.name.includes(`${lp.type}-${lp.instance}`))
+	}
 
 	// 
 	// #region Logical Physicals
@@ -51,6 +54,9 @@ export class Store {
 	lpList: LpElement[] = $state([])
 	_selectedLogicalPhysicals: LpElement[] = $state([])
 	selectedLogicalPhysicals: LpElement[] = $derived([...this._selectedLogicalPhysicals])
+	public findLP(type: string, instance: string) {
+		return this.lpList.find(lp => lp.type === type && lp.instance === instance)
+	}
 	public selectLP(lp: LpElement) {
 		this._selectedLogicalPhysicals.push(lp)
 	}

@@ -34,6 +34,7 @@ export type NodeElement =
 		name: string
 		isLinked?: boolean
 		lnClass: LcTypes | LpTypes
+		title?: string
 		numberOfDynamicPorts?: number
 	}
 

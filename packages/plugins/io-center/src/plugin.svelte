@@ -91,8 +91,6 @@
 	function addConnection(connection: Connection) {
 		cmd.addConnection(connection);
 	}
-
-	$inspect(store.selectedDataObject);
 </script>
 
 <main
