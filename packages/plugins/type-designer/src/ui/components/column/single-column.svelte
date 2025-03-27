@@ -8,7 +8,7 @@ import CardCollapsibleWrapper from '../element-card/card-collapsible-wrapper.sve
 import ImportSelect from '@/ui/components/import/import-select.svelte'
 import ImportContainer from '@/ui/components/import/import-container.svelte'
 // STORES
-import { typeElementsStore, importsStore } from '@/headless/stores'
+import { typeElementsStore, importsStore, dndStore } from '@/headless/stores'
 // TYPES
 import type {
 	AvailableTypeFamily,
@@ -18,6 +18,7 @@ import type {
 	Column,
 	TypeElementByIds
 } from '@/headless/stores'
+import { ALLOWED_TARGETS_BY_REF_FAMILY, COLUMN_KEY_TO_TYPE_FAMILY, TYPE_FAMILY } from '@/headless/constants';
 
 //======= INITIALIZATION =======//
 
@@ -64,9 +65,35 @@ const hasImportedTypeElements = $derived.by(() => {
 const capitalizedColumnKey = $derived(
 	columnKey.charAt(0).toUpperCase() + columnKey.slice(1)
 )
+
+const isColumnDisabled = $derived.by(() => {
+    if (!dndStore.isDragging) return false;
+    
+    // Ref
+    if (dndStore.currentSourceRefFamily) {
+        return !ALLOWED_TARGETS_BY_REF_FAMILY[dndStore.currentSourceRefFamily]
+            .some(allowedFamily => {
+                if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
+                    return COLUMN_KEY_TO_TYPE_FAMILY[columnKey].includes(allowedFamily);
+                }
+                return COLUMN_KEY_TO_TYPE_FAMILY[columnKey] === allowedFamily;
+            });
+    }
+    
+    // Funktion
+    if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function) {
+        const allowedFamilies = [TYPE_FAMILY.bay, TYPE_FAMILY.generalEquipment, TYPE_FAMILY.conductingEquipment];
+        if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
+            return !COLUMN_KEY_TO_TYPE_FAMILY[columnKey].some(family => allowedFamilies.includes(family));
+        }
+        return !allowedFamilies.includes(COLUMN_KEY_TO_TYPE_FAMILY[columnKey]);
+    }
+    
+    return true;
+});
 </script>
 
-<Card.Root class="{columnKey === 'lNodeType' ? 'pb-4' : ''} flex-1 flex flex-col min-h-full" >
+<Card.Root class="{columnKey === 'lNodeType' ? 'pb-4' : ''} flex-1 flex flex-col min-h-full {isColumnDisabled ? 'opacity-40' : ''}" >
 	<Card.Header class="pb-4">
 		<div class="flex justify-between">
 			<Card.Title>{ column.name}</Card.Title>

@@ -26,10 +26,10 @@ function setVirtualValue(value: boolean) {
 </script>
 
 <Switch.Root
-class="mt-1 self-end"
-bind:checked={
-	getVirtualValue,
-	setVirtualValue
-}
-disabled={sidebarStore.isCurrentElementImported}
+	class="mt-1 self-end"
+	bind:checked={
+		getVirtualValue,
+		setVirtualValue
+	}
+	disabled={sidebarStore.isCurrentElementImported}
 />

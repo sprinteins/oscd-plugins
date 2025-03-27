@@ -1,10 +1,14 @@
 <script lang="ts">
     import Button, {Label} from "@smui/button"
     import {IconWrapper} from "@oscd-plugins/ui"
+
     import TextElement from "@/components/elements/text-element/text-element.svelte"
     import ImageElement from "@/components/elements/image-element/image-element.svelte"
     import SignalListElement from "@/components/elements/signal-list-element/signal-list-element.svelte"
+    import TableElement from "@/components/elements/table-element/table-element.svelte"
     import ElementWrapper from "@/components/element-wrapper/element-wrapper.svelte"
+    import CreateTableDialog from "@/components/dialog/create-table-dialog.svelte";
+
     import {docTemplatesStore} from '@/stores'
     import {pluginStore} from "@/stores/plugin.store"
     import type {BlockElement, ElementType, ElementMap} from '@/components/elements/types.elements'
@@ -38,16 +42,43 @@
 
 
     let isElementsChoiceVisible = false
-    $: blockElements = mappedBlocks
+    $: isCreateTableDialogOpen = false;
+    $: blockElements = mappedBlocks;
     const componentMap : ElementMap  = {
         "text": TextElement,
         "image": ImageElement,
         "signalList": SignalListElement,
+        "table": TableElement,
+    }
+
+
+    function openTableModal() {
+        isCreateTableDialogOpen = true;
+    }
+
+
+    function createTableElement(rows: number, columns: number) {
+        const id = addElement("table");
+
+        const setDimensions = () => {
+            const data: string[][] = [];
+
+            for(let i = 0; i < columns; i++) {
+                data[i] = [];
+                for(let j = 0; j < rows; j++) {
+                    data[i][j] = "";
+                }
+            }
+
+            handleContentChange(id, JSON.stringify(data))
+        };
+
+        setDimensions();
     }
 
 
     function addElement(type: ElementType){
-        docTemplatesStore.addBlockToDocumentTemplate(template, type)
+        return docTemplatesStore.addBlockToDocumentTemplate(template, type)
     }
 
 
@@ -94,7 +125,7 @@
 </script>
 
 
-
+<CreateTableDialog bind:isOpen={isCreateTableDialogOpen} onHandleSubmit={createTableElement}/>
 
 <div class="template-builder">
     <div class="card">
@@ -111,7 +142,7 @@
             {/each}
         </div>
 
-        <footer >
+        <footer>
             <Button on:click={()=> isElementsChoiceVisible = !isElementsChoiceVisible}>
                 <IconWrapper icon="add" fillColor="#2aa198"/>
                 <Label>
@@ -123,6 +154,7 @@
                     <Button variant="outlined" on:click={()=>{addElement('text')}}>Text</Button>
                     <Button variant="outlined" on:click={()=>{addElement("image")}}>Image</Button>
                     <Button variant="outlined" on:click={()=>{addElement("signalList")}}>Signal List</Button>
+                    <Button variant="outlined" on:click={openTableModal}>Table</Button>
                 {/if}
             </div>
         </footer>
@@ -160,7 +192,6 @@
         flex-wrap: wrap;
     }
 
-  
 </style>
 
 

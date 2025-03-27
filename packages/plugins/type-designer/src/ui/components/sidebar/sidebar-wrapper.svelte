@@ -27,6 +27,10 @@ const hasChildrenOptions = $derived(
 		Object.values(
 			sidebarStore.currentElementType.parameters.childrenOptions
 		).some((option) => option)
+
+const editLabel = $derived(
+	sidebarStore.currentElementType?.attributes?.name ||
+		sidebarStore.currentElementType?.attributes?.id
 )
 
 const currentElementAttributesEntries = $derived.by(() => {
@@ -36,14 +40,6 @@ const currentElementAttributesEntries = $derived.by(() => {
 	return Object.entries(
 		pluginLocalStore.currentDefinition[currentTypeFamily].attributes || {}
 	)
-})
-
-const isAnyAttributeAllowed = $derived.by(() => {
-	if (!sidebarStore.currentElementTypeFamily) return false
-
-	const currentTypeFamily = TYPE_FAMILY[sidebarStore.currentElementTypeFamily]
-	return pluginLocalStore.currentDefinition?.[currentTypeFamily].anyAllowed
-		.attributes
 })
 
 //====== FUNCTIONS ======//
@@ -71,10 +67,10 @@ function isAttributeReadonly(attributeKey: string) {
 }
 </script>
 
-<Sidebar.Root side="right" class="sidebar-root z-0" >
+<Sidebar.Root side="right" class="sidebar-root z-0">
 	{#if sidebarStore.currentElementType}
 
-		<Sidebar.Header class="text-xl font-black">Edit {sidebarStore.currentElementType.attributes?.name || sidebarStore.currentElementType.attributes?.id}</Sidebar.Header>
+		<Sidebar.Header class="text-xl font-black">Edit {editLabel}</Sidebar.Header>
 		<Sidebar.Content class="p-4 space-y-5">
 			<div class="space-y-3">
 				<Label.Root class="text-lg font-bold">Attributes details:</Label.Root>
