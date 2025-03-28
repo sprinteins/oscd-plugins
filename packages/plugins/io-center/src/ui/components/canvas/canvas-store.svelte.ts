@@ -6,7 +6,7 @@ import { NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants"
 
 class Store {
 	dataObjects = $derived<NodeElement[]>(store.selectedDataObject ? [dataObjectToNodeElement(store.selectedDataObject)] : [])
-	logicalConditioners = $derived(store.logicalConditioners.map(LCToNodeElement))
+	logicalConditioners = $derived(store.selectedLogicalConditioners.map(LCToNodeElement))
 	logicalPhysicals = $derived(store.selectedLogicalPhysicals.map(LPToNodeElement))
 	container = $state<HTMLDivElement | null>(null)
 	mousePosition = $state({ x: 0, y: 0 })

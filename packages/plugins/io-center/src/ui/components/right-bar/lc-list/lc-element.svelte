@@ -1,44 +1,41 @@
 <script lang="ts">
-    import type { LpElement } from "./types.lp-list";
     import { Edit, Square, SquareCheck } from "lucide-svelte";
-    import EditLpDialog from "./edit-lp-dialog.svelte";
     import { store } from "@/store.svelte";
+    import type { LogicalConditioner } from "../../canvas/types.canvas";
 
     type Props = {
-        lpElement: LpElement;
+        lc: LogicalConditioner;
         searchTerm: string;
-        removeLP: (lpElement: LpElement) => void;
-        editLP: (LpElement: LpElement, name: string, desc: string) => void;
     };
 
-    let { lpElement, searchTerm, removeLP, editLP }: Props = $props();
+    let { lc, searchTerm }: Props = $props();
 
-    const { name, instance } = lpElement;
+    const { type, instance } = lc;
 
     let showDialog = $state(false);
-    const isSelected = $derived(store.isLPSelected(lpElement));
+    const isSelected = $derived(store.isLcSelected(lc));
 
     let isSearched = $derived(
         searchTerm !== "" &&
-            lpElement.name.toLowerCase().includes(searchTerm.toLowerCase()),
+            lc.type.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
-    function addLpElementToCanvas(element: LpElement) {
-        store.toggleLpElementSelection(element);
+    function addLcElementToCanvas(lc: LogicalConditioner) {
+        store.toggleLcSelection(lc);
     }
 </script>
 
 <div
-    data-name="lp-element"
+    data-name="lc-element"
     class={{
-        "lp-element": true,
+        "lc-element": true,
         selected: isSelected,
         searched: isSearched,
     }}
 >
     <button
-        disabled={store.connectionExistsFor(lpElement)}
-        onclick={() => addLpElementToCanvas(lpElement)}
+        disabled={store.connectionExistsFor(lc)}
+        onclick={() => addLcElementToCanvas(lc)}
     >
         {#if isSelected}
             <SquareCheck size={16} />
@@ -48,7 +45,7 @@
             </span>
         {/if}
     </button>
-    <p>{name}-{instance}</p>
+    <p>{type}-{instance}</p>
     <button
         class="ml-auto mr-2 show-on-hover"
         onclick={() => (showDialog = true)}
@@ -57,18 +54,16 @@
     </button>
 </div>
 
-<EditLpDialog bind:isOpen={showDialog} {lpElement} {removeLP} {editLP} />
-
 <style lang="scss">
-    .lp-element {
+    .lc-element {
         @apply flex items-center gap-1 text-lg py-1 pl-2 w-full mb-1 font-mono cursor-pointer rounded-md hover:bg-gray-100 transition-colors duration-300;
     }
 
-    .lp-element.selected {
+    .lc-element.selected {
         @apply bg-beige hover:bg-beige;
     }
 
-    .lp-element.searched {
+    .lc-element.searched {
         @apply bg-gray-200 hover:bg-gray-200;
     }
 
@@ -76,7 +71,7 @@
         opacity: 0;
     }
 
-    .lp-element:hover .show-on-hover {
+    .lc-element:hover .show-on-hover {
         opacity: 1;
     }
 </style>

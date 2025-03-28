@@ -30,7 +30,7 @@
 		NodeElement,
 	} from "./ui/components/canvas/types.canvas";
     import type { LpElement, LpTypes } from "./ui/components/right-bar/lp-list/types.lp-list";
-    import LpList from "./ui/components/right-bar/lp-list/lp-list.svelte";
+    import SidebarRight from "./sidebar-right.svelte";
 
 	// props
 	const {
@@ -113,9 +113,10 @@
 			{hasLNodeType}
 			{addConnection}
 		/>
-		<LpList
+		<SidebarRight
 			slot="sidebar-right"
 			{addLP}
+			{addLC}
 			{removeLP}
 			{editLP}
 			{hasLNodeType}

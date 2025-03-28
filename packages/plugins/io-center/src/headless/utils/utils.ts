@@ -33,53 +33,6 @@ export function searchTree(tree: TreeNode[], searchTerm: string): TreeNode[] {
         .filter((node) => node !== null)
 }
 
-export function findDataObject(
-    tree: ObjectTree,
-    targetDoName: string,
-    targetIedName: string,
-    targetLDeviceInst: string,
-    targetLnClass: string,
-    targetLnInst: string
-): ObjectNodeDataObject | null {
-    if (tree.ied.name !== targetIedName) {
-        return null
-    }
-    for (const lDevice of tree.ied.children) {
-        if (lDevice.inst !== targetLDeviceInst) {
-            continue
-        }
-
-        for (const ln of lDevice.children) {
-            if (ln.lnClass !== targetLnClass || ln.inst !== targetLnInst) {
-                continue
-            }
-
-            const targetDo = ln.children.find(
-                (doElement) => doElement.name === targetDoName
-            )
-
-            if (targetDo) return targetDo
-        }
-    }
-    return null
-}
-
-export function findLogicalPhysical(
-    list: LpElement[],
-    targetLnClass: string,
-    targetLnInst: string
-): LpElement | null {
-    const targetLP = list.find(
-        (element) =>
-            element.type === targetLnClass && element.instance === targetLnInst
-    )
-
-    if (targetLP) return targetLP
-
-    return null
-}
-
-
 export function getPortsConfig(node: NodeElement): ConnectionPort[] {
     switch (node.type) {
         case NODE_ELEMENT_TYPE.DO:
