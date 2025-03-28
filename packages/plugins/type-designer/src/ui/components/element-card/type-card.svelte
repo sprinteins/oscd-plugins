@@ -46,6 +46,11 @@ const sidebar = Sidebar.useSidebar()
 
 //======= DERIVED STATES =======//
 
+const shouldShowBadge = $derived(
+	typeElement.parameters.refFamily === REF_FAMILY.eqFunction ||
+		typeElement.parameters.refFamily === REF_FAMILY.function
+)
+
 const hasCurrentTypeElementRefs = $derived.by(() => {
 	return Object.values(typeElement.refs).some(
 		(ref) => Object.keys(ref).length
@@ -138,7 +143,7 @@ function getBadgeLabel(refFamily: string) {
 			<div class="ml-6 truncate capitalize">{ typeElement.parameters.label }</div>
 
 			<!-- FUNCTION BADGES START -->
-			{#if typeElement.parameters.refFamily === REF_FAMILY.eqFunction || typeElement.parameters.refFamily === REF_FAMILY.function}
+			{#if shouldShowBadge}
 				<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">{ getBadgeLabel(typeElement.parameters.refFamily) }</Badge.Root>
 			{/if}
 			<!-- FUNCTION BADGES END -->
