@@ -27,7 +27,7 @@ const hasChildrenOptions = $derived(
 		Object.values(
 			sidebarStore.currentElementType.parameters.childrenOptions
 		).some((option) => option)
-
+)
 const editLabel = $derived(
 	sidebarStore.currentElementType?.attributes?.name ||
 		sidebarStore.currentElementType?.attributes?.id
