@@ -98,9 +98,9 @@ async function handleImport(event: Event) {
 		)
 }
 
-function getBadgeLabel(refFamily: string) {
-	if (refFamily === REF_FAMILY.eqFunction) return 'EQ'
-	if (refFamily === REF_FAMILY.function) return 'FN'
+function getBadgeLabel(refFamily: string | undefined) {
+	if (refFamily === REF_FAMILY.eqFunction) return 'EqFn'
+	if (refFamily === REF_FAMILY.function) return 'Fn'
 }
 </script>
 
@@ -118,7 +118,7 @@ function getBadgeLabel(refFamily: string) {
 >
 	<Card.Content class={`flex flex-row items-center justify-between h-8 p-2 ${cursorPointer} ${typeElementFamily === TYPE_FAMILY.lNodeType ? 'px-4' : 'px-1'}`}>
 
-		<div class="flex items-center min-w-0">
+		<div class="flex items-center min-w-0 w-full">
 			{#if typeElementFamily !== TYPE_FAMILY.lNodeType }
 				{#if hasCurrentTypeElementRefs}
 					<Collapsible.Trigger
@@ -144,7 +144,7 @@ function getBadgeLabel(refFamily: string) {
 
 			<!-- FUNCTION BADGES START -->
 			{#if shouldShowBadge}
-				<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">{ getBadgeLabel(typeElement.parameters.refFamily) }</Badge.Root>
+				<Badge.Root class="bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300 ml-auto">{ getBadgeLabel(typeElement.parameters.refFamily) }</Badge.Root>
 			{/if}
 			<!-- FUNCTION BADGES END -->
 		</div>

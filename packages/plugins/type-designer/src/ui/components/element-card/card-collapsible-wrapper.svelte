@@ -118,8 +118,8 @@ function getBadgeLabel(refFamily: AvailableRefFamily) {
 		refFamily === REF_FAMILY.conductingEquipment ||
 		refFamily === REF_FAMILY.generalEquipment
 	)
-		return 'EqRef'
-	if (refFamily === REF_FAMILY.function) return 'FunctionRef'
+		return 'Eq'
+	if (refFamily === REF_FAMILY.function) return 'Fn'
 }
 
 //======= EFFECTS =======//
@@ -143,11 +143,11 @@ $effect(() => {
 								{#each Object.entries(refElements) as [refId, refWrapper]} 
 									<Card.Root class="w-5/6" >
 										<Card.Content class="h-8 p-1 flex items-center justify-between">
-											<div class="flex items-center min-w-0">
+											<div class="flex items-center min-w-0 w-full">
 												<span class="ml-3 min-w-2.5 min-h-2.5 border-teal-700 border-2 transform rotate-45"></span>
 												<span class="ml-4 truncate">{ getCurrentRefFullLabel(refWrapper) }</span>
 												{#if shouldShowBadge(refFamily)}
-													<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">{ getBadgeLabel(refFamily) }</Badge.Root>
+													<Badge.Root class="bg-transparent border-gray-600 border-2 rounded-sm text-gray-600 hover:bg-transparent ml-auto">{ getBadgeLabel(refFamily) }</Badge.Root>
 												{/if}
 											</div>
 											{#if !isImportContainer}
