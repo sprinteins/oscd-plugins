@@ -11,13 +11,13 @@ class UseDnDStore {
 	currentSourceTypeIdOrUuid = $state<string>()
 	currentSourceTypeFamily = $state<AvailableTypeFamily>()
 	currentSourceRefFamily = $state<AvailableRefFamily>()
-	
-	currentDropTargetId = $state<string>()
-	isDropZoneVisible = $state(false)
-	
-	private dragLeaveTimeout: number | undefined
 
-	handleDragStart({ event, sourceTypeId, sourceTypeFamily, sourceRefFamily }: {
+	handleDragStart({
+		event,
+		sourceTypeId,
+		sourceTypeFamily,
+		sourceRefFamily
+	}: {
 		event: DragEvent
 		sourceTypeId: string
 		sourceTypeFamily: AvailableTypeFamily
@@ -36,16 +36,10 @@ class UseDnDStore {
 		this.currentSourceRefFamily = undefined
 	}
 
-	handleDragOver({ targetId, isAllowedToDrop }: { 
-		targetId: string, 
-		isAllowedToDrop: boolean 
-	}) {
-		if (!this.isDragging || !isAllowedToDrop) return false
-		window.dispatchEvent(new CustomEvent('hideAllDropZones'))
-		return true
-	}
-
-	handleDrop({ parentTypeWrapper, parentTypeFamily }: {
+	handleDrop({
+		parentTypeWrapper,
+		parentTypeFamily
+	}: {
 		parentTypeWrapper: Element
 		parentTypeFamily: AvailableTypeFamily
 	}) {
@@ -80,13 +74,6 @@ class UseDnDStore {
 		this.currentSourceTypeIdOrUuid = undefined
 		this.currentSourceTypeFamily = undefined
 		this.currentSourceRefFamily = undefined
-		this.currentDropTargetId = undefined
-		this.isDropZoneVisible = false
-		
-		if (this.dragLeaveTimeout) {
-			clearTimeout(this.dragLeaveTimeout)
-			this.dragLeaveTimeout = undefined
-		}
 	}
 }
 

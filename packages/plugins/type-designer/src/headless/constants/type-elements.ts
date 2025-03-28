@@ -113,3 +113,15 @@ export const ALLOWED_TARGETS_BY_REF_FAMILY = {
 	],
 	[REF_FAMILY.lNode]: [TYPE_FAMILY.function]
 } as const
+
+export const ALLOWED_TARGETS_BY_TYPE_FAMILY = {
+	[TYPE_FAMILY.bay]: undefined,
+	[TYPE_FAMILY.generalEquipment]: TYPE_FAMILY.bay,
+	[TYPE_FAMILY.conductingEquipment]: TYPE_FAMILY.bay,
+	[TYPE_FAMILY.function]: [
+		TYPE_FAMILY.generalEquipment,
+		TYPE_FAMILY.conductingEquipment,
+		TYPE_FAMILY.bay
+	],
+	[TYPE_FAMILY.lNodeType]: TYPE_FAMILY.function
+} as const
