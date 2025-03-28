@@ -247,7 +247,6 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 	console.log("objectTree", objectTree)
 
 	const accessPointElements = Array.from(IEDElement.querySelectorAll("AccessPoint"))
-	const lDeviceElements = Array.from(IEDElement.querySelectorAll("LDevice"))
 	objectTree.ied.children = accessPointElements.map((accessPoint) => {
 		const ap: ObjectNodeAccessPoint = {
 			id: crypto.randomUUID(),
@@ -259,7 +258,7 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 			_type: NodeTypes.accessPoint
 		}
 
-		ap.children = Array.from(accessPoint.querySelectorAll("LD")).map((ldElement) => {
+		ap.children = Array.from(accessPoint.querySelectorAll("LDevice")).map((ldElement) => {
 			const ld: ObjectNodeLogicalDevice = {
 				id: crypto.randomUUID(),
 				inst: ldElement.getAttribute("inst") || "unknown",
