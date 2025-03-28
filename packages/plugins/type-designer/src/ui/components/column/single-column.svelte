@@ -139,14 +139,14 @@ $inspect(importsStore.loadedLNodeType.elementByIds)
 		{#if groupedImportedTypeElementsEntries?.length && (columnKey === 'functionType' || columnKey === 'lNodeType') && importsStore.isContainerOpen[columnKey]}
 			<div
 				transition:slide
-				class={`${hasTypeElements ? "h-1/2 pb-2" : "h-full pb-0"} px-2 pt-2 -mx-2 -mt-2 mb-2 overflow-hidden`}
+				class={`${hasTypeElements ? "h-3/4 pb-2" : "h-full pb-0"} px-2 pt-2 -mx-2 -mt-2 mb-2 overflow-hidden`}
 			>
 				<ImportContainer {columnKey} {groupedImportedTypeElementsEntries}/>
 			</div>
 		{/if}	
 		
 		{#if hasTypeElements}
-			<div class={`${shouldResizeContainerToHalf ? "h-1/2" : "h-full"} overflow-y-auto p-2`}>
+			<div class={`${shouldResizeContainerToHalf ? "h-1/4" : "h-full"} overflow-y-auto p-2`}>
 				{#each groupedTypeElementsEntries as [typeElementFamily, typeElements]}
 					{#each Object.entries(typeElements) as [typeElementKey, typeElement]}
 						<CardCollapsibleWrapper {typeElementKey} {typeElement} {typeElementFamily}/>
