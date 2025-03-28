@@ -15,6 +15,7 @@
 	import jsonPackage from "../package.json";
 	import { initPlugin } from "@oscd-plugins/core-ui-svelte";
 	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
+	import { SvelteToast } from "@zerodevx/svelte-toast";
 	import Layout from "./ui/layout.svelte";
 	import { useQuery } from "./query.svelte";
 	import { newCommand, type Command } from "./command.svelte";
@@ -29,7 +30,7 @@
 		LpTypes,
 	} from "./ui/components/lp-list/types.lp-list";
 	import type {
-    Connection,
+		Connection,
 		LcTypes,
 		NodeElement,
 	} from "./ui/components/canvas/types.canvas";
@@ -65,7 +66,13 @@
 		cmd.editLC(lcNode, newType);
 	}
 
-	function addLP(type: LpTypes, name: string, desc: string, number?: number, numberOfLPDOPorts?: number) {
+	function addLP(
+		type: LpTypes,
+		name: string,
+		desc: string,
+		number?: number,
+		numberOfLPDOPorts?: number,
+	) {
 		cmd.addLP(type, name, desc, number, numberOfLPDOPorts);
 	}
 
@@ -102,7 +109,13 @@
 >
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
-		<CanvasArea slot="content" {addLC} {editLC} {hasLNodeType} {addConnection} />
+		<CanvasArea
+			slot="content"
+			{addLC}
+			{editLC}
+			{hasLNodeType}
+			{addConnection}
+		/>
 		<LpList
 			slot="sidebar-right"
 			{addLP}
@@ -113,5 +126,17 @@
 	</Layout>
 </main>
 
+<div class="toast-wrap">
+	<SvelteToast />
+</div>
+
 <style>
+	.toast-wrap {
+		display: contents;
+		font-family: Roboto, sans-serif;
+		@apply text-sm;
+	}
+	.toast-wrap :global(strong) {
+		font-weight: 600;
+	}
 </style>

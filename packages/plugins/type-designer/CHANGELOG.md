@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bay refs badges to differentiate function from equipment
 
+## [3.7.0] - 27.03.2025
+
+### Added 
+
+- Drag and Drop adaptions 
+
+## [3.6.0] - 26.03.2025
+
+### Added 
+
+- One can now modify the number of `Terminal` of a `ConductingEquipment` via the sidebar.
+Note that :
+  - some of them have a fixed number defined by the standard, and thus the dropdown is disabled
+	- the default number at creation has been restricted to two.
+
 ## [3.5.0] - 24.03.2025
 
 ### Added 

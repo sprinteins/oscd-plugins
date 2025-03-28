@@ -17,6 +17,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     doc.setFontSize(DEFAULT_FONT_SIZE);
     const INITIAL_UPPER_PAGE_COORDINATE = 10;
     const INITIAL_LOWER_PAGE_COORDINATE = 10;
+    const DEFAULT_LINE_HEIGHT = 7;
 
     let marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
     const pageHeight = doc.internal.pageSize.height;
@@ -27,15 +28,16 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     const blockHandler: Record<ElementType, (block: Element) => void> = {
         text: handleRichTextEditorBlock,
         image: () => {},
-        signalList: processSignalListForPdfGeneration
+        signalList: processSignalListForPdfGeneration,
+        table: processTableForPdfGeneration,
     }
 
-    function incrementVerticalPositionForNextLine(lineHeight = 7) {
-        marginTop += lineHeight;
+    function incrementVerticalPositionForNextLine(lineHeight?: number) {
+        marginTop += lineHeight || DEFAULT_LINE_HEIGHT;
     }
 
-    function contentExceedsCurrentPage(marginTop: number,pageHeight: number,marginBottom: number) {
-        const bufferToBottomPage = 10;
+    function contentExceedsCurrentPage(height?: number) {
+        const bufferToBottomPage = height || 10;
         return (marginTop + bufferToBottomPage) > (pageHeight-marginBottom);
     }
 
@@ -83,7 +85,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         const wrappedText : string [] = doc.splitTextToSize(text ?? "", pageWidth - (35 - indent));
 
         for(const line of wrappedText){
-            if (contentExceedsCurrentPage(marginTop, pageHeight, marginBottom)) {
+            if (contentExceedsCurrentPage()) {
                 doc.addPage();
                 marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
             }
@@ -146,7 +148,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
   
     function renderTextLine(text: string) {
-        if (contentExceedsCurrentPage(marginTop, pageHeight, marginBottom)) {
+        if (contentExceedsCurrentPage()) {
             doc.addPage();
             marginTop = INITIAL_UPPER_PAGE_COORDINATE;
         }
@@ -154,6 +156,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         doc.text(text, horizontalSpacing, marginTop);
         incrementVerticalPositionForNextLine();
     }
+    
     function processSignalListForPdfGeneration(block: Element){
         if(!block.textContent) {
             console.error("No content found in Signal List Block");
@@ -186,14 +189,47 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         zipcelx(config)
     }
 
-    for(const block of allBlocks){
+    function processTableForPdfGeneration(block: Element) {
+        const content = block.textContent;
+        if(!content) {
+            console.error("No content found in Table Block");
+            return;
+        }
 
+        const data = JSON.parse(content);
+
+        const formattedHeader: string[][] = [data.map((row: string[]) => row[0])];
+        const formattedBody: string[][] = [data.map((row: string[]) => row[1])];
+
+        const rows = data[0].length;
+        const tableHeight = rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT;
+
+        if (contentExceedsCurrentPage(tableHeight)) {
+            doc.addPage();
+            marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
+        }
+
+        autoTable(doc, {
+            head: formattedHeader,
+            body: formattedBody,
+            startY: marginTop,
+            margin: {
+                left: 10
+            },
+            styles: {
+                fillColor: "black"
+            },
+        });
+
+        incrementVerticalPositionForNextLine(tableHeight);
+    }
+
+    for(const block of allBlocks){
         const blockType = block.getAttribute('type') as ElementType;
         
         if(blockType && blockHandler[blockType]){
             blockHandler[blockType](block);
         }
-            
     }
     
     doc.save(`${templateTitle}.pdf`);

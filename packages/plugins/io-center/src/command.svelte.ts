@@ -5,6 +5,7 @@ import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
 import { createElement } from "./headless/stores/document-helpers.svelte"
 import type { Connection, LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
 import { L_NODE_TYPE_CONTENT, NODE_ELEMENT_TYPE } from "./headless/constants"
+import { isDoToLcConnectionAllowed } from "./headless/utils"
 
 export class Command {
 	constructor(
@@ -300,6 +301,22 @@ export class Command {
 			throw new Error('Connector LC LN not found!')
 		}
 
+		const localLC = store.findLC(lcLnClass || "", lcInst || "")
+
+		if (!localLC) {
+			throw new Error(`LC with lnClass ${lcLnClass} and inst ${lcInst} not found!`)
+		}
+
+		const connectedDO = store.selectedDataObject
+
+		if (!connectedDO) {
+			throw new Error(`DO with name ${doName} not found!`)
+		}
+
+		if (!isDoToLcConnectionAllowed(connectedDO, localLC)) {
+			return
+		}
+
 		const doiName = connection.from.type === NODE_ELEMENT_TYPE.LC
 			? `${connection.from.port.name}${connection.from.port.index ?? ""}`
 			: `${connection.to.port.name}${connection.to.port.index ?? ""}`
@@ -328,7 +345,7 @@ export class Command {
 				doc: store.doc,
 				tagName: "LNRef",
 				attributes: {
-					"refLDIn": "LD0",
+					"refLDInst": "LD0",
 					"refLNClass": lpLnClass,
 					"refLNInst": lpInst,
 					"refDO": connection.from.type === NODE_ELEMENT_TYPE.LP
@@ -341,12 +358,6 @@ export class Command {
 		}
 
 		if (connectionType === "output") {
-			const connectedDO = store.selectedDataObjects.filter(doElement => doElement.name === doName)[0]
-
-			if (!connectedDO) {
-				throw new Error(`DO with name ${doName} not found!`)
-			}
-
 			createElement({
 				host,
 				doc: store.doc,

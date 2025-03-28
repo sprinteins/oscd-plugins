@@ -215,6 +215,9 @@ importers:
       '@smui/data-table':
         specifier: ^7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.6.3)
+      '@smui/dialog':
+        specifier: 7.0.0
+        version: 7.0.0(svelte@4.2.19)(typescript@5.6.3)
       '@smui/icon-button':
         specifier: ^7.0.0
         version: 7.0.0(svelte@4.2.19)(typescript@5.6.3)
@@ -447,6 +450,9 @@ importers:
       '@vitest/ui':
         specifier: ^0.30.1
         version: 0.30.1
+      '@zerodevx/svelte-toast':
+        specifier: ^0.9.6
+        version: 0.9.6(svelte@5.20.1)
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
@@ -3457,6 +3463,11 @@ packages:
 
   '@xyflow/system@0.0.14':
     resolution: {integrity: sha512-dmVQujAwZyoSZTr0sQHlgro9pS+RO9AgjT2BDlyB7t/+FYQBgW3FKdTQnVh8/azcdAncWruyiPt9K/h2kpTYrA==}
+
+  '@zerodevx/svelte-toast@0.9.6':
+    resolution: {integrity: sha512-nHlTrCjverlPK9yukK6fqbG3e/R+f10ldrc4nJHOe2qNDScuPTuYVSFEk2dDDtzWAwTN5pmdEXgA3M2RbT8jiw==}
+    peerDependencies:
+      svelte: ^3.57.0 || ^4.0.0 || ^5.0.0
 
   '@zip.js/zip.js@2.7.54':
     resolution: {integrity: sha512-qMrJVg2hoEsZJjMJez9yI2+nZlBUxgYzGV3mqcb2B/6T1ihXp0fWBDYlVHlHquuorgNUQP5a8qSmX6HF5rFJNg==}
@@ -9442,7 +9453,7 @@ snapshots:
       '@material/dialog': 14.0.0
       '@material/dom': 14.0.0
       '@smui/common': 7.0.0(svelte@3.59.2)(typescript@5.6.3)
-      svelte2tsx: 0.7.30(svelte@3.59.2)(typescript@5.6.3)
+      svelte2tsx: 0.7.34(svelte@3.59.2)(typescript@5.6.3)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -9453,7 +9464,7 @@ snapshots:
       '@material/dialog': 14.0.0
       '@material/dom': 14.0.0
       '@smui/common': 7.0.0(svelte@4.2.19)(typescript@5.6.3)
-      svelte2tsx: 0.7.30(svelte@4.2.19)(typescript@5.6.3)
+      svelte2tsx: 0.7.34(svelte@4.2.19)(typescript@5.6.3)
     transitivePeerDependencies:
       - svelte
       - typescript
@@ -11549,6 +11560,10 @@ snapshots:
       d3-drag: 3.0.0
       d3-selection: 3.0.0
       d3-zoom: 3.0.0
+
+  '@zerodevx/svelte-toast@0.9.6(svelte@5.20.1)':
+    dependencies:
+      svelte: 5.20.1
 
   '@zip.js/zip.js@2.7.54': {}
 
