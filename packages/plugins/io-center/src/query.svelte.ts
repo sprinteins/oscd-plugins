@@ -192,64 +192,95 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 		}))
 	}));
 
-	store.connections = lnRefElements.flatMap(lcElement => {
-		return lcElement.dois.flatMap(doiElement => {
-			const doiName = doiElement.doi.getAttribute("name");
-			const connectionType = doiElement.doi.getAttribute("desc");
+	const lpsToSelect: LpElement[] = []
 
-			if (!connectionType || !doiName) {
-				console.warn("connection type or name not defined!");
-				return;
-			}
+	store.connections = lnRefElements.flatMap(
+		lcElement => {
+			return lcElement.dois.flatMap(
+				doiElement => {
+					const doiName = doiElement.doi.getAttribute("name");
+					const connectionType = doiElement.doi.getAttribute("desc");
 
-			if (!selectedDataObject) {
-				return;
-			}
+					if (!connectionType || !doiName) {
+						console.warn("connection type or name not defined!");
+						return;
+					}
 
-			return doiElement.lnRefs.flatMap(lnRefElement => {
-				const lcAttrs = lcElement.lc;
-				const refDO = lnRefElement.getAttribute("refDO") || "";
-				const refLDInst = lnRefElement.getAttribute("refLDInst") || "";
-				const refLNClass = lnRefElement.getAttribute("refLNClass") || "";
-				const refLNInst = lnRefElement.getAttribute("refLNInst") || "";
-				const lnClass = lcAttrs.getAttribute("lnClass") || "";
-				const inst = lcAttrs.getAttribute("inst") || "";
+					if (!selectedDataObject) {
+						return;
+					}
 
-				const from = {
-					name: connectionType === "output"
-						? `${refDO}-right`
-						: `${lnClass}-${inst}-right`,
-					type: connectionType === "output" ? NODE_ELEMENT_TYPE.DO : NODE_ELEMENT_TYPE.LC,
-					port: connectionType === "output" ? { name: refDO, side: "right" } as ConnectionPort : { name: doiName, side: "right" } as ConnectionPort
-				};
+					return doiElement.lnRefs.flatMap(
+						lnRefElement => {
+							const lcAttrs = lcElement.lc;
+							const refDO = lnRefElement.getAttribute("refDO") || "";
+							const refLDInst = lnRefElement.getAttribute("refLDInst") || "";
+							const refLNClass = lnRefElement.getAttribute("refLNClass") || "";
+							const refLNInst = lnRefElement.getAttribute("refLNInst") || "";
+							const lnClass = lcAttrs.getAttribute("lnClass") || "";
+							const inst = lcAttrs.getAttribute("inst") || "";
 
-				const to = {
-					name: connectionType === "output"
-						? `${lnClass}-${inst}-left`
-						: `${refLNClass}-${refLNInst}-left`,
-					type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP,
-					port: connectionType === "output" ? PORTS_CONFIG_PER_TYPE[lnClass].filter(port => doiName.includes(port.name))[0] : { name: refDO, side: "left" } as ConnectionPort
-				};
+							const from = {
+								name: connectionType === "output"
+									? `${refDO}-right`
+									: `${lnClass}-${inst}-right`,
+								type: connectionType === "output" ? NODE_ELEMENT_TYPE.DO : NODE_ELEMENT_TYPE.LC,
+								port: connectionType === "output" ? { name: refDO, side: "right" } as ConnectionPort : { name: doiName, side: "right" } as ConnectionPort
+							};
 
-				const connection: Connection = {
-					id: crypto.randomUUID(),
-					from,
-					to
-				};
+							const to = {
+								name: connectionType === "output"
+									? `${lnClass}-${inst}-left`
+									: `${refLNClass}-${refLNInst}-left`,
+								type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP,
+								port: connectionType === "output" ? PORTS_CONFIG_PER_TYPE[lnClass].filter(port => doiName.includes(port.name))[0] : { name: refDO, side: "left" } as ConnectionPort
+							};
 
-				if (
-					connectionType === "output"
-					&& refDO === selectedDataObject.name
-					&& refLNClass === selectedDataObject.objectPath.ln?.lnClass
-					&& refLNInst === selectedDataObject.objectPath.ln?.inst
-					&& refLDInst === selectedDataObject.objectPath.lDevice?.inst
-				) {
-					return connection
-				}
-			});
-		});
-	}).filter(connection => connection !== undefined);
+							const connection: Connection = {
+								id: crypto.randomUUID(),
+								from,
+								to
+							};
+
+							if (
+								connectionType === "output"
+								&& refDO === selectedDataObject.name
+								&& refLNClass === selectedDataObject.objectPath.ln?.lnClass
+								&& refLNInst === selectedDataObject.objectPath.ln?.inst
+								&& refLDInst === selectedDataObject.objectPath.lDevice?.inst
+							) {
+								return connection
+							}
+
+							if (connectionType === "input" && selectedDataObject) {
+								const targetLP = store.findLP(refLNClass, refLNInst)
+
+								if (!targetLP) {
+									console.warn(`LP ${refLNClass}-${refLNInst} not found!`)
+									return
+								}
+
+								const isConnectedLcConnectedToSelectedDo = Boolean(
+									lcElement.lc.querySelector(
+										`DOI[desc="output"] > LNRef[refLDInst="${selectedDataObject.objectPath.lDevice?.inst}"][refLNClass="${selectedDataObject.objectPath.ln?.lnClass}"][refLNInst="${selectedDataObject.objectPath.ln?.inst}"][refDO="${selectedDataObject.name}"]`
+									)
+								)
+
+								if (isConnectedLcConnectedToSelectedDo) {
+									if (!lpsToSelect.includes(targetLP)) {
+										targetLP.isLinked = true
+										lpsToSelect.push(targetLP)
+									}
+									return connection
+								}
+							}
+						});
+				});
+		}).filter(connection => connection !== undefined);
+
+	store._selectedLogicalPhysicals = lpsToSelect
 }
+
 
 function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
 	if (!doc || !selectedIED) { console.warn("no doc or no ied selected"); return }
