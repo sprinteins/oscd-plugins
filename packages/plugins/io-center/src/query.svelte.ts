@@ -7,6 +7,7 @@ import {
 	type ObjectTree,
 	type ObjectNodeDataObject,
 	type ObjectNodeLogicalNode,
+	type ObjectNodeAccessPoint,
 } from "./ied/object-tree.type.d";
 import { store } from "./store.svelte";
 import type { Nullable } from "./types";
@@ -243,61 +244,72 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 		}
 	}
 
-	const lDeviceElements = Array.from(IEDElement.querySelectorAll("LDevice"))
-	objectTree.ied.children = lDeviceElements.map((ldDeviceElement) => {
-		const ld: ObjectNodeLogicalDevice = {
+	const accessPointElements = Array.from(IEDElement.querySelectorAll("AccessPoint"))
+	objectTree.ied.children = accessPointElements.map((accessPoint) => {
+		const ap: ObjectNodeAccessPoint = {
 			id: crypto.randomUUID(),
-			inst: ldDeviceElement.getAttribute("inst") || "unknown",
+			name: accessPoint.getAttribute("name") || "unknown",
 			children: [],
 			objectPath: {
 				ied: { id: objectTree.ied.id, name: objectTree.ied.name }
 			},
-			_type: NodeTypes.logicalDevice
+			_type: NodeTypes.accessPoint
 		}
 
-		ld.children = Array.from(ldDeviceElement.querySelectorAll("LN")).map((lnElement) => {
-			const ln: ObjectNodeLogicalNode = {
+		ap.children = Array.from(accessPoint.querySelectorAll("LDevice")).map((ldElement) => {
+			const ld: ObjectNodeLogicalDevice = {
 				id: crypto.randomUUID(),
-				lnClass: lnElement.getAttribute("lnClass") || "unknown",
-				inst: lnElement.getAttribute("inst") || "unknown",
+				inst: ldElement.getAttribute("inst") || "unknown",
 				children: [],
 				objectPath: {
 					ied: { id: objectTree.ied.id, name: objectTree.ied.name },
-					lDevice: { id: ld.id, inst: ld.inst }
+					accessPoint: { name: ap.name }
 				},
-				_type: NodeTypes.logicalNode
+				_type: NodeTypes.logicalDevice
 			}
 
-			// jumping to the LNodeType to get the DOs
-			const lnNodeType = store.doc.querySelector(`LNodeType[id="${lnElement.getAttribute("lnType") || ""}"]`);
-			if (!lnNodeType) {
-				console.warn(`could not find LNodeType with id: ${lnElement.getAttribute("lnType")}`)
-				return ln
-			}
-			const dos = Array.from(lnNodeType.querySelectorAll("DO"))
-
-			ln.children = dos.map((doElement) => {
-				if (!hasCDC(doElement, doc, TARGET_CDC)) {
-					return undefined
-				}
-				const dataObject: ObjectNodeDataObject = {
+			ld.children = Array.from(ldElement.querySelectorAll("LN")).map((lnElement) => {
+				const ln: ObjectNodeLogicalNode = {
 					id: crypto.randomUUID(),
-					name: doElement.getAttribute("name") || "unknown",
+					lnClass: lnElement.getAttribute("lnClass") || "unknown",
+					inst: lnElement.getAttribute("inst") || "unknown",
+					children: [],
 					objectPath: {
 						ied: { id: objectTree.ied.id, name: objectTree.ied.name },
-						lDevice: { id: ld.id, inst: ld.inst },
-						ln: { id: ln.id, lnClass: ln.lnClass, inst: ln.inst }
+						accessPoint: { name: ap.name },
+						lDevice: { id: ld.id, inst: ld.inst }
 					},
-					_type: NodeTypes.dataObject
+					_type: NodeTypes.logicalNode
 				}
-				return dataObject
-			}).filter(Boolean) as ObjectNodeDataObject[]
-			return ln
+
+				const lnNodeType = doc.querySelector(`LNodeType[id="${lnElement.getAttribute("lnType") || ""}"]`);
+				if (!lnNodeType) {
+					console.warn(`could not find LNodeType with id: ${lnElement.getAttribute("lnType")}`)
+					return ln
+				}
+				const dos = Array.from(lnNodeType.querySelectorAll("DO"))
+
+				ln.children = dos.map((doElement) => {
+					const dataObject: ObjectNodeDataObject = {
+						id: crypto.randomUUID(),
+						name: doElement.getAttribute("name") || "unknown",
+						objectPath: {
+							ied: { id: objectTree.ied.id, name: objectTree.ied.name },
+							accessPoint: { name: ap.name },
+							lDevice: { id: ld.id, inst: ld.inst },
+							ln: { id: ln.id, lnClass: ln.lnClass, inst: ln.inst }
+						},
+						_type: NodeTypes.dataObject
+					}
+					return dataObject
+				})
+				return ln
+			})
+			return ld
 		})
-		return ld
+		return ap
 	})
 	store.objectTreeV2 = objectTree
-
 }
 
 // TARGET_CDC: Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
