@@ -244,8 +244,6 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 		}
 	}
 
-	console.log("objectTree", objectTree)
-
 	const accessPointElements = Array.from(IEDElement.querySelectorAll("AccessPoint"))
 	objectTree.ied.children = accessPointElements.map((accessPoint) => {
 		const ap: ObjectNodeAccessPoint = {
