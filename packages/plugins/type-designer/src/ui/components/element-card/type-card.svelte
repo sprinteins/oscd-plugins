@@ -92,6 +92,11 @@ async function handleImport(event: Event) {
 			typeElementFamily
 		)
 }
+
+function getBadgeLabel(refFamily: string) {
+	if (refFamily === REF_FAMILY.eqFunction) return 'EQ'
+	if (refFamily === REF_FAMILY.function) return 'FN'
+}
 </script>
 
 <Card.Root 
@@ -133,11 +138,8 @@ async function handleImport(event: Event) {
 			<div class="ml-6 truncate capitalize">{ typeElement.parameters.label }</div>
 
 			<!-- FUNCTION BADGES START -->
-			{#if typeElement.parameters.refFamily === REF_FAMILY.eqFunction}
-				<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">EQ</Badge.Root>
-			{/if}
-			{#if typeElement.parameters.refFamily === REF_FAMILY.function}
-				<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">FN</Badge.Root>
+			{#if typeElement.parameters.refFamily === REF_FAMILY.eqFunction || typeElement.parameters.refFamily === REF_FAMILY.function}
+				<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">{ getBadgeLabel(typeElement.parameters.refFamily) }</Badge.Root>
 			{/if}
 			<!-- FUNCTION BADGES END -->
 		</div>

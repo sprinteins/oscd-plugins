@@ -105,6 +105,15 @@ function getCurrentRefFullLabel(refWrapper: RefElement<AvailableRefFamily>) {
 	return `${currentLabel}_Ref_${refWrapper.occurrence}`
 }
 
+function getBadgeLabel(refFamily: AvailableRefFamily) {
+	if (
+		refFamily === REF_FAMILY.conductingEquipment ||
+		refFamily === REF_FAMILY.generalEquipment
+	)
+		return 'EqRef'
+	if (refFamily === REF_FAMILY.function) return 'FunctionRef'
+}
+
 //======= EFFECTS =======//
 
 $effect(() => {
@@ -129,11 +138,8 @@ $effect(() => {
 											<div class="flex items-center min-w-0">
 												<span class="ml-3 min-w-2.5 min-h-2.5 border-teal-700 border-2 transform rotate-45"></span>
 												<span class="ml-4 truncate">{ getCurrentRefFullLabel(refWrapper) }</span>
-												{#if refFamily === REF_FAMILY.conductingEquipment || refFamily === REF_FAMILY.generalEquipment}
-													<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">#EqRef</Badge.Root>
-												{/if}
-												{#if refFamily === REF_FAMILY.function}
-													<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">#FunctionRef</Badge.Root>
+												{#if refFamily === REF_FAMILY.conductingEquipment || refFamily === REF_FAMILY.generalEquipment || refFamily === REF_FAMILY.function}
+													<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">{ getBadgeLabel(refFamily) }</Badge.Root>
 												{/if}
 											</div>
 											{#if !isImportContainer}
