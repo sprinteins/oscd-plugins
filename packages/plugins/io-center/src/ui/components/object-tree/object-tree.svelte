@@ -32,31 +32,38 @@
 	});
 
 	function convertToTreeNode(objectTree: ObjectTree): TreeNodeType[] {
-		const treeNodes: TreeNodeType[] = objectTree.ied?.children.map((ld) => {
+		const treeNodes: TreeNodeType[] = objectTree.ied.children.map((ap) => {
 			return {
-				id: ld.id,
-				name: ld.inst,
-				type: NODE_TYPE.logicalDevice,
-				isOpen: wasNodeAlreadyOpen(ld.id),
-				children: ld.children.map((ln) => {
+				id: ap.id,
+				name: ap.name,
+				type: NODE_TYPE.accessPoint,
+				isOpen: wasNodeAlreadyOpen(ap.id),
+				children: ap.children.map((ld) => {
 					return {
-						id: ln.id,
-						name: `${ln.lnClass} - ${ln.inst}`,
-						type: NODE_TYPE.logicalNode,
-						isOpen: wasNodeAlreadyOpen(ln.id),
-						children: ln.children.map((dataObject) => {
+						id: ld.id,
+						name: ld.inst,
+						type: NODE_TYPE.logicalDevice,
+						isOpen: wasNodeAlreadyOpen(ld.id),
+						children: ld.children.map((ln) => {
 							return {
-								id: dataObject.id,
-								name: dataObject.name,
-								type: NODE_TYPE.dataObjectInstance,
-								dataObject,
+								id: ln.id,
+								name: `${ln.lnClass} - ${ln.inst}`,
+								type: NODE_TYPE.logicalNode,
+								isOpen: wasNodeAlreadyOpen(ln.id),
+								children: ln.children.map((dataObject) => {
+									return {
+										id: dataObject.id,
+										name: dataObject.name,
+										type: NODE_TYPE.dataObjectInstance,
+										dataObject,
+									};
+								}),
 							};
 						}),
 					};
 				}),
 			};
 		});
-
 		return treeNodes;
 	}
 

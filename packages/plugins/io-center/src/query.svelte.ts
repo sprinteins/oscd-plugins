@@ -7,6 +7,7 @@ import {
 	type ObjectTree,
 	type ObjectNodeDataObject,
 	type ObjectNodeLogicalNode,
+	type ObjectNodeAccessPoint,
 } from "./ied/object-tree.type.d";
 import { store } from "./store.svelte";
 import type { Nullable } from "./types";
@@ -260,62 +261,75 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 		}
 	}
 
-	const SelectorLDevicesWithoutLD0 = "LDevice:not([inst='LD0'])"
-	const lDeviceElements = Array.from(IEDElement.querySelectorAll(SelectorLDevicesWithoutLD0))
-	objectTree.ied.children = lDeviceElements.map((ldDeviceElement) => {
-		const ld: ObjectNodeLogicalDevice = {
-			id: `${objectTree.ied.id}::LD_${ldDeviceElement.getAttribute("inst")}`,
-			inst: ldDeviceElement.getAttribute("inst") || "unknown",
+	const accessPointElements = Array.from(IEDElement.querySelectorAll("AccessPoint"))
+	objectTree.ied.children = accessPointElements.map((accessPoint) => {
+		const ap: ObjectNodeAccessPoint = {
+			id: crypto.randomUUID(),
+			name: accessPoint.getAttribute("name") || "unknown",
 			children: [],
 			objectPath: {
 				ied: { id: objectTree.ied.id, name: objectTree.ied.name }
 			},
-			_type: NodeTypes.logicalDevice
+			_type: NodeTypes.accessPoint
 		}
-
-		ld.children = Array.from(ldDeviceElement.querySelectorAll("LN")).map((lnElement) => {
-			const ln: ObjectNodeLogicalNode = {
-				id: `${ld.id}::LN_${lnElement.getAttribute("lnClass")}+LN_${lnElement.getAttribute("inst")}`,
-				lnClass: lnElement.getAttribute("lnClass") || "unknown",
-				inst: lnElement.getAttribute("inst") || "unknown",
+		const SelectorLDevicesWithoutLD0 = "LDevice:not([inst='LD0'])"
+		ap.children = Array.from(accessPoint.querySelectorAll(SelectorLDevicesWithoutLD0)).map((ldElement) => {
+			const ld: ObjectNodeLogicalDevice = {
+				id: `${objectTree.ied.id}::LD_${ldElement.getAttribute("inst")}`,
+				inst: ldElement.getAttribute("inst") || "unknown",
 				children: [],
 				objectPath: {
 					ied: { id: objectTree.ied.id, name: objectTree.ied.name },
-					lDevice: { id: ld.id, inst: ld.inst }
+					accessPoint: { name: ap.name }
 				},
-				_type: NodeTypes.logicalNode
+				_type: NodeTypes.logicalDevice
 			}
 
-			// jumping to the LNodeType to get the DOs
-			const lnNodeType = store.doc.querySelector(`LNodeType[id="${lnElement.getAttribute("lnType") || ""}"]`);
-			if (!lnNodeType) {
-				console.warn(`could not find LNodeType with id: ${lnElement.getAttribute("lnType")}`)
-				return ln
-			}
-			const dos = Array.from(lnNodeType.querySelectorAll("DO"))
-
-			ln.children = dos.map((doElement) => {
-				if (!hasCDC(doElement, doc, TARGET_CDC)) {
-					return undefined
-				}
-				const dataObject: ObjectNodeDataObject = {
-					id: `${ln.id}::DO_${doElement.getAttribute("name")}`,
-					name: doElement.getAttribute("name") || "unknown",
+			ld.children = Array.from(ldElement.querySelectorAll("LN")).map((lnElement) => {
+				const ln: ObjectNodeLogicalNode = {
+					id: `${ld.id}::LN_${lnElement.getAttribute("lnClass")}+LN_${lnElement.getAttribute("inst")}`,
+					lnClass: lnElement.getAttribute("lnClass") || "unknown",
+					inst: lnElement.getAttribute("inst") || "unknown",
+					children: [],
 					objectPath: {
 						ied: { id: objectTree.ied.id, name: objectTree.ied.name },
-						lDevice: { id: ld.id, inst: ld.inst },
-						ln: { id: ln.id, lnClass: ln.lnClass, inst: ln.inst }
+						accessPoint: { name: ap.name },
+						lDevice: { id: ld.id, inst: ld.inst }
 					},
-					_type: NodeTypes.dataObject
+					_type: NodeTypes.logicalNode
 				}
-				return dataObject
-			}).filter(Boolean) as ObjectNodeDataObject[]
-			return ln
+
+				const lnNodeType = doc.querySelector(`LNodeType[id="${lnElement.getAttribute("lnType") || ""}"]`);
+				if (!lnNodeType) {
+					console.warn(`could not find LNodeType with id: ${lnElement.getAttribute("lnType")}`)
+					return ln
+				}
+				const dos = Array.from(lnNodeType.querySelectorAll("DO"))
+
+				ln.children = dos.map((doElement) => {
+					if (!hasCDC(doElement, doc, TARGET_CDC)) {
+						return undefined
+					}
+					const dataObject: ObjectNodeDataObject = {
+						id: `${ln.id}::DO_${doElement.getAttribute("name")}`,
+						name: doElement.getAttribute("name") || "unknown",
+						objectPath: {
+							ied: { id: objectTree.ied.id, name: objectTree.ied.name },
+							accessPoint: { name: ap.name },
+							lDevice: { id: ld.id, inst: ld.inst },
+							ln: { id: ln.id, lnClass: ln.lnClass, inst: ln.inst }
+						},
+						_type: NodeTypes.dataObject
+					}
+					return dataObject
+				}).filter(Boolean) as ObjectNodeDataObject[]
+				return ln
+			})
+			return ld
 		})
-		return ld
+		return ap
 	})
 	store.objectTree = objectTree
-
 }
 
 // TARGET_CDC: Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document

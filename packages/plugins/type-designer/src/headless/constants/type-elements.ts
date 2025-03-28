@@ -56,7 +56,10 @@ export const READONLY_ATTRIBUTES = [
 	'id',
 	'uuid',
 	'templateUuid',
-	'originUuid'
+	'originUuid',
+	'lnType',
+	'lnClass',
+	'type'
 ] as const
 
 // ALLOWED

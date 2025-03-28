@@ -52,6 +52,10 @@ export type TypeElement<GenericTypeFamily extends AvailableTypeFamily> = {
 	parameters: {
 		label: string
 		refFamily: AvailableRefFamily | undefined
+		childrenOptions: Record<
+			AvailableTypeFamily,
+			ConductingEquipmentChildrenOptions | undefined
+		>
 	}
 	refs: RefElementsByFamily
 }
@@ -69,6 +73,7 @@ export type RefElement<GenericRefFamily extends AvailableRefFamily> = {
 		id: string
 		family: AvailableTypeFamily
 	}
+	occurrence: number
 }
 
 export type SortedImportedTypeElements<
@@ -97,4 +102,12 @@ export type Columns = {
 		| Column<'conductingEquipment'>
 	[COLUMNS.functionType]: Column<'function'> | Column<'eqFunction'>
 	[COLUMNS.lNodeType]: Column<'lNodeType'>
+}
+
+// Children Options
+
+type ConductingEquipmentChildrenOptions = {
+	currentTerminalsElements: Element[]
+	currentValue: number | undefined
+	options: Array<{ label: string; value: number }>
 }

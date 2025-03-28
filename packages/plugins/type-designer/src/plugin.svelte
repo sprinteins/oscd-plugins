@@ -27,7 +27,7 @@ import {
 import { pluginLocalStore } from '@/headless/stores'
 // COMPONENTS
 import ColumnsContainer from '@/ui/views/columns-container.svelte'
-import SidebarWrapper from '@/ui/components/sidebar-wrapper.svelte'
+import SidebarWrapper from '@/ui/components/sidebar/sidebar-wrapper.svelte'
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 

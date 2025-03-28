@@ -14,6 +14,8 @@ import {
 	TYPE_ID_ATTRIBUTE,
 	REF_FAMILY_TO_TYPE_FAMILY_MAP
 } from '@/headless/constants'
+// HELPERS
+import { getChildrenOptions } from '@/headless/stores/type-elements/children-options.helper'
 // TYPES
 import type {
 	AvailableRefFamily,
@@ -89,12 +91,18 @@ function getRefs(element: Element): RefElementsByFamily {
 
 			const typeFamily = REF_FAMILY_TO_TYPE_FAMILY_MAP[refFamily]
 
+			const refOccurrence =
+				Object.values(acc[refFamily]).filter(
+					(ref) => ref.source.id === typeId
+				).length + 1
+
 			acc[refFamily][uuidv4()] = {
 				element: childElement as RefRawElement<typeof refFamily>,
 				source: {
 					id: typeId,
 					family: typeFamily
-				}
+				},
+				occurrence: refOccurrence
 			} as RefElementsByFamily[typeof refFamily][string]
 			return acc
 		},
@@ -170,7 +178,11 @@ export function getAndMapTypeElements<
 							params.family,
 							elementId,
 							params.rootElement
-						)
+						),
+						childrenOptions: getChildrenOptions({
+							family: params.family,
+							element
+						})
 					},
 					refs: getRefs(element)
 				} as TypeElement<GenericFamily>
