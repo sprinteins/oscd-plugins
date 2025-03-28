@@ -35,6 +35,10 @@ export class Store {
 	objectTree: ObjectTree = $state(NullObjectTree)
 
 	logicalConditioners: LogicalConditioner[] = $state([])
+	public findLC(type: string, instance: string) {
+		return this.logicalConditioners.find(lc => lc.type === type && lc.instance === instance)
+	}
+
 
 	connections = $state<Connection[]>([])
 	public resetConnections(_: unknown) {

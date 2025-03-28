@@ -1,3 +1,5 @@
+import type { TARGET_CDC_TYPES } from "@/headless/constants"
+
 export type ObjectTree = {
 	ied: ObjectNodeIED
 }
@@ -35,10 +37,11 @@ export type ObjectNodeLogicalNode = {
 }
 
 export type ObjectNodeDataObject = {
-	id: string,
-	name: string,
-	isLinked?: boolean,
+	id: string
+	name: string
+	isLinked?: boolean
 	objectPath: ObjectPath
+	cdcType?: string
 	_type: NodeTypes.dataObject
 }
 
