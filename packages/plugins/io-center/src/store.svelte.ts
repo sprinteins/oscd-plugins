@@ -7,7 +7,7 @@ import {
 } from "./ied/object-tree.type.d";
 import type { Nullable } from "./types";
 import type { Connection, LogicalConditioner } from "./ui/components/canvas/types.canvas";
-import type { LpElement } from "./ui/components/lp-list/types.lp-list";
+import type { LpElement } from "./ui/components/right-bar/lp-list/types.lp-list";
 
 
 export class Store {

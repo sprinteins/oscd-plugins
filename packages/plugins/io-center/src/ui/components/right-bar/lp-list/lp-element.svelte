@@ -1,9 +1,8 @@
 <script lang="ts">
     import type { LpElement } from "./types.lp-list";
-    import { canvasStore } from "../canvas/canvas-store.svelte";
     import { Edit, Square, SquareCheck } from "lucide-svelte";
     import EditLpDialog from "./edit-lp-dialog.svelte";
-    import { store } from "../../../store.svelte";
+    import { store } from "@/store.svelte";
 
     type Props = {
         lpElement: LpElement;

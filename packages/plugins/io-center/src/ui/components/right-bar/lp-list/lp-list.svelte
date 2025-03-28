@@ -2,8 +2,8 @@
     import { LP_TYPE } from "@/headless/constants";
     import type { Nullable } from "@/types";
     import { Plus } from "lucide-svelte";
-    import { store } from "../../../store.svelte";
-    import SearchBar from "../common/search-bar.svelte";
+    import { store } from "@/store.svelte";
+    import SearchBar from "../../common/search-bar.svelte";
     import FilterButtons from "./filter-buttons.svelte";
     import LpElement from "./lp-element.svelte";
     import type { LpTypes, LpElement as LpElementType } from "./types.lp-list";

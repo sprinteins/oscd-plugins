@@ -9,7 +9,7 @@ import type {
     NodeElement,
     NodeElementType
 } from '@/ui/components/canvas/types.canvas'
-import type { LpElement } from '@/ui/components/lp-list/types.lp-list'
+import type { LpElement } from '@/ui/components/right-bar/lp-list/types.lp-list'
 import type { TreeNode } from '@/ui/components/object-tree/types.object-tree'
 import { tick } from 'svelte'
 import { ALLOWED_LC_FOR_CDC, NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE } from '../constants'

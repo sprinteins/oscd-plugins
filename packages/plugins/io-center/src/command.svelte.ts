@@ -1,7 +1,7 @@
 import { createAndDispatchEditEvent } from "@oscd-plugins/core-api/plugin/v1"
 import { store } from "./store.svelte"
 import type { Nullable } from "./types"
-import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
+import type { LpElement, LpTypes } from "./ui/components/right-bar/lp-list/types.lp-list"
 import { createElement } from "./headless/stores/document-helpers.svelte"
 import type { Connection, LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
 import { L_NODE_TYPE_CONTENT, NODE_ELEMENT_TYPE } from "./headless/constants"

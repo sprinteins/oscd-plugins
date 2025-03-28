@@ -22,18 +22,15 @@
 
 	import type { Nullable } from "./types";
 	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
-	import LpList from "./ui/components/lp-list/lp-list.svelte";
 	import { store } from "./store.svelte";
 	import SideBarLeft from "./sidebar-left.svelte";
-	import type {
-		LpElement,
-		LpTypes,
-	} from "./ui/components/lp-list/types.lp-list";
 	import type {
 		Connection,
 		LcTypes,
 		NodeElement,
 	} from "./ui/components/canvas/types.canvas";
+    import type { LpElement, LpTypes } from "./ui/components/right-bar/lp-list/types.lp-list";
+    import LpList from "./ui/components/right-bar/lp-list/lp-list.svelte";
 
 	// props
 	const {

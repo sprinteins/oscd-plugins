@@ -1,7 +1,7 @@
 import type { ConnectionPort, LogicalConditioner, NodeElement, NodeElementType } from "./types.canvas"
 import { store } from "../../../store.svelte"
 import type { ObjectNodeDataObject } from "../../../ied/object-tree.type"
-import type { LpElement } from "../lp-list/types.lp-list"
+import type { LpElement } from "../right-bar/lp-list/types.lp-list"
 import { NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants"
 
 class Store {

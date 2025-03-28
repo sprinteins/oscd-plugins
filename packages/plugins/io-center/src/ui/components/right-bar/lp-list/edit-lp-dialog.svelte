@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Input from "../common/input.svelte";
+    import Input from "../../common/input.svelte";
     import type { LpElement } from "./types.lp-list";
 
     type Props = {

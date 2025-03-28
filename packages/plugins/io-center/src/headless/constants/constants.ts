@@ -1,5 +1,5 @@
 import type { ConnectionPort, LcTypes } from "@/ui/components/canvas/types.canvas"
-import type { LpTypes } from "@/ui/components/lp-list/types.lp-list"
+import type { LpTypes } from "@/ui/components/right-bar/lp-list/types.lp-list"
 
 export const NODE_TYPE = {
     accessPoint: 'accessPoint',
