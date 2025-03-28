@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import zipcelx from 'zipcelx';
 import type {ElementType} from "@/components/elements/types.elements"
-import {docTemplatesStore} from '@/stores'
+import {docTemplatesStore, placeholderStore} from '@/stores'
 import type {Columns, SignalType} from '@/stores'
 import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list-element/types.signal-list'
 
@@ -79,10 +79,11 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     }
 
     function handleText(text: string, fontSize: number, fontStyle: "normal" | "bold" | "italic", indent = 0 ){
+        const textWithPlaceholder = placeholderStore.fillPlaceholder(text);
         doc.setFontSize(fontSize);
         doc.setFont("helvetica", fontStyle);
 
-        const wrappedText : string [] = doc.splitTextToSize(text ?? "", pageWidth - (35 - indent));
+        const wrappedText : string [] = doc.splitTextToSize(textWithPlaceholder ?? "", pageWidth - (35 - indent));
 
         for(const line of wrappedText){
             if (contentExceedsCurrentPage()) {

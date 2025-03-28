@@ -6,7 +6,6 @@
     import ListItem from '@tiptap/extension-list-item'
 	import Underline from '@tiptap/extension-underline'
 	import {debounce} from '@/utils';
-    import {placeholderStore} from "@/stores";
 
     let element: Element;
     let editor: unknown;
@@ -15,12 +14,7 @@
 
 
 	const ONE_SECOND_IN_MS = 1000;
-	const debouncedContentChange = debounce(fillPlaceholder, ONE_SECOND_IN_MS);
-
-    function fillPlaceholder(text: string) {
-        const filledText = placeholderStore.fillPlaceholder(text);
-        onContentChange(filledText)
-    }
+	const debouncedContentChange = debounce(onContentChange, ONE_SECOND_IN_MS);
 
     onMount(() => {
         editor = new Editor({
