@@ -28,6 +28,7 @@ const hasChildrenOptions = $derived(
 			sidebarStore.currentElementType.parameters.childrenOptions
 		).some((option) => option)
 )
+  
 const editLabel = $derived(
 	sidebarStore.currentElementType?.attributes?.name ||
 		sidebarStore.currentElementType?.attributes?.id
@@ -105,6 +106,7 @@ function isAttributeReadonly(attributeKey: string) {
 					</div>
 				{/each}
 			</div>
+
 			{#if hasChildrenOptions}
 				<div class="space-y-3">
 					<Label.Root class="text-lg font-bold">Child Elements Options:</Label.Root>
