@@ -238,9 +238,6 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
             }
         }
 
-        // TODO: When table gets too long and breaks, the margin at the bottom is incorrect
-        const tableHeight = (rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT);
-
         if(newFilledBody.length === 0) {
             newFilledBody = filledBody;
         }
@@ -257,7 +254,14 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
             }
         });
 
-        incrementVerticalPositionForNextLine(tableHeight);
+        // TODO: When table gets too long and breaks, the margin at the bottom is incorrect
+        const tableHeight = (rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT);
+        if(contentExceedsCurrentPage(tableHeight)) {
+            doc.addPage();            
+            marginTop = INITIAL_UPPER_PAGE_COORDINATE;
+        } else {
+            incrementVerticalPositionForNextLine(tableHeight);
+        }
     }
 
     for(const block of allBlocks){
