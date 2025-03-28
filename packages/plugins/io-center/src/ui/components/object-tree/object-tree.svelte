@@ -25,32 +25,42 @@
 	});
 
 	function convertToTreeNode(objectTree: ObjectTree): TreeNodeType[] {
-		const treeNodes: TreeNodeType[] = objectTree.ied?.children.map((ld) => {
+		if (!objectTree.ied) {
+			return [];
+		}
+
+		return objectTree.ied.children.map((ap) => {
 			return {
-				id: ld.id,
-				name: ld.inst,
-				type: NODE_TYPE.logicalDevice,
+				id: ap.id,
+				name: ap.name,
+				type: NODE_TYPE.accessPoint,
 				isOpen: false,
-				children: ld.children.map((ln) => {
+				children: ap.children.map((ld) => {
 					return {
-						id: ln.id,
-						name: `${ln.lnClass} - ${ln.inst}`,
-						type: NODE_TYPE.logicalNode,
+						id: ld.id,
+						name: ld.inst,
+						type: NODE_TYPE.logicalDevice,
 						isOpen: false,
-						children: ln.children.map((dataObject) => {
+						children: ld.children.map((ln) => {
 							return {
-								id: dataObject.id,
-								name: dataObject.name,
-								type: NODE_TYPE.dataObjectInstance,
-								dataObject,
+								id: ln.id,
+								name: `${ln.lnClass} - ${ln.inst}`,
+								type: NODE_TYPE.logicalNode,
+								isOpen: false,
+								children: ln.children.map((dataObject) => {
+									return {
+										id: dataObject.id,
+										name: dataObject.name,
+										type: NODE_TYPE.dataObjectInstance,
+										dataObject
+									};
+								})
 							};
-						}),
+						})
 					};
-				}),
+				})
 			};
 		});
-
-		return treeNodes;
 	}
 
 	function filterTree(
