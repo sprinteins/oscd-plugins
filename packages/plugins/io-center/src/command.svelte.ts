@@ -341,7 +341,7 @@ export class Command {
 		}
 
 		if (connectionType === "output") {
-			const connectedDO = store.selectedDataObjects.filter(doElement => doElement.name === doName)[0]
+			const connectedDO = store.selectedDataObject
 
 			if (!connectedDO) {
 				throw new Error(`DO with name ${doName} not found!`)

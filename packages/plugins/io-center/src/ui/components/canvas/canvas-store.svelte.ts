@@ -5,7 +5,7 @@ import type { LpElement } from "../lp-list/types.lp-list"
 import { NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants"
 
 class Store {
-	dataObjects = $derived<NodeElement[]>(store.selectedDataObjects.map(dataObjectToNodeElement))
+	dataObjects = $derived<NodeElement[]>(store.selectedDataObject ? [dataObjectToNodeElement(store.selectedDataObject)] : [])
 	logicalConditioners = $derived(store.logicalConditioners.map(LCToNodeElement))
 	logicalPhysicals = $derived(store.selectedLogicalPhysicals.map(LPToNodeElement))
 	container = $state<HTMLDivElement | null>(null)
@@ -50,8 +50,8 @@ export function dataObjectToNodeElement(dataObject: ObjectNodeDataObject): NodeE
 		dataObject.objectPath.ln?.inst,
 		dataObject.name
 	]
-		.filter(Boolean)
-		.join("-")
+	.filter(Boolean)
+	.join("-")
 
 	const nodeElement = {
 		name: dataObject.name,
