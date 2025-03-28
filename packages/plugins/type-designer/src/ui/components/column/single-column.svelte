@@ -21,8 +21,10 @@ import type {
 import {
 	ALLOWED_TARGETS_BY_REF_FAMILY,
 	COLUMN_KEY_TO_TYPE_FAMILY,
+	ALLOWED_TARGETS_BY_TYPE_FAMILY,
 	TYPE_FAMILY
 } from '@/headless/constants'
+import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 
 //======= INITIALIZATION =======//
 
@@ -82,36 +84,36 @@ const capitalizedColumnKey = $derived(
 const isColumnDisabled = $derived.by(() => {
 	if (!dndStore.isDragging) return false
 
+	const currentColumnTypeFamily = Array.isArray(
+		COLUMN_KEY_TO_TYPE_FAMILY[columnKey]
+	)
+		? COLUMN_KEY_TO_TYPE_FAMILY[columnKey]
+		: [COLUMN_KEY_TO_TYPE_FAMILY[columnKey]]
+
 	// Ref
 	if (dndStore.currentSourceRefFamily) {
-		return !ALLOWED_TARGETS_BY_REF_FAMILY[
-			dndStore.currentSourceRefFamily
-		].some((allowedFamily) => {
-			if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
-				return COLUMN_KEY_TO_TYPE_FAMILY[columnKey].includes(
-					allowedFamily
-				)
-			}
-			return COLUMN_KEY_TO_TYPE_FAMILY[columnKey] === allowedFamily
-		})
-	}
+		const allowedTypeFamilies =
+			ALLOWED_TARGETS_BY_REF_FAMILY[dndStore.currentSourceRefFamily]
 
-	// Funktion
-	if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function) {
-		const allowedFamilies = [
-			TYPE_FAMILY.bay,
-			TYPE_FAMILY.generalEquipment,
-			TYPE_FAMILY.conductingEquipment
-		]
-		if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
-			return !COLUMN_KEY_TO_TYPE_FAMILY[columnKey].some((family) =>
-				allowedFamilies.includes(family)
+		const isAllowed = allowedTypeFamilies.some((allowedTypeFamily) => {
+			return currentColumnTypeFamily.some(
+				(family) => family === allowedTypeFamily
 			)
-		}
-		return !allowedFamilies.includes(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])
+		})
+
+		return !isAllowed
 	}
 
-	return true
+	// Function template - not yet instantiated
+	if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function) {
+		const allowedTypeFamilies =
+			ALLOWED_TARGETS_BY_TYPE_FAMILY[TYPE_FAMILY.function]
+		const isAllowed = currentColumnTypeFamily.some((typeFamily) =>
+			allowedTypeFamilies.includes(typeFamily)
+		)
+
+		return !isAllowed
+	}
 })
 
 $inspect(importsStore.loadedLNodeType.elementByIds)
