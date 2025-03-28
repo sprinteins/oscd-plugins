@@ -16,35 +16,22 @@
 
     const { name, instance } = lpElement;
 
+	let showDialog = $state(false);
+	let isSelected = $derived(store.isLPSelected(lpElement));
+
     let isSearched = $derived(
         searchTerm !== "" &&
             lpElement.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
-    let isSelected = $derived(
-        store.selectedLogicalPhysicals.some((item) => item.id === lpElement.id),
-    );
-
-    let showDialog = $state(false);
-
     function addLpElementToCanvas(element: LpElement) {
-        if (
-            store.selectedLogicalPhysicals.some(
-                (item) => item.id === element.id,
-            )
-        ) {
-            store.selectedLogicalPhysicals =
-                store.selectedLogicalPhysicals.filter(
-                    (item) => item.id !== element.id,
-                );
-            return;
-        }
-
-        store.selectedLogicalPhysicals.push(lpElement);
+		store.toggleElementSelection(element);
     }
+
 </script>
 
 <div
+	data-name="lp-element"
     class={{
         "lp-element": true,
         selected: isSelected,

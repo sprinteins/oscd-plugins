@@ -214,8 +214,6 @@ export function stopDrawing(
             }
 
             addConnection(connection)
-
-            store.connections = [...store.connections, connection]
         }
     }
 }

@@ -5,15 +5,23 @@ export type ObjectTree = {
 export type ObjectNodeIED = {
 	id: string
 	name: string
-	children: ObjectNodeLogicalDevice[]
+	children: ObjectNodeAccessPoint[]
 	_type: NodeTypes.ied
+}
+
+export type ObjectNodeAccessPoint = {
+	id: string
+	name: string
+	children: ObjectNodeLogicalDevice[],
+	objectPath: Pick<ObjectPath, 'ied'>
+	_type: NodeTypes.accessPoint
 }
 
 export type ObjectNodeLogicalDevice = {
 	id: string
 	inst: string
 	children: ObjectNodeLogicalNode[]
-	objectPath: Pick<ObjectPath, 'ied'>
+	objectPath: Pick<ObjectPath, 'ied' | 'accessPoint'>
 	_type: NodeTypes.logicalDevice
 }
 
@@ -22,7 +30,7 @@ export type ObjectNodeLogicalNode = {
 	lnClass: string
 	inst: string
 	children: ObjectNodeDataObject[]
-	objectPath: Pick<ObjectPath, 'ied' | 'lDevice'>
+	objectPath: Pick<ObjectPath, 'ied' | 'accessPoint' | 'lDevice'>
 	_type: NodeTypes.logicalNode
 }
 
@@ -38,6 +46,9 @@ export type ObjectPath = {
 	ied?: {
 		id: string
 		name: string
+	},
+	accessPoint?: {
+		name: string
 	}
 	lDevice?: {
 		id: string
@@ -51,6 +62,7 @@ export type ObjectPath = {
 }
 export const NodeTypes = {
 	ied: 'ied',
+	accessPoint: 'accessPoint',
 	logicalDevice: 'logicalDevice',
 	logicalNode: 'logicalNode',
 	dataObject: 'dataObject'
