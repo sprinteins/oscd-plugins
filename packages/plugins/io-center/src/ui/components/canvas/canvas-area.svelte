@@ -17,6 +17,7 @@
 		LcTypes,
 		NodeElement as NodeElementType,
 	} from "./types.canvas";
+    import { onDestroy } from "svelte";
 
 	type Props = {
 		addLC: (type: LcTypes, number?: number, numberOfLCIVPorts?: number) => void;
@@ -29,6 +30,8 @@
 
 	let isDialogOpen = $state(false);
 
+	let selectedConnection: string | null = null;
+
 	async function getCurrentCoordinates(connection: Connection) {
 		const fromXToY = `${(await getCoordinates(connection.from)).x},${(await getCoordinates(connection.from)).y}`;
 		const fromXToXFromY = `${((await getCoordinates(connection.from)).x + (await getCoordinates(connection.to)).x) / 2},${(await getCoordinates(connection.from)).y}`;
@@ -36,6 +39,29 @@
 		const toXToY = `${(await getCoordinates(connection.to)).x},${(await getCoordinates(connection.to)).y}`;
 		return `M ${fromXToY} C ${fromXToXFromY} ${fromXToXToY} ${toXToY}`;
 	}
+
+	async function setSelectedConnection(connectionId: string, evt: MouseEvent) {
+		evt.stopPropagation();
+		selectedConnection = connectionId;
+	}
+
+
+	function handleKeyPress(event: KeyboardEvent) {
+		if (event.key === "Backspace" && selectedConnection) {
+			console.log("About to delete connection: ", selectedConnection)
+			// TODO: Remove the selected connection both in the canvas and in the file
+
+			selectedConnection = null;
+		}
+	}
+
+	window.addEventListener("keydown", handleKeyPress);
+
+	onDestroy(() => {
+		window.removeEventListener("keydown", handleKeyPress);
+	});
+
+	
 </script>
 
 <div
@@ -107,13 +133,22 @@
 	</div>
 </div>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <svg
 	class="absolute top-0 left-0 w-full h-full pointer-events-none"
 	bind:this={canvasStore.svgElement}
+	onclick={()=>{selectedConnection = null}}
 >
 	{#each store.connections as connection (connection.id)}
 		{#await getCurrentCoordinates(connection) then d}
-			<path class="stroke-black stroke-2 fill-none" {d} />
+			<path class={`
+				stroke-2 fill-none cursor-pointer pointer-events-auto
+				${selectedConnection === connection.id ? "stroke-red-500" : "stroke-black"}
+			`} 
+				{d} 
+				onclick={(event) => setSelectedConnection(connection.id, event)}
+			/>
 		{/await}
 	{/each}
 	{#if canvasStore.drawStartPoint}F
