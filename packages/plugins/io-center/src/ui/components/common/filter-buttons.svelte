@@ -1,18 +1,19 @@
 <script lang="ts">
-    import { LP_TYPE } from "@/headless/constants";
     import type { Nullable } from "@/types";
-    import type { LpTypes } from "./types.lp-list";
+    import type { FilterOptions } from "./types.common";
 
     type Props = {
-        selectedTypeToShow: Nullable<LpTypes>;
+        selectedTypeToShow: Nullable<string>;
         showLinked: boolean;
         showUnlinked: boolean;
+        filterOptions: FilterOptions;
     };
 
     let {
         selectedTypeToShow = $bindable(),
         showLinked = $bindable(),
         showUnlinked = $bindable(),
+        filterOptions,
     }: Props = $props();
 
     let selectedLabel = $state("");
@@ -25,29 +26,6 @@
         selectedTypeToShow = selectedType;
         showLinked = linked;
         showUnlinked = unlinked;
-    }
-
-    const filterOptions: Array<{
-        label: string;
-        values: {
-            selectedType?: Nullable<LpTypes>;
-            linked?: boolean;
-            unlinked?: boolean;
-        };
-    }> = [
-        {
-            label: "All LPs",
-            values: { selectedType: null, linked: true, unlinked: true },
-        },
-        { label: "Unlinked", values: { linked: false, unlinked: true } },
-        { label: "Linked", values: { linked: true, unlinked: false } },
-    ];
-
-    for (const value of Object.values(LP_TYPE)) {
-        filterOptions.push({
-            label: value,
-            values: { selectedType: value },
-        });
     }
 </script>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { L_NODE_TYPE_HELPER_TEXT, LP_TYPE } from "@/headless/constants";
-    import Input from "../common/input.svelte";
-    import Select from "../common/select.svelte";
+    import Input from "../../common/input.svelte";
+    import Select from "../../common/select.svelte";
     import type { FormData, LpTypes } from "./types.lp-list";
 
     type Props = {

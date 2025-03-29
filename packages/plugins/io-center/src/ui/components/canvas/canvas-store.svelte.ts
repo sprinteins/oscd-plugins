@@ -1,12 +1,12 @@
 import type { ConnectionPort, LogicalConditioner, NodeElement, NodeElementType } from "./types.canvas"
 import { store } from "../../../store.svelte"
 import type { ObjectNodeDataObject } from "../../../ied/object-tree.type"
-import type { LpElement } from "../lp-list/types.lp-list"
+import type { LpElement } from "../right-bar/lp-list/types.lp-list"
 import { NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants"
 
 class Store {
 	dataObjects = $derived<NodeElement[]>(store.selectedDataObject ? [dataObjectToNodeElement(store.selectedDataObject)] : [])
-	logicalConditioners = $derived(store.logicalConditioners.map(LCToNodeElement))
+	logicalConditioners = $derived(store.selectedLogicalConditioners.map(LCToNodeElement))
 	logicalPhysicals = $derived(store.selectedLogicalPhysicals.map(LPToNodeElement))
 	container = $state<HTMLDivElement | null>(null)
 	mousePosition = $state({ x: 0, y: 0 })

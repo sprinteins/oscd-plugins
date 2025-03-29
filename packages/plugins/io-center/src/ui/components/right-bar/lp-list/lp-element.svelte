@@ -1,9 +1,9 @@
 <script lang="ts">
     import type { LpElement } from "./types.lp-list";
-    import { canvasStore } from "../canvas/canvas-store.svelte";
     import { Edit, Square, SquareCheck } from "lucide-svelte";
     import EditLpDialog from "./edit-lp-dialog.svelte";
-    import { store } from "../../../store.svelte";
+    import { store } from "@/store.svelte";
+    import Tooltip from "../../common/tooltip.svelte";
 
     type Props = {
         lpElement: LpElement;
@@ -17,7 +17,7 @@
     const { name, instance } = lpElement;
 
     let showDialog = $state(false);
-    let isSelected = $derived(store.isLPSelected(lpElement));
+    const isSelected = $derived(store.isLPSelected(lpElement));
 
     let isSearched = $derived(
         searchTerm !== "" &&
@@ -25,7 +25,11 @@
     );
 
     function addLpElementToCanvas(element: LpElement) {
-        store.toggleElementSelection(element);
+        store.toggleLpElementSelection(element);
+    }
+
+    function getTooltipText() {
+        return lpElement.isLinked ? "Can not edit a linked LP!" : "";
     }
 </script>
 
@@ -53,8 +57,11 @@
     <button
         class="ml-auto mr-2 show-on-hover"
         onclick={() => (showDialog = true)}
+        disabled={lpElement.isLinked}
     >
-        <Edit size={16} />
+        <Tooltip position="left" text={getTooltipText()}>
+            <Edit size={16} />
+        </Tooltip>
     </button>
 </div>
 

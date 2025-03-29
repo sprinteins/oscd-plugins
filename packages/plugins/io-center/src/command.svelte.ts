@@ -1,7 +1,7 @@
 import { createAndDispatchEditEvent } from "@oscd-plugins/core-api/plugin/v1"
 import { store } from "./store.svelte"
 import type { Nullable } from "./types"
-import type { LpElement, LpTypes } from "./ui/components/lp-list/types.lp-list"
+import type { LpElement, LpTypes } from "./ui/components/right-bar/lp-list/types.lp-list"
 import { createElement } from "./headless/stores/document-helpers.svelte"
 import type { Connection, LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
 import { L_NODE_TYPE_CONTENT, NODE_ELEMENT_TYPE } from "./headless/constants"
@@ -138,9 +138,6 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLCNumber + 1}`,
 				"lnType": type,
-				/* SUBJECT TO BE CHANGED: since the flow for LC will be changed to not save to scd file until a connection happens,
-				this is a temporary solution as the current flow is (save to file -> read from file -> update local state) and will change to
-				(update local state -> save to file) and then we can change where we save the LCIV ports number. */
 				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
 			}
 
@@ -155,9 +152,6 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLCNumber + i}`,
 				"lnType": type,
-				/* SUBJECT TO BE CHANGED: since the flow for LC will be changed to not save to scd file until a connection happens,
-				this is a temporary solution as the current flow is (save to file -> read from file -> update local state) and will change to
-				(update local state -> save to file) and then we can change where we save the LCIV ports number. */
 				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
 			}
 
@@ -165,28 +159,24 @@ export class Command {
 		}
 	}
 
-	public editLC(lcNode: NodeElement, newType: LcTypes) {
-		const lc = store.logicalConditioners.find(lc => lc.id === lcNode.id)
-
-		if (!lc) {
-			throw new Error(`No LC found in store with id ${lcNode.id}`)
-		}
-
+	public editLC(lc: LogicalConditioner, newType: LcTypes, numberOfLCIVPorts?: number) {
 		this.removeLC(lc)
-
+		if (numberOfLCIVPorts) {
+			this.addLC(newType, 1, numberOfLCIVPorts)
+			return
+		}
 		this.addLC(newType)
 	}
 
-	public removeLC(lcElement: LogicalConditioner) {
+	public removeLC(lc: LogicalConditioner) {
 		const host = this.requireHost()
 
 		const ied = this.requireSelectedIED()
 
-		//Delete target LP
-		const lcToDelete = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lcElement.type}"][inst="${lcElement.instance}"][lnClass="${lcElement.type}"]`)
+		const lcToDelete = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lc.type}"][inst="${lc.instance}"][lnClass="${lc.type}"]`)
 
 		if (!lcToDelete) {
-			throw new Error(`LP element with name ${lcElement.type}-${lcElement.instance} not found!`)
+			throw new Error(`LP element with name ${lc.type}-${lc.instance} not found!`)
 		}
 
 		createAndDispatchEditEvent({
@@ -196,10 +186,10 @@ export class Command {
 			}
 		})
 
-		//Correct instance attribute for any LP that's after the target
-		const remainingLCs = Array.from(ied.querySelectorAll(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lcElement.type}"]`))
+		//Decrease instance attribute by 1 for any LP that's after the target
+		const remainingLCs = Array.from(ied.querySelectorAll(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lc.type}"]`))
 
-		const deletedLcInstance = Number.parseInt(lcElement.instance)
+		const deletedLcInstance = Number.parseInt(lc.instance)
 
 		for (const lc of remainingLCs.slice(deletedLcInstance - 1)) {
 			createAndDispatchEditEvent({
