@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Master template flag on SCD file
 - Disable import template function when it's a master template
+
+
+## [1.13.1] - 2025-03-28
+
+### Fix
+
+- xpath placeholder storage on scd file
  
 ## [1.13.0] - 2025-03-26
 
@@ -66,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.0] - 2025-03-10
 
-### Feature
+### Added
 
 - Export Signal List block element as a extra xlsx file
   

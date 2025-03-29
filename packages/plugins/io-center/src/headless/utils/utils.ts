@@ -5,14 +5,16 @@ import type {
     Connection,
     ConnectionPoint,
     ConnectionPort,
+    LogicalConditioner,
     NodeElement,
     NodeElementType
 } from '@/ui/components/canvas/types.canvas'
 import type { LpElement } from '@/ui/components/lp-list/types.lp-list'
 import type { TreeNode } from '@/ui/components/object-tree/types.object-tree'
 import { tick } from 'svelte'
-import { NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE } from '../constants'
+import { ALLOWED_LC_FOR_CDC, NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE } from '../constants'
 import _ from "lodash"
+import { toast } from '@zerodevx/svelte-toast'
 
 export function searchTree(tree: TreeNode[], searchTerm: string): TreeNode[] {
     return tree
@@ -154,6 +156,26 @@ export function connectionExists(
             (connection.from.name === fromNode && connection.to.name === toNode && _.isEqual(connection.from.port, fromPort) && _.isEqual(connection.to.port, toPort)) ||
             (connection.from.name === toNode && connection.to.name === fromNode) && _.isEqual(connection.from.port, toPort) && _.isEqual(connection.to.port, fromPort)
     )
+}
+
+export function isDoToLcConnectionAllowed(dataObject: ObjectNodeDataObject, lc: LogicalConditioner): boolean {
+    const cdc = dataObject.cdcType
+
+    if (!cdc) {
+        console.warn(`DO (id: ${dataObject.id}) has no cdc type defined!`)
+        return false
+    }
+
+    if (!ALLOWED_LC_FOR_CDC[cdc]) {
+        return true
+    }
+
+    if (ALLOWED_LC_FOR_CDC[cdc].includes(lc.type)) {
+        return true
+    }
+
+    toast.push(`Data Object with cdc (${cdc}) can not be linked to a Logical Conditioner of type ${lc.type}!`)
+    return false
 }
 
 export function stopDrawing(

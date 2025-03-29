@@ -24,7 +24,8 @@ export function LPToNodeElement(lp: LpElement): NodeElement {
 	return {
 		id: lp.id,
 		type: NODE_ELEMENT_TYPE.LP,
-		name: `${lp.type}-${lp.instance}`,
+		name: `${lp.name || lp.type}-${lp.instance}`,
+		title: `${lp.type}-${lp.instance}`,
 		isLinked: lp.isLinked,
 		lnClass: lp.type,
 		numberOfDynamicPorts: lp.numberOfLPDOPorts

@@ -40,10 +40,15 @@
         (node.type === NODE_ELEMENT_TYPE.LP &&
             side === "left" &&
             node.lnClass === LP_TYPE.LPDO);
+
+    function getDataTitle() {
+        const title = node.type === NODE_ELEMENT_TYPE.LP ? node.title : node.name
+        return `${title}-${side}`
+    }
 </script>
 
 <div
-    data-title={`${node.name}-${side}`}
+    data-title={getDataTitle()}
     class={`container absolute ${side}-0 ${containerTopPos} transform -translate-y-1/2 ${containerTranslateX}`}
 >
     {#if useDynamicPorts && node.numberOfDynamicPorts}
