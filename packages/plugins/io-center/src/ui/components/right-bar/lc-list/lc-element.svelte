@@ -12,7 +12,11 @@
         lc: LogicalConditioner;
         searchTerm: string;
         removeLC: (lc: LogicalConditioner) => void;
-        editLC: (lc: LogicalConditioner, newType: LcTypes, numberOfLCIVPorts?: number) => void;
+        editLC: (
+            lc: LogicalConditioner,
+            newType: LcTypes,
+            numberOfLCIVPorts?: number,
+        ) => void;
     };
 
     let { lc, searchTerm, editLC, removeLC }: Props = $props();
@@ -29,6 +33,10 @@
 
     function addLcElementToCanvas(lc: LogicalConditioner) {
         store.toggleLcSelection(lc);
+    }
+
+    function getTooltipText() {
+        return lc.isLinked ? "Can not edit a linked LC!" : "";
     }
 </script>
 
@@ -58,13 +66,9 @@
         onclick={() => (showDialog = true)}
         disabled={lc.isLinked}
     >
-        {#if lc.isLinked}
-            <Tooltip position="left" text="Can not edit a linked LC!">
-                <Edit size={16} />
-            </Tooltip>
-        {:else}
+        <Tooltip position="left" text={getTooltipText()}>
             <Edit size={16} />
-        {/if}
+        </Tooltip>
     </button>
 </div>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
     import Input from "../../common/input.svelte";
     import type { LpElement } from "./types.lp-list";
+    import { toast } from "@zerodevx/svelte-toast";
 
     type Props = {
         isOpen: boolean;
@@ -19,6 +20,7 @@
     }
 
     function handleDelete() {
+        toast.push(`${lpElement.name}-${lpElement.instance} Deleted!`);
         removeLP(lpElement);
         isOpen = false;
     }
