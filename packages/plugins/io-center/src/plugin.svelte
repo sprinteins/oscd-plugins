@@ -91,6 +91,10 @@
 	function addConnection(connection: Connection) {
 		cmd.addConnection(connection);
 	}
+
+	function removeConnection(connection: Connection) {
+		cmd.removeConnection(connection);
+	}
 </script>
 
 <main
@@ -115,6 +119,7 @@
 			{editLC}
 			{hasLNodeType}
 			{addConnection}
+			{removeConnection}
 		/>
 		<LpList
 			slot="sidebar-right"

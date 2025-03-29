@@ -24,13 +24,14 @@
 		editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
 		hasLNodeType: (type: LcTypes) => boolean;
 		addConnection: (connection: Connection) => void;
+		removeConnection: (connection: Connection) => void;
 	};
 
-	const { addLC, editLC, hasLNodeType, addConnection }: Props = $props();
+	const { addLC, editLC, hasLNodeType, addConnection, removeConnection }: Props = $props();
 
 	let isDialogOpen = $state(false);
 
-	let selectedConnection: string | null = null;
+	let selectedConnection: Connection | null = $state(null);
 
 	async function getCurrentCoordinates(connection: Connection) {
 		const fromXToY = `${(await getCoordinates(connection.from)).x},${(await getCoordinates(connection.from)).y}`;
@@ -40,17 +41,18 @@
 		return `M ${fromXToY} C ${fromXToXFromY} ${fromXToXToY} ${toXToY}`;
 	}
 
-	async function setSelectedConnection(connectionId: string, evt: MouseEvent) {
+	async function setSelectedConnection(connection: Connection, evt: MouseEvent) {
 		evt.stopPropagation();
-		selectedConnection = connectionId;
+		selectedConnection = connection;
 	}
 
 
 	function handleKeyPress(event: KeyboardEvent) {
 		if (event.key === "Backspace" && selectedConnection) {
-			console.log("About to delete connection: ", selectedConnection)
-			// TODO: Remove the selected connection both in the canvas and in the file
 
+			console.log("About to delete connection: ", selectedConnection)
+
+			removeConnection(selectedConnection);
 			selectedConnection = null;
 		}
 	}
@@ -147,7 +149,7 @@
 				${selectedConnection === connection.id ? "stroke-red-500" : "stroke-black"}
 			`} 
 				{d} 
-				onclick={(event) => setSelectedConnection(connection.id, event)}
+				onclick={(event) => setSelectedConnection(connection, event)}
 			/>
 		{/await}
 	{/each}
