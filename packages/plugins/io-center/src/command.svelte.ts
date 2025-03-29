@@ -374,6 +374,15 @@ export class Command {
 		}
 	}
 
+	public removeConnection(connection: Connection) {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const storedConnection = store.connections.find((c) => c === connection);
+
+		// TODO: continue with the connection removal and call edit api
+
+	}
+
 	private requireSelectedIED(): Element {
 		if (!store.doc) { throw new Error('Doc not found!') }
 
