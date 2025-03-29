@@ -1,33 +1,43 @@
 <script lang="ts">
     import { LC_TYPE } from "@/headless/constants";
     import Select from "../common/select.svelte";
-    import type {
-        FormData,
-        LcTypes,
-        NodeElement as NodeElementType,
-    } from "./types.canvas";
+    import type { LcTypes, LogicalConditioner } from "./types.canvas";
+    import type { Optional } from "@/types";
+    import Input from "../common/input.svelte";
+    import { toast } from "@zerodevx/svelte-toast";
 
     type Props = {
         isOpen: boolean;
-        nodeSelected: boolean;
-        lcNode: NodeElementType;
-        editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
+        lc: LogicalConditioner;
+        removeLC: (lc: LogicalConditioner) => void;
+        editLC: (
+            lc: LogicalConditioner,
+            newType: LcTypes,
+            numberOfLCIVPorts?: number,
+        ) => void;
     };
 
-    let { isOpen = $bindable(), nodeSelected = $bindable(), lcNode, editLC }: Props = $props();
+    let { isOpen = $bindable(), lc, removeLC, editLC }: Props = $props();
 
-    let newType = $state<LcTypes>(LC_TYPE.LCBI);
+    let newType = $state<LcTypes>(lc.type);
+    let numberOfLCIVPorts = $state<Optional<number>>(undefined);
 
     function handleCancel() {
         isOpen = false;
-        nodeSelected = false;
+    }
+
+    function handleDelete() {
+        removeLC(lc);
+        toast.push(`${lc.type}-${lc.instance} Deleted!`);
+        isOpen = false;
     }
 
     function handleSubmit() {
-        editLC(lcNode, newType);
-
+        toast.push(
+            `${lc.type}-${lc.instance}${newType !== lc.type ? ` type changed to ${newType}` : ""}${numberOfLCIVPorts ? ` ports number changed to ${numberOfLCIVPorts}` : ""}!`,
+        );
+        editLC(lc, newType, numberOfLCIVPorts);
         isOpen = false;
-        nodeSelected = false;
     }
 </script>
 
@@ -39,11 +49,23 @@
                 label="LC Type"
                 options={Object.values(LC_TYPE)}
             />
+            {#if newType === LC_TYPE.LCIV}
+                <Input
+                    bind:value={numberOfLCIVPorts}
+                    label="Number of LCIV Ports"
+                    defaultValue={lc.numberOfLCIVPorts}
+                />
+            {/if}
             <div class="action-buttons">
                 <button class="cancel-button" onclick={handleCancel}>
                     Cancel
                 </button>
-                <button class="add-button" onclick={handleSubmit}> Add </button>
+                <button class="delete-button" onclick={handleDelete}>
+                    Delete
+                </button>
+                <button class="add-button" onclick={handleSubmit}>
+                    Edit
+                </button>
             </div>
         </div>
     </div>
@@ -63,6 +85,10 @@
 
         .cancel-button {
             @apply px-4 py-2 text-gray-600;
+        }
+
+        .delete-button {
+            @apply px-4 py-2 text-white bg-red-600 rounded-lg;
         }
 
         .add-button {

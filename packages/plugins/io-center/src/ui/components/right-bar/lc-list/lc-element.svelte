@@ -1,14 +1,21 @@
 <script lang="ts">
     import { Edit, Square, SquareCheck } from "lucide-svelte";
     import { store } from "@/store.svelte";
-    import type { LogicalConditioner } from "../../canvas/types.canvas";
+    import type {
+        LcTypes,
+        LogicalConditioner,
+    } from "../../canvas/types.canvas";
+    import EditLcDialog from "../../canvas/edit-lc-dialog.svelte";
+    import Tooltip from "../../common/tooltip.svelte";
 
     type Props = {
         lc: LogicalConditioner;
         searchTerm: string;
+        removeLC: (lc: LogicalConditioner) => void;
+        editLC: (lc: LogicalConditioner, newType: LcTypes, numberOfLCIVPorts?: number) => void;
     };
 
-    let { lc, searchTerm }: Props = $props();
+    let { lc, searchTerm, editLC, removeLC }: Props = $props();
 
     const { type, instance } = lc;
 
@@ -49,10 +56,19 @@
     <button
         class="ml-auto mr-2 show-on-hover"
         onclick={() => (showDialog = true)}
+        disabled={lc.isLinked}
     >
-        <Edit size={16} />
+        {#if lc.isLinked}
+            <Tooltip position="left" text="Can not edit a linked LC!">
+                <Edit size={16} />
+            </Tooltip>
+        {:else}
+            <Edit size={16} />
+        {/if}
     </button>
 </div>
+
+<EditLcDialog bind:isOpen={showDialog} {lc} {editLC} {removeLC} />
 
 <style lang="scss">
     .lc-element {

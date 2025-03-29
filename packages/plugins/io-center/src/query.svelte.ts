@@ -182,6 +182,17 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 								&& refLNInst === selectedDataObject.objectPath.ln?.inst
 								&& refLDInst === selectedDataObject.objectPath.lDevice?.inst
 							) {
+								const selectedLC = store.findLC(lnClass, inst)
+
+								if (!selectedLC) {
+									console.warn('LC and LP to be connected not found!')
+									return
+								}
+
+								if (!lcsToSelect.includes(selectedLC)) {
+									selectedLC.isLinked = true
+									lcsToSelect.push(selectedLC)
+								}
 								return connection
 							}
 

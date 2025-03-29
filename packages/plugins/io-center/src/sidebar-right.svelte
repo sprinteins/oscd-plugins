@@ -1,5 +1,8 @@
 <script lang="ts">
-    import type { LcTypes } from "./ui/components/canvas/types.canvas";
+	import type {
+		LcTypes,
+		LogicalConditioner,
+	} from "./ui/components/canvas/types.canvas";
 	import LcList from "./ui/components/right-bar/lc-list/lc-list.svelte";
 	import LpList from "./ui/components/right-bar/lp-list/lp-list.svelte";
 	import type {
@@ -15,20 +18,33 @@
 			number?: number,
 			numberOfLPDOPorts?: number,
 		) => void;
+		addLC: (
+			type: LcTypes,
+			number?: number,
+			numberOfLCIVPorts?: number,
+		) => void;
 		removeLP: (lpElement: LpElement) => void;
+		removeLC: (lc: LogicalConditioner) => void;
 		editLP: (LpElement: LpElement, name: string, desc: string) => void;
+		editLC: (lc: LogicalConditioner, newType: LcTypes, numberOfLCIVPorts?: number) => void;
 		hasLNodeType: (type: LpTypes | LcTypes) => boolean;
-		addLC: (type: LcTypes, number?: number, numberOfLCIVPorts?: number) => void;
-
 	};
 
 	type TabType = "LP" | "LC";
 
-	let { addLP, addLC, removeLP, editLP, hasLNodeType }: Props = $props();
+	let {
+		addLP,
+		addLC,
+		removeLP,
+		removeLC,
+		editLP,
+		editLC,
+		hasLNodeType,
+	}: Props = $props();
 
-	let activeTab = $state<TabType>("LP");
+	let activeTab = $state<TabType>("LC");
 
-	const tabs: TabType[] = ["LP", "LC"];
+	const tabs: TabType[] = ["LC", "LP"];
 
 	function handleTabChange(tabId: TabType) {
 		activeTab = tabId;
@@ -50,7 +66,7 @@
 	{#if activeTab === "LP"}
 		<LpList {addLP} {removeLP} {editLP} {hasLNodeType} />
 	{:else}
-		<LcList {addLC} {hasLNodeType}/>
+		<LcList {addLC} {removeLC} {editLC} {hasLNodeType} />
 	{/if}
 </sidebar-right>
 

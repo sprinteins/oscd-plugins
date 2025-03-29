@@ -20,6 +20,8 @@
     let timeoutId: ReturnType<typeof setTimeout>;
 
     const showTooltip = () => {
+        if (text === "") return;
+
         timeoutId = setTimeout(() => {
             isTooltipVisible = true;
         }, delayInMS);

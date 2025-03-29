@@ -4,10 +4,12 @@
     import { Plus } from "lucide-svelte";
     import { store } from "@/store.svelte";
     import SearchBar from "../../common/search-bar.svelte";
-    import type { LcTypes } from "../../canvas/types.canvas";
+    import type {
+        LcTypes,
+        LogicalConditioner,
+    } from "../../canvas/types.canvas";
     import LcElement from "./lc-element.svelte";
     import FilterButtons from "../../common/filter-buttons.svelte";
-    import CreateLpDialog from "../lp-list/create-lp-dialog.svelte";
     import AddLcDialog from "../../canvas/add-lc-dialog.svelte";
     import Tooltip from "../../common/tooltip.svelte";
 
@@ -17,10 +19,16 @@
             number?: number,
             numberOfLCIVPorts?: number,
         ) => void;
+        removeLC: (lc: LogicalConditioner) => void;
+        editLC: (
+            lc: LogicalConditioner,
+            newType: LcTypes,
+            numberOfLCIVPorts?: number,
+        ) => void;
         hasLNodeType: (type: LcTypes) => boolean;
     };
 
-    let { addLC, hasLNodeType }: Props = $props();
+    let { addLC, removeLC, editLC, hasLNodeType }: Props = $props();
 
     let searchTerm = $state("");
 
@@ -42,22 +50,24 @@
     );
 
     let showDialog = $state(false);
+
+    function getTooltipText() {
+        return !store.selectedDataObject || !store.selectedIED
+            ? "Select an IED and a Data Object first."
+            : "";
+    }
 </script>
 
 <div class="py-6 pr-6" data-name="lp-list">
     <button
         onclick={() => (showDialog = true)}
-        class="add-button w-full"
+        class="add-button"
         disabled={!store.selectedIED || !store.selectedDataObject}
     >
         <Plus size={16} />
-        {#if !store.selectedIED || !store.selectedDataObject}
-            <Tooltip position="left" text="Select an IED and a Data Object first.">
-                <p>Add LC</p>
-            </Tooltip>
-        {:else}
+        <Tooltip position="left" text={getTooltipText()}>
             <p>Add LC</p>
-        {/if}
+        </Tooltip>
     </button>
 
     <AddLcDialog bind:isOpen={showDialog} {addLC} {hasLNodeType} />
@@ -78,7 +88,7 @@
             {#if (selectedTypeToShow === null || selectedTypeToShow === lcType) && filteredList.length > 0}
                 <p class="text-xl font-semibold pl-2 pt-3">{lcType}</p>
                 {#each filteredList.filter((item) => item.type === lcType) as lc (lc.id)}
-                    <LcElement {searchTerm} {lc} />
+                    <LcElement {searchTerm} {lc} {editLC} {removeLC} />
                 {/each}
             {/if}
         {/each}

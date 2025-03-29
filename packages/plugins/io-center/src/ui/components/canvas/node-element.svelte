@@ -1,7 +1,6 @@
 <script lang="ts">
   import {
     NODE_ELEMENT_TYPE,
-    PORTS_CONFIG_PER_TYPE,
   } from "@/headless/constants";
   import type {
     Connection,
@@ -29,7 +28,6 @@
       addConnection: (connection: Connection) => void,
     ) => void;
     addConnection: (connection: Connection) => void;
-    editLC?: (lcNode: NodeElementType, newType: LcTypes) => void;
     hasLNodeType?: (type: LcTypes) => boolean;
   };
 

@@ -27,7 +27,7 @@
 	import type {
 		Connection,
 		LcTypes,
-		NodeElement,
+		LogicalConditioner,
 	} from "./ui/components/canvas/types.canvas";
     import type { LpElement, LpTypes } from "./ui/components/right-bar/lp-list/types.lp-list";
     import SidebarRight from "./sidebar-right.svelte";
@@ -59,8 +59,12 @@
 		cmd.addLC(type, number, numberOfLCIVPorts);
 	}
 
-	function editLC(lcNode: NodeElement, newType: LcTypes) {
-		cmd.editLC(lcNode, newType);
+	function editLC(lc: LogicalConditioner, newType: LcTypes, numberOfLCIVPorts?: number) {
+		cmd.editLC(lc, newType, numberOfLCIVPorts);
+	}
+
+	function removeLC(lc: LogicalConditioner) {
+		cmd.removeLC(lc)
 	}
 
 	function addLP(
@@ -108,8 +112,6 @@
 		<SideBarLeft slot="sidebar-left" />
 		<CanvasArea
 			slot="content"
-			{addLC}
-			{editLC}
 			{hasLNodeType}
 			{addConnection}
 		/>
@@ -118,7 +120,9 @@
 			{addLP}
 			{addLC}
 			{removeLP}
+			{removeLC}
 			{editLP}
+			{editLC}
 			{hasLNodeType}
 		/>
 	</Layout>
