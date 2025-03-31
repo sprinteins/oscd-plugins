@@ -5,13 +5,14 @@ import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore, placeholderStore} from '@/stores'
 import type {Columns, SignalType} from '@/stores'
 import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list-element/types.signal-list'
+import type { ImageData } from '@/components/elements/image-element/types.image';
 
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
 
 
-function generatePdf(templateTitle: string , allBlocks: Element[]){
+async function generatePdf(templateTitle: string , allBlocks: Element[]){
     const doc = new jsPDF();
     const DEFAULT_FONT_SIZE = 10;
     doc.setFontSize(DEFAULT_FONT_SIZE);
@@ -27,7 +28,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
     const blockHandler: Record<ElementType, (block: Element) => void> = {
         text: handleRichTextEditorBlock,
-        image: () => {},
+        image: processImageForPdfGeneration,
         signalList: processSignalListForPdfGeneration,
         table: processTableForPdfGeneration,
     }
@@ -157,6 +158,59 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         doc.text(text, horizontalSpacing, marginTop);
         incrementVerticalPositionForNextLine();
     }
+
+    async function loadImage(base64: string): Promise<HTMLImageElement> {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                resolve(img);
+            }
+            img.onerror = (error) => reject(error);
+            img.src = base64;
+        });
+    }
+
+    function getImageScaleFactor(scale: string) {
+        switch(scale.toLowerCase()) {
+            case "small":
+                return 0.25;
+            case "medium":
+                return 0.5;
+            case "large":
+                return 1;
+            default:
+                return 0.25;
+        }
+    }
+
+    async function processImageForPdfGeneration(block: Element) {
+        const content = block.textContent;
+        if(!content) {
+            return;
+        }
+
+        const parsedContent = JSON.parse(content) as ImageData;
+        const imageSource = parsedContent.base64Data;
+        if(!imageSource) {
+            return;
+        }
+
+        const image = await loadImage(imageSource);
+        const format = content.split(";")[0].split("/")[1];
+
+        const maxWidth = 186;
+        const scaleFactor = getImageScaleFactor(parsedContent.scale);
+        
+        const aspectRatio = image.height / image.width;
+        
+        const width = scaleFactor * maxWidth;
+        const height = width * aspectRatio;
+
+        doc.addImage(imageSource, format.toUpperCase(), 10, marginTop, width, height);
+        
+        const padding = Math.round(height) + DEFAULT_LINE_HEIGHT;
+        incrementVerticalPositionForNextLine(padding);
+    }
     
     function processSignalListForPdfGeneration(block: Element){
         if(!block.textContent) {
@@ -190,6 +244,20 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         zipcelx(config)
     }
 
+    function allocateSpaceForRows(filledBody: string[][], newFilledBody: string[][]) {
+        for(let i = 0; i < filledBody.length; i++) {
+            let row = filledBody[i];
+
+            for(let j = 0; j < row.length; j++) {
+                let values = row[j].split(", ");
+
+                for(let k = 0; k < values.length; k++) {
+                    newFilledBody[k][j] = values[k].trim();
+                }
+            }
+        }
+    }
+
     function processTableForPdfGeneration(block: Element) {
         const content = block.textContent;
         if(!content) {
@@ -202,37 +270,65 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         const formattedHeader: string[][] = [data.map((row: string[]) => row[0])];
         const formattedBody: string[][] = [data.map((row: string[]) => row[1])];
 
-        const rows = data[0].length;
-        const tableHeight = rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT;
+        const filledBody = formattedBody.map((row) => row.map(cell => cell = placeholderStore.fillPlaceholder(cell)));
 
-        if (contentExceedsCurrentPage(tableHeight)) {
-            doc.addPage();
-            marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
+        let rows = data[0].length;
+        let maxNeededRows = rows;
+
+        filledBody[0].forEach(row => {
+            const entries = row.split(", ").length;
+            if(entries > maxNeededRows) {
+                maxNeededRows = entries;
+            }
+        });
+
+        let newFilledBody: string[][] = [];
+
+        if(maxNeededRows > rows) {
+            const columns = filledBody[0].length;
+
+            for(let rowIndex = 0; rowIndex < maxNeededRows; rowIndex++) {
+                const newColumn: string[] = new Array(columns).fill("");
+                newFilledBody.push(newColumn);
+            }
+
+            rows = maxNeededRows + 1;
+            allocateSpaceForRows(filledBody, newFilledBody);
         }
 
+        if(newFilledBody.length === 0) {
+            newFilledBody = filledBody;
+        }
+        
         autoTable(doc, {
             head: formattedHeader,
-            body: formattedBody,
+            body: newFilledBody,
             startY: marginTop,
             margin: {
                 left: 10
             },
-            styles: {
+            headStyles: {
                 fillColor: "black"
-            },
+            }
         });
 
-        incrementVerticalPositionForNextLine(tableHeight);
+        const tableHeight = (rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT);
+        if(contentExceedsCurrentPage(tableHeight)) {
+            doc.addPage();            
+            marginTop = INITIAL_UPPER_PAGE_COORDINATE;
+        } else {
+            incrementVerticalPositionForNextLine(tableHeight);
+        }
     }
 
     for(const block of allBlocks){
         const blockType = block.getAttribute('type') as ElementType;
         
         if(blockType && blockHandler[blockType]){
-            blockHandler[blockType](block);
+            await blockHandler[blockType](block);
         }
     }
-    
+
     doc.save(`${templateTitle}.pdf`);
 
     

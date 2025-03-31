@@ -10,6 +10,7 @@ import type {
 import type { Xml, Utils } from '@oscd-plugins/core-api/plugin/v1'
 import type { IEC61850 } from '@oscd-plugins/core-standard'
 
+export type AvailableColumn = keyof COLUMNS
 export type AvailableTypeFamily = keyof typeof TYPE_FAMILY
 export type AvailableRefFamily = keyof typeof REF_FAMILY
 export type AvailableImportedTypeFamily = (typeof ALLOWED_IMPORTED_TYPE)[number]

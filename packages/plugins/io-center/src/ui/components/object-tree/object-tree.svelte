@@ -37,7 +37,7 @@
 				id: ap.id,
 				name: ap.name,
 				type: NODE_TYPE.accessPoint,
-				isOpen: wasNodeAlreadyOpen(ap.id),
+				isOpen: true,
 				children: ap.children.map((ld) => {
 					return {
 						id: ld.id,

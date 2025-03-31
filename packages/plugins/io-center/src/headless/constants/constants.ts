@@ -1,5 +1,6 @@
 import type { ConnectionPort, LcTypes } from "@/ui/components/canvas/types.canvas"
-import type { LpTypes } from "@/ui/components/lp-list/types.lp-list"
+import type { FilterOptions } from "@/ui/components/common/types.common"
+import type { LpTypes } from "@/ui/components/right-bar/lp-list/types.lp-list"
 
 export const NODE_TYPE = {
     accessPoint: 'accessPoint',
@@ -144,3 +145,23 @@ export const ALLOWED_LC_FOR_CDC: Record<string, LcTypes[]> = {
 // TARGET_CDC: Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
 // Currently hard-coded per client request but in future we may make it dynamic and allow the user to fill the targetScd
 export const TARGET_CDC_TYPES = ['dps', 'sps', 'ins', 'ens']
+
+export const LP_LIST_FILTER_OPTIONS: FilterOptions = [
+    { label: "All LPs", values: { selectedType: null, linked: true, unlinked: true } },
+    { label: "Unlinked", values: { linked: false, unlinked: true } },
+    { label: "Linked", values: { linked: true, unlinked: false } },
+    ...Object.values(LP_TYPE).map((value) => ({
+        label: value,
+        values: { selectedType: value },
+    })),
+];
+
+export const LC_LIST_FILTER_OPTIONS: FilterOptions = [
+    { label: "All LCs", values: { selectedType: null, linked: true, unlinked: true } },
+    { label: "Unlinked", values: { linked: false, unlinked: true } },
+    { label: "Linked", values: { linked: true, unlinked: false } },
+    ...Object.values(LC_TYPE).map((value) => ({
+        label: value,
+        values: { selectedType: value },
+    })),
+];

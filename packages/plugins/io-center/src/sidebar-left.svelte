@@ -7,6 +7,7 @@
 	function onSelectIED(ied: IED) {
 		store.selectedIED = ied;
 		store.selectedDataObject = null;
+		store.selectedLogicalConditioners = [];
 		store.selectedLogicalPhysicals = [];
 	}
 </script>

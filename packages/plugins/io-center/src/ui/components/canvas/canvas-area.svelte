@@ -9,8 +9,6 @@
 		startDrawing,
 		stopDrawing,
 	} from "@/headless/utils";
-	import { Plus } from "lucide-svelte";
-	import AddLCDialog from "./add-lc-dialog.svelte";
 	import { store } from "../../../store.svelte";
 	import type {
 		Connection,
@@ -20,16 +18,12 @@
     import { onDestroy } from "svelte";
 
 	type Props = {
-		addLC: (type: LcTypes, number?: number, numberOfLCIVPorts?: number) => void;
-		editLC: (lcNode: NodeElementType, newType: LcTypes) => void;
 		hasLNodeType: (type: LcTypes) => boolean;
 		addConnection: (connection: Connection) => void;
 		removeConnection: (connection: Connection) => void;
 	};
 
-	const { addLC, editLC, hasLNodeType, addConnection, removeConnection }: Props = $props();
-
-	let isDialogOpen = $state(false);
+	const { hasLNodeType, addConnection, removeConnection }: Props = $props();
 
 	let selectedConnection: Connection | null = $state(null);
 
@@ -79,12 +73,7 @@
 			Data Objects
 		</div>
 		{#each canvasStore.dataObjects as node}
-			<NodeElement
-				{node}
-				{startDrawing}
-				{stopDrawing}
-				{addConnection}
-			/>
+			<NodeElement {node} {startDrawing} {stopDrawing} {addConnection} />
 		{/each}
 	</div>
 	<div
@@ -95,13 +84,6 @@
 			class="flex justify-center gap-2 font-mono bg-gray-300 w-full py-2 items-center"
 		>
 			Logical Conditioners
-			<button
-				class="bg-white rounded-sm p-1 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed"
-				onclick={() => (isDialogOpen = true)}
-				disabled={!store.selectedIED}
-			>
-				<Plus size={16} />
-			</button>
 		</div>
 		{#each canvasStore.logicalConditioners as node}
 			<NodeElement
@@ -111,7 +93,6 @@
 				{startDrawing}
 				{stopDrawing}
 				{addConnection}
-				{editLC}
 				{hasLNodeType}
 			/>
 		{/each}
@@ -160,8 +141,6 @@
 		/>
 	{/if}
 </svg>
-
-<AddLCDialog bind:isOpen={isDialogOpen} {addLC} {hasLNodeType} />
 
 <svelte:window onresize={redrawConnections} />
 

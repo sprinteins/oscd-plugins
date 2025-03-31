@@ -22,18 +22,15 @@
 
 	import type { Nullable } from "./types";
 	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
-	import LpList from "./ui/components/lp-list/lp-list.svelte";
 	import { store } from "./store.svelte";
 	import SideBarLeft from "./sidebar-left.svelte";
 	import type {
-		LpElement,
-		LpTypes,
-	} from "./ui/components/lp-list/types.lp-list";
-	import type {
 		Connection,
 		LcTypes,
-		NodeElement,
+		LogicalConditioner,
 	} from "./ui/components/canvas/types.canvas";
+    import type { LpElement, LpTypes } from "./ui/components/right-bar/lp-list/types.lp-list";
+    import SidebarRight from "./sidebar-right.svelte";
 
 	// props
 	const {
@@ -62,8 +59,12 @@
 		cmd.addLC(type, number, numberOfLCIVPorts);
 	}
 
-	function editLC(lcNode: NodeElement, newType: LcTypes) {
-		cmd.editLC(lcNode, newType);
+	function editLC(lc: LogicalConditioner, newType: LcTypes, numberOfLCIVPorts?: number) {
+		cmd.editLC(lc, newType, numberOfLCIVPorts);
+	}
+
+	function removeLC(lc: LogicalConditioner) {
+		cmd.removeLC(lc)
 	}
 
 	function addLP(
@@ -115,17 +116,18 @@
 		<SideBarLeft slot="sidebar-left" />
 		<CanvasArea
 			slot="content"
-			{addLC}
-			{editLC}
 			{hasLNodeType}
 			{addConnection}
 			{removeConnection}
 		/>
-		<LpList
+		<SidebarRight
 			slot="sidebar-right"
 			{addLP}
+			{addLC}
 			{removeLP}
+			{removeLC}
 			{editLP}
+			{editLC}
 			{hasLNodeType}
 		/>
 	</Layout>

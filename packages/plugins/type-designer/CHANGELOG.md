@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.1] - 31.03.2025
+
+### Fix
+
+- The allowed dropzone have been restricted to go along with the UI
+
+## [3.10.0] - 31.03.2025
+
+### Changed 
+
+- Container height ratio changed from 1:2 / 1:2 to 1:4 / 3:4
+- Drag'n'drop dropzone has been enhanced
+
+### Fixed 
+
+- importing `Function` opens the container in the right column if there is no type to import
+
 ## [3.9.0] - 27.03.2025
 
 ### Added 

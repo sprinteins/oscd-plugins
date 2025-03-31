@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { Info } from "lucide-svelte";
-
     type Props = {
         label: string;
         value?: string;
