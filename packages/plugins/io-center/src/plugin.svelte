@@ -15,24 +15,22 @@
 	import jsonPackage from "../package.json";
 	import { initPlugin } from "@oscd-plugins/core-ui-svelte";
 	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
+	import { SvelteToast } from "@zerodevx/svelte-toast";
 	import Layout from "./ui/layout.svelte";
 	import { useQuery } from "./query.svelte";
 	import { newCommand, type Command } from "./command.svelte";
 
 	import type { Nullable } from "./types";
 	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
-	import LpList from "./ui/components/lp-list/lp-list.svelte";
 	import { store } from "./store.svelte";
 	import SideBarLeft from "./sidebar-left.svelte";
 	import type {
-		LpElement,
-		LpTypes,
-	} from "./ui/components/lp-list/types.lp-list";
-	import type {
-    Connection,
+		Connection,
 		LcTypes,
-		NodeElement,
+		LogicalConditioner,
 	} from "./ui/components/canvas/types.canvas";
+    import type { LpElement, LpTypes } from "./ui/components/right-bar/lp-list/types.lp-list";
+    import SidebarRight from "./sidebar-right.svelte";
 
 	// props
 	const {
@@ -61,11 +59,21 @@
 		cmd.addLC(type, number, numberOfLCIVPorts);
 	}
 
-	function editLC(lcNode: NodeElement, newType: LcTypes) {
-		cmd.editLC(lcNode, newType);
+	function editLC(lc: LogicalConditioner, newType: LcTypes, numberOfLCIVPorts?: number) {
+		cmd.editLC(lc, newType, numberOfLCIVPorts);
 	}
 
-	function addLP(type: LpTypes, name: string, desc: string, number?: number, numberOfLPDOPorts?: number) {
+	function removeLC(lc: LogicalConditioner) {
+		cmd.removeLC(lc)
+	}
+
+	function addLP(
+		type: LpTypes,
+		name: string,
+		desc: string,
+		number?: number,
+		numberOfLPDOPorts?: number,
+	) {
 		cmd.addLP(type, name, desc, number, numberOfLPDOPorts);
 	}
 
@@ -102,16 +110,35 @@
 >
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
-		<CanvasArea slot="content" {addLC} {editLC} {hasLNodeType} {addConnection} />
-		<LpList
+		<CanvasArea
+			slot="content"
+			{hasLNodeType}
+			{addConnection}
+		/>
+		<SidebarRight
 			slot="sidebar-right"
 			{addLP}
+			{addLC}
 			{removeLP}
+			{removeLC}
 			{editLP}
+			{editLC}
 			{hasLNodeType}
 		/>
 	</Layout>
 </main>
 
+<div class="toast-wrap">
+	<SvelteToast />
+</div>
+
 <style>
+	.toast-wrap {
+		display: contents;
+		font-family: Roboto, sans-serif;
+		@apply text-sm;
+	}
+	.toast-wrap :global(strong) {
+		font-weight: 600;
+	}
 </style>

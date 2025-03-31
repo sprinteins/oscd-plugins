@@ -45,6 +45,8 @@
 		@apply h-full p-0 m-0;
 	}
 	sidebar-right {
+		display: flex;
+		flex-direction: column;
 		grid-area: sidebar-right;
 		@apply h-full p-0 m-0;
 	}

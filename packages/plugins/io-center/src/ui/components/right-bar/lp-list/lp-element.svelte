@@ -1,9 +1,9 @@
 <script lang="ts">
     import type { LpElement } from "./types.lp-list";
-    import { canvasStore } from "../canvas/canvas-store.svelte";
     import { Edit, Square, SquareCheck } from "lucide-svelte";
     import EditLpDialog from "./edit-lp-dialog.svelte";
-    import { store } from "../../../store.svelte";
+    import { store } from "@/store.svelte";
+    import Tooltip from "../../common/tooltip.svelte";
 
     type Props = {
         lpElement: LpElement;
@@ -16,42 +16,35 @@
 
     const { name, instance } = lpElement;
 
+    let showDialog = $state(false);
+    const isSelected = $derived(store.isLPSelected(lpElement));
+
     let isSearched = $derived(
         searchTerm !== "" &&
             lpElement.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
-    let isSelected = $derived(
-        store.selectedLogicalPhysicals.some((item) => item.id === lpElement.id),
-    );
-
-    let showDialog = $state(false);
-
     function addLpElementToCanvas(element: LpElement) {
-        if (
-            store.selectedLogicalPhysicals.some(
-                (item) => item.id === element.id,
-            )
-        ) {
-            store.selectedLogicalPhysicals =
-                store.selectedLogicalPhysicals.filter(
-                    (item) => item.id !== element.id,
-                );
-            return;
-        }
+        store.toggleLpElementSelection(element);
+    }
 
-        store.selectedLogicalPhysicals.push(lpElement);
+    function getTooltipText() {
+        return lpElement.isLinked ? "Can not edit a linked LP!" : "";
     }
 </script>
 
 <div
+    data-name="lp-element"
     class={{
         "lp-element": true,
         selected: isSelected,
         searched: isSearched,
     }}
 >
-    <button onclick={() => addLpElementToCanvas(lpElement)}>
+    <button
+        disabled={store.connectionExistsFor(lpElement)}
+        onclick={() => addLpElementToCanvas(lpElement)}
+    >
         {#if isSelected}
             <SquareCheck size={16} />
         {:else}
@@ -64,8 +57,11 @@
     <button
         class="ml-auto mr-2 show-on-hover"
         onclick={() => (showDialog = true)}
+        disabled={lpElement.isLinked}
     >
-        <Edit size={16} />
+        <Tooltip position="left" text={getTooltipText()}>
+            <Edit size={16} />
+        </Tooltip>
     </button>
 </div>
 

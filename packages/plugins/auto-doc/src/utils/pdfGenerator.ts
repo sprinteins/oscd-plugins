@@ -79,10 +79,11 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
     }
 
     function handleText(text: string, fontSize: number, fontStyle: "normal" | "bold" | "italic", indent = 0 ){
+        const textWithPlaceholder = placeholderStore.fillPlaceholder(text);
         doc.setFontSize(fontSize);
         doc.setFont("helvetica", fontStyle);
 
-        const wrappedText : string [] = doc.splitTextToSize(text ?? "", pageWidth - (35 - indent));
+        const wrappedText : string [] = doc.splitTextToSize(textWithPlaceholder ?? "", pageWidth - (35 - indent));
 
         for(const line of wrappedText){
             if (contentExceedsCurrentPage()) {

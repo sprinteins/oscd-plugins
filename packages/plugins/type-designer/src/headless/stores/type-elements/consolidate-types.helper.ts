@@ -14,6 +14,8 @@ import {
 	TYPE_ID_ATTRIBUTE,
 	REF_FAMILY_TO_TYPE_FAMILY_MAP
 } from '@/headless/constants'
+// HELPERS
+import { getChildrenOptions } from '@/headless/stores/type-elements/children-options.helper'
 // TYPES
 import type {
 	AvailableRefFamily,
@@ -176,7 +178,11 @@ export function getAndMapTypeElements<
 							params.family,
 							elementId,
 							params.rootElement
-						)
+						),
+						childrenOptions: getChildrenOptions({
+							family: params.family,
+							element
+						})
 					},
 					refs: getRefs(element)
 				} as TypeElement<GenericFamily>

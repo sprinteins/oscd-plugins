@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { Info } from "lucide-svelte";
-
     type Props = {
         label: string;
-        value: string;
+        value?: string;
         options: string[];
         helperText?: string;
         helperTextDetails?: string;
+		name?: string;
     };
 
     let {
@@ -15,6 +14,7 @@
         options,
         helperText,
         helperTextDetails,
+		...restProps
     }: Props = $props();
 </script>
 
@@ -22,7 +22,7 @@
     <label for="select">
         {label}
     </label>
-    <select id="select" bind:value>
+    <select id="select" bind:value {...restProps}>
         {#each options as option}
             <option value={option}>{option}</option>
         {/each}

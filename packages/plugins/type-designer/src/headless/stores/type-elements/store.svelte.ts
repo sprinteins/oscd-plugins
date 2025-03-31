@@ -9,17 +9,14 @@ import {
 } from '@/headless/constants'
 // HELPERS
 import { getAndMapTypeElements } from './consolidate-types.helper'
-import {
-	createNewType,
-	duplicateType,
-	deleteTypeAndRefs
-} from './type-crud-operation.helper'
+import { createNewType, deleteTypeAndRefs } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
 import {
 	getTypeNextOccurrence,
 	getElementsWithSameNameBase
 } from './type-naming.helper'
 import { getFilteredTypeElementByIds } from './filter.helper'
+import { duplicateElement } from '@/headless/stores/type-elements/common-crud-operation.helper'
 // TYPES
 import type { TypeElementsByFamily, Columns } from '@/headless/stores'
 
@@ -147,10 +144,10 @@ class UseTypeElementsStore {
 	})
 
 	//====== PROXY TO HELPERS ======//
-
+	// common
+	duplicateElement = duplicateElement
 	// type
 	createNewType = createNewType
-	duplicateType = duplicateType
 	deleteTypeAndRefs = deleteTypeAndRefs
 	// ref
 	createNewRef = createNewRef
