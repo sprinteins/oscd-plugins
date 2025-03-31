@@ -1,11 +1,15 @@
 <script lang="ts">
-import { onMount } from 'svelte'
 // CORE
 import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 // STORE
 import { dndStore, typeElementsStore, importsStore } from '@/headless/stores'
 // CONSTANTS
-import { TYPE_FAMILY, ALLOWED_IMPORTED_TYPE } from '@/headless/constants'
+import {
+	TYPE_FAMILY,
+	ALLOWED_IMPORTED_TYPE,
+	REF_FAMILY,
+	ALLOWED_TARGETS_BY_REF_FAMILY
+} from '@/headless/constants'
 // COMPONENTS
 import { slide } from 'svelte/transition'
 import { Card, Collapsible, Badge } from '@oscd-plugins/core-ui-svelte'
@@ -58,6 +62,23 @@ const hasRefs = $derived.by(() => {
 	)
 })
 
+const isAllowedToDrop = $derived.by(() => {
+	if (dndStore.currentSourceRefFamily)
+		return ALLOWED_TARGETS_BY_REF_FAMILY[
+			dndStore.currentSourceRefFamily
+		].some(
+			(allowedTargetFamily) => allowedTargetFamily === typeElementFamily
+		)
+	// is undefined for template functions (not instantiated)
+	if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function)
+		return (
+			typeElementFamily === TYPE_FAMILY.bay ||
+			typeElementFamily === TYPE_FAMILY.generalEquipment ||
+			typeElementFamily === TYPE_FAMILY.conductingEquipment
+		)
+	return false
+})
+
 //======= FUNCTIONS =======//
 
 function getCurrentRefFullLabel(refWrapper: RefElement<AvailableRefFamily>) {
@@ -102,12 +123,13 @@ function getBadgeLabel(refFamily: AvailableRefFamily) {
 
 const handleDragOver = (event: DragEvent) => {
 	event.preventDefault()
+	if (!isAllowedToDrop) return
 	isCurrentDropTarget = true
 }
 
 const handleOpenCollapsible = (event: DragEvent) => {
 	event.preventDefault()
-	if (isLNodeType) return
+	if (isLNodeType || !isAllowedToDrop) return
 
 	if (!hoverTimeout)
 		hoverTimeout = setTimeout(() => {
@@ -119,7 +141,7 @@ const handleOpenCollapsible = (event: DragEvent) => {
 
 const handleCloseCollapsible = (event: DragEvent) => {
 	event.preventDefault()
-	if (isLNodeType) return
+	if (isLNodeType || !isAllowedToDrop) return
 
 	const dropZone = event.currentTarget as HTMLElement
 	if (!dropZone?.contains(event.relatedTarget as Node | null)) {
@@ -134,28 +156,36 @@ const handleCloseCollapsible = (event: DragEvent) => {
 }
 
 const handleDragLeave = (event: DragEvent) => {
+	if (!isAllowedToDrop) return
 	const dropZone = event.currentTarget as HTMLElement
 	if (!dropZone?.contains(event.relatedTarget as Node | null)) {
 		isCurrentDropTarget = false
 		isElementCardOpen = false
 	}
 }
+
+//======= EFFECTS =======//
+
+$effect(() => {
+	if (!hasRefs) isElementCardOpen = false
+})
 </script>
 
 <Collapsible.Root 
 	bind:open={isElementCardOpen} 
-	class={`space-y-1 mb-2`}
+	class="space-y-1 mb-2"
 	ondragover={handleOpenCollapsible}
 	ondragleave={handleCloseCollapsible}
 >
 	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {isImportContainer} />
 
 
-	<Collapsible.Content class="space-y-1 flex flex-col items-end relative" 
+	<Collapsible.Content class="space-y-1 flex flex-col items-end relative"
 		ondragover={handleDragOver}
 		ondragleave={handleDragLeave}
 		ondrop={(event) => {
 			event.preventDefault();
+			if(!isAllowedToDrop) return
 			isCurrentDropTarget = false;
 			dndStore.handleDrop({
 				parentTypeWrapper: typeElement.element,
@@ -167,11 +197,13 @@ const handleDragLeave = (event: DragEvent) => {
 			{#if collapsibleContentOpen}
 				<div {...props} transition:slide={{ duration: 100 }}  >
 					<!-- DND DROP ZONE START -->
-					<div 
-						class={`${isCurrentDropTarget ? 'flex' : 'hidden'} dropzone`}
-					>
-						<CirclePlus class="size-16 text-primary stroke-2" />
-					</div>
+					{#if isAllowedToDrop}
+						<div 
+							class={`${isCurrentDropTarget ? 'flex' : 'hidden'} dropzone`}
+						>
+							<CirclePlus class="size-16 text-primary stroke-2" />
+						</div>
+					{/if}
 					<!-- DND DROP ZONE END -->
 
 					<!-- REFS CARDS START -->
