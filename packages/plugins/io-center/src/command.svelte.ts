@@ -367,10 +367,92 @@ export class Command {
 	public removeConnection(connection: Connection) {
 		if (!store.doc) { throw new Error('Doc not found!') }
 
+		const host = this.requireHost()
+
 		const storedConnection = store.connections.find((c) => c === connection);
 
-		// TODO: continue with the connection removal and call edit api
+		if (!storedConnection) {
+			console.warn(`Connection (id: ${connection.id}) not found!`)
+			return
+		}
 
+		//DO to LC connection
+		if (storedConnection.from.type === NODE_ELEMENT_TYPE.DO) {
+			const [lcLnClass, lcInst] = connection.to.name.replace(/-left|-right/g, '').split("-")
+
+			const parentDOI = store.doc.querySelector(`LN[lnClass="${lcLnClass}"][inst="${lcInst}"] > DOI[name="${storedConnection.to.port.name}"][desc="output"]`)
+
+			if (!parentDOI) {
+				console.warn(`Parent DOI for connection (id: ${connection.id}) not found in doc!`)
+				return
+			}
+
+			const connectionElement = parentDOI.querySelector(`LNRef[refDO="${storedConnection.from.port.name}"]`)
+
+			if (!connectionElement) {
+				console.warn(`connection (id: ${connection.id}) not found in doc!`)
+				return
+			}
+
+			//Delete the LNRef (connection)
+			createAndDispatchEditEvent({
+				host,
+				edit: {
+					node: connectionElement
+				}
+			})
+
+			const remainingLNRefNumber = Array.from(parentDOI.querySelectorAll("LNRef")).length
+
+			if (remainingLNRefNumber === 0) {
+				//Delete parent DOI if no LNRef (connection) within it
+				createAndDispatchEditEvent({
+					host,
+					edit: {
+						node: parentDOI
+					}
+				})
+			}
+		}
+
+		//LC to LP connection
+		if (storedConnection.from.type === NODE_ELEMENT_TYPE.LC) {
+			const [lcLnClass, lcInst] = connection.from.name.replace(/-left|-right/g, '').split("-")
+
+			const parentDOI = store.doc.querySelector(`LN[lnClass="${lcLnClass}"][inst="${lcInst}"] > DOI[name="${storedConnection.from.port.name}"][desc="input"]`)
+
+			if (!parentDOI) {
+				console.warn(`Parent DOI for connection (id: ${connection.id}) not found in doc!`)
+				return
+			}
+
+			const connectionElement = parentDOI.querySelector(`LNRef[refDO="${storedConnection.to.port.name}"]`)
+
+			if (!connectionElement) {
+				console.warn(`connection (id: ${connection.id}) not found in doc!`)
+				return
+			}
+
+			//Delete the LNRef (connection)
+			createAndDispatchEditEvent({
+				host,
+				edit: {
+					node: connectionElement
+				}
+			})
+
+			const remainingLNRefNumber = Array.from(parentDOI.querySelectorAll("LNRef")).length
+
+			if (remainingLNRefNumber === 0) {
+				//Delete parent DOI if no LNRef (connection) within it
+				createAndDispatchEditEvent({
+					host,
+					edit: {
+						node: parentDOI
+					}
+				})
+			}
+		}
 	}
 
 	private requireSelectedIED(): Element {
