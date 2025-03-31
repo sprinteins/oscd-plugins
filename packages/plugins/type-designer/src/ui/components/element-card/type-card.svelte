@@ -105,7 +105,7 @@ function getBadgeLabel(refFamily: string | undefined) {
 </script>
 
 <Card.Root 
-	class={`mb-2 ${sidebarStore.currentElementTypeKey === typeElementKey ? 'border-primary ring ring-primary ring-offset-2 ring-offset-primary-foreground' : ''}`}
+	class={`mb-1 ${sidebarStore.currentElementTypeKey === typeElementKey ? 'border-primary ring ring-primary ring-offset-2 ring-offset-primary-foreground' : ''}`}
 	onclick={handleCardClick}
 	draggable={isDraggable} 
 	ondragstart={(event) => dndStore.handleDragStart({

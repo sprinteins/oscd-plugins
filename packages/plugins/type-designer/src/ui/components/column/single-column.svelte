@@ -18,7 +18,13 @@ import type {
 	Column,
 	TypeElementByIds
 } from '@/headless/stores'
-import { ALLOWED_TARGETS_BY_REF_FAMILY, COLUMN_KEY_TO_TYPE_FAMILY, TYPE_FAMILY } from '@/headless/constants';
+import {
+	ALLOWED_TARGETS_BY_REF_FAMILY,
+	COLUMN_KEY_TO_TYPE_FAMILY,
+	ALLOWED_TARGETS_BY_TYPE_FAMILY,
+	TYPE_FAMILY
+} from '@/headless/constants'
+import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 
 //======= INITIALIZATION =======//
 
@@ -30,6 +36,8 @@ const {
 	columnKey: keyof Columns
 	column: Column<AvailableTypeFamily>
 } = $props()
+
+//====== DERIVED STATES ======//
 
 const groupedTypeElementsEntries = $derived(
 	Object.entries(column.groupedTypeElements) as [
@@ -54,6 +62,7 @@ const groupedImportedTypeElementsEntries = $derived.by(() => {
 			SortedImportedTypeElements<AvailableImportedTypeFamily>
 		][]
 })
+
 const hasImportedTypeElements = $derived.by(() => {
 	return groupedImportedTypeElementsEntries?.some(
 		([, importedTypeElements]) =>
@@ -62,35 +71,52 @@ const hasImportedTypeElements = $derived.by(() => {
 	)
 })
 
+const shouldResizeContainerToHalf = $derived(
+	hasImportedTypeElements &&
+		(columnKey === 'functionType' || columnKey === 'lNodeType') &&
+		importsStore.isContainerOpen[columnKey]
+)
+
 const capitalizedColumnKey = $derived(
 	columnKey.charAt(0).toUpperCase() + columnKey.slice(1)
 )
 
 const isColumnDisabled = $derived.by(() => {
-    if (!dndStore.isDragging) return false;
-    
-    // Ref
-    if (dndStore.currentSourceRefFamily) {
-        return !ALLOWED_TARGETS_BY_REF_FAMILY[dndStore.currentSourceRefFamily]
-            .some(allowedFamily => {
-                if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
-                    return COLUMN_KEY_TO_TYPE_FAMILY[columnKey].includes(allowedFamily);
-                }
-                return COLUMN_KEY_TO_TYPE_FAMILY[columnKey] === allowedFamily;
-            });
-    }
-    
-    // Funktion
-    if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function) {
-        const allowedFamilies = [TYPE_FAMILY.bay, TYPE_FAMILY.generalEquipment, TYPE_FAMILY.conductingEquipment];
-        if (Array.isArray(COLUMN_KEY_TO_TYPE_FAMILY[columnKey])) {
-            return !COLUMN_KEY_TO_TYPE_FAMILY[columnKey].some(family => allowedFamilies.includes(family));
-        }
-        return !allowedFamilies.includes(COLUMN_KEY_TO_TYPE_FAMILY[columnKey]);
-    }
-    
-    return true;
-});
+	if (!dndStore.isDragging) return false
+
+	const currentColumnTypeFamily = Array.isArray(
+		COLUMN_KEY_TO_TYPE_FAMILY[columnKey]
+	)
+		? COLUMN_KEY_TO_TYPE_FAMILY[columnKey]
+		: [COLUMN_KEY_TO_TYPE_FAMILY[columnKey]]
+
+	// Ref
+	if (dndStore.currentSourceRefFamily) {
+		const allowedTypeFamilies =
+			ALLOWED_TARGETS_BY_REF_FAMILY[dndStore.currentSourceRefFamily]
+
+		const isAllowed = allowedTypeFamilies.some((allowedTypeFamily) => {
+			return currentColumnTypeFamily.some(
+				(family) => family === allowedTypeFamily
+			)
+		})
+
+		return !isAllowed
+	}
+
+	// Function template - not yet instantiated
+	if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function) {
+		const allowedTypeFamilies =
+			ALLOWED_TARGETS_BY_TYPE_FAMILY[TYPE_FAMILY.function]
+		const isAllowed = currentColumnTypeFamily.some((typeFamily) =>
+			allowedTypeFamilies.includes(typeFamily)
+		)
+
+		return !isAllowed
+	}
+})
+
+$inspect(importsStore.loadedLNodeType.elementByIds)
 </script>
 
 <Card.Root class="{columnKey === 'lNodeType' ? 'pb-4' : ''} flex-1 flex flex-col min-h-full {isColumnDisabled ? 'opacity-40' : ''}" >
@@ -110,17 +136,17 @@ const isColumnDisabled = $derived.by(() => {
 
 	<Card.Content class={`${hasTypeElements ? "pb-4" : "pb-0"} px-4 pt-4 overflow-y-hidden h-full`}>
 
-		{#if groupedImportedTypeElementsEntries?.length && hasImportedTypeElements && (columnKey === 'functionType' || columnKey === 'lNodeType') && importsStore.isContainerOpen[columnKey]}
+		{#if groupedImportedTypeElementsEntries?.length && (columnKey === 'functionType' || columnKey === 'lNodeType') && importsStore.isContainerOpen[columnKey]}
 			<div
 				transition:slide
-				class={`${hasTypeElements ? "h-1/2 pb-2" : "h-full pb-0"} px-2 pt-2 -mx-2 -mt-2 mb-2 overflow-hidden`}
+				class={`${hasTypeElements ? "h-3/4 pb-2" : "h-full pb-0"} px-2 pt-2 -mx-2 -mt-2 mb-2 overflow-hidden`}
 			>
 				<ImportContainer {columnKey} {groupedImportedTypeElementsEntries}/>
 			</div>
 		{/if}	
 		
 		{#if hasTypeElements}
-			<div class={`${hasImportedTypeElements ? "h-1/2" : "h-full"} overflow-y-auto p-2`}>
+			<div class={`${shouldResizeContainerToHalf ? "h-1/4" : "h-full"} overflow-y-auto p-2`}>
 				{#each groupedTypeElementsEntries as [typeElementFamily, typeElements]}
 					{#each Object.entries(typeElements) as [typeElementKey, typeElement]}
 						<CardCollapsibleWrapper {typeElementKey} {typeElement} {typeElementFamily}/>
