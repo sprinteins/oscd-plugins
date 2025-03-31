@@ -255,7 +255,6 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
             }
         });
 
-        // TODO: When table gets too long and breaks, the margin at the bottom is incorrect
         const tableHeight = (rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT);
         if(contentExceedsCurrentPage(tableHeight)) {
             doc.addPage();            
