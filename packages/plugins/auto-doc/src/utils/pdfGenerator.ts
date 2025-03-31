@@ -202,27 +202,66 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         const formattedHeader: string[][] = [data.map((row: string[]) => row[0])];
         const formattedBody: string[][] = [data.map((row: string[]) => row[1])];
 
-        const rows = data[0].length;
-        const tableHeight = rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT;
+        const filledBody = formattedBody.map((row) => row.map(cell => cell = placeholderStore.fillPlaceholder(cell)));
 
-        if (contentExceedsCurrentPage(tableHeight)) {
-            doc.addPage();
-            marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
+        let rows = data[0].length;
+        let maxNeededRows = rows;
+
+        filledBody[0].forEach(row => {
+            const entries = row.split(", ").length;
+            if(entries > maxNeededRows) {
+                maxNeededRows = entries;
+            }
+        });
+
+        let newFilledBody: string[][] = [];
+
+        if(maxNeededRows > rows) {
+            const columns = filledBody[0].length;
+
+            for(let rowIndex = 0; rowIndex < maxNeededRows; rowIndex++) {
+                const newColumn: string[] = new Array(columns).fill("");
+                newFilledBody.push(newColumn);
+            }
+
+            rows = maxNeededRows + 1;
+
+            for(let i = 0; i < filledBody.length; i++) {
+                let row = filledBody[i];
+
+                for(let j = 0; j < row.length; j++) {
+                    let values = row[j].split(", ");
+
+                    for(let k = 0; k < values.length; k++) {
+                        newFilledBody[k][j] = values[k].trim();
+                    }
+                }
+            }
+        }
+
+        if(newFilledBody.length === 0) {
+            newFilledBody = filledBody;
         }
 
         autoTable(doc, {
             head: formattedHeader,
-            body: formattedBody,
+            body: newFilledBody,
             startY: marginTop,
             margin: {
                 left: 10
             },
-            styles: {
+            headStyles: {
                 fillColor: "black"
-            },
+            }
         });
 
-        incrementVerticalPositionForNextLine(tableHeight);
+        const tableHeight = (rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT);
+        if(contentExceedsCurrentPage(tableHeight)) {
+            doc.addPage();            
+            marginTop = INITIAL_UPPER_PAGE_COORDINATE;
+        } else {
+            incrementVerticalPositionForNextLine(tableHeight);
+        }
     }
 
     for(const block of allBlocks){
