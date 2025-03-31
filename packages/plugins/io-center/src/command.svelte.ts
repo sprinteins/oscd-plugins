@@ -36,11 +36,11 @@ export class Command {
 		if (!number) {
 			const attributes = {
 				"xmlns": "",
-				"desc": desc || null,
+				"desc": desc || "",
 				"lnClass": type,
 				"inst": `${currentLPNumber + 1}`,
 				"lnType": name || type,
-				"numberOfLPDOPorts": `${numberOfLPDOPorts}` || "",
+				...(numberOfLPDOPorts && { "numberOfLPDOPorts": `${numberOfLPDOPorts}` || "" })
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -51,11 +51,11 @@ export class Command {
 		for (let i = 1; i <= number; i++) {
 			const attributes = {
 				"xmlns": "",
-				"desc": desc || null,
+				"desc": desc || "",
 				"lnClass": type,
 				"inst": `${currentLPNumber + i}`,
 				"lnType": name || type,
-				"numberOfLPDOPorts": `${numberOfLPDOPorts}` || "",
+				...(numberOfLPDOPorts && { "numberOfLPDOPorts": `${numberOfLPDOPorts}` || "" }),
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -77,7 +77,7 @@ export class Command {
 			host,
 			edit: {
 				element: lpToEdit,
-				attributes: { "lnType": `${name || lpToEdit.getAttribute("lnType")}`, "desc": `${desc || lpToEdit.getAttribute("desc")}` },
+				attributes: { "lnType": `${name || lpToEdit.getAttribute("lnType")}`, "desc": `${desc || lpToEdit.getAttribute("desc") || ""}` },
 				attributesNS: {}
 			}
 		})
@@ -138,7 +138,7 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLCNumber + 1}`,
 				"lnType": type,
-				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
+				...(numberOfLCIVPorts && { "numberOfLCIVPorts": `${numberOfLCIVPorts}` || "" })
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -152,7 +152,7 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLCNumber + i}`,
 				"lnType": type,
-				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
+				...(numberOfLCIVPorts && { "numberOfLCIVPorts": `${numberOfLCIVPorts}` || "" })
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -311,22 +311,26 @@ export class Command {
 			? `${connection.from.port.name}${connection.from.port.index ?? ""}`
 			: `${connection.to.port.name}${connection.to.port.index ?? ""}`
 
-		createElement({
-			host,
-			doc: store.doc,
-			tagName: "DOI",
-			attributes: {
-				"name": doiName,
-				"desc": connectionType
-			},
-			parent: connectorLC,
-			reference: null
-		})
-
-		const doi = connectorLC.querySelector(`DOI[name="${doiName}"][desc="${connectionType}"]`)
+		let doi = connectorLC.querySelector(`DOI[name="${doiName}"][desc="${connectionType}"]`)
 
 		if (!doi) {
-			throw new Error(`DOI[name="${doiName}",desc="${connectionType}"] not created!`)
+			createElement({
+				host,
+				doc: store.doc,
+				tagName: "DOI",
+				attributes: {
+					"name": doiName,
+					"desc": connectionType
+				},
+				parent: connectorLC,
+				reference: null
+			})
+		}
+
+		doi = connectorLC.querySelector(`DOI[name="${doiName}"][desc="${connectionType}"]`)
+
+		if (!doi) {
+			throw new Error(`DOI ${doiName} still not created!`)
 		}
 
 		if (connectionType === "input") {
@@ -361,6 +365,97 @@ export class Command {
 				parent: doi,
 				reference: null
 			})
+		}
+	}
+
+	public removeConnection(connection: Connection) {
+		if (!store.doc) { throw new Error('Doc not found!') }
+
+		const host = this.requireHost()
+
+		const storedConnection = store.connections.find((c) => c === connection);
+
+		if (!storedConnection) {
+			console.warn(`Connection (id: ${connection.id}) not found!`)
+			return
+		}
+
+		//DO to LC connection
+		if (storedConnection.from.type === NODE_ELEMENT_TYPE.DO) {
+			const [lcLnClass, lcInst] = connection.to.name.replace(/-left|-right/g, '').split("-")
+
+			const parentDOI = store.doc.querySelector(`LN[lnClass="${lcLnClass}"][inst="${lcInst}"] > DOI[name="${storedConnection.to.port.name}"][desc="output"]`)
+
+			if (!parentDOI) {
+				console.warn(`Parent DOI for connection (id: ${connection.id}) not found in doc!`)
+				return
+			}
+
+			const connectionElement = parentDOI.querySelector(`LNRef[refDO="${storedConnection.from.port.name}"]`)
+
+			if (!connectionElement) {
+				console.warn(`connection (id: ${connection.id}) not found in doc!`)
+				return
+			}
+
+			//Delete the LNRef (connection)
+			createAndDispatchEditEvent({
+				host,
+				edit: {
+					node: connectionElement
+				}
+			})
+
+			const remainingLNRefNumber = Array.from(parentDOI.querySelectorAll("LNRef")).length
+
+			if (remainingLNRefNumber === 0) {
+				//Delete parent DOI if no LNRef (connection) within it
+				createAndDispatchEditEvent({
+					host,
+					edit: {
+						node: parentDOI
+					}
+				})
+			}
+		}
+
+		//LC to LP connection
+		if (storedConnection.from.type === NODE_ELEMENT_TYPE.LC) {
+			const [lcLnClass, lcInst] = connection.from.name.replace(/-left|-right/g, '').split("-")
+
+			const parentDOI = store.doc.querySelector(`LN[lnClass="${lcLnClass}"][inst="${lcInst}"] > DOI[name="${storedConnection.from.port.name}"][desc="input"]`)
+
+			if (!parentDOI) {
+				console.warn(`Parent DOI for connection (id: ${connection.id}) not found in doc!`)
+				return
+			}
+
+			const connectionElement = parentDOI.querySelector(`LNRef[refDO="${storedConnection.to.port.name}"]`)
+
+			if (!connectionElement) {
+				console.warn(`connection (id: ${connection.id}) not found in doc!`)
+				return
+			}
+
+			//Delete the LNRef (connection)
+			createAndDispatchEditEvent({
+				host,
+				edit: {
+					node: connectionElement
+				}
+			})
+
+			const remainingLNRefNumber = Array.from(parentDOI.querySelectorAll("LNRef")).length
+
+			if (remainingLNRefNumber === 0) {
+				//Delete parent DOI if no LNRef (connection) within it
+				createAndDispatchEditEvent({
+					host,
+					edit: {
+						node: parentDOI
+					}
+				})
+			}
 		}
 	}
 

@@ -92,6 +92,10 @@
 	function addConnection(connection: Connection) {
 		cmd.addConnection(connection);
 	}
+
+	function removeConnection(connection: Connection) {
+		cmd.removeConnection(connection);
+	}
 </script>
 
 <main
@@ -114,6 +118,7 @@
 			slot="content"
 			{hasLNodeType}
 			{addConnection}
+			{removeConnection}
 		/>
 		<SidebarRight
 			slot="sidebar-right"

@@ -15,13 +15,17 @@
 		LcTypes,
 		NodeElement as NodeElementType,
 	} from "./types.canvas";
+	import { onDestroy } from "svelte";
 
 	type Props = {
 		hasLNodeType: (type: LcTypes) => boolean;
 		addConnection: (connection: Connection) => void;
+		removeConnection: (connection: Connection) => void;
 	};
 
-	const { hasLNodeType, addConnection }: Props = $props();
+	const { hasLNodeType, addConnection, removeConnection }: Props = $props();
+
+	let selectedConnection: Connection | null = $state(null);
 
 	async function getCurrentCoordinates(connection: Connection) {
 		const fromXToY = `${(await getCoordinates(connection.from)).x},${(await getCoordinates(connection.from)).y}`;
@@ -30,6 +34,29 @@
 		const toXToY = `${(await getCoordinates(connection.to)).x},${(await getCoordinates(connection.to)).y}`;
 		return `M ${fromXToY} C ${fromXToXFromY} ${fromXToXToY} ${toXToY}`;
 	}
+
+	async function setSelectedConnection(
+		connection: Connection,
+		evt: MouseEvent,
+	) {
+		evt.stopPropagation();
+		selectedConnection = connection;
+	}
+
+	function handleKeyPress(event: KeyboardEvent) {
+		if (event.key === "Backspace" && selectedConnection) {
+			console.log("About to delete connection: ", selectedConnection);
+
+			removeConnection(selectedConnection);
+			selectedConnection = null;
+		}
+	}
+
+	window.addEventListener("keydown", handleKeyPress);
+
+	onDestroy(() => {
+		window.removeEventListener("keydown", handleKeyPress);
+	});
 </script>
 
 <div
@@ -88,13 +115,25 @@
 	</div>
 </div>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <svg
 	class="absolute top-0 left-0 w-full h-full pointer-events-none"
 	bind:this={canvasStore.svgElement}
+	onclick={() => {
+		selectedConnection = null;
+	}}
 >
 	{#each store.connections as connection (connection.id)}
 		{#await getCurrentCoordinates(connection) then d}
-			<path class="stroke-black stroke-2 fill-none" {d} />
+			<path
+				class={`
+				stroke-2 fill-none cursor-pointer pointer-events-auto
+				${selectedConnection?.id === connection.id ? "stroke-red-500" : "stroke-black"}
+			`}
+				{d}
+				onclick={(event) => setSelectedConnection(connection, event)}
+			/>
 		{/await}
 	{/each}
 	{#if canvasStore.drawStartPoint}F
