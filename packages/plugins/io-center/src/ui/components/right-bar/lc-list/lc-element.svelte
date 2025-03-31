@@ -47,10 +47,10 @@
         selected: isSelected,
         searched: isSearched,
     }}
+    onclick={() => addLcElementToCanvas(lc)}
 >
     <button
         disabled={store.connectionExistsFor(lc)}
-        onclick={() => addLcElementToCanvas(lc)}
     >
         {#if isSelected}
             <SquareCheck size={16} />
@@ -80,7 +80,7 @@
     }
 
     .lc-element.selected {
-        @apply bg-beige hover:bg-beige;
+        @apply bg-white hover:bg-white;
     }
 
     .lc-element.searched {
