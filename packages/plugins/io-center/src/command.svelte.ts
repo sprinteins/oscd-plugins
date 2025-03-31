@@ -36,11 +36,11 @@ export class Command {
 		if (!number) {
 			const attributes = {
 				"xmlns": "",
-				"desc": desc || null,
+				"desc": desc || "",
 				"lnClass": type,
 				"inst": `${currentLPNumber + 1}`,
 				"lnType": name || type,
-				"numberOfLPDOPorts": `${numberOfLPDOPorts}` || "",
+				...(numberOfLPDOPorts && { "numberOfLPDOPorts": `${numberOfLPDOPorts}` || "" })
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -51,11 +51,11 @@ export class Command {
 		for (let i = 1; i <= number; i++) {
 			const attributes = {
 				"xmlns": "",
-				"desc": desc || null,
+				"desc": desc || "",
 				"lnClass": type,
 				"inst": `${currentLPNumber + i}`,
 				"lnType": name || type,
-				"numberOfLPDOPorts": `${numberOfLPDOPorts}` || "",
+				...(numberOfLPDOPorts && { "numberOfLPDOPorts": `${numberOfLPDOPorts}` || "" }),
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -77,7 +77,7 @@ export class Command {
 			host,
 			edit: {
 				element: lpToEdit,
-				attributes: { "lnType": `${name || lpToEdit.getAttribute("lnType")}`, "desc": `${desc || lpToEdit.getAttribute("desc")}` },
+				attributes: { "lnType": `${name || lpToEdit.getAttribute("lnType")}`, "desc": `${desc || lpToEdit.getAttribute("desc") || ""}` },
 				attributesNS: {}
 			}
 		})
@@ -138,7 +138,7 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLCNumber + 1}`,
 				"lnType": type,
-				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
+				...(numberOfLCIVPorts && { "numberOfLCIVPorts": `${numberOfLCIVPorts}` || "" })
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
@@ -152,7 +152,7 @@ export class Command {
 				"lnClass": type,
 				"inst": `${currentLCNumber + i}`,
 				"lnType": type,
-				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
+				...(numberOfLCIVPorts && { "numberOfLCIVPorts": `${numberOfLCIVPorts}` || "" })
 			}
 
 			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
