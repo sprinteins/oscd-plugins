@@ -60,7 +60,6 @@
 		<div class="image-preview">
 			<img src={imagePreview} alt="Uploaded Image" />
 		</div>
-	{:else} 
 	{/if}
 </div>
 
