@@ -244,6 +244,20 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
         zipcelx(config)
     }
 
+    function allocateSpaceForRows(filledBody: string[][], newFilledBody: string[][]) {
+        for(let i = 0; i < filledBody.length; i++) {
+            let row = filledBody[i];
+
+            for(let j = 0; j < row.length; j++) {
+                let values = row[j].split(", ");
+
+                for(let k = 0; k < values.length; k++) {
+                    newFilledBody[k][j] = values[k].trim();
+                }
+            }
+        }
+    }
+
     function processTableForPdfGeneration(block: Element) {
         const content = block.textContent;
         if(!content) {
@@ -279,18 +293,7 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
             }
 
             rows = maxNeededRows + 1;
-
-            for(let i = 0; i < filledBody.length; i++) {
-                let row = filledBody[i];
-
-                for(let j = 0; j < row.length; j++) {
-                    let values = row[j].split(", ");
-
-                    for(let k = 0; k < values.length; k++) {
-                        newFilledBody[k][j] = values[k].trim();
-                    }
-                }
-            }
+            allocateSpaceForRows(filledBody, newFilledBody);
         }
 
         if(newFilledBody.length === 0) {
