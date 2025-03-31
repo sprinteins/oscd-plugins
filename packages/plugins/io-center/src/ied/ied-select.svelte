@@ -21,7 +21,7 @@
 	}
 </script>
 
-<div class="flex-col mx-auto w-4/5 mt-2">
+<div class="flex-col mx-auto w-full px-2 mt-2">
 	<label for="select" class="font-medium">Select an IED</label>
 	<select
 		id="select"
