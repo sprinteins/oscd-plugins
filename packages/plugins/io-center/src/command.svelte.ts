@@ -311,22 +311,26 @@ export class Command {
 			? `${connection.from.port.name}${connection.from.port.index ?? ""}`
 			: `${connection.to.port.name}${connection.to.port.index ?? ""}`
 
-		createElement({
-			host,
-			doc: store.doc,
-			tagName: "DOI",
-			attributes: {
-				"name": doiName,
-				"desc": connectionType
-			},
-			parent: connectorLC,
-			reference: null
-		})
-
-		const doi = connectorLC.querySelector(`DOI[name="${doiName}"][desc="${connectionType}"]`)
+		let doi = connectorLC.querySelector(`DOI[name="${doiName}"][desc="${connectionType}"]`)
 
 		if (!doi) {
-			throw new Error(`DOI[name="${doiName}",desc="${connectionType}"] not created!`)
+			createElement({
+				host,
+				doc: store.doc,
+				tagName: "DOI",
+				attributes: {
+					"name": doiName,
+					"desc": connectionType
+				},
+				parent: connectorLC,
+				reference: null
+			})
+		}
+
+		doi = connectorLC.querySelector(`DOI[name="${doiName}"][desc="${connectionType}"]`)
+
+		if (!doi) {
+			throw new Error(`DOI ${doiName} still not created!`)
 		}
 
 		if (connectionType === "input") {
