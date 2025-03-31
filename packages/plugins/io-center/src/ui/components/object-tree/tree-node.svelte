@@ -141,7 +141,7 @@
     .tree-node {
         user-select: none;
         -webkit-user-select: none;
-		@apply font-mono cursor-pointer rounded-md  transition-colors duration-300 hover:no-underline;
+		@apply cursor-pointer rounded-md  transition-colors duration-300 hover:no-underline;
     }
 	.tree-summary{
 		display: grid;

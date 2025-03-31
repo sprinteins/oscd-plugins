@@ -76,7 +76,7 @@
 
 <style lang="scss">
     .lc-element {
-        @apply flex items-center gap-1 text-lg py-1 pl-2 w-full mb-1 font-mono cursor-pointer rounded-md hover:bg-gray-100 transition-colors duration-300;
+        @apply flex items-center gap-1 text-lg py-1 pl-2 w-full mb-1 cursor-pointer rounded-md hover:bg-gray-100 transition-colors duration-300;
     }
 
     .lc-element.selected {
