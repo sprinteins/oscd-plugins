@@ -5,6 +5,7 @@
     import Button, {Label} from "@smui/button"
     import Menu from "@smui/menu"
     import List, { Item, Text } from "@smui/list"
+    import Checkbox from '@smui/checkbox';
     import {IconWrapper} from "@oscd-plugins/ui"
     import {docTemplatesStore} from '@/stores'
     import {push} from 'svelte-spa-router'
@@ -15,7 +16,7 @@
 
     let menu: Menu
     let fileSelector: FileSelector
-
+    let isMasterTemplate = docTemplatesStore.getMasterTemplateFlag()
     let allTemplates: Element[] = []
     const emptyTitleOrDescription = "N/A"
 
@@ -53,6 +54,8 @@
 
 
     $: templatesConvertedToTableRow = allTemplates.map(mapElementToTableRow)
+    $: docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
+    $: importToolTipText = isMasterTemplate ? "No import allowed for master templates" : ""
 
 
     function mapElementToTableRow(template: Element):Template{
@@ -91,6 +94,14 @@
        fetchTemplates();
     }
 
+    function openFileSelectorIfNotMasterTemplate(){
+        if(isMasterTemplate){
+            console.error("No import allowed for master templates")
+            return;
+        }
+        fileSelector.open();
+    }
+
 
 
 
@@ -109,12 +120,19 @@
                 <Item on:SMUI:action={() => navigateToCreateTemplate()}>
                     <Text>New</Text>
                 </Item>
-                <Item on:SMUI:action={() => fileSelector.open()}>
-                    <Text>Import from</Text>
+                <Item on:SMUI:action={() => openFileSelectorIfNotMasterTemplate()}
+                    title={importToolTipText}
+                >
+                    <Text class={isMasterTemplate ? "cursor-not-allowed": ""}>Import from</Text>
                 </Item>
             </List>
         </Menu>
         <!-- <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button> -->
+         <div class="master-template-checkbox-area">
+            <Checkbox bind:checked={isMasterTemplate} />
+            <span>Master Template</span>
+         </div>
+
     </header>  
     <main>
         <Table 
@@ -138,6 +156,8 @@
     }
     .template-controls{
         margin: 0 0 1rem 1rem;
+        display: flex;
+        justify-content: space-between;
         & :global(.btn-pill){
                 border-radius: 2em;
                 cursor: pointer;
@@ -160,5 +180,15 @@
                 background-color:$clr-secondary-15;
             }
         }
+    }
+
+    .master-template-checkbox-area{
+        display: flex;
+        align-items: center;
+    }
+
+    :global(.cursor-not-allowed){
+        cursor: not-allowed;
+        color: #a6a6a6;
     }
 </style>

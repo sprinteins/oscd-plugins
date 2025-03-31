@@ -1,5 +1,4 @@
-import { LC_TYPE, LP_TYPE, NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE } from "./headless/constants";
-import { findDataObject, findLogicalPhysical, getPortsConfig } from "./headless/utils";
+import { LC_TYPE, LP_TYPE, NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE, TARGET_CDC_TYPES } from "./headless/constants";
 import type { IED } from "./ied/ied";
 import {
 	NodeTypes,
@@ -7,11 +6,12 @@ import {
 	type ObjectTree,
 	type ObjectNodeDataObject,
 	type ObjectNodeLogicalNode,
+	type ObjectNodeAccessPoint,
 } from "./ied/object-tree.type.d";
 import { store } from "./store.svelte";
 import type { Nullable } from "./types";
-import type { Connection, ConnectionPoint, ConnectionPort, LogicalConditioner } from "./ui/components/canvas/types.canvas";
-import type { LpElement } from "./ui/components/lp-list/types.lp-list";
+import type { Connection, ConnectionPort, LogicalConditioner } from "./ui/components/canvas/types.canvas";
+import type { LpElement } from "./ui/components/right-bar/lp-list/types.lp-list";
 
 
 /**
@@ -23,9 +23,7 @@ export function useQuery() {
 	$effect(() => storeObjectTree(store.doc, store.selectedIED, store.editCount))
 	$effect(() => storeLogicalConditioners(store.doc, store.selectedIED, store.editCount))
 	$effect(() => storeLogicalPhysicals(store.doc, store.selectedIED, store.editCount))
-	$effect(() => storeSelectedDataObjects(store.doc, store.selectedIED, store.editCount))
-	$effect(() => storeSelectedLogicalPhysicals(store.doc, store.selectedIED, store.editCount))
-	$effect(() => storeConnections(store.doc, store.selectedIED, store.editCount))
+	$effect(() => storeConnections(store.doc, store.selectedIED, store.selectedDataObject, store.editCount))
 }
 
 function storeIEDs(doc: Nullable<XMLDocument>, _: unknown) {
@@ -81,13 +79,23 @@ export function storeLogicalPhysicals(doc: Nullable<XMLDocument>, selectedIED: N
 		.join(",")
 
 	const lpElements = Array.from(iedElement.querySelectorAll(lpQuery));
+	const iedName = iedElement.getAttribute("name") || "unknown"
 
-	store.lpList = lpElements.map(lpElementToLP)
+	store.lpList = lpElements.map((el) => lpElementToLP(iedName, el))
 }
 
-function lpElementToLP(lpElement: Element): LpElement {
+function lpElementToLP(iedName: string, lpElement: Element): LpElement {
+
+	const id = [
+		iedName,
+		lpElement.getAttribute("inst") || "",
+		lpElement.getAttribute("lnClass") || "",
+		lpElement.getAttribute("lnType") || "",
+		lpElement.getAttribute("desc") || ""
+	].join("-")
+
 	return {
-		id: crypto.randomUUID(),
+		id,
 		type: lpElement.getAttribute("lnClass") as keyof typeof LP_TYPE || "unknown",
 		name: `${lpElement.getAttribute("lnType") || ""}`,
 		instance: `${lpElement.getAttribute("inst") || ""}`,
@@ -97,73 +105,7 @@ function lpElementToLP(lpElement: Element): LpElement {
 	}
 }
 
-function storeSelectedDataObjects(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
-	if (!doc || !selectedIED) { console.warn("no doc or no ied selected"); return }
-
-	const iedElement = doc.querySelector(`IED[name="${selectedIED.name}"]`)
-
-	if (!iedElement) { console.warn(`IED (name:${selectedIED.name}) not found`); return }
-
-	const lcQuery = Object.values(LC_TYPE)
-		.map(lcType => `AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lcType}"]`)
-		.join(",")
-
-
-	const lnRefElementsWithDO = Array.from(iedElement.querySelectorAll(lcQuery)).flatMap(
-		lcElement => Array.from(lcElement.querySelectorAll("DOI[desc='output']")).flatMap(
-			doiElement => Array.from(doiElement.querySelectorAll("LNRef"))
-		));
-
-	store.selectedDataObjects = lnRefElementsWithDO.reduce((uniqueObjects, lnRefElement) => {
-		const refDO = lnRefElement.getAttribute("refDO") || "";
-		const refLNClass = lnRefElement.getAttribute("refLNClass") || "";
-		const refLNInst = lnRefElement.getAttribute("refLNInst") || "";
-		const refLDInst = lnRefElement.getAttribute("refLDInst") || "";
-
-		const dataObject = findDataObject(store.objectTreeV2, refDO, selectedIED.name, refLDInst, refLNClass, refLNInst);
-
-		if (dataObject && !uniqueObjects.some(doObject => doObject.id === dataObject.id)) {
-			dataObject.isLinked = true;
-			uniqueObjects.push(dataObject);
-		}
-
-		return uniqueObjects;
-	}, [] as ObjectNodeDataObject[]);
-}
-
-function storeSelectedLogicalPhysicals(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
-	if (!doc || !selectedIED) { console.warn("no doc or no ied selected"); return }
-
-	const iedElement = doc.querySelector(`IED[name="${selectedIED.name}"]`)
-
-	if (!iedElement) { console.warn(`IED (name:${selectedIED.name}) not found`); return }
-
-	const lcQuery = Object.values(LC_TYPE)
-		.map(lcType => `AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lcType}"]`)
-		.join(",")
-
-
-	const lnRefElementsWithLP = Array.from(iedElement.querySelectorAll(lcQuery)).flatMap(
-		lcElement => Array.from(lcElement.querySelectorAll("DOI[desc='input']")).flatMap(
-			doiElement => Array.from(doiElement.querySelectorAll("LNRef"))
-		));
-
-	store.selectedLogicalPhysicals = lnRefElementsWithLP.reduce((uniqueObjects, lnRefElement) => {
-		const refLNClass = lnRefElement.getAttribute("refLNClass") || "";
-		const refLNInst = lnRefElement.getAttribute("refLNInst") || "";
-
-		const logicalPhysical = findLogicalPhysical(store.lpList, refLNClass, refLNInst);
-
-		if (logicalPhysical && !uniqueObjects.some(lp => lp.id === logicalPhysical.id)) {
-			logicalPhysical.isLinked = true;
-			uniqueObjects.push(logicalPhysical);
-		}
-
-		return uniqueObjects;
-	}, [] as LpElement[]);
-}
-
-function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
+function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, selectedDataObject: ObjectNodeDataObject | null, _: unknown) {
 	if (!doc || !selectedIED) { console.warn("no doc or no ied selected"); return }
 
 	const iedElement = doc.querySelector(`IED[name="${selectedIED.name}"]`)
@@ -182,51 +124,113 @@ function storeConnections(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>
 		}))
 	}));
 
-	store.connections = lnRefElements.flatMap(lcElement => {
-		return lcElement.dois.flatMap(doiElement => {
-			const doiName = doiElement.doi.getAttribute("name");
-			const connectionType = doiElement.doi.getAttribute("desc");
+	const lcsToSelect: LogicalConditioner[] = []
+	const lpsToSelect: LpElement[] = []
 
-			if (!connectionType || !doiName) {
-				console.warn("connection type or name not defined!");
-				return;
-			}
+	store.connections = lnRefElements.flatMap(
+		lcElement => {
+			return lcElement.dois.flatMap(
+				doiElement => {
+					const doiName = doiElement.doi.getAttribute("name");
+					const connectionType = doiElement.doi.getAttribute("desc");
 
-			return doiElement.lnRefs.flatMap(lnRefElement => {
-				const lcAttrs = lcElement.lc;
-				const refDO = lnRefElement.getAttribute("refDO") || "";
-				const refLNClass = lnRefElement.getAttribute("refLNClass") || "";
-				const refLNInst = lnRefElement.getAttribute("refLNInst") || "";
-				const lnClass = lcAttrs.getAttribute("lnClass") || "";
-				const inst = lcAttrs.getAttribute("inst") || "";
+					if (!connectionType || !doiName) {
+						console.warn("connection type or name not defined!");
+						return;
+					}
 
-				const from = {
-					name: connectionType === "output"
-						? `${refDO}-right`
-						: `${lnClass}-${inst}-right`,
-					type: connectionType === "output" ? NODE_ELEMENT_TYPE.DO : NODE_ELEMENT_TYPE.LC,
-					port: connectionType === "output" ? { name: refDO, side: "right" } as ConnectionPort : { name: doiName, side: "right" } as ConnectionPort
-				};
+					if (!selectedDataObject) {
+						return;
+					}
 
-				const to = {
-					name: connectionType === "output"
-						? `${lnClass}-${inst}-left`
-						: `${refLNClass}-${refLNInst}-left`,
-					type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP,
-					port: connectionType === "output" ? PORTS_CONFIG_PER_TYPE[lnClass].filter(port => doiName.includes(port.name))[0] : { name: refDO, side: "left" } as ConnectionPort
-				};
+					return doiElement.lnRefs.flatMap(
+						lnRefElement => {
+							const lcAttrs = lcElement.lc;
+							const refDO = lnRefElement.getAttribute("refDO") || "";
+							const refLDInst = lnRefElement.getAttribute("refLDInst") || "";
+							const refLNClass = lnRefElement.getAttribute("refLNClass") || "";
+							const refLNInst = lnRefElement.getAttribute("refLNInst") || "";
+							const lnClass = lcAttrs.getAttribute("lnClass") || "";
+							const inst = lcAttrs.getAttribute("inst") || "";
 
-				const connection: Connection = {
-					id: crypto.randomUUID(),
-					from,
-					to
-				};
+							const from = {
+								name: connectionType === "output"
+									? `${refDO}-right`
+									: `${lnClass}-${inst}-right`,
+								type: connectionType === "output" ? NODE_ELEMENT_TYPE.DO : NODE_ELEMENT_TYPE.LC,
+								port: connectionType === "output" ? { name: refDO, side: "right" } as ConnectionPort : { name: doiName, side: "right" } as ConnectionPort
+							};
 
-				return connection
-			});
-		});
-	}).filter(connection => connection !== undefined);
+							const to = {
+								name: connectionType === "output"
+									? `${lnClass}-${inst}-left`
+									: `${refLNClass}-${refLNInst}-left`,
+								type: connectionType === "output" ? NODE_ELEMENT_TYPE.LC : NODE_ELEMENT_TYPE.LP,
+								port: connectionType === "output" ? PORTS_CONFIG_PER_TYPE[lnClass].filter(port => doiName.includes(port.name))[0] : { name: refDO, side: "left" } as ConnectionPort
+							};
+
+							const connection: Connection = {
+								id: crypto.randomUUID(),
+								from,
+								to
+							};
+
+							if (
+								connectionType === "output"
+								&& refDO === selectedDataObject.name
+								&& refLNClass === selectedDataObject.objectPath.ln?.lnClass
+								&& refLNInst === selectedDataObject.objectPath.ln?.inst
+								&& refLDInst === selectedDataObject.objectPath.lDevice?.inst
+							) {
+								const selectedLC = store.findLC(lnClass, inst)
+
+								if (!selectedLC) {
+									console.warn('LC and LP to be connected not found!')
+									return
+								}
+
+								if (!lcsToSelect.includes(selectedLC)) {
+									selectedLC.isLinked = true
+									lcsToSelect.push(selectedLC)
+								}
+								return connection
+							}
+
+							if (connectionType === "input" && selectedDataObject) {
+								const selectedLP = store.findLP(refLNClass, refLNInst)
+								const selectedLC = store.findLC(lnClass, inst)
+
+								if (!selectedLP || !selectedLC) {
+									console.warn('LC and LP to be connected not found!')
+									return
+								}
+
+								const isConnectedLcConnectedToSelectedDo = Boolean(
+									lcElement.lc.querySelector(
+										`DOI[desc="output"] > LNRef[refLDInst="${selectedDataObject.objectPath.lDevice?.inst}"][refLNClass="${selectedDataObject.objectPath.ln?.lnClass}"][refLNInst="${selectedDataObject.objectPath.ln?.inst}"][refDO="${selectedDataObject.name}"]`
+									)
+								)
+
+								if (isConnectedLcConnectedToSelectedDo) {
+									if (!lpsToSelect.includes(selectedLP)) {
+										selectedLP.isLinked = true
+										lpsToSelect.push(selectedLP)
+									}
+									if (!lcsToSelect.includes(selectedLC)) {
+										selectedLC.isLinked = true
+										lcsToSelect.push(selectedLC)
+									}
+									return connection
+								}
+							}
+						});
+				});
+		}).filter(connection => connection !== undefined);
+
+	store._selectedLogicalConditioners = lcsToSelect
+	store._selectedLogicalPhysicals = lpsToSelect
 }
+
 
 function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>, _: unknown) {
 	if (!doc || !selectedIED) { console.warn("no doc or no ied selected"); return }
@@ -236,88 +240,103 @@ function storeObjectTree(doc: Nullable<XMLDocument>, selectedIED: Nullable<IED>,
 
 	const objectTree: ObjectTree = {
 		ied: {
-			id: crypto.randomUUID(),
+			id: `IED_${IEDElement.getAttribute("name")}`,
 			name: IEDElement.getAttribute("name") || "unknown",
 			children: [],
 			_type: NodeTypes.ied,
 		}
 	}
 
-	const lDeviceElements = Array.from(IEDElement.querySelectorAll("LDevice"))
-	objectTree.ied.children = lDeviceElements.map((ldDeviceElement) => {
-		const ld: ObjectNodeLogicalDevice = {
+	const accessPointElements = Array.from(IEDElement.querySelectorAll("AccessPoint"))
+	objectTree.ied.children = accessPointElements.map((accessPoint) => {
+		const ap: ObjectNodeAccessPoint = {
 			id: crypto.randomUUID(),
-			inst: ldDeviceElement.getAttribute("inst") || "unknown",
+			name: accessPoint.getAttribute("name") || "unknown",
 			children: [],
 			objectPath: {
 				ied: { id: objectTree.ied.id, name: objectTree.ied.name }
 			},
-			_type: NodeTypes.logicalDevice
+			_type: NodeTypes.accessPoint
 		}
-
-		ld.children = Array.from(ldDeviceElement.querySelectorAll("LN")).map((lnElement) => {
-			const ln: ObjectNodeLogicalNode = {
-				id: crypto.randomUUID(),
-				lnClass: lnElement.getAttribute("lnClass") || "unknown",
-				inst: lnElement.getAttribute("inst") || "unknown",
+		const SelectorLDevicesWithoutLD0 = "LDevice:not([inst='LD0'])"
+		ap.children = Array.from(accessPoint.querySelectorAll(SelectorLDevicesWithoutLD0)).map((ldElement) => {
+			const ld: ObjectNodeLogicalDevice = {
+				id: `${objectTree.ied.id}::LD_${ldElement.getAttribute("inst")}`,
+				inst: ldElement.getAttribute("inst") || "unknown",
 				children: [],
 				objectPath: {
 					ied: { id: objectTree.ied.id, name: objectTree.ied.name },
-					lDevice: { id: ld.id, inst: ld.inst }
+					accessPoint: { name: ap.name }
 				},
-				_type: NodeTypes.logicalNode
+				_type: NodeTypes.logicalDevice
 			}
 
-			// jumping to the LNodeType to get the DOs
-			const lnNodeType = store.doc.querySelector(`LNodeType[id="${lnElement.getAttribute("lnType") || ""}"]`);
-			if (!lnNodeType) {
-				console.warn(`could not find LNodeType with id: ${lnElement.getAttribute("lnType")}`)
-				return ln
-			}
-			const dos = Array.from(lnNodeType.querySelectorAll("DO"))
-
-			ln.children = dos.map((doElement) => {
-				if (!hasCDC(doElement, doc, TARGET_CDC)) {
-					return undefined
-				}
-				const dataObject: ObjectNodeDataObject = {
-					id: crypto.randomUUID(),
-					name: doElement.getAttribute("name") || "unknown",
+			ld.children = Array.from(ldElement.querySelectorAll("LN")).map((lnElement) => {
+				const ln: ObjectNodeLogicalNode = {
+					id: `${ld.id}::LN_${lnElement.getAttribute("lnClass")}+LN_${lnElement.getAttribute("inst")}`,
+					lnClass: lnElement.getAttribute("lnClass") || "unknown",
+					inst: lnElement.getAttribute("inst") || "unknown",
+					children: [],
 					objectPath: {
 						ied: { id: objectTree.ied.id, name: objectTree.ied.name },
-						lDevice: { id: ld.id, inst: ld.inst },
-						ln: { id: ln.id, lnClass: ln.lnClass, inst: ln.inst }
+						accessPoint: { name: ap.name },
+						lDevice: { id: ld.id, inst: ld.inst }
 					},
-					_type: NodeTypes.dataObject
+					_type: NodeTypes.logicalNode
 				}
-				return dataObject
-			}).filter(Boolean) as ObjectNodeDataObject[]
-			return ln
-		})
-		return ld
-	})
-	store.objectTreeV2 = objectTree
 
+				const lnNodeType = doc.querySelector(`LNodeType[id="${lnElement.getAttribute("lnType") || ""}"]`);
+				if (!lnNodeType) {
+					console.warn(`could not find LNodeType with id: ${lnElement.getAttribute("lnType")}`)
+					return ln
+				}
+				const dos = Array.from(lnNodeType.querySelectorAll("DO"))
+
+				ln.children = dos.map((doElement) => {
+					const [isAllowedCDC, cdc] = hasCDC(doElement, doc, TARGET_CDC_TYPES)
+
+					if (!isAllowedCDC) {
+						return undefined
+					}
+
+					const dataObject: ObjectNodeDataObject = {
+						id: `${ln.id}::DO_${doElement.getAttribute("name")}`,
+						name: doElement.getAttribute("name") || "unknown",
+						objectPath: {
+							ied: { id: objectTree.ied.id, name: objectTree.ied.name },
+							accessPoint: { name: ap.name },
+							lDevice: { id: ld.id, inst: ld.inst },
+							ln: { id: ln.id, lnClass: ln.lnClass, inst: ln.inst }
+						},
+						cdcType: cdc,
+						_type: NodeTypes.dataObject
+					}
+					return dataObject
+				}).filter(Boolean) as ObjectNodeDataObject[]
+				return ln
+			})
+			return ld
+		})
+		return ap
+	})
+	store.objectTree = objectTree
 }
 
-// TARGET_CDC: Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
-// Currently hard-coded by the client request but in future we may make it dynamic and allow the user to fill the targetScd
-const TARGET_CDC = ['sps', 'dps', 'dpc', 'inc', 'ins', 'pos']
-function hasCDC(doElement: Element, doc: XMLDocument, targetCDC: string[]): boolean {
+function hasCDC(doElement: Element, doc: XMLDocument, targetCDC: string[]): [boolean, string] {
 	const type = doElement.getAttribute("type") || "";
 	if (type === "") {
-		return false;
+		return [false, ""];
 	}
 
 	const doType = doc.querySelector(`DOType[id="${type}"]`);
 	if (!doType) {
-		return false;
+		return [false, ""];
 	}
 
 	const cdc = doType.getAttribute("cdc") || "";
 	if (cdc === "" || !targetCDC.includes(cdc.toLowerCase())) {
-		return false;
+		return [false, ""];
 	}
 
-	return true;
+	return [true, cdc.toLowerCase()];
 }

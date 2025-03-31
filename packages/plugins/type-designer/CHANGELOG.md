@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.0] - 27.03.2025
+
+### Added 
+
+- Add duplicate ref menu entry
+
+## [3.8.0] - 27.03.2025
+
+### Added 
+
+- Bay refs badges to differentiate function from equipment
+
 ## [3.7.0] - 27.03.2025
 
 ### Added 
