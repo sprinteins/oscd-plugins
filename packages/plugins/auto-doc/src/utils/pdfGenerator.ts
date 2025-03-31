@@ -270,7 +270,7 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
         const formattedHeader: string[][] = [data.map((row: string[]) => row[0])];
         const formattedBody: string[][] = [data.map((row: string[]) => row[1])];
 
-        const filledBody = formattedBody.map((row) => row.map(it => it = placeholderStore.fillPlaceholder(it)));
+        const filledBody = formattedBody.map((row) => row.map(cell => cell = placeholderStore.fillPlaceholder(cell)));
 
         let rows = data[0].length;
         let maxNeededRows = rows;

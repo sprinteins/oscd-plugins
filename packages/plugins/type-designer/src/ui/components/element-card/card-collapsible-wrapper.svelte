@@ -1,21 +1,17 @@
 <script lang="ts">
-import { onMount } from 'svelte';
+import { onMount } from 'svelte'
 // CORE
 import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 // STORE
 import { dndStore, typeElementsStore, importsStore } from '@/headless/stores'
 // CONSTANTS
-import {
-	ALLOWED_TARGETS_BY_REF_FAMILY,
-	TYPE_FAMILY,
-	ALLOWED_IMPORTED_TYPE,
-	REF_FAMILY
-} from '@/headless/constants'
+import { TYPE_FAMILY, ALLOWED_IMPORTED_TYPE } from '@/headless/constants'
 // COMPONENTS
 import { slide } from 'svelte/transition'
 import { Card, Collapsible, Badge } from '@oscd-plugins/core-ui-svelte'
 import TypeCard from './type-card.svelte'
 import CardMenu from './card-menu.svelte'
+import { CirclePlus } from 'lucide-svelte'
 // TYPES
 import type {
 	TypeElement,
@@ -42,33 +38,12 @@ const {
 
 // local states
 let isElementCardOpen = $state(false)
+let isCurrentDropTarget = $state(false)
+let hoverTimeout: NodeJS.Timeout | null = $state(null)
 
 //======= DERIVED STATES =======//
 
-const isAllowedToDrop = $derived.by(() => {
-	if (dndStore.currentSourceRefFamily)
-		return ALLOWED_TARGETS_BY_REF_FAMILY[
-			dndStore.currentSourceRefFamily
-		].some(
-			(allowedTargetFamily) => allowedTargetFamily === typeElementFamily
-		)
-	// is undefined for template functions (not instantiated)
-	if (dndStore.currentSourceTypeFamily === TYPE_FAMILY.function)
-		return (
-			typeElementFamily === TYPE_FAMILY.bay ||
-			typeElementFamily === TYPE_FAMILY.generalEquipment ||
-			typeElementFamily === TYPE_FAMILY.conductingEquipment
-		)
-	return false
-})
-
-const currentDraggedItemLabel = $derived(
-	dndStore.currentSourceTypeFamily &&
-		dndStore.currentSourceTypeIdOrUuid &&
-		typeElementsStore.typeElementsPerFamily[
-			dndStore.currentSourceTypeFamily
-		][dndStore.currentSourceTypeIdOrUuid].parameters.label
-)
+const isLNodeType = $derived(typeElementFamily === TYPE_FAMILY.lNodeType)
 
 const currentRefs = $derived(
 	Object.entries(typeElement.refs) as [
@@ -106,6 +81,8 @@ function getCurrentRefFullLabel(refWrapper: RefElement<AvailableRefFamily>) {
 	return `${currentLabel}_Ref_${refWrapper.occurrence}`
 }
 
+//======= LOCAL DND HANDLERS =======//
+
 function shouldShowBadge(refFamily: AvailableRefFamily) {
 	return (
 		refFamily === REF_FAMILY.conductingEquipment ||
@@ -123,93 +100,83 @@ function getBadgeLabel(refFamily: AvailableRefFamily) {
 	if (refFamily === REF_FAMILY.function) return 'Fn'
 }
 
-//======= EFFECTS =======//
-
-$effect(() => {
-	if (!hasRefs) isElementCardOpen = false
-})
-
-let scrollableContainer: HTMLElement;
-let lastScrollPosition = 0;
-
-let isCurrentDropTarget = $state(false);
-let dragLeaveTimeout: number | undefined;
-
 const handleDragOver = (event: DragEvent) => {
-	event.preventDefault();
-	if (dndStore.handleDragOver({ targetId: typeElementKey, isAllowedToDrop })) {
-		if (dragLeaveTimeout) {
-			clearTimeout(dragLeaveTimeout);
-			dragLeaveTimeout = undefined;
-		}
-		
-		const target = event.target as HTMLElement;
-		scrollableContainer = target.closest('.overflow-y-auto') as HTMLElement;
-		if (scrollableContainer) {
-			lastScrollPosition = scrollableContainer.scrollTop;
-		}
-		
-		isCurrentDropTarget = true;
-		isElementCardOpen = true;
+	event.preventDefault()
+	isCurrentDropTarget = true
+}
+
+const handleOpenCollapsible = (event: DragEvent) => {
+	event.preventDefault()
+	if (isLNodeType) return
+
+	if (!hoverTimeout)
+		hoverTimeout = setTimeout(() => {
+			isElementCardOpen = true
+			if (!hasRefs) isCurrentDropTarget = true
+			hoverTimeout = null
+		}, 500)
+}
+
+const handleCloseCollapsible = (event: DragEvent) => {
+	event.preventDefault()
+	if (isLNodeType) return
+
+	const dropZone = event.currentTarget as HTMLElement
+	if (!dropZone?.contains(event.relatedTarget as Node | null)) {
+		isCurrentDropTarget = false
+		isElementCardOpen = false
 	}
-};
+
+	if (hoverTimeout) {
+		clearTimeout(hoverTimeout)
+		hoverTimeout = null
+	}
+}
 
 const handleDragLeave = (event: DragEvent) => {
-	const target = event.target as HTMLElement;
-	const relatedTarget = event.relatedTarget as HTMLElement;
-	
-	if (relatedTarget && target.contains(relatedTarget)) {
-		return;
+	const dropZone = event.currentTarget as HTMLElement
+	if (!dropZone?.contains(event.relatedTarget as Node | null)) {
+		isCurrentDropTarget = false
+		isElementCardOpen = false
 	}
-	
-	// prevents flickering of the collapsible element, otherwise it jumps like crazy when dragging over the refs
-	dragLeaveTimeout = window.setTimeout(() => {
-		isElementCardOpen = false;
-	}, 50);
-};
-
-onMount(() => {
-	const hideHandler = () => {
-		isCurrentDropTarget = false;
-	};
-	window.addEventListener('hideAllDropZones', hideHandler);
-	return () => {
-		window.removeEventListener('hideAllDropZones', hideHandler);
-		if (dragLeaveTimeout) {
-			clearTimeout(dragLeaveTimeout);
-		}
-	};
-});
+}
 </script>
-	
+
 <Collapsible.Root 
 	bind:open={isElementCardOpen} 
-	class="space-y-2"
-	ondragover={handleDragOver}
-	ondragleave={handleDragLeave}
-	ondrop={() => {
-		if (dndStore.currentDropTargetId === typeElementKey) {
+	class={`space-y-1 mb-2`}
+	ondragover={handleOpenCollapsible}
+	ondragleave={handleCloseCollapsible}
+>
+	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {isImportContainer} />
+
+
+	<Collapsible.Content class="space-y-1 flex flex-col items-end relative" 
+		ondragover={handleDragOver}
+		ondragleave={handleDragLeave}
+		ondrop={(event) => {
+			event.preventDefault();
 			isCurrentDropTarget = false;
 			dndStore.handleDrop({
 				parentTypeWrapper: typeElement.element,
 				parentTypeFamily: typeElementFamily
 			});
-			if (scrollableContainer) {
-				setTimeout(() => {
-					scrollableContainer.scrollTop = lastScrollPosition;
-				}, 0);
-			}
-		}
-	}}
->
-	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {isImportContainer}/>
+		}}>
+		
+		{#snippet child({ props, open: collapsibleContentOpen })}
+			{#if collapsibleContentOpen}
+				<div {...props} transition:slide={{ duration: 100 }}  >
+					<!-- DND DROP ZONE START -->
+					<div 
+						class={`${isCurrentDropTarget ? 'flex' : 'hidden'} dropzone`}
+					>
+						<CirclePlus class="size-16 text-primary stroke-2" />
+					</div>
+					<!-- DND DROP ZONE END -->
 
-		<!-- REF CARD START -->
-		<Collapsible.Content class="space-y-2 flex flex-col items-end">
-			{#snippet child({ props, open: collapsibleContentOpen })}
-				{#if collapsibleContentOpen}
-					<div {...props} transition:slide={{ duration: 100 }}>
-						{#if typeElementFamily !== TYPE_FAMILY.lNodeType}
+					<!-- REFS CARDS START -->
+					{#if typeElementFamily !== TYPE_FAMILY.lNodeType}
+						{#if hasRefs}
 							{#each currentRefs as [refFamily, refElements]}
 								{#each Object.entries(refElements) as [refId, refWrapper]} 
 									<Card.Root class="w-5/6">
@@ -228,43 +195,37 @@ onMount(() => {
 									</Card.Root>
 								{/each}
 							{/each}
-						{/if}
-					</div>
-				{/if}
-			{/snippet}
-		</Collapsible.Content>
-	<!-- REF CARD END -->
+						{:else}
 
-	<!-- DND PLACEHOLDER START -->
-	{#if dndStore.isDragging && isAllowedToDrop && isCurrentDropTarget && !isImportContainer}
-		<div  class="flex justify-end">
-			<Card.Root
-				class="border-gray-500 border-dashed w-5/6 "
-				ondragover={(event) => event.preventDefault()}
-				ondrop={(event) => {
-					event.preventDefault();
-					isCurrentDropTarget = false;
-					dndStore.handleDrop({
-						parentTypeWrapper: typeElement.element,
-						parentTypeFamily: typeElementFamily
-					});
-					if (scrollableContainer) {
-						setTimeout(() => {
-							scrollableContainer.scrollTop = lastScrollPosition;
-						}, 0);
-					}
-				}}
-			>
-				<Card.Content class="h-8 p-1 flex items-center justify-center">
-					<span class="mr-1">Drop</span>
-					<div class="overflow-hidden text-ellipsis">
-						<span class="truncate font-bold">{currentDraggedItemLabel}</span>
-					</div>
-					<span class="ml-1">here.</span>
-				</Card.Content>
-			</Card.Root>
-		</div>
-	{/if}
-	<!-- DND PLACEHOLDER END -->
+							<!-- DND INVISIBLE PLACEHOLDER START -->
+							<div class="w-5/6 h-8 invisible"></div>
+							<!-- DND INVISIBLE PLACEHOLDER END -->
+
+						{/if}
+					{/if}
+					<!-- REFS CARDS END -->
+				</div>
+			{/if}
+		{/snippet}
+
+	</Collapsible.Content>
 </Collapsible.Root>
 
+<style>
+.dropzone{
+	@apply 
+		absolute
+		min-h-8
+		top-0
+		left-0
+		right-0
+		bottom-0
+		bg-primary/20
+		border-4
+		border-dashed
+		border-primary
+		flex-col
+		items-center
+		justify-center;
+}
+</style>

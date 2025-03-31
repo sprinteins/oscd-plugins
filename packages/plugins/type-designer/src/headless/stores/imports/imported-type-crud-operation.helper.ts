@@ -40,8 +40,16 @@ function loadFunction() {
 		rootElement: importsStore.importedXmlDocument?.documentElement
 	})
 
+	const hasFunctions = !!Object.keys(importsStore.loadedFunction.elementByIds)
+		.length
+	const hasDependencies =
+		!!Object.keys(importsStore.loadedFunction.dependencies).length &&
+		!!Object.keys(
+			importsStore.loadedTypeElementsPerFamily.lNodeType.available
+		).length
+
 	importsStore.isContainerOpen.functionType = true
-	importsStore.isContainerOpen.lNodeType = true
+	importsStore.isContainerOpen.lNodeType = hasFunctions && hasDependencies
 }
 
 function loadLNodeType() {
