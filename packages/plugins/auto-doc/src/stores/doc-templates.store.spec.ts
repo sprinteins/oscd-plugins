@@ -575,6 +575,19 @@ describe('DocumentTemplateStore', () => {
 		const autoDocArea = get(docTemplatesStore.privateArea);
 		expect(eventStore.createMultipleAndDispatchActionEvent).toHaveBeenCalledWith(autoDocArea, templates, 'Import auto doc templates');
 	  });
+
+	  it('should set master template flag and dispatch event', () => {
+		vi.spyOn(eventStore, 'updateAndDispatchActionEvent');
+		const isMaster = true
+		docTemplatesStore.setMasterTemplateFlag(isMaster);
+
+		const autoDocArea = get(docTemplatesStore.privateArea);
+
+		const updates = { masterTemplate: isMaster.toString(), type: 'AUTO_DOC' }
+
+		expect(eventStore.updateAndDispatchActionEvent).toHaveBeenCalledWith(autoDocArea, updates);
+	  });
+
 });
 
 

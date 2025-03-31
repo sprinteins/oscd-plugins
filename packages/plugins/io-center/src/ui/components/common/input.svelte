@@ -14,6 +14,7 @@
         min = 0,
         value = $bindable(),
         helperText,
+		...restProps
     }: Props = $props();
 
     //Only allow numbers as input for tyoe number
@@ -39,6 +40,7 @@
         id="input"
         bind:value
         oninput={type === "number" ? handleInput : null}
+		{...restProps}	
     />
     {#if helperText}
         <p class="helper-text">

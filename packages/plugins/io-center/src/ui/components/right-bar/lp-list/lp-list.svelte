@@ -1,16 +1,22 @@
 <script lang="ts">
-    import { LP_TYPE } from "@/headless/constants";
+    import { LP_LIST_FILTER_OPTIONS, LP_TYPE } from "@/headless/constants";
     import type { Nullable } from "@/types";
     import { Plus } from "lucide-svelte";
-    import { store } from "../../../store.svelte";
-    import SearchBar from "../common/search-bar.svelte";
-    import FilterButtons from "./filter-buttons.svelte";
+    import { store } from "@/store.svelte";
+    import SearchBar from "../../common/search-bar.svelte";
     import LpElement from "./lp-element.svelte";
     import type { LpTypes, LpElement as LpElementType } from "./types.lp-list";
     import CreateLpDialog from "./create-lp-dialog.svelte";
+    import FilterButtons from "../../common/filter-buttons.svelte";
 
     type Props = {
-        addLP: (type: LpTypes, name: string, desc: string, number?: number, numberOfLPDOPorts?: number) => void;
+        addLP: (
+            type: LpTypes,
+            name: string,
+            desc: string,
+            number?: number,
+            numberOfLPDOPorts?: number,
+        ) => void;
         removeLP: (lpElement: LpElementType) => void;
         editLP: (LpElement: LpElementType, name: string, desc: string) => void;
         hasLNodeType: (type: LpTypes) => boolean;
@@ -40,7 +46,7 @@
     let showDialog = $state(false);
 </script>
 
-<div class="py-6 pr-6">
+<div class="py-6 pr-6" data-name="lp-list">
     <button
         onclick={() => (showDialog = true)}
         class="add-button"
@@ -50,13 +56,14 @@
         <p>Add LP</p>
     </button>
 
-    <CreateLpDialog bind:isOpen={showDialog} {addLP} {hasLNodeType}/>
+    <CreateLpDialog bind:isOpen={showDialog} {addLP} {hasLNodeType} />
 
     {#if store.selectedIED}
         <SearchBar bind:searchTerm placeholder="Search LP" />
 
         <div class="mt-2">
             <FilterButtons
+                filterOptions={LP_LIST_FILTER_OPTIONS}
                 bind:selectedTypeToShow
                 bind:showLinked
                 bind:showUnlinked

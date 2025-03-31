@@ -5,12 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.14.0] - 2025-03-26
+## [1.15.0] - 2025-03-31
 
 ### Added
 
 - Display images in PDF export
 
+## [1.14.1] - 2025-03-31
+
+### Added
+
+- Fill table with placeholder values
+
+## [1.14.0] - 2025-03-28
+
+### Added
+
+- Master template flag on SCD file
+- Disable import template function when it's a master template
+
+
+## [1.13.1] - 2025-03-28
+
+### Fix
+
+- xpath placeholder storage on scd file
+ 
 ## [1.13.0] - 2025-03-26
 
 ### Added
@@ -65,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.0] - 2025-03-10
 
-### Feature
+### Added
 
 - Export Signal List block element as a extra xlsx file
   

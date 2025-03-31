@@ -1,5 +1,5 @@
 import type { LC_TYPE, NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants"
-import type { LpTypes } from "../lp-list/types.lp-list"
+import type { LpTypes } from "../right-bar/lp-list/types.lp-list"
 
 export type ConnectionPort = {
 	side: "right" | "left"
@@ -34,6 +34,7 @@ export type NodeElement =
 		name: string
 		isLinked?: boolean
 		lnClass: LcTypes | LpTypes
+		title?: string
 		numberOfDynamicPorts?: number
 	}
 

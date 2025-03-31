@@ -12,6 +12,10 @@
     const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS);
 
     const dispatch = createEventDispatcher();
+
+    function getCellStyle(row: number) {
+        return row === 0 ? "filled" : "outlined";
+    }
     
     function handleInputChange(row: number, value: string) {
         dispatch('update', { row, value });
@@ -23,7 +27,7 @@
     {#each { length: rows } as _, row}
         <Textfield
             bind:value={data[row]}
-            variant="outlined"
+            variant={getCellStyle(row)}
             on:input= {e => debounceUserInput(row, e.target.value)}
         >
         </Textfield>

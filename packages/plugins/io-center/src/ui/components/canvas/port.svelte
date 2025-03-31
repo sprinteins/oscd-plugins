@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { NODE_ELEMENT_TYPE } from "@/headless/constants";
     import type {
         Connection,
         ConnectionPort,
@@ -38,7 +39,14 @@
         startDrawing(event, port, node.type);
     }}
     onmouseup={() => {
-        stopDrawing(port, node.name, node.type, addConnection);
+        stopDrawing(
+            port,
+            node.type === NODE_ELEMENT_TYPE.LP && node.title
+                ? node.title
+                : node.name,
+            node.type,
+            addConnection,
+        );
     }}
 >
     <p class={`absolute ${port.side}-1 -bottom-[125%] px-3`}>

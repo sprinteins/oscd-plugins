@@ -46,6 +46,11 @@ const sidebar = Sidebar.useSidebar()
 
 //======= DERIVED STATES =======//
 
+const shouldShowBadge = $derived(
+	typeElement.parameters.refFamily === REF_FAMILY.eqFunction ||
+		typeElement.parameters.refFamily === REF_FAMILY.function
+)
+
 const hasCurrentTypeElementRefs = $derived.by(() => {
 	return Object.values(typeElement.refs).some(
 		(ref) => Object.keys(ref).length
@@ -92,6 +97,11 @@ async function handleImport(event: Event) {
 			typeElementFamily
 		)
 }
+
+function getBadgeLabel(refFamily: string | undefined) {
+	if (refFamily === REF_FAMILY.eqFunction) return 'EqFn'
+	if (refFamily === REF_FAMILY.function) return 'Fn'
+}
 </script>
 
 <Card.Root 
@@ -108,7 +118,7 @@ async function handleImport(event: Event) {
 >
 	<Card.Content class={`flex flex-row items-center justify-between h-8 p-2 ${cursorPointer} ${typeElementFamily === TYPE_FAMILY.lNodeType ? 'px-4' : 'px-1'}`}>
 
-		<div class="flex items-center min-w-0">
+		<div class="flex items-center min-w-0 w-full">
 			{#if typeElementFamily !== TYPE_FAMILY.lNodeType }
 				{#if hasCurrentTypeElementRefs}
 					<Collapsible.Trigger
@@ -133,11 +143,8 @@ async function handleImport(event: Event) {
 			<div class="ml-6 truncate capitalize">{ typeElement.parameters.label }</div>
 
 			<!-- FUNCTION BADGES START -->
-			{#if typeElement.parameters.refFamily === REF_FAMILY.eqFunction}
-				<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">EQ</Badge.Root>
-			{/if}
-			{#if typeElement.parameters.refFamily === REF_FAMILY.function}
-				<Badge.Root class="ml-3 bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300">FN</Badge.Root>
+			{#if shouldShowBadge}
+				<Badge.Root class="bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300 ml-auto">{ getBadgeLabel(typeElement.parameters.refFamily) }</Badge.Root>
 			{/if}
 			<!-- FUNCTION BADGES END -->
 		</div>
