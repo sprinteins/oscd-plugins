@@ -5,6 +5,7 @@ import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore} from '@/stores'
 import type {Columns, SignalType} from '@/stores'
 import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list-element/types.signal-list'
+import type { ImageData } from '@/components/elements/image-element/types.image';
 
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
@@ -168,24 +169,43 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
         });
     }
 
+    function getImageScaleFactor(scale: string) {
+        switch(scale.toLowerCase()) {
+            case "small":
+                return 0.25;
+            case "medium":
+                return 0.5;
+            case "large":
+                return 1;
+            default:
+                return 0.25;
+        }
+    }
+
     async function processImageForPdfGeneration(block: Element) {
         const content = block.textContent;
         if(!content) {
             return;
         }
 
-        const image = await loadImage(content);
+        const parsedContent = JSON.parse(content) as ImageData;
+        const imageSource = parsedContent.base64Data;
+        if(!imageSource) {
+            return;
+        }
+
+        const image = await loadImage(imageSource);
         const format = content.split(";")[0].split("/")[1];
 
         const maxWidth = 186;
-        const scaleFactor = 0.25;
+        const scaleFactor = getImageScaleFactor(parsedContent.scale);
         
         const aspectRatio = image.height / image.width;
         
         const width = scaleFactor * maxWidth;
         const height = width * aspectRatio;
 
-        doc.addImage(content, format.toUpperCase(), 10, marginTop, width, height);
+        doc.addImage(imageSource, format.toUpperCase(), 10, marginTop, width, height);
         
         const padding = Math.round(height) + DEFAULT_LINE_HEIGHT;
         incrementVerticalPositionForNextLine(padding);
