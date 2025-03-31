@@ -37,11 +37,10 @@
                 setFilters(values);
             }}
             class={{
-                "border-4 border-indigo-600": selectedLabel === label,
-                "border-4 border-red-600":
-                    (label === "All LPs" && showLinked && showUnlinked) ||
-                    (label === "Unlinked" && showUnlinked && !showLinked) ||
-                    (label === "Linked" && showLinked && !showUnlinked),
+                "selected": selectedLabel === label,
+                "active": (label === "All LPs" && showLinked && showUnlinked) ||
+                         (label === "Unlinked" && showUnlinked && !showLinked) ||
+                         (label === "Linked" && showLinked && !showUnlinked),
             }}
         >
             {label}
@@ -51,6 +50,14 @@
 
 <style>
     button {
-        @apply bg-gray-100 text-sm p-2 border rounded-xl;
+        @apply bg-gray-100 text-sm p-2 border rounded-xl font-normal transition-all;
+    }
+
+    button.selected {
+        @apply border-2 border-[#2aa197] font-bold;
+    }
+
+    button.active {
+        @apply border-2 border-[#2aa197];
     }
 </style>
