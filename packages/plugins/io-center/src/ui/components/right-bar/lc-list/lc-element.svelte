@@ -49,6 +49,16 @@
     }}
     onclick={() => addLcElementToCanvas(lc)}
 >
+    <p>{type}-{instance}</p>
+    <button
+        onclick={() => (showDialog = true)}
+        disabled={lc.isLinked}
+        class="ml-auto mr-2 show-on-hover"
+    >
+        <Tooltip position="left" text={getTooltipText()}>
+            <Edit size={16} />
+        </Tooltip>
+    </button>
     <button
         disabled={store.connectionExistsFor(lc)}
     >
@@ -60,23 +70,13 @@
             </span>
         {/if}
     </button>
-    <p>{type}-{instance}</p>
-    <button
-        class="ml-auto mr-2 show-on-hover"
-        onclick={() => (showDialog = true)}
-        disabled={lc.isLinked}
-    >
-        <Tooltip position="left" text={getTooltipText()}>
-            <Edit size={16} />
-        </Tooltip>
-    </button>
 </div>
 
 <EditLcDialog bind:isOpen={showDialog} {lc} {editLC} {removeLC} />
 
 <style lang="scss">
     .lc-element {
-        @apply flex items-center gap-1 text-lg py-1 pl-2 w-full mb-1 cursor-pointer rounded-md hover:bg-gray-100 transition-colors duration-300;
+        @apply flex items-center gap-1 text-lg py-1 px-2 w-full mb-1 cursor-pointer rounded-md hover:bg-gray-100 transition-colors duration-300;
     }
 
     .lc-element.selected {
