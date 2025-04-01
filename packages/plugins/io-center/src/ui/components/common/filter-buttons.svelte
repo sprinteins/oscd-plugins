@@ -21,10 +21,17 @@
     function toggleFilter(label: string, values: any) {
         if (selectedLabels.includes(label)) {
             selectedLabels = selectedLabels.filter(l => l !== label);
+            if (label === "Linked") showLinked = false;
+            if (label === "Unlinked") showUnlinked = false;
         } else {
             selectedLabels = [...selectedLabels, label];
+            if (label === "Linked") showLinked = true;
+            if (label === "Unlinked") showUnlinked = true;
         }
-        setFilters(values);
+
+        if (label !== "Linked" && label !== "Unlinked") {
+            setFilters({ ...values, linked: showLinked, unlinked: showUnlinked });
+        }
     }
 
     function setFilters({
@@ -45,8 +52,8 @@
             class={{
                 "selected": selectedLabels.includes(label),
                 "active": (label === "All LPs" && showLinked && showUnlinked) ||
-                         (label === "Unlinked" && showUnlinked && !showLinked) ||
-                         (label === "Linked" && showLinked && !showUnlinked),
+                         (label === "Unlinked" && showUnlinked) ||
+                         (label === "Linked" && showLinked),
             }}
         >
             {label}
