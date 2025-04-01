@@ -16,7 +16,16 @@
         filterOptions,
     }: Props = $props();
 
-    let selectedLabel = $state("");
+    let selectedLabels = $state<string[]>([]);
+
+    function toggleFilter(label: string, values: any) {
+        if (selectedLabels.includes(label)) {
+            selectedLabels = selectedLabels.filter(l => l !== label);
+        } else {
+            selectedLabels = [...selectedLabels, label];
+        }
+        setFilters(values);
+    }
 
     function setFilters({
         selectedType = selectedTypeToShow,
@@ -32,12 +41,9 @@
 <div class="flex flex-wrap gap-1">
     {#each filterOptions as { label, values }}
         <button
-            onclick={() => {
-                selectedLabel = label;
-                setFilters(values);
-            }}
+            onclick={() => toggleFilter(label, values)}
             class={{
-                "selected": selectedLabel === label,
+                "selected": selectedLabels.includes(label),
                 "active": (label === "All LPs" && showLinked && showUnlinked) ||
                          (label === "Unlinked" && showUnlinked && !showLinked) ||
                          (label === "Linked" && showLinked && !showUnlinked),
