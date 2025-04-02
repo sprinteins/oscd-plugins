@@ -16,6 +16,7 @@
 		NodeElement as NodeElementType,
 	} from "./types.canvas";
 	import { onDestroy } from "svelte";
+	import _ from "lodash";
 
 	type Props = {
 		hasLNodeType: (type: LcTypes) => boolean;
@@ -35,18 +36,19 @@
 		return `M ${fromXToY} C ${fromXToXFromY} ${fromXToXToY} ${toXToY}`;
 	}
 
+	const coordinates = $derived(store.connections.map(getCurrentCoordinates));
+
 	async function setSelectedConnection(
-		connection: Connection,
 		evt: MouseEvent,
+		connection?: Connection,
 	) {
+		if (!connection) return;
 		evt.stopPropagation();
 		selectedConnection = connection;
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
 		if (event.key === "Backspace" && selectedConnection) {
-			console.log("About to delete connection: ", selectedConnection);
-
 			removeConnection(selectedConnection);
 			selectedConnection = null;
 		}
@@ -124,15 +126,15 @@
 		selectedConnection = null;
 	}}
 >
-	{#each store.connections as connection (connection.id)}
-		{#await getCurrentCoordinates(connection) then d}
+	{#each _.zip(store.connections, coordinates) as [connection, promise] (connection?.id)}
+		{#await promise then d}
 			<path
 				class={`
 				stroke-2 fill-none cursor-pointer pointer-events-auto
-				${selectedConnection?.id === connection.id ? "stroke-red-500" : "stroke-black"}
+				${selectedConnection?.id === connection?.id ? "stroke-red-500" : "stroke-black"}
 			`}
 				{d}
-				onclick={(event) => setSelectedConnection(connection, event)}
+				onclick={(event) => setSelectedConnection(event, connection)}
 			/>
 		{/await}
 	{/each}

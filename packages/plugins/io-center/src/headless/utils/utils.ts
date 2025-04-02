@@ -201,7 +201,7 @@ export async function getCoordinates(connectionPoint: ConnectionPoint) {
 
     const target = canvasStore.container.querySelector(
         `[data-title="${connectionPoint.name}"]`
-    ) as HTMLElement | null
+    )
 
     if (!target) {
         return { x: 0, y: 0 }
