@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {
-		ALLOWED_LC_FOR_CDC,
+		RESTRICTED_LC_TYPES_BY_CDC,
 		L_NODE_TYPE_HELPER_TEXT,
 		LC_TYPE,
 	} from "@/headless/constants";
@@ -76,11 +76,11 @@
 
 		if (
 			store.selectedDataObject.cdcType &&
-			Object.keys(ALLOWED_LC_FOR_CDC).includes(
+			Object.keys(RESTRICTED_LC_TYPES_BY_CDC).includes(
 				store.selectedDataObject.cdcType,
 			)
 		) {
-			return ALLOWED_LC_FOR_CDC[store.selectedDataObject.cdcType];
+			return RESTRICTED_LC_TYPES_BY_CDC[store.selectedDataObject.cdcType];
 		}
 
 		return Object.values(LC_TYPE);
