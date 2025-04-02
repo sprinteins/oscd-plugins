@@ -37,9 +37,15 @@
 	}
 	sidebar-left {
 		grid-area: sidebar-left;
-		overflow: hidden;
+		overflow: scroll;
+		scrollbar-width: none;
 		@apply w-full h-full p-0 m-0;
 	}
+
+	sidebar-left::-webkit-scrollbar {
+		display: none;
+	}
+
 	content {
 		grid-area: content;
 		@apply h-full p-0 m-0;
