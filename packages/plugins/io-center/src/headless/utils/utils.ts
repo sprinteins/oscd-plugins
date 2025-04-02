@@ -9,10 +9,9 @@ import type {
     NodeElement,
     NodeElementType
 } from '@/ui/components/canvas/types.canvas'
-import type { LpElement } from '@/ui/components/right-bar/lp-list/types.lp-list'
 import type { TreeNode } from '@/ui/components/object-tree/types.object-tree'
 import { tick } from 'svelte'
-import { ALLOWED_LC_FOR_CDC, NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE } from '../constants'
+import { RESTRICTED_LC_TYPES_BY_CDC, NODE_ELEMENT_TYPE, PORTS_CONFIG_PER_TYPE } from '../constants'
 import _ from "lodash"
 import { toast } from '@zerodevx/svelte-toast'
 
@@ -119,11 +118,11 @@ export function isDoToLcConnectionAllowed(dataObject: ObjectNodeDataObject, lc: 
         return false
     }
 
-    if (!ALLOWED_LC_FOR_CDC[cdc]) {
+    if (!RESTRICTED_LC_TYPES_BY_CDC[cdc]) {
         return true
     }
 
-    if (ALLOWED_LC_FOR_CDC[cdc].includes(lc.type)) {
+    if (RESTRICTED_LC_TYPES_BY_CDC[cdc].includes(lc.type)) {
         return true
     }
 
