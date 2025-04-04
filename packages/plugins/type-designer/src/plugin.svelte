@@ -48,7 +48,6 @@ const {
 		getEditCount: () => editCount,
 		getIsCustomInstance: () => isCustomInstance,
 		getHost: () => $host() || window,
-		getRootElement: () => pluginLocalStore.rootElement,
 		customNamespaces: [
 			{ 
 				namespacePrefix: pluginLocalStore.pluginNamespacePrefix,
