@@ -49,11 +49,11 @@
     }}
     onclick={() => addLcElementToCanvas(lc)}
 >
-    <p>{type}-{instance}</p>
+    <p class="flex-1">{type}-{instance}</p>
     <button
         onclick={() => (showDialog = true)}
         disabled={lc.isLinked}
-        class="ml-auto mr-2 show-on-hover"
+        class="flex items-center ml-auto mr-2 show-on-hover"
     >
         <Tooltip position="left" text={getTooltipText()}>
             <Edit size={16} />
@@ -61,11 +61,12 @@
     </button>
     <button
         disabled={store.connectionExistsFor(lc)}
+        class="flex items-center justify-center w-6 h-6"
     >
         {#if isSelected}
             <SquareCheck size={16} />
         {:else}
-            <span class="show-on-hover">
+            <span class="show-on-hover flex items-center justify-center">
                 <Square size={16} />
             </span>
         {/if}

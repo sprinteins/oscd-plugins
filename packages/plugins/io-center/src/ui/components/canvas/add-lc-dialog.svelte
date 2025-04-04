@@ -144,7 +144,7 @@
 		}
 
 		.add-button {
-			@apply px-4 py-2 bg-blue-600 text-white rounded-lg;
+			@apply px-4 py-2 bg-blue-600 text-white bg-[#2aa198] rounded-lg;
 		}
 	}
 </style>

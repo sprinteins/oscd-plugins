@@ -40,28 +40,29 @@
         selected: isSelected,
         searched: isSearched,
     }}
+    onclick={() => addLpElementToCanvas(lpElement)}
 >
+    <p class="flex-1">{name}-{instance}</p>
     <button
-        disabled={store.connectionExistsFor(lpElement)}
-        onclick={() => addLpElementToCanvas(lpElement)}
-    >
-        {#if isSelected}
-            <SquareCheck size={16} />
-        {:else}
-            <span class="show-on-hover">
-                <Square size={16} />
-            </span>
-        {/if}
-    </button>
-    <p>{name}-{instance}</p>
-    <button
-        class="ml-auto mr-2 show-on-hover"
         onclick={() => (showDialog = true)}
         disabled={lpElement.isLinked}
+        class="flex items-center ml-auto mr-2 show-on-hover"
     >
         <Tooltip position="left" text={getTooltipText()}>
             <Edit size={16} />
         </Tooltip>
+    </button>
+    <button
+        disabled={store.connectionExistsFor(lpElement)}
+        class="flex items-center justify-center w-6 h-6"
+    >
+        {#if isSelected}
+            <SquareCheck size={16} />
+        {:else}
+            <span class="show-on-hover flex items-center justify-center">
+                <Square size={16} />
+            </span>
+        {/if}
     </button>
 </div>
 
@@ -69,11 +70,11 @@
 
 <style lang="scss">
     .lp-element {
-        @apply flex items-center gap-1 text-lg py-1 pl-2 w-full mb-1 cursor-pointer rounded-md hover:bg-gray-100 transition-colors duration-300;
+        @apply flex items-center gap-1 text-lg py-1 px-2 w-full mb-1 cursor-pointer rounded-md hover:bg-gray-100 transition-colors duration-300;
     }
 
     .lp-element.selected {
-        @apply bg-beige hover:bg-beige;
+        @apply bg-white hover:bg-white;
     }
 
     .lp-element.searched {
