@@ -92,14 +92,16 @@
 		<div role="button" id="modal" class="backdrop">
 			<div class="container space-y-4">
 				<form onsubmit={handleSubmit}>
-					<Select
-						bind:value={tempTypeOfLC}
-						name="typeOfLC"
-						label="Type of LC"
-						options={getOptions()}
-						helperText={getHelperText()}
-						helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
-					/>
+					<div class={getHelperText() ? "mb-4" : ""}>
+						<Select
+							bind:value={tempTypeOfLC}
+							name="typeOfLC"
+							label="Type of LC"
+							options={getOptions()}
+							helperText={getHelperText()}
+							helperTextDetails={L_NODE_TYPE_HELPER_TEXT}
+						/>
+					</div>
 					{#if tempTypeOfLC === LC_TYPE.LCIV}
 						<Input
 							name="numberOfLCIVPorts"
