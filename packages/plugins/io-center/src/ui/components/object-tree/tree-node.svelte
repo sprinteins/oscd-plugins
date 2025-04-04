@@ -1,38 +1,42 @@
 <script lang="ts">
-    import TreeNode from "./tree-node.svelte";
-    import type { TreeNode as TreeNodeType } from "./types.object-tree";
-    import { ChevronRight, ChevronDown, Square, SquareCheck, SquareMinus } from "lucide-svelte";
-    import { store } from "../../../store.svelte";
-    import { gatherDataObjects } from "./utils";
+import TreeNode from './tree-node.svelte'
+import type { TreeNode as TreeNodeType } from './types.object-tree'
+import {
+	ChevronRight,
+	ChevronDown,
+	Square,
+	SquareCheck,
+	SquareMinus
+} from 'lucide-svelte'
+import { store } from '../../../store.svelte'
+import { gatherDataObjects } from './utils'
 
-    type Props = {
-        treeNode: TreeNodeType
-        searchTerm: string
-		onclickobjectcheckbox?: (node: TreeNodeType) => void
-		onclickobject?: (node: TreeNodeType) => void
-		onclickparentcheckbox?: (node: TreeNodeType) => void
-		onclickparentnode?: (node: TreeNodeType) => void
-    };
+type Props = {
+	treeNode: TreeNodeType
+	searchTerm: string
+	onclickobjectcheckbox?: (node: TreeNodeType) => void
+	onclickobject?: (node: TreeNodeType) => void
+	onclickparentcheckbox?: (node: TreeNodeType) => void
+	onclickparentnode?: (node: TreeNodeType) => void
+}
 
-    let {
-        treeNode,
-        searchTerm,
-		onclickobjectcheckbox = noopFn,
-		onclickobject = noopFn,
-		onclickparentcheckbox = noopFn,
-		onclickparentnode = noopFn,
-    }: Props = $props();
-	
-	function noopFn() {}
+let {
+	treeNode,
+	searchTerm,
+	onclickobjectcheckbox = noopFn,
+	onclickobject = noopFn,
+	onclickparentcheckbox = noopFn,
+	onclickparentnode = noopFn
+}: Props = $props()
 
-    let isSearched = $derived(
-        searchTerm !== "" &&
+function noopFn() {}
+
+let isSearched = $derived(
+	searchTerm !== '' &&
 		treeNode.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+)
 
-    let isSelected = $derived(
-        store.selectedDataObject?.id === treeNode.id,
-    );
+let isSelected = $derived(store.selectedDataObject?.id === treeNode.id)
 
 /* 	function hasAllChildrenSelected(children: TreeNodeType[]){
 		const dataObjects = gatherDataObjects(children)
@@ -42,18 +46,20 @@
 		return dataObjects.every((dataObject) => store.selectedDataObjects.some((o) => o.id === dataObject.id));
 	} */
 
-	function hasSomeSelectedChildren(children: TreeNodeType[]){
-		const dataObjects = gatherDataObjects(children)
-		if(dataObjects.length === 0){
-			return false
-		}
-		return dataObjects.some((child) => store.selectedDataObject?.id === child.id);
+function hasSomeSelectedChildren(children: TreeNodeType[]) {
+	const dataObjects = gatherDataObjects(children)
+	if (dataObjects.length === 0) {
+		return false
 	}
+	return dataObjects.some(
+		(child) => store.selectedDataObject?.id === child.id
+	)
+}
 
-	function disableClick(e: MouseEvent){
-		e.stopPropagation();
-		e.preventDefault();
-	}
+function disableClick(e: MouseEvent) {
+	e.stopPropagation()
+	e.preventDefault()
+}
 </script>
 
 <div class="tree-node">
@@ -99,7 +105,7 @@
 
             </summary>
             <div class="tree-details">
-                {#each treeNode.children as node (node.id)}
+                {#each treeNode.children as node, index (node.id + index)}
                     <TreeNode
                         treeNode={node}
 						{searchTerm}
