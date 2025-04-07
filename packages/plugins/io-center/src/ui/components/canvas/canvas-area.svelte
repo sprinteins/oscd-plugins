@@ -123,7 +123,7 @@ onDestroy(() => {
 		selectedConnection = null;
 	}}
 >
-	<!-- {#each _.zip(store.connections, coordinates) as [connection, promise] (connection?.id)}
+	{#each _.zip(store.connections, coordinates) as [connection, promise] (connection?.id)}
 		{#await promise then d}
 			<path
 				class={`
@@ -134,7 +134,7 @@ onDestroy(() => {
 				onclick={(event) => setSelectedConnection(event, connection)}
 			/>
 		{/await}
-	{/each} -->
+	{/each}
 	{#if canvasStore.drawStartPoint}F
 		<path
 			class="stroke-black stroke-2"
