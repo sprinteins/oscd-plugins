@@ -1,67 +1,66 @@
 <script lang="ts">
-	import NodeElement from "./node-element.svelte";
-	import { calulateCoordinates } from "./canvas-actions.svelte";
-	import { canvasStore } from "./canvas-store.svelte";
-	import {
-		getCirclePosition,
-		getCoordinates,
-		redrawConnections,
-		startDrawing,
-		stopDrawing,
-	} from "@/headless/utils";
-	import { store } from "../../../store.svelte";
-	import type {
-		Connection,
-		LcTypes,
-		NodeElement as NodeElementType,
-	} from "./types.canvas";
-	import { onDestroy } from "svelte";
+import NodeElement from './node-element.svelte'
+import { calulateCoordinates } from './canvas-actions.svelte'
+import { canvasStore } from './canvas-store.svelte'
+import {
+	getCirclePosition,
+	getCoordinates,
+	redrawConnections,
+	startDrawing,
+	stopDrawing
+} from '@/headless/utils'
+import { store } from '../../../store.svelte'
+import type {
+	Connection,
+	LcTypes,
+	NodeElement as NodeElementType
+} from './types.canvas'
+import { onDestroy } from 'svelte'
+import _ from 'lodash'
 
-	type Props = {
-		hasLNodeType: (type: LcTypes) => boolean;
-		addConnection: (connection: Connection) => void;
-		removeConnection: (connection: Connection) => void;
-	};
+type Props = {
+	hasLNodeType: (type: LcTypes) => boolean
+	addConnection: (connection: Connection) => void
+	removeConnection: (connection: Connection) => void
+}
 
-	const { hasLNodeType, addConnection, removeConnection }: Props = $props();
+const { hasLNodeType, addConnection, removeConnection }: Props = $props()
 
-	let selectedConnection: Connection | null = $state(null);
+let selectedConnection: Connection | null = $state(null)
 
-	async function getCurrentCoordinates(connection: Connection) {
-		const fromXToY = `${(await getCoordinates(connection.from)).x},${(await getCoordinates(connection.from)).y}`;
-		const fromXToXFromY = `${((await getCoordinates(connection.from)).x + (await getCoordinates(connection.to)).x) / 2},${(await getCoordinates(connection.from)).y}`;
-		const fromXToXToY = `${((await getCoordinates(connection.from)).x + (await getCoordinates(connection.to)).x) / 2},${(await getCoordinates(connection.to)).y}`;
-		const toXToY = `${(await getCoordinates(connection.to)).x},${(await getCoordinates(connection.to)).y}`;
-		return `M ${fromXToY} C ${fromXToXFromY} ${fromXToXToY} ${toXToY}`;
+async function getCurrentCoordinates(connection: Connection) {
+	const fromXToY = `${(await getCoordinates(connection.from)).x},${(await getCoordinates(connection.from)).y}`
+	const fromXToXFromY = `${((await getCoordinates(connection.from)).x + (await getCoordinates(connection.to)).x) / 2},${(await getCoordinates(connection.from)).y}`
+	const fromXToXToY = `${((await getCoordinates(connection.from)).x + (await getCoordinates(connection.to)).x) / 2},${(await getCoordinates(connection.to)).y}`
+	const toXToY = `${(await getCoordinates(connection.to)).x},${(await getCoordinates(connection.to)).y}`
+	return `M ${fromXToY} C ${fromXToXFromY} ${fromXToXToY} ${toXToY}`
+}
+
+const coordinates = $derived(store.connections.map(getCurrentCoordinates))
+
+async function setSelectedConnection(evt: MouseEvent, connection?: Connection) {
+	if (!connection) return
+	evt.stopPropagation()
+	selectedConnection = connection
+}
+
+function handleKeyPress(event: KeyboardEvent) {
+	if (event.key === 'Backspace' && selectedConnection) {
+		removeConnection(selectedConnection)
+		selectedConnection = null
 	}
+}
 
-	async function setSelectedConnection(
-		connection: Connection,
-		evt: MouseEvent,
-	) {
-		evt.stopPropagation();
-		selectedConnection = connection;
-	}
+window.addEventListener('keydown', handleKeyPress)
 
-	function handleKeyPress(event: KeyboardEvent) {
-		if (event.key === "Backspace" && selectedConnection) {
-			console.log("About to delete connection: ", selectedConnection);
-
-			removeConnection(selectedConnection);
-			selectedConnection = null;
-		}
-	}
-
-	window.addEventListener("keydown", handleKeyPress);
-
-	onDestroy(() => {
-		window.removeEventListener("keydown", handleKeyPress);
-	});
+onDestroy(() => {
+	window.removeEventListener('keydown', handleKeyPress)
+})
 </script>
 
 <div
 	use:calulateCoordinates
-	class="grid grid-cols-3 h-screen p-2 gap-2"
+	class="grid grid-cols-3 h-full p-2 gap-2"
 	bind:this={canvasStore.container}
 >
 	<div
@@ -124,15 +123,15 @@
 		selectedConnection = null;
 	}}
 >
-	{#each store.connections as connection (connection.id)}
-		{#await getCurrentCoordinates(connection) then d}
+	{#each _.zip(store.connections, coordinates) as [connection, promise] (connection?.id)}
+		{#await promise then d}
 			<path
 				class={`
 				stroke-2 fill-none cursor-pointer pointer-events-auto
-				${selectedConnection?.id === connection.id ? "stroke-red-500" : "stroke-black"}
+				${selectedConnection?.id === connection?.id ? "stroke-red-500" : "stroke-black"}
 			`}
 				{d}
-				onclick={(event) => setSelectedConnection(connection, event)}
+				onclick={(event) => setSelectedConnection(event, connection)}
 			/>
 		{/await}
 	{/each}

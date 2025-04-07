@@ -31,7 +31,6 @@ export function initPlugin(
 			>
 		}
 		getHost: () => HTMLElement | undefined
-		getRootElement: () => Element | null | undefined
 		customNamespaces?: Record<'namespacePrefix' | 'namespaceUri', string>[]
 	}
 ) {
@@ -48,7 +47,7 @@ export function initPlugin(
 	const editCount = $derived(params.getEditCount())
 	const isCustomInstance = $derived(params.getIsCustomInstance())
 	const host = $derived(params.getHost())
-	const rootElement = $derived(params.getRootElement())
+	const rootElement = $derived(doc?.documentElement)
 
 	const revisionNamespace = $derived.by(() => {
 		if (params.definition?.revision) {
