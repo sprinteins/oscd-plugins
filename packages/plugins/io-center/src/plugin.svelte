@@ -14,7 +14,7 @@
 <script lang="ts">
 import jsonPackage from '../package.json'
 // CORE
-import { initPlugin } from '@oscd-plugins/core-ui-svelte'
+import { initPlugin, WrongFileLoaded } from '@oscd-plugins/core-ui-svelte'
 // LOGIC
 import { useQuery } from './query.svelte'
 import { newCommand, type Command } from './command.svelte'
@@ -124,6 +124,8 @@ function removeConnection(connection: Connection) {
 	data-plugin-version={jsonPackage.version}
 	bind:this={root}
 >
+
+{#if store.iedList.length}
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
 		<CanvasArea
@@ -142,7 +144,10 @@ function removeConnection(connection: Connection) {
 			{editLC}
 			{hasLNodeType}
 		/>
-	</Layout>
+		</Layout>
+	{:else}
+		<WrongFileLoaded pluginName='I/O Center' errorMessage="There are no IEDs in this file to work with. Open a new file."/>
+	{/if}
 </main>
 
 <div class="toast-wrap">
