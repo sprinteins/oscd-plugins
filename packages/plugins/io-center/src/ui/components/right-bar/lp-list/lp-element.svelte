@@ -1,36 +1,36 @@
 <script lang="ts">
-    import type { LpElement } from "./types.lp-list";
-    import { Edit, Square, SquareCheck } from "lucide-svelte";
-    import EditLpDialog from "./edit-lp-dialog.svelte";
-    import { store } from "@/store.svelte";
-    import Tooltip from "../../common/tooltip.svelte";
+import type { LpElement } from './types.lp-list'
+import { Edit, Square, SquareCheck } from 'lucide-svelte'
+import EditLpDialog from './edit-lp-dialog.svelte'
+import { store } from '@/store.svelte'
+import Tooltip from '../../common/tooltip.svelte'
 
-    type Props = {
-        lpElement: LpElement;
-        searchTerm: string;
-        removeLP: (lpElement: LpElement) => void;
-        editLP: (LpElement: LpElement, name: string, desc: string) => void;
-    };
+type Props = {
+	lpElement: LpElement
+	searchTerm: string
+	removeLP: (lpElement: LpElement) => void
+	editLP: (LpElement: LpElement, name: string, desc: string) => void
+}
 
-    let { lpElement, searchTerm, removeLP, editLP }: Props = $props();
+let { lpElement, searchTerm, removeLP, editLP }: Props = $props()
 
-    const { name, instance } = lpElement;
+const { name, instance } = $derived(lpElement)
 
-    let showDialog = $state(false);
-    const isSelected = $derived(store.isLPSelected(lpElement));
+let showDialog = $state(false)
+const isSelected = $derived(store.isLPSelected(lpElement))
 
-    let isSearched = $derived(
-        searchTerm !== "" &&
-            lpElement.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
+let isSearched = $derived(
+	searchTerm !== '' &&
+		lpElement.name.toLowerCase().includes(searchTerm.toLowerCase())
+)
 
-    function addLpElementToCanvas(element: LpElement) {
-        store.toggleLpElementSelection(element);
-    }
+function addLpElementToCanvas(element: LpElement) {
+	store.toggleLpElementSelection(element)
+}
 
-    function getTooltipText() {
-        return lpElement.isLinked ? "Can not edit a linked LP!" : "";
-    }
+function getTooltipText() {
+	return lpElement.isLinked ? 'Can not edit a linked LP!' : ''
+}
 </script>
 
 <div
