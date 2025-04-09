@@ -35,7 +35,8 @@ export function initSsdTemplate(
 				target: wrongFileLoadedContainer,
 				props: {
 					pluginName: params.pluginName,
-					extension: 'SSD'
+					errorMessage:
+						'Create or open a template file with a SSD extension.'
 				}
 			})
 	}

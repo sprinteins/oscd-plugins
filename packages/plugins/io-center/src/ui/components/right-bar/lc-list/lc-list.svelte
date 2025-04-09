@@ -1,68 +1,59 @@
 <script lang="ts">
-    import { LC_LIST_FILTER_OPTIONS, LC_TYPE } from "@/headless/constants";
-    import type { Nullable } from "@/types";
-    import { Plus } from "lucide-svelte";
-    import { store } from "@/store.svelte";
-    import SearchBar from "../../common/search-bar.svelte";
-    import type {
-        LcTypes,
-        LogicalConditioner,
-    } from "../../canvas/types.canvas";
-    import LcElement from "./lc-element.svelte";
-    import FilterButtons from "../../common/filter-buttons.svelte";
-    import AddLcDialog from "../../canvas/add-lc-dialog.svelte";
-    import Tooltip from "../../common/tooltip.svelte";
+import { LC_LIST_FILTER_OPTIONS, LC_TYPE } from '@/headless/constants'
+import type { Nullable } from '@/types'
+import { Plus } from 'lucide-svelte'
+import { store } from '@/store.svelte'
+import SearchBar from '../../common/search-bar.svelte'
+import type { LcTypes, LogicalConditioner } from '../../canvas/types.canvas'
+import LcElement from './lc-element.svelte'
+import FilterButtons from '../../common/filter-buttons.svelte'
+import AddLcDialog from '../../canvas/add-lc-dialog.svelte'
+import Tooltip from '../../common/tooltip.svelte'
+// STORES
+import { iedTreeStore } from '@/headless/stores'
 
-    type Props = {
-        addLC: (
-            type: LcTypes,
-            number?: number,
-            numberOfLCIVPorts?: number,
-        ) => void;
-        removeLC: (lc: LogicalConditioner) => void;
-        editLC: (
-            lc: LogicalConditioner,
-            newType: LcTypes,
-            numberOfLCIVPorts?: number,
-        ) => void;
-        hasLNodeType: (type: LcTypes) => boolean;
-    };
+type Props = {
+	addLC: (type: LcTypes, number?: number, numberOfLCIVPorts?: number) => void
+	removeLC: (lc: LogicalConditioner) => void
+	editLC: (
+		lc: LogicalConditioner,
+		newType: LcTypes,
+		numberOfLCIVPorts?: number
+	) => void
+	hasLNodeType: (type: LcTypes) => boolean
+}
 
-    let { addLC, removeLC, editLC, hasLNodeType }: Props = $props();
+let { addLC, removeLC, editLC, hasLNodeType }: Props = $props()
 
-    let searchTerm = $state("");
+let searchTerm = $state('')
 
-    let selectedTypeToShow = $state<Nullable<LcTypes>>(null);
-    let showLinked = $state(true);
-    let showUnlinked = $state(true);
+let selectedTypeToShow = $state<Nullable<LcTypes>>(null)
+let showLinked = $state(true)
+let showUnlinked = $state(true)
 
-    const filteredList = $derived.by(() =>
-        store.logicalConditioners
-            .filter((item) =>
-                item.type.toLowerCase().includes(searchTerm.toLowerCase()),
-            )
-            .filter((item) =>
-                showLinked && !showUnlinked ? item.isLinked : true,
-            )
-            .filter((item) =>
-                showUnlinked && !showLinked ? !item.isLinked : true,
-            ),
-    );
+const filteredList = $derived.by(() =>
+	store.logicalConditioners
+		.filter((item) =>
+			item.type.toLowerCase().includes(searchTerm.toLowerCase())
+		)
+		.filter((item) => (showLinked && !showUnlinked ? item.isLinked : true))
+		.filter((item) => (showUnlinked && !showLinked ? !item.isLinked : true))
+)
 
-    let showDialog = $state(false);
+let showDialog = $state(false)
 
-    function getTooltipText() {
-        return !store.selectedDataObject || !store.selectedIED
-            ? "Select an IED and a Data Object first."
-            : "";
-    }
+function getTooltipText() {
+	return !iedTreeStore.selectedDataObject || !iedTreeStore.selectedIED
+		? 'Select an IED and a Data Object first.'
+		: ''
+}
 </script>
 
 <div class="py-6 pr-6" data-name="lp-list">
     <button
         onclick={() => (showDialog = true)}
         class="add-button"
-        disabled={!store.selectedIED || !store.selectedDataObject}
+        disabled={!iedTreeStore.selectedIED || !iedTreeStore.selectedDataObject}
     >
         <Plus size={16} />
         <Tooltip position="left" text={getTooltipText()}>
@@ -72,7 +63,7 @@
 
     <AddLcDialog bind:isOpen={showDialog} {addLC} {hasLNodeType} />
 
-    {#if store.selectedIED}
+    {#if iedTreeStore.selectedIED}
         <SearchBar bind:searchTerm placeholder="Search LC" />
 
         <div class="mt-2">

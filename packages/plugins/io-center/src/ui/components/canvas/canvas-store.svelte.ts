@@ -1,17 +1,33 @@
-import type { ConnectionPort, LogicalConditioner, NodeElement, NodeElementType } from "./types.canvas"
-import { store } from "../../../store.svelte"
-import type { ObjectNodeDataObject } from "../../../ied/object-tree.type"
-import type { LpElement } from "../right-bar/lp-list/types.lp-list"
-import { NODE_ELEMENT_TYPE, NODE_TYPE } from "@/headless/constants"
+import type {
+	ConnectionPort,
+	LogicalConditioner,
+	NodeElement,
+	NodeElementType
+} from './types.canvas'
+import { store } from '../../../store.svelte'
+import type { LpElement } from '../right-bar/lp-list/types.lp-list'
+import { NODE_ELEMENT_TYPE } from '@/headless/constants'
+// STORES
+import { iedTreeStore } from '@/headless/stores'
+// TYPES
+import type { DataObject } from '@/headless/stores'
 
 class Store {
-	dataObjects = $derived<NodeElement[]>(store.selectedDataObject ? [dataObjectToNodeElement(store.selectedDataObject)] : [])
-	logicalConditioners = $derived(store.selectedLogicalConditioners.map(LCToNodeElement))
-	logicalPhysicals = $derived(store.selectedLogicalPhysicals.map(LPToNodeElement))
+	dataObjects = $derived<NodeElement[]>(
+		iedTreeStore.selectedDataObject
+			? [dataObjectToNodeElement(iedTreeStore.selectedDataObject)]
+			: []
+	)
+	logicalConditioners = $derived(
+		store.selectedLogicalConditioners.map(LCToNodeElement)
+	)
+	logicalPhysicals = $derived(
+		store.selectedLogicalPhysicals.map(LPToNodeElement)
+	)
 	container = $state<HTMLDivElement | null>(null)
 	mousePosition = $state({ x: 0, y: 0 })
-	startNode = $state<string | null>("");
-	startPort = $state<ConnectionPort | null>(null);
+	startNode = $state<string | null>('')
+	startPort = $state<ConnectionPort | null>(null)
 	startNodeType = $state<NodeElementType | null>(null)
 	drawStartPoint = $state<EventTarget | null>(null)
 	lastStartPoint = $state<EventTarget | null>(null)
@@ -42,23 +58,22 @@ export function LCToNodeElement(lc: LogicalConditioner): NodeElement {
 	}
 }
 
-export function dataObjectToNodeElement(dataObject: ObjectNodeDataObject): NodeElement {
-
+export function dataObjectToNodeElement(dataObject: DataObject): NodeElement {
 	const id = [
-		dataObject.objectPath.ied?.name,
-		dataObject.objectPath.lDevice?.inst,
-		dataObject.objectPath.ln?.lnClass,
-		dataObject.objectPath.ln?.inst,
+		dataObject.objectPath.ied.name,
+		dataObject.objectPath.lDevice.inst,
+		dataObject.objectPath.ln.lnClass,
+		dataObject.objectPath.ln.inst,
 		dataObject.name
 	]
-	.filter(Boolean)
-	.join("-")
+		.filter(Boolean)
+		.join('-')
 
 	const nodeElement = {
 		name: dataObject.name,
 		type: NODE_ELEMENT_TYPE.DO,
-		isLinked: dataObject.isLinked,
-		id,
+		isLinked: false,
+		id
 	}
 	return nodeElement
 }
