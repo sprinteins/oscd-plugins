@@ -111,9 +111,7 @@ export class Command {
 
 		const ied = this.requireSelectedIED()
 
-		const lpToEdit = ied.querySelector(
-			`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`
-		)
+		const lpToEdit = ied.querySelector(`LN[uuid="${lpElement.id}"]`)
 
 		if (!lpToEdit) {
 			throw new Error(
@@ -140,9 +138,7 @@ export class Command {
 		const ied = this.requireSelectedIED()
 
 		//Delete target LP
-		const lpToDelete = ied.querySelector(
-			`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`
-		)
+		const lpToDelete = ied.querySelector(`LN[uuid="${lpElement.id}"]`)
 
 		if (!lpToDelete) {
 			throw new Error(
@@ -156,6 +152,11 @@ export class Command {
 				node: lpToDelete
 			}
 		})
+
+		store._selectedLogicalPhysicals =
+			store._selectedLogicalPhysicals.filter(
+				(lp) => lp.id !== lpElement.id
+			)
 
 		//Correct instance attribute for any LP that's after the target
 		const remainingLPs = Array.from(
@@ -246,11 +247,11 @@ export class Command {
 	}
 
 	public editLC(
-		lc: LogicalConditioner,
+		currentLc: LogicalConditioner,
 		newType: LcTypes,
 		numberOfLCIVPorts?: number
 	) {
-		this.removeLC(lc)
+		this.removeLC(currentLc)
 		if (numberOfLCIVPorts) {
 			this.addLC(newType, 1, numberOfLCIVPorts)
 			return
@@ -258,18 +259,16 @@ export class Command {
 		this.addLC(newType)
 	}
 
-	public removeLC(lc: LogicalConditioner) {
+	public removeLC(currentLc: LogicalConditioner) {
 		const host = this.requireHost()
 
 		const ied = this.requireSelectedIED()
 
-		const lcToDelete = ied.querySelector(
-			`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lc.type}"][inst="${lc.instance}"][lnClass="${lc.type}"]`
-		)
+		const lcToDelete = ied.querySelector(`LN[uuid="${currentLc.id}"]`)
 
 		if (!lcToDelete) {
 			throw new Error(
-				`LP element with name ${lc.type}-${lc.instance} not found!`
+				`LP element with name ${currentLc.type}-${currentLc.instance} not found!`
 			)
 		}
 
@@ -280,14 +279,19 @@ export class Command {
 			}
 		})
 
+		store._selectedLogicalConditioners =
+			store._selectedLogicalConditioners.filter(
+				(lc) => lc.id !== currentLc.id
+			)
+
 		//Decrease instance attribute by 1 for any LP that's after the target
 		const remainingLCs = Array.from(
 			ied.querySelectorAll(
-				`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lc.type}"]`
+				`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${currentLc.type}"]`
 			)
 		)
 
-		const deletedLcInstance = Number.parseInt(lc.instance)
+		const deletedLcInstance = Number.parseInt(currentLc.instance)
 
 		for (const lc of remainingLCs.slice(deletedLcInstance - 1)) {
 			createAndDispatchEditEvent({
