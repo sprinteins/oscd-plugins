@@ -1,36 +1,39 @@
-import type { ConnectionPort, LcTypes } from "@/ui/components/canvas/types.canvas"
-import type { FilterOptions } from "@/ui/components/common/types.common"
-import type { LpTypes } from "@/ui/components/right-bar/lp-list/types.lp-list"
+import type {
+	ConnectionPort,
+	LcTypes
+} from '@/ui/components/canvas/types.canvas'
+import type { FilterOptions } from '@/ui/components/common/types.common'
 
 export const NODE_TYPE = {
-    accessPoint: 'accessPoint',
-    logicalDevice: 'logicalDevice',
-    logicalNode: 'logicalNode',
-    dataObjectInstance: 'dataObjectInstance'
+	ied: 'IED',
+	accessPoint: 'AccessPoint',
+	lDevice: 'LDevice',
+	lN: 'LN',
+	dO: 'DO'
 } as const
 
 export const NODE_ELEMENT_TYPE = {
-    DO: "DO",
-    LC: "LC",
-    LP: "LP"
+	DO: 'DO',
+	LC: 'LC',
+	LP: 'LP'
 } as const
 
 export const LP_TYPE = {
-    LPDO: 'LPDO',
-    LPDI: 'LPDI',
-    LPAI: 'LPAI',
-    LPAO: 'LPAO',
+	LPDO: 'LPDO',
+	LPDI: 'LPDI',
+	LPAI: 'LPAI',
+	LPAO: 'LPAO'
 } as const
 
 export const LC_TYPE = {
-    LCBI: "LCBI",
-    LCBO: "LCBO",
-    LCDP: "LCDP",
-    LCIV: "LCIV",
+	LCBI: 'LCBI',
+	LCBO: 'LCBO',
+	LCDP: 'LCDP',
+	LCIV: 'LCIV'
 } as const
 
 export const L_NODE_TYPE_CONTENT = {
-    LCBI: `
+	LCBI: `
         <DO name="NamPlt" type="LPL"/>
         <DO name="OutInd" type="SPS"/>
         <DO name="Beh" type="ENS"/>
@@ -44,7 +47,7 @@ export const L_NODE_TYPE_CONTENT = {
         <DO name="PlsDur" type="ING"/>
         <DO name="InRef" type="ORG"/>
     `,
-    LCBO: `
+	LCBO: `
         <DO name="NamPlt" type="LPL"/>
         <DO name="OutInd" type="SPS"/>
         <DO name="Beh" type="ENS"/>
@@ -60,9 +63,9 @@ export const L_NODE_TYPE_CONTENT = {
         <DO name="MinPlsDur" type="ING"/>
         <DO name="InRef" type="ORG"/>
     `,
-    LCDP: '<DO name="OutPos" type="DPS"/>',
-    LCIV: '<DO name="OutPos" type="INS"/>',
-    LPDO: `
+	LCDP: '<DO name="OutPos" type="DPS"/>',
+	LCIV: '<DO name="OutPos" type="INS"/>',
+	LPDO: `
         <DO name="BrdRef" type="VSD"/>
         <DO name="DsgOutCom" type="VSD"/>
         <DO name="DsgOutSig" type="VSD"/>
@@ -84,7 +87,7 @@ export const L_NODE_TYPE_CONTENT = {
         <DO name="OutTyp" type="ENG"/>
         <DO name="InRef" type="ORG"/>
     `,
-    LPDI: `
+	LPDI: `
         <DO name="BrdRef" type="VSD"/>
         <DO name="DsgInpCom" type="VSD"/>
         <DO name="DsgInpSig" type="VSD"/>
@@ -106,40 +109,40 @@ export const L_NODE_TYPE_CONTENT = {
         <DO name="VlnTyp" type="ENG"/>
         <DO name="InRef" type="ORG"/>
     `,
-    LPAI: '<DO name="Ind" type="SPS"/>',
-    LPAO: '<DO name="Ind" type="SPS"/>',
+	LPAI: '<DO name="Ind" type="SPS"/>',
+	LPAO: '<DO name="Ind" type="SPS"/>'
 } as const
 
 export const L_NODE_TYPE_HELPER_TEXT =
-    "The selected type has no matching LNodeType, which will be created automatically, or you can create one using the Template Plugin.";
+	'The selected type has no matching LNodeType, which will be created automatically, or you can create one using the Template Plugin.'
 
 export const PORTS_CONFIG_PER_TYPE: Record<string, ConnectionPort[]> = {
-    LCBI: [
-        { name: 'OutInd', side: 'left' },
-        { name: 'In', side: 'right' },
-    ],
-    LCBO: [
-        { name: 'In', side: 'left' },
-        { name: 'OutInd', side: 'right' },
-    ],
-    LCDP: [
-        { name: 'OutPos', side: 'left' },
-        { name: 'InOn', side: 'right' },
-        { name: 'InOff', side: 'right' }
-    ],
-    LCIV: [
-        { name: 'OutInd', side: 'left' },
-        { name: 'In', side: 'right' },
-    ],
-    LPDO: [{ name: 'In', side: 'left' }],
-    LPDI: [{ name: 'Ind', side: 'left' }],
-    LPAI: [{ name: 'Ind', side: 'left' }],
-    LPAO: [{ name: 'Ind', side: 'left' }],
+	LCBI: [
+		{ name: 'OutInd', side: 'left' },
+		{ name: 'In', side: 'right' }
+	],
+	LCBO: [
+		{ name: 'In', side: 'left' },
+		{ name: 'OutInd', side: 'right' }
+	],
+	LCDP: [
+		{ name: 'OutPos', side: 'left' },
+		{ name: 'InOn', side: 'right' },
+		{ name: 'InOff', side: 'right' }
+	],
+	LCIV: [
+		{ name: 'OutInd', side: 'left' },
+		{ name: 'In', side: 'right' }
+	],
+	LPDO: [{ name: 'In', side: 'left' }],
+	LPDI: [{ name: 'Ind', side: 'left' }],
+	LPAI: [{ name: 'Ind', side: 'left' }],
+	LPAO: [{ name: 'Ind', side: 'left' }]
 }
 
 export const RESTRICTED_LC_TYPES_BY_CDC: Record<string, LcTypes[]> = {
-    "dps": [LC_TYPE.LCDP],
-    "sps": [LC_TYPE.LCBI, LC_TYPE.LCBO],
+	dps: [LC_TYPE.LCDP],
+	sps: [LC_TYPE.LCBI, LC_TYPE.LCBO]
 }
 
 // TARGET_CDC: Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
@@ -147,21 +150,27 @@ export const RESTRICTED_LC_TYPES_BY_CDC: Record<string, LcTypes[]> = {
 export const TARGET_CDC_TYPES = ['dps', 'sps', 'dpc', 'spc', 'ins', 'ens']
 
 export const LP_LIST_FILTER_OPTIONS: FilterOptions = [
-    { label: "All LPs", values: { selectedType: null, linked: true, unlinked: true } },
-    { label: "Unlinked", values: { linked: false, unlinked: true } },
-    { label: "Linked", values: { linked: true, unlinked: false } },
-    ...Object.values(LP_TYPE).map((value) => ({
-        label: value,
-        values: { selectedType: value },
-    })),
-];
+	{
+		label: 'All LPs',
+		values: { selectedType: null, linked: true, unlinked: true }
+	},
+	{ label: 'Unlinked', values: { linked: false, unlinked: true } },
+	{ label: 'Linked', values: { linked: true, unlinked: false } },
+	...Object.values(LP_TYPE).map((value) => ({
+		label: value,
+		values: { selectedType: value }
+	}))
+]
 
 export const LC_LIST_FILTER_OPTIONS: FilterOptions = [
-    { label: "All LCs", values: { selectedType: null, linked: true, unlinked: true } },
-    { label: "Unlinked", values: { linked: false, unlinked: true } },
-    { label: "Linked", values: { linked: true, unlinked: false } },
-    ...Object.values(LC_TYPE).map((value) => ({
-        label: value,
-        values: { selectedType: value },
-    })),
-];
+	{
+		label: 'All LCs',
+		values: { selectedType: null, linked: true, unlinked: true }
+	},
+	{ label: 'Unlinked', values: { linked: false, unlinked: true } },
+	{ label: 'Linked', values: { linked: true, unlinked: false } },
+	...Object.values(LC_TYPE).map((value) => ({
+		label: value,
+		values: { selectedType: value }
+	}))
+]

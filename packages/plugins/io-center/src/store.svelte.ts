@@ -1,11 +1,3 @@
-import type { DataObject } from './ied/data-object'
-import type { IED } from './ied/ied'
-import {
-	NullObjectTree,
-	type ObjectNodeDataObject,
-	type ObjectTree
-} from './ied/object-tree.type.d'
-import type { Nullable } from './types'
 import type {
 	Connection,
 	LogicalConditioner
@@ -20,22 +12,6 @@ export class Store {
 	doc: XMLDocument = $state(
 		new DOMParser().parseFromString('<SCL></SCL>', 'application/xml')
 	)
-
-	//
-	// #region IEDs
-	//
-	iedList: IED[] = $state([])
-	selectedIED: Nullable<IED> = $state(null)
-
-	//
-	// #region Object Tree
-	//
-	//Multiple Selection "Disabled for now"
-	//selectedDataObjects: ObjectNodeDataObject[] = $state([])
-	selectedDataObject: ObjectNodeDataObject | null = $state(null)
-	dataObjects: DataObject[] = $state([])
-	objectTree: ObjectTree = $state(NullObjectTree)
-	objectTreeSearchInputValue: string = $state('')
 
 	//
 	// #region Logical Conditioners

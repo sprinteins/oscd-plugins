@@ -14,13 +14,22 @@
            └ ─ ─ Content              
    └ ─ ─ Sidebar Left                             
 -->
-
+<script lang="ts">
+// STORES
+import { iedTreeStore } from '@/headless/stores'
+</script>
 <layout>
 	<sidebar-left>
 		<slot name="sidebar-left" />
 	</sidebar-left>
 	<content>
-		<slot name="content" />
+		{#if iedTreeStore.selectedDataObject}
+			<slot name="content" />
+		{:else}
+		<div class="flex items-center justify-center h-full w-full">
+			<p class="font-black text-xl">Please select a data object in the left sidebar.</p>
+		</div>
+		{/if}
 	</content>
 	<sidebar-right>
 		<slot name="sidebar-right" />

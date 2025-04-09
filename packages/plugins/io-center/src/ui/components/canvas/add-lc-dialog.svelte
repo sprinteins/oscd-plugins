@@ -1,90 +1,88 @@
 <script lang="ts">
-	import {
-		RESTRICTED_LC_TYPES_BY_CDC,
-		L_NODE_TYPE_HELPER_TEXT,
-		LC_TYPE,
-	} from "@/headless/constants";
-	import Input from "../common/input.svelte";
-	import Select from "../common/select.svelte";
-	import type { LcTypes } from "./types.canvas";
-	import type { Optional } from "../../../types";
-	import { store } from "@/store.svelte";
+import {
+	RESTRICTED_LC_TYPES_BY_CDC,
+	L_NODE_TYPE_HELPER_TEXT,
+	LC_TYPE
+} from '@/headless/constants'
+import Input from '../common/input.svelte'
+import Select from '../common/select.svelte'
+import type { LcTypes } from './types.canvas'
+import type { Optional } from '../../../types'
+import { iedTreeStore } from '@/headless/stores'
 
-	type Props = {
-		isOpen: boolean;
-		addLC: (
-			type: LcTypes,
-			number?: number,
-			numberOfLCIVPorts?: number,
-		) => void;
-		hasLNodeType: (type: LcTypes) => boolean;
-	};
+type Props = {
+	isOpen: boolean
+	addLC: (type: LcTypes, number?: number, numberOfLCIVPorts?: number) => void
+	hasLNodeType: (type: LcTypes) => boolean
+}
 
-	let { isOpen = $bindable(), addLC, hasLNodeType }: Props = $props();
-	let tempTypeOfLC: LcTypes | "" = $state("");
+let { isOpen = $bindable(), addLC, hasLNodeType }: Props = $props()
+let tempTypeOfLC: LcTypes | '' = $state('')
 
-	const typePresentInDoc = $derived.by(() => {
-		if (!tempTypeOfLC) {
-			return;
-		}
-		return hasLNodeType(tempTypeOfLC);
-	});
+const typePresentInDoc = $derived.by(() => {
+	if (!tempTypeOfLC) {
+		return
+	}
+	return hasLNodeType(tempTypeOfLC)
+})
 
-	function handleSubmit(event: SubmitEvent) {
-		event.preventDefault();
-		tempTypeOfLC = "";
-		if (!event.target) {
-			return;
-		}
-
-		const formElement = event.target as HTMLFormElement;
-		const formData = new FormData(formElement);
-
-		const typeOfLC = formData.get("typeOfLC") as Optional<LcTypes>;
-		let numberOfLCs = Number(formData.get("number")) as Optional<number>;
-		const numberOfLCIVPorts = Number(
-			formData.get("numberOfLCIVPorts"),
-		) as Optional<number>;
-
-		if (numberOfLCIVPorts) {
-			numberOfLCs = 1;
-		}
-
-		if (!typeOfLC) {
-			return;
-		}
-
-		addLC(typeOfLC, numberOfLCs, numberOfLCIVPorts);
-		isOpen = false;
+function handleSubmit(event: SubmitEvent) {
+	event.preventDefault()
+	tempTypeOfLC = ''
+	if (!event.target) {
+		return
 	}
 
-	function handleCancel() {
-		tempTypeOfLC = "";
-		isOpen = false;
+	const formElement = event.target as HTMLFormElement
+	const formData = new FormData(formElement)
+
+	const typeOfLC = formData.get('typeOfLC') as Optional<LcTypes>
+	let numberOfLCs = Number(formData.get('number')) as Optional<number>
+	const numberOfLCIVPorts = Number(
+		formData.get('numberOfLCIVPorts')
+	) as Optional<number>
+
+	if (numberOfLCIVPorts) {
+		numberOfLCs = 1
 	}
 
-	function getHelperText() {
-		return tempTypeOfLC && !typePresentInDoc
-			? `⚠︎ Missing ${tempTypeOfLC} LNodeType`
-			: undefined;
+	if (!typeOfLC) {
+		return
 	}
 
-	function getOptions() {
-		if (!store.selectedDataObject) {
-			return [];
-		}
+	addLC(typeOfLC, numberOfLCs, numberOfLCIVPorts)
+	isOpen = false
+}
 
-		if (
-			store.selectedDataObject.cdcType &&
-			Object.keys(RESTRICTED_LC_TYPES_BY_CDC).includes(
-				store.selectedDataObject.cdcType,
-			)
-		) {
-			return RESTRICTED_LC_TYPES_BY_CDC[store.selectedDataObject.cdcType];
-		}
+function handleCancel() {
+	tempTypeOfLC = ''
+	isOpen = false
+}
 
-		return Object.values(LC_TYPE);
+function getHelperText() {
+	return tempTypeOfLC && !typePresentInDoc
+		? `⚠︎ Missing ${tempTypeOfLC} LNodeType`
+		: undefined
+}
+
+function getOptions() {
+	if (!iedTreeStore.selectedDataObject) {
+		return []
 	}
+
+	if (
+		iedTreeStore.selectedDataObject.cdcType &&
+		Object.keys(RESTRICTED_LC_TYPES_BY_CDC).includes(
+			iedTreeStore.selectedDataObject.cdcType
+		)
+	) {
+		return RESTRICTED_LC_TYPES_BY_CDC[
+			iedTreeStore.selectedDataObject.cdcType
+		]
+	}
+
+	return Object.values(LC_TYPE)
+}
 </script>
 
 {#if isOpen}

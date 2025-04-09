@@ -20,6 +20,7 @@ import { useQuery } from './query.svelte'
 import { newCommand, type Command } from './command.svelte'
 // STORE
 import { store } from './store.svelte'
+import { iedTreeStore } from './headless/stores'
 // COMPONENTS
 import Layout from '@/ui/layout.svelte'
 import SideBarLeft from '@/sidebar-left.svelte'
@@ -125,7 +126,7 @@ function removeConnection(connection: Connection) {
 	bind:this={root}
 >
 
-{#if store.iedList.length}
+{#if iedTreeStore.iEDList.length}
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
 		<CanvasArea
