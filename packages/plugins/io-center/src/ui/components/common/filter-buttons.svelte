@@ -52,9 +52,9 @@
     }
 </script>
 
-<div class="flex flex-wrap gap-1">
-    {#each filterOptions as { label }}
-        {#if STATUS_BUTTONS.includes(label)}
+<div class="flex flex-col gap-2">
+    <div class="flex flex-wrap gap-1">
+        {#each filterOptions.slice(0, 3) as { label }}
             {#if label !== "All LPs" || (selectedStatus !== "Linked" && selectedStatus !== "Unlinked")}
                 <label class="radio-label">
                     <input
@@ -67,7 +67,11 @@
                     <span class="radio-text">{label}</span>
                 </label>
             {/if}
-        {:else}
+        {/each}
+    </div>
+
+    <div class="flex flex-wrap gap-1">
+        {#each filterOptions.slice(3) as { label }}
             <button
                 onclick={() => toggleType(label)}
                 class={{
@@ -77,8 +81,8 @@
             >
                 {label}
             </button>
-        {/if}
-    {/each}
+        {/each}
+    </div>
 </div>
 
 <style>
