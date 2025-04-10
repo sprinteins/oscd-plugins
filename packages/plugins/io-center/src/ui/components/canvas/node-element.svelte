@@ -77,4 +77,12 @@
   .selected {
     @apply border-teal-600;
   }
+
+  .text {
+    @apply flex-none;
+  }
+
+  .connector-icon {
+    @apply ml-auto flex-none;
+  }
 </style>
