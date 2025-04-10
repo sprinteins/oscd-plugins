@@ -26,7 +26,7 @@
 
     let searchTerm = $state("");
 
-    let selectedTypeToShow = $state<Nullable<LpTypes>>(null);
+    let selectedTypeToShow = $state<Nullable<string[]>>(null);
     let showLinked = $state(true);
     let showUnlinked = $state(true);
 
@@ -36,11 +36,14 @@
                 item.name.toLowerCase().includes(searchTerm.toLowerCase()),
             )
             .filter((item) =>
-                showLinked && !showUnlinked ? item.isLinked : true,
+                showLinked && !showUnlinked ? item.isLinked : 
+                showUnlinked && !showLinked ? !item.isLinked : 
+                true
             )
-            .filter((item) =>
-                showUnlinked && !showLinked ? !item.isLinked : true,
-            ),
+            .filter((item) => {
+                if (!selectedTypeToShow || selectedTypeToShow.length === 0) return true;
+                return selectedTypeToShow.includes(item.type);
+            }),
     );
 
     let showDialog = $state(false);
@@ -71,7 +74,7 @@
         </div>
 
         {#each Object.values(LP_TYPE) as lpType}
-            {#if (selectedTypeToShow === null || selectedTypeToShow === lpType) && filteredList.length > 0}
+            {#if (selectedTypeToShow === null || selectedTypeToShow.includes(lpType)) && filteredList.length > 0}
                 <p class="text-xl font-semibold pl-2 pt-3">{lpType}</p>
                 {#each filteredList.filter((item) => item.type === lpType) as lpElement (lpElement.id)}
                     <LpElement {searchTerm} {lpElement} {removeLP} {editLP} />
