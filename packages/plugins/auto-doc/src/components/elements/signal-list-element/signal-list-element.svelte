@@ -93,17 +93,19 @@
 	}
 	
 	function emitSelectedRows() {
-		const selectedWithOrder = selectedRows.map(row => ({
+		const allRowsWithOrder = mergedColsAndMessages.map((row, index) => ({
 			...row,
-			index: mergedColsAndMessages.findIndex(r => r.id === row.id)
-		}))
+			index
+		}));
+
+		const selectedWithOrder = allRowsWithOrder.filter(row => row.isSelected);
 		
 		const results = {
 			selected: selectedWithOrder,
 			matches: searchForMatchOnSignalList()
-		}
-		
-		onContentChange(JSON.stringify(results))
+		};
+		console.log("results", results);
+		onContentChange(JSON.stringify(results));
 	}
 	function getSelectedRowIfPreviouslySelected(
 		searchKey: keyof typeof Columns | keyof typeof SignalType
@@ -156,6 +158,7 @@
 		})
 		
 		mergedColsAndMessages = newRows
+		console.log("mergedColsAndMessages", mergedColsAndMessages);
 		emitSelectedRows()
 	}
 	
