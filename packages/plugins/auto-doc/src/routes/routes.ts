@@ -1,4 +1,4 @@
-import {TemplateOverview} from "@/pages"
+import {TemplateOverview, TemplateCreation} from "@/pages"
 import {wrap} from 'svelte-spa-router/wrap'
 import type { SvelteComponent, ComponentType } from 'svelte'
 import type { WrappedComponent } from "svelte-spa-router"
@@ -13,10 +13,10 @@ type Route = {
 export const routes : Route = {
 	[ROUTES.Home] : TemplateOverview,
 	[`${ROUTES.Create}`] : wrap({
-		asyncComponent: ()=> import("@/pages/template-creation/template-creation.svelte")
+		asyncComponent: ()=> TemplateCreation
 	}),
 	[`${ROUTES.Edit}/${ROUTER_PARAMS.id}`] : wrap({
-		asyncComponent: ()=> import("@/pages/template-creation/template-creation.svelte")
+		asyncComponent: ()=> TemplateCreation
 	}),
 	[ROUTES.Not_Found]: TemplateOverview
 }
