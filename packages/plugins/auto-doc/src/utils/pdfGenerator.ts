@@ -361,7 +361,6 @@ function generateTableHeader(selectedRows: SignalRow[]): TableHeader[] {
 
 function downloadAsPdf(templateId: string){
     const template = docTemplatesStore.getDocumentTemplate(templateId);
-    console.log("template", template);
     if(!template) {
         console.error("Template not found");
         return;

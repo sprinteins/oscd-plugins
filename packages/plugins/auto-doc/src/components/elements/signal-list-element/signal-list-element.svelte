@@ -104,7 +104,6 @@
 			selected: selectedWithOrder,
 			matches: searchForMatchOnSignalList()
 		};
-		console.log("results", results);
 		onContentChange(JSON.stringify(results));
 	}
 	function getSelectedRowIfPreviouslySelected(
@@ -158,7 +157,6 @@
 		})
 		
 		mergedColsAndMessages = newRows
-		console.log("mergedColsAndMessages", mergedColsAndMessages);
 		emitSelectedRows()
 	}
 	
