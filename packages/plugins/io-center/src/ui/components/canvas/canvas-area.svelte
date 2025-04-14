@@ -67,7 +67,7 @@ onDestroy(() => {
 		class="flex flex-col items-center w-full gap-2 bg-gray-50"
 		data-title="DO"
 	>
-		<div class="text-center font-mono bg-gray-300 w-full py-2">
+		<div class="text-center bg-gray-300 w-full py-2">
 			Data Objects
 		</div>
 		{#each canvasStore.dataObjects as node}
@@ -79,7 +79,7 @@ onDestroy(() => {
 		data-title="LC"
 	>
 		<div
-			class="flex justify-center gap-2 font-mono bg-gray-300 w-full py-2 items-center"
+			class="flex justify-center gap-2 bg-gray-300 w-full py-2 items-center"
 		>
 			Logical Conditioners
 		</div>
@@ -99,7 +99,7 @@ onDestroy(() => {
 		class="flex flex-col items-center w-full gap-2 bg-gray-50"
 		data-title="LP"
 	>
-		<div class="text-center font-mono bg-gray-300 w-full py-2">
+		<div class="text-center bg-gray-300 w-full py-2">
 			Logical Physical I/O
 		</div>
 		{#each canvasStore.logicalPhysicals as node}

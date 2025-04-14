@@ -27,7 +27,7 @@ let { addLC, removeLC, editLC, hasLNodeType }: Props = $props()
 
 let searchTerm = $state('')
 
-let selectedTypeToShow = $state<Nullable<LcTypes>>(null)
+let selectedTypeToShow = $state<Nullable<string[]>>(null)
 let showLinked = $state(true)
 let showUnlinked = $state(true)
 
@@ -36,8 +36,18 @@ const filteredList = $derived.by(() =>
 		.filter((item) =>
 			item.type.toLowerCase().includes(searchTerm.toLowerCase())
 		)
-		.filter((item) => (showLinked && !showUnlinked ? item.isLinked : true))
-		.filter((item) => (showUnlinked && !showLinked ? !item.isLinked : true))
+		.filter((item) =>
+			showLinked && !showUnlinked
+				? item.isLinked
+				: showUnlinked && !showLinked
+					? !item.isLinked
+					: true
+		)
+		.filter((item) => {
+			if (!selectedTypeToShow || selectedTypeToShow.length === 0)
+				return true
+			return selectedTypeToShow.includes(item.type)
+		})
 )
 
 let showDialog = $state(false)
@@ -76,7 +86,7 @@ function getTooltipText() {
         </div>
 
         {#each Object.values(LC_TYPE) as lcType}
-            {#if (selectedTypeToShow === null || selectedTypeToShow === lcType) && filteredList.length > 0}
+            {#if (selectedTypeToShow === null || selectedTypeToShow.includes(lcType)) && filteredList.length > 0}
                 <p class="text-xl font-semibold pl-2 pt-3">{lcType}</p>
                 {#each filteredList.filter((item) => item.type === lcType) as lc (lc.id)}
                     <LcElement {searchTerm} {lc} {editLC} {removeLC} />
