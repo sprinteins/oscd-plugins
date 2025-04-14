@@ -1,20 +1,46 @@
 <script lang="ts">
-	import { store } from "./store.svelte";
-	import IEDSelect from "./ied/ied-select.svelte";
-	import type { IED } from "./ied/ied";
-	import ObjectTree from "./ui/components/object-tree/object-tree.svelte";
+// STORES
+import { store } from './store.svelte'
+import { iedTreeStore } from '@/headless/stores'
+// COMPONENTS
+import { SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
+import IedTree from '@/ui/components/left-sidebar/ied-tree.svelte'
+import SearchBar from '@/ui/components/common/search-bar.svelte'
 
-	function onSelectIED(ied: IED) {
-		store.selectedIED = ied;
-		store.selectedDataObject = null;
-		store.selectedLogicalConditioners = [];
-		store.selectedLogicalPhysicals = [];
-	}
+//====== DERIVED ======//
+
+const iedOptions = $derived(
+	iedTreeStore.iEDList.map((ied) => ({
+		value: ied,
+		label: ied.name
+	}))
+)
+
+//====== FUNCTIONS ======//
+
+function resetAllSelectionOnChange() {
+	iedTreeStore.selectedDataObject = undefined
+	store._selectedLogicalConditioners = []
+	store._selectedLogicalPhysicals = []
+}
 </script>
 
-<sidebar-left>
-	<IEDSelect {onSelectIED} />
-	{#if store.objectTree.ied.children.length > 0}
-		<ObjectTree />
+<aside class="flex flex-col bg-sidebar h-full overflow-hidden p-4 space-y-5">
+	<section class="flex flex-col space-y-3">
+		<h1 class="font-black text-xl mb-3">Data Object selector</h1>
+		<SelectWorkaround
+			bind:value={iedTreeStore.selectedIED}
+			placeholder="Select an IED"
+			options={iedOptions}
+			handleChange={resetAllSelectionOnChange}
+		/>
+		<SearchBar bind:searchTerm={iedTreeStore.searchInputValue} placeholder="Search DO" />
+	</section>
+
+	{#if iedTreeStore.treeItems.length > 0}
+		<section class="overflow-y-auto">
+			<IedTree />
+		</section>
 	{/if}
-</sidebar-left>
+</aside>
+

@@ -1,64 +1,108 @@
-import { createAndDispatchEditEvent } from "@oscd-plugins/core-api/plugin/v1"
-import { store } from "./store.svelte"
-import type { Nullable } from "./types"
-import type { LpElement, LpTypes } from "./ui/components/right-bar/lp-list/types.lp-list"
-import { createElement } from "./headless/stores/document-helpers.svelte"
-import type { Connection, LcTypes, LogicalConditioner, NodeElement } from "./ui/components/canvas/types.canvas"
-import { L_NODE_TYPE_CONTENT, NODE_ELEMENT_TYPE } from "./headless/constants"
-import { isDoToLcConnectionAllowed } from "./headless/utils"
+import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
+import { store } from './store.svelte'
+import type { Nullable } from './types'
+import type {
+	LpElement,
+	LpTypes
+} from './ui/components/right-bar/lp-list/types.lp-list'
+import { createElement } from './headless/stores/document-helpers.svelte'
+import type {
+	Connection,
+	LcTypes,
+	LogicalConditioner,
+	NodeElement
+} from './ui/components/canvas/types.canvas'
+import { L_NODE_TYPE_CONTENT, NODE_ELEMENT_TYPE } from './headless/constants'
+import { isDoToLcConnectionAllowed } from './headless/utils'
+// STORES
+import { iedTreeStore } from './headless/stores'
 
 export class Command {
-	constructor(
-		private getHost: HostGetter,
-	) { }
+	constructor(private getHost: HostGetter) {}
 
-	public addLP(type: LpTypes, name: string, desc: string, number?: number, numberOfLPDOPorts?: number) {
-		if (!store.doc) { return }
+	public addLP(
+		type: LpTypes,
+		name: string,
+		desc: string,
+		number?: number,
+		numberOfLPDOPorts?: number
+	) {
+		if (!store.doc) {
+			return
+		}
 
-		const sclRoot = store.doc.querySelector("SCL");
+		const sclRoot = store.doc.querySelector('SCL')
 
-		if (!sclRoot) { return }
+		if (!sclRoot) {
+			return
+		}
 
 		const host = this.requireHost()
 
-		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
+		const ied = store.doc.querySelector(
+			`IED[name="${iedTreeStore.selectedIED?.name}"]`
+		)
 
 		if (!ied) {
-			throw new Error(`IED with name ${store.selectedIED} not found`)
+			throw new Error(
+				`IED with name ${iedTreeStore.selectedIED?.name} not found`
+			)
 		}
 
 		const ld0 = this.ensureLD0(ied)
 
 		this.ensureLNodeType(type)
 
-		const currentLPNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
+		const currentLPNumber = ld0.querySelectorAll(
+			`LN[lnClass="${type}"]`
+		).length
 
 		if (!number) {
 			const attributes = {
-				"xmlns": "",
-				"desc": desc || null,
-				"lnClass": type,
-				"inst": `${currentLPNumber + 1}`,
-				"lnType": name || type,
-				"numberOfLPDOPorts": `${numberOfLPDOPorts}` || "",
+				xmlns: '',
+				uuid: crypto.randomUUID(),
+				desc: desc || '',
+				lnClass: type,
+				inst: `${currentLPNumber + 1}`,
+				lnType: name || type,
+				...(numberOfLPDOPorts && {
+					numberOfLPDOPorts: `${numberOfLPDOPorts}` || ''
+				})
 			}
 
-			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
+			createElement({
+				host,
+				doc: store.doc,
+				tagName: 'LN',
+				attributes,
+				parent: ld0,
+				reference: null
+			})
 
 			return
 		}
 
 		for (let i = 1; i <= number; i++) {
 			const attributes = {
-				"xmlns": "",
-				"desc": desc || null,
-				"lnClass": type,
-				"inst": `${currentLPNumber + i}`,
-				"lnType": name || type,
-				"numberOfLPDOPorts": `${numberOfLPDOPorts}` || "",
+				xmlns: '',
+				uuid: crypto.randomUUID(),
+				desc: desc || '',
+				lnClass: type,
+				inst: `${currentLPNumber + i}`,
+				lnType: name || type,
+				...(numberOfLPDOPorts && {
+					numberOfLPDOPorts: `${numberOfLPDOPorts}` || ''
+				})
 			}
 
-			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
+			createElement({
+				host,
+				doc: store.doc,
+				tagName: 'LN',
+				attributes,
+				parent: ld0,
+				reference: null
+			})
 		}
 	}
 
@@ -67,17 +111,22 @@ export class Command {
 
 		const ied = this.requireSelectedIED()
 
-		const lpToEdit = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`)
+		const lpToEdit = ied.querySelector(`LN[uuid="${lpElement.id}"]`)
 
 		if (!lpToEdit) {
-			throw new Error(`LP element with name ${lpElement.name}-${lpElement.instance} not found!`)
+			throw new Error(
+				`LP element with name ${lpElement.name}-${lpElement.instance} not found!`
+			)
 		}
 
 		createAndDispatchEditEvent({
 			host,
 			edit: {
 				element: lpToEdit,
-				attributes: { "lnType": `${name || lpToEdit.getAttribute("lnType")}`, "desc": `${desc || lpToEdit.getAttribute("desc")}` },
+				attributes: {
+					lnType: `${name || lpToEdit.getAttribute('lnType')}`,
+					desc: `${desc || lpToEdit.getAttribute('desc') || ''}`
+				},
 				attributesNS: {}
 			}
 		})
@@ -89,10 +138,12 @@ export class Command {
 		const ied = this.requireSelectedIED()
 
 		//Delete target LP
-		const lpToDelete = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lpElement.name}"][inst="${lpElement.instance}"][lnClass="${lpElement.type}"]`)
+		const lpToDelete = ied.querySelector(`LN[uuid="${lpElement.id}"]`)
 
 		if (!lpToDelete) {
-			throw new Error(`LP element with name ${lpElement.name}-${lpElement.instance} not found!`)
+			throw new Error(
+				`LP element with name ${lpElement.name}-${lpElement.instance} not found!`
+			)
 		}
 
 		createAndDispatchEditEvent({
@@ -102,8 +153,17 @@ export class Command {
 			}
 		})
 
+		store._selectedLogicalPhysicals =
+			store._selectedLogicalPhysicals.filter(
+				(lp) => lp.id !== lpElement.id
+			)
+
 		//Correct instance attribute for any LP that's after the target
-		const remainingLPs = Array.from(ied.querySelectorAll(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lpElement.type}"]`))
+		const remainingLPs = Array.from(
+			ied.querySelectorAll(
+				`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lpElement.type}"]`
+			)
+		)
 
 		const deletedLpInstance = Number.parseInt(lpElement.instance)
 
@@ -112,7 +172,9 @@ export class Command {
 				host,
 				edit: {
 					element: lp,
-					attributes: { "inst": `${Number.parseInt(lp.getAttribute("inst") || "") - 1}` },
+					attributes: {
+						inst: `${Number.parseInt(lp.getAttribute('inst') || '') - 1}`
+					},
 					attributesNS: {}
 				}
 			})
@@ -120,7 +182,10 @@ export class Command {
 	}
 
 	public addLC(type: LcTypes, number?: number, numberOfLCIVPorts?: number) {
-		if (!store.doc) { console.warn("no doc"); return; }
+		if (!store.doc) {
+			console.warn('no doc')
+			return
+		}
 
 		const host = this.requireHost()
 
@@ -130,37 +195,63 @@ export class Command {
 
 		this.ensureLNodeType(type)
 
-		const currentLCNumber = ld0.querySelectorAll(`LN[lnClass="${type}"]`).length
+		const currentLCNumber = ld0.querySelectorAll(
+			`LN[lnClass="${type}"]`
+		).length
 
 		if (!number) {
 			const attributes = {
-				"xmlns": "",
-				"lnClass": type,
-				"inst": `${currentLCNumber + 1}`,
-				"lnType": type,
-				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
+				xmlns: '',
+				uuid: crypto.randomUUID(),
+				lnClass: type,
+				inst: `${currentLCNumber + 1}`,
+				lnType: type,
+				...(numberOfLCIVPorts && {
+					numberOfLCIVPorts: `${numberOfLCIVPorts}` || ''
+				})
 			}
 
-			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
+			createElement({
+				host,
+				doc: store.doc,
+				tagName: 'LN',
+				attributes,
+				parent: ld0,
+				reference: null
+			})
 
 			return
 		}
 
 		for (let i = 1; i <= number; i++) {
 			const attributes = {
-				"xmlns": "",
-				"lnClass": type,
-				"inst": `${currentLCNumber + i}`,
-				"lnType": type,
-				"numberOfLCIVPorts": `${numberOfLCIVPorts}` || "",
+				xmlns: '',
+				uuid: crypto.randomUUID(),
+				lnClass: type,
+				inst: `${currentLCNumber + i}`,
+				lnType: type,
+				...(numberOfLCIVPorts && {
+					numberOfLCIVPorts: `${numberOfLCIVPorts}` || ''
+				})
 			}
 
-			createElement({ host, doc: store.doc, tagName: "LN", attributes, parent: ld0, reference: null })
+			createElement({
+				host,
+				doc: store.doc,
+				tagName: 'LN',
+				attributes,
+				parent: ld0,
+				reference: null
+			})
 		}
 	}
 
-	public editLC(lc: LogicalConditioner, newType: LcTypes, numberOfLCIVPorts?: number) {
-		this.removeLC(lc)
+	public editLC(
+		currentLc: LogicalConditioner,
+		newType: LcTypes,
+		numberOfLCIVPorts?: number
+	) {
+		this.removeLC(currentLc)
 		if (numberOfLCIVPorts) {
 			this.addLC(newType, 1, numberOfLCIVPorts)
 			return
@@ -168,15 +259,17 @@ export class Command {
 		this.addLC(newType)
 	}
 
-	public removeLC(lc: LogicalConditioner) {
+	public removeLC(currentLc: LogicalConditioner) {
 		const host = this.requireHost()
 
 		const ied = this.requireSelectedIED()
 
-		const lcToDelete = ied.querySelector(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnType="${lc.type}"][inst="${lc.instance}"][lnClass="${lc.type}"]`)
+		const lcToDelete = ied.querySelector(`LN[uuid="${currentLc.id}"]`)
 
 		if (!lcToDelete) {
-			throw new Error(`LP element with name ${lc.type}-${lc.instance} not found!`)
+			throw new Error(
+				`LP element with name ${currentLc.type}-${currentLc.instance} not found!`
+			)
 		}
 
 		createAndDispatchEditEvent({
@@ -186,17 +279,28 @@ export class Command {
 			}
 		})
 
-		//Decrease instance attribute by 1 for any LP that's after the target
-		const remainingLCs = Array.from(ied.querySelectorAll(`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${lc.type}"]`))
+		store._selectedLogicalConditioners =
+			store._selectedLogicalConditioners.filter(
+				(lc) => lc.id !== currentLc.id
+			)
 
-		const deletedLcInstance = Number.parseInt(lc.instance)
+		//Decrease instance attribute by 1 for any LP that's after the target
+		const remainingLCs = Array.from(
+			ied.querySelectorAll(
+				`AccessPoint > Server > LDevice[inst="LD0"] > LN[lnClass="${currentLc.type}"]`
+			)
+		)
+
+		const deletedLcInstance = Number.parseInt(currentLc.instance)
 
 		for (const lc of remainingLCs.slice(deletedLcInstance - 1)) {
 			createAndDispatchEditEvent({
 				host,
 				edit: {
 					element: lc,
-					attributes: { "inst": `${Number.parseInt(lc.getAttribute("inst") || "") - 1}` },
+					attributes: {
+						inst: `${Number.parseInt(lc.getAttribute('inst') || '') - 1}`
+					},
 					attributesNS: {}
 				}
 			})
@@ -204,7 +308,9 @@ export class Command {
 	}
 
 	private ensureLNodeType(type: LcTypes | LpTypes) {
-		if (!store.doc) { throw new Error('Doc not found!') }
+		if (!store.doc) {
+			throw new Error('Doc not found!')
+		}
 
 		const host = this.requireHost()
 
@@ -215,23 +321,37 @@ export class Command {
 		const dataTypeTemplates = this.ensureDataTypeTemplates()
 
 		const attributes = {
-			"id": `IOCenter.${type}`,
-			"lnClass": type,
+			id: `IOCenter.${type}`,
+			lnClass: type
 		}
 
-		createElement({ host, doc: store.doc, tagName: "LNodeType", attributes, parent: dataTypeTemplates, reference: null, innerHTML: L_NODE_TYPE_CONTENT[type] })
+		createElement({
+			host,
+			doc: store.doc,
+			tagName: 'LNodeType',
+			attributes,
+			parent: dataTypeTemplates,
+			reference: null,
+			innerHTML: L_NODE_TYPE_CONTENT[type]
+		})
 	}
 
 	public hasLNodeType(type: LcTypes | LpTypes): boolean {
-		if (!store.doc) { throw new Error('Doc not found!') }
+		if (!store.doc) {
+			throw new Error('Doc not found!')
+		}
 
-		const lnType = store.doc.querySelector(`DataTypeTemplates > LNodeType[lnClass="${type}"]`)
+		const lnType = store.doc.querySelector(
+			`DataTypeTemplates > LNodeType[lnClass="${type}"]`
+		)
 
 		return Boolean(lnType)
 	}
 
 	public addConnection(connection: Connection) {
-		if (!store.doc) { throw new Error('Doc not found!') }
+		if (!store.doc) {
+			throw new Error('Doc not found!')
+		}
 
 		const host = this.requireHost()
 
@@ -239,14 +359,20 @@ export class Command {
 
 		const ld0 = this.ensureLD0(ied)
 
-		let connectionType: Nullable<"input" | "output"> = null;
+		let connectionType: Nullable<'input' | 'output'> = null
 
-		if (connection.from.type === NODE_ELEMENT_TYPE.DO || connection.to.type === NODE_ELEMENT_TYPE.DO) {
-			connectionType = "output"
+		if (
+			connection.from.type === NODE_ELEMENT_TYPE.DO ||
+			connection.to.type === NODE_ELEMENT_TYPE.DO
+		) {
+			connectionType = 'output'
 		}
 
-		if (connection.from.type === NODE_ELEMENT_TYPE.LP || connection.to.type === NODE_ELEMENT_TYPE.LP) {
-			connectionType = "input"
+		if (
+			connection.from.type === NODE_ELEMENT_TYPE.LP ||
+			connection.to.type === NODE_ELEMENT_TYPE.LP
+		) {
+			connectionType = 'input'
 		}
 
 		if (!connectionType) {
@@ -267,37 +393,49 @@ export class Command {
 		let lcInst: string | null = null
 
 		if (connection.from.type === NODE_ELEMENT_TYPE.LC) {
-			[lcLnClass, lcInst] = connection.from.name.replace(/-left|-right/g, '').split('-')
+			;[lcLnClass, lcInst] = connection.from.name
+				.replace(/-left|-right/g, '')
+				.split('-')
 		}
 
 		if (connection.to.type === NODE_ELEMENT_TYPE.LC) {
-			[lcLnClass, lcInst] = connection.to.name.replace(/-left|-right/g, '').split('-')
+			;[lcLnClass, lcInst] = connection.to.name
+				.replace(/-left|-right/g, '')
+				.split('-')
 		}
 
 		let lpLnClass: string | null = null
 		let lpInst: string | null = null
 
 		if (connection.from.type === NODE_ELEMENT_TYPE.LP) {
-			[lpLnClass, lpInst] = connection.from.name.replace(/-left|-right/g, '').split('-')
+			;[lpLnClass, lpInst] = connection.from.name
+				.replace(/-left|-right/g, '')
+				.split('-')
 		}
 
 		if (connection.to.type === NODE_ELEMENT_TYPE.LP) {
-			[lpLnClass, lpInst] = connection.to.name.replace(/-left|-right/g, '').split('-')
+			;[lpLnClass, lpInst] = connection.to.name
+				.replace(/-left|-right/g, '')
+				.split('-')
 		}
 
-		const connectorLC = ld0.querySelector(`LN[lnClass="${lcLnClass}"][inst="${lcInst}"]`)
+		const connectorLC = ld0.querySelector(
+			`LN[lnClass="${lcLnClass}"][inst="${lcInst}"]`
+		)
 
 		if (!connectorLC) {
 			throw new Error('Connector LC LN not found!')
 		}
 
-		const localLC = store.findLC(lcLnClass || "", lcInst || "")
+		const localLC = store.findLC(lcLnClass || '', lcInst || '')
 
 		if (!localLC) {
-			throw new Error(`LC with lnClass ${lcLnClass} and inst ${lcInst} not found!`)
+			throw new Error(
+				`LC with lnClass ${lcLnClass} and inst ${lcInst} not found!`
+			)
 		}
 
-		const connectedDO = store.selectedDataObject
+		const connectedDO = iedTreeStore.selectedDataObject
 
 		if (!connectedDO) {
 			throw new Error(`DO with name ${doName} not found!`)
@@ -307,56 +445,67 @@ export class Command {
 			return
 		}
 
-		const doiName = connection.from.type === NODE_ELEMENT_TYPE.LC
-			? `${connection.from.port.name}${connection.from.port.index ?? ""}`
-			: `${connection.to.port.name}${connection.to.port.index ?? ""}`
+		const doiName =
+			connection.from.type === NODE_ELEMENT_TYPE.LC
+				? `${connection.from.port.name}${connection.from.port.index ?? ''}`
+				: `${connection.to.port.name}${connection.to.port.index ?? ''}`
 
-		createElement({
-			host,
-			doc: store.doc,
-			tagName: "DOI",
-			attributes: {
-				"name": doiName,
-				"desc": connectionType
-			},
-			parent: connectorLC,
-			reference: null
-		})
-
-		const doi = connectorLC.querySelector(`DOI[name="${doiName}"][desc="${connectionType}"]`)
+		let doi = connectorLC.querySelector(
+			`DOI[name="${doiName}"][desc="${connectionType}"]`
+		)
 
 		if (!doi) {
-			throw new Error(`DOI[name="${doiName}",desc="${connectionType}"] not created!`)
-		}
-
-		if (connectionType === "input") {
 			createElement({
 				host,
 				doc: store.doc,
-				tagName: "LNRef",
+				tagName: 'DOI',
 				attributes: {
-					"refLDInst": "LD0",
-					"refLNClass": lpLnClass,
-					"refLNInst": lpInst,
-					"refDO": connection.from.type === NODE_ELEMENT_TYPE.LP
-						? `${connection.from.port.name}${connection.from.port.index ?? ""}`
-						: `${connection.to.port.name}${connection.to.port.index ?? ""}`
+					name: doiName,
+					desc: connectionType
+				},
+				parent: connectorLC,
+				reference: null
+			})
+		}
+
+		doi = connectorLC.querySelector(
+			`DOI[name="${doiName}"][desc="${connectionType}"]`
+		)
+
+		if (!doi) {
+			throw new Error(`DOI ${doiName} still not created!`)
+		}
+
+		if (connectionType === 'input') {
+			createElement({
+				host,
+				doc: store.doc,
+				tagName: 'LNRef',
+				attributes: {
+					refLDInst: 'LD0',
+					refLNClass: lpLnClass,
+					refLNInst: lpInst,
+					refDO:
+						connection.from.type === NODE_ELEMENT_TYPE.LP
+							? `${connection.from.port.name}${connection.from.port.index ?? ''}`
+							: `${connection.to.port.name}${connection.to.port.index ?? ''}`
 				},
 				parent: doi,
 				reference: null
 			})
 		}
 
-		if (connectionType === "output") {
+		if (connectionType === 'output') {
 			createElement({
 				host,
 				doc: store.doc,
-				tagName: "LNRef",
+				tagName: 'LNRef',
 				attributes: {
-					"refLDInst": connectedDO.objectPath.lDevice?.inst || "unknown",
-					"refLNClass": connectedDO.objectPath.ln?.lnClass || "unknown",
-					"refLNInst": connectedDO.objectPath.ln?.inst || "unknown",
-					"refDO": doName,
+					refLDInst:
+						connectedDO.objectPath.lDevice?.inst || 'unknown',
+					refLNClass: connectedDO.objectPath.ln?.lnClass || 'unknown',
+					refLNInst: connectedDO.objectPath.ln?.inst || 'unknown',
+					refDO: doName
 				},
 				parent: doi,
 				reference: null
@@ -364,24 +513,151 @@ export class Command {
 		}
 	}
 
-	private requireSelectedIED(): Element {
-		if (!store.doc) { throw new Error('Doc not found!') }
+	public removeConnection(connection: Connection) {
+		if (!store.doc) {
+			throw new Error('Doc not found!')
+		}
 
-		const ied = store.doc.querySelector(`IED[name="${store.selectedIED?.name}"]`)
+		const host = this.requireHost()
+
+		const storedConnection = store.connections.find((c) => c === connection)
+
+		if (!storedConnection) {
+			console.warn(`Connection (id: ${connection.id}) not found!`)
+			return
+		}
+
+		//DO to LC connection
+		if (storedConnection.from.type === NODE_ELEMENT_TYPE.DO) {
+			const [lcLnClass, lcInst] = connection.to.name
+				.replace(/-left|-right/g, '')
+				.split('-')
+
+			const parentDOI = store.doc.querySelector(
+				`LN[lnClass="${lcLnClass}"][inst="${lcInst}"] > DOI[name="${storedConnection.to.port.name}"][desc="output"]`
+			)
+
+			if (!parentDOI) {
+				console.warn(
+					`Parent DOI for connection (id: ${connection.id}) not found in doc!`
+				)
+				return
+			}
+
+			const connectionElement = parentDOI.querySelector(
+				`LNRef[refDO="${storedConnection.from.port.name}"]`
+			)
+
+			if (!connectionElement) {
+				console.warn(
+					`connection (id: ${connection.id}) not found in doc!`
+				)
+				return
+			}
+
+			//Delete the LNRef (connection)
+			createAndDispatchEditEvent({
+				host,
+				edit: {
+					node: connectionElement
+				}
+			})
+
+			const remainingLNRefNumber = Array.from(
+				parentDOI.querySelectorAll('LNRef')
+			).length
+
+			if (remainingLNRefNumber === 0) {
+				//Delete parent DOI if no LNRef (connection) within it
+				createAndDispatchEditEvent({
+					host,
+					edit: {
+						node: parentDOI
+					}
+				})
+			}
+		}
+
+		//LC to LP connection
+		if (storedConnection.from.type === NODE_ELEMENT_TYPE.LC) {
+			const [lcLnClass, lcInst] = connection.from.name
+				.replace(/-left|-right/g, '')
+				.split('-')
+
+			const parentDOI = store.doc.querySelector(
+				`LN[lnClass="${lcLnClass}"][inst="${lcInst}"] > DOI[name="${storedConnection.from.port.name}"][desc="input"]`
+			)
+
+			if (!parentDOI) {
+				console.warn(
+					`Parent DOI for connection (id: ${connection.id}) not found in doc!`
+				)
+				return
+			}
+
+			const connectionElement = parentDOI.querySelector(
+				`LNRef[refDO="${storedConnection.to.port.name}"]`
+			)
+
+			if (!connectionElement) {
+				console.warn(
+					`connection (id: ${connection.id}) not found in doc!`
+				)
+				return
+			}
+
+			//Delete the LNRef (connection)
+			createAndDispatchEditEvent({
+				host,
+				edit: {
+					node: connectionElement
+				}
+			})
+
+			const remainingLNRefNumber = Array.from(
+				parentDOI.querySelectorAll('LNRef')
+			).length
+
+			if (remainingLNRefNumber === 0) {
+				//Delete parent DOI if no LNRef (connection) within it
+				createAndDispatchEditEvent({
+					host,
+					edit: {
+						node: parentDOI
+					}
+				})
+			}
+		}
+	}
+
+	private requireSelectedIED(): Element {
+		if (!store.doc) {
+			throw new Error('Doc not found!')
+		}
+
+		const ied = store.doc.querySelector(
+			`IED[name="${iedTreeStore.selectedIED?.name}"]`
+		)
 
 		if (!ied) {
-			throw new Error(`IED with name ${store.selectedIED?.name} not found`)
+			throw new Error(
+				`IED with name ${iedTreeStore.selectedIED?.name} not found`
+			)
 		}
 
 		return ied
 	}
 
 	private ensureDataTypeTemplates(): Element {
-		if (!store.doc) { throw new Error('Doc not found!') }
+		if (!store.doc) {
+			throw new Error('Doc not found!')
+		}
 
-		const sclRoot = store.doc.querySelector("SCL");
+		const sclRoot = store.doc.querySelector('SCL')
 
-		if (!sclRoot) { throw new Error('SCL Root not found!') }
+		if (!sclRoot) {
+			throw new Error('SCL Root not found!')
+		}
 
 		const host = this.requireHost()
 
@@ -391,11 +667,19 @@ export class Command {
 			return dTT
 		}
 
-		createElement({ host, doc: store.doc, tagName: "DataTypeTemplates", parent: sclRoot, reference: null })
+		createElement({
+			host,
+			doc: store.doc,
+			tagName: 'DataTypeTemplates',
+			parent: sclRoot,
+			reference: null
+		})
 
 		dTT = store.doc.querySelector('DataTypeTemplates')
 
-		if (!dTT) { throw new Error('DataTypeTemplates still does not exist!') }
+		if (!dTT) {
+			throw new Error('DataTypeTemplates still does not exist!')
+		}
 
 		return dTT
 	}
@@ -409,44 +693,49 @@ export class Command {
 		}
 
 		let accessPoint = ied.querySelector('AccessPoint')
-		console.log("accessPoint 1:", accessPoint)
+		console.log('accessPoint 1:', accessPoint)
 		if (!accessPoint) {
 			const newAccessPoint = store.doc.createElement('AccessPoint')
 			newAccessPoint.setAttribute('name', 'AP1')
 			createAndDispatchEditEvent({
 				host,
-				edit: { node: newAccessPoint, parent: ied, reference: null },
+				edit: { node: newAccessPoint, parent: ied, reference: null }
 			})
 			accessPoint = ied.querySelector('AccessPoint')
-			console.log("accessPoint 2:", accessPoint)
+			console.log('accessPoint 2:', accessPoint)
 		}
-		if (!accessPoint) { throw new Error('server still does not exist') }
+		if (!accessPoint) {
+			throw new Error('server still does not exist')
+		}
 
 		let server = accessPoint?.querySelector('Server')
-		console.log("server 1:", server)
+		console.log('server 1:', server)
 		if (!server) {
 			const newServer = store.doc.createElement('Server')
 			createAndDispatchEditEvent({
 				host,
-				edit: { node: newServer, parent: accessPoint, reference: null },
+				edit: { node: newServer, parent: accessPoint, reference: null }
 			})
 			server = accessPoint?.querySelector('Server')
-			console.log("server 2:", server)
+			console.log('server 2:', server)
 		}
-		if (!server) { throw new Error('server still does not exist') }
+		if (!server) {
+			throw new Error('server still does not exist')
+		}
 
 		const newLD0 = store.doc.createElement('LDevice')
 		newLD0.setAttribute('inst', 'LD0')
 		createAndDispatchEditEvent({
 			host,
-			edit: { node: newLD0, parent: server, reference: null },
+			edit: { node: newLD0, parent: server, reference: null }
 		})
 		ld0 = ied.querySelector('LDevice[inst="LD0"]')
-		if (!ld0) { throw new Error('ld0 still does not exist') }
+		if (!ld0) {
+			throw new Error('ld0 still does not exist')
+		}
 
 		return ld0
 	}
-
 
 	private requireHost() {
 		const host = this.getHost()
@@ -455,12 +744,10 @@ export class Command {
 		}
 		return host
 	}
-
 }
 
 export function newCommand(getHost: HostGetter) {
 	return new Command(getHost)
 }
-
 
 type HostGetter = () => Nullable<HTMLElement>

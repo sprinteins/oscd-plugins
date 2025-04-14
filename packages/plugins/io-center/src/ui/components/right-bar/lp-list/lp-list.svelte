@@ -1,59 +1,64 @@
 <script lang="ts">
-    import { LP_LIST_FILTER_OPTIONS, LP_TYPE } from "@/headless/constants";
-    import type { Nullable } from "@/types";
-    import { Plus } from "lucide-svelte";
-    import { store } from "@/store.svelte";
-    import SearchBar from "../../common/search-bar.svelte";
-    import LpElement from "./lp-element.svelte";
-    import type { LpTypes, LpElement as LpElementType } from "./types.lp-list";
-    import CreateLpDialog from "./create-lp-dialog.svelte";
-    import FilterButtons from "../../common/filter-buttons.svelte";
+import { LP_LIST_FILTER_OPTIONS, LP_TYPE } from '@/headless/constants'
+import type { Nullable } from '@/types'
+import { Plus } from 'lucide-svelte'
+import { store } from '@/store.svelte'
+import SearchBar from '../../common/search-bar.svelte'
+import LpElement from './lp-element.svelte'
+import type { LpTypes, LpElement as LpElementType } from './types.lp-list'
+import CreateLpDialog from './create-lp-dialog.svelte'
+import FilterButtons from '../../common/filter-buttons.svelte'
+// STORES
+import { iedTreeStore } from '@/headless/stores'
 
-    type Props = {
-        addLP: (
-            type: LpTypes,
-            name: string,
-            desc: string,
-            number?: number,
-            numberOfLPDOPorts?: number,
-        ) => void;
-        removeLP: (lpElement: LpElementType) => void;
-        editLP: (LpElement: LpElementType, name: string, desc: string) => void;
-        hasLNodeType: (type: LpTypes) => boolean;
-    };
+type Props = {
+	addLP: (
+		type: LpTypes,
+		name: string,
+		desc: string,
+		number?: number,
+		numberOfLPDOPorts?: number
+	) => void
+	removeLP: (lpElement: LpElementType) => void
+	editLP: (LpElement: LpElementType, name: string, desc: string) => void
+	hasLNodeType: (type: LpTypes) => boolean
+}
 
-    let { addLP, removeLP, editLP, hasLNodeType }: Props = $props();
+let { addLP, removeLP, editLP, hasLNodeType }: Props = $props()
 
-    let searchTerm = $state("");
+let searchTerm = $state('')
 
-    let selectedTypeToShow = $state<Nullable<string[]>>(null);
-    let showLinked = $state(true);
-    let showUnlinked = $state(true);
+let selectedTypeToShow = $state<Nullable<string[]>>(null)
+let showLinked = $state(true)
+let showUnlinked = $state(true)
 
-    const filteredList = $derived.by(() =>
-        store.lpList
-            .filter((item) =>
-                item.name.toLowerCase().includes(searchTerm.toLowerCase()),
-            )
-            .filter((item) =>
-                showLinked && !showUnlinked ? item.isLinked : 
-                showUnlinked && !showLinked ? !item.isLinked : 
-                true
-            )
-            .filter((item) => {
-                if (!selectedTypeToShow || selectedTypeToShow.length === 0) return true;
-                return selectedTypeToShow.includes(item.type);
-            }),
-    );
+const filteredList = $derived.by(() =>
+	store.lpList
+		.filter((item) =>
+			item.name.toLowerCase().includes(searchTerm.toLowerCase())
+		)
+		.filter((item) =>
+			showLinked && !showUnlinked
+				? item.isLinked
+				: showUnlinked && !showLinked
+					? !item.isLinked
+					: true
+		)
+		.filter((item) => {
+			if (!selectedTypeToShow || selectedTypeToShow.length === 0)
+				return true
+			return selectedTypeToShow.includes(item.type)
+		})
+)
 
-    let showDialog = $state(false);
+let showDialog = $state(false)
 </script>
 
 <div class="py-6 pr-6" data-name="lp-list">
     <button
         onclick={() => (showDialog = true)}
         class="add-button"
-        disabled={!store.selectedIED}
+        disabled={!iedTreeStore.selectedIED}
     >
         <Plus size={16} />
         <p>Add LP</p>
@@ -61,7 +66,7 @@
 
     <CreateLpDialog bind:isOpen={showDialog} {addLP} {hasLNodeType} />
 
-    {#if store.selectedIED}
+    {#if iedTreeStore.selectedIED}
         <SearchBar bind:searchTerm placeholder="Search LP" />
 
         <div class="mt-2">

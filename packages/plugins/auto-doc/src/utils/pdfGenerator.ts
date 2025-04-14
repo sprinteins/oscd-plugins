@@ -5,13 +5,14 @@ import type {ElementType} from "@/components/elements/types.elements"
 import {docTemplatesStore, placeholderStore} from '@/stores'
 import type {Columns, SignalType} from '@/stores'
 import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list-element/types.signal-list'
+import type { ImageData } from '@/components/elements/image-element/types.image';
 
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
 
 
-function generatePdf(templateTitle: string , allBlocks: Element[]){
+async function generatePdf(templateTitle: string , allBlocks: Element[]){
     const doc = new jsPDF();
     const DEFAULT_FONT_SIZE = 10;
     doc.setFontSize(DEFAULT_FONT_SIZE);
@@ -27,7 +28,7 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
     const blockHandler: Record<ElementType, (block: Element) => void> = {
         text: handleRichTextEditorBlock,
-        image: () => {},
+        image: processImageForPdfGeneration,
         signalList: processSignalListForPdfGeneration,
         table: processTableForPdfGeneration,
     }
@@ -157,6 +158,59 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         doc.text(text, horizontalSpacing, marginTop);
         incrementVerticalPositionForNextLine();
     }
+
+    async function loadImage(base64: string): Promise<HTMLImageElement> {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                resolve(img);
+            }
+            img.onerror = (error) => reject(error);
+            img.src = base64;
+        });
+    }
+
+    function getImageScaleFactor(scale: string) {
+        switch(scale.toLowerCase()) {
+            case "small":
+                return 0.25;
+            case "medium":
+                return 0.5;
+            case "large":
+                return 1;
+            default:
+                return 0.25;
+        }
+    }
+
+    async function processImageForPdfGeneration(block: Element) {
+        const content = block.textContent;
+        if(!content) {
+            return;
+        }
+
+        const parsedContent = JSON.parse(content) as ImageData;
+        const imageSource = parsedContent.base64Data;
+        if(!imageSource) {
+            return;
+        }
+
+        const image = await loadImage(imageSource);
+        const format = content.split(";")[0].split("/")[1];
+
+        const maxWidth = 186;
+        const scaleFactor = getImageScaleFactor(parsedContent.scale);
+        
+        const aspectRatio = image.height / image.width;
+        
+        const width = scaleFactor * maxWidth;
+        const height = width * aspectRatio;
+
+        doc.addImage(imageSource, format.toUpperCase(), 10, marginTop, width, height);
+        
+        const padding = Math.round(height) + DEFAULT_LINE_HEIGHT;
+        incrementVerticalPositionForNextLine(padding);
+    }
     
     function processSignalListForPdfGeneration(block: Element){
         if(!block.textContent) {
@@ -188,6 +242,20 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
 
        renderTextLine(pdfHintText);
         zipcelx(config)
+    }
+
+    function allocateSpaceForRows(filledBody: string[][], newFilledBody: string[][]) {
+        for(let i = 0; i < filledBody.length; i++) {
+            let row = filledBody[i];
+
+            for(let j = 0; j < row.length; j++) {
+                let values = row[j].split(", ");
+
+                for(let k = 0; k < values.length; k++) {
+                    newFilledBody[k][j] = values[k].trim();
+                }
+            }
+        }
     }
 
     function processTableForPdfGeneration(block: Element) {
@@ -225,24 +293,13 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
             }
 
             rows = maxNeededRows + 1;
-
-            for(let i = 0; i < filledBody.length; i++) {
-                let row = filledBody[i];
-
-                for(let j = 0; j < row.length; j++) {
-                    let values = row[j].split(", ");
-
-                    for(let k = 0; k < values.length; k++) {
-                        newFilledBody[k][j] = values[k].trim();
-                    }
-                }
-            }
+            allocateSpaceForRows(filledBody, newFilledBody);
         }
 
         if(newFilledBody.length === 0) {
             newFilledBody = filledBody;
         }
-
+        
         autoTable(doc, {
             head: formattedHeader,
             body: newFilledBody,
@@ -268,10 +325,10 @@ function generatePdf(templateTitle: string , allBlocks: Element[]){
         const blockType = block.getAttribute('type') as ElementType;
         
         if(blockType && blockHandler[blockType]){
-            blockHandler[blockType](block);
+            await blockHandler[blockType](block);
         }
     }
-    
+
     doc.save(`${templateTitle}.pdf`);
 
     

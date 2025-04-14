@@ -12,86 +12,101 @@
 />
 
 <script lang="ts">
-	import jsonPackage from "../package.json";
-	import { initPlugin } from "@oscd-plugins/core-ui-svelte";
-	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
-	import { SvelteToast } from "@zerodevx/svelte-toast";
-	import Layout from "./ui/layout.svelte";
-	import { useQuery } from "./query.svelte";
-	import { newCommand, type Command } from "./command.svelte";
+import jsonPackage from '../package.json'
+// CORE
+import { initPlugin, WrongFileLoaded } from '@oscd-plugins/core-ui-svelte'
+// LOGIC
+import { useQuery } from './query.svelte'
+import { newCommand, type Command } from './command.svelte'
+// STORE
+import { store } from './store.svelte'
+import { iedTreeStore } from './headless/stores'
+// COMPONENTS
+import Layout from '@/ui/layout.svelte'
+import SideBarLeft from '@/sidebar-left.svelte'
+import CanvasArea from '@/ui/components/canvas/canvas-area.svelte'
+import SidebarRight from '@/sidebar-right.svelte'
+import { SvelteToast } from '@zerodevx/svelte-toast'
+// TYPES
+import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
+import type { Nullable } from './types'
+import type {
+	Connection,
+	LcTypes,
+	LogicalConditioner
+} from './ui/components/canvas/types.canvas'
+import type {
+	LpElement,
+	LpTypes
+} from './ui/components/right-bar/lp-list/types.lp-list'
 
-	import type { Nullable } from "./types";
-	import CanvasArea from "./ui/components/canvas/canvas-area.svelte";
-	import { store } from "./store.svelte";
-	import SideBarLeft from "./sidebar-left.svelte";
-	import type {
-		Connection,
-		LcTypes,
-		LogicalConditioner,
-	} from "./ui/components/canvas/types.canvas";
-    import type { LpElement, LpTypes } from "./ui/components/right-bar/lp-list/types.lp-list";
-    import SidebarRight from "./sidebar-right.svelte";
+// props
+const {
+	doc,
+	docName,
+	editCount,
+	isCustomInstance
+}: Plugin.CustomComponentsProps = $props()
 
-	// props
-	const {
-		doc,
-		docName,
-		editCount,
-		// isCustomInstance
-	}: Utils.PluginCustomComponentsProps = $props();
-	const isCustomInstance = true;
+//
+// Setup
+//
+let root = $state<Nullable<HTMLElement>>(null)
+let cmd = $state<Command>(newCommand(() => root))
+useQuery()
 
-	//
-	// Setup
-	//
-	let root = $state<Nullable<HTMLElement>>(null);
-	let cmd = $state<Command>(newCommand(() => root));
-	useQuery();
+// we need to trigger a rerendering when the editCount changes
+// this is how OpenSCD lets us know that there was a change in the document
+$effect(() => {
+	store.editCount = editCount
+	store.doc = doc
+})
 
-	// we need to trigger a rerendering when the editCount changes
-	// this is how OpenSCD lets us know that there was a change in the document
-	$effect(() => {
-		store.editCount = editCount;
-		store.doc = doc;
-	});
+function addLC(type: LcTypes, number?: number, numberOfLCIVPorts?: number) {
+	cmd.addLC(type, number, numberOfLCIVPorts)
+}
 
-	function addLC(type: LcTypes, number?: number, numberOfLCIVPorts?: number) {
-		cmd.addLC(type, number, numberOfLCIVPorts);
-	}
+function editLC(
+	lc: LogicalConditioner,
+	newType: LcTypes,
+	numberOfLCIVPorts?: number
+) {
+	cmd.editLC(lc, newType, numberOfLCIVPorts)
+}
 
-	function editLC(lc: LogicalConditioner, newType: LcTypes, numberOfLCIVPorts?: number) {
-		cmd.editLC(lc, newType, numberOfLCIVPorts);
-	}
+function removeLC(lc: LogicalConditioner) {
+	cmd.removeLC(lc)
+}
 
-	function removeLC(lc: LogicalConditioner) {
-		cmd.removeLC(lc)
-	}
+function addLP(
+	type: LpTypes,
+	name: string,
+	desc: string,
+	number?: number,
+	numberOfLPDOPorts?: number
+) {
+	cmd.addLP(type, name, desc, number, numberOfLPDOPorts)
+}
 
-	function addLP(
-		type: LpTypes,
-		name: string,
-		desc: string,
-		number?: number,
-		numberOfLPDOPorts?: number,
-	) {
-		cmd.addLP(type, name, desc, number, numberOfLPDOPorts);
-	}
+function removeLP(lpElement: LpElement) {
+	cmd.removeLP(lpElement)
+}
 
-	function removeLP(lpElement: LpElement) {
-		cmd.removeLP(lpElement);
-	}
+function editLP(lpElement: LpElement, name: string, desc: string) {
+	cmd.editLP(lpElement, name, desc)
+}
 
-	function editLP(lpElement: LpElement, name: string, desc: string) {
-		cmd.editLP(lpElement, name, desc);
-	}
+function hasLNodeType(type: LcTypes | LpTypes): boolean {
+	return cmd.hasLNodeType(type)
+}
 
-	function hasLNodeType(type: LcTypes | LpTypes): boolean {
-		return cmd.hasLNodeType(type);
-	}
+function addConnection(connection: Connection) {
+	cmd.addConnection(connection)
+}
 
-	function addConnection(connection: Connection) {
-		cmd.addConnection(connection);
-	}
+function removeConnection(connection: Connection) {
+	cmd.removeConnection(connection)
+}
 </script>
 
 <main
@@ -100,20 +115,25 @@
 		getDocName: () => docName,
 		getEditCount: () => editCount,
 		getIsCustomInstance: () => isCustomInstance,
-		getHost: () => $host(),
-		host: $host(),
+		getHost: () => $host() || window,
 		theme: "legacy-oscd-instance",
+		definition: {
+			edition: 'ed2Rev1',
+		}
 	}}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 	bind:this={root}
 >
+
+{#if iedTreeStore.iEDList.length}
 	<Layout>
 		<SideBarLeft slot="sidebar-left" />
 		<CanvasArea
 			slot="content"
 			{hasLNodeType}
 			{addConnection}
+			{removeConnection}
 		/>
 		<SidebarRight
 			slot="sidebar-right"
@@ -125,7 +145,10 @@
 			{editLC}
 			{hasLNodeType}
 		/>
-	</Layout>
+		</Layout>
+	{:else}
+		<WrongFileLoaded pluginName='I/O Center' errorMessage="There are no IEDs in this file to work with. Open a new file."/>
+	{/if}
 </main>
 
 <div class="toast-wrap">
