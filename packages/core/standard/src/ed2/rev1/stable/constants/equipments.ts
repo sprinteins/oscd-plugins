@@ -79,6 +79,11 @@ export const CONDUCTING_EQUIPMENTS = {
 		type: 'IFL',
 		numberOfTerminals: 1
 	},
+	loadTapChanger: {
+		label: 'Load Tap Changer',
+		type: 'LTC',
+		numberOfTerminals: undefined
+	},
 	motor: {
 		label: 'Motor',
 		type: 'MOT',
