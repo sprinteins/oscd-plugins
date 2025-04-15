@@ -136,7 +136,7 @@ const handleOpenCollapsible = (event: DragEvent) => {
 			isElementCardOpen = true
 			if (!hasRefs) isCurrentDropTarget = true
 			hoverTimeout = null
-		}, 500)
+		}, 200)
 }
 
 const handleCloseCollapsible = (event: DragEvent) => {
