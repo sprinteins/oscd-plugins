@@ -1,7 +1,7 @@
 export type FilterOptions = Array<{
     label: string;
     values: {
-        selectedType?: Nullable<LpTypes>;
+        selectedTypes?: Nullable<LpTypes[]>;
         linked?: boolean;
         unlinked?: boolean;
     };
