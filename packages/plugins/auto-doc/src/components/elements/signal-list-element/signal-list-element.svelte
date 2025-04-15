@@ -179,6 +179,16 @@
 	</div>
 	
 	{#each mergedColsAndMessages as row, i (row.id)}
+		{@const isFirstOfLastFour = i === mergedColsAndMessages.length - 4}
+		
+		{#if isFirstOfLastFour}
+			<div class="section-divider">
+				<div></div>
+				<small>Choose the message types you want to display</small>
+				<small>Filter targen IEDS with Regex</small>
+			</div>
+		{/if}
+
 		<SignalRow 
 			idx={i}
 			id={row.id}
@@ -208,6 +218,15 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+
+	.section-divider {
+		display: grid;
+		grid-template-columns: 100px repeat(2, 1fr);
+		grid-gap: 1rem;
+		margin-left: 0.6rem;
+		margin-bottom: 1.5rem;
+		margin-top: 1.5rem;
 	}
 
 	small {
