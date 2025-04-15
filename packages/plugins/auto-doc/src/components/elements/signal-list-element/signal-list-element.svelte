@@ -225,10 +225,8 @@
 		grid-template-columns: 100px repeat(2, 1fr);
 		grid-gap: 1rem;
 		margin-left: 0.6rem;
+		margin-bottom: 1.5rem;
 		margin-top: 1.5rem;
-		margin-bottom: 0.5rem;
-		border-top: 1px solid #e5e7eb;
-		padding-top: 1rem;
 	}
 
 	small {
