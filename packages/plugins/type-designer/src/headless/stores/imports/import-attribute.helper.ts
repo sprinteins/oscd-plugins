@@ -12,6 +12,16 @@ import { pluginLocalStore } from '@/headless/stores'
  * @returns
  */
 export function setUuidAttributesRecursively(element: Element) {
+	const isLNodeTypeOrChild = element.tagName === 'LNodeType' || 
+		element.closest('LNodeType') !== null;
+
+	if (isLNodeTypeOrChild) {
+		for (const child of Array.from(element.children)) {
+			setUuidAttributesRecursively(child)
+		}
+		return
+	}
+
 	const hasId = element.hasAttribute('id')
 
 	if (!hasId) {
