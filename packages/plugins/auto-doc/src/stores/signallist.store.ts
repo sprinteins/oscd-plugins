@@ -12,6 +12,7 @@ import type {
 import { SignalType } from './signallist.store.d'
 
 import { MESSAGE_PUBLISHER,  MESSAGE_SUBSCRIBER,  SUBSCRIBER_EXT_REF } from "../constants";
+import { queryDataSetForControl, queryLDevice, queryLN } from "@/utils";
 
 
 
@@ -55,6 +56,8 @@ function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { mes
     for (const ied of IEDs) {
         processIEDForPublishers(ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
     }
+
+    console.log('messagePublishers', messagePublishers)
 
     const filteredMessagePublishers = filterMessagePublishers(messagePublishers, filter);
 
@@ -101,9 +104,12 @@ function processAccessPointForPublishers(accessPoint: Element, ied: Element, dat
 }
 
 function processLDeviceForPublishers(lDevice: Element, ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
-    const lNode0 = lDevice.querySelector('LN0');
-    if (!lNode0) return;
+    const lNodes = lDevice.querySelectorAll('LN0, LN');
+    for (const ln of lNodes) {
+        processLNForPublishers(ln, lDevice, ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
+    }
 
+    /* TODO: Remove when working
     const GSEControl = lNode0.querySelector('GSEControl');
     const ReportControl = lNode0.querySelector('ReportControl');
     if (!GSEControl && !ReportControl) return;
@@ -112,6 +118,32 @@ function processLDeviceForPublishers(lDevice: Element, ied: Element, dataTypeTem
     const dataSets = lNode0.querySelectorAll('DataSet');
     for (const dataSet of dataSets) {
         processDataSet(dataSet, lDevice, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
+    }
+    */
+}
+
+function processLNForPublishers(ln: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    const gseControls = ln.querySelectorAll('GSEControl');
+    const reportControls = ln.querySelectorAll('ReportControl');
+
+    for (const gseControl of gseControls) {
+        const dataSet = queryDataSetForControl(gseControl);
+
+        if (!dataSet) {
+            continue;
+        }
+
+        processDataSet(dataSet, lDevice, ied, dataTypeTemplates, SignalType.GOOSE, messagePublishers, invaliditiesReports);
+    }
+
+    for (const reportControl of reportControls) {
+        const dataSet = queryDataSetForControl(reportControl);
+
+        if (!dataSet) {
+            continue;
+        }
+
+        processDataSet(dataSet, lDevice, ied, dataTypeTemplates, SignalType.MMS, messagePublishers, invaliditiesReports);
     }
 }
 
@@ -131,13 +163,35 @@ function processFCDA(FCDA: Element, lDevice: Element, ied: Element, dataTypeTemp
     const daName = FCDA.getAttribute('daName') || '';
     const fc = FCDA.getAttribute('fc') || '';
 
+    const targetLDevice = queryLDevice(ied, ldInst);
+    if (!targetLDevice) {
+        // TODO: Remove console
+        console.log('Target LDevice not found');
+        return;
+    }
+
+    const targetLN = queryLN(targetLDevice, lnClass, lnInst, prefix);
+    if (!targetLN) {
+        // TODO: Remove console
+        // console.log(`lnClass: ${lnClass}, lnInst: ${lnInst}, prefix: ${prefix}`);
+        // console.log(targetLDevice);
+        console.log('Target LN not found');
+        return;
+    }
+
+    processLN(targetLN, ldInst, prefix, lnClass, lnInst, doName, daName, fc, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
+
+    // TODO: Remove
+    /*
     const lNodes = lDevice.querySelectorAll(`LN[inst="${lnInst}"][lnClass="${lnClass}"][prefix="${prefix}"]`);
     for (const ln of lNodes) {
         processLN(ln, ldInst, prefix, lnClass, lnInst, doName, daName, fc, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
     }
+    */
 }
 
 function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string, lnInst: string, doName: string, daName:string, fc: string, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    console.log(`Processing LN: lnClass: ${lnClass}, lnInst: ${lnInst}, prefix: ${prefix}`)
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
@@ -146,15 +200,19 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
     const substationName = substation ? substation.getAttribute('name') || '' : '';
 
     const DOIs = ln.querySelectorAll('DOI');
+    console.log('DOIs', DOIs)
     for (const DOI of DOIs) {
 
         const doiName = DOI.getAttribute('name') || '';
         if(doName !== doiName) continue;
 
         const DAIs = DOI.querySelectorAll('DAI');
+        console.log('DAIs', DAIs)
         for (const DAI of DAIs) {
+            // TODO: is 'desc' correct here? Should we really skip in this case?
             const desc = DAI.getAttribute('desc') || '';
             if (desc !== '') {
+                console.log(`Processing DAI with desc: ${desc}`);
                 const IEDName = ied.getAttribute('name') || '';
                 const logicalNodeInformation: LogicalNodeInformation = {
                     [MESSAGE_PUBLISHER.IEDName]: IEDName,
@@ -166,19 +224,31 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
                 };
 
                 const LNodeType = findLNodeType(logicalNodeInformation.LogicalNodeType, dataTypeTemplates, IEDName, logicalNodeInformation, invaliditiesReports);
-                if (!LNodeType) continue;
+                if (!LNodeType) {
+                    console.log(`LNodeType not found ${logicalNodeInformation.LogicalNodeType}`)
+                    continue;
+                }
 
                 const DO = findDO(doName, LNodeType, IEDName, logicalNodeInformation, invaliditiesReports);
-                if (!DO) continue;
+                if (!DO) {
+                    console.log(`DO not found ${doName}`)
+                    continue;
+                }
 
                 const DOtypeId = DO.getAttribute('type') || '';
                 const DOtype = findDOType(DOtypeId, dataTypeTemplates, IEDName, logicalNodeInformation, invaliditiesReports);
-                if (!DOtype) continue;
+                if (!DOtype) {
+                    console.log(`DOType not found ${DOtypeId}`)
+                    continue;
+                }
 
                 const daName = DAI.getAttribute('name') || '';
                 const commonDataClass = DOtype.getAttribute('cdc') || '';
                 const DA = findDA(daName, DOtype, IEDName, logicalNodeInformation, invaliditiesReports);
-                if (!DA) continue;
+                if (!DA) {
+                    console.log(`DA not found ${daName}`)
+                    continue;
+                }
 
                 const attributeType = DA.getAttribute('bType') || '';
 
