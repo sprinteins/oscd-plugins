@@ -42,6 +42,11 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
         return (marginTop + bufferToBottomPage) > (pageHeight-marginBottom);
     }
 
+    function createNewPage() {
+        doc.addPage();
+        marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
+    }
+
     function handleRichTextEditorBlock(block: Element){
         const parser = new DOMParser();
         const parsedBlockContent = parser.parseFromString(block.textContent ?? "", "text/html");
@@ -88,9 +93,9 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
 
         for(const line of wrappedText){
             if (contentExceedsCurrentPage()) {
-                doc.addPage();
-                marginTop = INITIAL_UPPER_PAGE_COORDINATE; 
+                createNewPage();
             }
+
             const horizontalSpacing = 10;
             doc.text(line, horizontalSpacing, marginTop);
             incrementVerticalPositionForNextLine();
@@ -151,8 +156,7 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
   
     function renderTextLine(text: string) {
         if (contentExceedsCurrentPage()) {
-            doc.addPage();
-            marginTop = INITIAL_UPPER_PAGE_COORDINATE;
+            createNewPage();
         }
         const horizontalSpacing = 10;
         doc.text(text, horizontalSpacing, marginTop);
@@ -206,6 +210,10 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
         const width = scaleFactor * maxWidth;
         const height = width * aspectRatio;
 
+        if(contentExceedsCurrentPage(height)) {
+            createNewPage();
+        }
+
         doc.addImage(imageSource, format.toUpperCase(), 10, marginTop, width, height);
         
         const padding = Math.round(height) + DEFAULT_LINE_HEIGHT;
@@ -240,7 +248,7 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
             }
         }
 
-       renderTextLine(pdfHintText);
+        renderTextLine(pdfHintText);
         zipcelx(config)
     }
 
@@ -314,8 +322,7 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
 
         const tableHeight = (rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT);
         if(contentExceedsCurrentPage(tableHeight)) {
-            doc.addPage();            
-            marginTop = INITIAL_UPPER_PAGE_COORDINATE;
+            createNewPage();
         } else {
             incrementVerticalPositionForNextLine(tableHeight);
         }
