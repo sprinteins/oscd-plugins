@@ -179,7 +179,7 @@ function processFCDA(FCDA: Element, lDevice: Element, ied: Element, dataTypeTemp
         return;
     }
 
-    processLN(targetLN, ldInst, prefix, lnClass, lnInst, doName, daName, fc, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
+    processLN2(targetLN, ldInst, prefix, lnClass, lnInst, doName, daName, fc, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
 
     // TODO: Remove
     /*
@@ -190,6 +190,120 @@ function processFCDA(FCDA: Element, lDevice: Element, ied: Element, dataTypeTemp
     */
 }
 
+function processLN2(ln: Element, ldInst: string, prefix: string, lnClass: string, lnInst: string, doName: string, daName:string, fc: string, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    console.log(`Processing LN: lnClass: ${lnClass}, lnInst: ${lnInst}, prefix: ${prefix}`)
+    const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
+    const substation = xmlDoc.querySelector('Substation');
+    const substationName = substation?.getAttribute('name') ?? '';
+    const IEDName = ied.getAttribute('name') || '';
+
+    const logicalNodeInformation: LogicalNodeInformation = {
+        [MESSAGE_PUBLISHER.IEDName]: IEDName,
+        [MESSAGE_PUBLISHER.LogicalDeviceInstance]: ldInst,
+        [MESSAGE_PUBLISHER.LogicalNodePrefix]: prefix,
+        [MESSAGE_PUBLISHER.LogicalNodeClass]: lnClass,
+        [MESSAGE_PUBLISHER.LogicalNodeInstance]: lnInst,
+        [MESSAGE_PUBLISHER.LogicalNodeType]: ln.getAttribute('lnType') || ''
+    };
+
+    const LNodeType = findLNodeType(logicalNodeInformation.LogicalNodeType, dataTypeTemplates, IEDName, logicalNodeInformation, invaliditiesReports);
+    if (!LNodeType) {
+        console.log(`LNodeType not found ${logicalNodeInformation.LogicalNodeType}`)
+        return;
+    }
+
+    const DO = findDO(doName, LNodeType, IEDName, logicalNodeInformation, invaliditiesReports);
+    if (!DO) {
+        console.log(`DO not found ${doName}`)
+        return;
+    }
+
+    const DOtypeId = DO.getAttribute('type') || '';
+    const DOtype = findDOType(DOtypeId, dataTypeTemplates, IEDName, logicalNodeInformation, invaliditiesReports);
+    if (!DOtype) {
+        console.log(`DOType not found ${DOtypeId}`)
+        return;
+    }
+
+    const commonDataClass = DOtype.getAttribute('cdc') || '';
+    const DA = findDA(daName, DOtype, IEDName, logicalNodeInformation, invaliditiesReports);
+    if (!DA) {
+        console.log(`DA not found ${daName}`)
+        return;
+    }
+
+    const attributeType = DA.getAttribute('bType') || '';
+
+    const dataObjectInformation: DataObjectInformation = {
+        [MESSAGE_PUBLISHER.DataObjectName]: doName,
+        [MESSAGE_PUBLISHER.DataAttributeName]: daName,
+        [MESSAGE_PUBLISHER.CommonDataClass]: commonDataClass,
+        [MESSAGE_PUBLISHER.AttributeType]: attributeType,
+        [MESSAGE_PUBLISHER.FunctionalConstraint]: fc,
+    };
+
+    // TODO: What to use for M_text
+    const desc = '';
+
+    const isDuplicate = messagePublishers.some(publisher =>
+        publisher.M_text === desc &&
+        publisher.IEDName === IEDName &&
+        publisher.logicalNodeInformation.LogicalDeviceInstance === ldInst &&
+        publisher.logicalNodeInformation.LogicalNodePrefix === prefix &&
+        publisher.logicalNodeInformation.LogicalNodeClass === lnClass &&
+        publisher.logicalNodeInformation.LogicalNodeInstance === lnInst &&
+        publisher.logicalNodeInformation.LogicalNodeType === logicalNodeInformation.LogicalNodeType &&
+        publisher.dataObjectInformation.DataObjectName === doName &&
+        publisher.dataObjectInformation.DataAttributeName === daName &&
+        publisher.dataObjectInformation.CommonDataClass === commonDataClass &&
+        publisher.dataObjectInformation.AttributeType === attributeType &&
+        publisher.dataObjectInformation.FunctionalConstraint === fc
+    );
+
+    if (isDuplicate) {
+        return;
+    }
+
+    let voltageLevelName = ''
+    let bayName = ''
+
+    const voltageLevel = substation?.querySelectorAll("VoltageLevel");
+
+    if(voltageLevel){
+        
+        for (const vl of voltageLevel) {
+           const bays = vl.querySelectorAll("Bay");
+           for (const bay of bays) {
+
+            const lNodes = bay.querySelectorAll("LNode");
+
+            for(const ln of lNodes){
+                const lnIedName = ln.getAttribute("iedName")
+                if(lnIedName === IEDName ){
+                    bayName = bay.getAttribute("name") || ''
+                    voltageLevelName = vl.getAttribute("name") || ''
+                }
+            }
+            
+           }
+        }
+    }
+    messagePublishers.push({
+        [MESSAGE_PUBLISHER.UW]: substationName, 
+        [MESSAGE_PUBLISHER.VoltageLevel]: voltageLevelName,
+        [MESSAGE_PUBLISHER.Bay]: bayName,
+        [MESSAGE_PUBLISHER.M_text]: desc, 
+        [MESSAGE_PUBLISHER.SignalType]: signalType, 
+        [MESSAGE_PUBLISHER.IEDName]: IEDName, 
+        [MESSAGE_PUBLISHER.LogicalNodeInformation]: logicalNodeInformation,
+        [MESSAGE_PUBLISHER.DataObjectInformation]: dataObjectInformation,
+         
+    });
+}
+
 function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string, lnInst: string, doName: string, daName:string, fc: string, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
     console.log(`Processing LN: lnClass: ${lnClass}, lnInst: ${lnInst}, prefix: ${prefix}`)
     const xmlDoc = get(xmlDocument);
@@ -198,6 +312,8 @@ function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string,
     }
     const substation = xmlDoc.querySelector('Substation');
     const substationName = substation ? substation.getAttribute('name') || '' : '';
+
+    // TODO: Use daName from FCDA, what is the purpose of DAI?
 
     const DOIs = ln.querySelectorAll('DOI');
     console.log('DOIs', DOIs)
