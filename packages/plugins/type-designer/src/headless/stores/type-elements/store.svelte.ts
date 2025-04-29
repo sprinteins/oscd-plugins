@@ -18,7 +18,7 @@ import {
 import { getFilteredTypeElementByIds } from './filter.helper'
 import { duplicateElement } from '@/headless/stores/type-elements/common-crud-operation.helper'
 // TYPES
-import type { TypeElementsByFamily, Columns } from '@/headless/stores'
+import type { TypeElementsByFamily, Columns, AvailableTypeFamily } from '@/headless/stores'
 
 class UseTypeElementsStore {
 	//====== INITIALIZATION ======//
@@ -205,12 +205,41 @@ class UseTypeElementsStore {
 	})
 	newComputedTypeName = $derived.by(() => {
 		return {
-			[TYPE_FAMILY.bay]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.bay]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.bay]}`,
+			[TYPE_FAMILY.bay]: this.getComputedName(TYPE_FAMILY.bay),
 			[TYPE_FAMILY.generalEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.generalEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.generalEquipment]}`,
 			[TYPE_FAMILY.conductingEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.conductingEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.conductingEquipment]}`,
-			[TYPE_FAMILY.function]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.function]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.function]}`
+			[TYPE_FAMILY.function]: this.getComputedName(TYPE_FAMILY.function)
 		}
 	})
+
+
+	private getComputedName(family: "function" | "bay") : string {
+		// const inputValue = this.newTypeNameInputValueByColumnKey[this.columnKeyByTypeFamily[family]]
+		
+		const inputValue = "Func_1"
+
+		if (inputValue) {
+			const match = inputValue.match(/^(.+?)(?:_(\d+))?$/)
+			if (match) {
+				const baseName = match[1]
+				const existingIndex = match[2]
+				
+				if (existingIndex) {
+					const elementWithSameName = Object.values(this.typeElementsPerFamily[family])
+						.find(element => element.parameters.label === inputValue)
+					
+					console.log("elementWithSameName", elementWithSameName)
+					if (!elementWithSameName) {
+						return inputValue
+					}
+					return `${inputValue}_1`
+				}
+				return `${baseName}_${this.nextOccurrenceByTypeFamily[family]}`
+			}
+		}
+
+		return `${this.namePrefixByTypeFamily[family]}_${this.nextOccurrenceByTypeFamily[family]}`
+	}
 }
 
 export const typeElementsStore = new UseTypeElementsStore()
