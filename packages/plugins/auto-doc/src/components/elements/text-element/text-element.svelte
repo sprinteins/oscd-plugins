@@ -1,17 +1,19 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
-    import { Editor } from '@tiptap/core';
+    import { Editor, type Content } from '@tiptap/core';
     import StarterKit from '@tiptap/starter-kit';
     import TextStyle from '@tiptap/extension-text-style';
     import ListItem from '@tiptap/extension-list-item'
 	import Underline from '@tiptap/extension-underline'
 	import {debounce} from '@/utils';
+    import PlaceholderHelpDialog from '@/components/dialog/placeholder-help-dialog.svelte';
 
     let element: Element;
-    let editor: unknown;
+    let editor: Editor;
     export let content = '<p>Hello World! 🌍️ </p>';
     export let onContentChange: (newContent: string) => void;
 
+    $: isPlaceholderHelpDialogOpen = false;
 
 	const ONE_SECOND_IN_MS = 1000;
 	const debouncedContentChange = debounce(onContentChange, ONE_SECOND_IN_MS);
@@ -33,7 +35,7 @@
             onUpdate: ({ editor }) => {
                 debouncedContentChange(editor.getHTML());
             },
-            onTransaction: () => {
+            onTransaction: ({ }) => {
                 // force re-render so `editor.isActive` works as expected
                 editor = editor;
             },
@@ -44,9 +46,22 @@
             editor.destroy();
         }
     });
+
+    function insertPlaceholder() {
+        const cursorPosition = editor.state.selection.$anchor.pos;
+        editor.commands.insertContent("{{}}");
+        editor.chain().focus().setTextSelection(cursorPosition + 2).run();
+    }
 </script>
+
+<PlaceholderHelpDialog bind:isOpen={isPlaceholderHelpDialogOpen}/>
+
 {#if editor}
     <div class="control-group">
+        <div>
+            <button on:click={insertPlaceholder}>Insert placeholder</button>
+            <button on:click={() => isPlaceholderHelpDialogOpen = true}>?</button>
+        </div>
         <div class="button-group">
             <button
                 on:click={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -195,5 +210,12 @@
         border: none;
         border-top: 1px solid var(--gray-2);
         margin: 2rem 0;
+    }
+
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        place-items: start;
+        gap: 0.5rem;
     }
 </style>
