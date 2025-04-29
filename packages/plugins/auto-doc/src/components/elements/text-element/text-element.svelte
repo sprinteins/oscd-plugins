@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
-    import { Editor, type Content } from '@tiptap/core';
+    import { Editor } from '@tiptap/core';
     import StarterKit from '@tiptap/starter-kit';
     import TextStyle from '@tiptap/extension-text-style';
     import ListItem from '@tiptap/extension-list-item'
@@ -35,7 +35,7 @@
             onUpdate: ({ editor }) => {
                 debouncedContentChange(editor.getHTML());
             },
-            onTransaction: ({ }) => {
+            onTransaction: () => {
                 // force re-render so `editor.isActive` works as expected
                 editor = editor;
             },
