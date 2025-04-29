@@ -185,7 +185,7 @@
 			<div class="section-divider">
 				<div></div>
 				<small>Choose the message types you want to display</small>
-				<small>Filter targen IEDS with Regex</small>
+				<small>Filter target IEDS with XPath</small>
 			</div>
 		{/if}
 
