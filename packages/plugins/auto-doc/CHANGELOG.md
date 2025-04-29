@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.0] - 2025-04-29
+
+- Add Insert placeholder button
+- Add XPath help modal
+
 ## [1.16.2] - 2025-04-25
 
 ### Fixed
