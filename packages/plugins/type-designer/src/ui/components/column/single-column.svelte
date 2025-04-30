@@ -55,10 +55,14 @@ function handleColumnDragOver(event: DragEvent) {
 			}, WAIT_MS)
 		}
 	} else {
-		clearTimeout(scrollTimer ?? undefined)
-		scrollTimer = null
-		extraSpacer = 0
+		resetSpacer();
 	}
+}
+
+function resetSpacer() {
+	clearTimeout(scrollTimer ?? undefined)
+	scrollTimer = null
+	extraSpacer = 0
 }
 
 //======= INITIALIZATION =======//
