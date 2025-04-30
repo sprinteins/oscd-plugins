@@ -61,12 +61,6 @@ function handleColumnDragOver(event: DragEvent) {
 	}
 }
 
-function resetSpacer() {
-	clearTimeout(scrollTimer ?? undefined)
-	scrollTimer = null
-	extraSpacer = 0
-}
-
 //======= INITIALIZATION =======//
 
 // props
