@@ -24,7 +24,48 @@ import {
 	ALLOWED_TARGETS_BY_TYPE_FAMILY,
 	TYPE_FAMILY
 } from '@/headless/constants'
-import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
+
+let scrollContainer: HTMLDivElement
+let extraSpacer = $state(0)
+const SPACER = 60
+const THRESH = 70
+const WAIT_MS = 350
+let scrollTimer: number | null = null
+
+function handleColumnDragOver(event: DragEvent) {
+	if (!dndStore.isDragging) return
+	event.preventDefault()
+
+	const rect = scrollContainer.getBoundingClientRect()
+	const distanceFromBottom = rect.bottom - event.clientY
+
+	const nearBottom = distanceFromBottom < THRESH
+
+	if (nearBottom) {
+		const remaining =
+			scrollContainer.scrollHeight -
+			(scrollContainer.scrollTop + scrollContainer.clientHeight)
+
+		extraSpacer = remaining < THRESH ? SPACER : 0
+
+		if (scrollTimer === null && extraSpacer) {
+			scrollTimer = window.setTimeout(() => {
+				scrollContainer.scrollTop += THRESH - distanceFromBottom
+				scrollTimer = null
+			}, WAIT_MS)
+		}
+	} else {
+		clearTimeout(scrollTimer ?? undefined)
+		scrollTimer = null
+		extraSpacer = 0
+	}
+}
+
+function resetSpacer() {
+	clearTimeout(scrollTimer ?? undefined)
+	scrollTimer = null
+	extraSpacer = 0
+}
 
 //======= INITIALIZATION =======//
 
@@ -146,14 +187,27 @@ $inspect(importsStore.loadedLNodeType.elementByIds)
 		{/if}	
 		
 		{#if hasTypeElements}
-			<div class={`${shouldResizeContainerToHalf ? "h-1/4" : "h-full"} overflow-y-auto p-2`}>
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore event_directive_deprecated -->
+			<div
+				bind:this={scrollContainer}
+				class={`${shouldResizeContainerToHalf ? "h-1/4" : "h-full"} overflow-y-auto p-2`}
+					ondragover={handleColumnDragOver}
+					ondragleave={resetSpacer}
+					ondrop={resetSpacer}
+			>
 				{#each groupedTypeElementsEntries as [typeElementFamily, typeElements]}
 					{#each Object.entries(typeElements) as [typeElementKey, typeElement]}
 						<CardCollapsibleWrapper {typeElementKey} {typeElement} {typeElementFamily}/>
 					{/each}
 				{/each}
+
+				{#if extraSpacer}
+					<div style={`height:${extraSpacer}px;`}></div>
+				{/if}
 			</div>
 		{/if}
+
 	</Card.Content>
 
 	{#if columnKey !== 'lNodeType'}
