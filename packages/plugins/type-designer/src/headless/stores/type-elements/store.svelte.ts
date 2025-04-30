@@ -203,43 +203,49 @@ class UseTypeElementsStore {
 			removeOccurrencePartToTestedValue: true
 		})
 	})
+
+	/**
+	 * If the user gave an explicit name with an index attached (e.g "Func_1"),
+	 * reuse it when it is not already present
+	 */
+	private computeNameWithOptionalSuffix(
+		family: "function" | "bay",
+		inputValue: string | undefined,
+		defaultPrefix: string,
+		nextOcc: number
+	  ): string {
+		const typed = inputValue?.trim()
+		if (typed) {
+		  const explicitSuffix = /.+_\d+$/.test(typed)
+		  if (explicitSuffix) {
+			const exists = Object.values(this.typeElementsPerFamily[family]).some(
+			  (el) => (el as any).parameters?.label === typed || (el as any).attributes?.name === typed
+			)
+			if (!exists) return typed // func_1 free again
+		  }
+		  return `${typed}_${nextOcc}`
+		}
+		return `${defaultPrefix}_${nextOcc}`
+	  }
+	  
 	newComputedTypeName = $derived.by(() => {
 		return {
-			[TYPE_FAMILY.bay]: this.getComputedName(TYPE_FAMILY.bay),
+			[TYPE_FAMILY.bay]: this.computeNameWithOptionalSuffix(
+				'bay',
+				this.newTypeNameInputValueByColumnKey[COLUMNS.bayType],
+				this.namePrefixByTypeFamily[TYPE_FAMILY.bay],
+				this.nextOccurrenceByTypeFamily[TYPE_FAMILY.bay]
+			  ),
 			[TYPE_FAMILY.generalEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.generalEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.generalEquipment]}`,
 			[TYPE_FAMILY.conductingEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.conductingEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.conductingEquipment]}`,
-			[TYPE_FAMILY.function]: this.getComputedName(TYPE_FAMILY.function)
+			[TYPE_FAMILY.function]: this.computeNameWithOptionalSuffix(
+				'function',
+				this.newTypeNameInputValueByColumnKey[COLUMNS.functionType],
+				this.namePrefixByTypeFamily[TYPE_FAMILY.function],
+				this.nextOccurrenceByTypeFamily[TYPE_FAMILY.function]
+			  )
 		}
 	})
-
-
-	private getComputedName(family: "function" | "bay") : string {
-		// const inputValue = this.newTypeNameInputValueByColumnKey[this.columnKeyByTypeFamily[family]]
-		
-		const inputValue = "Func_1"
-
-		if (inputValue) {
-			const match = inputValue.match(/^(.+?)(?:_(\d+))?$/)
-			if (match) {
-				const baseName = match[1]
-				const existingIndex = match[2]
-				
-				if (existingIndex) {
-					const elementWithSameName = Object.values(this.typeElementsPerFamily[family])
-						.find(element => element.parameters.label === inputValue)
-					
-					console.log("elementWithSameName", elementWithSameName)
-					if (!elementWithSameName) {
-						return inputValue
-					}
-					return `${inputValue}_1`
-				}
-				return `${baseName}_${this.nextOccurrenceByTypeFamily[family]}`
-			}
-		}
-
-		return `${this.namePrefixByTypeFamily[family]}_${this.nextOccurrenceByTypeFamily[family]}`
-	}
 }
 
 export const typeElementsStore = new UseTypeElementsStore()
