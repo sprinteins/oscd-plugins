@@ -49,7 +49,7 @@ async function loadSelectedFile() {
 				importsStore.currentImportColumnKey
 			] = selectedFilename
 		importsStore.loadElements()
-		dialogStore.closeDialog()
+		await dialogStore.closeDialog()
 		resetSelectInputs()
 	}
 }
@@ -58,10 +58,14 @@ function handleFileSelection(selectedFile: Compas.FileByType) {
 	selectedFileId = selectedFile.id
 	selectedFilename = selectedFile.name
 }
-//====== EFFECTS ======//
 
+async function handleCloseDialog() {
+	await dialogStore.closeDialog()
+	resetSelectInputs()
+}
+//====== EFFECTS ======//
 $effect(() => {
-	if (!dialogStore.isOpen) selectedType = undefined
+	if (!dialogStore.isOpen) resetSelectInputs()
 })
 </script>
 
@@ -139,7 +143,7 @@ $effect(() => {
 	</div>
 
 	<footer class="flex justify-end space-x-2 mt-5">
-		<Button.Root variant="outline" class="hover:bg-secondary hover:text-secondary-foreground" onclick={() => { dialogStore.closeDialog(); resetSelectInputs();}}>Cancel</Button.Root>
+		<Button.Root variant="outline" class="hover:bg-secondary hover:text-secondary-foreground" onclick={handleCloseDialog}>Cancel</Button.Root>
 		<Button.Root disabled={!selectedFileId} onclick={loadSelectedFile}>Select</Button.Root>
 	</footer>
 </section>

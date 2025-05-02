@@ -1,18 +1,39 @@
-import type { Component } from 'svelte'
+// SVELTE
+import { mount, unmount, tick } from 'svelte'
+// TYPES
+import type { Component, ComponentProps } from 'svelte'
 
 class UseDialogStore {
-	dialogRef = $state<HTMLDialogElement | null>(null)
-	innerComponent = $state<
-		| Component<
-				Record<string, never>,
-				{ closeCallback?: (() => void) | undefined },
-				''
-		  >
-		| undefined
-	>()
+	//====== STATES ======//
+
+	dialogRef = $state<HTMLDialogElement>()
+	// biome-ignore lint/suspicious/noExplicitAny: this complies to the return type of mount
+	innerComponent = $state.raw<Record<string, any>>()
+	innerComponentTargetRef = $state<HTMLElement>()
 	isOpen = $state(false)
 	private resolvePromise: ((value: string | undefined) => void) | undefined =
 		undefined
+
+	//====== ACTIONS ======//
+
+	// biome-ignore lint/suspicious/noExplicitAny: the component can have any props
+	mountInnerComponent<GenericInnerComponent extends Component<any>>(params: {
+		innerComponent: GenericInnerComponent
+		innerComponentProps?: ComponentProps<GenericInnerComponent>
+	}) {
+		if (!this.innerComponent && this.innerComponentTargetRef)
+			this.innerComponent = mount(params.innerComponent, {
+				target: this.innerComponentTargetRef,
+				props: params.innerComponentProps || {}
+			})
+	}
+
+	async unmountInnerComponent() {
+		if (this.innerComponent) {
+			await unmount(this.innerComponent, { outro: false })
+			this.innerComponent = undefined
+		}
+	}
 
 	openDialog() {
 		this.dialogRef?.showModal()
@@ -22,8 +43,12 @@ class UseDialogStore {
 		})
 	}
 
-	closeDialog(returnValue?: string) {
+	async closeDialog(returnValue?: string) {
+		await this.unmountInnerComponent()
+
 		this.dialogRef?.close()
+		this.isOpen = false
+
 		if (returnValue && this.resolvePromise) {
 			this.resolvePromise(returnValue)
 			this.resolvePromise = undefined

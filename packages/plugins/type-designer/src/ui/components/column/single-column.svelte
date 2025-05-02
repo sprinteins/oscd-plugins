@@ -24,7 +24,6 @@ import {
 	ALLOWED_TARGETS_BY_TYPE_FAMILY,
 	TYPE_FAMILY
 } from '@/headless/constants'
-import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 
 //======= INITIALIZATION =======//
 
@@ -115,8 +114,6 @@ const isColumnDisabled = $derived.by(() => {
 		return !isAllowed
 	}
 })
-
-$inspect(importsStore.loadedLNodeType.elementByIds)
 </script>
 
 <Card.Root class="{columnKey === 'lNodeType' ? 'pb-4' : ''} flex-1 flex flex-col min-h-full {isColumnDisabled ? 'opacity-40' : ''}" >
