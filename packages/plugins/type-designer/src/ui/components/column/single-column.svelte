@@ -31,6 +31,7 @@ const SPACER = 60
 const THRESH = 70
 const WAIT_MS = 350
 let scrollTimer: number | null = null
+let spacerLocked = false
 
 function handleColumnDragOver(event: DragEvent) {
 	if (!dndStore.isDragging) return
@@ -42,20 +43,21 @@ function handleColumnDragOver(event: DragEvent) {
 	const nearBottom = distanceFromBottom < THRESH
 
 	if (nearBottom) {
-		const remaining =
-			scrollContainer.scrollHeight -
-			(scrollContainer.scrollTop + scrollContainer.clientHeight)
+		if (!spacerLocked) {
+			extraSpacer = SPACER
+			console.log('locking spacer')
+			spacerLocked = true
+		}
 
-		extraSpacer = remaining < THRESH ? SPACER : 0
-
-		if (scrollTimer === null && extraSpacer) {
+		if (scrollTimer === null) {
 			scrollTimer = window.setTimeout(() => {
 				scrollContainer.scrollTop += THRESH - distanceFromBottom
 				scrollTimer = null
 			}, WAIT_MS)
 		}
 	} else {
-		resetSpacer();
+		clearTimeout(scrollTimer ?? undefined)
+		scrollTimer = null
 	}
 }
 
@@ -63,6 +65,8 @@ function resetSpacer() {
 	clearTimeout(scrollTimer ?? undefined)
 	scrollTimer = null
 	extraSpacer = 0
+	extraSpacer = 0
+	spacerLocked = false
 }
 
 //======= INITIALIZATION =======//
