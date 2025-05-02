@@ -13,12 +13,13 @@ import { createNewType, deleteTypeAndRefs } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
 import {
 	getTypeNextOccurrence,
-	getElementsWithSameNameBase
+	getElementsWithSameNameBase,
+	computeNameWithOptionalSuffix
 } from './type-naming.helper'
 import { getFilteredTypeElementByIds } from './filter.helper'
 import { duplicateElement } from '@/headless/stores/type-elements/common-crud-operation.helper'
 // TYPES
-import type { TypeElementsByFamily, Columns, AvailableTypeFamily } from '@/headless/stores'
+import type { TypeElementsByFamily, Columns } from '@/headless/stores'
 
 class UseTypeElementsStore {
 	//====== INITIALIZATION ======//
@@ -203,47 +204,22 @@ class UseTypeElementsStore {
 			removeOccurrencePartToTestedValue: true
 		})
 	})
-
-	/**
-	 * If the user gave an explicit name with an index attached (e.g "Func_1"),
-	 * reuse it when it is not already present
-	 */
-	private computeNameWithOptionalSuffix(
-		family: "function" | "bay",
-		inputValue: string | undefined,
-		defaultPrefix: string,
-		nextOcc: number
-	  ): string {
-		const typed = inputValue?.trim()
-		if (typed) {
-		  const explicitSuffix = /.+_\d+$/.test(typed)
-		  if (explicitSuffix) {
-			const exists = Object.values(this.typeElementsPerFamily[family]).some(
-			  (el) => (el as any).parameters?.label === typed || (el as any).attributes?.name === typed
-			)
-			if (!exists) return typed // func_1 free again
-		  }
-		  return `${typed}_${nextOcc}`
-		}
-		return `${defaultPrefix}_${nextOcc}`
-	  }
-	  
 	newComputedTypeName = $derived.by(() => {
 		return {
-			[TYPE_FAMILY.bay]: this.computeNameWithOptionalSuffix(
+			[TYPE_FAMILY.bay]: computeNameWithOptionalSuffix(
 				'bay',
 				this.newTypeNameInputValueByColumnKey[COLUMNS.bayType],
 				this.namePrefixByTypeFamily[TYPE_FAMILY.bay],
 				this.nextOccurrenceByTypeFamily[TYPE_FAMILY.bay]
-			  ),
+			),
 			[TYPE_FAMILY.generalEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.generalEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.generalEquipment]}`,
 			[TYPE_FAMILY.conductingEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.conductingEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.conductingEquipment]}`,
-			[TYPE_FAMILY.function]: this.computeNameWithOptionalSuffix(
+			[TYPE_FAMILY.function]: computeNameWithOptionalSuffix(
 				'function',
 				this.newTypeNameInputValueByColumnKey[COLUMNS.functionType],
 				this.namePrefixByTypeFamily[TYPE_FAMILY.function],
 				this.nextOccurrenceByTypeFamily[TYPE_FAMILY.function]
-			  )
+			)
 		}
 	})
 }
