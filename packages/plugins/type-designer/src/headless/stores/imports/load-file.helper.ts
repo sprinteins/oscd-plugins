@@ -10,13 +10,16 @@ import type {
 	AvailableColumnsWhereImportIsAllowed
 } from '@/headless/stores'
 
-export function loadFromCompas(
+export async function loadFromCompas(
 	currentColumnKey: AvailableColumnsWhereImportIsAllowed
 ) {
 	importsStore.currentImportColumnKey = currentColumnKey
 	importsStore.lastImportSource = 'compas'
-	dialogStore.innerComponent = ImportDialog
-	dialogStore.openDialog()
+
+	dialogStore.mountInnerComponent({
+		innerComponent: ImportDialog
+	})
+	await dialogStore.openDialog()
 }
 
 export async function loadFromLocal(
