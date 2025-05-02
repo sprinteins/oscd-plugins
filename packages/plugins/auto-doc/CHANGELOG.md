@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.17.0] - 2025-04-29
 
-- Add Insert placeholder button
-- Add XPath help modal
+### Added
+
+- Insert placeholder button
+- XPath help modal
+- Tooltip for rich text editor buttons 
+
+### Changed
+
+- Turn rich text editor buttons to icons
 
 ## [1.16.2] - 2025-04-25
 
