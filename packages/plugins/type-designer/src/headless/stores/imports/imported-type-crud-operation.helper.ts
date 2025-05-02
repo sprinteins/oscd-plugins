@@ -134,7 +134,9 @@ function handleUserDecision(decision: UserDecision) {
 }
 
 async function fireUserDecisionDialog() {
-	dialogStore.innerComponent = UpdateConfirmationDialog
+	dialogStore.mountInnerComponent({
+		innerComponent: UpdateConfirmationDialog
+	})
 	const decision = await dialogStore.openDialog()
 
 	if (

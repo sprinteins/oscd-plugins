@@ -8,12 +8,8 @@ import type { UserDecision } from '@/headless/stores'
 
 //====== FUNCTIONS ======//
 
-export function closeCallback() {
-	dialogStore.closeDialog('cancel')
-}
-
 async function handleResponse(returnValue: UserDecision) {
-	dialogStore.closeDialog(returnValue)
+	await dialogStore.closeDialog(returnValue)
 }
 
 const elementsToCreate = $derived(

@@ -74,7 +74,7 @@ const {
 		<SidebarWrapper />
 	</Sidebar.Provider>
 	
-	<DialogWorkaround innerComponent={dialogStore.innerComponent}/>
+	<DialogWorkaround />
 
 </main>
 
