@@ -66,7 +66,13 @@ function resetSpacer() {
 	scrollTimer = null
 	extraSpacer = 0
 	extraSpacer = 0
+	console.log('release')
 	spacerLocked = false
+}
+
+function handleContainerDragLeave(event: DragEvent) {
+	const container = event.currentTarget as HTMLElement
+	if (!container.contains(event.relatedTarget as Node | null)) resetSpacer()
 }
 
 //======= INITIALIZATION =======//
@@ -195,7 +201,7 @@ $inspect(importsStore.loadedLNodeType.elementByIds)
 				bind:this={scrollContainer}
 				class={`${shouldResizeContainerToHalf ? "h-1/4" : "h-full"} overflow-y-auto p-2`}
 					ondragover={handleColumnDragOver}
-					ondragleave={resetSpacer}
+					ondragleave={handleContainerDragLeave}
 					ondrop={resetSpacer}
 			>
 				{#each groupedTypeElementsEntries as [typeElementFamily, typeElements]}
