@@ -119,6 +119,16 @@ export const CONDUCTING_EQUIPMENTS = {
 		type: 'LIN',
 		numberOfTerminals: 2
 	},
+	powerTransformer: {
+		label: 'Power Transformer',
+		type: 'PTR',
+		numberOfTerminals: undefined
+	},
+	powerTransformerWinding: {
+		label: 'Power Transformer Winding',
+		type: 'PTW',
+		numberOfTerminals: undefined
+	},
 	rotatingReactiveComponent: {
 		label: 'Rotating Reactive Component',
 		type: 'RRC',
