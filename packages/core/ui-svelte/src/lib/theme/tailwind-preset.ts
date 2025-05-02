@@ -1,7 +1,7 @@
 import { fontFamily } from 'tailwindcss/defaultTheme'
 import tailwindcssAnimate from 'tailwindcss-animate'
 // TYPES
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
 const config: Config = {
 	darkMode: ['class', '[data-mode="dark"]'],
@@ -33,6 +33,11 @@ const config: Config = {
 					DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
 					foreground:
 						'hsl(var(--secondary-foreground) / <alpha-value>)'
+				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))  / <alpha-value>)',
+					foreground:
+						'hsl(var(--warning-foreground))  / <alpha-value>)'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive) / <alpha-value>)',
