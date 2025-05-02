@@ -49,8 +49,8 @@
 
     function insertPlaceholder() {
         const cursorPosition = editor.state.selection.$anchor.pos;
-        editor.commands.insertContent("{{}}");
-        editor.chain().focus().setTextSelection(cursorPosition + 2).run();
+        editor.commands.insertContent("{{ //default: }}");
+        editor.chain().focus().setTextSelection(cursorPosition + 13).run();
     }
 </script>
 

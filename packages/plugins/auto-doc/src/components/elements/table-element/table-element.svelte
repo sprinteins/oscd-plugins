@@ -1,6 +1,8 @@
 <script lang="ts">
-    import TableColumn from "./table-column.svelte";
+    import CustomIconButton from "@oscd-plugins/ui/src/components/smui-wrapper/custom-icon-button.svelte";
+import TableColumn from "./table-column.svelte";
     import PlaceholderHelpDialog from "@/components/dialog/placeholder-help-dialog.svelte";
+    import Tooltip from "@/components/tooltip/tooltip.svelte";
 
     export let content = "";
 	export let onContentChange: (newContent: string) => void;
@@ -25,7 +27,7 @@
 
     function insertPlaceholder() {
         const { column, row } = selectedCell;
-        data[column][row] = "{{}}";
+        data[column][row] = "{{ //default: }}";
     }
 </script>
 
@@ -33,8 +35,12 @@
 
 <div class="table-element"> 
     <div>
-        <button on:click={insertPlaceholder}>Insert placeholder</button>
-        <button on:click={() => isPlaceholderHelpDialogOpen = true}>?</button>
+        <Tooltip text="Insert&nbsp;Placeholder">
+            <CustomIconButton icon="data_object" size="small" on:click={insertPlaceholder}/>
+        </Tooltip>
+        <Tooltip text="Placeholder&nbsp;Help">
+            <CustomIconButton icon="help" size="small" on:click={() => isPlaceholderHelpDialogOpen = true}/>
+        </Tooltip>
     </div>
     <div class="table-element-grid">
         {#each data as column, columnIndex}

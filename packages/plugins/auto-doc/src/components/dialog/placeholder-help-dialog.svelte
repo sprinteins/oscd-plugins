@@ -19,6 +19,9 @@
 
         <ul>
             <li>
+                <code>//default</code>: Namespace, leave it as is for default
+            </li>
+            <li>
                 <code>Name</code>: Name of the element, like Substation, LNode, Function, Bay, etc.
             </li>
             <li>
