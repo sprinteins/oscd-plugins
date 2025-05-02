@@ -24,7 +24,56 @@ import {
 	ALLOWED_TARGETS_BY_TYPE_FAMILY,
 	TYPE_FAMILY
 } from '@/headless/constants'
-import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
+
+let scrollContainer: HTMLDivElement
+let extraSpacer = $state(0)
+const SPACER = 60
+const THRESH = 70
+const WAIT_MS = 350
+let scrollTimer: number | null = null
+let spacerLocked = false
+
+function handleColumnDragOver(event: DragEvent) {
+	if (!dndStore.isDragging) return
+	event.preventDefault()
+
+	const rect = scrollContainer.getBoundingClientRect()
+	const distanceFromBottom = rect.bottom - event.clientY
+
+	const nearBottom = distanceFromBottom < THRESH
+
+	if (nearBottom) {
+		if (!spacerLocked) {
+			extraSpacer = SPACER
+			console.log('locking spacer')
+			spacerLocked = true
+		}
+
+		if (scrollTimer === null) {
+			scrollTimer = window.setTimeout(() => {
+				scrollContainer.scrollTop += THRESH - distanceFromBottom
+				scrollTimer = null
+			}, WAIT_MS)
+		}
+	} else {
+		clearTimeout(scrollTimer ?? undefined)
+		scrollTimer = null
+	}
+}
+
+function resetSpacer() {
+	clearTimeout(scrollTimer ?? undefined)
+	scrollTimer = null
+	extraSpacer = 0
+	extraSpacer = 0
+	console.log('release')
+	spacerLocked = false
+}
+
+function handleContainerDragLeave(event: DragEvent) {
+	const container = event.currentTarget as HTMLElement
+	if (!container.contains(event.relatedTarget as Node | null)) resetSpacer()
+}
 
 //======= INITIALIZATION =======//
 
@@ -146,14 +195,27 @@ $inspect(importsStore.loadedLNodeType.elementByIds)
 		{/if}	
 		
 		{#if hasTypeElements}
-			<div class={`${shouldResizeContainerToHalf ? "h-1/4" : "h-full"} overflow-y-auto p-2`}>
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore event_directive_deprecated -->
+			<div
+				bind:this={scrollContainer}
+				class={`${shouldResizeContainerToHalf ? "h-1/4" : "h-full"} overflow-y-auto p-2`}
+					ondragover={handleColumnDragOver}
+					ondragleave={handleContainerDragLeave}
+					ondrop={resetSpacer}
+			>
 				{#each groupedTypeElementsEntries as [typeElementFamily, typeElements]}
 					{#each Object.entries(typeElements) as [typeElementKey, typeElement]}
 						<CardCollapsibleWrapper {typeElementKey} {typeElement} {typeElementFamily}/>
 					{/each}
 				{/each}
+
+				{#if extraSpacer}
+					<div style={`height:${extraSpacer}px;`}></div>
+				{/if}
 			</div>
 		{/if}
+
 	</Card.Content>
 
 	{#if columnKey !== 'lNodeType'}
