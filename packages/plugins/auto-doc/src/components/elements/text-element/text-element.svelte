@@ -136,7 +136,12 @@
                     />
                 </Tooltip>
                 <Tooltip text="Placeholder&nbsp;Help">
-                       <CustomIconButton icon="help" color="primary" size="small" on:click={() => isPlaceholderHelpDialogOpen = true}/>
+                    <CustomIconButton 
+                        on:click={() => isPlaceholderHelpDialogOpen = true}
+                        size="small" 
+                        color="primary" 
+                        icon="help" 
+                    />
                 </Tooltip>
                 <Tooltip text="Undo">
                     <CustomIconButton
