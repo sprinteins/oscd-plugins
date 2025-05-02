@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.1.0] - 30.04.2025
+## [3.0.0] - 30.04.2025
 
 ### Add
 
@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Codebase refactoring using stores as single source of truth + business logic
+- Codebase refactoring using stores as single source of truth + business logic (complete rewrite)
 - New UI to match OSCD theme :
 	- right sidebar :
 		- new search filter
