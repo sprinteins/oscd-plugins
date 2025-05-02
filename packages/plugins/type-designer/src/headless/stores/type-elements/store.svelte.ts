@@ -13,7 +13,8 @@ import { createNewType, deleteTypeAndRefs } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
 import {
 	getTypeNextOccurrence,
-	getElementsWithSameNameBase
+	getElementsWithSameNameBase,
+	computeNameWithOptionalSuffix
 } from './type-naming.helper'
 import { getFilteredTypeElementByIds } from './filter.helper'
 import { duplicateElement } from '@/headless/stores/type-elements/common-crud-operation.helper'
@@ -205,10 +206,20 @@ class UseTypeElementsStore {
 	})
 	newComputedTypeName = $derived.by(() => {
 		return {
-			[TYPE_FAMILY.bay]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.bay]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.bay]}`,
+			[TYPE_FAMILY.bay]: computeNameWithOptionalSuffix(
+				'bay',
+				this.newTypeNameInputValueByColumnKey[COLUMNS.bayType],
+				this.namePrefixByTypeFamily[TYPE_FAMILY.bay],
+				this.nextOccurrenceByTypeFamily[TYPE_FAMILY.bay]
+			),
 			[TYPE_FAMILY.generalEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.generalEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.generalEquipment]}`,
 			[TYPE_FAMILY.conductingEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.conductingEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.conductingEquipment]}`,
-			[TYPE_FAMILY.function]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.function]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.function]}`
+			[TYPE_FAMILY.function]: computeNameWithOptionalSuffix(
+				'function',
+				this.newTypeNameInputValueByColumnKey[COLUMNS.functionType],
+				this.namePrefixByTypeFamily[TYPE_FAMILY.function],
+				this.nextOccurrenceByTypeFamily[TYPE_FAMILY.function]
+			)
 		}
 	})
 }

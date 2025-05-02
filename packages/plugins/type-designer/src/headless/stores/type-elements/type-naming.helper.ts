@@ -163,3 +163,29 @@ export function getNumberOfCharactersToRemoveOccurrencePart(params: {
 		extraUnderscoreCharacter
 	)
 }
+
+export function computeNameWithOptionalSuffix(
+	family: 'function' | 'bay',
+	inputValue: string | undefined,
+	defaultPrefix: string,
+	nextOcc: number
+): string {
+	const typed = inputValue?.trim()
+	if (typed) {
+		const explicitSuffix = /.+_\d+$/.test(typed)
+		if (explicitSuffix) {
+			const exists = Object.values(
+				typeElementsStore.typeElementsPerFamily[family]
+			).some(
+				(el) =>
+					(el as TypeElement<typeof family>).parameters?.label ===
+						typed ||
+					(el as TypeElement<typeof family>).attributes?.name ===
+						typed
+			)
+			if (!exists) return typed
+		}
+		return `${typed}_${nextOcc}`
+	}
+	return `${defaultPrefix}_${nextOcc}`
+}
