@@ -12,34 +12,23 @@ import { pluginLocalStore } from '@/headless/stores'
  * @returns
  */
 export function setUuidAttributesRecursively(element: Element) {
-	const isLNodeTypeOrChild = element.tagName === 'LNodeType' || 
-		element.closest('LNodeType') !== null;
+	const isLNodeType = element.tagName === 'LNodeType'
+	if (isLNodeType) return
 
-	if (isLNodeTypeOrChild) {
-		for (const child of Array.from(element.children)) {
-			setUuidAttributesRecursively(child)
-		}
-		return
-	}
+	const uuid = element.getAttribute('uuid')
+	const templateUuid = element.getAttribute('templateUuid')
+	const originUuid = element.getAttributeNS(
+		pluginLocalStore.namespaces.currentUnstableRevision.uri,
+		'originUuid'
+	)
 
-	const hasId = element.hasAttribute('id')
-
-	if (!hasId) {
-		const uuid = element.getAttribute('uuid')
-		const templateUuid = element.getAttribute('templateUuid')
-		const originUuid = element.getAttributeNS(
+	if (!originUuid && uuid)
+		element.setAttributeNS(
 			pluginLocalStore.namespaces.currentUnstableRevision.uri,
-			'originUuid'
+			'originUuid',
+			templateUuid || uuid
 		)
-
-		if (!originUuid && uuid)
-			element.setAttributeNS(
-				pluginLocalStore.namespaces.currentUnstableRevision.uri,
-				'originUuid',
-				templateUuid || uuid
-			)
-		element.setAttribute('uuid', uuidv4())
-	}
+	element.setAttribute('uuid', uuidv4())
 
 	for (const child of Array.from(element.children))
 		setUuidAttributesRecursively(child)
