@@ -12,7 +12,7 @@ import type {
 import { SignalType } from './signallist.store.d'
 
 import { MESSAGE_PUBLISHER,  MESSAGE_SUBSCRIBER,  SUBSCRIBER_EXT_REF } from "../constants";
-import { queryDataSetForControl, queryLDevice, queryLN } from "@/utils";
+import { buildLNQuery, queryDataSetForControl, queryLDevice, queryLN } from "@/utils";
 
 
 
@@ -99,14 +99,14 @@ function processIEDForPublishers(ied: Element, dataTypeTemplates: Element, messa
 function processAccessPointForPublishers(accessPoint: Element, ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
     const LDevices = accessPoint.querySelectorAll('LDevice');
     for (const lDevice of LDevices) {
-        processLDeviceForPublishers(lDevice, ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
+        processLDeviceForPublishers(accessPoint, lDevice, ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
     }
 }
 
-function processLDeviceForPublishers(lDevice: Element, ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+function processLDeviceForPublishers(accessPoint: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
     const lNodes = lDevice.querySelectorAll('LN0, LN');
     for (const ln of lNodes) {
-        processLNForPublishers(ln, lDevice, ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
+        processLNForPublishers(accessPoint, ln, lDevice, ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
     }
 
     /* TODO: Remove when working
@@ -122,7 +122,7 @@ function processLDeviceForPublishers(lDevice: Element, ied: Element, dataTypeTem
     */
 }
 
-function processLNForPublishers(ln: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+function processLNForPublishers(accessPoint: Element, ln: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
     const gseControls = ln.querySelectorAll('GSEControl');
     const reportControls = ln.querySelectorAll('ReportControl');
 
@@ -133,7 +133,7 @@ function processLNForPublishers(ln: Element, lDevice: Element, ied: Element, dat
             continue;
         }
 
-        processDataSet(dataSet, lDevice, ied, dataTypeTemplates, SignalType.GOOSE, messagePublishers, invaliditiesReports);
+        processDataSet(dataSet, accessPoint, lDevice, ied, dataTypeTemplates, SignalType.GOOSE, messagePublishers, invaliditiesReports);
     }
 
     for (const reportControl of reportControls) {
@@ -143,19 +143,19 @@ function processLNForPublishers(ln: Element, lDevice: Element, ied: Element, dat
             continue;
         }
 
-        processDataSet(dataSet, lDevice, ied, dataTypeTemplates, SignalType.MMS, messagePublishers, invaliditiesReports);
+        processDataSet(dataSet, accessPoint, lDevice, ied, dataTypeTemplates, SignalType.MMS, messagePublishers, invaliditiesReports);
     }
 }
 
-function processDataSet(dataSet: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+function processDataSet(dataSet: Element, accessPoint: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
     const FCDAs = dataSet.querySelectorAll('FCDA');
     for (const FCDA of FCDAs) {
-        processFCDA(FCDA, lDevice, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
+        processFCDA(FCDA, accessPoint, lDevice, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
     }
 }
 
-function processFCDA(FCDA: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
-    const ldInst = lDevice.getAttribute('inst') || '';
+function processFCDA(FCDA: Element, accessPoint: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+    const ldInst = FCDA.getAttribute('ldInst') || '';
     const prefix = FCDA.getAttribute('prefix') || '';
     const lnClass = FCDA.getAttribute('lnClass') || '';
     const lnInst = FCDA.getAttribute('lnInst') || '';
@@ -163,7 +163,7 @@ function processFCDA(FCDA: Element, lDevice: Element, ied: Element, dataTypeTemp
     const daName = FCDA.getAttribute('daName') || '';
     const fc = FCDA.getAttribute('fc') || '';
 
-    const targetLDevice = queryLDevice(ied, ldInst);
+    const targetLDevice = queryLDevice(accessPoint, ldInst);
     if (!targetLDevice) {
         // TODO: Remove console
         console.log('Target LDevice not found');
@@ -173,8 +173,6 @@ function processFCDA(FCDA: Element, lDevice: Element, ied: Element, dataTypeTemp
     const targetLN = queryLN(targetLDevice, lnClass, lnInst, prefix);
     if (!targetLN) {
         // TODO: Remove console
-        // console.log(`lnClass: ${lnClass}, lnInst: ${lnInst}, prefix: ${prefix}`);
-        // console.log(targetLDevice);
         console.log('Target LN not found');
         return;
     }
@@ -232,10 +230,9 @@ function processLN2(ln: Element, ldInst: string, prefix: string, lnClass: string
     const DA = findDA(daName, DOtype, IEDName, logicalNodeInformation, invaliditiesReports);
     if (!DA) {
         console.log(`DA not found ${daName}`)
-        return;
     }
 
-    const attributeType = DA.getAttribute('bType') || '';
+    const attributeType = DA?.getAttribute('bType') || '';
 
     const dataObjectInformation: DataObjectInformation = {
         [MESSAGE_PUBLISHER.DataObjectName]: doName,

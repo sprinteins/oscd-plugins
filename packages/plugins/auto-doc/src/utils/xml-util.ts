@@ -9,10 +9,30 @@ export function queryDataSetForControl(control: Element): Element | null {
     return control.parentElement?.querySelector(`:scope > DataSet[name="${dataSetName}"]`) ?? null;
 }
 
-export function queryLDevice(ied: Element, inst: string): Element | null {
-    return ied.querySelector(
-      `:scope > AccessPoint > Server > LDevice[inst="${inst}"]`
+export function queryLDevice(accessPoint: Element, inst: string): Element | null {
+    return accessPoint.querySelector(
+      `:scope > Server > LDevice[inst="${inst}"]`
     );
+}
+
+export function buildLNQuery(
+  lnClass: string,
+  inst: string,
+  prefix: string | null
+): string {
+  if (lnClass === 'LLN0') {
+    return `:scope > LN0[lnClass="${lnClass}"]`;
+  }
+
+  let lnQuery = `:scope > LN[lnClass="${lnClass}"][inst="${inst}"]`;
+  
+  if (prefix) {
+    lnQuery += `[prefix="${prefix}"]`;
+  } else {
+    lnQuery += `:not([prefix]), ${lnQuery}[prefix=""]`;
+  }
+
+  return lnQuery;
 }
 
 export function queryLN(
@@ -21,15 +41,7 @@ export function queryLN(
     inst: string,
     prefix: string | null
   ): Element | null {
-    const ln0Query = `:scope > LN0[lnClass="${lnClass}"]`;
-    let lnQuery = `:scope > LN[lnClass="${lnClass}"][inst="${inst}"]`;
-  
-    if (prefix) {
-      lnQuery += `[prefix="${prefix}"]`;
-    } else {
-      lnQuery += `:not([prefix]), ${lnQuery}[prefix=""]`;
-    }
-  
-    return lDevice.querySelector(`${ln0Query}, ${lnQuery}`);
+    const query = buildLNQuery(lnClass, inst, prefix);
+    return lDevice.querySelector(query);
 }
 
