@@ -42,7 +42,10 @@ export class LogicalStore {
 	//====== DERIVED
 
 	conditioners = $derived.by(() => {
-		if (iedStore.selectedDataObjectId && canvasStore.connectionUuids.length)
+		if (
+			iedStore.selectedDataObjectId &&
+			`${canvasStore.connectionUuids.length}`
+		)
 			return this.consolidateLogical({
 				logicalKind: 'conditioner',
 				logicalFilterValues: this.conditionerFilterValues
@@ -52,7 +55,10 @@ export class LogicalStore {
 	})
 
 	physicals = $derived.by(() => {
-		if (iedStore.selectedDataObjectId && canvasStore.connectionUuids.length)
+		if (
+			iedStore.selectedDataObjectId &&
+			`${canvasStore.connectionUuids.length}`
+		)
 			return this.consolidateLogical({
 				logicalKind: 'physical',
 				logicalFilterValues: this.physicalFilterValues

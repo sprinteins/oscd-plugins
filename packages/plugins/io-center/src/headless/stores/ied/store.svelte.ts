@@ -1,9 +1,10 @@
+import { untrack } from 'svelte'
 // CORE
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
 import { TREE_LEVEL } from '@/headless/constants'
 // STORES
-import { logicalStore, canvasStore } from '@/headless/stores'
+import { pluginLocalStore, logicalStore, canvasStore } from '@/headless/stores'
 // HELPERS
 import { iedElementToIedList } from './crud-operation.helper'
 import { mapCurrentAccessPoint } from './tree-consolidation.helpers'
@@ -31,7 +32,18 @@ export class IedStore {
 	//====== DERIVED
 
 	// IED
-	iEDList = $derived<IED[]>(iedElementToIedList())
+	iEDList = $derived.by<IED[]>(() => {
+		if (
+			pluginLocalStore.isPluginInitialized &&
+			`${pluginGlobalStore.editCount}`
+		) {
+			const untrackedIEDs = untrack(() =>
+				Array.from(pluginLocalStore.rootSubElements?.ied || [])
+			)
+			return iedElementToIedList(untrackedIEDs)
+		}
+		return []
+	})
 	selectedIED = $derived.by<IED | undefined>(() => {
 		if (this.selectedIEDUuid) {
 			return iedStore.iEDList.find(
@@ -54,22 +66,24 @@ export class IedStore {
 
 	// tree
 	treeItems = $derived.by<TreeItem[]>(() => {
-		if (`${pluginGlobalStore.editCount}` && this.selectedIED)
+		if (this.selectedIED) {
 			return [
 				{
 					id: this.selectedIED.uuid,
 					name: this.selectedIED.name,
 					level: TREE_LEVEL.ied,
-					children: mapCurrentAccessPoint({
-						accessPointElements: Array.from(
-							this.selectedIED?.element?.querySelectorAll(
-								'AccessPoint'
-							) || []
-						)
-					})
+					children: untrack(() =>
+						mapCurrentAccessPoint({
+							accessPointElements: Array.from(
+								this.selectedIED?.element?.querySelectorAll(
+									'AccessPoint'
+								) || []
+							)
+						})
+					)
 				}
 			]
-
+		}
 		return []
 	})
 	filteredTreeItems = $derived.by<TreeItem[]>(() => {
@@ -106,9 +120,15 @@ export class IedStore {
 		canvasStore.resetStates()
 	}
 
-	resetStates() {
+	resetSidebarStates() {
+		this.parentTreeItemToExpandOnUpdate = undefined
 		this.selectedDataObjectId = undefined
 		this.searchInputValue = ''
+	}
+
+	resetStates() {
+		this.resetSidebarStates()
+		this.selectedIEDUuid = undefined
 	}
 
 	//====== PROXY ======//

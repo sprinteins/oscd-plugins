@@ -41,7 +41,17 @@ const {
 	isCustomInstance
 }: Plugin.CustomComponentsProps = $props()
 
-// this plugins relies on Uuids on certain elements
+// reset states on new doc
+$effect(() => {
+	if (editCount === -1) {
+		pluginLocalStore.isPluginInitialized = false
+		canvasStore.resetStates()
+		iedStore.resetStates()
+		logicalStore.resetStates()
+	}
+})
+
+// this plugins relies on Uuids for certain elements
 $effect(() => {
 	if (
 		!pluginLocalStore.isPluginInitialized &&
@@ -54,15 +64,6 @@ $effect(() => {
 $effect(() => {
 	if (iedStore.selectedDataObject && canvasStore.connectionUuids.length)
 		canvasStore.getCurrentConnectedUuidsAndAddLogicalToSelection()
-})
-
-// reset states on new doc
-$effect(() => {
-	if (editCount === -1) {
-		canvasStore.resetStates()
-		iedStore.resetStates()
-		logicalStore.resetStates()
-	}
 })
 </script>
 

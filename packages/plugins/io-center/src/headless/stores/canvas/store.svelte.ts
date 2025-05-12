@@ -1,3 +1,4 @@
+import { untrack } from 'svelte'
 // CORE
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // HELPERS
@@ -43,7 +44,8 @@ export class CanvasStore {
 
 	// connections
 	connectionUuids = $derived.by<ConnectionId[]>(() => {
-		if (`${pluginGlobalStore.editCount}`) return getConnectionsUuids()
+		if (`${pluginGlobalStore.editCount}`)
+			return untrack(() => getConnectionsUuids())
 		return []
 	})
 

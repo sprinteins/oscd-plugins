@@ -18,7 +18,7 @@ const iedOptions = $derived(
 //====== FUNCTIONS ======//
 
 function resetAllStatesOnChange() {
-	iedStore.resetStates()
+	iedStore.resetSidebarStates()
 	logicalStore.resetStates()
 	canvasStore.resetStates()
 }
