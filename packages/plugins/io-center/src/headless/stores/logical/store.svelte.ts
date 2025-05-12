@@ -43,7 +43,7 @@ export class LogicalStore {
 
 	conditioners = $derived.by(() => {
 		if (
-			iedStore.selectedDataObjectId &&
+			`${iedStore.selectedDataObjectIds.length}` &&
 			`${canvasStore.connectionUuids.length}`
 		)
 			return this.consolidateLogical({
@@ -56,7 +56,7 @@ export class LogicalStore {
 
 	physicals = $derived.by(() => {
 		if (
-			iedStore.selectedDataObjectId &&
+			`${iedStore.selectedDataObjectIds.length}` &&
 			`${canvasStore.connectionUuids.length}`
 		)
 			return this.consolidateLogical({

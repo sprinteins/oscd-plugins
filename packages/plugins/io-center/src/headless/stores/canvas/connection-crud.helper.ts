@@ -20,6 +20,8 @@ import {
 	pluginLocalStore,
 	logicalStore
 } from '@/headless/stores'
+// UTILS
+import { pushInStringArrayIfNotPresent } from '@/headless/utils'
 // TYPES
 import type {
 	PortConfig,
@@ -53,76 +55,79 @@ export function getConnectionsUuids() {
 }
 
 export function getCurrentConnectedUuidsAndAddLogicalToSelection() {
-	if (!iedStore.selectedDataObject) throw new Error('No data object selected')
+	if (!iedStore.selectedDataObjects.length)
+		throw new Error('No data objects selected')
 
-	const currentDataObjectPayloadUuid =
-		iedStore.selectedDataObject.ports[0].payload.uuid
+	// const currentDataObjectPayloadUuid =
+	// 	iedStore.selectedDataObject.ports[0].payload.uuid
 
-	// loop through all ids
-	for (const connectionId of canvasStore.connectionUuids) {
-		//source: 878 target 5cf
-
-		// begin with conditioner as their are considered as source
-		// for both dataObject and physical in the connectionUuids array
-		for (const conditioner of logicalStore.conditioners.raw) {
-			for (const conditionerPort of conditioner.ports) {
-				if (connectionId.dOISource === conditionerPort.payload.uuid) {
-					const isConnectedToCurrentSelectedDataObject =
-						conditionerPort.allowedTarget.kind ===
-							PORT_KIND.dataObject &&
-						connectionId.lNRefTarget ===
-							currentDataObjectPayloadUuid
-					// check connection between conditioner and dataObject
-					if (isConnectedToCurrentSelectedDataObject) {
-						// add dataObject
-						pushIfUuidNotPresent(
-							canvasStore.currentConnectedDataObjectAndLogicalUuids,
-							currentDataObjectPayloadUuid
-						)
-						// add conditioner
-						pushIfUuidNotPresent(
-							canvasStore.currentConnectedDataObjectAndLogicalUuids,
-							conditionerPort.payload.uuid
-						)
-
-						pushIfUuidNotPresent(
-							logicalStore.conditionerFilterValues
-								.selectedLogicalIds,
-							conditioner.id
-						)
-					}
-
-					// check connection between conditioner and physical
+	for (const currentDataObject of iedStore.selectedDataObjects) {
+		const currentDataObjectUuid = currentDataObject.ports[0].payload.uuid
+		// loop through all ids
+		for (const connectionId of canvasStore.connectionUuids) {
+			// begin with conditioner as their are considered as source
+			// for both dataObject and physical in the connectionUuids array
+			for (const conditioner of logicalStore.conditioners.raw) {
+				for (const conditionerPort of conditioner.ports) {
 					if (
-						conditionerPort.allowedTarget.kind ===
-						PORT_KIND.logicalPhysical
+						connectionId.dOISource === conditionerPort.payload.uuid
 					) {
-						for (const physical of logicalStore.physicals.raw) {
-							for (const physicalPort of physical.ports) {
-								if (
-									connectionId.lNRefTarget ===
-									physicalPort.payload.uuid
-								) {
-									// add conditioner
-									pushIfUuidNotPresent(
-										canvasStore.currentConnectedDataObjectAndLogicalUuids,
-										conditionerPort.payload.uuid
-									)
-									pushIfUuidNotPresent(
-										logicalStore.conditionerFilterValues
-											.selectedLogicalIds,
-										conditioner.id
-									)
-									// add physical
-									pushIfUuidNotPresent(
-										canvasStore.currentConnectedDataObjectAndLogicalUuids,
+						const isConnectedToCurrentSelectedDataObject =
+							conditionerPort.allowedTarget.kind ===
+								PORT_KIND.dataObject &&
+							connectionId.lNRefTarget === currentDataObjectUuid
+						// check connection between conditioner and dataObject
+						if (isConnectedToCurrentSelectedDataObject) {
+							// add dataObject
+							pushInStringArrayIfNotPresent(
+								canvasStore.currentConnectedDataObjectAndLogicalUuids,
+								currentDataObjectUuid
+							)
+							// add conditioner
+							pushInStringArrayIfNotPresent(
+								canvasStore.currentConnectedDataObjectAndLogicalUuids,
+								conditionerPort.payload.uuid
+							)
+
+							pushInStringArrayIfNotPresent(
+								logicalStore.conditionerFilterValues
+									.selectedLogicalIds,
+								conditioner.id
+							)
+						}
+
+						// check connection between conditioner and physical
+						if (
+							conditionerPort.allowedTarget.kind ===
+							PORT_KIND.logicalPhysical
+						) {
+							for (const physical of logicalStore.physicals.raw) {
+								for (const physicalPort of physical.ports) {
+									if (
+										connectionId.lNRefTarget ===
 										physicalPort.payload.uuid
-									)
-									pushIfUuidNotPresent(
-										logicalStore.physicalFilterValues
-											.selectedLogicalIds,
-										physical.id
-									)
+									) {
+										// add conditioner
+										pushInStringArrayIfNotPresent(
+											canvasStore.currentConnectedDataObjectAndLogicalUuids,
+											conditionerPort.payload.uuid
+										)
+										pushInStringArrayIfNotPresent(
+											logicalStore.conditionerFilterValues
+												.selectedLogicalIds,
+											conditioner.id
+										)
+										// add physical
+										pushInStringArrayIfNotPresent(
+											canvasStore.currentConnectedDataObjectAndLogicalUuids,
+											physicalPort.payload.uuid
+										)
+										pushInStringArrayIfNotPresent(
+											logicalStore.physicalFilterValues
+												.selectedLogicalIds,
+											physical.id
+										)
+									}
 								}
 							}
 						}
@@ -141,18 +146,7 @@ export async function createConnection(params: {
 }) {
 	if (!isConnectionAllowed()) throw new Error('Connection not allowed')
 
-	let dOIPort: PortConfig
-	let lNRefPort: PortConfig
-	const sourceTagName = PORT_KIND_TO_ELEMENT_TAG_NAME[params.source.kind]
-	const targetTagName = PORT_KIND_TO_ELEMENT_TAG_NAME[params.target.kind]
-
-	if (sourceTagName === CONNECTION_ELEMENT_TAG_NAME.dOI) {
-		dOIPort = params.source
-		lNRefPort = params.target
-	} else if (targetTagName === CONNECTION_ELEMENT_TAG_NAME.dOI) {
-		dOIPort = params.target
-		lNRefPort = params.source
-	} else throw new Error('No ports source or target found')
+	const { dOIPort, lNRefPort } = getNamedPortFromSourceAndTarget(params)
 
 	const doesConnectionAlreadyExists = canvasStore.connectionUuids.some(
 		(connectionUuid) =>
@@ -174,7 +168,8 @@ export async function createConnection(params: {
 }
 
 function createLnRef(port: PortConfig, parent: Element) {
-	if (!iedStore.selectedDataObject) throw new Error('No data object selected')
+	if (!iedStore.selectedDataObjects.length)
+		throw new Error('No data object selected')
 
 	return pluginLocalStore.createElement({
 		tagName: CONNECTION_ELEMENT_TAG_NAME.lNRef,
@@ -184,7 +179,9 @@ function createLnRef(port: PortConfig, parent: Element) {
 			lnUuid: port.payload.lnUuid,
 			lnClass: port.payload.lnClass,
 			lnInst: port.payload.lnInst,
-			doName: iedStore.selectedDataObject.name,
+			...(port.kind === PORT_KIND.dataObject && {
+				doName: port.name
+			}),
 			...(port.payload.lnClass === LOGICAL_PHYSICAL_CLASS.LPDO && {
 				order: `${port.index}`
 			})
@@ -270,20 +267,27 @@ export function isConnectionAllowed() {
 			target.payload.lnClass,
 			LOGICAL_CONDITIONER_CLASS
 		)
-	)
-		return isDoToLcConnectionAllowed(target.payload.lnClass)
+	) {
+		const { dOIPort, lNRefPort } = getNamedPortFromSourceAndTarget({
+			source,
+			target
+		})
+		if (!dOIPort.commonDataClass) return true
+		return isDoToLcConnectionAllowed(
+			dOIPort.commonDataClass,
+			lNRefPort.payload.lnClass as LogicalConditionerClass
+		)
+	}
 
 	return true
 }
 
 function isDoToLcConnectionAllowed(
+	dataObjectCommonDataClass: string,
 	logicalConditionerClass: LogicalConditionerClass
 ): boolean {
-	const currentCommonDataClass = iedStore.selectedDataObject?.commonDataClass
-	if (!currentCommonDataClass) throw new Error('No common data class found!')
-
 	const isClassImpactedByCdcRestriction = typeGuard.isPropertyOfObject(
-		currentCommonDataClass,
+		dataObjectCommonDataClass,
 		ALLOWED_LOGICAL_CONDITIONER_CLASS_BY_CDC
 	)
 
@@ -291,7 +295,7 @@ function isDoToLcConnectionAllowed(
 
 	const isClassAllowed = typeGuard.isTuplesIncludingString(
 		logicalConditionerClass,
-		ALLOWED_LOGICAL_CONDITIONER_CLASS_BY_CDC[currentCommonDataClass]
+		ALLOWED_LOGICAL_CONDITIONER_CLASS_BY_CDC[dataObjectCommonDataClass]
 	)
 
 	if (isClassAllowed) return true
@@ -321,6 +325,22 @@ export function isPortDisabled(port: PortConfig): boolean {
 
 //====== LOCAL HELPERS ======//
 
-function pushIfUuidNotPresent(array: string[], uuid: string) {
-	if (!array.includes(uuid)) array.push(uuid)
+function getNamedPortFromSourceAndTarget(params: {
+	source: PortConfig
+	target: PortConfig
+}): { dOIPort: PortConfig; lNRefPort: PortConfig } {
+	let dOIPort: PortConfig
+	let lNRefPort: PortConfig
+	const sourceTagName = PORT_KIND_TO_ELEMENT_TAG_NAME[params.source.kind]
+	const targetTagName = PORT_KIND_TO_ELEMENT_TAG_NAME[params.target.kind]
+
+	if (sourceTagName === CONNECTION_ELEMENT_TAG_NAME.dOI) {
+		dOIPort = params.source
+		lNRefPort = params.target
+	} else if (targetTagName === CONNECTION_ELEMENT_TAG_NAME.dOI) {
+		dOIPort = params.target
+		lNRefPort = params.source
+	} else throw new Error('No ports source or target found')
+
+	return { dOIPort, lNRefPort }
 }

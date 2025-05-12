@@ -62,7 +62,10 @@ $effect(() => {
 
 // update connections
 $effect(() => {
-	if (iedStore.selectedDataObject && canvasStore.connectionUuids.length)
+	if (
+		iedStore.selectedDataObjects.length &&
+		canvasStore.connectionUuids.length
+	)
 		canvasStore.getCurrentConnectedUuidsAndAddLogicalToSelection()
 })
 </script>

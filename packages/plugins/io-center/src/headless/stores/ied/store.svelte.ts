@@ -11,6 +11,7 @@ import { mapCurrentAccessPoint } from './tree-consolidation.helpers'
 import { isDataObject } from './guards.helper'
 import { createIedRequiredElements } from './required-element.helper'
 import { filterTree, hasSelectedChild, getDataObjects } from './tree.helper'
+
 // TYPES
 import type {
 	IED,
@@ -25,8 +26,11 @@ export class IedStore {
 	//====== STATES
 
 	selectedIEDUuid = $state<string>()
-	selectedDataObjectId = $state<string>()
-	parentTreeItemToExpandOnUpdate = $state<DataObjectParentTree>()
+
+	selectedDataObjectIds = $state<string[]>([])
+	parentTreeItemsToExpandOnUpdateByDataObjectId = $state<
+		Record<string, DataObjectParentTree>
+	>({})
 	searchInputValue: string = $state('')
 
 	//====== DERIVED
@@ -51,11 +55,13 @@ export class IedStore {
 			)
 		}
 	})
-	selectedDataObject = $derived.by<DataObject | undefined>(() => {
-		if (this.selectedDataObjectId)
-			return getDataObjects(this.filteredTreeItems).find(
-				(dataObject) => dataObject.id === this.selectedDataObjectId
+
+	selectedDataObjects = $derived.by<DataObject[]>(() => {
+		if (`${this.selectedDataObjectIds.length}`)
+			return getDataObjects(this.filteredTreeItems).filter((dataObject) =>
+				this.selectedDataObjectIds.includes(dataObject.id)
 			)
+		return []
 	})
 
 	currentIedSubElements = $derived({
@@ -107,22 +113,34 @@ export class IedStore {
 		parentTreeItemToExpandOnUpdate: DataObjectParentTree
 		forceUpdate?: boolean
 	}) {
-		if (this.selectedDataObject?.id === params.dataObject.id) {
-			this.selectedDataObjectId = undefined
-			this.parentTreeItemToExpandOnUpdate = undefined
+		if (this.selectedDataObjectIds.includes(params.dataObject.id)) {
+			this.selectedDataObjectIds = this.selectedDataObjectIds.filter(
+				(id) => id !== params.dataObject.id
+			)
+			this.parentTreeItemsToExpandOnUpdateByDataObjectId =
+				Object.fromEntries(
+					Object.entries(
+						this.parentTreeItemsToExpandOnUpdateByDataObjectId
+					).filter(([id, _]) => id !== params.dataObject.id)
+				)
 		} else {
-			this.selectedDataObjectId = params.dataObject.id
-			this.parentTreeItemToExpandOnUpdate =
-				params.parentTreeItemToExpandOnUpdate
+			this.selectedDataObjectIds = [
+				...this.selectedDataObjectIds,
+				params.dataObject.id
+			]
+			this.parentTreeItemsToExpandOnUpdateByDataObjectId = {
+				...this.parentTreeItemsToExpandOnUpdateByDataObjectId,
+				[params.dataObject.id]: params.parentTreeItemToExpandOnUpdate
+			}
 		}
 
 		logicalStore.resetStates()
-		canvasStore.resetStates()
+		canvasStore.resetCurrentPorts()
 	}
 
 	resetSidebarStates() {
-		this.parentTreeItemToExpandOnUpdate = undefined
-		this.selectedDataObjectId = undefined
+		this.parentTreeItemsToExpandOnUpdateByDataObjectId = {}
+		this.selectedDataObjectIds = []
 		this.searchInputValue = ''
 	}
 

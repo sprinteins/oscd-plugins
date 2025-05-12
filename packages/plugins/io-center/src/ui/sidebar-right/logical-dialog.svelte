@@ -20,6 +20,8 @@ import {
 import { iedStore, logicalStore } from '@/headless/stores'
 // COMPONENTS
 import { TriangleAlert } from 'lucide-svelte'
+// UTILS
+import { pushInStringArrayIfNotPresent } from '@/headless/utils'
 // TYPES
 import type {
 	LogicalKind,
@@ -57,13 +59,13 @@ let prefix = $state<string | null>(logicalToEdit?.attributes.prefix || null)
 //====== COMPUTED ======//
 
 const logicalTypeOptions = $derived.by(() => {
-	if (!iedStore.selectedDataObject) return undefined
+	if (!iedStore.selectedDataObjects.length) return undefined
 	let currentOptions: Readonly<
 		LogicalConditionerClass[] | LogicalPhysicalClass[]
 	>
 
 	if (logicalKind === 'conditioner') {
-		currentOptions = getConditionerTypes(iedStore.selectedDataObject)
+		currentOptions = getConditionerTypes(iedStore.selectedDataObjects)
 	} else currentOptions = Object.values(LOGICAL_PHYSICAL_CLASS)
 
 	return currentOptions.map((option) => ({
@@ -78,20 +80,34 @@ const displayAlert = $derived(
 
 //====== FUNCTIONS ======//
 
-function getConditionerTypes(selectedDataObject: DataObject) {
-	let currentOptions: Readonly<LogicalConditionerClass[]>
+function getConditionerTypes(selectedDataObjects: DataObject[]) {
+	let currentOptions: LogicalConditionerClass[] = []
 
-	if (
-		typeGuard.isPropertyOfObject(
-			selectedDataObject.commonDataClass,
-			ALLOWED_LOGICAL_CONDITIONER_CLASS_BY_CDC
-		)
-	) {
-		currentOptions =
-			ALLOWED_LOGICAL_CONDITIONER_CLASS_BY_CDC[
-				selectedDataObject.commonDataClass
-			]
-	} else currentOptions = Object.values(LOGICAL_CONDITIONER_CLASS)
+	for (const currentDataObject of selectedDataObjects) {
+		const currentCdc = currentDataObject.ports[0].commonDataClass
+		if (currentCdc === undefined) continue
+		if (
+			typeGuard.isPropertyOfObject(
+				currentCdc,
+				ALLOWED_LOGICAL_CONDITIONER_CLASS_BY_CDC
+			)
+		) {
+			for (const currentLogicalConditionerClass of ALLOWED_LOGICAL_CONDITIONER_CLASS_BY_CDC[
+				currentCdc
+			])
+				pushInStringArrayIfNotPresent(
+					currentOptions,
+					currentLogicalConditionerClass
+				)
+		} else
+			for (const currentLogicalConditionerClass of Object.values(
+				LOGICAL_CONDITIONER_CLASS
+			))
+				pushInStringArrayIfNotPresent(
+					currentOptions,
+					currentLogicalConditionerClass
+				)
+	}
 
 	return currentOptions
 }

@@ -44,8 +44,7 @@ export class CanvasStore {
 
 	// connections
 	connectionUuids = $derived.by<ConnectionId[]>(() => {
-		if (`${pluginGlobalStore.editCount}`)
-			return untrack(() => getConnectionsUuids())
+		if (`${pluginGlobalStore.editCount}`) return getConnectionsUuids()
 		return []
 	})
 
@@ -84,13 +83,13 @@ export class CanvasStore {
 	resetCurrentPorts() {
 		this.currentPortSource = null
 		this.currentPortTarget = null
+		this.drawnLineSource = null
 	}
 
 	resetStates() {
 		this.currentConnectedDataObjectAndLogicalUuids = []
-		this.resetCurrentPorts()
-		this.drawnLineSource = null
 		this.portHTMLElementByUuids = {}
+		this.resetCurrentPorts()
 	}
 
 	//====== PROXY ======//

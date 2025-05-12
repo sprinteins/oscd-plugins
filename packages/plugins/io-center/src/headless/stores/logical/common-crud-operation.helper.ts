@@ -268,9 +268,6 @@ function getLogicalPortConfig(params: {
 		})
 	}
 
-	const doName = iedStore.selectedDataObject?.name
-	if (!doName) throw new Error('No data object name found')
-
 	for (const [side, ports] of Object.entries(portConfigBySide) as [
 		PortSide,
 		PortConfig[]
@@ -294,7 +291,7 @@ function getLogicalPortConfig(params: {
 				portConfigBySideWithUuids[side][index].payload.uuid =
 					currentDoi?.getAttribute('uuid') || crypto.randomUUID()
 			} else if (params.logicalKind === 'physical') {
-				const query = `LNRef[ldInst="${params.ldInst}"][lnUuid="${params.lnUuid}"][lnClass="${params.lnClass}"][lnInst="${params.lnInst}"][doName="${doName}"]${params.numberOfPorts ? `[order="${index}"]` : ''}`
+				const query = `LNRef[ldInst="${params.ldInst}"][lnUuid="${params.lnUuid}"][lnClass="${params.lnClass}"][lnInst="${params.lnInst}"]${params.numberOfPorts ? `[order="${index}"]` : ''}`
 				const currentLnRef =
 					iedStore.selectedIED?.element?.querySelector(query)
 

@@ -153,13 +153,13 @@ export function mapCurrentDataObject(params: {
 						name: dOElementName,
 						side: PORT_SIDE.right,
 						index: 0,
+						commonDataClass,
 						payload: {
 							...lnRefAttributes,
 							uuid: lnRefElementUuid
 						}
 					}
-				],
-				commonDataClass
+				]
 			}
 		})
 		.filter(

@@ -36,7 +36,7 @@ const portBgColor = $derived.by(() => {
 	if (isTargetPort && isMouseHover)
 		return isConnectionAllowed ? 'bg-primary' : 'bg-destructive'
 
-	return canvasStore.currentConnectedDataObjectAndLogicalUuids &&
+	return canvasStore.currentConnectedDataObjectAndLogicalUuids.length &&
 		canvasStore.isPortConnected(port)
 		? 'bg-primary'
 		: 'bg-black'

@@ -22,7 +22,7 @@ import { iedStore } from '@/headless/stores'
 	<sidebar-left class="sidebar sidebar-left">
 		<slot name="sidebar-left" />
 	</sidebar-left>
-	{#if iedStore.selectedDataObject}
+	{#if iedStore.selectedDataObjects.length}
 		<content class="content">
 			<slot name="content" />
 		</content>
