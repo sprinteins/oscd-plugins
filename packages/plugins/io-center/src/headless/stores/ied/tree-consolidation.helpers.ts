@@ -140,7 +140,7 @@ export function mapCurrentDataObject(params: {
 					?.getAttribute('uuid') || crypto.randomUUID()
 
 			return {
-				id: `${params.lnType}-${dOElementName}`,
+				id: `${params.lnType}-${dOElementName}-${params.lnInst}`,
 				name: dOElementName,
 				level: TREE_LEVEL.dO,
 				ports: [

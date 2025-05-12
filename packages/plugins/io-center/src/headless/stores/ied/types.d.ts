@@ -12,7 +12,6 @@ export type TreeItem = {
 	name: string
 	level: (typeof TREE_LEVEL)[keyof typeof TREE_LEVEL]
 	children?: TreeItem[]
-	commonDataClass?: string
 }
 
 export type DataObjectParentTree = {

@@ -58,9 +58,6 @@ export function getCurrentConnectedUuidsAndAddLogicalToSelection() {
 	if (!iedStore.selectedDataObjects.length)
 		throw new Error('No data objects selected')
 
-	// const currentDataObjectPayloadUuid =
-	// 	iedStore.selectedDataObject.ports[0].payload.uuid
-
 	for (const currentDataObject of iedStore.selectedDataObjects) {
 		const currentDataObjectUuid = currentDataObject.ports[0].payload.uuid
 		// loop through all ids

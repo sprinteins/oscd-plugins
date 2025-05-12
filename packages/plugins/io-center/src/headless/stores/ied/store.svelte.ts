@@ -57,7 +57,7 @@ export class IedStore {
 	})
 
 	selectedDataObjects = $derived.by<DataObject[]>(() => {
-		if (`${this.selectedDataObjectIds.length}`)
+		if (this.selectedDataObjectIds.length)
 			return getDataObjects(this.filteredTreeItems).filter((dataObject) =>
 				this.selectedDataObjectIds.includes(dataObject.id)
 			)
@@ -134,7 +134,6 @@ export class IedStore {
 			}
 		}
 
-		logicalStore.resetStates()
 		canvasStore.resetCurrentPorts()
 	}
 
