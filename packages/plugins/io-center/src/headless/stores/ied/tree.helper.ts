@@ -49,7 +49,7 @@ export function hasSelectedChild(children: TreeItem[]) {
 	const dataObjects = getDataObjects(children)
 	if (dataObjects.length === 0) return false
 
-	return dataObjects.some(
-		(child) => iedStore.selectedDataObject?.id === child.id
+	return dataObjects.some((child) =>
+		iedStore.selectedDataObjectIds.includes(child.id)
 	)
 }

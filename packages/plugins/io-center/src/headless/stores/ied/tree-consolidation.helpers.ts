@@ -140,7 +140,7 @@ export function mapCurrentDataObject(params: {
 					?.getAttribute('uuid') || crypto.randomUUID()
 
 			return {
-				id: `${params.lnType}-${dOElementName}`,
+				id: `${params.lnType}-${dOElementName}-${params.lnInst}`,
 				name: dOElementName,
 				level: TREE_LEVEL.dO,
 				ports: [
@@ -153,13 +153,13 @@ export function mapCurrentDataObject(params: {
 						name: dOElementName,
 						side: PORT_SIDE.right,
 						index: 0,
+						commonDataClass,
 						payload: {
 							...lnRefAttributes,
 							uuid: lnRefElementUuid
 						}
 					}
-				],
-				commonDataClass
+				]
 			}
 		})
 		.filter(

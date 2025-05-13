@@ -40,17 +40,12 @@ function handleTreeItemClick(treeItem: (typeof tree)['children'][number]) {
 //====== EFFECTS ======//
 
 $effect(() => {
-	if (
-		!iedStore.selectedDataObject ||
-		!iedStore.parentTreeItemToExpandOnUpdate
-	)
-		return
-
-	tree.expand(iedStore.parentTreeItemToExpandOnUpdate.accessPoint)
-	tree.expand(iedStore.parentTreeItemToExpandOnUpdate.lDevice)
-	tree.expand(iedStore.parentTreeItemToExpandOnUpdate.lN)
-	if (!tree.isSelected(iedStore.selectedDataObject.id)) {
-		tree.select(iedStore.selectedDataObject.id)
+	for (const parentTreeItemToExpand of Object.values(
+		iedStore.parentTreeItemsToExpandOnUpdateByDataObjectId
+	)) {
+		tree.expand(parentTreeItemToExpand.accessPoint)
+		tree.expand(parentTreeItemToExpand.lDevice)
+		tree.expand(parentTreeItemToExpand.lN)
 	}
 })
 </script>
@@ -64,7 +59,7 @@ $effect(() => {
 {/snippet}
 
 {#snippet treeItemCheckbox(item: typeof tree['children'][number])}
-	{#if item.item?.level === TREE_LEVEL.dO && item.id === iedStore.selectedDataObject?.id}
+	{#if item.item?.level === TREE_LEVEL.dO && iedStore.selectedDataObjectIds.includes(item.item.id)}
 		<SquareCheck class="ml-auto size-4"/>
 	{:else if item.item?.children && iedStore.hasSelectedChild(item.item.children)}
 		<SquareMinus class="ml-auto size-4"/>

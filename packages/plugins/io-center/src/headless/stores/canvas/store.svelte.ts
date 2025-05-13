@@ -1,3 +1,4 @@
+import { untrack } from 'svelte'
 // CORE
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // HELPERS
@@ -82,13 +83,13 @@ export class CanvasStore {
 	resetCurrentPorts() {
 		this.currentPortSource = null
 		this.currentPortTarget = null
+		this.drawnLineSource = null
 	}
 
 	resetStates() {
 		this.currentConnectedDataObjectAndLogicalUuids = []
-		this.resetCurrentPorts()
-		this.drawnLineSource = null
 		this.portHTMLElementByUuids = {}
+		this.resetCurrentPorts()
 	}
 
 	//====== PROXY ======//

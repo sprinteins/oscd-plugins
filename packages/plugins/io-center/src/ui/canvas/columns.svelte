@@ -16,9 +16,9 @@ import NodeCard from './node-card.svelte'
 	class="grid grid-cols-3 h-full p-2 gap-2"
 >
 	<Container title="Data Objects" >
-		{#if iedStore.selectedDataObject}
-			<NodeCard title={iedStore.selectedDataObject.name} node={iedStore.selectedDataObject} />
-		{/if}
+		{#each iedStore.selectedDataObjects as selectedDataObject (selectedDataObject.id)}
+				<NodeCard title={selectedDataObject.name} node={selectedDataObject} />
+		{/each}
 	</Container>
 
 	<Container title="Logical Conditioners">

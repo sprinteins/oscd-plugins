@@ -13,7 +13,6 @@ export type DataObject = {
 	name: string
 	level: typeof TREE_LEVEL.dO
 	ports: PortConfig[]
-	commonDataClass: string
 }
 
 const PORTS_CONFIG = Object.values(PORTS_CONFIG_PER_CLASS)
@@ -30,6 +29,7 @@ export type PortConfig = {
 	name: string
 	side: PortSide
 	index: number
+	commonDataClass?: string
 	payload: PortPayload
 }
 

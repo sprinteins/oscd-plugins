@@ -1,15 +1,17 @@
+import { untrack } from 'svelte'
 // CORE
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
 import { TREE_LEVEL } from '@/headless/constants'
 // STORES
-import { logicalStore, canvasStore } from '@/headless/stores'
+import { pluginLocalStore, logicalStore, canvasStore } from '@/headless/stores'
 // HELPERS
 import { iedElementToIedList } from './crud-operation.helper'
 import { mapCurrentAccessPoint } from './tree-consolidation.helpers'
 import { isDataObject } from './guards.helper'
 import { createIedRequiredElements } from './required-element.helper'
 import { filterTree, hasSelectedChild, getDataObjects } from './tree.helper'
+
 // TYPES
 import type {
 	IED,
@@ -24,14 +26,28 @@ export class IedStore {
 	//====== STATES
 
 	selectedIEDUuid = $state<string>()
-	selectedDataObjectId = $state<string>()
-	parentTreeItemToExpandOnUpdate = $state<DataObjectParentTree>()
+
+	selectedDataObjectIds = $state<string[]>([])
+	parentTreeItemsToExpandOnUpdateByDataObjectId = $state<
+		Record<string, DataObjectParentTree>
+	>({})
 	searchInputValue: string = $state('')
 
 	//====== DERIVED
 
 	// IED
-	iEDList = $derived<IED[]>(iedElementToIedList())
+	iEDList = $derived.by<IED[]>(() => {
+		if (
+			pluginLocalStore.isPluginInitialized &&
+			`${pluginGlobalStore.editCount}`
+		) {
+			const untrackedIEDs = untrack(() =>
+				Array.from(pluginLocalStore.rootSubElements?.ied || [])
+			)
+			return iedElementToIedList(untrackedIEDs)
+		}
+		return []
+	})
 	selectedIED = $derived.by<IED | undefined>(() => {
 		if (this.selectedIEDUuid) {
 			return iedStore.iEDList.find(
@@ -39,11 +55,13 @@ export class IedStore {
 			)
 		}
 	})
-	selectedDataObject = $derived.by<DataObject | undefined>(() => {
-		if (this.selectedDataObjectId)
-			return getDataObjects(this.filteredTreeItems).find(
-				(dataObject) => dataObject.id === this.selectedDataObjectId
+
+	selectedDataObjects = $derived.by<DataObject[]>(() => {
+		if (this.selectedDataObjectIds.length)
+			return getDataObjects(this.filteredTreeItems).filter((dataObject) =>
+				this.selectedDataObjectIds.includes(dataObject.id)
 			)
+		return []
 	})
 
 	currentIedSubElements = $derived({
@@ -54,22 +72,24 @@ export class IedStore {
 
 	// tree
 	treeItems = $derived.by<TreeItem[]>(() => {
-		if (`${pluginGlobalStore.editCount}` && this.selectedIED)
+		if (this.selectedIED) {
 			return [
 				{
 					id: this.selectedIED.uuid,
 					name: this.selectedIED.name,
 					level: TREE_LEVEL.ied,
-					children: mapCurrentAccessPoint({
-						accessPointElements: Array.from(
-							this.selectedIED?.element?.querySelectorAll(
-								'AccessPoint'
-							) || []
-						)
-					})
+					children: untrack(() =>
+						mapCurrentAccessPoint({
+							accessPointElements: Array.from(
+								this.selectedIED?.element?.querySelectorAll(
+									'AccessPoint'
+								) || []
+							)
+						})
+					)
 				}
 			]
-
+		}
 		return []
 	})
 	filteredTreeItems = $derived.by<TreeItem[]>(() => {
@@ -93,22 +113,39 @@ export class IedStore {
 		parentTreeItemToExpandOnUpdate: DataObjectParentTree
 		forceUpdate?: boolean
 	}) {
-		if (this.selectedDataObject?.id === params.dataObject.id) {
-			this.selectedDataObjectId = undefined
-			this.parentTreeItemToExpandOnUpdate = undefined
+		if (this.selectedDataObjectIds.includes(params.dataObject.id)) {
+			this.selectedDataObjectIds = this.selectedDataObjectIds.filter(
+				(id) => id !== params.dataObject.id
+			)
+			this.parentTreeItemsToExpandOnUpdateByDataObjectId =
+				Object.fromEntries(
+					Object.entries(
+						this.parentTreeItemsToExpandOnUpdateByDataObjectId
+					).filter(([id, _]) => id !== params.dataObject.id)
+				)
 		} else {
-			this.selectedDataObjectId = params.dataObject.id
-			this.parentTreeItemToExpandOnUpdate =
-				params.parentTreeItemToExpandOnUpdate
+			this.selectedDataObjectIds = [
+				...this.selectedDataObjectIds,
+				params.dataObject.id
+			]
+			this.parentTreeItemsToExpandOnUpdateByDataObjectId = {
+				...this.parentTreeItemsToExpandOnUpdateByDataObjectId,
+				[params.dataObject.id]: params.parentTreeItemToExpandOnUpdate
+			}
 		}
 
-		logicalStore.resetStates()
-		canvasStore.resetStates()
+		canvasStore.resetCurrentPorts()
+	}
+
+	resetSidebarStates() {
+		this.parentTreeItemsToExpandOnUpdateByDataObjectId = {}
+		this.selectedDataObjectIds = []
+		this.searchInputValue = ''
 	}
 
 	resetStates() {
-		this.selectedDataObjectId = undefined
-		this.searchInputValue = ''
+		this.resetSidebarStates()
+		this.selectedIEDUuid = undefined
 	}
 
 	//====== PROXY ======//
