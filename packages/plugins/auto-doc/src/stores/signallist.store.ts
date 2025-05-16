@@ -4,15 +4,13 @@ import { get, writable } from "svelte/store";
 import { pluginStore } from './index'
 // TYPES
 import type { 
-    MessagePublisher, MessageSubscriber, LogicalNodeInformation,
+    MessagePublisher, LogicalNodeInformation,
     DataObjectInformation, InvalditiesReport, MessagePublisherFilter, 
-    MessageSubscriberFilter, MessageSubscriberAndPdfContent, PdfRowStructure 
+    PdfRowStructure 
 } from './signallist.store.d'
 
-import { SignalType } from './signallist.store.d'
-
-import { MESSAGE_PUBLISHER,  MESSAGE_SUBSCRIBER,  SUBSCRIBER_EXT_REF } from "../constants";
-import { buildLNQuery, queryDataSetForControl, queryDataTypeLeaf, queryFCDA, queryLDevice, queryLN, queryLNode } from "@/utils";
+import { MESSAGE_PUBLISHER } from "../constants";
+import { queryDataSetForControl, queryDataTypeLeaf, queryFCDA, queryLDevice, queryLN, queryLNode } from "@/utils";
 
 
 
@@ -390,6 +388,7 @@ function getValueFromNestedProperty(publisher: MessagePublisher, key: keyof Mess
         CommonDataClass: "dataObjectInformation.CommonDataClass",
         AttributeType: "dataObjectInformation.AttributeType",
         FunctionalConstraint: "dataObjectInformation.FunctionalConstraint",
+        SignalType: "signalType"
     };
 
     const path = keyMap[key] || key;

@@ -17,6 +17,7 @@ export enum Columns{
     Bay = 'Bay',
     M_text = 'Meldetext',
     IEDName = 'IED Name',
+    SignalType = 'SignalType',
     // LN Infos
     LogicalDeviceInstance = 'Logical Device Instance',
     LogicalNodePrefix = 'Logical Node Prefix',
@@ -102,6 +103,7 @@ export type MessagePublisherFilter = {
     CommonDataClass?: string;
     AttributeType?: string;
     FunctionalConstraint?: string;
+    SignalType?: string;
 }
 type IEDNameSearch = string
 

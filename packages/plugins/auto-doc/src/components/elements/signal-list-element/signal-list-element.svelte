@@ -112,12 +112,11 @@
 	}
 	
 	function searchForMatchOnSignalList(): PdfRows {
-		const publisherFilter: MessagePublisherFilter = {}
-		const subscriberFilter: MessageSubscriberFilter = {}
+		const publisherFilter: MessagePublisherFilter = {};
 	
 		for (const { searchKey, column2 } of selectedRows) {
 			if (doesIncludeSignalType(searchKey)) {
-				subscriberFilter[searchKey as keyof MessageSubscriberFilter] = column2
+				// TODO: What to do with signaltype?
 			} else {
 				publisherFilter[searchKey as keyof MessagePublisherFilter] = column2
 			}
