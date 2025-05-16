@@ -47,27 +47,6 @@ export function queryLN(
     return lDevice.querySelector(query);
 }
 
-const signalTypeToServiceTypeMap: Record<SignalType, string> = {
-    [SignalType.GOOSE]: 'GOOSE',
-    [SignalType.MMS]: 'Report',
-    [SignalType.SV]: 'SMV',
-    [SignalType.UNKNOWN]: ''
-}
-
-export function queryExtRef(
-    ln: Element,
-    iedName: string,
-    cbName: string,
-    signalType: SignalType
-): Element | null {
-    const serviceType = signalTypeToServiceTypeMap[signalType];
-    
-    const query = `:scope > Inputs > ExtRef[iedName="${iedName}"][srcCBName="${cbName}"][serviceType="${serviceType}"]`;
-    console.log(query);
-    
-    return ln.querySelector(`:scope > Inputs > ExtRef[iedName="${iedName}"][srcCBName="${cbName}"][serviceType="${serviceType}"]`);
-}
-
 export function queryLNode(doc: XMLDocument, iedName: string, ldInst: string, lnClass: string, lnInst: string, prefix: string): Element | null {
     return doc.querySelector(`SCL > Substation > VoltageLevel > Bay LNode[iedName="${iedName}"][ldInst="${ldInst}"][lnClass="${lnClass}"][lnInst="${lnInst}"][prefix="${prefix}"]`);
 }

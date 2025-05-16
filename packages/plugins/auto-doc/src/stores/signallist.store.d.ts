@@ -119,7 +119,6 @@ export type MessageSubscriberAndPdfContent = {
 }
 
 export type PdfRowStructure = {
-    matchedFilteredValuesForPdf: string[][],
-    publisher: MessagePublisher
-    matchedSubscribers: string[]
+    matchedFilteredValuesForPdf: string[][];
+    publisher: MessagePublisher;
 }

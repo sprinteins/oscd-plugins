@@ -117,21 +117,17 @@
 	
 		for (const { searchKey, column2 } of selectedRows) {
 			if (doesIncludeSignalType(searchKey)) {
-				subscriberFilter[searchKey as keyof MessageSubscriberFilter] =
-					column2
+				subscriberFilter[searchKey as keyof MessageSubscriberFilter] = column2
 			} else {
 				publisherFilter[searchKey as keyof MessagePublisherFilter] = column2
 			}
 		}
 	
-		const { messagePublishers } =
-			signallistStore.getPublishingLogicalDevices(publisherFilter)
-		const { matchedRows } = signallistStore.getSubscribingLogicalDevices(
-			messagePublishers,
-			subscriberFilter
-		)
+		const { pdfRows } = signallistStore.getPublishingLogicalDevices(publisherFilter);
+
+		console.log(pdfRows);
 	
-		return { matchedRowsForTablePdf: matchedRows }
+		return { matchedRowsForTablePdf: pdfRows }
 	}
 	
 	function doesIncludeSignalType(searchKey: string) {
