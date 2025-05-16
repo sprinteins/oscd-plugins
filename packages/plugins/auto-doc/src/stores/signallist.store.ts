@@ -12,13 +12,328 @@ import type {
 import { SignalType } from './signallist.store.d'
 
 import { MESSAGE_PUBLISHER,  MESSAGE_SUBSCRIBER,  SUBSCRIBER_EXT_REF } from "../constants";
-import { buildLNQuery, queryDataSetForControl, queryLDevice, queryLN } from "@/utils";
+import { buildLNQuery, queryDataSetForControl, queryDataTypeLeaf, queryExtRef, queryFCDA, queryLDevice, queryLN, queryLNode } from "@/utils";
 
 
 
 //====== STORES ======//
 const { xmlDocument } = pluginStore
 const pdfRowValues = writable<PdfRowStructure[]>([])
+
+
+//==== new attempt, i cant take all this terrible code anymore
+
+interface TargetContext {
+    ied: Element,
+    accessPoint: Element,
+    lDevice: Element,
+    ln: Element,
+    extRef: Element
+}
+
+interface SourceContext {
+    ied: Element,
+    lDevice: Element,
+    ln: Element,
+    control: Element,
+    dataSet: Element,
+    dataLn: Element,
+    lNode: Element
+}
+
+enum ServiceType {
+    GOOSE = 'GOOSE',
+    Report = 'Report',
+    SMV = 'SMV'
+}
+
+const serviceTypeToControl: { [key in ServiceType]: string } = {
+    [ServiceType.GOOSE]: 'GSEControl',
+    [ServiceType.Report]: 'ReportControl',
+    [ServiceType.SMV]: 'SampledValueControl'
+}
+
+interface SourceTarget {
+    sourceContext: SourceContext | null;
+    targetContext: TargetContext;
+}
+
+function getSignalList2(): MessagePublisher[] {
+    const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
+
+    const ieds = xmlDoc.querySelectorAll('IED');
+
+    const contexts = Array.from(ieds).map(ied => {
+        const targetContext: TargetContext = {
+            ied: ied,
+            accessPoint: null!,
+            lDevice: null!,
+            ln: null!,
+            extRef: null!
+        }
+
+        return handleIED(targetContext).flat();
+    })
+    .flat();
+
+    const messagePublishers = contexts.map(c => fillMessagePublisherData(c));
+    return messagePublishers;
+}
+
+function fillMessagePublisherData(context: SourceTarget): MessagePublisher {
+    const lNode = context.sourceContext?.lNode!;
+    const substation = lNode.closest('Substation')?.getAttribute('name') ?? '';
+    const voltageLevel = lNode.closest('VoltageLevel')?.getAttribute('name') ?? '';
+    const bay = lNode.closest('Bay')?.getAttribute('name') ?? '';
+
+    const extRef = context.targetContext.extRef!;
+    const mText = extRef.getAttribute('desc') ?? '';
+    const signalType = extRef.getAttribute('serviceType') ?? '';
+    const iedName = extRef.getAttribute('iedName') ?? '';
+    const dataLDInst = extRef.getAttribute('ldInst') ?? '';
+    const dataLnClass = extRef.getAttribute('lnClass') ?? '';
+    const dataLnInst = extRef.getAttribute('lnInst') ?? '';
+    const dataLnPrefix = extRef.getAttribute('prefix') ?? '';
+
+    const dataLn = context.sourceContext!.dataLn!;
+    const dataLnType = dataLn.getAttribute('lnType') ?? '';
+
+    const logicalNodeInformation: LogicalNodeInformation = {
+        [MESSAGE_PUBLISHER.IEDName]: iedName,
+        [MESSAGE_PUBLISHER.LogicalDeviceInstance]: dataLDInst,
+        [MESSAGE_PUBLISHER.LogicalNodePrefix]: dataLnPrefix,
+        [MESSAGE_PUBLISHER.LogicalNodeClass]: dataLnClass,
+        [MESSAGE_PUBLISHER.LogicalNodeInstance]: dataLnInst,
+        [MESSAGE_PUBLISHER.LogicalNodeType]: dataLnType
+    };
+
+    const dataObjectInformation = getDataObjectInformation(context);
+
+    return {
+        [MESSAGE_PUBLISHER.UW]: substation,
+        [MESSAGE_PUBLISHER.VoltageLevel]: voltageLevel,
+        [MESSAGE_PUBLISHER.Bay]: bay,
+        [MESSAGE_PUBLISHER.M_text]: mText,
+        [MESSAGE_PUBLISHER.SignalType]: signalType,
+        [MESSAGE_PUBLISHER.IEDName]: iedName,
+        [MESSAGE_PUBLISHER.LogicalNodeInformation]: logicalNodeInformation,
+        [MESSAGE_PUBLISHER.DataObjectInformation]: dataObjectInformation
+    }
+}
+
+function getDataObjectInformation(context: SourceTarget): DataObjectInformation {
+    // TODO: FN -> FCDA
+    // TODO: Traverse DataObject
+    // TODO: CDC: Each DOType -> ABC.DEF
+    // data Attribute: Leaf DA Type
+    const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
+
+    const extRef = context.targetContext.extRef;
+    const doName = extRef.getAttribute('doName') ?? '';
+    const daName = extRef.getAttribute('daName') ?? '';
+
+    const dataLdInst = extRef.getAttribute('ldInst') ?? '';
+    const dataLnClass = extRef.getAttribute('lnClass') ?? '';
+    const dataLnInst = extRef.getAttribute('lnInst') ?? '';
+    const dataPrefix = extRef.getAttribute('prefix') ?? '';
+
+    const dataSet = context.sourceContext!.dataSet;
+
+    const fcda = queryFCDA(dataSet, dataLdInst, dataLnClass, dataLnInst, dataPrefix);
+    const fc = fcda?.getAttribute('fc') ?? '';
+
+    if (!fcda) {
+        console.log(`FCDA not found ${dataLdInst}, ${dataLnClass}, ${dataLnInst}, ${dataPrefix}`);
+    }
+
+    const dataTypeTemplates = xmlDoc.querySelector('SCL > DataTypeTemplates');
+    if (!dataTypeTemplates) {
+        throw new Error('DataTypeTemplates not found');
+    }
+
+    const dataLn = context.sourceContext!.dataLn;
+    const lnType = dataLn.getAttribute('lnType') ?? '';
+    const doSegments = doName.split('.');
+    const daSegments = daName ? daName.split('.') : [];
+
+    const dataTypeLeaf = queryDataTypeLeaf(dataTypeTemplates, lnType, doSegments, daSegments);
+    if (!dataTypeLeaf) {
+        console.log(`Could not find data type leaf for lnType ${lnType}, doName ${doName}, daName ${daName}`);
+    }
+
+    const cdc = dataTypeLeaf?.cdcs.join('.') ?? '';
+    console.log(dataTypeLeaf?.daLeaf);
+    const attributeType = dataTypeLeaf?.dataAttributeType ?? '';
+
+    return {
+        [MESSAGE_PUBLISHER.DataObjectName]: doName,
+        [MESSAGE_PUBLISHER.DataAttributeName]: daName,
+        [MESSAGE_PUBLISHER.CommonDataClass]: cdc,
+        [MESSAGE_PUBLISHER.AttributeType]: attributeType,
+        [MESSAGE_PUBLISHER.FunctionalConstraint]: fc
+    };
+}
+
+function handleIED(targetContext: TargetContext) {
+    const accessPoints = targetContext.ied.querySelectorAll(':scope > AccessPoint');
+
+    return Array.from(accessPoints).map(accessPoint => {
+        const newTargetContext = {
+            ...targetContext,
+            accessPoint
+        };
+
+        return handleAccessPoint(newTargetContext).flat();
+    });
+}
+
+function handleAccessPoint(targetContext: TargetContext) {
+    const lDevices = targetContext.accessPoint.querySelectorAll(':scope > Server > LDevice');
+
+    return Array.from(lDevices).map(lDevice => {
+        const newTargetContext = {
+            ...targetContext,
+            lDevice
+        };
+
+        return handleLDevice(newTargetContext).flat();
+    });
+}
+
+function handleLDevice(targetContext: TargetContext) {
+    const lns = targetContext.lDevice.querySelectorAll(':scope > LN');
+
+    return Array.from(lns).map(ln => {
+        const newTargetContext = {
+            ...targetContext,
+            ln
+        };
+
+        return handleLn(newTargetContext).flat();
+    });
+}
+
+function handleLn(targetContext: TargetContext) {
+    const extRefs = targetContext.ln.querySelectorAll(':scope > Inputs > ExtRef');
+
+    return Array.from(extRefs)
+        .map(extRef => {
+            const newTargetContext = {
+                ...targetContext,
+                extRef
+            };
+
+            return handleExtRef(newTargetContext);
+        });
+}
+
+function handleExtRef(targetContext: TargetContext) {
+    const sourceContext = getSourceContext(targetContext);
+
+    return {
+        sourceContext,
+        targetContext
+    };
+}
+
+function getSourceContext(targetContext: TargetContext): SourceContext | null {
+    const xmlDoc = get(xmlDocument);
+    if (!xmlDoc) {
+        throw new Error("XML Document is not defined");
+    }
+
+    const extRef = targetContext.extRef;
+    const iedName = extRef.getAttribute('iedName') ?? '';
+    const ldInst = extRef.getAttribute('srcLDInst');
+    const lnClass = extRef.getAttribute('srcLNClass');
+    const cbName = extRef.getAttribute('srcCBName');
+
+    const sourceIed = xmlDoc.querySelector(`IED[name="${iedName}"]`);
+    if (!sourceIed) {
+        console.log(`Source IED ${iedName} not found`);
+        return null;
+    }
+
+    // TODO: Do we need to consider accesspoint?
+    const sourceLDevice = sourceIed.querySelector(`LDevice[inst="${ldInst}"]`);
+    if (!sourceLDevice) {
+        console.log(`Source LDevice ${ldInst} not found`);
+        return null;
+    }
+
+    const sourceLN = sourceLDevice.querySelector(`:scope > LN0[lnClass="${lnClass}"], :scope > LN[lnClass="${lnClass}"]`);
+    if (!sourceLN) {
+        console.log(`Source LN ${lnClass} not found`);
+        return null;
+    }
+
+    const serviceType = targetContext.extRef.getAttribute('serviceType');
+    if (!serviceType) {
+        console.log(`ExtRef is missing serviceType attribute`);
+        return null;
+    }
+
+    const controlTag = serviceTypeToControl[serviceType as ServiceType];
+    const control = sourceLN.querySelector(`${controlTag}[name="${cbName}"]`);
+    if (!control) {
+        console.log(`${controlTag} ${cbName} not found`);
+        return null;
+    }
+
+    const dataSet = queryDataSetForControl(control);
+    if (!dataSet) {
+        console.log(`DataSet ${control.getAttribute('datSet')} not found`);
+        return null;
+    }
+
+    const dataLdInst = extRef.getAttribute('ldInst') ?? '';
+    const dataLnClass = extRef.getAttribute('lnClass') ?? '';
+    const dataLnInst = extRef.getAttribute('lnInst') ?? '';
+    const dataPrefix = extRef.getAttribute('prefix') ?? '';
+
+    const sourceAccessPoint = sourceLDevice.closest('AccessPoint');
+
+    if (!sourceAccessPoint) {
+        console.log(`Source AccessPoint not found`);
+        return null;
+    }
+
+    const dataLDevice = queryLDevice(sourceAccessPoint, dataLdInst);
+
+    if (!dataLDevice) {
+        console.log(`Data LDevice ${dataLdInst} not found`);
+        return null;
+    }
+
+    const dataLn = queryLN(dataLDevice, dataLnClass, dataLnInst, dataPrefix)
+
+    if (!dataLn) {
+        console.log(`Data LN ${dataLnClass}, ${dataLnInst}, ${dataPrefix} not found`);
+        return null;
+    }
+
+    const lNode = queryLNode(xmlDoc, iedName, dataLdInst, dataLnClass, dataLnInst, dataPrefix);
+    if (!lNode) {
+        console.log(`LNode ${iedName}, ${dataLdInst}, ${dataLnClass}, ${dataLnInst}, ${dataPrefix} not found`);
+        return null;
+    }
+
+    return {
+        ied: sourceIed,
+        lDevice: sourceLDevice,
+        ln: sourceLN,
+        control,
+        dataSet,
+        dataLn,
+        lNode
+    };
+}
 
 
 //==== PUBLIC ACTIONS
@@ -39,25 +354,10 @@ function getSignallist() {
 }
 
 function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[] } {
-    const messagePublishers: MessagePublisher[] = [];
     const invaliditiesReports: InvalditiesReport[] = [];
 
-    const xmlDoc = get(xmlDocument);
-    if (!xmlDoc) {
-        throw new Error("XML Document is not defined");
-    }
-
-    const dataTypeTemplates = xmlDoc.querySelector('DataTypeTemplates');
-    if (!dataTypeTemplates) {
-        throw new Error("DataTypeTemplates Element not found in XML Document");
-    }
-
-    const IEDs = xmlDoc.querySelectorAll('IED');
-    for (const ied of IEDs) {
-        processIEDForPublishers(ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
-    }
-
-    console.log('messagePublishers', messagePublishers)
+    const messagePublishers = getSignalList2();
+    console.log(messagePublishers);
 
     const filteredMessagePublishers = filterMessagePublishers(messagePublishers, filter);
 
@@ -108,23 +408,15 @@ function processLDeviceForPublishers(accessPoint: Element, lDevice: Element, ied
     for (const ln of lNodes) {
         processLNForPublishers(accessPoint, ln, lDevice, ied, dataTypeTemplates, messagePublishers, invaliditiesReports);
     }
-
-    /* TODO: Remove when working
-    const GSEControl = lNode0.querySelector('GSEControl');
-    const ReportControl = lNode0.querySelector('ReportControl');
-    if (!GSEControl && !ReportControl) return;
-    const signalType = GSEControl ? SignalType.GOOSE : (ReportControl ? SignalType.MMS : SignalType.UNKNOWN);
-
-    const dataSets = lNode0.querySelectorAll('DataSet');
-    for (const dataSet of dataSets) {
-        processDataSet(dataSet, lDevice, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
-    }
-    */
 }
 
 function processLNForPublishers(accessPoint: Element, ln: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
     const gseControls = ln.querySelectorAll('GSEControl');
     const reportControls = ln.querySelectorAll('ReportControl');
+    const sampledValueControls = ln.querySelectorAll('SampledValueControl');
+
+    // Source info: CBName,  ?? LD Inst, LN Class
+    // iedName, ServiceType
 
     for (const gseControl of gseControls) {
         const dataSet = queryDataSetForControl(gseControl);
@@ -133,7 +425,7 @@ function processLNForPublishers(accessPoint: Element, ln: Element, lDevice: Elem
             continue;
         }
 
-        processDataSet(dataSet, accessPoint, lDevice, ied, dataTypeTemplates, SignalType.GOOSE, messagePublishers, invaliditiesReports);
+        processDataSet(dataSet, gseControl, accessPoint, lDevice, ied, dataTypeTemplates, SignalType.GOOSE, messagePublishers, invaliditiesReports);
     }
 
     for (const reportControl of reportControls) {
@@ -143,18 +435,28 @@ function processLNForPublishers(accessPoint: Element, ln: Element, lDevice: Elem
             continue;
         }
 
-        processDataSet(dataSet, accessPoint, lDevice, ied, dataTypeTemplates, SignalType.MMS, messagePublishers, invaliditiesReports);
+        processDataSet(dataSet, reportControl, accessPoint, lDevice, ied, dataTypeTemplates, SignalType.MMS, messagePublishers, invaliditiesReports);
+    }
+
+    for (const sampleValueControl of sampledValueControls) {
+        const dataSet = queryDataSetForControl(sampleValueControl);
+
+        if (!dataSet) {
+            continue;
+        }
+
+        processDataSet(dataSet, sampleValueControl, accessPoint, lDevice, ied, dataTypeTemplates, SignalType.SV, messagePublishers, invaliditiesReports);
     }
 }
 
-function processDataSet(dataSet: Element, accessPoint: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+function processDataSet(dataSet: Element, control: Element, accessPoint: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
     const FCDAs = dataSet.querySelectorAll('FCDA');
     for (const FCDA of FCDAs) {
-        processFCDA(FCDA, accessPoint, lDevice, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
+        processFCDA(FCDA, control, accessPoint, lDevice, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
     }
 }
 
-function processFCDA(FCDA: Element, accessPoint: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+function processFCDA(FCDA: Element, control: Element, accessPoint: Element, lDevice: Element, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
     const ldInst = FCDA.getAttribute('ldInst') || '';
     const prefix = FCDA.getAttribute('prefix') || '';
     const lnClass = FCDA.getAttribute('lnClass') || '';
@@ -177,18 +479,10 @@ function processFCDA(FCDA: Element, accessPoint: Element, lDevice: Element, ied:
         return;
     }
 
-    processLN2(targetLN, ldInst, prefix, lnClass, lnInst, doName, daName, fc, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
-
-    // TODO: Remove
-    /*
-    const lNodes = lDevice.querySelectorAll(`LN[inst="${lnInst}"][lnClass="${lnClass}"][prefix="${prefix}"]`);
-    for (const ln of lNodes) {
-        processLN(ln, ldInst, prefix, lnClass, lnInst, doName, daName, fc, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
-    }
-    */
+    processLN(targetLN, control, ldInst, prefix, lnClass, lnInst, doName, daName, fc, ied, dataTypeTemplates, signalType, messagePublishers, invaliditiesReports);
 }
 
-function processLN2(ln: Element, ldInst: string, prefix: string, lnClass: string, lnInst: string, doName: string, daName:string, fc: string, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
+function processLN(targetLn: Element, control: Element, ldInst: string, prefix: string, lnClass: string, lnInst: string, doName: string, daName:string, fc: string, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
     console.log(`Processing LN: lnClass: ${lnClass}, lnInst: ${lnInst}, prefix: ${prefix}`)
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
@@ -204,7 +498,7 @@ function processLN2(ln: Element, ldInst: string, prefix: string, lnClass: string
         [MESSAGE_PUBLISHER.LogicalNodePrefix]: prefix,
         [MESSAGE_PUBLISHER.LogicalNodeClass]: lnClass,
         [MESSAGE_PUBLISHER.LogicalNodeInstance]: lnInst,
-        [MESSAGE_PUBLISHER.LogicalNodeType]: ln.getAttribute('lnType') || ''
+        [MESSAGE_PUBLISHER.LogicalNodeType]: targetLn.getAttribute('lnType') || ''
     };
 
     const LNodeType = findLNodeType(logicalNodeInformation.LogicalNodeType, dataTypeTemplates, IEDName, logicalNodeInformation, invaliditiesReports);
@@ -242,11 +536,18 @@ function processLN2(ln: Element, ldInst: string, prefix: string, lnClass: string
         [MESSAGE_PUBLISHER.FunctionalConstraint]: fc,
     };
 
-    // TODO: What to use for M_text
-    const desc = '';
+    // TODO: ExtRef -> desc
+    // which iedName?
+    const extRef = queryExtRef(targetLn, IEDName, control.getAttribute('name') || '', signalType);
+
+    if (!extRef) {
+        // console.log('ExtRef not found');
+    }
+
+    const mText = extRef?.getAttribute('desc') ?? '';
 
     const isDuplicate = messagePublishers.some(publisher =>
-        publisher.M_text === desc &&
+        publisher.M_text === mText &&
         publisher.IEDName === IEDName &&
         publisher.logicalNodeInformation.LogicalDeviceInstance === ldInst &&
         publisher.logicalNodeInformation.LogicalNodePrefix === prefix &&
@@ -292,142 +593,13 @@ function processLN2(ln: Element, ldInst: string, prefix: string, lnClass: string
         [MESSAGE_PUBLISHER.UW]: substationName, 
         [MESSAGE_PUBLISHER.VoltageLevel]: voltageLevelName,
         [MESSAGE_PUBLISHER.Bay]: bayName,
-        [MESSAGE_PUBLISHER.M_text]: desc, 
+        [MESSAGE_PUBLISHER.M_text]: mText, 
         [MESSAGE_PUBLISHER.SignalType]: signalType, 
         [MESSAGE_PUBLISHER.IEDName]: IEDName, 
         [MESSAGE_PUBLISHER.LogicalNodeInformation]: logicalNodeInformation,
         [MESSAGE_PUBLISHER.DataObjectInformation]: dataObjectInformation,
          
     });
-}
-
-function processLN(ln: Element, ldInst: string, prefix: string, lnClass: string, lnInst: string, doName: string, daName:string, fc: string, ied: Element, dataTypeTemplates: Element, signalType: SignalType, messagePublishers: MessagePublisher[], invaliditiesReports: InvalditiesReport[]) {
-    console.log(`Processing LN: lnClass: ${lnClass}, lnInst: ${lnInst}, prefix: ${prefix}`)
-    const xmlDoc = get(xmlDocument);
-    if (!xmlDoc) {
-        throw new Error("XML Document is not defined");
-    }
-    const substation = xmlDoc.querySelector('Substation');
-    const substationName = substation ? substation.getAttribute('name') || '' : '';
-
-    // TODO: Use daName from FCDA, what is the purpose of DAI?
-
-    const DOIs = ln.querySelectorAll('DOI');
-    console.log('DOIs', DOIs)
-    for (const DOI of DOIs) {
-
-        const doiName = DOI.getAttribute('name') || '';
-        if(doName !== doiName) continue;
-
-        const DAIs = DOI.querySelectorAll('DAI');
-        console.log('DAIs', DAIs)
-        for (const DAI of DAIs) {
-            // TODO: is 'desc' correct here? Should we really skip in this case?
-            const desc = DAI.getAttribute('desc') || '';
-            if (desc !== '') {
-                console.log(`Processing DAI with desc: ${desc}`);
-                const IEDName = ied.getAttribute('name') || '';
-                const logicalNodeInformation: LogicalNodeInformation = {
-                    [MESSAGE_PUBLISHER.IEDName]: IEDName,
-                    [MESSAGE_PUBLISHER.LogicalDeviceInstance]: ldInst,
-                    [MESSAGE_PUBLISHER.LogicalNodePrefix]: prefix,
-                    [MESSAGE_PUBLISHER.LogicalNodeClass]: lnClass,
-                    [MESSAGE_PUBLISHER.LogicalNodeInstance]: lnInst,
-                    [MESSAGE_PUBLISHER.LogicalNodeType]: ln.getAttribute('lnType') || ''
-                };
-
-                const LNodeType = findLNodeType(logicalNodeInformation.LogicalNodeType, dataTypeTemplates, IEDName, logicalNodeInformation, invaliditiesReports);
-                if (!LNodeType) {
-                    console.log(`LNodeType not found ${logicalNodeInformation.LogicalNodeType}`)
-                    continue;
-                }
-
-                const DO = findDO(doName, LNodeType, IEDName, logicalNodeInformation, invaliditiesReports);
-                if (!DO) {
-                    console.log(`DO not found ${doName}`)
-                    continue;
-                }
-
-                const DOtypeId = DO.getAttribute('type') || '';
-                const DOtype = findDOType(DOtypeId, dataTypeTemplates, IEDName, logicalNodeInformation, invaliditiesReports);
-                if (!DOtype) {
-                    console.log(`DOType not found ${DOtypeId}`)
-                    continue;
-                }
-
-                const daName = DAI.getAttribute('name') || '';
-                const commonDataClass = DOtype.getAttribute('cdc') || '';
-                const DA = findDA(daName, DOtype, IEDName, logicalNodeInformation, invaliditiesReports);
-                if (!DA) {
-                    console.log(`DA not found ${daName}`)
-                    continue;
-                }
-
-                const attributeType = DA.getAttribute('bType') || '';
-
-                const dataObjectInformation: DataObjectInformation = {
-                    [MESSAGE_PUBLISHER.DataObjectName]: doName,
-                    [MESSAGE_PUBLISHER.DataAttributeName]: daName,
-                    [MESSAGE_PUBLISHER.CommonDataClass]: commonDataClass,
-                    [MESSAGE_PUBLISHER.AttributeType]: attributeType,
-                    [MESSAGE_PUBLISHER.FunctionalConstraint]: fc,
-                };
-
-                const isDuplicate = messagePublishers.some(publisher =>
-                    publisher.M_text === desc &&
-                    publisher.IEDName === IEDName &&
-                    publisher.logicalNodeInformation.LogicalDeviceInstance === ldInst &&
-                    publisher.logicalNodeInformation.LogicalNodePrefix === prefix &&
-                    publisher.logicalNodeInformation.LogicalNodeClass === lnClass &&
-                    publisher.logicalNodeInformation.LogicalNodeInstance === lnInst &&
-                    publisher.logicalNodeInformation.LogicalNodeType === logicalNodeInformation.LogicalNodeType &&
-                    publisher.dataObjectInformation.DataObjectName === doName &&
-                    publisher.dataObjectInformation.DataAttributeName === daName &&
-                    publisher.dataObjectInformation.CommonDataClass === commonDataClass &&
-                    publisher.dataObjectInformation.AttributeType === attributeType &&
-                    publisher.dataObjectInformation.FunctionalConstraint === fc
-                );
-
-                if (!isDuplicate) {
-                    let voltageLevelName = ''
-                    let bayName = ''
-
-                    const voltageLevel = substation?.querySelectorAll("VoltageLevel");
-
-                    if(voltageLevel){
-                        
-                        for (const vl of voltageLevel) {
-                           const bays = vl.querySelectorAll("Bay");
-                           for (const bay of bays) {
-
-                            const lNodes = bay.querySelectorAll("LNode");
-
-                            for(const ln of lNodes){
-                                const lnIedName = ln.getAttribute("iedName")
-                                if(lnIedName === IEDName ){
-                                    bayName = bay.getAttribute("name") || ''
-                                    voltageLevelName = vl.getAttribute("name") || ''
-                                }
-                            }
-                            
-                           }
-                        }
-                    }
-                    messagePublishers.push({ 
-                        [MESSAGE_PUBLISHER.UW]: substationName, 
-                        [MESSAGE_PUBLISHER.VoltageLevel]: voltageLevelName,
-                        [MESSAGE_PUBLISHER.Bay]: bayName,
-                        [MESSAGE_PUBLISHER.M_text]: desc, 
-                        [MESSAGE_PUBLISHER.SignalType]: signalType, 
-                        [MESSAGE_PUBLISHER.IEDName]: IEDName, 
-                        [MESSAGE_PUBLISHER.LogicalNodeInformation]: logicalNodeInformation,
-                        [MESSAGE_PUBLISHER.DataObjectInformation]: dataObjectInformation,
-                         
-                    });
-                }
-            }
-        }
-    }
 }
 
 function findLNodeType(logicalNodeType: string, dataTypeTemplates: Element, IEDName: string, logicalNodeInformation: LogicalNodeInformation, invaliditiesReports: InvalditiesReport[]): Element | null {
@@ -509,6 +681,7 @@ function processInputs(input: Element, ied: Element, messagePublisher: MessagePu
                     [SUBSCRIBER_EXT_REF.srcCBName]: extRef.getAttribute('srcCBName') || '',
                 }
             };
+            console.log('adding subscriber', subscriber);
             messageSubscribers.push(subscriber);
         }
     }
