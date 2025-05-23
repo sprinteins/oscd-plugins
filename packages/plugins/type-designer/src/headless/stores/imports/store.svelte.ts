@@ -1,32 +1,52 @@
-// CORE
-import { findAllStandardElementsBySelector } from '@oscd-plugins/core-api/plugin/v1'
 // CONSTANTS
-import { TYPE_FAMILY, COLUMNS } from '@/headless/constants'
+import { TYPE_FAMILY } from '@/headless/constants'
 // HELPERS
 import {
-	loadElements,
-	getAvailableElementsToImport,
+	findAndSortLoadedElements,
+	removeLoadedElements,
 	handleImportsAndFireDialogDecision,
-	handleAllImportsAndFireDialogDecision,
-	removeImportedElements
+	handleAllImportsAndFireDialogDecision
 } from './imported-type-crud-operation.helper'
 import { loadFromCompas, loadFromLocal } from './load-file.helper'
 // TYPES
-import type {
-	TypeElementByIds,
-	AvailableColumnsWhereImportIsAllowed
-} from '@/headless/stores'
-import type { EditEvent, RemoveEvent } from './types'
+import type { EditEvent, RemoveEvent } from '@/headless/stores'
 
 class UseImportsStore {
 	//====== STATES ======//
 
-	importedXmlDocument = $state<XMLDocument>()
-	currentImportColumnKey = $state<AvailableColumnsWhereImportIsAllowed>()
+	fileInput = $state<HTMLInputElement>()
+	currentFilename = $state('')
+	loadedXmlDocument = $state.raw<XMLDocument>()
+	lastImportSource = $state<'compas' | 'local'>()
 
 	currentImportActionsByElementIds = $state<
 		Record<string, [EditEvent, RemoveEvent | undefined]>[]
 	>([])
+
+	//====== COMPUTED ======//
+
+	loadedTypeElementsPerFamily = $derived.by(() => ({
+		[TYPE_FAMILY.bay]: findAndSortLoadedElements({
+			family: TYPE_FAMILY.bay,
+			selector: 'VoltageLevel[name=TEMPLATE] > Bay:not([name=TEMPLATE])'
+		}),
+		[TYPE_FAMILY.generalEquipment]: findAndSortLoadedElements({
+			family: TYPE_FAMILY.generalEquipment,
+			selector: 'Bay[name=TEMPLATE] > GeneralEquipment'
+		}),
+		[TYPE_FAMILY.conductingEquipment]: findAndSortLoadedElements({
+			family: TYPE_FAMILY.conductingEquipment,
+			selector: 'Bay[name=TEMPLATE] > ConductingEquipment'
+		}),
+		[TYPE_FAMILY.function]: findAndSortLoadedElements({
+			family: TYPE_FAMILY.function,
+			selector: 'Bay[name=TEMPLATE] > Function'
+		}),
+		[TYPE_FAMILY.lNodeType]: findAndSortLoadedElements({
+			family: TYPE_FAMILY.lNodeType,
+			selector: 'LNodeType'
+		})
+	}))
 
 	currentImportActions = $derived(
 		this.currentImportActionsByElementIds.flatMap(
@@ -63,92 +83,15 @@ class UseImportsStore {
 		)
 	})
 
-	fileInput: Record<
-		AvailableColumnsWhereImportIsAllowed,
-		HTMLInputElement | null
-	> = $state({
-		[COLUMNS.functionType]: null,
-		[COLUMNS.lNodeType]: null
-	})
-
-	currentFilenameByColumnKey = $state({
-		functionType: '',
-		lNodeType: ''
-	})
-
-	lastImportSource = $state<'compas' | 'local'>()
-
-	isContainerOpen = $state<
-		Record<AvailableColumnsWhereImportIsAllowed, boolean>
-	>({
-		functionType: false,
-		lNodeType: false
-	})
-
-	//====== COMPUTED ======//
-
-	functionFromBayTemplateElements = $derived.by(() => {
-		if (this.importedXmlDocument)
-			return findAllStandardElementsBySelector<'function', 'ed2Rev1'>({
-				selector: 'Bay[name=TEMPLATE] > Function',
-				root: this.importedXmlDocument.documentElement
-			})
-	})
-
-	lNodeTypeElements = $derived.by(() => {
-		if (this.importedXmlDocument)
-			return findAllStandardElementsBySelector<'lNodeType', 'ed2Rev1'>({
-				selector: 'LNodeType',
-				root: this.importedXmlDocument.documentElement
-			})
-	})
-
-	loadedFunction: {
-		elementByIds: TypeElementByIds<typeof TYPE_FAMILY.function>
-		dependencies: TypeElementByIds<typeof TYPE_FAMILY.lNodeType>
-	} = $state({
-		elementByIds: {},
-		dependencies: {}
-	})
-
-	loadedLNodeType: TypeElementByIds<typeof TYPE_FAMILY.lNodeType> = $state({})
-
-	loadedTypeElementsPerFamily = $derived({
-		[TYPE_FAMILY.function]: {
-			available: getAvailableElementsToImport(
-				TYPE_FAMILY.function,
-				this.loadedFunction.elementByIds
-			),
-			all: this.loadedFunction.elementByIds
-		},
-		[TYPE_FAMILY.lNodeType]: {
-			available: {
-				...getAvailableElementsToImport(
-					TYPE_FAMILY.lNodeType,
-					this.loadedLNodeType
-				),
-				...getAvailableElementsToImport(
-					TYPE_FAMILY.lNodeType,
-					this.loadedFunction.dependencies
-				)
-			},
-			all: {
-				...this.loadedFunction.dependencies,
-				...this.loadedLNodeType
-			}
-		}
-	})
-
 	//====== PROXY TO HELPERS ======//
 
 	// imports
-	loadElements = loadElements
 	loadFromCompas = loadFromCompas
 	loadFromLocal = loadFromLocal
+	removeLoadedElements = removeLoadedElements
 	handleImportsAndFireDialogDecision = handleImportsAndFireDialogDecision
 	handleAllImportsAndFireDialogDecision =
 		handleAllImportsAndFireDialogDecision
-	removeImportedElements = removeImportedElements
 }
 
 export const importsStore = new UseImportsStore()
