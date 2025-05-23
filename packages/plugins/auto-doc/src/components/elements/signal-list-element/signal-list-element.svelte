@@ -133,8 +133,7 @@
 		return [
 			SignalType.GOOSE,
 			SignalType.MMS,
-			SignalType.SV,
-			SignalType.UNKNOWN
+			SignalType.SV
 		].includes(SignalType[searchKey as unknown as keyof typeof SignalType])
 	}
 	

@@ -6,9 +6,8 @@ import type { MESSAGE_PUBLISHER, MESSAGE_SUBSCRIBER, SUBSCRIBER_EXT_REF } from "
 */
 export enum SignalType {
     GOOSE = 'GOOSE',
-    MMS = 'MMS',
-    SV = 'SV',
-    UNKNOWN = 'UNKNOWN',
+    MMS = 'Report',
+    SV = 'SMV'
 }
 
 export enum Columns{
@@ -37,6 +36,7 @@ export type MessagePublisher = {
     [MESSAGE_PUBLISHER.Bay]: string;
     [MESSAGE_PUBLISHER.M_text]: string;
     [MESSAGE_PUBLISHER.SignalType]: string;
+    [MESSAGE_PUBLISHER.TargetIEDName]: string;
     [MESSAGE_PUBLISHER.IEDName]: string;
     [MESSAGE_PUBLISHER.LogicalNodeInformation]: LogicalNodeInformation;
     [MESSAGE_PUBLISHER.DataObjectInformation]: DataObjectInformation;
@@ -111,7 +111,6 @@ export type MessageSubscriberFilter = {
     [SignalType.GOOSE]?: IEDNameSearch;
     [SignalType.MMS]?: IEDNameSearch;
     [SignalType.SV]?: IEDNameSearch;
-    [SignalType.UNKNOWN]?: IEDNameSearch;
 }
 
 
@@ -123,4 +122,9 @@ export type MessageSubscriberAndPdfContent = {
 export type PdfRowStructure = {
     matchedFilteredValuesForPdf: string[][];
     publisher: MessagePublisher;
+    matchedSubscribers: {
+        [SignalType.GOOSE]: string[];
+        [SignalType.MMS]: string[];
+        [SignalType.SV]: string[];
+    }
 }

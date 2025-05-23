@@ -1,7 +1,7 @@
 // SVELTE
 import { get, writable } from "svelte/store";
 // STORES
-import { pluginStore } from './index'
+import { pluginStore, SignalType } from './index'
 // TYPES
 import type { 
     MessagePublisher, LogicalNodeInformation,
@@ -86,6 +86,8 @@ function fillMessagePublisherData(context: SourceTarget): MessagePublisher {
     const substation = lNode.closest('Substation')?.getAttribute('name') ?? '';
     const voltageLevel = lNode.closest('VoltageLevel')?.getAttribute('name') ?? '';
     const bay = lNode.closest('Bay')?.getAttribute('name') ?? '';
+    const targetIed = context.targetContext.ied;
+    const targetIEDName = targetIed.getAttribute('name') ?? '';
 
     const extRef = context.targetContext.extRef!;
     const mText = extRef.getAttribute('desc') ?? '';
@@ -116,6 +118,7 @@ function fillMessagePublisherData(context: SourceTarget): MessagePublisher {
         [MESSAGE_PUBLISHER.Bay]: bay,
         [MESSAGE_PUBLISHER.M_text]: mText,
         [MESSAGE_PUBLISHER.SignalType]: signalType,
+        [MESSAGE_PUBLISHER.TargetIEDName]: targetIEDName,
         [MESSAGE_PUBLISHER.IEDName]: iedName,
         [MESSAGE_PUBLISHER.LogicalNodeInformation]: logicalNodeInformation,
         [MESSAGE_PUBLISHER.DataObjectInformation]: dataObjectInformation
@@ -162,7 +165,6 @@ function getDataObjectInformation(context: SourceTarget): DataObjectInformation 
     }
 
     const cdc = dataTypeLeaf?.cdcs.join('.') ?? '';
-    console.log(dataTypeLeaf?.daLeaf);
     const attributeType = dataTypeLeaf?.dataAttributeType ?? '';
 
     return {
@@ -338,11 +340,42 @@ function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { pdf
     console.log(messagePublishers);
 
     const pdfRows = filterMessagePublishers(messagePublishers, filter);
+    const groupedPdfRows = groupByPublisher(pdfRows);
 
-    return { pdfRows, invaliditiesReports};
+    return { pdfRows: groupedPdfRows, invaliditiesReports};
 }
 
 //==== PRIVATE ACTIONS
+function getPublisherIdentifier(pdfRow: PdfRowStructure): string {
+    const p = pdfRow.publisher;
+    const lnInfo = p.logicalNodeInformation;
+    const doInfo = p.dataObjectInformation;
+
+    return `${p.IEDName}-${p.M_text}-${lnInfo.LogicalDeviceInstance}-${lnInfo.LogicalNodeClass}-${lnInfo.LogicalNodeInstance}-${lnInfo.LogicalNodePrefix}-${lnInfo.LogicalNodeType}-${doInfo.AttributeType}-${doInfo.CommonDataClass}-${doInfo.DataAttributeName}-${doInfo.DataObjectName}-${doInfo.FunctionalConstraint}`;
+}
+
+function groupByPublisher(pdfRows: PdfRowStructure[]): PdfRowStructure[] {
+    const groupedPdfRows: PdfRowStructure[] = [];
+
+    for (const pdfRow of pdfRows) {
+        const publisherId = getPublisherIdentifier(pdfRow);
+
+        const existingPublisher = groupedPdfRows.find(r => getPublisherIdentifier(r) === publisherId);
+
+        if (existingPublisher) {
+            // TODO: Add subscriber to existing element
+
+            const signalType = pdfRow.publisher.signalType as SignalType;
+            const subscribers = existingPublisher.matchedSubscribers[signalType];
+            subscribers.push(...pdfRow.matchedSubscribers[signalType]);
+        } else {
+            groupedPdfRows.push(pdfRow);
+        }
+    }
+
+    return groupedPdfRows;
+}
+
 function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: MessagePublisherFilter): PdfRowStructure[] {
     const matchedValueAndCorrespondingPublisher : PdfRowStructure [] = [];
     const allMessagePublishers: MessagePublisher[] = [];
@@ -366,8 +399,29 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
         }
 
         if (allFiltersMatch) {
+            const signalType = publisher.signalType;
+            const gooseSubscriber = [];
+            const mmsSubscriber = [];
+            const svSubscriber = [];
+
+            if (signalType === SignalType.GOOSE) {
+                gooseSubscriber.push(publisher.targetIEDName);
+            } else if (signalType === SignalType.MMS) {
+                mmsSubscriber.push(publisher.targetIEDName);
+            } else if (signalType === SignalType.SV) {
+                svSubscriber.push(publisher.targetIEDName);
+            }
+
             allMessagePublishers.push(publisher);
-            matchedValueAndCorrespondingPublisher.push({matchedFilteredValuesForPdf:[valuesMatched], publisher})
+            matchedValueAndCorrespondingPublisher.push({
+                matchedFilteredValuesForPdf:[valuesMatched],
+                publisher,
+                matchedSubscribers: {
+                    [SignalType.GOOSE]: gooseSubscriber,
+                    [SignalType.MMS]: mmsSubscriber,
+                    [SignalType.SV]: svSubscriber,
+                }
+            });
         }  
     }
 
