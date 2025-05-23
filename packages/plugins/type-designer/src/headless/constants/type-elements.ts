@@ -64,21 +64,6 @@ export const READONLY_ATTRIBUTES = [
 
 // ALLOWED
 
-export const ALLOWED_IMPORTED_TYPE = [
-	TYPE_FAMILY.function,
-	TYPE_FAMILY.lNodeType
-] as const
-
-export const ALLOWED_IMPORTED_REF = [
-	REF_FAMILY.function,
-	REF_FAMILY.lNode
-] as const
-
-export const ALLOWED_IMPORT_FUNCTIONALITY_BY_COLUMNS = [
-	COLUMNS.functionType,
-	COLUMNS.lNodeType
-] as const
-
 export const ALLOWED_USER_DECISIONS = [
 	'proceed',
 	'forceCreate',
