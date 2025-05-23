@@ -41,26 +41,6 @@ export type MessagePublisher = {
     [MESSAGE_PUBLISHER.DataObjectInformation]: DataObjectInformation;
 }
 
-
-export type MessageSubscriber = {
-    [MESSAGE_SUBSCRIBER.IEDName]: string;
-    [MESSAGE_SUBSCRIBER.ExtRef]: ExtRef
-}
-export type ExtRef = {
-    [SUBSCRIBER_EXT_REF.iedName]: string;
-    [SUBSCRIBER_EXT_REF.serviceType]: string;
-    [SUBSCRIBER_EXT_REF.ldInst]: string;
-    [SUBSCRIBER_EXT_REF.lnClass]: string;
-    [SUBSCRIBER_EXT_REF.lnInst]: string;
-    [SUBSCRIBER_EXT_REF.prefix]: string;
-    [SUBSCRIBER_EXT_REF.doName]: string;
-    [SUBSCRIBER_EXT_REF.daName]: string;
-    [SUBSCRIBER_EXT_REF.srcLDInst]: string;
-    [SUBSCRIBER_EXT_REF.srcPrefix]: string;
-    [SUBSCRIBER_EXT_REF.srcLNClass]: string;
-    [SUBSCRIBER_EXT_REF.srcCBName]: string;
-}
-
 export type LogicalNodeInformation = {
     [MESSAGE_PUBLISHER.IEDName]: string;
     [MESSAGE_PUBLISHER.LogicalDeviceInstance]: string;
@@ -80,8 +60,7 @@ export type DataObjectInformation = {
 
 export type InvalditiesReport = {
     IEDName: string;
-    LogicalNodeInformation: LogicalNodeInformation;
-    invalidities: string[];
+    invalidities: string;
 }
 
 export type MessagePublisherFilter = {
@@ -111,11 +90,6 @@ export type MessageSubscriberFilter = {
     [SignalType.SV]?: IEDNameSearch;
 }
 
-
-export type MessageSubscriberAndPdfContent = {
-    subscribers: MessageSubscriber[];
-    matchedRows: PdfRowStructure[];
-}
 
 export type PdfRowStructure = {
     matchedFilteredValuesForPdf: string[][];

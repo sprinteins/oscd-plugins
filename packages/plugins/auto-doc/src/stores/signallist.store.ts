@@ -27,7 +27,8 @@ interface TargetContext {
     accessPoint: Element,
     lDevice: Element,
     ln: Element,
-    extRef: Element
+    extRef: Element,
+    invaliditiesReports: InvalditiesReport[]
 }
 
 interface SourceContext {
@@ -57,7 +58,7 @@ interface SourceTarget {
     targetContext: TargetContext;
 }
 
-function getSignalList(): MessagePublisher[] {
+function getSignalList(invaliditiesReports: InvalditiesReport[]): MessagePublisher[] {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
@@ -71,7 +72,8 @@ function getSignalList(): MessagePublisher[] {
             accessPoint: null!,
             lDevice: null!,
             ln: null!,
-            extRef: null!
+            extRef: null!,
+            invaliditiesReports
         }
 
         return handleIED(targetContext).flat();
@@ -133,6 +135,7 @@ function getDataObjectInformation(context: SourceTarget): DataObjectInformation 
     }
 
     const extRef = context.targetContext.extRef;
+    const iedName = extRef.getAttribute('iedName') ?? '';
     const doName = extRef.getAttribute('doName') ?? '';
     const daName = extRef.getAttribute('daName') ?? '';
 
@@ -147,7 +150,10 @@ function getDataObjectInformation(context: SourceTarget): DataObjectInformation 
     const fc = fcda?.getAttribute('fc') ?? '';
 
     if (!fcda) {
-        console.log(`FCDA not found ${dataLdInst}, ${dataLnClass}, ${dataLnInst}, ${dataPrefix}`);
+        context.targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `FCDA not found ${dataLdInst}, ${dataLnClass}, ${dataLnInst}, ${dataPrefix}`
+        });
     }
 
     const dataTypeTemplates = xmlDoc.querySelector('SCL > DataTypeTemplates');
@@ -162,7 +168,10 @@ function getDataObjectInformation(context: SourceTarget): DataObjectInformation 
 
     const dataTypeLeaf = queryDataTypeLeaf(dataTypeTemplates, lnType, doSegments, daSegments);
     if (!dataTypeLeaf) {
-        console.log(`Could not find data type leaf for lnType ${lnType}, doName ${doName}, daName ${daName}`);
+        context.targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `Could not find data type leaf for lnType ${lnType}, doName ${doName}, daName ${daName}`
+        });
     }
 
     const cdc = dataTypeLeaf?.cdcs.join('.') ?? '';
@@ -253,39 +262,56 @@ function getSourceContext(targetContext: TargetContext): SourceContext | null {
 
     const sourceIed = xmlDoc.querySelector(`IED[name="${iedName}"]`);
     if (!sourceIed) {
-        console.log(`Source IED ${iedName} not found`);
+        targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `Source IED ${iedName} not found`
+        });
         return null;
     }
 
-    // TODO: Do we need to consider accesspoint?
     const sourceLDevice = sourceIed.querySelector(`LDevice[inst="${ldInst}"]`);
     if (!sourceLDevice) {
-        console.log(`Source LDevice ${ldInst} not found`);
+        targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `Source LDevice ${ldInst} not found`
+        });
         return null;
     }
 
     const sourceLN = sourceLDevice.querySelector(`:scope > LN0[lnClass="${lnClass}"], :scope > LN[lnClass="${lnClass}"]`);
     if (!sourceLN) {
-        console.log(`Source LN ${lnClass} not found`);
+        targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `Source LN ${lnClass} not found`
+        });
         return null;
     }
 
     const serviceType = targetContext.extRef.getAttribute('serviceType');
     if (!serviceType) {
-        console.log(`ExtRef is missing serviceType attribute`);
+        targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `ExtRef is missing serviceType attribute`
+        });
         return null;
     }
 
     const controlTag = serviceTypeToControl[serviceType as ServiceType];
     const control = sourceLN.querySelector(`${controlTag}[name="${cbName}"]`);
     if (!control) {
-        console.log(`${controlTag} ${cbName} not found`);
+        targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `${controlTag} ${cbName} not found`
+        });
         return null;
     }
 
     const dataSet = queryDataSetForControl(control);
     if (!dataSet) {
-        console.log(`DataSet ${control.getAttribute('datSet')} not found`);
+        targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `DataSet ${control.getAttribute('datSet')} not found`
+        });
         return null;
     }
 
@@ -297,27 +323,39 @@ function getSourceContext(targetContext: TargetContext): SourceContext | null {
     const sourceAccessPoint = sourceLDevice.closest('AccessPoint');
 
     if (!sourceAccessPoint) {
-        console.log(`Source AccessPoint not found`);
+        targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `Source AccessPoint not found`
+        });
         return null;
     }
 
     const dataLDevice = queryLDevice(sourceAccessPoint, dataLdInst);
 
     if (!dataLDevice) {
-        console.log(`Data LDevice ${dataLdInst} not found`);
+        targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `Data LDevice ${dataLdInst} not found`
+        });
         return null;
     }
 
     const dataLn = queryLN(dataLDevice, dataLnClass, dataLnInst, dataPrefix)
 
     if (!dataLn) {
-        console.log(`Data LN ${dataLnClass}, ${dataLnInst}, ${dataPrefix} not found`);
+        targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `Data LN ${dataLnClass}, ${dataLnInst}, ${dataPrefix} not found`
+        });
         return null;
     }
 
     const lNode = queryLNode(xmlDoc, iedName, dataLdInst, dataLnClass, dataLnInst, dataPrefix);
     if (!lNode) {
-        console.log(`LNode ${iedName}, ${dataLdInst}, ${dataLnClass}, ${dataLnInst}, ${dataPrefix} not found`);
+        targetContext.invaliditiesReports.push({
+            IEDName: iedName,
+            invalidities: `LNode ${iedName}, ${dataLdInst}, ${dataLnClass}, ${dataLnInst}, ${dataPrefix} not found`
+        });
         return null;
     }
 
@@ -337,8 +375,7 @@ function getSourceContext(targetContext: TargetContext): SourceContext | null {
 function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}, subscriberFilter: MessageSubscriberFilter): { pdfRows: PdfRowStructure[], invaliditiesReports: InvalditiesReport[] } {
     const invaliditiesReports: InvalditiesReport[] = [];
 
-    const messagePublishers = getSignalList();
-    console.log(messagePublishers);
+    const messagePublishers = getSignalList(invaliditiesReports);
 
     const pdfRows = filterMessagePublishers(messagePublishers, filter);
     const groupedPdfRows = groupByPublisher(pdfRows);
@@ -410,8 +447,6 @@ function groupByPublisher(pdfRows: PdfRowStructure[]): PdfRowStructure[] {
         const existingPublisher = groupedPdfRows.find(r => getPublisherIdentifier(r) === publisherId);
 
         if (existingPublisher) {
-            // TODO: Add subscriber to existing element
-
             const signalType = pdfRow.publisher.signalType as SignalType;
             const subscribers = existingPublisher.matchedSubscribers[signalType];
             subscribers.push(...pdfRow.matchedSubscribers[signalType]);

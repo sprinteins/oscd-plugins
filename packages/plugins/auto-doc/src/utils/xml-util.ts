@@ -52,7 +52,6 @@ export function queryLNode(doc: XMLDocument, iedName: string, ldInst: string, ln
 }
 
 export function queryFCDA(dataSet: Element, ldInst: string, lnClass: string, lnInst: string, prefix: string): Element | null {
-    // TODO: Use First part of doName, daName
     let query = `FCDA[ldInst="${ldInst}"][lnClass="${lnClass}"]`;
     
     if (lnClass !== 'LLN0') {

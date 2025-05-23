@@ -123,7 +123,7 @@
 			}
 		}
 	
-		const { pdfRows } = signallistStore.getPublishingLogicalDevices(publisherFilter, subscriberFilter);
+		const { pdfRows, invaliditiesReports } = signallistStore.getPublishingLogicalDevices(publisherFilter, subscriberFilter);
 
 		console.log(pdfRows);
 	

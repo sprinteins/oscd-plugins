@@ -1,5 +1,5 @@
 import type { SignalType, Columns, PdfRowStructure } from "@/stores/signallist.store.d"
-import type {MessagePublisher, MessageSubscriber}  from '@/stores';
+import type {MessagePublisher}  from '@/stores';
 
 export type Label = { name: string, hasSuffix: boolean }
 
