@@ -101,26 +101,42 @@ export function getAttributesNS(element: Element) {
  * @param secondElement
  * @returns
  */
-export function areElementsIdentical(
-	firstElement: Element,
+export function areElementsIdentical(params: {
+	firstElement: Element
 	secondElement: Element
-) {
+	attributesToIgnore?: string[]
+}) {
 	// Compare tag names
-	if (firstElement.tagName !== secondElement.tagName) return false
+	if (params.firstElement.tagName !== params.secondElement.tagName)
+		return false
 
 	// Compare attributes
-	const firstElementAttributes = firstElement.attributes
-	const secondElementAttributes = secondElement.attributes
+	const firstElementAttributes = (
+		params.firstElement.cloneNode(true) as Element
+	).attributes
+	const secondElementAttributes = (
+		params.secondElement.cloneNode(true) as Element
+	).attributes
+
+	if (params.attributesToIgnore)
+		for (const attributeToIgnore of params.attributesToIgnore) {
+			if (firstElementAttributes.getNamedItem(attributeToIgnore))
+				firstElementAttributes.removeNamedItem(attributeToIgnore)
+			if (secondElementAttributes.getNamedItem(attributeToIgnore))
+				secondElementAttributes.removeNamedItem(attributeToIgnore)
+		}
 
 	if (firstElementAttributes.length !== secondElementAttributes.length)
 		return false
 
 	for (let i = 0; i < firstElementAttributes.length; i++) {
-		const currentAttributeFromFirstElement = firstElementAttributes[i]
+		const currentAttributeFromFirstElement = firstElementAttributes.item(i)
+
+		if (!currentAttributeFromFirstElement) continue
 
 		const currentAttributeFromSecondElement =
 			secondElementAttributes.getNamedItem(
-				currentAttributeFromFirstElement.name
+				currentAttributeFromFirstElement.localName
 			)
 
 		if (
@@ -132,18 +148,19 @@ export function areElementsIdentical(
 	}
 
 	// Compare child elements
-	const firstElementChildren = firstElement.children
-	const secondElementChildren = secondElement.children
+	const firstElementChildren = params.firstElement.children
+	const secondElementChildren = params.secondElement.children
 
 	if (firstElementChildren.length !== secondElementChildren.length)
 		return false
 
 	for (let i = 0; i < firstElementChildren.length; i++) {
 		if (
-			!areElementsIdentical(
-				firstElementChildren[i],
-				secondElementChildren[i]
-			)
+			!areElementsIdentical({
+				firstElement: firstElementChildren[i],
+				secondElement: secondElementChildren[i],
+				attributesToIgnore: params.attributesToIgnore
+			})
 		)
 			return false
 	}
