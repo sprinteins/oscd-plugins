@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Uuids are recursively added to element that are not part of DataTypeTemplates
+- Create a new element named after one that was deleted
 
 ## [3.10.3] - 02.05.2025
 
