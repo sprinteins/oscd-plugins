@@ -79,21 +79,19 @@ function hasLoadedTypeElements(scope: 'all' | ImportScope) {
 		) || false
 	)
 }
-
-$inspect(importsStore.loadedTypeElementsPerFamily)
 </script>
 	
 <Card.Root class={`p-2 -m-2 bg-background/50 rounded-none h-full ${dndStore.isDragging ? 'opacity-25' : ''}`} >
 	<Tabs.Root value="all" class="w-full h-full overflow-hidden flex flex-col">
 		<Tabs.List class="grid w-full grid-cols-3 shrink-0">
-			<Tabs.Trigger value="all" >All</Tabs.Trigger>
-			<Tabs.Trigger value="import" >Import</Tabs.Trigger>
-			<Tabs.Trigger value="update" >Update</Tabs.Trigger>
+			<Tabs.Trigger value="all">All</Tabs.Trigger>
+			<Tabs.Trigger value="add">Add</Tabs.Trigger>
+			<Tabs.Trigger value="update">Update</Tabs.Trigger>
 		</Tabs.List>
 		<Tabs.Content value="all" class="flex-1 overflow-hidden">
 			{@render importOptions('all')}
 		</Tabs.Content>
-		<Tabs.Content value="import" class="flex-1 overflow-hidden">
+		<Tabs.Content value="add" class="flex-1 overflow-hidden">
 			{@render importOptions('toAdd')}
 		</Tabs.Content>
 		<Tabs.Content value="update" class="flex-1 overflow-hidden">
