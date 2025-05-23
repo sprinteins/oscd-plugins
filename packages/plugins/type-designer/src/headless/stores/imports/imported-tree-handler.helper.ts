@@ -15,7 +15,10 @@ export async function handleImportOfAnyElement(
 ) {
 	if (hasAlreadyBeenTreated(currentImportedElement)) return
 
-	const localTwinElement = getLocalTwinElement(currentImportedElement)
+	const localTwinElement =
+		getElementEquivalentInWorkingDocumentByIdUuidOrOriginUuid(
+			currentImportedElement
+		)
 
 	if (localTwinElement)
 		await addReplaceAction(currentImportedElement, localTwinElement)
@@ -33,8 +36,10 @@ export async function handleImportOfAnyElement(
 //====== ACTIONS ======//
 
 async function addCreateAction(currentImportedElement: Element) {
-	setUuidAttributesRecursively(currentImportedElement)
-	setNameAttribute(currentImportedElement)
+	const elementToCreate = currentImportedElement.cloneNode(true) as Element
+
+	setUuidAttributesRecursively(elementToCreate)
+	setNameAttribute(elementToCreate)
 
 	const { idOrUuid, localParent, localNextSibling } =
 		await getElementActionPayload(currentImportedElement)
@@ -43,7 +48,7 @@ async function addCreateAction(currentImportedElement: Element) {
 		[idOrUuid]: [
 			{
 				parent: localParent,
-				node: currentImportedElement,
+				node: elementToCreate,
 				reference: localNextSibling
 			},
 			undefined
@@ -55,9 +60,25 @@ async function addReplaceAction(
 	currentImportedElement: Element,
 	localElement: Element
 ) {
-	if (areElementsIdentical(localElement, currentImportedElement)) return
+	if (
+		areElementsIdentical({
+			firstElement: localElement,
+			secondElement: currentImportedElement,
+			attributesToIgnore: ['uuid', 'templateUuid', 'originUuid', 'name']
+		})
+	)
+		return
 
-	setUuidAttributesRecursively(currentImportedElement)
+	const elementToReplace = currentImportedElement.cloneNode(true) as Element
+
+	const elementToRemove =
+		getElementEquivalentInWorkingDocumentByIdUuidOrOriginUuid(
+			currentImportedElement
+		)
+
+	if (!elementToRemove) throw new Error('Element to remove is not defined')
+
+	setUuidAttributesRecursively(elementToReplace)
 
 	const { idOrUuid, localParent, localNextSibling } =
 		await getElementActionPayload(currentImportedElement)
@@ -66,11 +87,11 @@ async function addReplaceAction(
 		[idOrUuid]: [
 			{
 				parent: localParent,
-				node: currentImportedElement,
+				node: elementToReplace,
 				reference: localNextSibling
 			},
 			{
-				node: currentImportedElement
+				node: elementToRemove
 			}
 		]
 	})
@@ -83,7 +104,7 @@ async function handleImportOfRefAsType(currentImportedElement: Element) {
 		currentImportedElement
 	)
 	const currentRefAsTypeElement =
-		importsStore.importedXmlDocument?.documentElement.querySelector(
+		importsStore.loadedXmlDocument?.documentElement.querySelector(
 			`[${attribute}="${idOrUuid}"]`
 		)
 
@@ -134,19 +155,6 @@ function hasRefToImportAsType(currentImportedElement: Element) {
 	})
 }
 
-function getLocalTwinElement(currentImportedElement: Element) {
-	const currentIdOrUuid = getElementIdOrUuid(currentImportedElement)
-
-	return (
-		pluginLocalStore.rootElement?.querySelector(
-			`[id="${currentIdOrUuid}"]`
-		) ||
-		pluginLocalStore.rootElement?.querySelector(
-			`[uuid="${currentIdOrUuid}"]`
-		)
-	)
-}
-
 //====== GETTER ======//
 
 function getElementIdOrUuid(currentImportedElement: Element) {
@@ -174,9 +182,12 @@ function getLocalParentByTagName(currentImportedElement: Element) {
 		currentImportedElement.parentElement?.tagName
 	if (!importedParentElementTagName) return
 
-	const localParent = pluginLocalStore.rootElement?.getElementsByTagName(
-		importedParentElementTagName
-	)
+	let selector = importedParentElementTagName
+
+	if (selector === 'Bay' || selector === 'VoltageLevel')
+		selector = `${selector}[name=TEMPLATE]`
+
+	const localParent = pluginLocalStore.rootElement?.querySelectorAll(selector)
 
 	const isLocalParentUniqueEquivalent = localParent?.length === 1
 
@@ -184,20 +195,12 @@ function getLocalParentByTagName(currentImportedElement: Element) {
 }
 
 function getLocalParentById(currentImportedElement: Element) {
-	const importedParentUuid =
-		currentImportedElement?.parentElement?.getAttribute('uuid')
-	const importedParentId =
-		currentImportedElement?.parentElement?.getAttribute('id')
+	if (!currentImportedElement?.parentElement)
+		throw new Error('Element has no parent element')
 
-	if (importedParentUuid)
-		return pluginLocalStore.rootElement?.querySelector(
-			`[${pluginLocalStore.namespaces.currentUnstableRevision.prefix}\\:originUuid="${importedParentUuid}"]`
-		)
-
-	if (importedParentId)
-		return pluginLocalStore.rootElement?.querySelector(
-			`[id="${importedParentId}"]`
-		)
+	return getElementEquivalentInWorkingDocumentByIdUuidOrOriginUuid(
+		currentImportedElement.parentElement
+	)
 }
 
 function getLocalNextSibling(
@@ -233,4 +236,33 @@ async function getElementActionPayload(currentImportedElement: Element) {
 		localParent,
 		localNextSibling
 	}
+}
+
+function getElementEquivalentInWorkingDocumentByIdUuidOrOriginUuid(
+	element: Element
+) {
+	if (!pluginLocalStore.rootElement)
+		throw new Error('Root element is not defined')
+
+	const idOrUuid = getElementIdOrUuid(element)
+
+	const elementById = pluginLocalStore.rootElement.querySelector(
+		`[id="${idOrUuid}"]`
+	)
+
+	const elementByUuid = pluginLocalStore.rootElement.querySelector(
+		`[uuid="${idOrUuid}"]`
+	)
+
+	const elementByOriginUuid =
+		pluginLocalStore.rootElement.querySelector(`[id="${idOrUuid}"]`) ||
+		Array.from(pluginLocalStore.rootElement.querySelectorAll('*')).find(
+			(el) =>
+				el.getAttributeNS(
+					pluginLocalStore.namespaces.currentUnstableRevision.uri,
+					'originUuid'
+				) === idOrUuid
+		)
+
+	return elementById || elementByUuid || elementByOriginUuid
 }

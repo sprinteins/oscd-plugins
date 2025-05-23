@@ -17,9 +17,9 @@ const columnsEntries = $derived(Object.entries(typeElementsStore.columns)) as [
 </script>
 
 
-<div  class="grid grid-cols-4 min-h-full gap-4 w-full p-4">
-{#each columnsEntries as [key, column]}
-	<SingleColumn columnKey={key} {column} />
-{/each}
+<div class="grid grid-cols-4 gap-4 w-full h-full p-4 overflow-hidden">
+	{#each columnsEntries as [key, column]}
+		<SingleColumn columnKey={key} {column} />
+	{/each}
 </div>
 

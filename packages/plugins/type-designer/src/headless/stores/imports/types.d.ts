@@ -20,3 +20,5 @@ export type RemoveEvent = {
 }
 
 export type UserDecision = (typeof ALLOWED_USER_DECISIONS)[number]
+
+export type ImportScope = 'toAdd' | 'toUpdate'

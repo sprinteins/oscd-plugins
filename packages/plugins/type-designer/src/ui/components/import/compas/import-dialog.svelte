@@ -31,38 +31,39 @@ const filesList = $derived(
 
 //====== FUNCTIONS ======//
 
+function handleFileSelection(selectedFile: Compas.FileByType) {
+	selectedFileId = selectedFile.id
+	selectedFilename = selectedFile.name
+}
+
+async function loadSelectedFile() {
+	if (selectedType && selectedFileId && selectedFilename) {
+		const loadedFile = await compasStore.getFileByTypeAndId(
+			selectedType,
+			selectedFileId
+		)
+
+		if (!loadedFile) throw new Error('File not found')
+
+		importsStore.loadedXmlDocument = loadedFile
+		importsStore.currentFilename = selectedFilename
+
+		await dialogStore.closeDialog()
+		resetSelectInputs()
+	}
+}
+
 function resetSelectInputs() {
 	selectedType = undefined
 	selectedFileId = undefined
 	selectedFilename = undefined
 }
 
-async function loadSelectedFile() {
-	if (selectedType && selectedFileId) {
-		const loadedFile = await compasStore.getFileByTypeAndId(
-			selectedType,
-			selectedFileId
-		)
-		importsStore.importedXmlDocument = loadedFile
-		if (importsStore.currentImportColumnKey && selectedFilename)
-			importsStore.currentFilenameByColumnKey[
-				importsStore.currentImportColumnKey
-			] = selectedFilename
-		importsStore.loadElements()
-		await dialogStore.closeDialog()
-		resetSelectInputs()
-	}
-}
-
-function handleFileSelection(selectedFile: Compas.FileByType) {
-	selectedFileId = selectedFile.id
-	selectedFilename = selectedFile.name
-}
-
 async function handleCloseDialog() {
 	await dialogStore.closeDialog()
 	resetSelectInputs()
 }
+
 //====== EFFECTS ======//
 $effect(() => {
 	if (!dialogStore.isOpen) resetSelectInputs()

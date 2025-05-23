@@ -1,14 +1,8 @@
 <script lang="ts">
-// CORE
-import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 // STORE
 import { dndStore, sidebarStore } from '@/headless/stores'
 // CONSTANTS
-import {
-	REF_FAMILY,
-	TYPE_FAMILY,
-	ALLOWED_IMPORTED_TYPE
-} from '@/headless/constants'
+import { REF_FAMILY, TYPE_FAMILY } from '@/headless/constants'
 // STORES
 import { importsStore } from '@/headless/stores'
 // COMPONENTS
@@ -19,10 +13,19 @@ import {
 	Sidebar,
 	Badge
 } from '@oscd-plugins/core-ui-svelte'
-import { ChevronRight, ChevronDown, CircleArrowDown } from 'lucide-svelte'
+import {
+	ChevronRight,
+	ChevronDown,
+	CircleArrowDown,
+	RefreshCcw
+} from 'lucide-svelte'
 import CardMenu from './card-menu.svelte'
 // TYPES
-import type { TypeElement, AvailableTypeFamily } from '@/headless/stores'
+import type {
+	TypeElement,
+	AvailableTypeFamily,
+	ImportScope
+} from '@/headless/stores'
 
 //======= INITIALIZATION =======//
 
@@ -32,13 +35,13 @@ const {
 	typeElementFamily,
 	typeElement,
 	isElementCardOpen,
-	isImportContainer
+	importScope
 }: {
 	typeElementKey: string
 	typeElementFamily: AvailableTypeFamily
 	typeElement: TypeElement<AvailableTypeFamily>
 	isElementCardOpen: boolean
-	isImportContainer?: boolean
+	importScope?: ImportScope
 } = $props()
 
 // actions
@@ -64,7 +67,7 @@ const cursorPointer = $derived.by(() => {
 })
 
 const isDraggable = $derived.by(() => {
-	if (typeElementFamily === TYPE_FAMILY.bay || isImportContainer) return false
+	if (typeElementFamily === TYPE_FAMILY.bay || importScope) return false
 	return true
 })
 //======= FUNCTIONS =======//
@@ -79,23 +82,18 @@ function handleCardClick() {
 		key: typeElementKey,
 		family: typeElementFamily,
 		element: typeElement,
-		isImported: !!isImportContainer
+		isImported: !!importScope
 	})
 	sidebar.setOpen(true)
 }
 
 async function handleImport(event: Event) {
 	event.stopPropagation()
-	if (
-		typeGuard.isTuplesIncludingString(
-			typeElementFamily,
-			ALLOWED_IMPORTED_TYPE
-		)
+
+	await importsStore.handleImportsAndFireDialogDecision(
+		typeElementKey,
+		typeElementFamily
 	)
-		await importsStore.handleImportsAndFireDialogDecision(
-			typeElementKey,
-			typeElementFamily
-		)
 }
 
 function getBadgeLabel(refFamily: string | undefined) {
@@ -116,7 +114,7 @@ function getBadgeLabel(refFamily: string | undefined) {
 	})} 
 	ondragend={() => dndStore.handleDragEnd()}
 >
-	<Card.Content class={`flex flex-row items-center justify-between h-8 p-2 ${cursorPointer} ${typeElementFamily === TYPE_FAMILY.lNodeType ? 'px-4' : 'px-1'}`}>
+	<Card.Content class={`flex flex-row items-center justify-between h-8 p-2 ${cursorPointer} ${typeElementFamily === TYPE_FAMILY.lNodeType ? 'pl-4 pr-1' : 'px-1'}`}>
 
 		<div class="flex items-center min-w-0 w-full">
 			{#if typeElementFamily !== TYPE_FAMILY.lNodeType }
@@ -150,9 +148,13 @@ function getBadgeLabel(refFamily: string | undefined) {
 		</div>
 
 		<!-- CARD MENU START -->
-		{#if isImportContainer}
-			<Button.Root variant="ghost" class="rounded-full p-0 size-7" onclick={async (event) => await handleImport(event)}>
-				<CircleArrowDown class="!size-5"/>
+		{#if importScope}
+			<Button.Root variant="ghost" class="rounded-full p-0 size-7 ml-2" onclick={async (event) => await handleImport(event)}>
+				{#if importScope === 'toAdd'}
+					<CircleArrowDown class="!size-5"/>
+				{:else if importScope === 'toUpdate'}
+					<RefreshCcw class="!size-5"/>
+				{/if}
 			</Button.Root>
 		{:else if typeElementFamily !== TYPE_FAMILY.lNodeType }
 			<CardMenu type={{ family: typeElementFamily, id: typeElementKey }}/>

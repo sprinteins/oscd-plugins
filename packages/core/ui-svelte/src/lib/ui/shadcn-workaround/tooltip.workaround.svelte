@@ -11,11 +11,13 @@ let {
 	position,
 	text,
 	variant,
+	class: className,
 	children
 }: {
 	position?: 'top' | 'bottom' | 'left' | 'right'
 	variant?: 'popover' | 'primary' | 'secondary' | 'accent' | 'destructive'
 	text: string
+	class?: string
 	children: Snippet
 } = $props()
 
@@ -52,7 +54,7 @@ const variantClass = $derived.by(() => {
 })
 </script>
 
-<div class={`${positionClass} ${variantClass} tooltip`} data-tip={text}>
+<div class={`${positionClass} ${variantClass} tooltip ${className}`} data-tip={text}>
   {@render children()}
 </div>
 

@@ -1,15 +1,17 @@
 // CORE
-import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
+import {
+	typeGuard,
+	findAllStandardElementsBySelector,
+	areElementsIdentical,
+	createAndDispatchEditEvent
+} from '@oscd-plugins/core-api/plugin/v1'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
-import {
-	TYPE_FAMILY,
-	COLUMN_KEY_TO_TYPE_FAMILY,
-	ALLOWED_USER_DECISIONS
-} from '@/headless/constants'
+import { TYPE_FAMILY, ALLOWED_USER_DECISIONS } from '@/headless/constants'
 // HELPERS
 import { getAndMapTypeElements } from '../type-elements/consolidate-types.helper'
 import { handleImportOfAnyElement } from './imported-tree-handler.helper'
+import { getCurrentImportedActionsWithUpdatedTemplateUuids } from './import-attribute.helper'
 // STORES
 import { importsStore, typeElementsStore } from '@/headless/stores'
 // COMPONENTS
@@ -17,89 +19,41 @@ import UpdateConfirmationDialog from '@/ui/components/import/update-confirmation
 // TYPES
 import type {
 	TypeElementByIds,
-	AvailableColumnsWhereImportIsAllowed,
-	AvailableImportedTypeFamily,
 	UserDecision,
 	EditEvent,
-	RemoveEvent
+	RemoveEvent,
+	AvailableTypeFamily,
+	ImportScope
 } from '@/headless/stores'
-import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
-
-//====== LOCAL HELPERS ======//
-
-function loadFunction() {
-	importsStore.loadedFunction.elementByIds = getAndMapTypeElements({
-		family: TYPE_FAMILY.function,
-		typeElements: importsStore.functionFromBayTemplateElements,
-		rootElement: importsStore.importedXmlDocument?.documentElement
-	})
-
-	importsStore.loadedFunction.dependencies = getAndMapTypeElements({
-		family: TYPE_FAMILY.lNodeType,
-		typeElements: importsStore.lNodeTypeElements,
-		rootElement: importsStore.importedXmlDocument?.documentElement
-	})
-
-	const hasFunctions = !!Object.keys(importsStore.loadedFunction.elementByIds)
-		.length
-	const hasDependencies =
-		!!Object.keys(importsStore.loadedFunction.dependencies).length &&
-		!!Object.keys(
-			importsStore.loadedTypeElementsPerFamily.lNodeType.available
-		).length
-
-	importsStore.isContainerOpen.functionType = true
-	importsStore.isContainerOpen.lNodeType = hasFunctions && hasDependencies
-}
-
-function loadLNodeType() {
-	importsStore.loadedLNodeType = getAndMapTypeElements({
-		family: TYPE_FAMILY.lNodeType,
-		typeElements: importsStore.lNodeTypeElements,
-		rootElement: importsStore.importedXmlDocument?.documentElement
-	})
-
-	importsStore.isContainerOpen.lNodeType = true
-}
 
 //====== READ ======//
 
-export function loadElements() {
-	const currentTypeFamily =
-		importsStore.currentImportColumnKey &&
-		COLUMN_KEY_TO_TYPE_FAMILY[importsStore.currentImportColumnKey]
+export function findAndSortLoadedElements(params: {
+	family: AvailableTypeFamily
+	selector: string
+}) {
+	const rawElements = importsStore.loadedXmlDocument
+		? findAllStandardElementsBySelector<typeof params.family, 'ed2Rev1'>({
+				selector: params.selector,
+				root: importsStore.loadedXmlDocument.documentElement
+			})
+		: []
 
-	if (currentTypeFamily === TYPE_FAMILY.function) loadFunction()
-	if (currentTypeFamily === TYPE_FAMILY.lNodeType) loadLNodeType()
-}
-
-export function getAvailableElementsToImport<
-	GenericImportedTypeFamily extends AvailableImportedTypeFamily
->(
-	importedTypeFamily: GenericImportedTypeFamily,
-	importedTypeElements: TypeElementByIds<GenericImportedTypeFamily>
-) {
-	const availableElementsToImportEntries = Object.entries(
-		importedTypeElements
-	).filter(([importedTypeElementIdOrUuid, importedTypeElement]) => {
-		const isElementAlreadyPresentInTypeElementsPerFamily = Object.values(
-			typeElementsStore.typeElementsPerFamily[importedTypeFamily]
-		).some((typeElement) => {
-			if (importedTypeFamily === TYPE_FAMILY.lNodeType)
-				return (
-					typeElement.attributes?.id === importedTypeElementIdOrUuid
-				)
-			return (
-				typeElement.attributes?.originUuid ===
-				importedTypeElementIdOrUuid
-			)
-		})
-
-		if (isElementAlreadyPresentInTypeElementsPerFamily) return false
-		return true
+	const mappedRawElements = getAndMapTypeElements({
+		family: params.family,
+		typeElements: rawElements,
+		rootElement: importsStore.loadedXmlDocument?.documentElement
 	})
 
-	return Object.fromEntries(availableElementsToImportEntries)
+	const sortedElements = sortLoadedElements({
+		family: params.family,
+		elements: mappedRawElements
+	})
+
+	return {
+		raw: mappedRawElements,
+		...sortedElements
+	}
 }
 
 //====== CREATE ======//
@@ -109,7 +63,15 @@ function addImportedType(params: { forceCreate: boolean }) {
 	if (!host) throw new Error('Host is not defined')
 
 	const flattenedActions: (EditEvent | RemoveEvent)[] = []
-	for (const [editEvent, removeEvent] of importsStore.currentImportActions) {
+	const currentImportedActionsWithUpdatedTemplateUuids =
+		getCurrentImportedActionsWithUpdatedTemplateUuids(
+			importsStore.currentImportActions
+		)
+
+	for (const [
+		editEvent,
+		removeEvent
+	] of currentImportedActionsWithUpdatedTemplateUuids) {
 		flattenedActions.push(editEvent)
 		if (!params.forceCreate && removeEvent)
 			flattenedActions.push(removeEvent)
@@ -148,10 +110,10 @@ async function fireUserDecisionDialog() {
 
 export async function handleImportsAndFireDialogDecision(
 	typeElementKey: string,
-	typeElementFamily: AvailableImportedTypeFamily
+	typeElementFamily: AvailableTypeFamily
 ) {
 	const { element: currentImportedRootElement } =
-		importsStore.loadedTypeElementsPerFamily[typeElementFamily].available[
+		importsStore.loadedTypeElementsPerFamily[typeElementFamily].all[
 			typeElementKey
 		]
 
@@ -160,33 +122,75 @@ export async function handleImportsAndFireDialogDecision(
 }
 
 export async function handleAllImportsAndFireDialogDecision(
-	typeElementFamily: AvailableImportedTypeFamily
+	typeElementFamily: AvailableTypeFamily[],
+	importScope: 'all' | ImportScope
 ) {
-	for (const loadedTypeElementKey of Object.keys(
-		importsStore.loadedTypeElementsPerFamily[typeElementFamily].available
-	)) {
-		const { element: currentImportedRootElement } =
-			importsStore.loadedTypeElementsPerFamily[typeElementFamily]
-				.available[loadedTypeElementKey]
-		await handleImportOfAnyElement(currentImportedRootElement)
+	for (const currentFamily of typeElementFamily) {
+		for (const importedTypeElement of Object.values(
+			importsStore.loadedTypeElementsPerFamily[currentFamily][importScope]
+		))
+			await handleImportOfAnyElement(importedTypeElement.element)
 	}
+
 	await fireUserDecisionDialog()
 }
 
 //====== DELETE ======//
 
-export function removeImportedElements(
-	currentColumnKey: AvailableColumnsWhereImportIsAllowed
-) {
-	const currentTypeFamily = COLUMN_KEY_TO_TYPE_FAMILY[currentColumnKey]
+export function removeLoadedElements() {
+	importsStore.currentFilename = ''
+	importsStore.loadedXmlDocument = undefined
+}
 
-	if (currentTypeFamily === TYPE_FAMILY.function) {
-		importsStore.loadedFunction.elementByIds = {}
-		importsStore.loadedFunction.dependencies = {}
-		importsStore.isContainerOpen.functionType = false
-	}
-	if (currentTypeFamily === TYPE_FAMILY.lNodeType) {
-		importsStore.loadedLNodeType = {}
-		importsStore.isContainerOpen.lNodeType = false
-	}
+//====== LOCAL HELPERS ======//
+
+function sortLoadedElements(params: {
+	family: AvailableTypeFamily
+	elements: TypeElementByIds<typeof params.family>
+}) {
+	return Object.entries(params.elements).reduce(
+		(accumulator, [loadedTypeElementIdOrUuid, loadedTypeElement]) => {
+			const matchingElement = Object.values(
+				typeElementsStore.typeElementsPerFamily[params.family]
+			).find((typeElement) => {
+				const isIdMatch =
+					params.family === TYPE_FAMILY.lNodeType
+						? typeElement.attributes?.id ===
+							loadedTypeElementIdOrUuid
+						: typeElement.attributes?.originUuid ===
+							loadedTypeElementIdOrUuid
+
+				return isIdMatch
+			})
+
+			if (matchingElement) {
+				const isIdentical = areElementsIdentical({
+					firstElement: matchingElement.element,
+					secondElement: loadedTypeElement.element,
+					attributesToIgnore: [
+						'uuid',
+						'templateUuid',
+						'originUuid',
+						'name'
+					]
+				})
+
+				if (!isIdentical) {
+					accumulator.all[loadedTypeElementIdOrUuid] =
+						loadedTypeElement
+					accumulator.toUpdate[loadedTypeElementIdOrUuid] =
+						loadedTypeElement
+				}
+			} else {
+				accumulator.all[loadedTypeElementIdOrUuid] = loadedTypeElement
+				accumulator.toAdd[loadedTypeElementIdOrUuid] = loadedTypeElement
+			}
+			return accumulator
+		},
+		{
+			all: {} as TypeElementByIds<AvailableTypeFamily>,
+			toUpdate: {} as TypeElementByIds<AvailableTypeFamily>,
+			toAdd: {} as TypeElementByIds<AvailableTypeFamily>
+		}
+	)
 }

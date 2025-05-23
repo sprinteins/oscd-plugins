@@ -1,22 +1,11 @@
 import type { pluginLocalStore } from '@/headless/stores'
-import type {
-	TYPE_FAMILY,
-	REF_FAMILY,
-	COLUMNS,
-	ALLOWED_IMPORTED_TYPE,
-	ALLOWED_IMPORTED_REF,
-	ALLOWED_IMPORT_FUNCTIONALITY_BY_COLUMNS
-} from '@/headless/constants'
+import type { TYPE_FAMILY, REF_FAMILY, COLUMNS } from '@/headless/constants'
 import type { Xml, Utils } from '@oscd-plugins/core-api/plugin/v1'
 import type { IEC61850 } from '@oscd-plugins/core-standard'
 
 export type AvailableColumn = keyof COLUMNS
 export type AvailableTypeFamily = keyof typeof TYPE_FAMILY
 export type AvailableRefFamily = keyof typeof REF_FAMILY
-export type AvailableImportedTypeFamily = (typeof ALLOWED_IMPORTED_TYPE)[number]
-export type AvailableImportedRefFamily = (typeof ALLOWED_IMPORTED_REF)[number]
-export type AvailableColumnsWhereImportIsAllowed =
-	(typeof ALLOWED_IMPORT_FUNCTIONALITY_BY_COLUMNS)[number]
 
 export type TypeRawElement<GenericTypeFamily extends AvailableTypeFamily> =
 	Xml.SclElement<
@@ -80,8 +69,9 @@ export type RefElement<GenericRefFamily extends AvailableRefFamily> = {
 export type SortedImportedTypeElements<
 	GenericImportedTypeFamily extends AvailableTypeFamily
 > = {
-	available: TypeElementByIds<AvailableTypeFamily>
 	all: TypeElementByIds<AvailableTypeFamily>
+	toUpdate: TypeElementByIds<AvailableTypeFamily>
+	toAdd: TypeElementByIds<AvailableTypeFamily>
 }
 
 export type Column<GenericTypeFamily extends AvailableTypeFamily> = {
@@ -90,7 +80,7 @@ export type Column<GenericTypeFamily extends AvailableTypeFamily> = {
 		GenericTypeFamily,
 		TypeElementByIds<GenericTypeFamily>
 	>
-	importedTypeElements?: Record<
+	importedTypeElements: Record<
 		GenericTypeFamily,
 		SortedImportedTypeElements<GenericTypeFamily>
 	>
