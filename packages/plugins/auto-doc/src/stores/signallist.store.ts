@@ -6,7 +6,8 @@ import { pluginStore, SignalType } from './index'
 import type { 
     MessagePublisher, LogicalNodeInformation,
     DataObjectInformation, InvalditiesReport, MessagePublisherFilter, 
-    PdfRowStructure 
+    PdfRowStructure, 
+    MessageSubscriberFilter
 } from './signallist.store.d'
 
 import { MESSAGE_PUBLISHER } from "../constants";
@@ -56,7 +57,7 @@ interface SourceTarget {
     targetContext: TargetContext;
 }
 
-function getSignalList2(): MessagePublisher[] {
+function getSignalList(): MessagePublisher[] {
     const xmlDoc = get(xmlDocument);
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
@@ -333,19 +334,65 @@ function getSourceContext(targetContext: TargetContext): SourceContext | null {
 
 
 //==== PUBLIC ACTIONS
-function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}): { pdfRows: PdfRowStructure[], invaliditiesReports: InvalditiesReport[] } {
+function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}, subscriberFilter: MessageSubscriberFilter): { pdfRows: PdfRowStructure[], invaliditiesReports: InvalditiesReport[] } {
     const invaliditiesReports: InvalditiesReport[] = [];
 
-    const messagePublishers = getSignalList2();
+    const messagePublishers = getSignalList();
     console.log(messagePublishers);
 
     const pdfRows = filterMessagePublishers(messagePublishers, filter);
     const groupedPdfRows = groupByPublisher(pdfRows);
+    const filteredPdfRows = filterSubscriber(groupedPdfRows, subscriberFilter);
+    const pdfRowWithSubscribers = setSubscriber(filteredPdfRows);
 
-    return { pdfRows: groupedPdfRows, invaliditiesReports};
+    return { pdfRows: pdfRowWithSubscribers, invaliditiesReports};
 }
 
 //==== PRIVATE ACTIONS
+function setSubscriber(filteredPdfRows: PdfRowStructure[]): PdfRowStructure[] {
+    return filteredPdfRows.map(r => {
+        const gooseSubscribers = r.matchedSubscribers[SignalType.GOOSE].join(', ');
+        const mmsSubscribers = r.matchedSubscribers[SignalType.MMS].join(', ');
+        const svSubscribers = r.matchedSubscribers[SignalType.SV].join(', ');
+
+        const matchedFilteredValuesForPdf = [ ...r.matchedFilteredValuesForPdf[0], gooseSubscribers, mmsSubscribers, svSubscribers ];
+
+        return {
+            ...r,
+            matchedFilteredValuesForPdf: [ matchedFilteredValuesForPdf ]
+        }
+    });
+}
+
+function doesNameMatchFilter(name: string, filterText: string | undefined): boolean {
+    if (!filterText) {
+        return true;
+    }
+
+    return name.toLowerCase().includes(filterText.toLowerCase());
+}
+
+function filterSubscriber(pdfRows: PdfRowStructure[], filter: MessageSubscriberFilter): PdfRowStructure[] {
+    const gooseFilter = filter[SignalType.GOOSE];
+    const mmsFilter = filter[SignalType.MMS];
+    const svFilter = filter[SignalType.SV];
+
+    return pdfRows.map(pdfRow => {
+        const gooseSubscribers = gooseFilter ? pdfRow.matchedSubscribers[SignalType.GOOSE].filter(s => doesNameMatchFilter(s, gooseFilter)) : pdfRow.matchedSubscribers[SignalType.GOOSE];
+        const mmsSubscribers = mmsFilter ? pdfRow.matchedSubscribers[SignalType.MMS].filter(s => doesNameMatchFilter(s, mmsFilter)) : pdfRow.matchedSubscribers[SignalType.MMS];
+        const svSubscribers = svFilter ? pdfRow.matchedSubscribers[SignalType.SV].filter(s => doesNameMatchFilter(s, svFilter)) : pdfRow.matchedSubscribers[SignalType.SV];
+
+        return {
+            ...pdfRow,
+            matchedSubscribers: {
+                [SignalType.GOOSE]: gooseSubscribers,
+                [SignalType.MMS]: mmsSubscribers,
+                [SignalType.SV]: svSubscribers,
+            }
+        };
+    });
+}
+
 function getPublisherIdentifier(pdfRow: PdfRowStructure): string {
     const p = pdfRow.publisher;
     const lnInfo = p.logicalNodeInformation;
@@ -441,8 +488,7 @@ function getValueFromNestedProperty(publisher: MessagePublisher, key: keyof Mess
         DataAttributeName: "dataObjectInformation.DataAttributeName",
         CommonDataClass: "dataObjectInformation.CommonDataClass",
         AttributeType: "dataObjectInformation.AttributeType",
-        FunctionalConstraint: "dataObjectInformation.FunctionalConstraint",
-        SignalType: "signalType"
+        FunctionalConstraint: "dataObjectInformation.FunctionalConstraint"
     };
 
     const path = keyMap[key] || key;

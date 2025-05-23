@@ -113,16 +113,17 @@
 	
 	function searchForMatchOnSignalList(): PdfRows {
 		const publisherFilter: MessagePublisherFilter = {};
+		const subscriberFilter: MessageSubscriberFilter = {};
 	
 		for (const { searchKey, column2 } of selectedRows) {
 			if (doesIncludeSignalType(searchKey)) {
-				// TODO: What to do with signaltype?
+				subscriberFilter[searchKey as keyof MessageSubscriberFilter] = column2
 			} else {
 				publisherFilter[searchKey as keyof MessagePublisherFilter] = column2
 			}
 		}
 	
-		const { pdfRows } = signallistStore.getPublishingLogicalDevices(publisherFilter);
+		const { pdfRows } = signallistStore.getPublishingLogicalDevices(publisherFilter, subscriberFilter);
 
 		console.log(pdfRows);
 	
