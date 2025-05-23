@@ -83,6 +83,22 @@ class UseTypeElementsStore {
 					this.filtersByColumns.bayType,
 					this.typeElementsPerFamily.bay
 				)
+			},
+			importedTypeElements: {
+				bay: {
+					all: getFilteredTypeElementByIds(
+						this.filtersByColumns.bayType,
+						importsStore.loadedTypeElementsPerFamily.bay.all
+					),
+					toUpdate: getFilteredTypeElementByIds(
+						this.filtersByColumns.bayType,
+						importsStore.loadedTypeElementsPerFamily.bay.toUpdate
+					),
+					toAdd: getFilteredTypeElementByIds(
+						this.filtersByColumns.bayType,
+						importsStore.loadedTypeElementsPerFamily.bay.toAdd
+					)
+				}
 			}
 		},
 		[COLUMNS.equipmentType]: {
@@ -96,6 +112,42 @@ class UseTypeElementsStore {
 					this.filtersByColumns.equipmentType,
 					this.typeElementsPerFamily.conductingEquipment
 				)
+			},
+			importedTypeElements: {
+				generalEquipment: {
+					all: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.generalEquipment.all
+					),
+					toUpdate: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.generalEquipment.toUpdate
+					),
+					toAdd: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.generalEquipment.toAdd
+					)
+				},
+				conductingEquipment: {
+					all: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.conductingEquipment.all
+					),
+					toUpdate: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.conductingEquipment.toUpdate
+					),
+					toAdd: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.conductingEquipment.toAdd
+					)
+				}
 			}
 		},
 		[COLUMNS.functionType]: {
@@ -108,14 +160,18 @@ class UseTypeElementsStore {
 			},
 			importedTypeElements: {
 				function: {
-					available: getFilteredTypeElementByIds(
-						this.filtersByColumns.functionType,
-						importsStore.loadedTypeElementsPerFamily.function
-							.available
-					),
 					all: getFilteredTypeElementByIds(
 						this.filtersByColumns.functionType,
 						importsStore.loadedTypeElementsPerFamily.function.all
+					),
+					toUpdate: getFilteredTypeElementByIds(
+						this.filtersByColumns.functionType,
+						importsStore.loadedTypeElementsPerFamily.function
+							.toUpdate
+					),
+					toAdd: getFilteredTypeElementByIds(
+						this.filtersByColumns.functionType,
+						importsStore.loadedTypeElementsPerFamily.function.toAdd
 					)
 				}
 			}
@@ -130,14 +186,18 @@ class UseTypeElementsStore {
 			},
 			importedTypeElements: {
 				lNodeType: {
-					available: getFilteredTypeElementByIds(
-						this.filtersByColumns.lNodeType,
-						importsStore.loadedTypeElementsPerFamily.lNodeType
-							.available
-					),
 					all: getFilteredTypeElementByIds(
 						this.filtersByColumns.lNodeType,
 						importsStore.loadedTypeElementsPerFamily.lNodeType.all
+					),
+					toUpdate: getFilteredTypeElementByIds(
+						this.filtersByColumns.lNodeType,
+						importsStore.loadedTypeElementsPerFamily.lNodeType
+							.toUpdate
+					),
+					toAdd: getFilteredTypeElementByIds(
+						this.filtersByColumns.lNodeType,
+						importsStore.loadedTypeElementsPerFamily.lNodeType.toAdd
 					)
 				}
 			}
