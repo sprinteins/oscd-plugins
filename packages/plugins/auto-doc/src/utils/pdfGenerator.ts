@@ -2,8 +2,8 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import zipcelx from 'zipcelx';
 import type {ElementType} from "@/components/elements/types.elements"
-import {docTemplatesStore, placeholderStore} from '@/stores'
-import type {Columns, SignalType} from '@/stores'
+import {docTemplatesStore, placeholderStore} from '../stores'
+import type {Columns, SignalType} from '../stores'
 import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list-element/types.signal-list'
 import type { ImageData } from '@/components/elements/image-element/types.image';
 

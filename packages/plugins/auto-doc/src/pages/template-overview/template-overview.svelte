@@ -11,7 +11,7 @@
     import {push} from 'svelte-spa-router'
     import { onMount } from 'svelte';
     import {pdfGenerator} from '@/utils'
-    import {getAutoDocElement} from '@/utils'
+    import {queryAutoDocElement} from '@/utils'
     import { ROUTES } from "@/constants"
 
     let menu: Menu
@@ -38,7 +38,7 @@
         const fileAsString = await file.text()
         const templateDoc = new DOMParser().parseFromString(fileAsString, 'text/xml')
 
-        const autoDocElement = getAutoDocElement(templateDoc)
+        const autoDocElement = queryAutoDocElement(templateDoc)
 
         if (autoDocElement === null) {
             return

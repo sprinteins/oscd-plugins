@@ -6,9 +6,8 @@ import type { MESSAGE_PUBLISHER, MESSAGE_SUBSCRIBER, SUBSCRIBER_EXT_REF } from "
 */
 export enum SignalType {
     GOOSE = 'GOOSE',
-    MMS = 'MMS',
-    SV = 'SV',
-    UNKNOWN = 'UNKNOWN',
+    MMS = 'Report',
+    SV = 'SMV'
 }
 
 export enum Columns{
@@ -36,29 +35,10 @@ export type MessagePublisher = {
     [MESSAGE_PUBLISHER.Bay]: string;
     [MESSAGE_PUBLISHER.M_text]: string;
     [MESSAGE_PUBLISHER.SignalType]: string;
+    [MESSAGE_PUBLISHER.TargetIEDName]: string;
     [MESSAGE_PUBLISHER.IEDName]: string;
     [MESSAGE_PUBLISHER.LogicalNodeInformation]: LogicalNodeInformation;
     [MESSAGE_PUBLISHER.DataObjectInformation]: DataObjectInformation;
-}
-
-
-export type MessageSubscriber = {
-    [MESSAGE_SUBSCRIBER.IEDName]: string;
-    [MESSAGE_SUBSCRIBER.ExtRef]: ExtRef
-}
-export type ExtRef = {
-    [SUBSCRIBER_EXT_REF.iedName]: string;
-    [SUBSCRIBER_EXT_REF.serviceType]: string;
-    [SUBSCRIBER_EXT_REF.ldInst]: string;
-    [SUBSCRIBER_EXT_REF.lnClass]: string;
-    [SUBSCRIBER_EXT_REF.lnInst]: string;
-    [SUBSCRIBER_EXT_REF.prefix]: string;
-    [SUBSCRIBER_EXT_REF.doName]: string;
-    [SUBSCRIBER_EXT_REF.daName]: string;
-    [SUBSCRIBER_EXT_REF.srcLDInst]: string;
-    [SUBSCRIBER_EXT_REF.srcPrefix]: string;
-    [SUBSCRIBER_EXT_REF.srcLNClass]: string;
-    [SUBSCRIBER_EXT_REF.srcCBName]: string;
 }
 
 export type LogicalNodeInformation = {
@@ -80,8 +60,7 @@ export type DataObjectInformation = {
 
 export type InvalditiesReport = {
     IEDName: string;
-    LogicalNodeInformation: LogicalNodeInformation;
-    invalidities: string[];
+    invalidities: string;
 }
 
 export type MessagePublisherFilter = {
@@ -109,17 +88,15 @@ export type MessageSubscriberFilter = {
     [SignalType.GOOSE]?: IEDNameSearch;
     [SignalType.MMS]?: IEDNameSearch;
     [SignalType.SV]?: IEDNameSearch;
-    [SignalType.UNKNOWN]?: IEDNameSearch;
 }
 
-
-export type MessageSubscriberAndPdfContent = {
-    subscribers: MessageSubscriber[];
-    matchedRows: PdfRowStructure[];
-}
 
 export type PdfRowStructure = {
-    matchedFilteredValuesForPdf: string[][],
-    publisher: MessagePublisher
-    matchedSubscribers: string[]
+    matchedFilteredValuesForPdf: string[][];
+    publisher: MessagePublisher;
+    matchedSubscribers: {
+        [SignalType.GOOSE]: string[];
+        [SignalType.MMS]: string[];
+        [SignalType.SV]: string[];
+    }
 }
