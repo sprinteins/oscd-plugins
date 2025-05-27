@@ -5,9 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.11.0] - 23.05.2025
+
+### Added
+
+- global import menu for local or compas imports
+- import for columns `Bay` and `Equipments`
+- Three import tabs in the import container : All / Import / Update
+- Ability to import or update already imported elements recursively:
+	- comparing an imported element with those in the working document:
+		- if there is not twin element, it appears in the add tab
+		- if there is a twin but are not strictly identic (we check attributes and children recursively, except uuids and names attributes), it appears in the update tab : which is a delete and recreate functionality.
+		- if they are strictly identic (recursively), they doesn't appear
+
+### Removed
+
+- import dropdown menu in all columns
+
+## [3.10.4] - 02.05.2025
+
+### Fixed
+
+- Create a new element named after one that was deleted
+
+## [3.10.3] - 02.05.2025
+
+### Fixed
+
+- Uuids are recursively added to element that are not part of DataTypeTemplates
+
+## [3.10.2] - 16.04.2025
+
+### Changed
+
+- Adapt the dialog calls to its newer logic
+
 ## [3.10.1] - 31.03.2025
 
-### Fix
+### Fixed
 
 - The allowed dropzone have been restricted to go along with the UI
 

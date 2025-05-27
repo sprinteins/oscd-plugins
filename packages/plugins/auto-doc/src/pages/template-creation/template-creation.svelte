@@ -29,6 +29,8 @@
             return navigateToOverviewPage();
         }
 
+        window.history.pushState({}, "", "#");
+
         setInitialTitleAndDescription(template);
     });
 

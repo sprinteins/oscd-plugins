@@ -1,10 +1,10 @@
 import type {
-	ConnectionPort,
-	LcTypes
-} from '@/ui/components/canvas/types.canvas'
-import type { FilterOptions } from '@/ui/components/common/types.common'
+	PortConfig,
+	LogicalConditionerClass,
+	LogicalPhysicalClass
+} from '@/headless/stores'
 
-export const NODE_TYPE = {
+export const TREE_LEVEL = {
 	ied: 'IED',
 	accessPoint: 'AccessPoint',
 	lDevice: 'LDevice',
@@ -12,25 +12,58 @@ export const NODE_TYPE = {
 	dO: 'DO'
 } as const
 
-export const NODE_ELEMENT_TYPE = {
-	DO: 'DO',
-	LC: 'LC',
-	LP: 'LP'
+export const PORT_KIND = {
+	dataObject: 'dataObject',
+	logicalConditioner: 'logicalConditioner',
+	logicalPhysical: 'logicalPhysical'
 } as const
 
-export const LP_TYPE = {
+export const CONNECTION_ELEMENT_TAG_NAME = {
+	dOI: 'DOI',
+	lNRef: 'LNRef'
+}
+
+export const PORT_KIND_TO_ELEMENT_TAG_NAME = {
+	[PORT_KIND.dataObject]: CONNECTION_ELEMENT_TAG_NAME.lNRef,
+	[PORT_KIND.logicalConditioner]: CONNECTION_ELEMENT_TAG_NAME.dOI,
+	[PORT_KIND.logicalPhysical]: CONNECTION_ELEMENT_TAG_NAME.lNRef
+} as const
+
+export const PORT_SIDE = {
+	left: 'left',
+	right: 'right'
+} as const
+
+export const LOGICAL_KIND = {
+	conditioner: 'conditioner',
+	physical: 'physical'
+} as const
+
+export const L_DEVICE_0_INSTANCE = 'LD0'
+
+export const LOGICAL_PHYSICAL_CLASS = {
 	LPDO: 'LPDO',
 	LPDI: 'LPDI',
 	LPAI: 'LPAI',
 	LPAO: 'LPAO'
 } as const
 
-export const LC_TYPE = {
+export const LOGICAL_CONDITIONER_CLASS = {
 	LCBI: 'LCBI',
 	LCBO: 'LCBO',
 	LCDP: 'LCDP',
 	LCIV: 'LCIV'
 } as const
+
+export const ELEMENT_WITH_REQUIRED_UUID_ATTRIBUTES = [
+	'IED',
+	'AccessPoint',
+	'Server',
+	'LDevice',
+	'LN',
+	'DOI',
+	'LNRef'
+] as const
 
 export const L_NODE_TYPE_CONTENT = {
 	LCBI: `
@@ -116,61 +149,261 @@ export const L_NODE_TYPE_CONTENT = {
 export const L_NODE_TYPE_HELPER_TEXT =
 	'The selected type has no matching LNodeType, which will be created automatically, or you can create one using the Template Plugin.'
 
-export const PORTS_CONFIG_PER_TYPE: Record<string, ConnectionPort[]> = {
+export const PORTS_CONFIG_PER_CLASS = {
 	LCBI: [
-		{ name: 'OutInd', side: 'left' },
-		{ name: 'In', side: 'right' }
+		{
+			kind: PORT_KIND.logicalConditioner,
+			allowedTarget: {
+				kind: PORT_KIND.dataObject,
+				side: PORT_SIDE.right
+			},
+			name: 'OutInd',
+			side: PORT_SIDE.left,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		},
+		{
+			kind: PORT_KIND.logicalConditioner,
+			allowedTarget: {
+				kind: PORT_KIND.logicalPhysical,
+				side: PORT_SIDE.left
+			},
+			name: 'In',
+			side: PORT_SIDE.right,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		}
 	],
 	LCBO: [
-		{ name: 'In', side: 'left' },
-		{ name: 'OutInd', side: 'right' }
+		{
+			kind: PORT_KIND.logicalConditioner,
+			allowedTarget: {
+				kind: PORT_KIND.dataObject,
+				side: PORT_SIDE.right
+			},
+			name: 'In',
+			side: PORT_SIDE.left,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		},
+		{
+			kind: PORT_KIND.logicalConditioner,
+			allowedTarget: {
+				kind: PORT_KIND.logicalPhysical,
+				side: PORT_SIDE.left
+			},
+			name: 'OutInd',
+			side: PORT_SIDE.right,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		}
 	],
 	LCDP: [
-		{ name: 'OutPos', side: 'left' },
-		{ name: 'InOn', side: 'right' },
-		{ name: 'InOff', side: 'right' }
+		{
+			kind: PORT_KIND.logicalConditioner,
+			allowedTarget: {
+				kind: PORT_KIND.dataObject,
+				side: PORT_SIDE.right
+			},
+			name: 'OutPos',
+			side: PORT_SIDE.left,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		},
+		{
+			kind: PORT_KIND.logicalConditioner,
+			allowedTarget: {
+				kind: PORT_KIND.logicalPhysical,
+				side: PORT_SIDE.left
+			},
+			name: 'InOn',
+			side: PORT_SIDE.right,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		},
+		{
+			kind: PORT_KIND.logicalConditioner,
+			allowedTarget: {
+				kind: PORT_KIND.logicalPhysical,
+				side: PORT_SIDE.left
+			},
+			name: 'InOff',
+			side: PORT_SIDE.right,
+			index: 1,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		}
 	],
 	LCIV: [
-		{ name: 'OutInd', side: 'left' },
-		{ name: 'In', side: 'right' }
+		{
+			kind: PORT_KIND.logicalConditioner,
+			allowedTarget: {
+				kind: PORT_KIND.dataObject,
+				side: PORT_SIDE.right
+			},
+			name: 'OutInd',
+			side: PORT_SIDE.left,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		},
+		{
+			kind: PORT_KIND.logicalConditioner,
+			allowedTarget: {
+				kind: PORT_KIND.logicalPhysical,
+				side: PORT_SIDE.left
+			},
+			name: 'In',
+			side: PORT_SIDE.right,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		}
 	],
-	LPDO: [{ name: 'In', side: 'left' }],
-	LPDI: [{ name: 'Ind', side: 'left' }],
-	LPAI: [{ name: 'Ind', side: 'left' }],
-	LPAO: [{ name: 'Ind', side: 'left' }]
-}
+	LPDO: [
+		{
+			kind: PORT_KIND.logicalPhysical,
+			allowedTarget: {
+				kind: PORT_KIND.logicalConditioner,
+				side: PORT_SIDE.right
+			},
+			name: 'In',
+			side: PORT_SIDE.left,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		}
+	],
+	LPDI: [
+		{
+			kind: PORT_KIND.logicalPhysical,
+			allowedTarget: {
+				kind: PORT_KIND.logicalConditioner,
+				side: PORT_SIDE.right
+			},
+			name: 'Ind',
+			side: PORT_SIDE.left,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		}
+	],
+	LPAI: [
+		{
+			kind: PORT_KIND.logicalPhysical,
+			allowedTarget: {
+				kind: PORT_KIND.logicalConditioner,
+				side: PORT_SIDE.right
+			},
+			name: 'Ind',
+			side: PORT_SIDE.left,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		}
+	],
+	LPAO: [
+		{
+			kind: PORT_KIND.logicalPhysical,
+			allowedTarget: {
+				kind: PORT_KIND.logicalConditioner,
+				side: PORT_SIDE.right
+			},
+			name: 'Ind',
+			side: PORT_SIDE.left,
+			index: 0,
+			payload: {
+				uuid: '',
+				ldInst: L_DEVICE_0_INSTANCE,
+				lnUuid: '',
+				lnClass: '',
+				lnInst: ''
+			}
+		}
+	]
+} as const satisfies Record<
+	LogicalConditionerClass | LogicalPhysicalClass,
+	PortConfig[]
+>
 
-export const RESTRICTED_LC_TYPES_BY_CDC: Record<string, LcTypes[]> = {
-	dps: [LC_TYPE.LCDP],
-	sps: [LC_TYPE.LCBI, LC_TYPE.LCBO]
-}
+export const ALLOWED_LOGICAL_CONDITIONER_CLASS_BY_CDC = {
+	dps: [LOGICAL_CONDITIONER_CLASS.LCDP],
+	sps: [LOGICAL_CONDITIONER_CLASS.LCBI, LOGICAL_CONDITIONER_CLASS.LCBO]
+} as const
 
 // TARGET_CDC: Only data objects with a cdc attribute included in targetCdc will be collected from the SCD document
 // Currently hard-coded per client request but in future we may make it dynamic and allow the user to fill the targetScd
-export const TARGET_CDC_TYPES = ['dps', 'sps', 'dpc', 'spc', 'ins', 'ens']
-
-export const LP_LIST_FILTER_OPTIONS: FilterOptions = [
-	{
-		label: 'All LPs',
-		values: { selectedType: null, linked: true, unlinked: true }
-	},
-	{ label: 'Unlinked', values: { linked: false, unlinked: true } },
-	{ label: 'Linked', values: { linked: true, unlinked: false } },
-	...Object.values(LP_TYPE).map((value) => ({
-		label: value,
-		values: { selectedType: value }
-	}))
-]
-
-export const LC_LIST_FILTER_OPTIONS: FilterOptions = [
-	{
-		label: 'All LCs',
-		values: { selectedType: null, linked: true, unlinked: true }
-	},
-	{ label: 'Unlinked', values: { linked: false, unlinked: true } },
-	{ label: 'Linked', values: { linked: true, unlinked: false } },
-	...Object.values(LC_TYPE).map((value) => ({
-		label: value,
-		values: { selectedType: value }
-	}))
-]
+export const TARGET_CDC_TYPES = [
+	'dps',
+	'sps',
+	'dpc',
+	'spc',
+	'ins',
+	'ens'
+] as const

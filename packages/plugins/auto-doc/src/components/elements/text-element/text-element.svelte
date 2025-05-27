@@ -6,12 +6,19 @@
     import ListItem from '@tiptap/extension-list-item'
 	import Underline from '@tiptap/extension-underline'
 	import {debounce} from '@/utils';
+    import PlaceholderHelpDialog from '@/components/dialog/placeholder-help-dialog.svelte';
+    import Tooltip from '@/components/tooltip/tooltip.svelte';
+    import { Group } from '@smui/button';
+    import Button from '@oscd-plugins/uilib/src/lib/components/button/button.svelte';
+    import CustomIconButton from '@oscd-plugins/ui/src/components/smui-wrapper/custom-icon-button.svelte';
+
 
     let element: Element;
-    let editor: unknown;
+    let editor: Editor;
     export let content = '<p>Hello World! 🌍️ </p>';
     export let onContentChange: (newContent: string) => void;
 
+    $: isPlaceholderHelpDialogOpen = false;
 
 	const ONE_SECOND_IN_MS = 1000;
 	const debouncedContentChange = debounce(onContentChange, ONE_SECOND_IN_MS);
@@ -44,78 +51,141 @@
             editor.destroy();
         }
     });
+
+    function insertPlaceholder() {
+        const cursorPosition = editor.state.selection.$anchor.pos;
+        editor.commands.insertContent("{{ //default: }}");
+        editor.chain().focus().setTextSelection(cursorPosition + 13).run();
+    }
 </script>
+
+<PlaceholderHelpDialog bind:isOpen={isPlaceholderHelpDialogOpen}/>
+
 {#if editor}
     <div class="control-group">
-        <div class="button-group">
-            <button
-                on:click={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                class={editor.isActive("heading", { level: 1 }) ? "is-active" : ""}
-            >
-                H1
-            </button>
-            <button
-                on:click={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                class={editor.isActive("heading", { level: 2 }) ? "is-active" : ""}
-            >
-                H2
-            </button>
-            <button
-                on:click={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                class={editor.isActive("heading", { level: 3 }) ? "is-active" : ""}
-            >
-                H3
-            </button>
-            <button
-                on:click={() => editor.chain().focus().toggleBold().run()}
-                disabled={!editor.can().chain().focus().toggleBold().run()}
-                class={editor.isActive("bold") ? "is-active" : ""}
-            >
-                Bold
-            </button>
-            <button
-                on:click={() => editor.chain().focus().toggleItalic().run()}
-                disabled={!editor.can().chain().focus().toggleItalic().run()}
-                class={editor.isActive("italic") ? "is-active" : ""}
-            >
-                Italic
-            </button>
-            <button
-                on:click={() => editor.chain().focus().setParagraph().run()}
-                class={editor.isActive("paragraph") ? "is-active" : ""}
-            >
-                Paragraph
-            </button>
-            <button
-                on:click={() => editor.chain().focus().toggleBulletList().run()}
-                class={editor.isActive("bulletList") ? "is-active" : ""}
-            >
-                Bullet list
-            </button>
-            <button
-                on:click={() => editor.chain().focus().toggleOrderedList().run()}
-                class={editor.isActive("orderedList") ? "is-active" : ""}
-            >
-                Ordered list
-            </button>
-           <button
-                on:click={() => editor.chain().focus().undo().run()}
-                disabled={!editor.can().chain().focus().undo().run()}
-            >
-                Undo
-            </button>
-            <button
-                on:click={() => editor.chain().focus().redo().run()}
-                disabled={!editor.can().chain().focus().redo().run()}
-            >
-                Redo
-            </button>
+        <div class="text-controls">
+            <Group>
+                <Button
+                    on:click={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                    type={editor.isActive("heading", { level: 1 }) ? "primary" : "secondary"}
+                >
+                    H1
+                </Button>
+                <Button
+                    on:click={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                    type={editor.isActive("heading", { level: 2 }) ? "primary" : "secondary"}
+                >
+                    H2
+                </Button>
+                <Button
+                    on:click={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+                    type={editor.isActive("heading", { level: 3 }) ? "primary" : "secondary"}
+                >
+                    H3
+                </Button>
+            </Group>
+            <div class="button-group">
+                <Tooltip text="Bold">
+                    <CustomIconButton
+                        on:click={() => editor.chain().focus().toggleBold().run()}
+                        size="small"
+                        disabled={!editor.can().chain().focus().toggleBold().run()}
+                        color={editor.isActive("bold") ? "black" : "primary"}
+                        icon="bold"
+                    />
+                </Tooltip>
+                <Tooltip text="Italic">
+                    <CustomIconButton
+                        on:click={() => editor.chain().focus().toggleItalic().run()}
+                        size="small"
+                        disabled={!editor.can().chain().focus().toggleItalic().run()}
+                        color={editor.isActive("italic") ? "black" : "primary"}
+                        icon="italic"
+                    />
+                </Tooltip>
+                <Tooltip text="Paragraph">
+                    <CustomIconButton
+                        on:click={() => editor.chain().focus().setParagraph().run()}
+                        size="small"
+                        color={editor.isActive("paragraph") ? "black" : "primary"}
+                        icon="paragraph"
+                    />
+                </Tooltip>
+                <Tooltip text="Bullet&nbsp;List">
+                    <CustomIconButton
+                        on:click={() => editor.chain().focus().toggleBulletList().run()}
+                        size="small"
+                        color={editor.isActive("bulletList") ? "black" : "primary"}
+                        icon="bullet_list"
+                    />
+                </Tooltip>
+                <Tooltip text="Numbered&nbsp;List">
+                    <CustomIconButton
+                        on:click={() => editor.chain().focus().toggleOrderedList().run()}
+                        size="small"
+                        color={editor.isActive("orderedList") ? "black" : "primary"}
+                        icon="numbered_list"
+                    />
+                </Tooltip>
+                <Tooltip text="Insert&nbsp;Placeholder">
+                    <CustomIconButton
+                        on:click={insertPlaceholder}
+                        size="small"
+                        color={"primary"}
+                        icon="data_object"
+                    />
+                </Tooltip>
+                <Tooltip text="Placeholder&nbsp;Help">
+                    <CustomIconButton 
+                        on:click={() => isPlaceholderHelpDialogOpen = true}
+                        size="small" 
+                        color="primary" 
+                        icon="help" 
+                    />
+                </Tooltip>
+                <Tooltip text="Undo">
+                    <CustomIconButton
+                        on:click={() => editor.chain().focus().undo().run()}
+                        size="small"
+                        color="primary"
+                        icon="undo"
+                    />
+                </Tooltip>
+                <Tooltip text="Redo">
+                    <CustomIconButton
+                    on:click={() => editor.chain().focus().redo().run()}
+                    size="small"
+                    color="primary"
+                    icon="redo"
+                    />
+                </Tooltip>
+            </div>
         </div>
     </div>
 {/if}
 <div class="typing-area" bind:this={element} />
 
 <style lang="scss">
+    .text-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .button-group {
+        display: flex;
+    }
+
+    * :global(.tooltip-container) {
+        display: flex;
+    }
+
+    .placeholder-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
     button.is-active {
         background-color: black;
         color: white;
@@ -195,5 +265,12 @@
         border: none;
         border-top: 1px solid var(--gray-2);
         margin: 2rem 0;
+    }
+
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        place-items: start;
+        gap: 0.5rem;
     }
 </style>

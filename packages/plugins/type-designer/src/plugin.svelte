@@ -20,12 +20,12 @@ import {
 	initPlugin,
 	initSsdTemplate,
 	removeInstanceWarningAndIssueToast,
-	DialogWorkaround,
-	dialogStore
+	DialogWorkaround
 } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { pluginLocalStore } from '@/headless/stores'
 // COMPONENTS
+import ImportToolbar from '@/ui/components/import/import-toolbar.svelte'
 import ColumnsContainer from '@/ui/views/columns-container.svelte'
 import SidebarWrapper from '@/ui/components/sidebar/sidebar-wrapper.svelte'
 // TYPES
@@ -42,6 +42,7 @@ const {
 
 <main
 	id="plugin-container"
+	class="overflow-hidden"
 	use:initPlugin={{
 		getDoc: () => doc,
 		getDocName: () => docName,
@@ -65,16 +66,20 @@ const {
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
+
 	<Sidebar.Provider
 		open={false}
-		class="overflow-hidden h-[--plugin-container-height] min-h-full"
+		class=" h-[--plugin-container-height] min-h-full"
 		style="--sidebar-width: 20rem; --sidebar-width-mobile: 20rem;"
 	>
-		<ColumnsContainer />
+		<div class="flex flex-col w-full h-[--plugin-container-height] min-h-full">
+			<ImportToolbar />
+			<ColumnsContainer />
+		</div>
 		<SidebarWrapper />
 	</Sidebar.Provider>
 	
-	<DialogWorkaround innerComponent={dialogStore.innerComponent}/>
+	<DialogWorkaround />
 
 </main>
 
