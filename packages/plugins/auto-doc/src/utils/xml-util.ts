@@ -1,4 +1,3 @@
-import { SignalType } from "@/stores";
 
 export const autoDocIdentifier = 'AUTO_DOC'
 

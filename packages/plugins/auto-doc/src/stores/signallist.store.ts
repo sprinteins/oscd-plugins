@@ -11,7 +11,7 @@ import type {
 } from './signallist.store.d'
 
 import { MESSAGE_PUBLISHER } from "../constants";
-import { queryDataSetForControl, queryDataTypeLeaf, queryFCDA, queryLDevice, queryLN, queryLNode } from "@/utils";
+import { queryDataSetForControl, queryDataTypeLeaf, queryFCDA, queryLDevice, queryLN, queryLNode } from "../utils";
 
 
 
