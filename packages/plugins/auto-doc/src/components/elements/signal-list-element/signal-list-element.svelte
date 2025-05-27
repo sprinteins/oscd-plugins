@@ -124,8 +124,6 @@
 		}
 	
 		const { pdfRows, invaliditiesReports } = signallistStore.getPublishingLogicalDevices(publisherFilter, subscriberFilter);
-
-		console.log(pdfRows);
 	
 		return { matchedRowsForTablePdf: pdfRows }
 	}
