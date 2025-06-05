@@ -30,12 +30,16 @@ const {
 	typeElementKey,
 	typeElementFamily,
 	typeElement,
-	importScope
+	importScope,
+	isLast,
+	columnContentElement
 }: {
 	typeElementKey: string
 	typeElementFamily: AvailableTypeFamily
 	typeElement: TypeElement<AvailableTypeFamily>
 	importScope?: ImportScope
+	isLast: boolean
+	columnContentElement?: HTMLElement | null
 } = $props()
 
 // local states
@@ -128,7 +132,7 @@ const handleOpenCollapsible = (event: DragEvent) => {
 			isElementCardOpen = true
 			if (!hasRefs) isCurrentDropTarget = true
 			hoverTimeout = null
-		}, 500)
+		}, 200)
 }
 
 const handleCloseCollapsible = (event: DragEvent) => {
@@ -161,6 +165,14 @@ const handleDragLeave = (event: DragEvent) => {
 $effect(() => {
 	if (!hasRefs) isElementCardOpen = false
 })
+
+// handle last element with drag and drop
+// to scroll the column content element
+$effect(() => {
+	const invisiblePlaceholderHeightInPixels = 32
+	if (isElementCardOpen && isLast && columnContentElement)
+		columnContentElement.scrollTop += invisiblePlaceholderHeightInPixels
+})
 </script>
 
 <Collapsible.Root 
@@ -168,9 +180,9 @@ $effect(() => {
 	class="space-y-1 mb-2"
 	ondragover={importScope ? undefined : handleOpenCollapsible}
 	ondragleave={importScope ? undefined : handleCloseCollapsible}
+	ondrop={importScope ? undefined : handleCloseCollapsible}
 >
 	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {importScope} />
-
 
 	<Collapsible.Content class="space-y-1 flex flex-col items-end relative"
 		ondragover={handleDragOver}

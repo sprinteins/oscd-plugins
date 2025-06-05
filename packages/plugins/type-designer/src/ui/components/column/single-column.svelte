@@ -22,7 +22,6 @@ import {
 	ALLOWED_TARGETS_BY_TYPE_FAMILY,
 	TYPE_FAMILY
 } from '@/headless/constants'
-import type { SvelteComponent } from 'svelte'
 
 //======= INITIALIZATION =======//
 
@@ -37,7 +36,7 @@ const {
 
 //======= STATES =======//
 
-let columnContentElement = $state<SvelteComponent | null>(null)
+let columnContentElement = $state<HTMLElement | null>(null)
 
 //====== DERIVED STATES ======//
 
@@ -119,7 +118,7 @@ const isColumnDisabled = $derived.by(() => {
 		</Input.Root>
 	</Card.Header>
 
-	<Card.Content class="pb-0 px-2 pt-4 overflow-y-hidden h-full flex flex-col" bind:this={columnContentElement}>
+	<Card.Content class="pb-0 px-2 pt-4 overflow-y-hidden h-full flex flex-col">
 
 		{#if isImportViewActive}
 			<div
@@ -131,10 +130,11 @@ const isColumnDisabled = $derived.by(() => {
 		{/if}	
 		
 		{#if hasTypeElements}
-			<div class={`${isImportViewActive ? "h-1/4" : "flex-1"} overflow-y-auto p-2`}>
+			<div class={`${isImportViewActive ? "h-1/4" : "flex-1"} overflow-y-auto p-2`} bind:this={columnContentElement}>
 				{#each groupedTypeElementsEntries as [typeElementFamily, typeElements]}
-					{#each Object.entries(typeElements) as [typeElementKey, typeElement] (typeElementKey)}
-						<CardCollapsibleWrapper {typeElementKey} {typeElement} {typeElementFamily}/>
+					{@const typeElementsEntries = Object.entries(typeElements)}
+					{#each typeElementsEntries as [typeElementKey, typeElement], index (typeElementKey)}
+						<CardCollapsibleWrapper {typeElementKey} {typeElement} {typeElementFamily} isLast={typeElementsEntries.length === index +1} {columnContentElement}/>
 					{/each}
 				{/each}
 			</div>
