@@ -208,11 +208,14 @@ function getLocalNextSibling(
 	localParent: Element
 ) {
 	const currentTagName = currentImportedElement.tagName
-	const lastOfItsLocalKind =
-		Array.from(localParent.getElementsByTagName(currentTagName)).at(-1) ||
-		null
+	const lastOfItsLocalKind = Array.from(
+		localParent.getElementsByTagName(currentTagName)
+	).at(-1)
 
-	return lastOfItsLocalKind
+	const nextSiblingOfLastOfItsLocalKind =
+		lastOfItsLocalKind?.nextElementSibling || null
+
+	return nextSiblingOfLastOfItsLocalKind
 }
 
 async function getElementActionPayload(currentImportedElement: Element) {
