@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.13.0] - 06.06.2025
+
+### Added
+
+- Update notification dot and tooltip 
+
+## [3.12.0] - 05.06.2025
+
+### Changed
+
+- Drag'n'Drop opening time on elements card (from 500 to 200 ms)
+
+### Fixed
+
+- Scrollbar adjust its position for the last type element item in the list, so that it is now possible to easily drop elements.
+
 ## [3.11.0] - 23.05.2025
 
 ### Added
