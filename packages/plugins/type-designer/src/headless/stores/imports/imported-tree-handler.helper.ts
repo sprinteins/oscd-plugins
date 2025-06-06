@@ -79,6 +79,11 @@ async function addReplaceAction(
 	if (!elementToRemove) throw new Error('Element to remove is not defined')
 
 	setUuidAttributesRecursively(elementToReplace)
+	if (
+		elementToReplace.getAttribute('name') !==
+		elementToRemove.getAttribute('name')
+	)
+		setNameAttribute(elementToReplace)
 
 	const { idOrUuid, localParent, localNextSibling } =
 		await getElementActionPayload(currentImportedElement)

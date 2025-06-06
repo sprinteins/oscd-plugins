@@ -167,11 +167,13 @@ $effect(() => {
 })
 
 // handle last element with drag and drop
-// to scroll the column content element
+// to scroll the column content element to bottom
 $effect(() => {
-	const invisiblePlaceholderHeightInPixels = 32
 	if (isElementCardOpen && isLast && columnContentElement)
-		columnContentElement.scrollTop += invisiblePlaceholderHeightInPixels
+		columnContentElement.scrollTo({
+			top: columnContentElement.scrollHeight,
+			behavior: 'smooth'
+		})
 })
 </script>
 
