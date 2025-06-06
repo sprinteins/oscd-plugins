@@ -10,7 +10,7 @@ import {
 // HELPERS
 import { getAndMapTypeElements } from './consolidate-types.helper'
 import { createNewType, deleteTypeAndRefs } from './type-crud-operation.helper'
-import { createNewRef } from './ref-crud-operation.helper'
+import { createNewRef, deleteRef } from './ref-crud-operation.helper'
 import {
 	getTypeNextOccurrence,
 	getElementsWithSameNameBase,
@@ -212,6 +212,7 @@ class UseTypeElementsStore {
 	deleteTypeAndRefs = deleteTypeAndRefs
 	// ref
 	createNewRef = createNewRef
+	deleteRef = deleteRef
 	// naming
 	getTypeNextOccurrence = getTypeNextOccurrence
 	getElementsWithSameNameBase = getElementsWithSameNameBase

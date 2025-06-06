@@ -10,7 +10,11 @@ import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
 // CONSTANTS
 import { REF_FAMILY } from '@/headless/constants'
 // TYPES
-import type { AvailableRefFamily } from '@/headless/stores'
+import type {
+	AvailableRefFamily,
+	EditEvent,
+	RemoveEvent
+} from '@/headless/stores'
 
 function getRefAttributes(params: {
 	typeId: string
@@ -93,5 +97,50 @@ export function createNewRef(params: {
 			node: newRefElement,
 			reference: null
 		}
+	})
+}
+
+export function deleteRef(params: {
+	refElementToDelete: Element
+	refFamily: AvailableRefFamily
+}) {
+	if (!pluginGlobalStore.host) throw new Error('No host available')
+
+	const editActions: (EditEvent | RemoveEvent)[] = []
+
+	// delete
+	editActions.push({
+		node: params.refElementToDelete
+	})
+
+	// update lNode lnInst if impacted
+	if (
+		params.refFamily === REF_FAMILY.lNode &&
+		params.refElementToDelete?.parentElement
+	) {
+		let lnInstOccurrence = 1
+
+		for (const child of Array.from(
+			params.refElementToDelete.parentElement.children
+		)) {
+			if (
+				child.tagName === 'LNode' &&
+				!child.isEqualNode(params.refElementToDelete)
+			) {
+				child.setAttribute('lnInst', lnInstOccurrence.toString())
+				lnInstOccurrence++
+
+				editActions.push({
+					parent: params.refElementToDelete.parentElement,
+					node: child,
+					reference: null
+				})
+			}
+		}
+	}
+
+	createAndDispatchEditEvent({
+		host: pluginGlobalStore.host,
+		edit: editActions
 	})
 }
