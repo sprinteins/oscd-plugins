@@ -121,7 +121,7 @@ function hasLoadedTypeElements(scope: 'all' | ImportScope) {
 
 {#snippet importOptions(scope: 'all' | ImportScope)}
 <div class="flex flex-col h-full">
-	<Card.Content class="px-0 pt-4 overflow-y-auto flex-1 pb-0">
+	<Card.Content class="px-1.5 pt-4 overflow-y-auto flex-1 pb-0">
 		{#if hasLoadedTypeElementsPerScope[scope] }
 			{#each groupedLoadedTypeElementsEntries as [typeElementFamily, typeElements]}
 				{#if scope === 'all'}
