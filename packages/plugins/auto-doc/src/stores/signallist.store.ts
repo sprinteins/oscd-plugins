@@ -19,9 +19,6 @@ import { queryDataSetForControl, queryDataTypeLeaf, queryFCDA, queryLDevice, que
 const { xmlDocument } = pluginStore
 const pdfRowValues = writable<PdfRowStructure[]>([])
 
-
-//==== new attempt, i cant take all this terrible code anymore
-
 interface TargetContext {
     ied: Element,
     accessPoint: Element,
