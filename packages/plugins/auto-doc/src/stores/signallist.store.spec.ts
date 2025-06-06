@@ -44,7 +44,7 @@ describe('Signallist', () => {
         publisher: {
           Bay: "bay1",
           IEDName: "IED1",
-          M_text: "",
+          M_text: "signal1",
           UW: "substation1",
           VoltageLevel: "voltagelevel1",
           signalType: "GOOSE",
@@ -83,7 +83,7 @@ describe('Signallist', () => {
         publisher: {
           Bay: "bay1",
           IEDName: "IED1",
-          M_text: "",
+          M_text: "signal2",
           UW: "substation1",
           VoltageLevel: "voltagelevel1",
           signalType: "SMV",
@@ -104,11 +104,51 @@ describe('Signallist', () => {
             LogicalNodeType: "LNType3",
           }
         }
-    }
+    };
+
+    const ied1RportPublisher = {
+      matchedFilteredValuesForPdf: [
+          [ 
+            "",
+            "IED5",
+            ""
+          ],
+        ],
+        matchedSubscribers: {
+          GOOSE: [],
+          Report: [ "IED5" ],
+          SMV: []
+        },
+        publisher: {
+          Bay: "bay2",
+          IEDName: "IED1",
+          M_text: "signal3",
+          UW: "substation1",
+          VoltageLevel: "voltagelevel1",
+          signalType: "Report",
+          targetIEDName: "IED5",
+          dataObjectInformation: {
+            AttributeType: "BType1",
+            CommonDataClass: "CDC5",
+            DataAttributeName: "da1",
+            DataObjectName: "do1",
+            FunctionalConstraint: "FC2",
+          },
+          logicalNodeInformation: {
+            IEDName: "IED1",
+            LogicalDeviceInstance: "LD3",
+            LogicalNodeClass: "LC1",
+            LogicalNodeInstance: "1",
+            LogicalNodePrefix: "S",
+            LogicalNodeType: "LNType4",
+          }
+        }
+    };
 
     expect(pdfRows).toEqual([
       ied1GoosePublisher,
-      ied1SMVPublisher
+      ied1SMVPublisher,
+      ied1RportPublisher
     ]);
   });
 
