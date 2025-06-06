@@ -51,12 +51,19 @@ let hoverTimeout: NodeJS.Timeout | null = $state(null)
 
 const isLNodeType = $derived(typeElementFamily === TYPE_FAMILY.lNodeType)
 
-const currentRefs = $derived(
-	Object.entries(typeElement.refs) as [
+const currentRefs = $derived.by(() => {
+	if (importScope)
+		return Object.entries(
+			importsStore.loadedTypeElementsPerFamily[typeElementFamily].raw[
+				typeElementKey
+			].refs
+		) as [AvailableRefFamily, RefElementByIds<AvailableRefFamily>][]
+
+	return Object.entries(typeElement.refs) as [
 		AvailableRefFamily,
 		RefElementByIds<AvailableRefFamily>
 	][]
-)
+})
 
 const hasRefs = $derived.by(() => {
 	return Object.values(typeElement.refs).some(
@@ -162,6 +169,7 @@ const handleDragLeave = (event: DragEvent) => {
 
 //======= EFFECTS =======//
 
+// autoclose collapsible if no refs are present
 $effect(() => {
 	if (!hasRefs) isElementCardOpen = false
 })
