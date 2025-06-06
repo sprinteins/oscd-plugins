@@ -5,7 +5,6 @@ import { slide } from 'svelte/transition'
 import { Card, Input } from '@oscd-plugins/core-ui-svelte'
 import AddElement from './add-element.svelte'
 import CardCollapsibleWrapper from '../element-card/card-collapsible-wrapper.svelte'
-import ImportSelect from '@/ui/components/import/import-select.svelte'
 import ImportContainer from '@/ui/components/import/import-container.svelte'
 // STORES
 import { typeElementsStore, importsStore, dndStore } from '@/headless/stores'
@@ -13,7 +12,6 @@ import { typeElementsStore, importsStore, dndStore } from '@/headless/stores'
 import type {
 	AvailableTypeFamily,
 	SortedImportedTypeElements,
-	AvailableImportedTypeFamily,
 	Columns,
 	Column,
 	TypeElementByIds
@@ -24,7 +22,7 @@ import {
 	ALLOWED_TARGETS_BY_TYPE_FAMILY,
 	TYPE_FAMILY
 } from '@/headless/constants'
-import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
+import type { SvelteComponent } from 'svelte'
 
 //======= INITIALIZATION =======//
 
@@ -37,7 +35,13 @@ const {
 	column: Column<AvailableTypeFamily>
 } = $props()
 
+//======= STATES =======//
+
+let columnContentElement = $state<SvelteComponent | null>(null)
+
 //====== DERIVED STATES ======//
+
+//====== OBJECT ENTRIES
 
 const groupedTypeElementsEntries = $derived(
 	Object.entries(column.groupedTypeElements) as [
@@ -45,37 +49,23 @@ const groupedTypeElementsEntries = $derived(
 		TypeElementByIds<AvailableTypeFamily>
 	][]
 )
+
+const groupedLoadedTypeElementsEntries = $derived.by(() => {
+	return Object.entries(column.importedTypeElements) as [
+		AvailableTypeFamily,
+		SortedImportedTypeElements<AvailableTypeFamily>
+	][]
+})
+
+//====== TESTERS
+
 const hasTypeElements = $derived.by(() => {
-	return (
-		groupedTypeElementsEntries?.length &&
-		groupedTypeElementsEntries.some(
-			([, typeElements]) =>
-				typeElements && Object.keys(typeElements)?.length
-		)
+	return groupedTypeElementsEntries.some(
+		([, typeElements]) => typeElements && Object.keys(typeElements)?.length
 	)
 })
 
-const groupedImportedTypeElementsEntries = $derived.by(() => {
-	if (column.importedTypeElements)
-		return Object.entries(column.importedTypeElements) as [
-			AvailableImportedTypeFamily,
-			SortedImportedTypeElements<AvailableImportedTypeFamily>
-		][]
-})
-
-const hasImportedTypeElements = $derived.by(() => {
-	return groupedImportedTypeElementsEntries?.some(
-		([, importedTypeElements]) =>
-			importedTypeElements.all &&
-			Object.keys(importedTypeElements.all)?.length
-	)
-})
-
-const shouldResizeContainerToHalf = $derived(
-	hasImportedTypeElements &&
-		(columnKey === 'functionType' || columnKey === 'lNodeType') &&
-		importsStore.isContainerOpen[columnKey]
-)
+const isImportViewActive = $derived(!!importsStore.currentFilename)
 
 const capitalizedColumnKey = $derived(
 	columnKey.charAt(0).toUpperCase() + columnKey.slice(1)
@@ -115,17 +105,12 @@ const isColumnDisabled = $derived.by(() => {
 		return !isAllowed
 	}
 })
-
-$inspect(importsStore.loadedLNodeType.elementByIds)
 </script>
 
 <Card.Root class="{columnKey === 'lNodeType' ? 'pb-4' : ''} flex-1 flex flex-col min-h-full {isColumnDisabled ? 'opacity-40' : ''}" >
 	<Card.Header class="pb-4">
 		<div class="flex justify-between">
 			<Card.Title>{ column.name}</Card.Title>
-			{#if columnKey === 'functionType' || columnKey === 'lNodeType'}
-				<ImportSelect {columnKey} />
-			{/if}
 		</div>
 		<Input.Root
 			bind:value={typeElementsStore.filtersByColumns[columnKey]}
@@ -134,21 +119,21 @@ $inspect(importsStore.loadedLNodeType.elementByIds)
 		</Input.Root>
 	</Card.Header>
 
-	<Card.Content class={`${hasTypeElements ? "pb-4" : "pb-0"} px-4 pt-4 overflow-y-hidden h-full`}>
+	<Card.Content class="pb-0 px-2 pt-4 overflow-y-hidden h-full flex flex-col" bind:this={columnContentElement}>
 
-		{#if groupedImportedTypeElementsEntries?.length && (columnKey === 'functionType' || columnKey === 'lNodeType') && importsStore.isContainerOpen[columnKey]}
+		{#if isImportViewActive}
 			<div
 				transition:slide
-				class={`${hasTypeElements ? "h-3/4 pb-2" : "h-full pb-0"} px-2 pt-2 -mx-2 -mt-2 mb-2 overflow-hidden`}
+				class={`${hasTypeElements ? 'h-3/4' : 'h-full'} px-4 pt-2 -mx-2 -mt-2 overflow-hidden`}
 			>
-				<ImportContainer {columnKey} {groupedImportedTypeElementsEntries}/>
+				<ImportContainer {columnKey} {groupedLoadedTypeElementsEntries}/>
 			</div>
 		{/if}	
 		
 		{#if hasTypeElements}
-			<div class={`${shouldResizeContainerToHalf ? "h-1/4" : "h-full"} overflow-y-auto p-2`}>
+			<div class={`${isImportViewActive ? "h-1/4" : "flex-1"} overflow-y-auto p-2`}>
 				{#each groupedTypeElementsEntries as [typeElementFamily, typeElements]}
-					{#each Object.entries(typeElements) as [typeElementKey, typeElement]}
+					{#each Object.entries(typeElements) as [typeElementKey, typeElement] (typeElementKey)}
 						<CardCollapsibleWrapper {typeElementKey} {typeElement} {typeElementFamily}/>
 					{/each}
 				{/each}

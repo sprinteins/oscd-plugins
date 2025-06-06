@@ -13,7 +13,8 @@ import { createNewType, deleteTypeAndRefs } from './type-crud-operation.helper'
 import { createNewRef } from './ref-crud-operation.helper'
 import {
 	getTypeNextOccurrence,
-	getElementsWithSameNameBase
+	getElementsWithSameNameBase,
+	computeNameWithOptionalSuffix
 } from './type-naming.helper'
 import { getFilteredTypeElementByIds } from './filter.helper'
 import { duplicateElement } from '@/headless/stores/type-elements/common-crud-operation.helper'
@@ -82,6 +83,22 @@ class UseTypeElementsStore {
 					this.filtersByColumns.bayType,
 					this.typeElementsPerFamily.bay
 				)
+			},
+			importedTypeElements: {
+				bay: {
+					all: getFilteredTypeElementByIds(
+						this.filtersByColumns.bayType,
+						importsStore.loadedTypeElementsPerFamily.bay.all
+					),
+					toUpdate: getFilteredTypeElementByIds(
+						this.filtersByColumns.bayType,
+						importsStore.loadedTypeElementsPerFamily.bay.toUpdate
+					),
+					toAdd: getFilteredTypeElementByIds(
+						this.filtersByColumns.bayType,
+						importsStore.loadedTypeElementsPerFamily.bay.toAdd
+					)
+				}
 			}
 		},
 		[COLUMNS.equipmentType]: {
@@ -95,6 +112,42 @@ class UseTypeElementsStore {
 					this.filtersByColumns.equipmentType,
 					this.typeElementsPerFamily.conductingEquipment
 				)
+			},
+			importedTypeElements: {
+				generalEquipment: {
+					all: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.generalEquipment.all
+					),
+					toUpdate: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.generalEquipment.toUpdate
+					),
+					toAdd: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.generalEquipment.toAdd
+					)
+				},
+				conductingEquipment: {
+					all: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.conductingEquipment.all
+					),
+					toUpdate: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.conductingEquipment.toUpdate
+					),
+					toAdd: getFilteredTypeElementByIds(
+						this.filtersByColumns.equipmentType,
+						importsStore.loadedTypeElementsPerFamily
+							.conductingEquipment.toAdd
+					)
+				}
 			}
 		},
 		[COLUMNS.functionType]: {
@@ -107,14 +160,18 @@ class UseTypeElementsStore {
 			},
 			importedTypeElements: {
 				function: {
-					available: getFilteredTypeElementByIds(
-						this.filtersByColumns.functionType,
-						importsStore.loadedTypeElementsPerFamily.function
-							.available
-					),
 					all: getFilteredTypeElementByIds(
 						this.filtersByColumns.functionType,
 						importsStore.loadedTypeElementsPerFamily.function.all
+					),
+					toUpdate: getFilteredTypeElementByIds(
+						this.filtersByColumns.functionType,
+						importsStore.loadedTypeElementsPerFamily.function
+							.toUpdate
+					),
+					toAdd: getFilteredTypeElementByIds(
+						this.filtersByColumns.functionType,
+						importsStore.loadedTypeElementsPerFamily.function.toAdd
 					)
 				}
 			}
@@ -129,14 +186,18 @@ class UseTypeElementsStore {
 			},
 			importedTypeElements: {
 				lNodeType: {
-					available: getFilteredTypeElementByIds(
-						this.filtersByColumns.lNodeType,
-						importsStore.loadedTypeElementsPerFamily.lNodeType
-							.available
-					),
 					all: getFilteredTypeElementByIds(
 						this.filtersByColumns.lNodeType,
 						importsStore.loadedTypeElementsPerFamily.lNodeType.all
+					),
+					toUpdate: getFilteredTypeElementByIds(
+						this.filtersByColumns.lNodeType,
+						importsStore.loadedTypeElementsPerFamily.lNodeType
+							.toUpdate
+					),
+					toAdd: getFilteredTypeElementByIds(
+						this.filtersByColumns.lNodeType,
+						importsStore.loadedTypeElementsPerFamily.lNodeType.toAdd
 					)
 				}
 			}
@@ -205,10 +266,20 @@ class UseTypeElementsStore {
 	})
 	newComputedTypeName = $derived.by(() => {
 		return {
-			[TYPE_FAMILY.bay]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.bay]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.bay]}`,
+			[TYPE_FAMILY.bay]: computeNameWithOptionalSuffix(
+				'bay',
+				this.newTypeNameInputValueByColumnKey[COLUMNS.bayType],
+				this.namePrefixByTypeFamily[TYPE_FAMILY.bay],
+				this.nextOccurrenceByTypeFamily[TYPE_FAMILY.bay]
+			),
 			[TYPE_FAMILY.generalEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.generalEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.generalEquipment]}`,
 			[TYPE_FAMILY.conductingEquipment]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.conductingEquipment]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.conductingEquipment]}`,
-			[TYPE_FAMILY.function]: `${this.namePrefixByTypeFamily[TYPE_FAMILY.function]}_${this.nextOccurrenceByTypeFamily[TYPE_FAMILY.function]}`
+			[TYPE_FAMILY.function]: computeNameWithOptionalSuffix(
+				'function',
+				this.newTypeNameInputValueByColumnKey[COLUMNS.functionType],
+				this.namePrefixByTypeFamily[TYPE_FAMILY.function],
+				this.nextOccurrenceByTypeFamily[TYPE_FAMILY.function]
+			)
 		}
 	})
 }

@@ -1,12 +1,9 @@
 <script lang="ts">
-// CORE
-import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 // STORE
 import { dndStore, typeElementsStore, importsStore } from '@/headless/stores'
 // CONSTANTS
 import {
 	TYPE_FAMILY,
-	ALLOWED_IMPORTED_TYPE,
 	REF_FAMILY,
 	ALLOWED_TARGETS_BY_REF_FAMILY
 } from '@/headless/constants'
@@ -22,7 +19,8 @@ import type {
 	AvailableTypeFamily,
 	AvailableRefFamily,
 	RefElementByIds,
-	RefElement
+	RefElement,
+	ImportScope
 } from '@/headless/stores'
 
 //======= INITIALIZATION =======//
@@ -32,12 +30,12 @@ const {
 	typeElementKey,
 	typeElementFamily,
 	typeElement,
-	isImportContainer
+	importScope
 }: {
 	typeElementKey: string
 	typeElementFamily: AvailableTypeFamily
 	typeElement: TypeElement<AvailableTypeFamily>
-	isImportContainer?: boolean
+	importScope?: ImportScope
 } = $props()
 
 // local states
@@ -83,13 +81,7 @@ const isAllowedToDrop = $derived.by(() => {
 
 function getCurrentRefFullLabel(refWrapper: RefElement<AvailableRefFamily>) {
 	let currentLabel: string
-	if (
-		isImportContainer &&
-		typeGuard.isTuplesIncludingString(
-			refWrapper.source.family,
-			ALLOWED_IMPORTED_TYPE
-		)
-	)
+	if (importScope)
 		currentLabel =
 			importsStore.loadedTypeElementsPerFamily[refWrapper.source.family]
 				.all[refWrapper.source.id].parameters.label
@@ -174,10 +166,10 @@ $effect(() => {
 <Collapsible.Root 
 	bind:open={isElementCardOpen} 
 	class="space-y-1 mb-2"
-	ondragover={handleOpenCollapsible}
-	ondragleave={handleCloseCollapsible}
+	ondragover={importScope ? undefined : handleOpenCollapsible}
+	ondragleave={importScope ? undefined : handleCloseCollapsible}
 >
-	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {isImportContainer} />
+	<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {importScope} />
 
 
 	<Collapsible.Content class="space-y-1 flex flex-col items-end relative"
@@ -220,7 +212,7 @@ $effect(() => {
 													<Badge.Root class="bg-transparent border-gray-600 border-2 rounded-sm text-gray-600 hover:bg-transparent ml-auto">{ getBadgeLabel(refFamily) }</Badge.Root>
 												{/if}
 											</div>
-											{#if !isImportContainer}
+											{#if !importScope}
 												<CardMenu type={{ family: typeElementFamily, id: typeElementKey}} ref={{ family: refFamily, id: refId}}/>
 											{/if}
 										</Card.Content>

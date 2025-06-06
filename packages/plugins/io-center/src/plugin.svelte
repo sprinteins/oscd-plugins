@@ -14,31 +14,24 @@
 <script lang="ts">
 import jsonPackage from '../package.json'
 // CORE
-import { initPlugin, WrongFileLoaded } from '@oscd-plugins/core-ui-svelte'
-// LOGIC
-import { useQuery } from './query.svelte'
-import { newCommand, type Command } from './command.svelte'
-// STORE
-import { store } from './store.svelte'
-import { iedTreeStore } from './headless/stores'
+import {
+	initPlugin,
+	WrongFileLoaded,
+	DialogWorkaround
+} from '@oscd-plugins/core-ui-svelte'
+import {
+	canvasStore,
+	iedStore,
+	pluginLocalStore,
+	logicalStore
+} from './headless/stores'
 // COMPONENTS
 import Layout from '@/ui/layout.svelte'
-import SideBarLeft from '@/sidebar-left.svelte'
-import CanvasArea from '@/ui/components/canvas/canvas-area.svelte'
-import SidebarRight from '@/sidebar-right.svelte'
-import { SvelteToast } from '@zerodevx/svelte-toast'
+import SidebarLeft from '@/ui/sidebar-left/sidebar-left.svelte'
+import CanvasArea from '@/ui/canvas/canvas-area.svelte'
+import SidebarRight from '@/ui/sidebar-right/sidebar-right.svelte'
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
-import type { Nullable } from './types'
-import type {
-	Connection,
-	LcTypes,
-	LogicalConditioner
-} from './ui/components/canvas/types.canvas'
-import type {
-	LpElement,
-	LpTypes
-} from './ui/components/right-bar/lp-list/types.lp-list'
 
 // props
 const {
@@ -48,66 +41,35 @@ const {
 	isCustomInstance
 }: Plugin.CustomComponentsProps = $props()
 
-//
-// Setup
-//
-let root = $state<Nullable<HTMLElement>>(null)
-let cmd = $state<Command>(newCommand(() => root))
-useQuery()
-
-// we need to trigger a rerendering when the editCount changes
-// this is how OpenSCD lets us know that there was a change in the document
+// reset states on new doc
 $effect(() => {
-	store.editCount = editCount
-	store.doc = doc
+	if (editCount === -1) {
+		pluginLocalStore.isPluginInitialized = false
+		canvasStore.resetStates()
+		iedStore.resetStates()
+		logicalStore.resetStates()
+	}
 })
 
-function addLC(type: LcTypes, number?: number, numberOfLCIVPorts?: number) {
-	cmd.addLC(type, number, numberOfLCIVPorts)
-}
+// this plugins relies on Uuids for certain elements
+$effect(() => {
+	if (
+		!pluginLocalStore.isPluginInitialized &&
+		pluginLocalStore.rootSubElements.ied
+	)
+		pluginLocalStore.addRequiredUuids()
+})
 
-function editLC(
-	lc: LogicalConditioner,
-	newType: LcTypes,
-	numberOfLCIVPorts?: number
-) {
-	cmd.editLC(lc, newType, numberOfLCIVPorts)
-}
-
-function removeLC(lc: LogicalConditioner) {
-	cmd.removeLC(lc)
-}
-
-function addLP(
-	type: LpTypes,
-	name: string,
-	desc: string,
-	number?: number,
-	numberOfLPDOPorts?: number
-) {
-	cmd.addLP(type, name, desc, number, numberOfLPDOPorts)
-}
-
-function removeLP(lpElement: LpElement) {
-	cmd.removeLP(lpElement)
-}
-
-function editLP(lpElement: LpElement, name: string, desc: string) {
-	cmd.editLP(lpElement, name, desc)
-}
-
-function hasLNodeType(type: LcTypes | LpTypes): boolean {
-	return cmd.hasLNodeType(type)
-}
-
-function addConnection(connection: Connection) {
-	cmd.addConnection(connection)
-}
-
-function removeConnection(connection: Connection) {
-	cmd.removeConnection(connection)
-}
+// update connections
+$effect(() => {
+	if (
+		iedStore.selectedDataObjects.length &&
+		canvasStore.connectionUuids.length
+	)
+		canvasStore.getCurrentConnectedUuidsAndAddLogicalToSelection()
+})
 </script>
+
 
 <main
 	use:initPlugin={{
@@ -123,45 +85,20 @@ function removeConnection(connection: Connection) {
 	}}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
-	bind:this={root}
 >
-
-{#if iedTreeStore.iEDList.length}
-	<Layout>
-		<SideBarLeft slot="sidebar-left" />
-		<CanvasArea
-			slot="content"
-			{hasLNodeType}
-			{addConnection}
-			{removeConnection}
-		/>
-		<SidebarRight
-			slot="sidebar-right"
-			{addLP}
-			{addLC}
-			{removeLP}
-			{removeLC}
-			{editLP}
-			{editLC}
-			{hasLNodeType}
-		/>
-		</Layout>
-	{:else}
-		<WrongFileLoaded pluginName='I/O Center' errorMessage="There are no IEDs in this file to work with. Open a new file."/>
+	{#if pluginLocalStore.isPluginInitialized}
+		{#if iedStore.iEDList.length}
+			<Layout>
+				<SidebarLeft slot="sidebar-left" />
+				<CanvasArea slot="content" />
+				<SidebarRight
+					slot="sidebar-right"
+				/>
+			</Layout>
+		{:else}
+				<WrongFileLoaded pluginName='I/O Center' errorMessage="There are no IEDs in this file to work with. Open a new file."/>
+		{/if}
+		
+		<DialogWorkaround />
 	{/if}
 </main>
-
-<div class="toast-wrap">
-	<SvelteToast />
-</div>
-
-<style>
-	.toast-wrap {
-		display: contents;
-		font-family: Roboto, sans-serif;
-		@apply text-sm;
-	}
-	.toast-wrap :global(strong) {
-		font-weight: 600;
-	}
-</style>

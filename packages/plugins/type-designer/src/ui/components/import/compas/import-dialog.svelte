@@ -31,37 +31,42 @@ const filesList = $derived(
 
 //====== FUNCTIONS ======//
 
+function handleFileSelection(selectedFile: Compas.FileByType) {
+	selectedFileId = selectedFile.id
+	selectedFilename = selectedFile.name
+}
+
+async function loadSelectedFile() {
+	if (selectedType && selectedFileId && selectedFilename) {
+		const loadedFile = await compasStore.getFileByTypeAndId(
+			selectedType,
+			selectedFileId
+		)
+
+		if (!loadedFile) throw new Error('File not found')
+
+		importsStore.loadedXmlDocument = loadedFile
+		importsStore.currentFilename = selectedFilename
+
+		await dialogStore.closeDialog()
+		resetSelectInputs()
+	}
+}
+
 function resetSelectInputs() {
 	selectedType = undefined
 	selectedFileId = undefined
 	selectedFilename = undefined
 }
 
-async function loadSelectedFile() {
-	if (selectedType && selectedFileId) {
-		const loadedFile = await compasStore.getFileByTypeAndId(
-			selectedType,
-			selectedFileId
-		)
-		importsStore.importedXmlDocument = loadedFile
-		if (importsStore.currentImportColumnKey && selectedFilename)
-			importsStore.currentFilenameByColumnKey[
-				importsStore.currentImportColumnKey
-			] = selectedFilename
-		importsStore.loadElements()
-		dialogStore.closeDialog()
-		resetSelectInputs()
-	}
+async function handleCloseDialog() {
+	await dialogStore.closeDialog()
+	resetSelectInputs()
 }
 
-function handleFileSelection(selectedFile: Compas.FileByType) {
-	selectedFileId = selectedFile.id
-	selectedFilename = selectedFile.name
-}
 //====== EFFECTS ======//
-
 $effect(() => {
-	if (!dialogStore.isOpen) selectedType = undefined
+	if (!dialogStore.isOpen) resetSelectInputs()
 })
 </script>
 
@@ -139,7 +144,7 @@ $effect(() => {
 	</div>
 
 	<footer class="flex justify-end space-x-2 mt-5">
-		<Button.Root variant="outline" class="hover:bg-secondary hover:text-secondary-foreground" onclick={() => { dialogStore.closeDialog(); resetSelectInputs();}}>Cancel</Button.Root>
+		<Button.Root variant="outline" class="hover:bg-secondary hover:text-secondary-foreground" onclick={handleCloseDialog}>Cancel</Button.Root>
 		<Button.Root disabled={!selectedFileId} onclick={loadSelectedFile}>Select</Button.Root>
 	</footer>
 </section>

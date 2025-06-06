@@ -7,44 +7,17 @@ SEE: https://github.com/huntabyte/bits-ui/issues/828
 <script lang="ts">
 // STORES
 import { dialogStore } from '$lib/headless/stores/index.js'
-// TYPES
-import type { Component, SvelteComponent } from 'svelte'
 
 let {
-	class: className,
-	innerComponent
+	class: className
 }: {
 	class?: string
-	innerComponent:
-		| Component<
-				Record<string, never>,
-				{
-					closeCallback?: () => void
-				},
-				''
-		  >
-		| undefined
 } = $props()
-
-const InnerComponent = $derived(innerComponent)
-let innerComponentRef = $state<
-	| (SvelteComponent<Record<string, never>, never, never> & {
-			closeCallback?: (() => void) | undefined
-	  } & { $$bindings: '' })
-	| null
->(null)
-
-function handleClose() {
-	innerComponentRef?.closeCallback?.()
-	dialogStore.isOpen = false
-}
 </script>
 
-<dialog bind:this={dialogStore.dialogRef} onclose={handleClose} id="open-scd-dialog" class={`dialog ${className ? className : ''}`} >
-  <div class="dialog-box">
-		{#if InnerComponent}
-      <InnerComponent bind:this={innerComponentRef}/>
-		{/if}
+<dialog bind:this={dialogStore.dialogRef} oncancel={async () => await dialogStore.closeDialog('cancel')} id="open-scd-dialog" class={`dialog ${className ? className : ''}`} >
+  <div class="dialog-box" bind:this={dialogStore.innerComponentTargetRef}>
+		<!-- Inner component logic handle by the dialog store -->
   </div>
 </dialog>
 

@@ -6,7 +6,8 @@
 
     export let rows = 2;
     export let data = ["", ""];
-
+    export let columnIndex: number;
+    
     const ONE_SECOND_IN_MS = 1000;
     
     const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS);
@@ -15,6 +16,10 @@
 
     function getCellStyle(row: number) {
         return row === 0 ? "filled" : "outlined";
+    }
+    
+    function handleFocus(row: number) {
+        dispatch("focus", { column: columnIndex, row })
     }
     
     function handleInputChange(row: number, value: string) {
@@ -28,6 +33,7 @@
         <Textfield
             bind:value={data[row]}
             variant={getCellStyle(row)}
+            on:focus={() => handleFocus(row)}
             on:input= {e => debounceUserInput(row, e.target.value)}
         >
         </Textfield>

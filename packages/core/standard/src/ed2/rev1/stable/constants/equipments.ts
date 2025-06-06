@@ -79,6 +79,11 @@ export const CONDUCTING_EQUIPMENTS = {
 		type: 'IFL',
 		numberOfTerminals: 1
 	},
+	loadTapChanger: {
+		label: 'Load Tap Changer',
+		type: 'LTC',
+		numberOfTerminals: undefined
+	},
 	motor: {
 		label: 'Motor',
 		type: 'MOT',
@@ -113,6 +118,16 @@ export const CONDUCTING_EQUIPMENTS = {
 		label: 'Power Overhead Line',
 		type: 'LIN',
 		numberOfTerminals: 2
+	},
+	powerTransformer: {
+		label: 'Power Transformer',
+		type: 'PTR',
+		numberOfTerminals: undefined
+	},
+	powerTransformerWinding: {
+		label: 'Power Transformer Winding',
+		type: 'PTW',
+		numberOfTerminals: undefined
 	},
 	rotatingReactiveComponent: {
 		label: 'Rotating Reactive Component',
