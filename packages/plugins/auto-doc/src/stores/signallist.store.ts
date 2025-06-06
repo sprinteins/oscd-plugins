@@ -75,11 +75,10 @@ function getSignalList(invaliditiesReports: InvalditiesReport[]): MessagePublish
 
         return handleIED(targetContext).flat();
     })
-    .flat();
+        .flat()
+        .filter(c => c.sourceContext !== null);
 
-    const messagePublishers = contexts
-        .filter(c => Boolean(c.sourceContext))
-        .map(c => fillMessagePublisherData(c));
+    const messagePublishers = contexts.map(c => fillMessagePublisherData(c));
     return messagePublishers;
 }
 
@@ -371,7 +370,7 @@ function getSourceContext(targetContext: TargetContext): SourceContext | null {
 
 
 //==== PUBLIC ACTIONS
-function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}, subscriberFilter: MessageSubscriberFilter): { pdfRows: PdfRowStructure[], invaliditiesReports: InvalditiesReport[] } {
+function getPublishingLogicalDevices(filter: MessagePublisherFilter = {}, subscriberFilter: MessageSubscriberFilter = {}): { pdfRows: PdfRowStructure[], invaliditiesReports: InvalditiesReport[] } {
     const invaliditiesReports: InvalditiesReport[] = [];
 
     const messagePublishers = getSignalList(invaliditiesReports);
