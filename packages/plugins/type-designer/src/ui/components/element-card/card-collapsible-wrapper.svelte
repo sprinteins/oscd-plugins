@@ -38,7 +38,7 @@ const {
 	typeElementFamily: AvailableTypeFamily
 	typeElement: TypeElement<AvailableTypeFamily>
 	importScope?: ImportScope
-	isLast: boolean
+	isLast?: boolean
 	columnContentElement?: HTMLElement | null
 } = $props()
 

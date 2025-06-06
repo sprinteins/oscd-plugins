@@ -1,6 +1,11 @@
 <script lang="ts">
 // CORE
-import { Button, Card, Tabs } from '@oscd-plugins/core-ui-svelte'
+import {
+	Button,
+	Card,
+	Tabs,
+	TooltipWorkaround
+} from '@oscd-plugins/core-ui-svelte'
 // COMPONENTS
 import CardCollapsibleWrapper from '../element-card/card-collapsible-wrapper.svelte'
 // CONSTANTS
@@ -86,7 +91,21 @@ function hasLoadedTypeElements(scope: 'all' | ImportScope) {
 		<Tabs.List class="grid w-full grid-cols-3 shrink-0">
 			<Tabs.Trigger value="all">All</Tabs.Trigger>
 			<Tabs.Trigger value="add">Add</Tabs.Trigger>
-			<Tabs.Trigger value="update">Update</Tabs.Trigger>
+			<Tabs.Trigger value="update" >
+				<span class="relative">
+					Update
+					{#if hasLoadedTypeElementsPerScope.toUpdate}
+						<div class="absolute -top-1 -right-3">
+							<TooltipWorkaround text="Update available" position="left" variant="accent" class="z-10">
+								<span class="relative flex size-2">
+									<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+									<span class="relative inline-flex size-2 rounded-full bg-primary"></span>
+								</span>
+							</TooltipWorkaround>
+						</div>
+					{/if}
+				</span>
+			</Tabs.Trigger>
 		</Tabs.List>
 		<Tabs.Content value="all" class="flex-1 overflow-hidden">
 			{@render importOptions('all')}
