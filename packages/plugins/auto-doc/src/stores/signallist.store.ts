@@ -77,15 +77,17 @@ function getSignalList(invaliditiesReports: InvalditiesReport[]): MessagePublish
     })
     .flat();
 
-    const messagePublishers = contexts.map(c => fillMessagePublisherData(c));
+    const messagePublishers = contexts
+        .filter(c => Boolean(c.sourceContext))
+        .map(c => fillMessagePublisherData(c));
     return messagePublishers;
 }
 
 function fillMessagePublisherData(context: SourceTarget): MessagePublisher {
-    const lNode = context.sourceContext?.lNode!;
-    const substation = lNode.closest('Substation')?.getAttribute('name') ?? '';
-    const voltageLevel = lNode.closest('VoltageLevel')?.getAttribute('name') ?? '';
-    const bay = lNode.closest('Bay')?.getAttribute('name') ?? '';
+    const lNode = context.sourceContext?.lNode;
+    const substation = lNode?.closest('Substation')?.getAttribute('name') ?? '';
+    const voltageLevel = lNode?.closest('VoltageLevel')?.getAttribute('name') ?? '';
+    const bay = lNode?.closest('Bay')?.getAttribute('name') ?? '';
     const targetIed = context.targetContext.ied;
     const targetIEDName = targetIed.getAttribute('name') ?? '';
 
