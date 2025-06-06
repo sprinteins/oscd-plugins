@@ -70,11 +70,14 @@ function duplicateRefHandler() {
 
 function deleteRefHandler() {
 	if (!ref) throw new Error('Ref is not defined')
-	pluginGlobalStore.deleteElement(
-		typeElementsStore.typeElementsPerFamily[type.family][type.id].refs[
-			ref.family
-		][ref.id].element
-	)
+
+	typeElementsStore.deleteRef({
+		refElementToDelete:
+			typeElementsStore.typeElementsPerFamily[type.family][type.id].refs[
+				ref.family
+			][ref.id].element,
+		refFamily: ref.family
+	})
 }
 </script>
 
