@@ -6,16 +6,14 @@ import { SignalType } from './signallist.store.d';
 import type {MessagePublisherFilter, MessageSubscriberFilter, MessagePublisher} from '@/stores/signallist.store.d'
 
 import { signalListScd1 } from '../testfiles/signallist1';
+import { signalListScd2 } from '../testfiles/signallist2';
 
 
 describe('Signallist', () => {
-  let xmlDocument: Writable<XMLDocument | undefined>;
-
   beforeEach(() => {
-    xmlDocument = writable<XMLDocument | undefined>(undefined);
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(signalListScd1, 'application/xml');
-    xmlDocument.set(xmlDoc);
+
     pluginStore.init({
       newXMLDocument: xmlDoc,
       newPluginHostElement: document.createElement('SCL'),
@@ -106,7 +104,7 @@ describe('Signallist', () => {
         }
     };
 
-    const ied1RportPublisher = {
+    const ied1ReportPublisher = {
       matchedFilteredValuesForPdf: [
           [ 
             "",
@@ -148,8 +146,70 @@ describe('Signallist', () => {
     expect(pdfRows).toEqual([
       ied1GoosePublisher,
       ied1SMVPublisher,
-      ied1RportPublisher
+      ied1ReportPublisher
     ]);
+  });
+
+  describe('should handle nested data objects and attributes', () => {
+    beforeEach(() => {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(signalListScd2, 'application/xml');
+
+      pluginStore.init({
+        newXMLDocument: xmlDoc,
+        newPluginHostElement: document.createElement('SCL'),
+        newEditCount: 0
+      });
+    });
+
+    it('should map nested DOs and DAs', () => {
+      const {pdfRows, invaliditiesReports} = signallistStore.getPublishingLogicalDevices();
+
+      expect(invaliditiesReports).toEqual([]);
+
+      const ied1GoosePublisher = {
+        matchedFilteredValuesForPdf: [
+          [ 
+            "IED2",
+            "",
+            ""
+          ],
+        ],
+        matchedSubscribers: {
+          GOOSE: [ "IED2" ],
+          Report: [],
+          SMV: []
+        },
+        publisher: {
+          Bay: "bay1",
+          IEDName: "IED1",
+          M_text: "signal1",
+          UW: "substation1",
+          VoltageLevel: "voltagelevel1",
+          signalType: "GOOSE",
+          targetIEDName: "IED2",
+          dataObjectInformation: {
+            AttributeType: "BOOLEAN",
+            CommonDataClass: "CDC1.CDC2.CDC3",
+            DataAttributeName: "da1.da2.da3",
+            DataObjectName: "do1.do2.do3",
+            FunctionalConstraint: "FC1",
+          },
+          logicalNodeInformation: {
+            IEDName: "IED1",
+            LogicalDeviceInstance: "LD1",
+            LogicalNodeClass: "LC1",
+            LogicalNodeInstance: "1",
+            LogicalNodePrefix: "",
+            LogicalNodeType: "LNType1",
+          }
+        }
+      };
+
+      expect(pdfRows).toEqual([
+        ied1GoosePublisher,
+    ]);
+    });
   });
 
 });
