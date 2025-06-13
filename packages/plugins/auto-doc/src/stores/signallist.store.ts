@@ -25,7 +25,6 @@ import {
 
 //====== STORES ======//
 const { xmlDocument } = pluginStore
-const pdfRowValues = writable<PdfRowStructure[]>([])
 
 interface TargetContext {
 	ied: Element
@@ -581,7 +580,6 @@ function filterMessagePublishers(
 		}
 	}
 
-	pdfRowValues.update(() => [...matchedValueAndCorrespondingPublisher])
 	return matchedValueAndCorrespondingPublisher
 }
 
@@ -612,7 +610,5 @@ function getValueFromNestedProperty(
 }
 
 export const signallistStore = {
-	getPublishingLogicalDevices,
-	// Store for table pdf
-	pdfRowValues
+	getPublishingLogicalDevices
 }
