@@ -11,12 +11,12 @@ import { signalDndStore } from '../../../stores/signal-dnd.store'
 export let idx: number
 export let id: string
 export let label: LabelText = {
-	col1Label: { name: '', hasSuffix: false },
-	col2Label: { name: '', hasSuffix: false }
+	primaryInputLabel: { name: '', hasSuffix: false },
+	secondaryInputLabel: { name: '', hasSuffix: false }
 }
 export let isSelected = false
-export let column1 = ''
-export let column2 = ''
+export let primaryInput = ''
+export let secondaryInput = ''
 export let isInColumnsZone: boolean
 export let columnsLength: number
 
@@ -27,8 +27,8 @@ const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
 const dispatch = createEventDispatcher()
 
 function handleInputChange(key: keyof SignalRow, value: string) {
-	column1 = key === 'column1' ? value : column1
-	column2 = key === 'column2' ? value : column2
+	primaryInput = key === 'primaryInput' ? value : primaryInput
+	secondaryInput = key === 'secondaryInput' ? value : secondaryInput
 	dispatch('update', { key, value })
 }
 
@@ -129,18 +129,18 @@ $: isBlockedZone =
                                         <Checkbox bind:checked={isSelected} />
                                 </div>
                                 <Textfield
-                                        bind:value={column1}
+                                        bind:value={primaryInput}
                                         variant="outlined"
-                                        label={createSuffixForLabelIfNeeded(label.col1Label)}
-                                        on:input= {e => debounceUserInput('column1', e.target.value)}
+                                        label={createSuffixForLabelIfNeeded(label.primaryInputLabel)}
+                                        on:input= {e => debounceUserInput('primaryInput', e.target.value)}
                                         disabled={!isSelected}
                                 >
                                 </Textfield>
                                 <Textfield
-                                        bind:value={column2}
+                                        bind:value={secondaryInput}
                                         variant="outlined"
-                                        label={createSuffixForLabelIfNeeded(label.col2Label)}
-                                        on:input= {e => debounceUserInput('column2', e.target.value)}
+                                        label={createSuffixForLabelIfNeeded(label.secondaryInputLabel)}
+                                        on:input= {e => debounceUserInput('secondaryInput', e.target.value)}
                                                 disabled={!isSelected}
                                                 >
                                 </Textfield>

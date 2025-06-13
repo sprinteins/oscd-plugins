@@ -276,7 +276,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			return row.matchedFilteredValuesForPdf
 		})
 		const header = selectedRows.map((r) => ({
-			value: r.column1,
+			value: r.primaryInput,
 			type: 'string'
 		}))
 		const individualRows = rows.map((row) =>
@@ -412,7 +412,7 @@ type TableHeader = {
 
 function generateTableHeader(selectedRows: SignalRow[]): TableHeader[] {
 	return selectedRows.map((row) => ({
-		header: row.column1,
+		header: row.primaryInput,
 		dataKey: row.searchKey
 	}))
 }
