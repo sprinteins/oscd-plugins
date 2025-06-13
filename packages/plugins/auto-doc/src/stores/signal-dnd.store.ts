@@ -1,4 +1,4 @@
-import { writable, get } from 'svelte/store'
+import { get, writable } from 'svelte/store'
 
 class SignalDndStore {
 	_draggedIndex = writable<number>(-1)

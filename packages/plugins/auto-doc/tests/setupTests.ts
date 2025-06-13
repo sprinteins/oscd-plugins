@@ -1,27 +1,29 @@
-import { beforeAll, afterAll, test, expect } from 'vitest';
-import { chromium } from 'playwright';
-import type { Browser, BrowserContext, Page } from 'playwright';
+import { chromium } from 'playwright'
+import type { Browser, BrowserContext, Page } from 'playwright'
+import { afterAll, beforeAll, expect, test } from 'vitest'
 
 declare global {
-  var browser: Browser;
-  var context: BrowserContext;
-  var page: Page;
+	var browser: Browser
+	var context: BrowserContext
+	var page: Page
 }
 
 beforeAll(async () => {
-  globalThis.browser = await chromium.launch();
-  globalThis.context = await browser.newContext();
-  globalThis.page = await context.newPage();
-});
+	globalThis.browser = await chromium.launch()
+	globalThis.context = await browser.newContext()
+	globalThis.page = await context.newPage()
+})
 
 afterAll(async () => {
-  await globalThis.page.close();
-  await globalThis.context.close();
-  await globalThis.browser.close();
-});
+	await globalThis.page.close()
+	await globalThis.context.close()
+	await globalThis.browser.close()
+})
 
 test('sample test', async () => {
-  await page.setContent('<html><head><title>Example Domain</title></head><body></body></html>');
-  const title = await page.title();
-  expect(title).toBe('Example Domain');
-});
+	await page.setContent(
+		'<html><head><title>Example Domain</title></head><body></body></html>'
+	)
+	const title = await page.title()
+	expect(title).toBe('Example Domain')
+})

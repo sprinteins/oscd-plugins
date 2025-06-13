@@ -1,25 +1,24 @@
 <script lang="ts">
-    import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-    import {createEventDispatcher} from "svelte"
-    import {MOVE_BLOCK_DIRECTION} from "@/constants"
+import { MOVE_BLOCK_DIRECTION } from '@/constants'
+import { CustomIconButton } from '@oscd-plugins/ui/src/components'
+import { createEventDispatcher } from 'svelte'
 
-    //Prop
-    export let elementId: string
+//Prop
+export let elementId: string
 
-    const dispatch = createEventDispatcher()
+const dispatch = createEventDispatcher()
 
-    function duplicateBlockElement(){
-        dispatch("elementDuplicate", {elementId})
-    }
+function duplicateBlockElement() {
+	dispatch('elementDuplicate', { elementId })
+}
 
-    function moveBlockElement(direction: number) {
-        dispatch("elementMove", {elementId, direction});
-    }
+function moveBlockElement(direction: number) {
+	dispatch('elementMove', { elementId, direction })
+}
 
-    function deleteBlockElement(){
-        dispatch("elementDelete", {elementId})
-    }
-
+function deleteBlockElement() {
+	dispatch('elementDelete', { elementId })
+}
 </script>
 
 

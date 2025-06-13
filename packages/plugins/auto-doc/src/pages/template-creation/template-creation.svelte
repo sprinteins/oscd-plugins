@@ -1,91 +1,94 @@
 <script lang="ts">
-    import Button from "@smui/button"
-    import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-    import {TemplateBuilder, Tooltip} from '@/components';
-    import {push} from 'svelte-spa-router'
-    import Textfield from "@smui/textfield"
-    import {clickOutside} from "@/actions"
-    import {docTemplatesStore} from '@/stores'
-	import { onMount } from "svelte"
-    import {pdfGenerator} from '@/utils'
+import { clickOutside } from '@/actions'
+import { TemplateBuilder, Tooltip } from '@/components'
+import { docTemplatesStore } from '@/stores'
+import { pdfGenerator } from '@/utils'
+import { CustomIconButton } from '@oscd-plugins/ui/src/components'
+import Button from '@smui/button'
+import Textfield from '@smui/textfield'
+import { onMount } from 'svelte'
+import { push } from 'svelte-spa-router'
 
-    type Params = {id?: string}
-    export let params:Params = {} //params passed from the router
+type Params = { id?: string }
+export let params: Params = {} //params passed from the router
 
-    let title = "";
-    let description = "";
-    let isMetadataVisible = false
-    let templateId: string|undefined = undefined
-    let template: Element | null = null;
-    
-    const NO_TITLE_TEXT = "Untitled Document";
-    
-    onMount(() => {
-        templateId = params.id ?? createNewTemplate();
+let title = ''
+let description = ''
+let isMetadataVisible = false
+let templateId: string | undefined = undefined
+let template: Element | null = null
 
-        template = docTemplatesStore.getDocumentTemplate(templateId);
+const NO_TITLE_TEXT = 'Untitled Document'
 
-        if (!template) {
-            return navigateToOverviewPage();
-        }
+onMount(() => {
+	templateId = params.id ?? createNewTemplate()
 
-        window.history.pushState({}, "", "#");
+	template = docTemplatesStore.getDocumentTemplate(templateId)
 
-        setInitialTitleAndDescription(template);
-    });
+	if (!template) {
+		return navigateToOverviewPage()
+	}
 
-    
+	window.history.pushState({}, '', '#')
 
+	setInitialTitleAndDescription(template)
+})
 
-    function setInitialTitleAndDescription(template: Element) {
-        title = (template.getAttribute('title') as string)||"";
-        description = (template.getAttribute('description') as string)||"";
-    }
+function setInitialTitleAndDescription(template: Element) {
+	title = (template.getAttribute('title') as string) || ''
+	description = (template.getAttribute('description') as string) || ''
+}
 
-    function createNewTemplate() : string {
-       return docTemplatesStore.addDocumentTemplate() as string;
-    }
+function createNewTemplate(): string {
+	return docTemplatesStore.addDocumentTemplate() as string
+}
 
-    function askForEmptyTitleConfirmation(){
-        if (!title) {
-            const confirmNavigation = confirm("No title has been provided. Do you want to proceed?");
-            if (!confirmNavigation) {
-                return;
-            }
-        }
-        navigateToOverviewPage()
-    }
+function askForEmptyTitleConfirmation() {
+	if (!title) {
+		const confirmNavigation = confirm(
+			'No title has been provided. Do you want to proceed?'
+		)
+		if (!confirmNavigation) {
+			return
+		}
+	}
+	navigateToOverviewPage()
+}
 
-    function navigateToOverviewPage(){
-        push('/')
-        
-    }
+function navigateToOverviewPage() {
+	push('/')
+}
 
-    function displayTitleAndDescription(){
-        isMetadataVisible = true;
-    }
-    function closeTitleAndDescription(){
-            isMetadataVisible = false
-            if(templateId){
-                updateTitleAndDescription()
-            }else{
-                console.error("Template ID is null. Cannot update title and description.");
-            }
+function displayTitleAndDescription() {
+	isMetadataVisible = true
+}
+function closeTitleAndDescription() {
+	isMetadataVisible = false
+	if (templateId) {
+		updateTitleAndDescription()
+	} else {
+		console.error(
+			'Template ID is null. Cannot update title and description.'
+		)
+	}
+}
+$: templateTitle = title.length === 0 ? NO_TITLE_TEXT : title
 
-    }   
-    $: templateTitle = title.length === 0 ? NO_TITLE_TEXT : title;
+function updateTitleAndDescription() {
+	docTemplatesStore.editDocumentTemplateTitleAndDescription(
+		templateId as string,
+		title,
+		description
+	)
+}
 
-    function updateTitleAndDescription(){
-       docTemplatesStore.editDocumentTemplateTitleAndDescription(templateId as string, title, description)
-    }
+function downloadTemplateContent() {
+	if (!templateId) {
+		return
+	}
 
-    function downloadTemplateContent(){
-        if(!templateId){return}
-            
-        pdfGenerator.downloadAsPdf(templateId)
-    }
-
-
+	pdfGenerator.downloadAsPdf(templateId)
+}
 </script>
 
 <div class="template-creation-container">

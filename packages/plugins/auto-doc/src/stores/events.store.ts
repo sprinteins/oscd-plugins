@@ -1,7 +1,7 @@
+// OPENSCD
+import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
 // SVELTE
 import { get } from 'svelte/store'
-// OPENSCD
-import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1';
 // STORES
 import { pluginStore } from './index'
 
@@ -9,46 +9,12 @@ import { pluginStore } from './index'
 const { pluginHostElement } = pluginStore
 
 //====== ACTIONS ======//
-function createAndDispatchActionEvent(parent: Element, element: Element, reference?: Node | null) {
-	reference = reference ?? null;
-	
-	createAndDispatchEditEvent({
-		host: get(pluginHostElement),
-		edit: {
-			parent: parent, 
-			node: element,
-			reference: reference
-		}
-	});
-}
-
-function createMultipleAndDispatchActionEvent(parent: Element, elements: Element[], title: string) {
-	const creates = elements.map(element => ({
-		parent,
-		node: element,
-		reference: null
-	}));
-
-	createAndDispatchEditEvent({
-		host: get(pluginHostElement),
-		edit: creates,
-		options: {
-			title
-		}
-	});
-}
-
-function deleteAndDispatchActionEvent(element: Element) {
-	createAndDispatchEditEvent({
-		host: get(pluginHostElement), 
-		edit: {
-			node: element
-		}	
-	})
-}
-
-function moveAndDispatchActionEvent(parent: Element, element: Element, reference?: Node | null) {
-	reference = reference ?? null;
+function createAndDispatchActionEvent(
+	parent: Element,
+	element: Element,
+	reference?: Node | null
+) {
+	reference = reference ?? null
 
 	createAndDispatchEditEvent({
 		host: get(pluginHostElement),
@@ -57,10 +23,59 @@ function moveAndDispatchActionEvent(parent: Element, element: Element, reference
 			node: element,
 			reference: reference
 		}
-	});
+	})
 }
 
-function updateAndDispatchActionEvent(element: Element, newAttributes: Record<string, string | null>) {
+function createMultipleAndDispatchActionEvent(
+	parent: Element,
+	elements: Element[],
+	title: string
+) {
+	const creates = elements.map((element) => ({
+		parent,
+		node: element,
+		reference: null
+	}))
+
+	createAndDispatchEditEvent({
+		host: get(pluginHostElement),
+		edit: creates,
+		options: {
+			title
+		}
+	})
+}
+
+function deleteAndDispatchActionEvent(element: Element) {
+	createAndDispatchEditEvent({
+		host: get(pluginHostElement),
+		edit: {
+			node: element
+		}
+	})
+}
+
+function moveAndDispatchActionEvent(
+	parent: Element,
+	element: Element,
+	reference?: Node | null
+) {
+	reference = reference ?? null
+
+	createAndDispatchEditEvent({
+		host: get(pluginHostElement),
+		edit: {
+			parent: parent,
+			node: element,
+			reference: reference
+		}
+	})
+}
+
+function updateAndDispatchActionEvent(
+	element: Element,
+	newAttributes: Record<string, string | null>
+) {
 	createAndDispatchEditEvent({
 		host: get(pluginHostElement),
 		edit: {
@@ -68,7 +83,7 @@ function updateAndDispatchActionEvent(element: Element, newAttributes: Record<st
 			attributes: newAttributes,
 			attributesNS: {}
 		}
-	});
+	})
 }
 
 export const eventStore = {

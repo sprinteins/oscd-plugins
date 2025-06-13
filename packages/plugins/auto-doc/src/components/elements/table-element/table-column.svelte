@@ -1,30 +1,30 @@
 <script lang="ts">
-    import Textfield from "@smui/textfield";
-    import { createEventDispatcher } from "svelte";
-    
-    import { debounce } from "@/utils";
+import Textfield from '@smui/textfield'
+import { createEventDispatcher } from 'svelte'
 
-    export let rows = 2;
-    export let data = ["", ""];
-    export let columnIndex: number;
-    
-    const ONE_SECOND_IN_MS = 1000;
-    
-    const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS);
+import { debounce } from '@/utils'
 
-    const dispatch = createEventDispatcher();
+export let rows = 2
+export let data = ['', '']
+export let columnIndex: number
 
-    function getCellStyle(row: number) {
-        return row === 0 ? "filled" : "outlined";
-    }
-    
-    function handleFocus(row: number) {
-        dispatch("focus", { column: columnIndex, row })
-    }
-    
-    function handleInputChange(row: number, value: string) {
-        dispatch('update', { row, value });
-    }
+const ONE_SECOND_IN_MS = 1000
+
+const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
+
+const dispatch = createEventDispatcher()
+
+function getCellStyle(row: number) {
+	return row === 0 ? 'filled' : 'outlined'
+}
+
+function handleFocus(row: number) {
+	dispatch('focus', { column: columnIndex, row })
+}
+
+function handleInputChange(row: number, value: string) {
+	dispatch('update', { row, value })
+}
 </script>
 
 

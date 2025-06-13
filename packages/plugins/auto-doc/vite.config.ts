@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { resolve } from 'node:path'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { defineConfig } from 'vite'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -30,9 +30,8 @@ export default defineConfig({
 		},
 		sourcemap: isDevelopment ? 'inline' : false,
 
-		rollupOptions:{
-			output: {inlineDynamicImports: true}
+		rollupOptions: {
+			output: { inlineDynamicImports: true }
 		}
-	},
-
+	}
 })

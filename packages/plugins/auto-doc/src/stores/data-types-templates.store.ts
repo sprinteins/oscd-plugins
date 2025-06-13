@@ -1,8 +1,8 @@
-import { writable, get } from 'svelte/store'
 // CORE
 import { DataTypeTemplatesService } from '@oscd-plugins/core'
 // TYPES
 import type { DataTypeTemplates } from '@oscd-plugins/core'
+import { get, writable } from 'svelte/store'
 
 //==== STATE
 const rootElement = writable<DataTypeTemplates.RootElement | null>(null)
