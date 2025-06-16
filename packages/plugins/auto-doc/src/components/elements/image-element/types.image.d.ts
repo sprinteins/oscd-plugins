@@ -1,4 +1,4 @@
 export type ImageData = {
-    scale: string,
-    base64Data: string
+	scale: string
+	base64Data: string
 }

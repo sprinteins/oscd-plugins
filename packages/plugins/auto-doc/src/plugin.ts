@@ -1,5 +1,5 @@
-import Plugin from './plugin.svelte'
 import { createPluginInstance } from '@oscd-plugins/core'
+import Plugin from './plugin.svelte'
 
 export default createPluginInstance({
 	pluginType: 'editor',

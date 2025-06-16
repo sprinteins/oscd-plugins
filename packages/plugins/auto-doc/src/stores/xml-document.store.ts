@@ -1,11 +1,11 @@
-// SVELTE
-import { writable, get } from 'svelte/store'
 // OPENSCD
 import { createElement } from '@oscd-plugins/core'
-// STORES
-import { dataTypeTemplatesStore, pluginStore, eventStore } from './index'
 // TYPES
 import type { DataTypeTemplates } from '@oscd-plugins/core'
+// SVELTE
+import { get, writable } from 'svelte/store'
+// STORES
+import { dataTypeTemplatesStore, eventStore, pluginStore } from './index'
 
 //====== STORES ======//
 const { xmlDocument } = pluginStore
@@ -19,10 +19,10 @@ function addElementToXmlDocument(
 	elementAttributes: Record<string, string | null>
 ) {
 	const { dataTypeTemplatesRootElement } = dataTypeTemplatesStore
-	const xmlDoc = get(xmlDocument);
-    if (!xmlDoc) {
-        throw new Error("XML Document is not defined");
-    }
+	const xmlDoc = get(xmlDocument)
+	if (!xmlDoc) {
+		throw new Error('XML Document is not defined')
+	}
 	const newElement = createElement(
 		xmlDoc,
 		newElementTagName,
@@ -37,10 +37,10 @@ function addElementToXmlDocument(
 }
 
 function createDataTypeTemplateElement(): Element {
-	const xmlDoc = get(xmlDocument);
-    if (!xmlDoc) {
-        throw new Error("XML Document is not defined");
-    }
+	const xmlDoc = get(xmlDocument)
+	if (!xmlDoc) {
+		throw new Error('XML Document is not defined')
+	}
 	const newDataTypeTemplatesElement = createElement(
 		xmlDoc,
 		'DataTypeTemplates',
