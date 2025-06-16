@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.17.3] - 2025-06-16
 
-### Added
+### Changed
 
 - Improve UX by gathering data only when needed on signal list pdf generation
 - Remove duplicates in generated tables
