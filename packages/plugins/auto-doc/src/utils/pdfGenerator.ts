@@ -1,14 +1,11 @@
-import type { ImageData } from '@/components/elements/image-element/types.image'
-import type {
-	SignalListOnSCD,
-	SignalRow
-} from '@/components/elements/signal-list-element/types.signal-list'
-import type { ElementType } from '@/components/elements/types.elements'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import zipcelx from 'zipcelx'
-import { docTemplatesStore, placeholderStore } from '../stores'
-import type { Columns, SignalType } from '../stores'
+import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
+// TYPES
+import type { ImageData } from '@/components/elements/image-element/types.image'
+import type { SignalListOnSCD } from '@/components/elements/signal-list-element/types.signal-list'
+import type { ElementType } from '@/components/elements/types.elements'
 
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
@@ -270,16 +267,14 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		) as SignalListOnSCD
 
 		const selectedRows = parsedBlockContent.selected
-		const tableRows = parsedBlockContent.matches.matchedRowsForTablePdf
+		const tableRows =
+			signallistStore.searchForMatchOnSignalList(selectedRows)
 
-		const rows = tableRows.flatMap((row) => {
-			return row.matchedFilteredValuesForPdf
-		})
 		const header = selectedRows.map((r) => ({
 			value: r.primaryInput,
 			type: 'string'
 		}))
-		const individualRows = rows.map((row) =>
+		const individualRows = tableRows.map((row) =>
 			row.map((r) => ({ value: r, type: 'string' }))
 		)
 
@@ -392,30 +387,30 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	doc.save(`${templateTitle}.pdf`)
 }
 
-function generateTableBody(tableRows: string[][], tableHeader: TableHeader[]) {
-	const generatedRows = tableRows.map((row) => {
-		return tableHeader.reduce(
-			(acc: Record<string, string>, col, index) => {
-				acc[col.dataKey as string] = row[index]
-				return acc
-			},
-			{} as Record<string, string>
-		)
-	})
-	return generatedRows
-}
+// function generateTableBody(tableRows: string[][], tableHeader: TableHeader[]) {
+// 	const generatedRows = tableRows.map((row) => {
+// 		return tableHeader.reduce(
+// 			(acc: Record<string, string>, col, index) => {
+// 				acc[col.dataKey as string] = row[index]
+// 				return acc
+// 			},
+// 			{} as Record<string, string>
+// 		)
+// 	})
+// 	return generatedRows
+// }
 
-type TableHeader = {
-	header: string
-	dataKey: keyof typeof SignalType | keyof typeof Columns
-}
+// type TableHeader = {
+// 	header: string
+// 	dataKey: keyof typeof SignalType | keyof typeof Columns
+// }
 
-function generateTableHeader(selectedRows: SignalRow[]): TableHeader[] {
-	return selectedRows.map((row) => ({
-		header: row.primaryInput,
-		dataKey: row.searchKey
-	}))
-}
+// function generateTableHeader(selectedRows: SignalRow[]): TableHeader[] {
+// 	return selectedRows.map((row) => ({
+// 		header: row.primaryInput,
+// 		dataKey: row.searchKey
+// 	}))
+// }
 
 function downloadAsPdf(templateId: string) {
 	const template = docTemplatesStore.getDocumentTemplate(templateId)

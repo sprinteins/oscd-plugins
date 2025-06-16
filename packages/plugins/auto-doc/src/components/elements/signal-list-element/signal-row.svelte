@@ -2,7 +2,9 @@
 import Checkbox from '@smui/checkbox'
 import Textfield from '@smui/textfield'
 import { createEventDispatcher } from 'svelte'
-import type { Label, LabelText, SignalRow } from './types.signal-list'
+// TYPES
+import type { Label, LabelText } from './types.signal-list'
+import type { SignalRow } from '@/stores/signallist.store.d'
 
 import { debounce } from '@/utils/'
 import { signalDndStore } from '../../../stores/signal-dnd.store'

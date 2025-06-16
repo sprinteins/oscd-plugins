@@ -1,5 +1,5 @@
 // SVELTE
-import { get, writable } from 'svelte/store'
+import { get } from 'svelte/store'
 // STORES
 import { SignalType, pluginStore } from './index'
 // TYPES
@@ -22,6 +22,8 @@ import {
 	queryLN,
 	queryLNode
 } from '../utils'
+// TYPES
+import type { SignalRow } from './signallist.store.d'
 
 //====== STORES ======//
 const { xmlDocument } = pluginStore
@@ -422,6 +424,75 @@ function getPublishingLogicalDevices(
 	return { pdfRows: pdfRowWithSubscribers, invaliditiesReports }
 }
 
+function searchForMatchOnSignalList(selectedRows: SignalRow[]): string[][] {
+	const publisherFilter: MessagePublisherFilter = {}
+	const subscriberFilter: MessageSubscriberFilter = {}
+
+	for (const { searchKey, secondaryInput } of selectedRows) {
+		if (doesIncludeSignalType(searchKey)) {
+			subscriberFilter[searchKey as keyof MessageSubscriberFilter] =
+				secondaryInput
+		} else {
+			publisherFilter[searchKey as keyof MessagePublisherFilter] =
+				secondaryInput
+		}
+	}
+
+	const { pdfRows } = getPublishingLogicalDevices(
+		publisherFilter,
+		subscriberFilter
+	)
+
+	const pdfResultWithoutDuplicates = removeMatchDuplicates(pdfRows)
+
+	return pdfResultWithoutDuplicates
+}
+
+function removeMatchDuplicates(pdfRows: PdfRowStructure[]): string[][] {
+	return pdfRows.reduce(
+		(accumulator: string[][], current: PdfRowStructure) => {
+			// Process each row in matchedFilteredValuesForPdf
+			for (const row of current.matchedFilteredValuesForPdf) {
+				// Create a new row with unique values
+				const uniqueRow = row.map((value) => {
+					// Split comma-separated values and remove duplicates
+					const values = value
+						.split(', ')
+						.filter((v) => v.trim() !== '')
+					const uniqueValues = [...new Set(values)]
+					return uniqueValues.join(', ')
+				})
+
+				// Check if this row already exists in the accumulator
+				let rowExists = false
+				for (const accRow of accumulator) {
+					if (accRow.length === uniqueRow.length) {
+						let allMatch = true
+						for (let i = 0; i < accRow.length; i++) {
+							if (accRow[i] !== uniqueRow[i]) {
+								allMatch = false
+								break
+							}
+						}
+						if (allMatch) {
+							rowExists = true
+							break
+						}
+					}
+				}
+
+				// Only add if this is a unique row
+				if (!rowExists) {
+					accumulator.push(uniqueRow)
+				}
+			}
+
+			return accumulator
+		},
+		[] as string[][]
+	)
+}
+
 //==== PRIVATE ACTIONS
 function setSubscriber(filteredPdfRows: PdfRowStructure[]): PdfRowStructure[] {
 	return filteredPdfRows.map((r) => {
@@ -483,9 +554,17 @@ function filterSubscriber(
 		return {
 			...pdfRow,
 			matchedSubscribers: {
-				[SignalType.GOOSE]: gooseSubscribers,
-				[SignalType.MMS]: mmsSubscribers,
-				[SignalType.SV]: svSubscribers
+				[SignalType.GOOSE]: Object.keys(filter).includes(
+					SignalType.GOOSE
+				)
+					? gooseSubscribers
+					: [],
+				[SignalType.MMS]: Object.keys(filter).includes(SignalType.MMS)
+					? mmsSubscribers
+					: [],
+				[SignalType.SV]: Object.keys(filter).includes(SignalType.SV)
+					? svSubscribers
+					: []
 			}
 		}
 	})
@@ -609,6 +688,13 @@ function getValueFromNestedProperty(
 	return value
 }
 
+function doesIncludeSignalType(searchKey: string) {
+	return [SignalType.GOOSE, SignalType.MMS, SignalType.SV].includes(
+		SignalType[searchKey as unknown as keyof typeof SignalType]
+	)
+}
+
 export const signallistStore = {
-	getPublishingLogicalDevices
+	getPublishingLogicalDevices,
+	searchForMatchOnSignalList
 }

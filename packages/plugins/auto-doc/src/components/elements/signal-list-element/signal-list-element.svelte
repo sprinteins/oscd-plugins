@@ -1,15 +1,11 @@
 <script lang="ts">
-import { signallistStore } from '@/stores'
 import Checkbox from '@smui/checkbox'
 
-import type { MessagePublisherFilter, MessageSubscriberFilter } from '@/stores'
 import { Columns, SignalType } from '@/stores/'
 import SignalRow from './signal-row.svelte'
-import type {
-	PdfRows,
-	SignalListOnSCD,
-	SignalRow as SignalRowType
-} from './types.signal-list'
+// TYPES
+import type { SignalListOnSCD } from './types.signal-list'
+import type { SignalRow as SignalRowType } from '@/stores/signallist.store.d'
 
 // prop
 export let onContentChange: (newContent: string) => void
@@ -20,6 +16,7 @@ const parsedContent: SignalListOnSCD = isContentNotEmpty()
 	: getEmptyValues()
 const prevSelectedRows = parsedContent.selected
 
+// represents columns from 1 to 14 in the UI
 const columns: SignalRowType[] = Object.entries(Columns).map(
 	([key, value], i) => {
 		const prevSelected: SignalRowType | undefined =
@@ -43,6 +40,7 @@ const columns: SignalRowType[] = Object.entries(Columns).map(
 	}
 )
 
+// represents columns from 15 to 17 in the UI
 const messages: SignalRowType[] = Object.entries(SignalType).map(
 	([key, value], i) => {
 		const prevSelected: SignalRowType | undefined =
@@ -69,7 +67,6 @@ const messages: SignalRowType[] = Object.entries(SignalType).map(
 $: mergedColsAndMessages = [...columns, ...messages].sort(
 	(a, b) => a.index - b.index
 )
-$: selectedRows = mergedColsAndMessages.filter((row) => row.isSelected)
 $: columnsLength = columns.length
 
 function getEmptyValues(): SignalListOnSCD {
@@ -85,11 +82,10 @@ function updateSignalRow(
 	key: keyof SignalRowType,
 	value: string
 ) {
-	console.log('merged before', mergedColsAndMessages)
 	mergedColsAndMessages = mergedColsAndMessages.map((row, i) =>
 		i === index ? { ...row, [key]: value } : row
 	)
-	console.log('merged after', mergedColsAndMessages)
+
 	emitSelectedRows()
 }
 
@@ -111,8 +107,7 @@ function emitSelectedRows() {
 	const selectedWithOrder = allRowsWithOrder.filter((row) => row.isSelected)
 
 	const results = {
-		selected: selectedWithOrder,
-		matches: searchForMatchOnSignalList()
+		selected: selectedWithOrder
 	}
 	onContentChange(JSON.stringify(results))
 }
@@ -120,35 +115,6 @@ function getSelectedRowIfPreviouslySelected(
 	searchKey: keyof typeof Columns | keyof typeof SignalType
 ): SignalRowType | undefined {
 	return prevSelectedRows.find((selected) => selected.searchKey === searchKey)
-}
-
-function searchForMatchOnSignalList(): PdfRows {
-	const publisherFilter: MessagePublisherFilter = {}
-	const subscriberFilter: MessageSubscriberFilter = {}
-
-	for (const { searchKey, secondaryInput } of selectedRows) {
-		if (doesIncludeSignalType(searchKey)) {
-			subscriberFilter[searchKey as keyof MessageSubscriberFilter] =
-				secondaryInput
-		} else {
-			publisherFilter[searchKey as keyof MessagePublisherFilter] =
-				secondaryInput
-		}
-	}
-
-	const { pdfRows, invaliditiesReports } =
-		signallistStore.getPublishingLogicalDevices(
-			publisherFilter,
-			subscriberFilter
-		)
-
-	return { matchedRowsForTablePdf: pdfRows }
-}
-
-function doesIncludeSignalType(searchKey: string) {
-	return [SignalType.GOOSE, SignalType.MMS, SignalType.SV].includes(
-		SignalType[searchKey as unknown as keyof typeof SignalType]
-	)
 }
 
 function handleReorder(
