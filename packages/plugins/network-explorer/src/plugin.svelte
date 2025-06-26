@@ -1,4 +1,4 @@
-<svelte:options tag={null} />
+<svelte:options customElement={null} />
 
 <script lang="ts">
 	import { NetworkExplorer } from "@oscd-plugins/uilib/src/lib/plugins/network-explorer";
