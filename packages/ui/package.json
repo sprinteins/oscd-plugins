@@ -33,11 +33,11 @@
 	},
 	"dependencies": {
 		"@oscd-plugins/core": "workspace:^",
-		"@smui/button": "^7.0.0",
-		"@smui/drawer": "^7.0.0",
-		"@smui/icon-button": "7.0.0",
-		"@smui/top-app-bar": "^7.0.0",
+		"@smui/button": "^8.0.0-beta.3",
+		"@smui/drawer": "^8.0.0-beta.3",
+		"@smui/icon-button": "8.0.0-beta.3",
+		"@smui/top-app-bar": "^8.0.0-beta.3",
 		"normalize.css": "^8.0.1",
-		"svelte-material-ui": "^7.0.0"
+		"svelte-material-ui": "^8.0.0-beta.3"
 	}
 }
