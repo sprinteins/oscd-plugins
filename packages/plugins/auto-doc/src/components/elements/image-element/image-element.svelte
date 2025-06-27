@@ -1,17 +1,21 @@
 <script lang="ts">
 
-	export let content = "";
-	export let onContentChange: (newContent: string) => void;
 	import {imageUtils} from "@/utils"
     import type { ImageData } from "./types.image";
+	interface Props {
+		content?: string;
+		onContentChange: (newContent: string) => void;
+	}
+
+	let { content = "", onContentChange }: Props = $props();
 
 	let parsedContent: ImageData = {scale: "Small", base64Data: ""};
 	if(content) {
 		parsedContent = JSON.parse(content) as ImageData;
 	}
 
-	let imagePreview = imageUtils.createImageFromBase64(parsedContent?.base64Data).src;
-	let imageScale: string = parsedContent?.scale || "Small";
+	let imagePreview = $state(imageUtils.createImageFromBase64(parsedContent?.base64Data).src);
+	let imageScale: string = $state(parsedContent?.scale || "Small");
 
 	async function handleImageUpload(event) {
 		const file = event.target.files[0];
@@ -47,11 +51,11 @@
 
 <div class="image-upload-section">
 	<label for="imageUpload">Upload Image:</label>
-	<input type="file" id="imageUpload" accept="image/*" on:change={handleImageUpload} />
+	<input type="file" id="imageUpload" accept="image/*" onchange={handleImageUpload} />
 	{#if imagePreview}
 		<div class="image-scale-section">
 			<label for="imageScale">Image size</label>
-			<select id="imageScale" bind:value={imageScale} on:change={handleImageScale}>
+			<select id="imageScale" bind:value={imageScale} onchange={handleImageScale}>
 				<option>Small</option>	
 				<option>Medium</option>	
 				<option>Large</option>	

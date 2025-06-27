@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
     export type FileSelectorChangeEvent = CustomEvent<{ file: File }>
 </script>
 
@@ -11,7 +11,7 @@
     }
 
     const dispatch = createEventDispatcher()
-    let input: HTMLInputElement
+    let input: HTMLInputElement = $state()
 
     function onChange(e: Event) {
         const files = (e.target as HTMLInputElement).files
@@ -32,7 +32,7 @@
     class="file-selector"
     type="file"
     accept={accept}
-    on:change={onChange} />
+    onchange={onChange} />
 
 <style>
     .file-selector {

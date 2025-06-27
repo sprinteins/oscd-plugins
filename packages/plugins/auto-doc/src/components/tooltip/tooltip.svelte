@@ -2,12 +2,23 @@
 import { onDestroy } from 'svelte'
 import type { TooltipPosition } from './types.tooltip'
 
-export let text = ''
-export let position: TooltipPosition = 'top'
-export let isPositionModified = false
-export let delayInMS = 500
+  interface Props {
+    text?: string;
+    position?: TooltipPosition;
+    isPositionModified?: boolean;
+    delayInMS?: number;
+    children?: import('svelte').Snippet;
+  }
 
-let isTooltipVisible = false
+  let {
+    text = '',
+    position = 'top',
+    isPositionModified = false,
+    delayInMS = 500,
+    children
+  }: Props = $props();
+
+let isTooltipVisible = $state(false)
 let timeoutId: ReturnType<typeof setTimeout>
 
 const showTooltip = () => {
@@ -28,11 +39,11 @@ onDestroy(() => {
 
   <div
         class="tooltip-container"
-        on:mouseenter={showTooltip}
-        on:mouseleave={hideTooltip}
+        onmouseenter={showTooltip}
+        onmouseleave={hideTooltip}
         role="tooltip"
     >
-        <slot></slot>
+        {@render children?.()}
 
         {#if isTooltipVisible}
             <div class="tooltip {position} {isPositionModified ? 'modified' : ''} visible">

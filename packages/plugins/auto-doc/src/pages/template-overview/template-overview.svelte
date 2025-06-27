@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import {Table, FileSelector} from '@/components';
     import type { FileSelectorChangeEvent } from '@/components';
     import type {Template} from "./types.template-overview";
@@ -14,10 +16,10 @@
     import {queryAutoDocElement} from '@/utils'
     import { ROUTES } from "@/constants"
 
-    let menu: Menu
-    let fileSelector: FileSelector
-    let isMasterTemplate = docTemplatesStore.getMasterTemplateFlag()
-    let allTemplates: Element[] = []
+    let menu: Menu = $state()
+    let fileSelector: FileSelector = $state()
+    let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
+    let allTemplates: Element[] = $state([])
     const emptyTitleOrDescription = "N/A"
 
     onMount(() => {
@@ -53,9 +55,6 @@
     }
 
 
-    $: templatesConvertedToTableRow = allTemplates.map(mapElementToTableRow)
-    $: docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
-    $: importToolTipText = isMasterTemplate ? "No import allowed for master templates" : ""
 
 
     function mapElementToTableRow(template: Element):Template{
@@ -106,6 +105,11 @@
 
 
     
+    let templatesConvertedToTableRow = $derived(allTemplates.map(mapElementToTableRow))
+    run(() => {
+        docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
+    });
+    let importToolTipText = $derived(isMasterTemplate ? "No import allowed for master templates" : "")
 </script>
 
 <div class="template-overview">

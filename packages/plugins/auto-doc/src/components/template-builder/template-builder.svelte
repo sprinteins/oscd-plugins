@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import Button, {Label} from "@smui/button"
     import {IconWrapper} from "@oscd-plugins/ui"
 
@@ -14,8 +16,13 @@
     import type {BlockElement, ElementType, ElementMap} from '@/components/elements/types.elements'
     import {MOVE_BLOCK_DIRECTION} from "@/constants"
 
-    // Prop
-    export let template: Element
+    
+    interface Props {
+        // Prop
+        template: Element;
+    }
+
+    let { template }: Props = $props();
 
     const { editCount } = pluginStore
 
@@ -23,27 +30,28 @@
         return Array.from(template.querySelectorAll("Block"))
     }
 
-    let allBlocks = getAllBlocks()
+    let allBlocks = $state(getAllBlocks())
 
-    $: {
+    run(() => {
         $editCount
         allBlocks = getAllBlocks()
-    } 
+    }); 
 
-    $: mappedBlocks = allBlocks.map(block => {
+    let mappedBlocks = $derived(allBlocks.map(block => {
         return {
             id: block.getAttribute("id") as string,
             type: block.getAttribute("type") as ElementType,
             content: block.textContent
         } as BlockElement
-    })
+    }))
 
     
 
 
-    let isElementsChoiceVisible = false
-    $: isCreateTableDialogOpen = false;
-    $: blockElements = mappedBlocks;
+    let isElementsChoiceVisible = $state(false)
+    let isCreateTableDialogOpen = $state(false);
+    
+    let blockElements = $derived(mappedBlocks);
     const componentMap : ElementMap  = {
         "text": TextElement,
         "image": ImageElement,
@@ -133,8 +141,8 @@
         <div class="elements-list">
             {#each blockElements as blockElement (blockElement.id)}
                 <ElementWrapper elementId={blockElement.id} on:elementDuplicate={duplicateBlockElement} on:elementDelete={deleteBlockElement} on:elementMove={(direction) => moveBlockElement(direction)}>
-                    <svelte:component 
-                        this={componentMap[blockElement.type]}
+                    {@const SvelteComponent = componentMap[blockElement.type]}
+                    <SvelteComponent
                         content={blockElement.content}
                         onContentChange={(newContent) => handleContentChange(blockElement.id, newContent)}
                     />

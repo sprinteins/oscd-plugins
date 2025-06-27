@@ -4,17 +4,22 @@ import TableColumn from "./table-column.svelte";
     import PlaceholderHelpDialog from "@/components/dialog/placeholder-help-dialog.svelte";
     import Tooltip from "@/components/tooltip/tooltip.svelte";
 
-    export let content = "";
-	export let onContentChange: (newContent: string) => void;
+    interface Props {
+        content?: string;
+        onContentChange: (newContent: string) => void;
+    }
 
-    let data = [["", ""], ["", ""], ["", ""], ["", ""]];
+    let { content = "", onContentChange }: Props = $props();
 
-    let selectedCell = {
+    let data = $state([["", ""], ["", ""], ["", ""], ["", ""]]);
+
+    let selectedCell = $state({
         column: 0,
         row: 0,
-    };
+    });
 
-    $: isPlaceholderHelpDialogOpen = false;
+    let isPlaceholderHelpDialogOpen = $state(false);
+    
 
     if(content.trim()) {
         data = JSON.parse(content);

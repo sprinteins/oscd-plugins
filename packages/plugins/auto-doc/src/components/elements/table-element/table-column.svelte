@@ -4,9 +4,13 @@
     
     import { debounce } from "@/utils";
 
-    export let rows = 2;
-    export let data = ["", ""];
-    export let columnIndex: number;
+    interface Props {
+        rows?: number;
+        data?: any;
+        columnIndex: number;
+    }
+
+    let { rows = 2, data = $bindable(["", ""]), columnIndex }: Props = $props();
     
     const ONE_SECOND_IN_MS = 1000;
     

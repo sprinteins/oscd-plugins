@@ -6,7 +6,11 @@
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
     import {createEventDispatcher} from "svelte"
 
-    export let allTemplates : Template[];
+    interface Props {
+        allTemplates: Template[];
+    }
+
+    let { allTemplates }: Props = $props();
 
     const dispatch = createEventDispatcher()
     let selectedTemplates : Template[] = [];

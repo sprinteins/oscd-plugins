@@ -11,16 +11,21 @@
 	import { Columns, SignalType } from '@/stores/'
 	import type { MessagePublisherFilter, MessageSubscriberFilter } from '@/stores'
 	
-	// prop
-	export let onContentChange: (newContent: string) => void
-	export let content = ''
+	
+	interface Props {
+		// prop
+		onContentChange: (newContent: string) => void;
+		content?: string;
+	}
+
+	let { onContentChange, content = '' }: Props = $props();
 	
 	const parsedContent: SignalListOnSCD = isContentNotEmpty()
 		? JSON.parse(content)
 		: getEmptyValues()
 	const prevSelectedRows = parsedContent.selected
 	
-	const columns: SignalRowType[] = Object.entries(Columns).map(
+	const columns: SignalRowType[] = $state(Object.entries(Columns).map(
 		([key, value], i) => {
 			const prevSelected: SignalRowType | undefined =
 				getSelectedRowIfPreviouslySelected(key as keyof typeof Columns)
@@ -38,9 +43,9 @@
 				}
 			}
 		}
-	)
+	))
 	
-	const messages: SignalRowType[] = Object.entries(SignalType).map(
+	const messages: SignalRowType[] = $state(Object.entries(SignalType).map(
 		([key, value], i) => {
 			const prevSelected: SignalRowType | undefined =
 				getSelectedRowIfPreviouslySelected(key as keyof typeof SignalType)
@@ -58,11 +63,11 @@
 				}
 			}
 		}
-	)
+	))
 	
-	$: mergedColsAndMessages = [...columns, ...messages].sort((a, b) => a.index - b.index)
-	$: selectedRows = mergedColsAndMessages.filter((row) => row.isSelected)
-	$: columnsLength = columns.length
+	let mergedColsAndMessages = $derived([...columns, ...messages].sort((a, b) => a.index - b.index))
+	let selectedRows = $derived(mergedColsAndMessages.filter((row) => row.isSelected))
+	let columnsLength = $derived(columns.length)
 	
 	function getEmptyValues(): SignalListOnSCD {
 		return { selected: [], matches: { matchedRowsForTablePdf: [] } }
@@ -83,7 +88,7 @@
 		emitSelectedRows()
 	}
 	
-    let areAllCheckboxesSelected = false
+    let areAllCheckboxesSelected = $state(false)
 	function toggleAllCheckboxes(newValue: boolean) {
 		mergedColsAndMessages = mergedColsAndMessages.map((row) => ({
 			...row,

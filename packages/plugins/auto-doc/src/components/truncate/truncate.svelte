@@ -3,10 +3,19 @@
     import type {TooltipPosition} from "@/components/tooltip/types.tooltip"
 
   
-    export let text = '';        
-    export let maxChars = 50;    
-    export let tooltipPosition: TooltipPosition = 'top'; 
-    export let tooltipDelayInMS = 300;      
+  interface Props {
+    text?: string;
+    maxChars?: number;
+    tooltipPosition?: TooltipPosition;
+    tooltipDelayInMS?: number;
+  }
+
+  let {
+    text = '',
+    maxChars = 50,
+    tooltipPosition = 'top',
+    tooltipDelayInMS = 300
+  }: Props = $props();
   
 
     let isTextToBeTruncated = text.length > maxChars;

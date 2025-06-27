@@ -3,11 +3,15 @@
     import Dialog, { Title, Content, Actions } from "@smui/dialog";
     import Button, { Label } from "@smui/button";
 
-    export let isOpen = false;
-    export let onHandleSubmit = (_rows: number, _columns: number) => {};
+    interface Props {
+        isOpen?: boolean;
+        onHandleSubmit?: any;
+    }
 
-    let rows = 2;
-    let columns = 4;
+    let { isOpen = $bindable(false), onHandleSubmit = (_rows: number, _columns: number) => {} }: Props = $props();
+
+    let rows = $state(2);
+    let columns = $state(4);
 
     let minRows = 2;
     let maxRows = 2;

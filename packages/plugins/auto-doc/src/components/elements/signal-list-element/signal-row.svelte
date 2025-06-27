@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { run, preventDefault, createBubbler } from 'svelte/legacy';
+
+    const bubble = createBubbler();
     import Checkbox from '@smui/checkbox'
     import Textfield from '@smui/textfield'
     import { createEventDispatcher } from 'svelte'
@@ -7,18 +10,32 @@
     import { debounce } from '@/utils/'
     import { signalDndStore } from '../../../stores/signal-dnd.store'
     
-    //Props
-    export let idx: number;
-    export let id: string;
-    export let label: LabelText = {
+    
+    interface Props {
+        //Props
+        idx: number;
+        id: string;
+        label?: LabelText;
+        isSelected?: boolean;
+        column1?: string;
+        column2?: string;
+        isInColumnsZone: boolean;
+        columnsLength: number;
+    }
+
+    let {
+        idx,
+        id,
+        label = {
         col1Label: { name: '', hasSuffix: false },
         col2Label: { name: '', hasSuffix: false }
-    }
-    export let isSelected = false
-    export let column1 = ''
-    export let column2 = ''
-    export let isInColumnsZone: boolean;
-    export let columnsLength: number;
+    },
+        isSelected = $bindable(false),
+        column1 = $bindable(''),
+        column2 = $bindable(''),
+        isInColumnsZone,
+        columnsLength
+    }: Props = $props();
     
     
     const ONE_SECOND_IN_MS = 1000
@@ -38,11 +55,13 @@
         return hasSuffix ? `Column ${idx + 1} "${name}"` : name
     }
     
-    $: if (isSelected || !isSelected) {
-        dispatch('update', { key: 'isSelected', value: isSelected })
-    }
+    run(() => {
+        if (isSelected || !isSelected) {
+            dispatch('update', { key: 'isSelected', value: isSelected })
+        }
+    });
     
-    let isDraggedOver = false;
+    let isDraggedOver = $state(false);
 
     function isDropAllowed(): boolean {
         const draggedIsInColumnsZone = signalDndStore.draggedIndex < columnsLength;
@@ -76,9 +95,9 @@
         signalDndStore.handleDragEnd();
     }
 
-    $: isDragging = signalDndStore.draggedIndex === idx;
-    $: isBlockedZone = signalDndStore.draggedIndex !== -1 && 
-                       (signalDndStore.draggedIndex < columnsLength) !== (idx < columnsLength);
+    let isDragging = $derived(signalDndStore.draggedIndex === idx);
+    let isBlockedZone = $derived(signalDndStore.draggedIndex !== -1 && 
+                       (signalDndStore.draggedIndex < columnsLength) !== (idx < columnsLength));
 </script>
     
     
@@ -87,8 +106,8 @@
                 role="row"
                 tabindex="0"
                 aria-label="Draggable signal row"
-                on:dragover={handleDragOver}
-                on:dragleave={handleDragLeave}>
+                ondragover={handleDragOver}
+                ondragleave={handleDragLeave}>
                 <div class="signal-row"
                         data-row-id={id}
                         class:dragging={isDragging}
@@ -101,12 +120,12 @@
                                                 role="button"
                                                 tabindex="0"
                                                 aria-label="Drag handle"
-                                                on:dragstart={(event) => {
+                                                ondragstart={(event) => {
                                                     const row = event.target.closest('.signal-row');
                                                     event.dataTransfer?.setDragImage(row, 0, 0);
                                                     signalDndStore.handleDragStart(idx);
                                                 }}
-                                                on:dragend={() => signalDndStore.handleDragEnd(idx)}
+                                                ondragend={() => signalDndStore.handleDragEnd(idx)}
                                         >
                                                 <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
                                                         <circle cx="6" cy="6" r="2"/>
@@ -137,15 +156,15 @@
                                 </Textfield>
                 </div>
         
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
                 <div
                         class="drop-zone"
                         class:active={isDraggedOver && 
                                      signalDndStore.draggedIndex !== -1 && 
                                      idx !== signalDndStore.draggedIndex &&
                                      isDropAllowed()}
-                        on:drop|preventDefault={handleDrop}
-                        on:dragover|preventDefault
+                        ondrop={preventDefault(handleDrop)}
+                        ondragover={preventDefault(bubble('dragover'))}
                 >
                 </div>
         </div>

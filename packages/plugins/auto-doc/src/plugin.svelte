@@ -1,5 +1,7 @@
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	// COMPONENTS
 	import { MaterialTheme, CustomIconButton } from '@oscd-plugins/ui'
 	import Router from 'svelte-spa-router'
@@ -13,23 +15,24 @@
 	import type { PluginType } from '@oscd-plugins/core'
 	
 	//==== INITIALIZATION ====//
-	//props
-	export let xmlDocument: XMLDocument | undefined = undefined
-	export let pluginHostElement: Element
-	export let pluginType: PluginType = 'editor'
-	export let editCount: number
+	
+	interface Props {
+		//props
+		xmlDocument?: XMLDocument | undefined;
+		pluginHostElement: Element;
+		pluginType?: PluginType;
+		editCount: number;
+	}
+
+	let {
+		xmlDocument = undefined,
+		pluginHostElement,
+		pluginType = 'editor',
+		editCount
+	}: Props = $props();
 	
 	
 
-	//==== REACTIVITY ====//
-	
-	
-	$: triggerUpdate({
-		updateTrigger: editCount,
-		newXMLDocument: xmlDocument,
-		newPluginHostElement: pluginHostElement,
-		newEditCount: editCount,
-	})
 	
 	async function triggerUpdate(
 		{updateTrigger, newXMLDocument, newPluginHostElement, newEditCount} : 
@@ -42,6 +45,17 @@
 		})
 		docTemplatesStore.init()
 	}
+	//==== REACTIVITY ====//
+	
+	
+	run(() => {
+		triggerUpdate({
+			updateTrigger: editCount,
+			newXMLDocument: xmlDocument,
+			newPluginHostElement: pluginHostElement,
+			newEditCount: editCount,
+		})
+	});
 </script>
 	
 

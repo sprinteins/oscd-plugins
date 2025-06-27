@@ -13,12 +13,17 @@
     import CustomIconButton from '@oscd-plugins/ui/src/components/smui-wrapper/custom-icon-button.svelte';
 
 
-    let element: Element;
-    let editor: Editor;
-    export let content = '<p>Hello World! 🌍️ </p>';
-    export let onContentChange: (newContent: string) => void;
+    let element: Element = $state();
+    let editor: Editor = $state();
+    interface Props {
+        content?: string;
+        onContentChange: (newContent: string) => void;
+    }
 
-    $: isPlaceholderHelpDialogOpen = false;
+    let { content = '<p>Hello World! 🌍️ </p>', onContentChange }: Props = $props();
+
+    let isPlaceholderHelpDialogOpen = $state(false);
+    
 
 	const ONE_SECOND_IN_MS = 1000;
 	const debouncedContentChange = debounce(onContentChange, ONE_SECOND_IN_MS);
@@ -163,7 +168,7 @@
         </div>
     </div>
 {/if}
-<div class="typing-area" bind:this={element} />
+<div class="typing-area" bind:this={element}></div>
 
 <style lang="scss">
     .text-controls {

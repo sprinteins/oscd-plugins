@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { stopPropagation, createBubbler } from 'svelte/legacy';
+
+    const bubble = createBubbler();
     import Button from "@smui/button"
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
     import {TemplateBuilder, Tooltip} from '@/components';
@@ -10,13 +13,17 @@
     import {pdfGenerator} from '@/utils'
 
     type Params = {id?: string}
-    export let params:Params = {} //params passed from the router
+    interface Props {
+        params?: Params; //params passed from the router
+    }
 
-    let title = "";
-    let description = "";
-    let isMetadataVisible = false
+    let { params = {} }: Props = $props();
+
+    let title = $state("");
+    let description = $state("");
+    let isMetadataVisible = $state(false)
     let templateId: string|undefined = undefined
-    let template: Element | null = null;
+    let template: Element | null = $state(null);
     
     const NO_TITLE_TEXT = "Untitled Document";
     
@@ -73,7 +80,7 @@
             }
 
     }   
-    $: templateTitle = title.length === 0 ? NO_TITLE_TEXT : title;
+    let templateTitle = $derived(title.length === 0 ? NO_TITLE_TEXT : title);
 
     function updateTitleAndDescription(){
        docTemplatesStore.editDocumentTemplateTitleAndDescription(templateId as string, title, description)
@@ -94,8 +101,8 @@
                 <div class="template-title">
                     <CustomIconButton icon="arrow_back" color="black" on:click={askForEmptyTitleConfirmation}/>
                     <Tooltip text="Rename">
-                        <div class="title" role="button" tabindex="0" on:click|stopPropagation={displayTitleAndDescription} 
-                        on:keydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}
+                        <div class="title" role="button" tabindex="0" onclick={stopPropagation(displayTitleAndDescription)} 
+                        onkeydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}
                         >
                         {templateTitle}
                     </Tooltip>
@@ -112,9 +119,9 @@
     {#if isMetadataVisible}
         <div class="template-metadata"
             use:clickOutside={closeTitleAndDescription}
-            on:click|stopPropagation
+            onclick={stopPropagation(bubble('click'))}
             role="dialog"
-            on:keydown={(e) => e.key === 'Escape' && closeTitleAndDescription()}
+            onkeydown={(e) => e.key === 'Escape' && closeTitleAndDescription()}
             >
                 <Textfield
                     bind:value={title}

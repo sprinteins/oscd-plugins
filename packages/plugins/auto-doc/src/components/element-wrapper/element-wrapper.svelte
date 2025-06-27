@@ -3,8 +3,14 @@
     import {createEventDispatcher} from "svelte"
     import {MOVE_BLOCK_DIRECTION} from "@/constants"
 
-    //Prop
-    export let elementId: string
+    
+    interface Props {
+        //Prop
+        elementId: string;
+        children?: import('svelte').Snippet;
+    }
+
+    let { elementId, children }: Props = $props();
 
     const dispatch = createEventDispatcher()
 
@@ -31,7 +37,7 @@
         <CustomIconButton icon="arrow_upward" color="black" size="small" on:click={() => moveBlockElement(MOVE_BLOCK_DIRECTION.UP)}/>
         <CustomIconButton icon="arrow_downward" color="black" size="small" on:click={() => moveBlockElement(MOVE_BLOCK_DIRECTION.DOWN)}/>
     </div>
-    <slot/>
+    {@render children?.()}
 </div>
 
 
