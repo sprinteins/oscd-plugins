@@ -49,7 +49,7 @@ import TableColumn from "./table-column.svelte";
     </div>
     <div class="table-element-grid">
         {#each data as column, columnIndex}
-            <TableColumn bind:data={column} 
+            <TableColumn bind:data={data[columnIndex]} 
                 {columnIndex} 
                 on:focus={e => selectedCell = e.detail}
                 on:update={e => updateData(columnIndex, e.detail.row, e.detail.value)} 

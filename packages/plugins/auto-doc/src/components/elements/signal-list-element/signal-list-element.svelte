@@ -82,18 +82,20 @@
 		key: keyof SignalRowType,
 		value: string
 	) {
+		/* TODO: Remove
 		mergedColsAndMessages = mergedColsAndMessages.map((row, i) =>
 			i === index ? { ...row, [key]: value } : row
 		)
+		*/
+
+		let row = mergedColsAndMessages[index]
+		row[key] = value as unknown as never
 		emitSelectedRows()
 	}
 	
     let areAllCheckboxesSelected = $state(false)
 	function toggleAllCheckboxes(newValue: boolean) {
-		mergedColsAndMessages = mergedColsAndMessages.map((row) => ({
-			...row,
-			isSelected: !newValue
-		}))
+		mergedColsAndMessages.forEach(row => row.isSelected = !newValue)
 		emitSelectedRows()
 	}
 	
@@ -145,6 +147,8 @@
 	function handleReorder(
 		event: CustomEvent<{ draggedIndex: number; dropIndex: number }>
 	) {
+		// TODO: Reimplement reorder once mergedColsAndMessages is state
+		/*
 		const { draggedIndex, dropIndex } = event.detail
 		const newRows = [...mergedColsAndMessages]
 		const [draggedRow] = newRows.splice(draggedIndex, 1)
@@ -156,6 +160,7 @@
 		
 		mergedColsAndMessages = newRows
 		emitSelectedRows()
+		*/
 	}
 	
 	function isInColumnsZone(index: number): boolean {
