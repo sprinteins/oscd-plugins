@@ -1,84 +1,95 @@
 <script lang="ts">
-    import Checkbox from '@smui/checkbox'
-    import Textfield from '@smui/textfield'
-    import { createEventDispatcher } from 'svelte'
-    import type { SignalRow, LabelText, Label } from './types.signal-list'
-    
-    import { debounce } from '@/utils/'
-    import { signalDndStore } from '../../../stores/signal-dnd.store'
-    
-    //Props
-    export let idx: number;
-    export let id: string;
-    export let label: LabelText = {
-        col1Label: { name: '', hasSuffix: false },
-        col2Label: { name: '', hasSuffix: false }
-    }
-    export let isSelected = false
-    export let column1 = ''
-    export let column2 = ''
-    export let isInColumnsZone: boolean;
-    export let columnsLength: number;
-    
-    
-    const ONE_SECOND_IN_MS = 1000
-    
-    const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
-    
-    const dispatch = createEventDispatcher()
-    
-    function handleInputChange(key: keyof SignalRow, value: string) {
-        column1 = key === 'column1' ? value : column1
-        column2 = key === 'column2' ? value : column2
-        dispatch('update', { key, value })
-    }
-    
-    function createSuffixForLabelIfNeeded(label: Label) {
-        const { name, hasSuffix } = label
-        return hasSuffix ? `Column ${idx + 1} "${name}"` : name
-    }
-    
-    $: if (isSelected || !isSelected) {
-        dispatch('update', { key: 'isSelected', value: isSelected })
-    }
-    
-    let isDraggedOver = false;
+import Checkbox from '@smui/checkbox'
+import Textfield from '@smui/textfield'
+import { createEventDispatcher } from 'svelte'
+// TYPES
+import type { Label, LabelText } from './types.signal-list'
+import type { SignalRow } from '@/stores/signallist.store.d'
 
-    function isDropAllowed(): boolean {
-        const draggedIsInColumnsZone = signalDndStore.draggedIndex < columnsLength;
-        const targetIsInColumnsZone = idx < columnsLength;
-        
-        return draggedIsInColumnsZone === targetIsInColumnsZone;
-    }
+import { debounce } from '@/utils/'
+import { signalDndStore } from '../../../stores/signal-dnd.store'
 
-    const handleDragOver = (e: DragEvent) => {
-        e.preventDefault();
-        if (idx === signalDndStore.draggedIndex || !isDropAllowed()) {
-            isDraggedOver = false;
-            return;
-        }
-        isDraggedOver = true;
-        signalDndStore._dropIndex.set(idx);
-    };
+//Props
+export let idx: number
+export let id: string
+export let label: LabelText = {
+	primaryInputLabel: { name: '', hasSuffix: false },
+	secondaryInputLabel: { name: '', hasSuffix: false }
+}
+export let isSelected = false
+export let primaryInput = ''
+export let secondaryInput = ''
+export let isInColumnsZone: boolean
+export let columnsLength: number
 
-    const handleDragLeave = (e: DragEvent) => {
-        const relatedTarget = e.relatedTarget as HTMLElement;
-        if (e.currentTarget && !(e.currentTarget as HTMLElement)?.contains?.(relatedTarget)) {
-            isDraggedOver = false;
-        }
-    };
+const ONE_SECOND_IN_MS = 1000
 
-    const handleDrop = () => {
-        isDraggedOver = false;
-        const { draggedIndex, dropIndex } = signalDndStore;
-        if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex || !isDropAllowed()) return;
-        dispatch('reorder', { draggedIndex, dropIndex });
-        signalDndStore.handleDragEnd();
-    }
+const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
 
-    $: isDragging = signalDndStore.draggedIndex === idx;
-    $: isBlockedZone = signalDndStore.draggedIndex !== -1 && 
-                       (signalDndStore.draggedIndex < columnsLength) !== (idx < columnsLength);
+const dispatch = createEventDispatcher()
+
+function handleInputChange(key: keyof SignalRow, value: string) {
+	primaryInput = key === 'primaryInput' ? value : primaryInput
+	secondaryInput = key === 'secondaryInput' ? value : secondaryInput
+	dispatch('update', { key, value })
+}
+
+function createSuffixForLabelIfNeeded(label: Label) {
+	const { name, hasSuffix } = label
+	return hasSuffix ? `Column ${idx + 1} "${name}"` : name
+}
+
+$: if (isSelected || !isSelected) {
+	dispatch('update', { key: 'isSelected', value: isSelected })
+}
+
+let isDraggedOver = false
+
+function isDropAllowed(): boolean {
+	const draggedIsInColumnsZone = signalDndStore.draggedIndex < columnsLength
+	const targetIsInColumnsZone = idx < columnsLength
+
+	return draggedIsInColumnsZone === targetIsInColumnsZone
+}
+
+const handleDragOver = (e: DragEvent) => {
+	e.preventDefault()
+	if (idx === signalDndStore.draggedIndex || !isDropAllowed()) {
+		isDraggedOver = false
+		return
+	}
+	isDraggedOver = true
+	signalDndStore._dropIndex.set(idx)
+}
+
+const handleDragLeave = (e: DragEvent) => {
+	const relatedTarget = e.relatedTarget as HTMLElement
+	if (
+		e.currentTarget &&
+		!(e.currentTarget as HTMLElement)?.contains?.(relatedTarget)
+	) {
+		isDraggedOver = false
+	}
+}
+
+const handleDrop = () => {
+	isDraggedOver = false
+	const { draggedIndex, dropIndex } = signalDndStore
+	if (
+		draggedIndex === -1 ||
+		dropIndex === -1 ||
+		draggedIndex === dropIndex ||
+		!isDropAllowed()
+	)
+		return
+	dispatch('reorder', { draggedIndex, dropIndex })
+	signalDndStore.handleDragEnd()
+}
+
+$: isDragging = signalDndStore.draggedIndex === idx
+$: isBlockedZone =
+	signalDndStore.draggedIndex !== -1 &&
+	signalDndStore.draggedIndex < columnsLength !== idx < columnsLength
 </script>
     
     
@@ -120,18 +131,18 @@
                                         <Checkbox bind:checked={isSelected} />
                                 </div>
                                 <Textfield
-                                        bind:value={column1}
+                                        bind:value={primaryInput}
                                         variant="outlined"
-                                        label={createSuffixForLabelIfNeeded(label.col1Label)}
-                                        on:input= {e => debounceUserInput('column1', e.target.value)}
+                                        label={createSuffixForLabelIfNeeded(label.primaryInputLabel)}
+                                        on:input= {e => debounceUserInput('primaryInput', e.target.value)}
                                         disabled={!isSelected}
                                 >
                                 </Textfield>
                                 <Textfield
-                                        bind:value={column2}
+                                        bind:value={secondaryInput}
                                         variant="outlined"
-                                        label={createSuffixForLabelIfNeeded(label.col2Label)}
-                                        on:input= {e => debounceUserInput('column2', e.target.value)}
+                                        label={createSuffixForLabelIfNeeded(label.secondaryInputLabel)}
+                                        on:input= {e => debounceUserInput('secondaryInput', e.target.value)}
                                                 disabled={!isSelected}
                                                 >
                                 </Textfield>

@@ -1,47 +1,51 @@
 
 <script lang="ts">
-	// COMPONENTS
-	import { MaterialTheme, CustomIconButton } from '@oscd-plugins/ui'
-	import Router from 'svelte-spa-router'
-	import {routes} from '@/routes/routes'
-	
-	// PACKAGE
-	import jsonPackage from '../package.json'
-	// STORES
-	import { pluginStore, docTemplatesStore } from './stores'
-	// TYPES
-	import type { PluginType } from '@oscd-plugins/core'
-	
-	//==== INITIALIZATION ====//
-	//props
-	export let xmlDocument: XMLDocument | undefined = undefined
-	export let pluginHostElement: Element
-	export let pluginType: PluginType = 'editor'
-	export let editCount: number
-	
-	
+import { routes } from '@/routes/routes'
+// COMPONENTS
+import { CustomIconButton, MaterialTheme } from '@oscd-plugins/ui'
+import Router from 'svelte-spa-router'
 
-	//==== REACTIVITY ====//
-	
-	
-	$: triggerUpdate({
-		updateTrigger: editCount,
-		newXMLDocument: xmlDocument,
-		newPluginHostElement: pluginHostElement,
-		newEditCount: editCount,
+// TYPES
+import type { PluginType } from '@oscd-plugins/core'
+// PACKAGE
+import jsonPackage from '../package.json'
+// STORES
+import { docTemplatesStore, pluginStore } from './stores'
+
+//==== INITIALIZATION ====//
+//props
+export let xmlDocument: XMLDocument | undefined = undefined
+export let pluginHostElement: Element
+export let pluginType: PluginType = 'editor'
+export let editCount: number
+
+//==== REACTIVITY ====//
+
+$: triggerUpdate({
+	updateTrigger: editCount,
+	newXMLDocument: xmlDocument,
+	newPluginHostElement: pluginHostElement,
+	newEditCount: editCount
+})
+
+async function triggerUpdate({
+	updateTrigger,
+	newXMLDocument,
+	newPluginHostElement,
+	newEditCount
+}: {
+	updateTrigger: number
+	newXMLDocument: XMLDocument | undefined
+	newPluginHostElement: Element
+	newEditCount: number
+}) {
+	await pluginStore.init({
+		newXMLDocument,
+		newPluginHostElement,
+		newEditCount
 	})
-	
-	async function triggerUpdate(
-		{updateTrigger, newXMLDocument, newPluginHostElement, newEditCount} : 
-		{updateTrigger: number, newXMLDocument: XMLDocument|undefined, newPluginHostElement: Element, newEditCount: number}
-	){
-		await pluginStore.init({
-			newXMLDocument,
-			newPluginHostElement,
-			newEditCount,
-		})
-		docTemplatesStore.init()
-	}
+	docTemplatesStore.init()
+}
 </script>
 	
 

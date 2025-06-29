@@ -1,63 +1,64 @@
 <script lang="ts">
-    import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
-    import Checkbox from '@smui/checkbox';
-    import {Tooltip, Truncate} from "@/components"
-    import type {Template} from "@/pages/template-overview/types.template-overview";
-    import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-    import {createEventDispatcher} from "svelte"
+import { Tooltip, Truncate } from '@/components'
+import type { Template } from '@/pages/template-overview/types.template-overview'
+import { CustomIconButton } from '@oscd-plugins/ui/src/components'
+import Checkbox from '@smui/checkbox'
+import DataTable, { Head, Body, Row, Cell } from '@smui/data-table'
+import { createEventDispatcher } from 'svelte'
 
-    export let allTemplates : Template[];
+export let allTemplates: Template[]
 
-    const dispatch = createEventDispatcher()
-    let selectedTemplates : Template[] = [];
+const dispatch = createEventDispatcher()
+let selectedTemplates: Template[] = []
 
+function isInvalidDate(date: Date) {
+	return Number.isNaN(date.getTime())
+}
 
-    function isInvalidDate(date: Date){
-        return Number.isNaN(date.getTime());
-    }
+function formatDate(date: Date, defaultString = '-'): string {
+	if (isInvalidDate(date)) {
+		return defaultString
+	}
 
-    function formatDate(date: Date, defaultString = "-"): string{
-        if(isInvalidDate(date)){ return defaultString;}
+	return `${getDD_MM_YYYYFromDate(date)}, ${getHH_MM_FromDate(date)}`
+}
 
-        return `${getDD_MM_YYYYFromDate(date)}, ${getHH_MM_FromDate(date)}`;
-    }
+function getHH_MM_FromDate(date: Date): string {
+	const timeOptions: Intl.DateTimeFormatOptions = {
+		hour: 'numeric',
+		minute: '2-digit'
+	}
 
-    function getHH_MM_FromDate(date: Date,): string{
+	const extractedHH_MM = new Intl.DateTimeFormat('en-US', timeOptions).format(
+		date
+	)
+	return extractedHH_MM
+}
+function getDD_MM_YYYYFromDate(date: Date): string {
+	const dateOptions: Intl.DateTimeFormatOptions = {
+		month: '2-digit' as const,
+		day: '2-digit' as const,
+		year: 'numeric' as const
+	}
 
-        const timeOptions: Intl.DateTimeFormatOptions = { 
-            hour: "numeric",
-            minute: "2-digit"
-        };
+	const DD_MM_YYYY = new Date(date).toLocaleDateString('de-DE', dateOptions)
+	return DD_MM_YYYY
+}
 
-        const extractedHH_MM = new Intl.DateTimeFormat("en-US", timeOptions).format(date);
-        return extractedHH_MM;
-    }
-    function getDD_MM_YYYYFromDate(date: Date): string{
-        const dateOptions: Intl.DateTimeFormatOptions = { 
-            month:   "2-digit" as const, 
-            day:     "2-digit" as const,
-            year:    "numeric" as const,
-        };
+function deleteTemplate(templateId: string) {
+	dispatch('templateDelete', { templateId })
+}
 
-        const DD_MM_YYYY = new Date(date).toLocaleDateString("de-DE", dateOptions); 
-        return DD_MM_YYYY;
-    }
+function downloadTemplateContent(templateId: string) {
+	dispatch('templateDownload', { templateId })
+}
 
-    function deleteTemplate(templateId: string){
-        dispatch("templateDelete", {templateId})
-    }
-
-    function downloadTemplateContent(templateId: string){
-        dispatch("templateDownload", {templateId})
-    }
-
-    function editTemplate(templateId: string){
-        dispatch("editTemplate", {templateId})
-    }
-    function duplicateTemplate(templateId: string){
-        dispatch("duplicateTemplate", {templateId})
-    }
-
+function editTemplate(templateId: string) {
+	dispatch('editTemplate', { templateId })
+}
+function duplicateTemplate(templateId: string) {
+	dispatch('duplicateTemplate', { templateId })
+}
 </script>
 
 

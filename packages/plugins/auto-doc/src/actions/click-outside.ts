@@ -1,25 +1,21 @@
 type CallbackFn = () => void
 
+export function clickOutside(node: HTMLElement, callbackFn: CallbackFn) {
+	function onClick(evt: MouseEvent) {
+		const target = evt.target as Node
 
-export function clickOutside(node: HTMLElement, callbackFn: CallbackFn){
+		const isClickedOutsideNode = !node.contains(target)
 
-    function onClick(evt: MouseEvent){
-        const target = evt.target as Node;
+		if (isClickedOutsideNode) {
+			callbackFn()
+		}
+	}
 
-        const isClickedOutsideNode = !node.contains(target);
+	document.body.addEventListener('click', onClick)
 
-        if(isClickedOutsideNode){
-            callbackFn();
-        }
-    }
-
-    document.body.addEventListener('click', onClick);
-
-    return{
-        destroy(){
-            document.body.removeEventListener('click', onClick)
-        }
-    }
+	return {
+		destroy() {
+			document.body.removeEventListener('click', onClick)
+		}
+	}
 }
-
-
