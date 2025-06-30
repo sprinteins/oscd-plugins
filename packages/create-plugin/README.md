@@ -7,19 +7,22 @@
 - [] Modify the imported mock file imported in `src` > `plugin.dev.ts` to a `SCD`file that suits your needs
 - [] Launch `pnpm i`
 - [] Add if needed launch scripts to the monorepo package.json as shortcuts
+- [] Change `vite.config.ts` ports to a random one (both `server` and `preview`)
 
 ## LAUNCH SCRIPT
 
-1. Stand alone mode : `pnpm dev`
+1. Stand alone mode :
 
+* Launch the plugin with : `pnpm dev`
 In this mode the plugin is launched with HRM and locally with a mocked file already loaded
 
 2. Integrated mode with an SCD Instance : `pnpm integrated`
 
-In this mode the plugin has to be implemented with the given url in the console.
-The plugin is build, and then launched in a preview mode.
-Copy the given URL to your test instance : `${URL}/${buildJSFilename}.js`
-The `buildJSFilename` is the one provided in the `vite.config` : here `plugin.js` by default.
+* Launch the plugin with : `pnpm dev`
+* Copy the given url and add this : `${URL}/src/plugin.js`.
+* Load the plugin in OpenSCD with this url.
+
+It gives you HMR ability inside the OpenSCD instance.
 
 ## SVELTE ACTIONS
 
