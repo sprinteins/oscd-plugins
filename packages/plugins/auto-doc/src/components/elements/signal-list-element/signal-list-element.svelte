@@ -1,161 +1,141 @@
 <script lang="ts">
-	import { signallistStore } from '@/stores'
-	import Checkbox from '@smui/checkbox'
-	
-	import SignalRow from './signal-row.svelte'
-	import type {
-		SignalRow as SignalRowType,
-		PdfRows,
-		SignalListOnSCD
-	} from './types.signal-list'
-	import { Columns, SignalType } from '@/stores/'
-	import type { MessagePublisherFilter, MessageSubscriberFilter } from '@/stores'
-	
-	// prop
-	export let onContentChange: (newContent: string) => void
-	export let content = ''
-	
-	const parsedContent: SignalListOnSCD = isContentNotEmpty()
-		? JSON.parse(content)
-		: getEmptyValues()
-	const prevSelectedRows = parsedContent.selected
-	
-	const columns: SignalRowType[] = Object.entries(Columns).map(
-		([key, value], i) => {
-			const prevSelected: SignalRowType | undefined =
-				getSelectedRowIfPreviouslySelected(key as keyof typeof Columns)
-	
-			return {
-				id: `col-${key}`,
-				index: prevSelected?.index ?? i,
-				searchKey: key as keyof typeof Columns,
-				isSelected: prevSelected?.isSelected ?? false,
-				column1: prevSelected?.column1 ?? value,
-				column2: prevSelected?.column2 ?? '',
-				label: {
-					col1Label: { name: value, hasSuffix: true },
-					col2Label: { name: `Filter by ${value}`, hasSuffix: false }
-				}
-			}
-		}
-	)
-	
-	const messages: SignalRowType[] = Object.entries(SignalType).map(
-		([key, value], i) => {
-			const prevSelected: SignalRowType | undefined =
-				getSelectedRowIfPreviouslySelected(key as keyof typeof SignalType)
-	
-			return {
-				id: `msg-${key}`,
-				index: prevSelected?.index ?? (columns.length + i),
-				searchKey: key as keyof typeof SignalType,
-				isSelected: prevSelected?.isSelected ?? false,
-				column1: prevSelected?.column1 ?? value,
-				column2: prevSelected?.column2 ?? '',
-				label: {
-					col1Label: { name: value, hasSuffix: true },
-					col2Label: { name: 'Filter by IED Name', hasSuffix: false }
-				}
-			}
-		}
-	)
-	
-	$: mergedColsAndMessages = [...columns, ...messages].sort((a, b) => a.index - b.index)
-	$: selectedRows = mergedColsAndMessages.filter((row) => row.isSelected)
-	$: columnsLength = columns.length
-	
-	function getEmptyValues(): SignalListOnSCD {
-		return { selected: [], matches: { matchedRowsForTablePdf: [] } }
-	}
-	
-	function isContentNotEmpty() {
-		return content.trim()
-	}
-	
-	function updateSignalRow(
-		index: number,
-		key: keyof SignalRowType,
-		value: string
-	) {
-		mergedColsAndMessages = mergedColsAndMessages.map((row, i) =>
-			i === index ? { ...row, [key]: value } : row
-		)
-		emitSelectedRows()
-	}
-	
-    let areAllCheckboxesSelected = false
-	function toggleAllCheckboxes(newValue: boolean) {
-		mergedColsAndMessages = mergedColsAndMessages.map((row) => ({
-			...row,
-			isSelected: !newValue
-		}))
-		emitSelectedRows()
-	}
-	
-	function emitSelectedRows() {
-		const allRowsWithOrder = mergedColsAndMessages.map((row, index) => ({
-			...row,
-			index
-		}));
+import Checkbox from '@smui/checkbox'
 
-		const selectedWithOrder = allRowsWithOrder.filter(row => row.isSelected);
-		
-		const results = {
-			selected: selectedWithOrder,
-			matches: searchForMatchOnSignalList()
-		};
-		onContentChange(JSON.stringify(results));
-	}
-	function getSelectedRowIfPreviouslySelected(
-		searchKey: keyof typeof Columns | keyof typeof SignalType
-	): SignalRowType | undefined {
-		return prevSelectedRows.find((selected) => selected.searchKey === searchKey)
-	}
-	
-	function searchForMatchOnSignalList(): PdfRows {
-		const publisherFilter: MessagePublisherFilter = {};
-		const subscriberFilter: MessageSubscriberFilter = {};
-	
-		for (const { searchKey, column2 } of selectedRows) {
-			if (doesIncludeSignalType(searchKey)) {
-				subscriberFilter[searchKey as keyof MessageSubscriberFilter] = column2
-			} else {
-				publisherFilter[searchKey as keyof MessagePublisherFilter] = column2
+import { Columns, SignalType } from '@/stores/'
+import SignalRow from './signal-row.svelte'
+// TYPES
+import type { SignalListOnSCD } from './types.signal-list'
+import type { SignalRow as SignalRowType } from '@/stores/signallist.store.d'
+
+// prop
+export let onContentChange: (newContent: string) => void
+export let content = ''
+
+const parsedContent: SignalListOnSCD = isContentNotEmpty()
+	? JSON.parse(content)
+	: getEmptyValues()
+const prevSelectedRows = parsedContent.selected
+
+// represents columns from 1 to 14 in the UI
+const columns: SignalRowType[] = Object.entries(Columns).map(
+	([key, value], i) => {
+		const prevSelected: SignalRowType | undefined =
+			getSelectedRowIfPreviouslySelected(key as keyof typeof Columns)
+
+		return {
+			id: `col-${key}`,
+			index: prevSelected?.index ?? i,
+			searchKey: key as keyof typeof Columns,
+			isSelected: prevSelected?.isSelected ?? false,
+			primaryInput: prevSelected?.primaryInput ?? value,
+			secondaryInput: prevSelected?.secondaryInput ?? '',
+			label: {
+				primaryInputLabel: { name: value, hasSuffix: true },
+				secondaryInputLabel: {
+					name: `Filter by ${value}`,
+					hasSuffix: false
+				}
 			}
 		}
-	
-		const { pdfRows, invaliditiesReports } = signallistStore.getPublishingLogicalDevices(publisherFilter, subscriberFilter);
-	
-		return { matchedRowsForTablePdf: pdfRows }
 	}
-	
-	function doesIncludeSignalType(searchKey: string) {
-		return [
-			SignalType.GOOSE,
-			SignalType.MMS,
-			SignalType.SV
-		].includes(SignalType[searchKey as unknown as keyof typeof SignalType])
+)
+
+// represents columns from 15 to 17 in the UI
+const messages: SignalRowType[] = Object.entries(SignalType).map(
+	([key, value], i) => {
+		const prevSelected: SignalRowType | undefined =
+			getSelectedRowIfPreviouslySelected(key as keyof typeof SignalType)
+
+		return {
+			id: `msg-${key}`,
+			index: prevSelected?.index ?? columns.length + i,
+			searchKey: key as keyof typeof SignalType,
+			isSelected: prevSelected?.isSelected ?? false,
+			primaryInput: prevSelected?.primaryInput ?? value,
+			secondaryInput: prevSelected?.secondaryInput ?? '',
+			label: {
+				primaryInputLabel: { name: value, hasSuffix: true },
+				secondaryInputLabel: {
+					name: 'Filter by IED Name',
+					hasSuffix: false
+				}
+			}
+		}
 	}
-	
-	function handleReorder(
-		event: CustomEvent<{ draggedIndex: number; dropIndex: number }>
-	) {
-		const { draggedIndex, dropIndex } = event.detail
-		const newRows = [...mergedColsAndMessages]
-		const [draggedRow] = newRows.splice(draggedIndex, 1)
-		newRows.splice(dropIndex, 0, draggedRow)
-		
-		newRows.forEach((row, index) => {
-			row.index = index
-		})
-		
-		mergedColsAndMessages = newRows
-		emitSelectedRows()
+)
+
+$: mergedColsAndMessages = [...columns, ...messages].sort(
+	(a, b) => a.index - b.index
+)
+$: columnsLength = columns.length
+
+function getEmptyValues(): SignalListOnSCD {
+	return { selected: [], matches: { matchedRowsForTablePdf: [] } }
+}
+
+function isContentNotEmpty() {
+	return content.trim()
+}
+
+function updateSignalRow(
+	index: number,
+	key: keyof SignalRowType,
+	value: string
+) {
+	mergedColsAndMessages = mergedColsAndMessages.map((row, i) =>
+		i === index ? { ...row, [key]: value } : row
+	)
+
+	emitSelectedRows()
+}
+
+let areAllCheckboxesSelected = false
+function toggleAllCheckboxes(newValue: boolean) {
+	mergedColsAndMessages = mergedColsAndMessages.map((row) => ({
+		...row,
+		isSelected: !newValue
+	}))
+	emitSelectedRows()
+}
+
+function emitSelectedRows() {
+	const allRowsWithOrder = mergedColsAndMessages.map((row, index) => ({
+		...row,
+		index
+	}))
+
+	const selectedWithOrder = allRowsWithOrder.filter((row) => row.isSelected)
+
+	const results = {
+		selected: selectedWithOrder
 	}
-	
-	function isInColumnsZone(index: number): boolean {
-		return index < columns.length;
-	}
+	onContentChange(JSON.stringify(results))
+}
+function getSelectedRowIfPreviouslySelected(
+	searchKey: keyof typeof Columns | keyof typeof SignalType
+): SignalRowType | undefined {
+	return prevSelectedRows.find((selected) => selected.searchKey === searchKey)
+}
+
+function handleReorder(
+	event: CustomEvent<{ draggedIndex: number; dropIndex: number }>
+) {
+	const { draggedIndex, dropIndex } = event.detail
+	const newRows = [...mergedColsAndMessages]
+	const [draggedRow] = newRows.splice(draggedIndex, 1)
+	newRows.splice(dropIndex, 0, draggedRow)
+
+	newRows.forEach((row, index) => {
+		row.index = index
+	})
+
+	mergedColsAndMessages = newRows
+	emitSelectedRows()
+}
+
+function isInColumnsZone(index: number): boolean {
+	return index < columns.length
+}
 </script>
 	
 	
@@ -180,8 +160,8 @@
 			columnsLength={columnsLength}
 			label={row.label}
 			bind:isSelected={row.isSelected}
-			bind:column1={row.column1}
-			bind:column2={row.column2}
+			bind:primaryInput={row.primaryInput}
+			bind:secondaryInput={row.secondaryInput}
 			on:update={e => updateSignalRow(i, e.detail.key, e.detail.value)}
 			on:toggleAllCheckboxes={e => toggleAllCheckboxes(e.detail.value)}
 			on:reorder={handleReorder}

@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    export type FileSelectorChangeEvent = CustomEvent<{ file: File }>
+export type FileSelectorChangeEvent = CustomEvent<{ file: File }>
 </script>
 
 <script lang="ts">

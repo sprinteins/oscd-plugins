@@ -1,34 +1,39 @@
 <script lang="ts">
-    import CustomIconButton from "@oscd-plugins/ui/src/components/smui-wrapper/custom-icon-button.svelte";
-import TableColumn from "./table-column.svelte";
-    import PlaceholderHelpDialog from "@/components/dialog/placeholder-help-dialog.svelte";
-    import Tooltip from "@/components/tooltip/tooltip.svelte";
+import PlaceholderHelpDialog from '@/components/dialog/placeholder-help-dialog.svelte'
+import Tooltip from '@/components/tooltip/tooltip.svelte'
+import CustomIconButton from '@oscd-plugins/ui/src/components/smui-wrapper/custom-icon-button.svelte'
+import TableColumn from './table-column.svelte'
 
-    export let content = "";
-	export let onContentChange: (newContent: string) => void;
+export let content = ''
+export let onContentChange: (newContent: string) => void
 
-    let data = [["", ""], ["", ""], ["", ""], ["", ""]];
+let data = [
+	['', ''],
+	['', ''],
+	['', ''],
+	['', '']
+]
 
-    let selectedCell = {
-        column: 0,
-        row: 0,
-    };
+let selectedCell = {
+	column: 0,
+	row: 0
+}
 
-    $: isPlaceholderHelpDialogOpen = false;
+$: isPlaceholderHelpDialogOpen = false
 
-    if(content.trim()) {
-        data = JSON.parse(content);
-    }
+if (content.trim()) {
+	data = JSON.parse(content)
+}
 
-    function updateData(column: number, row: number, value: string) {
-        data[column][row] = value;
-        onContentChange(JSON.stringify(data));
-    }
+function updateData(column: number, row: number, value: string) {
+	data[column][row] = value
+	onContentChange(JSON.stringify(data))
+}
 
-    function insertPlaceholder() {
-        const { column, row } = selectedCell;
-        data[column][row] = "{{ //default: }}";
-    }
+function insertPlaceholder() {
+	const { column, row } = selectedCell
+	data[column][row] = '{{ //default: }}'
+}
 </script>
 
 <PlaceholderHelpDialog bind:isOpen={isPlaceholderHelpDialogOpen}/>

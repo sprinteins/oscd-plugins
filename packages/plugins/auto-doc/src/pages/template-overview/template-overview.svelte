@@ -1,111 +1,112 @@
 <script lang="ts">
-    import {Table, FileSelector} from '@/components';
-    import type { FileSelectorChangeEvent } from '@/components';
-    import type {Template} from "./types.template-overview";
-    import Button, {Label} from "@smui/button"
-    import Menu from "@smui/menu"
-    import List, { Item, Text } from "@smui/list"
-    import Checkbox from '@smui/checkbox';
-    import {IconWrapper} from "@oscd-plugins/ui"
-    import {docTemplatesStore} from '@/stores'
-    import {push} from 'svelte-spa-router'
-    import { onMount } from 'svelte';
-    import {pdfGenerator} from '@/utils'
-    import {queryAutoDocElement} from '@/utils'
-    import { ROUTES } from "@/constants"
+import { FileSelector, Table } from '@/components'
+import type { FileSelectorChangeEvent } from '@/components'
+import { ROUTES } from '@/constants'
+import { docTemplatesStore } from '@/stores'
+import { pdfGenerator } from '@/utils'
+import { queryAutoDocElement } from '@/utils'
+import { IconWrapper } from '@oscd-plugins/ui'
+import Button, { Label } from '@smui/button'
+import Checkbox from '@smui/checkbox'
+import List, { Item, Text } from '@smui/list'
+import Menu from '@smui/menu'
+import { onMount } from 'svelte'
+import { push } from 'svelte-spa-router'
+import type { Template } from './types.template-overview'
 
-    let menu: Menu
-    let fileSelector: FileSelector
-    let isMasterTemplate = docTemplatesStore.getMasterTemplateFlag()
-    let allTemplates: Element[] = []
-    const emptyTitleOrDescription = "N/A"
+let menu: Menu
+let fileSelector: FileSelector
+let isMasterTemplate = docTemplatesStore.getMasterTemplateFlag()
+let allTemplates: Element[] = []
+const emptyTitleOrDescription = 'N/A'
 
-    onMount(() => {
-        fetchTemplates();
-    });
+onMount(() => {
+	fetchTemplates()
+})
 
-    function fetchTemplates() {
-        allTemplates=docTemplatesStore.getAllDocumentTemplates();
-    }
+function fetchTemplates() {
+	allTemplates = docTemplatesStore.getAllDocumentTemplates()
+}
 
-    function navigateToCreateTemplate(){
-        push(`${ROUTES.Create}`);
-    }
+function navigateToCreateTemplate() {
+	push(`${ROUTES.Create}`)
+}
 
-    async function onImportTemplate(e: FileSelectorChangeEvent) {
-        const file = e.detail.file
+async function onImportTemplate(e: FileSelectorChangeEvent) {
+	const file = e.detail.file
 
-        const fileAsString = await file.text()
-        const templateDoc = new DOMParser().parseFromString(fileAsString, 'text/xml')
+	const fileAsString = await file.text()
+	const templateDoc = new DOMParser().parseFromString(
+		fileAsString,
+		'text/xml'
+	)
 
-        const autoDocElement = queryAutoDocElement(templateDoc)
+	const autoDocElement = queryAutoDocElement(templateDoc)
 
-        if (autoDocElement === null) {
-            return
-        }
+	if (autoDocElement === null) {
+		return
+	}
 
-        const documentTemplates = Array.from(autoDocElement.querySelectorAll('DocumentTemplate'))
+	const documentTemplates = Array.from(
+		autoDocElement.querySelectorAll('DocumentTemplate')
+	)
 
-        docTemplatesStore.importDocumentTemplates(documentTemplates)
-        
-        // TODO: the ui should update itself after any doc change
-        allTemplates = docTemplatesStore.getAllDocumentTemplates()
-    }
+	docTemplatesStore.importDocumentTemplates(documentTemplates)
 
+	// TODO: the ui should update itself after any doc change
+	allTemplates = docTemplatesStore.getAllDocumentTemplates()
+}
 
-    $: templatesConvertedToTableRow = allTemplates.map(mapElementToTableRow)
-    $: docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
-    $: importToolTipText = isMasterTemplate ? "No import allowed for master templates" : ""
+$: templatesConvertedToTableRow = allTemplates.map(mapElementToTableRow)
+$: docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
+$: importToolTipText = isMasterTemplate
+	? 'No import allowed for master templates'
+	: ''
 
+function mapElementToTableRow(template: Element): Template {
+	const templateDate: string = template.getAttribute('date') as string
 
-    function mapElementToTableRow(template: Element):Template{
-        const templateDate: string = template.getAttribute('date') as string;
-        
-        return {
-            id: template.getAttribute('id') ?? "No id",
-            name: template.getAttribute('title') ?? emptyTitleOrDescription,
-            description: template.getAttribute('description') ?? emptyTitleOrDescription,
-            lastEdited: new Date(templateDate)
-        }
-    }   
+	return {
+		id: template.getAttribute('id') ?? 'No id',
+		name: template.getAttribute('title') ?? emptyTitleOrDescription,
+		description:
+			template.getAttribute('description') ?? emptyTitleOrDescription,
+		lastEdited: new Date(templateDate)
+	}
+}
 
-    function deleteTemplate(event: CustomEvent<{templateId: string}>){
-        const {templateId} = event.detail
-        docTemplatesStore.deleteDocumentTemplate(templateId)
-        allTemplates = allTemplates.filter(template => template.getAttribute('id') !== templateId)
+function deleteTemplate(event: CustomEvent<{ templateId: string }>) {
+	const { templateId } = event.detail
+	docTemplatesStore.deleteDocumentTemplate(templateId)
+	allTemplates = allTemplates.filter(
+		(template) => template.getAttribute('id') !== templateId
+	)
+}
 
-    }
+function downloadTemplateContent(event: CustomEvent<{ templateId: string }>) {
+	const { templateId } = event.detail
+	pdfGenerator.downloadAsPdf(templateId)
+}
 
-    function downloadTemplateContent(event: CustomEvent<{templateId: string}>){
-        const {templateId} = event.detail
-        pdfGenerator.downloadAsPdf(templateId)
-    }
+function navigateToEditTemplate(event: CustomEvent<{ templateId: string }>) {
+	const { templateId } = event.detail
+	push(`${ROUTES.Edit}/${templateId}`)
+}
 
-    function navigateToEditTemplate(event: CustomEvent<{templateId: string}>){
-        const {templateId} = event.detail
-        push(`${ROUTES.Edit}/${templateId}`)
+function duplicateTemplate(event: CustomEvent<{ templateId: string }>) {
+	const { templateId } = event.detail
+	docTemplatesStore.duplicateDocumentTemplate(templateId)
 
-    }
+	fetchTemplates()
+}
 
-    function duplicateTemplate(event: CustomEvent<{templateId: string}>){
-        const {templateId} = event.detail
-        docTemplatesStore.duplicateDocumentTemplate(templateId)
-
-       fetchTemplates();
-    }
-
-    function openFileSelectorIfNotMasterTemplate(){
-        if(isMasterTemplate){
-            console.error("No import allowed for master templates")
-            return;
-        }
-        fileSelector.open();
-    }
-
-
-
-
-    
+function openFileSelectorIfNotMasterTemplate() {
+	if (isMasterTemplate) {
+		console.error('No import allowed for master templates')
+		return
+	}
+	fileSelector.open()
+}
 </script>
 
 <div class="template-overview">
