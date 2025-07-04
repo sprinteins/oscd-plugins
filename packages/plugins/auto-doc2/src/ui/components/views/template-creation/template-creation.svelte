@@ -1,23 +1,25 @@
 <script lang="ts">
     import { stopPropagation, createBubbler } from 'svelte/legacy';
+    import { View, type NavigateProps } from '../view-navigator/view'
 
     const bubble = createBubbler();
     import Button from "@smui/button"
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
     import {TemplateBuilder, Tooltip} from '@/ui/components';
-    import {push} from 'svelte-spa-router'
     import Textfield from "@smui/textfield"
     import {clickOutside} from "@/actions"
     import {docTemplatesStore} from '@/stores'
 	import { onMount } from "svelte"
     import {pdfGenerator} from '@/utils'
 
-    type Params = {id?: string}
-    interface Props {
-        params?: Params; //params passed from the router
+    interface Props extends NavigateProps {
+        id: string | null;
     }
 
-    let { params = {} }: Props = $props();
+    let { 
+        id,
+        navigate
+     }: Props = $props();
 
     let title = $state("");
     let description = $state("");
@@ -28,15 +30,15 @@
     const NO_TITLE_TEXT = "Untitled Document";
     
     onMount(() => {
-        templateId = params.id ?? createNewTemplate();
+        templateId = id ?? createNewTemplate();
 
         template = docTemplatesStore.getDocumentTemplate(templateId);
 
         if (!template) {
-            return navigateToOverviewPage();
+            // TODO: Readd when working
+            // return navigateToOverviewPage();
+            return;
         }
-
-        window.history.pushState({}, "", "#");
 
         setInitialTitleAndDescription(template);
     });
@@ -54,6 +56,7 @@
     }
 
     function askForEmptyTitleConfirmation(){
+        console.log('askForEmptyTitleConfirmation')
         if (!title) {
             const confirmNavigation = confirm("No title has been provided. Do you want to proceed?");
             if (!confirmNavigation) {
@@ -63,9 +66,9 @@
         navigateToOverviewPage()
     }
 
-    function navigateToOverviewPage(){
-        push('/')
-        
+    function navigateToOverviewPage() {
+        console.log('Navigate home')
+        navigate({ view: View.Home })
     }
 
     function displayTitleAndDescription(){
@@ -99,7 +102,7 @@
     <header class="header-container">
         <div class="header">
                 <div class="template-title">
-                    <CustomIconButton icon="arrow_back" color="black" on:click={askForEmptyTitleConfirmation}/>
+                    <CustomIconButton icon="arrow_back" color="black" onclick={askForEmptyTitleConfirmation}/>
                     <Tooltip text="Rename">
                         <div class="title" role="button" tabindex="0" onclick={stopPropagation(displayTitleAndDescription)} 
                         onkeydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}

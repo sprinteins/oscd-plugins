@@ -2,6 +2,7 @@
     import { run } from 'svelte/legacy';
 
     import {Table, FileSelector} from '@/ui/components';
+    import { View, type NavigateProps } from '../view-navigator/view'
     import type { FileSelectorChangeEvent } from '@/ui/components';
     import type {Template} from "./types.template-overview";
     import Button, {Label} from "@smui/button"
@@ -14,9 +15,13 @@
     import {pdfGenerator} from '@/utils'
     import {queryAutoDocElement} from '@/utils'
 
-    let menu: Menu = $state()
-    let fileSelector: FileSelector = $state()
-    let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
+    let { navigate }: NavigateProps = $props();
+
+    let menu: Menu
+    let fileSelector: FileSelector
+    // TODO: Remove
+    // let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
+    let isMasterTemplate = $state(false)
     let allTemplates: Element[] = $state([])
     const emptyTitleOrDescription = "N/A"
 
@@ -25,11 +30,12 @@
     });
 
     function fetchTemplates() {
-        allTemplates=docTemplatesStore.getAllDocumentTemplates();
+        allTemplates = docTemplatesStore.getAllDocumentTemplates();
     }
 
-    function navigateToCreateTemplate(){
-        // TODO: Use navigator
+    function navigateToCreateTemplate() {
+        console.log('navigate to create')
+        navigate({ view: View.Create })
     }
 
     async function onImportTemplate(e: FileSelectorChangeEvent) {
@@ -105,24 +111,25 @@
     
     let templatesConvertedToTableRow = $derived(allTemplates.map(mapElementToTableRow))
     run(() => {
-        docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
+        // TODO: Readd when working
+        // docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
     });
     let importToolTipText = $derived(isMasterTemplate ? "No import allowed for master templates" : "")
 </script>
 
 <div class="template-overview">
     <header class="template-controls">
-        <Button variant="raised" class="btn-pill btn-pill-primary" on:click={() => menu.setOpen(true)} > 
+        <Button variant="raised" class="btn-pill btn-pill-primary" onclick={() => menu.setOpen(true)} > 
             <IconWrapper fillColor="white" icon="add"/>
            <Label>Add template</Label> 
         </Button>
         <FileSelector bind:this={fileSelector} on:change={onImportTemplate} />
         <Menu bind:this={menu}>
             <List>
-                <Item on:SMUI:action={() => navigateToCreateTemplate()}>
+                <Item onSMUIAction={() => navigateToCreateTemplate()}>
                     <Text>New</Text>
                 </Item>
-                <Item on:SMUI:action={() => openFileSelectorIfNotMasterTemplate()}
+                <Item onSMUIAction={() => openFileSelectorIfNotMasterTemplate()}
                     title={importToolTipText}
                 >
                     <Text class={isMasterTemplate ? "cursor-not-allowed": ""}>Import from</Text>

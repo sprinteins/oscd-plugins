@@ -1,20 +1,25 @@
 <script lang='ts'>
-import { View } from './view';
+import { View, type ViewState } from './view';
 import TemplateOverview from '@/ui/components/views/template-overview/template-overview.svelte';
+import TemplateCreation from '@/ui/components/views/template-creation/template-creation.svelte';
 
-let currentView: View = View.Home
-let templateId: number | null = null
+let viewState = $state<ViewState>({
+	view: View.Home,
+	templateId: null
+});
 
-function navigate(view: View, id = null): void {
-	templateId = id
-	currentView = view
+function navigate(newViewState: Partial<ViewState>): void {
+	viewState = {
+		...viewState,
+		...newViewState
+	};
 }
 </script>
 
-{#if currentView === View.Home}
-	<TemplateOverview></TemplateOverview>
-{:else if currentView === View.Create }
-	<div>TODO: Create</div>
+{#if viewState.view === View.Home}
+	<TemplateOverview { navigate }></TemplateOverview>
+{:else if viewState.view === View.Create }
+	<TemplateCreation { navigate } id={viewState.templateId}></TemplateCreation>
 {:else}
 	<div>TODO: Edit</div>
 {/if}

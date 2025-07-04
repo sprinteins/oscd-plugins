@@ -79,7 +79,7 @@ function getBlockOfDocumentTemplate(docTemplateId: string, blockId: string) {
 
 function addDocumentTemplate(): string | null {
     let generatedId: string | null = null;
-    const xmlDoc = get(xmlDocument);
+    const xmlDoc = pluginGlobalStore.xmlDocument;
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
     }
@@ -101,7 +101,7 @@ function addDocumentTemplate(): string | null {
 }
 
 function importDocumentTemplates(docTemplates: Element[]) {
-    const xmlDoc = get(xmlDocument);
+    const xmlDoc = pluginGlobalStore.xmlDocument;
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
     }
@@ -143,7 +143,7 @@ function editDocumentTemplateTitleAndDescription(docTemplateId: string, newTitle
 
 function addBlockToDocumentTemplate(docTemplate: Element, type: ElementType, reference?: Element | null) {
     const generatedId = uuidv4();
-    const xmlDoc = get(xmlDocument);
+    const xmlDoc = pluginGlobalStore.xmlDocument;
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
     }
@@ -214,7 +214,7 @@ function duplicateBlockFromDocumentTemplate(docTemplate: Element, blockId: strin
 }
 
 function duplicateDocumentTemplate(docTemplateId: string) {
-    const xmlDoc = get(xmlDocument);
+    const xmlDoc = pluginGlobalStore.xmlDocument;
     if (!xmlDoc) {
         throw new Error("XML Document is not defined");
     }

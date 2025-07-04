@@ -16,8 +16,8 @@
     import {queryAutoDocElement} from '@/utils'
     import { ROUTES } from "@/constants"
 
-    let menu: Menu = $state()
-    let fileSelector: FileSelector = $state()
+    let menu: Menu
+    let fileSelector: FileSelector
     let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
     let allTemplates: Element[] = $state([])
     const emptyTitleOrDescription = "N/A"

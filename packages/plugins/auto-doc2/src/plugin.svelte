@@ -11,10 +11,6 @@
 	}}
 />
 
-<!-- Plugin logs -->
-<input type="hidden" name="package-name" value={jsonPackage.name} />
-<input type="hidden" name="package-version" value={jsonPackage.version} />
-
 <main 
 	use:initPlugin={{
 		getDoc: () => doc,
@@ -32,7 +28,7 @@
 >
 	<MaterialTheme pluginType="editor">
 		<auto-doc class="auto-doc">
-			{#if doc}
+			{#if pluginGlobalStore.xmlDocument}
 				<ViewNavigator></ViewNavigator>
 			{:else}
 				<div class="file-missing">
@@ -52,6 +48,8 @@ import jsonPackage from '../package.json'
 import { initPlugin } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 import ViewNavigator from './ui/components/views/view-navigator/view-navigator.svelte';
 

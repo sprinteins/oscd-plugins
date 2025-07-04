@@ -1,19 +1,16 @@
-// SVELTE
-import { get } from 'svelte/store'
 // OPENSCD
 import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1';
 // STORES
-import { pluginStore } from './index'
-
-//====== STORES ======//
-const { pluginHostElement } = pluginStore
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 //====== ACTIONS ======//
 function createAndDispatchActionEvent(parent: Element, element: Element, reference?: Node | null) {
 	reference = reference ?? null;
+
+	console.log(pluginGlobalStore)
 	
 	createAndDispatchEditEvent({
-		host: get(pluginHostElement),
+		host: pluginGlobalStore.host!,
 		edit: {
 			parent: parent, 
 			node: element,
@@ -30,7 +27,7 @@ function createMultipleAndDispatchActionEvent(parent: Element, elements: Element
 	}));
 
 	createAndDispatchEditEvent({
-		host: get(pluginHostElement),
+		host: pluginGlobalStore.host!,
 		edit: creates,
 		options: {
 			title
@@ -40,7 +37,7 @@ function createMultipleAndDispatchActionEvent(parent: Element, elements: Element
 
 function deleteAndDispatchActionEvent(element: Element) {
 	createAndDispatchEditEvent({
-		host: get(pluginHostElement), 
+		host: pluginGlobalStore.host!, 
 		edit: {
 			node: element
 		}	
@@ -51,7 +48,7 @@ function moveAndDispatchActionEvent(parent: Element, element: Element, reference
 	reference = reference ?? null;
 
 	createAndDispatchEditEvent({
-		host: get(pluginHostElement),
+		host: pluginGlobalStore.host!,
 		edit: {
 			parent: parent,
 			node: element,
@@ -62,7 +59,7 @@ function moveAndDispatchActionEvent(parent: Element, element: Element, reference
 
 function updateAndDispatchActionEvent(element: Element, newAttributes: Record<string, string | null>) {
 	createAndDispatchEditEvent({
-		host: get(pluginHostElement),
+		host: pluginGlobalStore.host!,
 		edit: {
 			element: element,
 			attributes: newAttributes,
