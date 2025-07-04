@@ -311,7 +311,65 @@ importers:
         version: 2.1.8(@types/node@22.10.1)(happy-dom@8.9.0)(jsdom@21.1.2)(sass@1.82.0)
 
   packages/plugins/auto-doc2:
+    dependencies:
+      '@smui/button':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/checkbox':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/data-table':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/dialog':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/icon-button':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/list':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/menu':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/textfield':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@tiptap/core':
+        specifier: ^2.11.5
+        version: 2.11.5(@tiptap/pm@2.11.5)
+      '@tiptap/extension-list-item':
+        specifier: ^2.11.5
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-text-style':
+        specifier: ^2.11.5
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-underline':
+        specifier: ^2.11.5
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/pm':
+        specifier: ^2.11.5
+        version: 2.11.5
+      '@tiptap/starter-kit':
+        specifier: ^2.11.5
+        version: 2.11.5
+      jspdf:
+        specifier: ^2.5.2
+        version: 2.5.2
+      jspdf-autotable:
+        specifier: ^3.8.4
+        version: 3.8.4(jspdf@2.5.2)
+      uuid:
+        specifier: ^10.0.0
+        version: 10.0.0
+      zipcelx:
+        specifier: ^1.6.2
+        version: 1.6.2
     devDependencies:
+      '@oscd-plugins/core':
+        specifier: workspace:^
+        version: link:../../core/legacy
       '@oscd-plugins/core-api':
         specifier: workspace:^
         version: link:../../core/api
@@ -321,6 +379,9 @@ importers:
       '@oscd-plugins/core-ui-svelte':
         specifier: workspace:^
         version: link:../../core/ui-svelte
+      '@oscd-plugins/ui':
+        specifier: workspace:^
+        version: link:../../ui
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
         version: 5.0.3(svelte@5.20.1)(vite@6.1.0(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0))

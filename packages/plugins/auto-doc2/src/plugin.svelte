@@ -11,6 +11,10 @@
 	}}
 />
 
+<!-- Plugin logs -->
+<input type="hidden" name="package-name" value={jsonPackage.name} />
+<input type="hidden" name="package-version" value={jsonPackage.version} />
+
 <main 
 	use:initPlugin={{
 		getDoc: () => doc,
@@ -26,20 +30,30 @@
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	<div class="flex flex-col space-y-9 items-center justify-center h-screen">
-		<h1 class="h1 font-black text-9xl">Hello Plugin 7</h1>
-		<span>See the <i>README</i> file in <b>`packages/template`</b> (oscd-plugins monorepo)</span>
-	</div>
+	<MaterialTheme pluginType="editor">
+		<auto-doc class="auto-doc">
+			{#if doc}
+				<ViewNavigator></ViewNavigator>
+			{:else}
+				<div class="file-missing">
+					<p>No XML file loaded</p>
+				</div>
+			{/if}
+		</auto-doc>
+	</MaterialTheme>
 </main>
 
 
 <script lang="ts">
+import { MaterialTheme } from '@oscd-plugins/ui'
 // PACKAGE
 import jsonPackage from '../package.json'
 // CORE
 import { initPlugin } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+
+import ViewNavigator from './ui/components/views/view-navigator/view-navigator.svelte';
 
 // props
 const {
@@ -49,3 +63,25 @@ const {
 	isCustomInstance
 }: Utils.PluginCustomComponentsProps = $props()
 </script>
+
+<style lang="scss">
+	.file-missing{
+		padding-top: 20px;
+		p{
+			text-align: center;
+		}
+	}
+
+	.banner {
+		align-items: center;
+		justify-content: space-between;
+		padding: .25rem 2rem;
+		width: 100%;
+		background-color: var(--mdc-theme-error);
+		color: white;
+		position:fixed;
+		top: var(--header-height);
+		box-sizing: border-box;
+		z-index: 1;
+	}
+</style>
