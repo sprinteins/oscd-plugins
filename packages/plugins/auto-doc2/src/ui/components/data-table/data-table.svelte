@@ -1,19 +1,24 @@
 <script lang="ts">
     import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
-    import Checkbox from '@smui/checkbox';
     import {Tooltip, Truncate} from "@/ui/components"
     import type {Template} from "@/ui/components/views/template-overview/types.template-overview";
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-    import {createEventDispatcher} from "svelte"
 
     interface Props {
         allTemplates: Template[];
+        deleteTemplate: (id: string) => void;
+        editTemplate: (id: string) => void;
+        downloadTemplate: (id: string) => void;
+        duplicateTemplate: (id: string) => void;
     }
 
-    let { allTemplates }: Props = $props();
-
-    const dispatch = createEventDispatcher()
-    let selectedTemplates : Template[] = [];
+    let {
+        allTemplates,
+        deleteTemplate,
+        editTemplate,
+        downloadTemplate,
+        duplicateTemplate
+    }: Props = $props();
 
 
     function isInvalidDate(date: Date){
@@ -46,22 +51,6 @@
         const DD_MM_YYYY = new Date(date).toLocaleDateString("de-DE", dateOptions); 
         return DD_MM_YYYY;
     }
-
-    function deleteTemplate(templateId: string){
-        dispatch("templateDelete", {templateId})
-    }
-
-    function downloadTemplateContent(templateId: string){
-        dispatch("templateDownload", {templateId})
-    }
-
-    function editTemplate(templateId: string){
-        dispatch("editTemplate", {templateId})
-    }
-    function duplicateTemplate(templateId: string){
-        dispatch("duplicateTemplate", {templateId})
-    }
-
 </script>
 
 
@@ -102,17 +91,17 @@
                     <Cell>
                     <div class="action-btns center-action-btns">
                         <Tooltip text="Edit" position="right" isPositionModified={true}>
-                            <CustomIconButton icon="edit" color="black" size="small" on:click={()=>{editTemplate(template.id)}}/>
+                            <CustomIconButton icon="edit" color="black" size="small" onclick={()=>{editTemplate(template.id)}}/>
                         </Tooltip>
                         <Tooltip text="Delete" position="left" isPositionModified={true}>
-                            <CustomIconButton icon="delete" color="black" size="small" on:click={()=>{deleteTemplate(template.id)}}/>
+                            <CustomIconButton icon="delete" color="black" size="small" onclick={()=>{deleteTemplate(template.id)}}/>
                         </Tooltip>
                         <Tooltip text="Duplicate" position="left" isPositionModified={true}>
-                            <CustomIconButton icon="content_copy" color="black" size="small" on:click={()=>{duplicateTemplate(template.id)}}/>
+                            <CustomIconButton icon="content_copy" color="black" size="small" onclick={()=>{duplicateTemplate(template.id)}}/>
                         </Tooltip>
                         <!-- ! &nbsp; - No-Break Space. Verhindert den Umbruch des Tooltips. Wenn nicht verwendet, wird das zweite Wort vom Border der Zeile(Spalte) abgeschnitten. -->
                         <Tooltip text="Generate&nbsp;Document" position="left" isPositionModified={true}>
-                            <CustomIconButton icon="download" color="black" size="small" on:click={()=>{downloadTemplateContent(template.id)}}/>
+                            <CustomIconButton icon="download" color="black" size="small" onclick={()=>{downloadTemplate(template.id)}}/>
                         </Tooltip>
                     </div>
                     </Cell>

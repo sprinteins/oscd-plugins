@@ -71,26 +71,24 @@
         }
     }   
 
-    function deleteTemplate(event: CustomEvent<{templateId: string}>){
-        const {templateId} = event.detail
+    function deleteTemplate(templateId: string){
         docTemplatesStore.deleteDocumentTemplate(templateId)
         allTemplates = allTemplates.filter(template => template.getAttribute('id') !== templateId)
 
     }
 
-    function downloadTemplateContent(event: CustomEvent<{templateId: string}>){
-        const {templateId} = event.detail
+    function downloadTemplateContent(templateId: string){
         pdfGenerator.downloadAsPdf(templateId)
     }
 
-    function navigateToEditTemplate(event: CustomEvent<{templateId: string}>){
-        const {templateId} = event.detail
-
-        // TODO: Use navigator
+    function navigateToEditTemplate(templateId: string){
+        navigate({
+            view: View.Edit,
+            templateId
+        })
     }
 
-    function duplicateTemplate(event: CustomEvent<{templateId: string}>){
-        const {templateId} = event.detail
+    function duplicateTemplate(templateId: string){
         docTemplatesStore.duplicateDocumentTemplate(templateId)
 
        fetchTemplates();
@@ -145,10 +143,10 @@
     <main>
         <Table 
             allTemplates={templatesConvertedToTableRow} 
-            on:templateDelete={deleteTemplate}
-            on:templateDownload={downloadTemplateContent}
-            on:editTemplate={navigateToEditTemplate}
-            on:duplicateTemplate={duplicateTemplate}
+            templateDelete={deleteTemplate}
+            templateDownload={downloadTemplateContent}
+            editTemplate={navigateToEditTemplate}
+            duplicateTemplate={duplicateTemplate}
         />
     </main>
 </div>

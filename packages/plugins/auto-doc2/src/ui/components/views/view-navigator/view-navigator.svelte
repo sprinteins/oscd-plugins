@@ -21,5 +21,5 @@ function navigate(newViewState: Partial<ViewState>): void {
 {:else if viewState.view === View.Create }
 	<TemplateCreation { navigate } id={viewState.templateId}></TemplateCreation>
 {:else}
-	<div>TODO: Edit</div>
+	<TemplateCreation { navigate } id={viewState.templateId}></TemplateCreation>
 {/if}
