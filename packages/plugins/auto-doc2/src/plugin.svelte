@@ -51,6 +51,8 @@ import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
+import { docTemplatesStore } from './stores'
+
 import ViewNavigator from './ui/components/views/view-navigator/view-navigator.svelte';
 
 // props
@@ -60,6 +62,10 @@ const {
 	editCount,
 	isCustomInstance
 }: Utils.PluginCustomComponentsProps = $props()
+
+$effect(() => {
+	setTimeout(() => docTemplatesStore.init(), 0)
+})
 </script>
 
 <style lang="scss">

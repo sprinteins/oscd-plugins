@@ -34,7 +34,6 @@
     }
 
     function navigateToCreateTemplate() {
-        console.log('navigate to create')
         navigate({ view: View.Create })
     }
 

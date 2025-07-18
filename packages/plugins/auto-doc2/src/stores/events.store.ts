@@ -6,8 +6,6 @@ import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 //====== ACTIONS ======//
 function createAndDispatchActionEvent(parent: Element, element: Element, reference?: Node | null) {
 	reference = reference ?? null;
-
-	console.log(pluginGlobalStore)
 	
 	createAndDispatchEditEvent({
 		host: pluginGlobalStore.host!,

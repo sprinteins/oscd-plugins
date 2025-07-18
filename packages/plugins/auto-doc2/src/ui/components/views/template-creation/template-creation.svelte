@@ -35,8 +35,7 @@
         template = docTemplatesStore.getDocumentTemplate(templateId);
 
         if (!template) {
-            // TODO: Readd when working
-            // return navigateToOverviewPage();
+            navigateToOverviewPage();
             return;
         }
 
@@ -114,7 +113,7 @@
                 <Button>open template</Button>
                 <Button>save template</Button>
             </div> -->
-            <Button variant="raised" on:click={downloadTemplateContent}>Generate Document</Button>
+            <Button variant="raised" onclick={downloadTemplateContent}>Generate Document</Button>
         </div>
     </header>
 
