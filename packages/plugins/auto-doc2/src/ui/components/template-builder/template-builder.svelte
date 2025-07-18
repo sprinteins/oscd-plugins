@@ -12,11 +12,9 @@
     import CreateTableDialog from "@/ui/components/dialog/create-table-dialog.svelte";
 
     import {docTemplatesStore} from '@/stores'
-    import {pluginStore} from "@/stores/plugin.store"
     import type {BlockElement, ElementType, ElementMap} from '@/ui/components/elements/types.elements'
     import {MOVE_BLOCK_DIRECTION} from "@/constants"
-
-    
+    import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte';
     interface Props {
         // Prop
         template: Element;
@@ -24,18 +22,11 @@
 
     let { template }: Props = $props();
 
-    const { editCount } = pluginStore
-
-    const getAllBlocks = () => {
+    const allBlocks = $derived.by(() => {
+        // Editcount is referenced to trigger updates on changes
+        pluginGlobalStore.editCount
         return Array.from(template.querySelectorAll("Block"))
-    }
-
-    let allBlocks = $state(getAllBlocks())
-
-    run(() => {
-        $editCount
-        allBlocks = getAllBlocks()
-    }); 
+    })
 
     let mappedBlocks = $derived(allBlocks.map(block => {
         return {
@@ -58,12 +49,6 @@
         "signalList": SignalListElement,
         "table": TableElement,
     }
-
-
-    function openTableModal() {
-        isCreateTableDialogOpen = true;
-    }
-
 
     function createTableElement(rows: number, columns: number) {
         const id = addElement("table");
@@ -151,7 +136,7 @@
         </div>
 
         <footer>
-            <Button on:click={()=> isElementsChoiceVisible = !isElementsChoiceVisible}>
+            <Button onclick={()=> isElementsChoiceVisible = !isElementsChoiceVisible}>
                 <IconWrapper icon="add" fillColor="#2aa198"/>
                 <Label>
                     add element 
@@ -159,10 +144,10 @@
             </Button>
             <div class="elements-container">
                 {#if isElementsChoiceVisible}
-                    <Button variant="outlined" on:click={()=>{addElement('text')}}>Text</Button>
-                    <Button variant="outlined" on:click={()=>{addElement("image")}}>Image</Button>
-                    <Button variant="outlined" on:click={()=>{addElement("signalList")}}>Signal List</Button>
-                    <Button variant="outlined" on:click={openTableModal}>Table</Button>
+                    <Button variant="outlined" onclick={()=>{addElement('text')}}>Text</Button>
+                    <Button variant="outlined" onclick={()=>{addElement("image")}}>Image</Button>
+                    <Button variant="outlined" onclick={()=>{addElement("signalList")}}>Signal List</Button>
+                    <Button variant="outlined" onclick={() => isCreateTableDialogOpen = true}>Table</Button>
                 {/if}
             </div>
         </footer>

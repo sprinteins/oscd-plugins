@@ -143,8 +143,8 @@
     <main>
         <Table 
             allTemplates={templatesConvertedToTableRow} 
-            templateDelete={deleteTemplate}
-            templateDownload={downloadTemplateContent}
+            deleteTemplate={deleteTemplate}
+            downloadTemplate={downloadTemplateContent}
             editTemplate={navigateToEditTemplate}
             duplicateTemplate={duplicateTemplate}
         />

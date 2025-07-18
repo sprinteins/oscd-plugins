@@ -65,7 +65,7 @@
             <Button action="none">
                 <Label>Cancel</Label>
             </Button>
-            <Button action="none" on:click={handleSubmit}>
+            <Button action="none" onclick={handleSubmit}>
                 <Label>Add</Label>
             </Button>
         </Actions>
