@@ -41,18 +41,18 @@ import TableColumn from "./table-column.svelte";
 <div class="table-element"> 
     <div>
         <Tooltip text="Insert&nbsp;Placeholder">
-            <CustomIconButton icon="data_object" size="small" on:click={insertPlaceholder}/>
+            <CustomIconButton icon="data_object" size="small" onclick={insertPlaceholder}/>
         </Tooltip>
         <Tooltip text="Placeholder&nbsp;Help">
-            <CustomIconButton icon="help" size="small" on:click={() => isPlaceholderHelpDialogOpen = true}/>
+            <CustomIconButton icon="help" size="small" onclick={() => isPlaceholderHelpDialogOpen = true}/>
         </Tooltip>
     </div>
     <div class="table-element-grid">
         {#each data as column, columnIndex}
             <TableColumn bind:data={data[columnIndex]} 
                 {columnIndex} 
-                on:focus={e => selectedCell = e.detail}
-                on:update={e => updateData(columnIndex, e.detail.row, e.detail.value)} 
+                focus={e => selectedCell = e}
+                inputChange={e => updateData(columnIndex, e.row, e.value)} 
                 rows={column.length}/>
         {/each}
     </div>

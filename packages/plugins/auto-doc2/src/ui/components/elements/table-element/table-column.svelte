@@ -1,6 +1,5 @@
 <script lang="ts">
     import Textfield from "@smui/textfield";
-    import { createEventDispatcher } from "svelte";
     
     import { debounce } from "@/utils";
 
@@ -8,26 +7,26 @@
         rows?: number;
         data?: any;
         columnIndex: number;
+        focus: (args: { column: number, row: number }) => void,
+        inputChange: (args: { value: string, row: number }) => void,
     }
 
-    let { rows = 2, data = $bindable(["", ""]), columnIndex }: Props = $props();
+    let { rows = 2, data = $bindable(["", ""]), columnIndex, focus, inputChange }: Props = $props();
     
     const ONE_SECOND_IN_MS = 1000;
     
     const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS);
-
-    const dispatch = createEventDispatcher();
 
     function getCellStyle(row: number) {
         return row === 0 ? "filled" : "outlined";
     }
     
     function handleFocus(row: number) {
-        dispatch("focus", { column: columnIndex, row })
+        focus({ column: columnIndex, row });
     }
     
     function handleInputChange(row: number, value: string) {
-        dispatch('update', { row, value });
+        inputChange({ row, value })
     }
 </script>
 
@@ -37,8 +36,8 @@
         <Textfield
             bind:value={data[row]}
             variant={getCellStyle(row)}
-            on:focus={() => handleFocus(row)}
-            on:input= {e => debounceUserInput(row, e.target.value)}
+            onfocus={() => handleFocus(row)}
+            oninput= {e => debounceUserInput(row, e.target.value)}
         >
         </Textfield>
     {/each}
