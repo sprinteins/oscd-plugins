@@ -1,7 +1,7 @@
-import type { SignalType, Columns, PdfRowStructure } from "@/stores/signallist.store.d"
-import type {MessagePublisher}  from '@/stores';
+import type { MessagePublisher } from '@/stores'
+import type { Columns, SignalType } from '@/stores/signallist.store.d'
 
-export type Label = { name: string, hasSuffix: boolean }
+export type Label = { name: string; hasSuffix: boolean }
 
 export type LabelText = {
 	primaryInputLabel: Label
@@ -9,11 +9,6 @@ export type LabelText = {
 }
 
 export type SignalListOnSCD = {
-	selected: SignalRow[];
-	matches: PdfRows;
+	selected: SignalRow[]
+	matches: PdfRows
 }
-
-
-
-
-

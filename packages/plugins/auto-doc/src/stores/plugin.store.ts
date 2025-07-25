@@ -12,7 +12,11 @@ function init({
 	newXMLDocument,
 	newPluginHostElement,
 	newEditCount
-}: { newXMLDocument: XMLDocument | undefined; newPluginHostElement: Element, newEditCount: number }) {
+}: {
+	newXMLDocument: XMLDocument | undefined
+	newPluginHostElement: Element
+	newEditCount: number
+}) {
 	xmlDocument.set(newXMLDocument)
 	pluginHostElement.set(newPluginHostElement)
 	editCount.set(newEditCount)
