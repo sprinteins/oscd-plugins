@@ -94,10 +94,17 @@
 	}
 	
     let areAllCheckboxesSelected = $state(false)
+
+	$effect(() => {
+		console.log('effect on all checkboxes selected ' + areAllCheckboxesSelected);
+		mergedColsAndMessages.forEach(row => row.isSelected = areAllCheckboxesSelected);
+	})
+	/*
 	function toggleAllCheckboxes(newValue: boolean) {
 		mergedColsAndMessages.forEach(row => row.isSelected = !newValue)
 		emitSelectedRows()
 	}
+	*/
 	
 	function emitSelectedRows() {
 		const allRowsWithOrder = mergedColsAndMessages.map((row, index) => ({
@@ -145,7 +152,7 @@
 	}
 	
 	function handleReorder(
-		event: CustomEvent<{ draggedIndex: number; dropIndex: number }>
+		event: { draggedIndex: number; dropIndex: number }
 	) {
 		// TODO: Reimplement reorder once mergedColsAndMessages is state
 		/*
@@ -173,16 +180,15 @@
 	<div class="header">
 		<div class="controls-column">
 			<div></div>
-			<Checkbox 
-				on:click={() => toggleAllCheckboxes(areAllCheckboxesSelected)}
-				bind:checked={areAllCheckboxesSelected}
-			/>
+			<!-- TODO: Fix checkbox toggle all -->
+			<Checkbox bind:checked={areAllCheckboxesSelected} />
 		</div>
 		<small>Choose the columns you want to display and rename if needed</small>
 		<small>Use the filter to limit the content of the columns to certain values</small>
 	</div>
 	
 	{#each mergedColsAndMessages as row, i (row.id)}
+		<!-- TODO: is this relevant? toggleAllCheckboxes={e => toggleAllCheckboxes(e.value)} -->
 		<SignalRow 
 			idx={i}
 			id={row.id}
@@ -192,9 +198,8 @@
 			bind:isSelected={row.isSelected}
 			bind:column1={row.column1}
 			bind:column2={row.column2}
-			on:update={e => updateSignalRow(i, e.detail.key, e.detail.value)}
-			on:toggleAllCheckboxes={e => toggleAllCheckboxes(e.detail.value)}
-			on:reorder={handleReorder}
+			update={e => updateSignalRow(i, e.key, e.value)}
+			reorder={handleReorder}
 		/>
 	{/each}
 	</article>

@@ -4,7 +4,6 @@
     const bubble = createBubbler();
     import Checkbox from '@smui/checkbox'
     import Textfield from '@smui/textfield'
-    import { createEventDispatcher } from 'svelte'
     import type { SignalRow, LabelText, Label } from './types.signal-list'
     
     import { debounce } from '@/utils/'
@@ -21,6 +20,8 @@
         column2?: string;
         isInColumnsZone: boolean;
         columnsLength: number;
+        update: (args: { key: keyof SignalRow, value: string }) => void;
+        reorder: (args: { draggedIndex: number, dropIndex: number }) => void;
     }
 
     let {
@@ -28,13 +29,15 @@
         id,
         label = {
         col1Label: { name: '', hasSuffix: false },
-        col2Label: { name: '', hasSuffix: false }
+        col2Label: { name: '', hasSuffix: false },
     },
         isSelected = $bindable(false),
         column1 = $bindable(''),
         column2 = $bindable(''),
         isInColumnsZone,
-        columnsLength
+        columnsLength,
+        update,
+        reorder
     }: Props = $props();
     
     
@@ -42,12 +45,10 @@
     
     const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
     
-    const dispatch = createEventDispatcher()
-    
     function handleInputChange(key: keyof SignalRow, value: string) {
         column1 = key === 'column1' ? value : column1
         column2 = key === 'column2' ? value : column2
-        dispatch('update', { key, value })
+        update({ key, value })
     }
     
     function createSuffixForLabelIfNeeded(label: Label) {
@@ -57,7 +58,8 @@
     
     run(() => {
         if (isSelected || !isSelected) {
-            dispatch('update', { key: 'isSelected', value: isSelected })
+            // TODO: this causes endless loop, what was it supposed to do?
+            // update({ key: 'isSelected', value: isSelected.toString() });
         }
     });
     
@@ -91,7 +93,8 @@
         isDraggedOver = false;
         const { draggedIndex, dropIndex } = signalDndStore;
         if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex || !isDropAllowed()) return;
-        dispatch('reorder', { draggedIndex, dropIndex });
+
+        reorder({ draggedIndex, dropIndex });
         signalDndStore.handleDragEnd();
     }
 
@@ -142,7 +145,7 @@
                                         bind:value={column1}
                                         variant="outlined"
                                         label={createSuffixForLabelIfNeeded(label.col1Label)}
-                                        on:input= {e => debounceUserInput('column1', e.target.value)}
+                                        oninput= {e => debounceUserInput('column1', e.target.value)}
                                         disabled={!isSelected}
                                 >
                                 </Textfield>
@@ -150,7 +153,7 @@
                                         bind:value={column2}
                                         variant="outlined"
                                         label={createSuffixForLabelIfNeeded(label.col2Label)}
-                                        on:input= {e => debounceUserInput('column2', e.target.value)}
+                                        oninput= {e => debounceUserInput('column2', e.target.value)}
                                                 disabled={!isSelected}
                                                 >
                                 </Textfield>
