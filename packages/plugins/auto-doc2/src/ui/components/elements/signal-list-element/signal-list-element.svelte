@@ -35,11 +35,11 @@
 				index: prevSelected?.index ?? i,
 				searchKey: key as keyof typeof Columns,
 				isSelected: prevSelected?.isSelected ?? false,
-				column1: prevSelected?.column1 ?? value,
-				column2: prevSelected?.column2 ?? '',
+				primaryInput: prevSelected?.primaryInput ?? value,
+				secondaryInput: prevSelected?.secondaryInput ?? '',
 				label: {
-					col1Label: { name: value, hasSuffix: true },
-					col2Label: { name: `Filter by ${value}`, hasSuffix: false }
+					primaryInputLabel: { name: value, hasSuffix: true },
+					secondaryInputLabel: { name: `Filter by ${value}`, hasSuffix: false }
 				}
 			}
 		}
@@ -55,11 +55,11 @@
 				index: prevSelected?.index ?? (columns.length + i),
 				searchKey: key as keyof typeof SignalType,
 				isSelected: prevSelected?.isSelected ?? false,
-				column1: prevSelected?.column1 ?? value,
-				column2: prevSelected?.column2 ?? '',
+				primaryInput: prevSelected?.primaryInput ?? value,
+				secondaryInput: prevSelected?.secondaryInput ?? '',
 				label: {
-					col1Label: { name: value, hasSuffix: true },
-					col2Label: { name: 'Filter by IED Name', hasSuffix: false }
+					primaryInputLabel: { name: value, hasSuffix: true },
+					secondaryInputLabel: { name: 'Filter by IED Name', hasSuffix: false }
 				}
 			}
 		}
@@ -130,11 +130,11 @@
 		const publisherFilter: MessagePublisherFilter = {};
 		const subscriberFilter: MessageSubscriberFilter = {};
 	
-		for (const { searchKey, column2 } of selectedRows) {
+		for (const { searchKey, secondaryInput } of selectedRows) {
 			if (doesIncludeSignalType(searchKey)) {
-				subscriberFilter[searchKey as keyof MessageSubscriberFilter] = column2
+				subscriberFilter[searchKey as keyof MessageSubscriberFilter] = secondaryInput
 			} else {
-				publisherFilter[searchKey as keyof MessagePublisherFilter] = column2
+				publisherFilter[searchKey as keyof MessagePublisherFilter] = secondaryInput
 			}
 		}
 	
@@ -196,8 +196,8 @@
 			columnsLength={columnsLength}
 			label={row.label}
 			bind:isSelected={row.isSelected}
-			bind:column1={row.column1}
-			bind:column2={row.column2}
+			bind:primaryInput={row.primaryInput}
+			bind:secondaryInput={row.secondaryInput}
 			update={e => updateSignalRow(i, e.key, e.value)}
 			reorder={handleReorder}
 		/>

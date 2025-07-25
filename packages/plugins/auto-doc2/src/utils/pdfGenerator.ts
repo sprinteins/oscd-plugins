@@ -234,7 +234,7 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
         const rows = tableRows.flatMap((row) => {
             return row.matchedFilteredValuesForPdf
         })
-        const header = selectedRows.map(r => ({value: r.column1, type: 'string'}))
+        const header = selectedRows.map(r => ({value: r.primaryInput, type: 'string'}))
         const individualRows = rows.map(row => row.map(r => ({value: r, type: 'string'})))
 
         const fileName = `SignalList_${blockId}`
@@ -358,7 +358,7 @@ type TableHeader = {
 
 function generateTableHeader(selectedRows: SignalRow[]): TableHeader[] {
     return selectedRows.map(row => ({
-        header: row.column1,
+        header: row.primaryInput,
         dataKey: row.searchKey
     }));
 }

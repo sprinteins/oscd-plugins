@@ -16,8 +16,8 @@
         id: string;
         label?: LabelText;
         isSelected?: boolean;
-        column1?: string;
-        column2?: string;
+        primaryInput?: string;
+        secondaryInput?: string;
         isInColumnsZone: boolean;
         columnsLength: number;
         update: (args: { key: keyof SignalRow, value: string }) => void;
@@ -28,12 +28,12 @@
         idx,
         id,
         label = {
-        col1Label: { name: '', hasSuffix: false },
-        col2Label: { name: '', hasSuffix: false },
-    },
+            primaryInputLabel: { name: '', hasSuffix: false },
+            secondaryInputLabel: { name: '', hasSuffix: false },
+        },
         isSelected = $bindable(false),
-        column1 = $bindable(''),
-        column2 = $bindable(''),
+        primaryInput = $bindable(''),
+        secondaryInput = $bindable(''),
         isInColumnsZone,
         columnsLength,
         update,
@@ -46,8 +46,8 @@
     const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
     
     function handleInputChange(key: keyof SignalRow, value: string) {
-        column1 = key === 'column1' ? value : column1
-        column2 = key === 'column2' ? value : column2
+        primaryInput = key === 'primaryInput' ? value : primaryInput
+        secondaryInput = key === 'secondaryInput' ? value : secondaryInput
         update({ key, value })
     }
     
@@ -142,18 +142,18 @@
                                         <Checkbox bind:checked={isSelected} />
                                 </div>
                                 <Textfield
-                                        bind:value={column1}
+                                        bind:value={primaryInput}
                                         variant="outlined"
-                                        label={createSuffixForLabelIfNeeded(label.col1Label)}
-                                        oninput= {e => debounceUserInput('column1', e.target.value)}
+                                        label={createSuffixForLabelIfNeeded(label.primaryInputLabel)}
+                                        oninput= {e => debounceUserInput('primaryInput', e.target.value)}
                                         disabled={!isSelected}
                                 >
                                 </Textfield>
                                 <Textfield
-                                        bind:value={column2}
+                                        bind:value={secondaryInput}
                                         variant="outlined"
-                                        label={createSuffixForLabelIfNeeded(label.col2Label)}
-                                        oninput= {e => debounceUserInput('column2', e.target.value)}
+                                        label={createSuffixForLabelIfNeeded(label.secondaryInputLabel)}
+                                        oninput= {e => debounceUserInput('secondaryInput', e.target.value)}
                                                 disabled={!isSelected}
                                                 >
                                 </Textfield>
