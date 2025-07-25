@@ -28,7 +28,7 @@
 >
 	<MaterialTheme pluginType="editor">
 		<auto-doc class="auto-doc">
-			{#if pluginGlobalStore.xmlDocument}
+			{#if hasRunInit && pluginGlobalStore.xmlDocument}
 				<ViewNavigator></ViewNavigator>
 			{:else}
 				<div class="file-missing">
@@ -63,8 +63,13 @@ const {
 	isCustomInstance
 }: Utils.PluginCustomComponentsProps = $props()
 
+let hasRunInit = $state(false);
+
 $effect(() => {
-	setTimeout(() => docTemplatesStore.init(), 0)
+	setTimeout(() => {
+		docTemplatesStore.init();
+		hasRunInit = true;
+	}, 0)
 })
 </script>
 

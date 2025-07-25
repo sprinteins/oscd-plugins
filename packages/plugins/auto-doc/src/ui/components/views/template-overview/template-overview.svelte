@@ -19,9 +19,7 @@
 
     let menu: Menu
     let fileSelector: FileSelector
-    // TODO: Remove
-    // let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
-    let isMasterTemplate = $state(false)
+    let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
     let allTemplates: Element[] = $state([])
     const emptyTitleOrDescription = "N/A"
 
@@ -108,8 +106,7 @@
     
     let templatesConvertedToTableRow = $derived(allTemplates.map(mapElementToTableRow))
     run(() => {
-        // TODO: Readd when working
-        // docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
+        docTemplatesStore.setMasterTemplateFlag(isMasterTemplate);
     });
     let importToolTipText = $derived(isMasterTemplate ? "No import allowed for master templates" : "")
 </script>
