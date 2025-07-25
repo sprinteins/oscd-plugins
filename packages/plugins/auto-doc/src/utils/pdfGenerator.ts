@@ -1,11 +1,10 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import zipcelx from 'zipcelx';
-import type {ElementType} from "@/components/elements/types.elements"
-import {docTemplatesStore, placeholderStore} from '../stores'
-import type {Columns, SignalType} from '../stores'
-import type {SignalListOnSCD, SignalRow} from '@/components/elements/signal-list-element/types.signal-list'
-import type { ImageData } from '@/components/elements/image-element/types.image';
+import type {ElementType} from "@/ui/components/elements/types.elements"
+import {docTemplatesStore, placeholderStore, signallistStore} from '../stores'
+import type {SignalListOnSCD} from '@/ui/components/elements/signal-list-element/types.signal-list'
+import type { ImageData } from '@/ui/components/elements/image-element/types.image';
 
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
@@ -229,13 +228,10 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
         const parsedBlockContent = JSON.parse(block.textContent) as SignalListOnSCD;
 
         const selectedRows = parsedBlockContent.selected
-        const tableRows = parsedBlockContent.matches.matchedRowsForTablePdf
-        
-        const rows = tableRows.flatMap((row) => {
-            return row.matchedFilteredValuesForPdf
-        })
-        const header = selectedRows.map(r => ({value: r.column1, type: 'string'}))
-        const individualRows = rows.map(row => row.map(r => ({value: r, type: 'string'})))
+        const tableRows = signallistStore.searchForMatchOnSignalList(selectedRows)
+
+        const header = selectedRows.map(r => ({value: r.primaryInput, type: 'string'}))
+        const individualRows = tableRows.map(row => row.map(r => ({value: r, type: 'string'})))
 
         const fileName = `SignalList_${blockId}`
         const pdfHintText = `Hint: check ${fileName}.xlsx`
@@ -341,6 +337,7 @@ async function generatePdf(templateTitle: string , allBlocks: Element[]){
     
 }
 
+/*
 function generateTableBody(tableRows: string[][], tableHeader: TableHeader []) {
    const generatedRows =  tableRows.map((row) => {
         return tableHeader.reduce((acc: Record<string, string>, col, index) => {
@@ -358,10 +355,11 @@ type TableHeader = {
 
 function generateTableHeader(selectedRows: SignalRow[]): TableHeader[] {
     return selectedRows.map(row => ({
-        header: row.column1,
+        header: row.primaryInput,
         dataKey: row.searchKey
     }));
 }
+*/
 
 
 
