@@ -4,7 +4,8 @@
     const bubble = createBubbler();
     import Checkbox from '@smui/checkbox'
     import Textfield from '@smui/textfield'
-    import type { SignalRow, LabelText, Label } from './types.signal-list'
+    import type { LabelText, Label } from './types.signal-list'
+    import type { SignalRow } from '@/stores/signallist.store.d'
     
     import { debounce } from '@/utils/'
     import { signalDndStore } from '@/stores/signal-dnd.store'

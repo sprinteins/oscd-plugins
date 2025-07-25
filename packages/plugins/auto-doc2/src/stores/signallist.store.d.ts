@@ -100,3 +100,13 @@ export type PdfRowStructure = {
         [SignalType.SV]: string[];
     }
 }
+
+export type SignalRow = {
+	id: string
+	index: number
+	isSelected: boolean
+	primaryInput: string
+	secondaryInput: string
+	label: LabelText
+	searchKey: keyof typeof SignalType | keyof typeof Columns
+}

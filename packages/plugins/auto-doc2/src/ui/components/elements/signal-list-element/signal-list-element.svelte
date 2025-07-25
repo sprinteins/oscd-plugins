@@ -1,15 +1,12 @@
 <script lang="ts">
-	import { signallistStore } from '@/stores'
 	import Checkbox from '@smui/checkbox'
 	
 	import SignalRow from './signal-row.svelte'
 	import type {
-		SignalRow as SignalRowType,
-		PdfRows,
 		SignalListOnSCD
 	} from './types.signal-list'
 	import { Columns, SignalType } from '@/stores/'
-	import type { MessagePublisherFilter, MessageSubscriberFilter } from '@/stores'
+	import type { SignalRow as SignalRowType } from '@/stores/signallist.store.d'
 	
 	
 	interface Props {
@@ -66,7 +63,6 @@
 	))
 	
 	let mergedColsAndMessages = $derived([...columns, ...messages].sort((a, b) => a.index - b.index))
-	let selectedRows = $derived(mergedColsAndMessages.filter((row) => row.isSelected))
 	let columnsLength = $derived(columns.length)
 	
 	function getEmptyValues(): SignalListOnSCD {
@@ -115,8 +111,7 @@
 		const selectedWithOrder = allRowsWithOrder.filter(row => row.isSelected);
 		
 		const results = {
-			selected: selectedWithOrder,
-			matches: searchForMatchOnSignalList()
+			selected: selectedWithOrder
 		};
 		onContentChange(JSON.stringify(results));
 	}
@@ -124,31 +119,6 @@
 		searchKey: keyof typeof Columns | keyof typeof SignalType
 	): SignalRowType | undefined {
 		return prevSelectedRows.find((selected) => selected.searchKey === searchKey)
-	}
-	
-	function searchForMatchOnSignalList(): PdfRows {
-		const publisherFilter: MessagePublisherFilter = {};
-		const subscriberFilter: MessageSubscriberFilter = {};
-	
-		for (const { searchKey, secondaryInput } of selectedRows) {
-			if (doesIncludeSignalType(searchKey)) {
-				subscriberFilter[searchKey as keyof MessageSubscriberFilter] = secondaryInput
-			} else {
-				publisherFilter[searchKey as keyof MessagePublisherFilter] = secondaryInput
-			}
-		}
-	
-		const { pdfRows, invaliditiesReports } = signallistStore.getPublishingLogicalDevices(publisherFilter, subscriberFilter);
-	
-		return { matchedRowsForTablePdf: pdfRows }
-	}
-	
-	function doesIncludeSignalType(searchKey: string) {
-		return [
-			SignalType.GOOSE,
-			SignalType.MMS,
-			SignalType.SV
-		].includes(SignalType[searchKey as unknown as keyof typeof SignalType])
 	}
 	
 	function handleReorder(
