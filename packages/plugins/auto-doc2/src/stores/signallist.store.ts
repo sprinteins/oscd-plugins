@@ -15,11 +15,6 @@ import { MESSAGE_PUBLISHER } from "@/constants";
 import { queryDataSetForControl, queryDataTypeLeaf, queryFCDA, queryLDevice, queryLN, queryLNode } from "../utils";
 
 
-
-//====== STORES ======//
-const xmlDocument = pluginGlobalStore.xmlDocument
-const pdfRowValues = writable<PdfRowStructure[]>([])
-
 interface TargetContext {
     ied: Element,
     accessPoint: Element,
@@ -506,7 +501,6 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
         }  
     }
 
-    pdfRowValues.update(() => [...matchedValueAndCorrespondingPublisher]);
     return matchedValueAndCorrespondingPublisher;
 }
 
@@ -532,7 +526,5 @@ function getValueFromNestedProperty(publisher: MessagePublisher, key: keyof Mess
 }
 
 export const signallistStore = {
-    getPublishingLogicalDevices,
-    // Store for table pdf
-    pdfRowValues
+    getPublishingLogicalDevices
 };
