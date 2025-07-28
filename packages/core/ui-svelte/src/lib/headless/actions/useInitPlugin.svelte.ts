@@ -7,6 +7,7 @@ import inlineCssLegacyTheme from '$lib/theme/styles/legacy-oscd-instance.theme.c
 import inlineCssShadcnTheme from '$lib/theme/styles/shadcn-stock.theme.css?inline'
 import inlineCssFonts from '$lib/theme/styles/fonts.css?inline'
 import inlineShadCnAdaptation from '$lib/theme/styles/shadcn-adaptation-to-instance-specificities.css?inline'
+import svelteFlowTheme from '@xyflow/svelte/dist/style.css?inline'
 // COMPONENTS
 import { Toaster } from '$lib/ui/shadcn/sonner/index.js'
 // UTILS
@@ -20,6 +21,7 @@ export function initPlugin(
 	node: HTMLElement,
 	params: {
 		theme: 'legacy-oscd-instance' | 'shadcn-stock'
+		useSvelteFlowTheme?: boolean
 		getDoc: () => XMLDocument
 		getDocName: () => string
 		getEditCount: () => number
@@ -32,6 +34,7 @@ export function initPlugin(
 		}
 		getHost: () => HTMLElement | undefined
 		customNamespaces?: Record<'namespacePrefix' | 'namespaceUri', string>[]
+
 	}
 ) {
 	const isInitialized = $derived(
@@ -46,6 +49,9 @@ export function initPlugin(
 	const docName = $derived(params.getDocName())
 	const editCount = $derived(params.getEditCount())
 	const isCustomInstance = $derived(params.getIsCustomInstance())
+	const isUsingSvelteFlowTheme = $derived(
+		params.useSvelteFlowTheme ?? false
+	)
 	const host = $derived(params.getHost())
 	const rootElement = $derived(doc?.documentElement)
 
@@ -246,9 +252,10 @@ export function initPlugin(
 			node.insertAdjacentElement('beforebegin', style)
 
 			style.innerHTML = `
+				${isUsingSvelteFlowTheme ? svelteFlowTheme : ''}
 				${selectedTheme}
 				${inlineCssFonts}
-				${inlineShadCnAdaptation}
+				${inlineShadCnAdaptation} 
 				main {
 					${cssVariables};
 					font-family: "Roboto", sans-serif;

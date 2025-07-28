@@ -59,7 +59,7 @@ export async function calculateLayout(
 	const graph: ElkNode = {
 		id: 'graph-root',
 		layoutOptions: {
-			'elk.algorithm': 'org.eclipse.elk.layered',			
+			'elk.algorithm': 'org.eclipse.elk.layered',
 			'org.eclipse.elk.layered.unnecessaryBendpoints': 'true',
 			'org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment':
 				'RIGHTUP',
@@ -87,7 +87,8 @@ export async function calculateLayout(
 		children,
 		edges
 	}
-
+	console.log('edges', edges)
+	console.log('children', children)
 	// message type information gets lost here
 	const root = (await elk.layout(graph)) as RootNode
 
@@ -120,14 +121,14 @@ export async function calculateLayout(
 										}
 									}
 								}
-							}						
+							}
 						}
 					}
 				}
 			}
 
 			for (const child of node.children) {
-				
+
 				//ELK only gives us local positions for child IEDs (I couldn't find a way to change that...)
 				//as a workaround we add the bay's position to all it's child IEDs
 				if (node.x !== undefined && node.y !== undefined) {
@@ -166,13 +167,13 @@ function generateBayLayout(ieds: IEDNode[], edges: IEDConnectionWithCustomValues
 		else {
 			const spacing = config.spacingBase ?? 20
 			bayNode = {
-				id:         	`bay-${id++}`, //placeholder
-				width:      	config.iedWidth,
-				height:     	config.iedHeight,
-				label:      	bayLabel,
-				isRelevant: 	ied.isRelevant,
-				isBayNode:		true,
-				children:   	[ied], //IEDs must be children of their bays, otherwise ELK won't calculate proper layouts!
+				id: `bay-${id++}`, //placeholder
+				width: config.iedWidth,
+				height: config.iedHeight,
+				label: bayLabel,
+				isRelevant: ied.isRelevant,
+				isBayNode: true,
+				children: [ied], //IEDs must be children of their bays, otherwise ELK won't calculate proper layouts!
 				layoutOptions: {
 					'elk.padding': `[top=${spacing * 2},left=${spacing},right=${spacing},bottom=${spacing}]` //double top spacing to account for baycontainer label!
 				},

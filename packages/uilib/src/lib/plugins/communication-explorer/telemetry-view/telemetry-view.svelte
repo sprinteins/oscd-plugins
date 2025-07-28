@@ -49,8 +49,10 @@ async function initInfos(
 
 	if (root !== lastUsedRoot) {
 		const iedInfos = getIEDCommunicationInfos(root)
+		console.log(iedInfos)
 		lastExtractedInfos = iedInfos
 		lastExtractedBays = getBays(root)
+		console.log(lastExtractedBays)
 		lastUsedRoot = root
 	}
 	rootNode = await calculateLayout(
