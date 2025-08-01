@@ -10,6 +10,7 @@
     import Tooltip from '@/ui/components/tooltip/tooltip.svelte';
     import { Group } from '@smui/button';
     import CustomIconButton from '@oscd-plugins/ui/src/components/smui-wrapper/custom-icon-button.svelte';
+    import Button from '@oscd-plugins/ui/src/components/smui-wrapper/button/button.svelte';
 
 
     let element: Element = $state();
@@ -69,30 +70,29 @@
     <div class="control-group">
         <div class="text-controls">
             <Group>
-                <!-- TODO: Reimplement with different button? -->
-                <!-- <Button
-                    on:click={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                <Button
+                    onclick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
                     type={editor.isActive("heading", { level: 1 }) ? "primary" : "secondary"}
                 >
                     H1
                 </Button>
                 <Button
-                    on:click={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                    onclick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
                     type={editor.isActive("heading", { level: 2 }) ? "primary" : "secondary"}
                 >
                     H2
                 </Button>
                 <Button
-                    on:click={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+                    onclick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
                     type={editor.isActive("heading", { level: 3 }) ? "primary" : "secondary"}
                 >
                     H3
-                </Button> -->
+                </Button>
             </Group>
             <div class="button-group">
                 <Tooltip text="Bold">
                     <CustomIconButton
-                        on:click={() => editor.chain().focus().toggleBold().run()}
+                        onclick={() => editor.chain().focus().toggleBold().run()}
                         size="small"
                         disabled={!editor.can().chain().focus().toggleBold().run()}
                         color={editor.isActive("bold") ? "black" : "primary"}
@@ -101,7 +101,7 @@
                 </Tooltip>
                 <Tooltip text="Italic">
                     <CustomIconButton
-                        on:click={() => editor.chain().focus().toggleItalic().run()}
+                        onclick={() => editor.chain().focus().toggleItalic().run()}
                         size="small"
                         disabled={!editor.can().chain().focus().toggleItalic().run()}
                         color={editor.isActive("italic") ? "black" : "primary"}
@@ -110,7 +110,7 @@
                 </Tooltip>
                 <Tooltip text="Paragraph">
                     <CustomIconButton
-                        on:click={() => editor.chain().focus().setParagraph().run()}
+                        onclick={() => editor.chain().focus().setParagraph().run()}
                         size="small"
                         color={editor.isActive("paragraph") ? "black" : "primary"}
                         icon="paragraph"
@@ -118,7 +118,7 @@
                 </Tooltip>
                 <Tooltip text="Bullet&nbsp;List">
                     <CustomIconButton
-                        on:click={() => editor.chain().focus().toggleBulletList().run()}
+                        onclick={() => editor.chain().focus().toggleBulletList().run()}
                         size="small"
                         color={editor.isActive("bulletList") ? "black" : "primary"}
                         icon="bullet_list"
@@ -126,7 +126,7 @@
                 </Tooltip>
                 <Tooltip text="Numbered&nbsp;List">
                     <CustomIconButton
-                        on:click={() => editor.chain().focus().toggleOrderedList().run()}
+                        onclick={() => editor.chain().focus().toggleOrderedList().run()}
                         size="small"
                         color={editor.isActive("orderedList") ? "black" : "primary"}
                         icon="numbered_list"
@@ -134,7 +134,7 @@
                 </Tooltip>
                 <Tooltip text="Insert&nbsp;Placeholder">
                     <CustomIconButton
-                        on:click={insertPlaceholder}
+                        onclick={insertPlaceholder}
                         size="small"
                         color={"primary"}
                         icon="data_object"
@@ -142,7 +142,7 @@
                 </Tooltip>
                 <Tooltip text="Placeholder&nbsp;Help">
                     <CustomIconButton 
-                        on:click={() => isPlaceholderHelpDialogOpen = true}
+                        onclick={() => isPlaceholderHelpDialogOpen = true}
                         size="small" 
                         color="primary" 
                         icon="help" 
@@ -150,7 +150,7 @@
                 </Tooltip>
                 <Tooltip text="Undo">
                     <CustomIconButton
-                        on:click={() => editor.chain().focus().undo().run()}
+                        onclick={() => editor.chain().focus().undo().run()}
                         size="small"
                         color="primary"
                         icon="undo"
@@ -158,10 +158,10 @@
                 </Tooltip>
                 <Tooltip text="Redo">
                     <CustomIconButton
-                    on:click={() => editor.chain().focus().redo().run()}
-                    size="small"
-                    color="primary"
-                    icon="redo"
+                        onclick={() => editor.chain().focus().redo().run()}
+                        size="small"
+                        color="primary"
+                        icon="redo"
                     />
                 </Tooltip>
             </div>
