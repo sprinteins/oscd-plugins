@@ -1,6 +1,5 @@
 <script lang="ts">
     import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-    import {createEventDispatcher} from "svelte"
     import {MOVE_BLOCK_DIRECTION} from "@/constants"
 
     
@@ -8,22 +7,23 @@
         //Prop
         elementId: string;
         children?: import('svelte').Snippet;
+        duplicateBlock(elementId: string): void,
+        moveBlock(elementId: string, direction: number): void,
+        deleteBlock(elementId: string): void
     }
 
-    let { elementId, children }: Props = $props();
-
-    const dispatch = createEventDispatcher()
+    let { elementId, children, duplicateBlock, moveBlock, deleteBlock }: Props = $props();
 
     function duplicateBlockElement(){
-        dispatch("elementDuplicate", {elementId})
+        duplicateBlock(elementId);
     }
 
     function moveBlockElement(direction: number) {
-        dispatch("elementMove", {elementId, direction});
+        moveBlock(elementId, direction);
     }
 
     function deleteBlockElement(){
-        dispatch("elementDelete", {elementId})
+        deleteBlock(elementId);
     }
 
 </script>
@@ -32,10 +32,10 @@
 
 <div class="element-wrapper">
     <div class="action-btns">
-        <CustomIconButton icon="content_copy" color="black" size="small" on:click={duplicateBlockElement}/>
-        <CustomIconButton icon="delete" color="black" size="small" on:click={deleteBlockElement}/>
-        <CustomIconButton icon="arrow_upward" color="black" size="small" on:click={() => moveBlockElement(MOVE_BLOCK_DIRECTION.UP)}/>
-        <CustomIconButton icon="arrow_downward" color="black" size="small" on:click={() => moveBlockElement(MOVE_BLOCK_DIRECTION.DOWN)}/>
+        <CustomIconButton icon="content_copy" color="black" size="small" onclick={duplicateBlockElement}/>
+        <CustomIconButton icon="delete" color="black" size="small" onclick={deleteBlockElement}/>
+        <CustomIconButton icon="arrow_upward" color="black" size="small" onclick={() => moveBlockElement(MOVE_BLOCK_DIRECTION.UP)}/>
+        <CustomIconButton icon="arrow_downward" color="black" size="small" onclick={() => moveBlockElement(MOVE_BLOCK_DIRECTION.DOWN)}/>
     </div>
     {@render children?.()}
 </div>

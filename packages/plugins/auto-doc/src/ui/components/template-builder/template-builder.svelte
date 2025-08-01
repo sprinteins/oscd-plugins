@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import Button, {Label} from "@smui/button"
     import {IconWrapper} from "@oscd-plugins/ui"
 
@@ -75,16 +73,13 @@
     }
 
 
-    function duplicateBlockElement(event: CustomEvent<{elementId: string}>){
-        const {elementId} = event.detail;
+    function duplicateBlockElement(elementId: string){
         const position = blockElements.findIndex((element) => element.id === elementId) + 1;
         docTemplatesStore.duplicateBlockFromDocumentTemplate(template, elementId, position);
     }
 
 
-    function moveBlockElement(event: CustomEvent<{elementId: string, direction: number}>) {
-        const {elementId, direction} = event.detail
-
+    function moveBlockElement(elementId: string, direction: number) {
         const blockElement = blockElements.find((element) => element.id === elementId);
         if(!blockElement) {
             return;
@@ -106,8 +101,7 @@
         docTemplatesStore.moveBlockInDocumentTemplate(template, elementId, reference);
     }
 
-    function deleteBlockElement(event: CustomEvent<{elementId: string}>){
-        const {elementId} = event.detail
+    function deleteBlockElement(elementId: string) {
         docTemplatesStore.deleteBlockFromDocumentTemplate(template, elementId);
     }
 
@@ -125,7 +119,7 @@
 
         <div class="elements-list">
             {#each blockElements as blockElement (blockElement.id)}
-                <ElementWrapper elementId={blockElement.id} on:elementDuplicate={duplicateBlockElement} on:elementDelete={deleteBlockElement} on:elementMove={(direction) => moveBlockElement(direction)}>
+                <ElementWrapper elementId={blockElement.id} duplicateBlock={duplicateBlockElement} deleteBlock={deleteBlockElement} moveBlock={moveBlockElement}>
                     {@const SvelteComponent = componentMap[blockElement.type]}
                     <SvelteComponent
                         content={blockElement.content}
