@@ -451,8 +451,8 @@ function removeMatchDuplicates(pdfRows: PdfRowStructure[]): string[][] {
 function setSubscriber(filteredPdfRows: PdfRowStructure[]): PdfRowStructure[] {
     return filteredPdfRows.map(r => {
         const gooseSubscribers = r.matchedSubscribers[SignalType.GOOSE].join(', ');
-        const mmsSubscribers = r.matchedSubscribers[SignalType.MMS].join(', ');
-        const svSubscribers = r.matchedSubscribers[SignalType.SV].join(', ');
+        const mmsSubscribers = r.matchedSubscribers[SignalType.Report].join(', ');
+        const svSubscribers = r.matchedSubscribers[SignalType.SMV].join(', ');
 
         const matchedFilteredValuesForPdf = [ ...r.matchedFilteredValuesForPdf[0], gooseSubscribers, mmsSubscribers, svSubscribers ];
 
@@ -473,28 +473,20 @@ function doesNameMatchFilter(name: string, filterText: string | undefined): bool
 
 function filterSubscriber(pdfRows: PdfRowStructure[], filter: MessageSubscriberFilter): PdfRowStructure[] {
     const gooseFilter = filter[SignalType.GOOSE];
-    const mmsFilter = filter[SignalType.MMS];
-    const svFilter = filter[SignalType.SV];
+    const mmsFilter = filter[SignalType.Report];
+    const svFilter = filter[SignalType.SMV];
 
     return pdfRows.map(pdfRow => {
         const gooseSubscribers = gooseFilter ? pdfRow.matchedSubscribers[SignalType.GOOSE].filter(s => doesNameMatchFilter(s, gooseFilter)) : pdfRow.matchedSubscribers[SignalType.GOOSE];
-        const mmsSubscribers = mmsFilter ? pdfRow.matchedSubscribers[SignalType.MMS].filter(s => doesNameMatchFilter(s, mmsFilter)) : pdfRow.matchedSubscribers[SignalType.MMS];
-        const svSubscribers = svFilter ? pdfRow.matchedSubscribers[SignalType.SV].filter(s => doesNameMatchFilter(s, svFilter)) : pdfRow.matchedSubscribers[SignalType.SV];
+        const mmsSubscribers = mmsFilter ? pdfRow.matchedSubscribers[SignalType.Report].filter(s => doesNameMatchFilter(s, mmsFilter)) : pdfRow.matchedSubscribers[SignalType.Report];
+        const svSubscribers = svFilter ? pdfRow.matchedSubscribers[SignalType.SMV].filter(s => doesNameMatchFilter(s, svFilter)) : pdfRow.matchedSubscribers[SignalType.SMV];
 
         return {
             ...pdfRow,
             matchedSubscribers: {
-                [SignalType.GOOSE]: Object.keys(filter).includes(
-					SignalType.GOOSE
-				)
-					? gooseSubscribers
-					: [],
-				[SignalType.MMS]: Object.keys(filter).includes(SignalType.MMS)
-					? mmsSubscribers
-					: [],
-				[SignalType.SV]: Object.keys(filter).includes(SignalType.SV)
-					? svSubscribers
-					: []
+                [SignalType.GOOSE]: gooseSubscribers,
+				[SignalType.Report]: mmsSubscribers,
+				[SignalType.SMV]: svSubscribers
             }
         };
     });
@@ -558,9 +550,9 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
 
             if (signalType === SignalType.GOOSE) {
                 gooseSubscriber.push(publisher.targetIEDName);
-            } else if (signalType === SignalType.MMS) {
+            } else if (signalType === SignalType.Report) {
                 mmsSubscriber.push(publisher.targetIEDName);
-            } else if (signalType === SignalType.SV) {
+            } else if (signalType === SignalType.SMV) {
                 svSubscriber.push(publisher.targetIEDName);
             }
 
@@ -570,8 +562,8 @@ function filterMessagePublishers(messagePublishers: MessagePublisher[], filter: 
                 publisher,
                 matchedSubscribers: {
                     [SignalType.GOOSE]: gooseSubscriber,
-                    [SignalType.MMS]: mmsSubscriber,
-                    [SignalType.SV]: svSubscriber,
+                    [SignalType.Report]: mmsSubscriber,
+                    [SignalType.SMV]: svSubscriber,
                 }
             });
         }  
@@ -602,7 +594,7 @@ function getValueFromNestedProperty(publisher: MessagePublisher, key: keyof Mess
 }
 
 function doesIncludeSignalType(searchKey: string) {
-	return [SignalType.GOOSE, SignalType.MMS, SignalType.SV].includes(
+	return [SignalType.GOOSE, SignalType.Report, SignalType.SMV].includes(
 		SignalType[searchKey as unknown as keyof typeof SignalType]
 	)
 }

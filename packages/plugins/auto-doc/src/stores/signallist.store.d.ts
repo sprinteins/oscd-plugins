@@ -10,8 +10,8 @@ import type {
 */
 export enum SignalType {
 	GOOSE = 'GOOSE',
-	MMS = 'Report',
-	SV = 'SMV'
+	Report = 'Report',
+	SMV = 'SMV'
 }
 
 export enum Columns {
@@ -90,8 +90,8 @@ type IEDNameSearch = string
 
 export type MessageSubscriberFilter = {
 	[SignalType.GOOSE]?: IEDNameSearch
-	[SignalType.MMS]?: IEDNameSearch
-	[SignalType.SV]?: IEDNameSearch
+	[SignalType.Report]?: IEDNameSearch
+	[SignalType.SMV]?: IEDNameSearch
 }
 
 export type PdfRowStructure = {
@@ -99,8 +99,8 @@ export type PdfRowStructure = {
 	publisher: MessagePublisher
 	matchedSubscribers: {
 		[SignalType.GOOSE]: string[]
-		[SignalType.MMS]: string[]
-		[SignalType.SV]: string[]
+		[SignalType.Report]: string[]
+		[SignalType.SMV]: string[]
 	}
 }
 
