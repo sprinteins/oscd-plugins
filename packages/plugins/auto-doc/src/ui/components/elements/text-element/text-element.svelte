@@ -13,14 +13,14 @@
     import Button from '@oscd-plugins/ui/src/components/smui-wrapper/button/button.svelte';
 
 
-    let element: Element = $state();
-    let editor: Editor = $state();
+    let element: Element | undefined = $state();
+    let editor: Editor | undefined = $state();
     interface Props {
         content?: string;
         onContentChange: (newContent: string) => void;
     }
 
-    let { content = '<p>Hello World! 🌍️ </p>', onContentChange }: Props = $props();
+    let { content = $bindable(''), onContentChange }: Props = $props();
 
     let isPlaceholderHelpDialogOpen = $state(false);
     
@@ -34,20 +34,23 @@
             extensions: [
                 TextStyle.configure({ types: [ListItem.name] }),
                 StarterKit.configure({
-					heading:{
-						levels: [1, 2, 3],
-					}
-				}),
+                    heading: {
+                        levels: [1, 2, 3]
+                    }
+                }),
 				Underline,
             ],
             content: content,
 			autofocus: true,
-            onUpdate: ({ editor }) => {
-                debouncedContentChange(editor.getHTML());
+            onUpdate: ({ editor: newEditor }) => {
+                console.log(newEditor.getHTML());
+                debouncedContentChange(newEditor.getHTML());
             },
-            onTransaction: () => {
+            onTransaction: ({ editor: newEditor }) => {
                 // force re-render so `editor.isActive` works as expected
-                editor = editor;
+                editor = undefined;
+                editor = newEditor;
+                content = editor.getHTML();
             },
         });
     });
@@ -57,10 +60,17 @@
         }
     });
 
+    $effect(() => {
+        // This makes sure if the parent passes in something new it sets Tiptap to use that instead of what it was.
+        if (content !== editor?.getHTML()) {
+            editor?.commands.setContent(content);
+        }
+    });
+
     function insertPlaceholder() {
-        const cursorPosition = editor.state.selection.$anchor.pos;
-        editor.commands.insertContent("{{ //default: }}");
-        editor.chain().focus().setTextSelection(cursorPosition + 13).run();
+        const cursorPosition = editor!.state.selection.$anchor.pos;
+        editor!.commands.insertContent("{{ //default: }}");
+        editor!.chain().focus().setTextSelection(cursorPosition + 13).run();
     }
 </script>
 
@@ -71,19 +81,19 @@
         <div class="text-controls">
             <Group>
                 <Button
-                    onclick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                    onclick={() => editor!.chain().focus().toggleHeading({ level: 1 }).run()}
                     type={editor.isActive("heading", { level: 1 }) ? "primary" : "secondary"}
                 >
                     H1
                 </Button>
                 <Button
-                    onclick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                    onclick={() => editor!.chain().focus().toggleHeading({ level: 2 }).run()}
                     type={editor.isActive("heading", { level: 2 }) ? "primary" : "secondary"}
                 >
                     H2
                 </Button>
                 <Button
-                    onclick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+                    onclick={() => editor!.chain().focus().toggleHeading({ level: 3 }).run()}
                     type={editor.isActive("heading", { level: 3 }) ? "primary" : "secondary"}
                 >
                     H3
@@ -92,7 +102,7 @@
             <div class="button-group">
                 <Tooltip text="Bold">
                     <CustomIconButton
-                        onclick={() => editor.chain().focus().toggleBold().run()}
+                        onclick={() => editor!.chain().focus().toggleBold().run()}
                         size="small"
                         disabled={!editor.can().chain().focus().toggleBold().run()}
                         color={editor.isActive("bold") ? "black" : "primary"}
@@ -101,7 +111,7 @@
                 </Tooltip>
                 <Tooltip text="Italic">
                     <CustomIconButton
-                        onclick={() => editor.chain().focus().toggleItalic().run()}
+                        onclick={() => editor!.chain().focus().toggleItalic().run()}
                         size="small"
                         disabled={!editor.can().chain().focus().toggleItalic().run()}
                         color={editor.isActive("italic") ? "black" : "primary"}
@@ -110,7 +120,7 @@
                 </Tooltip>
                 <Tooltip text="Paragraph">
                     <CustomIconButton
-                        onclick={() => editor.chain().focus().setParagraph().run()}
+                        onclick={() => editor!.chain().focus().setParagraph().run()}
                         size="small"
                         color={editor.isActive("paragraph") ? "black" : "primary"}
                         icon="paragraph"
@@ -118,7 +128,7 @@
                 </Tooltip>
                 <Tooltip text="Bullet&nbsp;List">
                     <CustomIconButton
-                        onclick={() => editor.chain().focus().toggleBulletList().run()}
+                        onclick={() => editor!.chain().focus().toggleBulletList().run()}
                         size="small"
                         color={editor.isActive("bulletList") ? "black" : "primary"}
                         icon="bullet_list"
@@ -126,7 +136,7 @@
                 </Tooltip>
                 <Tooltip text="Numbered&nbsp;List">
                     <CustomIconButton
-                        onclick={() => editor.chain().focus().toggleOrderedList().run()}
+                        onclick={() => editor!.chain().focus().toggleOrderedList().run()}
                         size="small"
                         color={editor.isActive("orderedList") ? "black" : "primary"}
                         icon="numbered_list"
@@ -150,7 +160,7 @@
                 </Tooltip>
                 <Tooltip text="Undo">
                     <CustomIconButton
-                        onclick={() => editor.chain().focus().undo().run()}
+                        onclick={() => editor!.chain().focus().undo().run()}
                         size="small"
                         color="primary"
                         icon="undo"
@@ -158,7 +168,7 @@
                 </Tooltip>
                 <Tooltip text="Redo">
                     <CustomIconButton
-                        onclick={() => editor.chain().focus().redo().run()}
+                        onclick={() => editor!.chain().focus().redo().run()}
                         size="small"
                         color="primary"
                         icon="redo"
