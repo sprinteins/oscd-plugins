@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { run, preventDefault, createBubbler } from 'svelte/legacy';
+    import { preventDefault, createBubbler } from 'svelte/legacy';
 
     const bubble = createBubbler();
     import Checkbox from '@smui/checkbox'
@@ -56,14 +56,7 @@
         const { name, hasSuffix } = label
         return hasSuffix ? `Column ${idx + 1} "${name}"` : name
     }
-    
-    run(() => {
-        if (isSelected || !isSelected) {
-            // TODO: this causes endless loop, what was it supposed to do?
-            // update({ key: 'isSelected', value: isSelected.toString() });
-        }
-    });
-    
+
     let isDraggedOver = $state(false);
 
     function isDropAllowed(): boolean {
@@ -140,7 +133,10 @@
                                                         <circle cx="12" cy="18" r="2"/>
                                                 </svg>
                                         </div>
-                                        <Checkbox bind:checked={isSelected} />
+                                        <Checkbox
+                                            bind:checked={isSelected}
+                                            oninput={e => debounceUserInput('isSelected', e.target.checked)}
+                                        />
                                 </div>
                                 <Textfield
                                         bind:value={primaryInput}

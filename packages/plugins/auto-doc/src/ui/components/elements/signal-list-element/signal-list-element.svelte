@@ -64,6 +64,7 @@
 	
 	let mergedColsAndMessages = $derived([...columns, ...messages].sort((a, b) => a.index - b.index))
 	let columnsLength = $derived(columns.length)
+	let areAllCheckboxesSelected = $derived(mergedColsAndMessages.every(r => r.isSelected));
 	
 	function getEmptyValues(): SignalListOnSCD {
 		return { selected: [], matches: { matchedRowsForTablePdf: [] } }
@@ -78,29 +79,15 @@
 		key: keyof SignalRowType,
 		value: string
 	) {
-		/* TODO: Remove
-		mergedColsAndMessages = mergedColsAndMessages.map((row, i) =>
-			i === index ? { ...row, [key]: value } : row
-		)
-		*/
-
 		let row = mergedColsAndMessages[index]
 		row[key] = value as unknown as never
 		emitSelectedRows()
 	}
-	
-    let areAllCheckboxesSelected = $state(false)
 
-	$effect(() => {
-		console.log('effect on all checkboxes selected ' + areAllCheckboxesSelected);
-		mergedColsAndMessages.forEach(row => row.isSelected = areAllCheckboxesSelected);
-	})
-	/*
-	function toggleAllCheckboxes(newValue: boolean) {
-		mergedColsAndMessages.forEach(row => row.isSelected = !newValue)
-		emitSelectedRows()
+	function toggleAllCheckboxes(isSelected: boolean) {
+		mergedColsAndMessages.forEach(row => row.isSelected = isSelected);
+		emitSelectedRows();
 	}
-	*/
 	
 	function emitSelectedRows() {
 		const allRowsWithOrder = mergedColsAndMessages.map((row, index) => ({
@@ -150,15 +137,13 @@
 	<div class="header">
 		<div class="controls-column">
 			<div></div>
-			<!-- TODO: Fix checkbox toggle all -->
-			<Checkbox bind:checked={areAllCheckboxesSelected} />
+			<Checkbox checked={areAllCheckboxesSelected} oninput={e => toggleAllCheckboxes(e.target.checked)} />
 		</div>
 		<small>Choose the columns you want to display and rename if needed</small>
 		<small>Use the filter to limit the content of the columns to certain values</small>
 	</div>
 	
 	{#each mergedColsAndMessages as row, i (row.id)}
-		<!-- TODO: is this relevant? toggleAllCheckboxes={e => toggleAllCheckboxes(e.value)} -->
 		<SignalRow 
 			idx={i}
 			id={row.id}
