@@ -111,20 +111,24 @@
 	function handleReorder(
 		event: { draggedIndex: number; dropIndex: number }
 	) {
-		// TODO: Reimplement reorder once mergedColsAndMessages is state
-		/*
-		const { draggedIndex, dropIndex } = event.detail
-		const newRows = [...mergedColsAndMessages]
-		const [draggedRow] = newRows.splice(draggedIndex, 1)
-		newRows.splice(dropIndex, 0, draggedRow)
-		
-		newRows.forEach((row, index) => {
-			row.index = index
-		})
-		
-		mergedColsAndMessages = newRows
-		emitSelectedRows()
-		*/
+		const { draggedIndex, dropIndex } = event;
+		const newOrder = [...mergedColsAndMessages];
+		const [draggedRow] = newOrder.splice(draggedIndex, 1);
+		newOrder.splice(dropIndex, 0, draggedRow);
+
+		// Update index in underlying state
+		newOrder.forEach((row, idx) => {
+			row.index = idx;
+		});
+
+		// Mutate columns and messages in-place
+		const updatedColumns = newOrder.filter(row => row.id.startsWith('col-'));
+		const updatedMessages = newOrder.filter(row => row.id.startsWith('msg-'));
+
+		columns.splice(0, columns.length, ...updatedColumns);
+		messages.splice(0, messages.length, ...updatedMessages);
+
+		emitSelectedRows();
 	}
 	
 	function isInColumnsZone(index: number): boolean {
