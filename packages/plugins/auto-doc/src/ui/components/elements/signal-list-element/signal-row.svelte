@@ -68,12 +68,20 @@
 
     const handleDragOver = (e: DragEvent) => {
         e.preventDefault();
-        if (idx === signalDndStore.draggedIndex || !isDropAllowed()) {
+        const isNext = idx === signalDndStore.draggedIndex;
+        const isPrevious = idx === signalDndStore.draggedIndex - 1;
+        if (isNext || isPrevious || !isDropAllowed()) {
             isDraggedOver = false;
             return;
         }
+
         isDraggedOver = true;
-        signalDndStore._dropIndex.set(idx);
+
+        if(idx < signalDndStore.draggedIndex) {
+            signalDndStore._dropIndex.set(idx + 1);
+        } else {
+            signalDndStore._dropIndex.set(idx);
+        }
     };
 
     const handleDragLeave = (e: DragEvent) => {
@@ -83,7 +91,7 @@
         }
     };
 
-    const handleDrop = () => {
+    const dropIntoPosition = () => {
         isDraggedOver = false;
         const { draggedIndex, dropIndex } = signalDndStore;
         if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex || !isDropAllowed()) return;
@@ -95,6 +103,11 @@
     let isDragging = $derived(signalDndStore.draggedIndex === idx);
     let isBlockedZone = $derived(signalDndStore.draggedIndex !== -1 && 
                        (signalDndStore.draggedIndex < columnsLength) !== (idx < columnsLength));
+
+    function onDragEnd() {
+        signalDndStore.handleDragEnd();
+    }
+
 </script>
     
     
@@ -103,6 +116,7 @@
                 role="row"
                 tabindex="0"
                 aria-label="Draggable signal row"
+                ondrop={preventDefault(dropIntoPosition)}
                 ondragover={handleDragOver}
                 ondragleave={handleDragLeave}>
                 <div class="signal-row"
@@ -113,16 +127,17 @@
                         class:blocked-zone={isBlockedZone}
                 >
                                 <div class="controls-container" style:cursor={isDragging ? 'grabbing' : 'grab'}>
-                                        <div draggable="true"
+                                        <div    
+                                                draggable="true"
                                                 role="button"
                                                 tabindex="0"
                                                 aria-label="Drag handle"
                                                 ondragstart={(event) => {
                                                     const row = event.target.closest('.signal-row');
-                                                    event.dataTransfer?.setDragImage(row, 0, 0);
+                                                    event.dataTransfer?.setDragImage(row, 16, 36);
                                                     signalDndStore.handleDragStart(idx);
                                                 }}
-                                                ondragend={() => signalDndStore.handleDragEnd(idx)}
+                                                ondragend={() => onDragEnd()}
                                         >
                                                 <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
                                                         <circle cx="6" cy="6" r="2"/>
@@ -160,13 +175,11 @@
                 <div
                         class="drop-zone"
                         class:active={isDraggedOver && 
-                                     signalDndStore.draggedIndex !== -1 && 
                                      idx !== signalDndStore.draggedIndex &&
                                      isDropAllowed()}
-                        ondrop={preventDefault(handleDrop)}
+                        ondrop={preventDefault(dropIntoPosition)}
                         ondragover={preventDefault(bubble('dragover'))}
-                >
-                </div>
+                ></div>
         </div>
     </div>
     
