@@ -1,5 +1,6 @@
 import { type Writable, get, writable } from 'svelte/store'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { docTemplatesStore } from './doc-templates.store'
 import { eventStore, pluginStore } from './index'
 
@@ -12,112 +13,11 @@ describe('DocumentTemplateStore', () => {
 		const xmlString = '<SCL></SCL>'
 		const xmlDoc = parser.parseFromString(xmlString, 'application/xml')
 		xmlDocument.set(xmlDoc)
-		pluginStore.init({
-			newXMLDocument: xmlDoc,
-			newPluginHostElement: document.createElement('SCL')
-		})
+		pluginGlobalStore.xmlDocument = xmlDoc
+		pluginGlobalStore.host = document.createElement('SCL')
 
 		docTemplatesStore.init()
 	})
-
-	/*
-	function mockEventStore() {
-		vi.mock(import('./events.store.js'), async (importOriginal) => {
-			const insertBlock = (
-				parent: Element,
-				element: Element,
-				reference?: Node | null
-			) => {
-				parent.appendChild(element)
-				if (reference) {
-					parent.insertBefore(element, reference)
-				}
-			}
-
-			const mod = await importOriginal()
-			return {
-				eventStore: {
-					...mod.eventStore,
-					createAndDispatchActionEvent: vi
-						.fn()
-						.mockImplementation(
-							(
-								docTemplate: Element,
-								blockElement: Element,
-								reference?: Node | null
-							) => {
-								insertBlock(
-									docTemplate,
-									blockElement,
-									reference
-								)
-							}
-						),
-					moveAndDispatchActionEvent: vi
-						.fn()
-						.mockImplementation(
-							(
-								docTemplate: Element,
-								blockElement: Element,
-								reference?: Node | null
-							) => {
-								insertBlock(
-									docTemplate,
-									blockElement,
-									reference
-								)
-							}
-						),
-					deleteAndDispatchActionEvent: vi
-						.fn()
-						.mockImplementation((blockElement: Element) => {
-							const privateArea = get(
-								docTemplatesStore.privateArea
-							)
-							if (!privateArea) {
-								return
-							}
-
-							const docDef =
-								privateArea.querySelector('DocumentTemplate')
-							if (!docDef) {
-								throw new Error('DocumentTemplate not found')
-							}
-
-							const isDocTemplate = privateArea.querySelector(
-								`DocumentTemplate[id="${blockElement.id}"]`
-							)
-							if (isDocTemplate) {
-								privateArea.removeChild(blockElement)
-							} else {
-								docDef.removeChild(blockElement)
-							}
-						}),
-					updateAndDispatchActionEvent: vi
-						.fn()
-						.mockImplementation(
-							(
-								docTemplate: Element,
-								updates: Record<string, string | null>
-							) => {
-								const { title, description } = updates
-								if (title) {
-									docTemplate.setAttribute('title', title)
-								}
-
-								if (description) {
-									docTemplate.setAttribute(
-										'description',
-										description
-									)
-								}
-							}
-						)
-				}
-			}
-		})
-	}
-		*/
 
 	it('should create a "private" element with type="AUTO_DOC" if it does not exist', () => {
 		// Act

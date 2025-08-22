@@ -9,8 +9,8 @@ import { pluginStore } from './plugin.store'
 import { signallistStore } from './signallist.store'
 import { SignalType } from './signallist.store.d'
 
-import { signalListScd1 } from '../testfiles/signallist1'
-import { signalListScd2 } from '../testfiles/signallist2'
+import { signalListScd1 } from '../../tests/testfiles/signallist1'
+import { signalListScd2 } from '../../tests/testfiles/signallist2'
 
 describe('Signallist', () => {
 	beforeEach(() => {
