@@ -1,5 +1,5 @@
 {
-	"name": "@oscd-plugins/plugin-name",
+	"name": "@oscd-plugins/auto-doc",
 	"private": true,
 	"version": "1.17.4",
 	"type": "module",
