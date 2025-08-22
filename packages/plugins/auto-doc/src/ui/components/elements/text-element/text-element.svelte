@@ -43,7 +43,6 @@
             content: content,
 			autofocus: true,
             onUpdate: ({ editor: newEditor }) => {
-                console.log(newEditor.getHTML());
                 debouncedContentChange(newEditor.getHTML());
             },
             onTransaction: ({ editor: newEditor }) => {

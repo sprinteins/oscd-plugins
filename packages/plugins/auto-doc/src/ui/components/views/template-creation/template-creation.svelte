@@ -55,7 +55,6 @@
     }
 
     function askForEmptyTitleConfirmation(){
-        console.log('askForEmptyTitleConfirmation')
         if (!title) {
             const confirmNavigation = confirm("No title has been provided. Do you want to proceed?");
             if (!confirmNavigation) {
@@ -66,7 +65,6 @@
     }
 
     function navigateToOverviewPage() {
-        console.log('Navigate home')
         navigate({ view: View.Home })
     }
 
