@@ -20,6 +20,7 @@ describe('DocumentTemplateStore', () => {
 		docTemplatesStore.init()
 	})
 
+	/*
 	function mockEventStore() {
 		vi.mock(import('./events.store.js'), async (importOriginal) => {
 			const insertBlock = (
@@ -116,6 +117,7 @@ describe('DocumentTemplateStore', () => {
 			}
 		})
 	}
+		*/
 
 	it('should create a "private" element with type="AUTO_DOC" if it does not exist', () => {
 		// Act
