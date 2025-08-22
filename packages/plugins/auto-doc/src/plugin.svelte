@@ -41,19 +41,19 @@
 
 
 <script lang="ts">
+// TYPES
+import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+// CORE
+import { initPlugin } from '@oscd-plugins/core-ui-svelte'
 import { MaterialTheme } from '@oscd-plugins/ui'
 // PACKAGE
 import jsonPackage from '../package.json'
-// CORE
-import { initPlugin } from '@oscd-plugins/core-ui-svelte'
-// TYPES
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 import { docTemplatesStore } from './stores'
 
-import ViewNavigator from './ui/components/views/view-navigator/view-navigator.svelte';
+import ViewNavigator from './ui/components/views/view-navigator/view-navigator.svelte'
 
 // props
 const {
@@ -63,12 +63,12 @@ const {
 	isCustomInstance
 }: Utils.PluginCustomComponentsProps = $props()
 
-let hasRunInit = $state(false);
+let hasRunInit = $state(false)
 
 $effect(() => {
 	setTimeout(() => {
-		docTemplatesStore.init();
-		hasRunInit = true;
+		docTemplatesStore.init()
+		hasRunInit = true
 	}, 0)
 })
 </script>

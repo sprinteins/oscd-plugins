@@ -2,21 +2,21 @@
 import { onDestroy } from 'svelte'
 import type { TooltipPosition } from './types.tooltip'
 
-  interface Props {
-    text?: string;
-    position?: TooltipPosition;
-    isPositionModified?: boolean;
-    delayInMS?: number;
-    children?: import('svelte').Snippet;
-  }
+interface Props {
+	text?: string
+	position?: TooltipPosition
+	isPositionModified?: boolean
+	delayInMS?: number
+	children?: import('svelte').Snippet
+}
 
-  let {
-    text = '',
-    position = 'top',
-    isPositionModified = false,
-    delayInMS = 500,
-    children
-  }: Props = $props();
+let {
+	text = '',
+	position = 'top',
+	isPositionModified = false,
+	delayInMS = 500,
+	children
+}: Props = $props()
 
 let isTooltipVisible = $state(false)
 let timeoutId: ReturnType<typeof setTimeout>

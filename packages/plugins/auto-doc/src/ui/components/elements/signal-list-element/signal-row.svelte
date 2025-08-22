@@ -1,113 +1,121 @@
 <script lang="ts">
-    import { preventDefault, createBubbler } from 'svelte/legacy';
+import { createBubbler, preventDefault } from 'svelte/legacy'
 
-    const bubble = createBubbler();
-    import Checkbox from '@smui/checkbox'
-    import Textfield from '@smui/textfield'
-    import type { LabelText, Label } from './types.signal-list'
-    import type { SignalRow } from '@/stores/signallist.store.d'
-    
-    import { debounce } from '@/utils/'
-    import { signalDndStore } from '@/stores/signal-dnd.store'
-    
-    
-    interface Props {
-        //Props
-        idx: number;
-        id: string;
-        label?: LabelText;
-        isSelected?: boolean;
-        primaryInput?: string;
-        secondaryInput?: string;
-        isInColumnsZone: boolean;
-        columnsLength: number;
-        update: (args: { key: keyof SignalRow, value: string }) => void;
-        reorder: (args: { draggedIndex: number, dropIndex: number }) => void;
-    }
+const bubble = createBubbler()
+import type { SignalRow } from '@/stores/signallist.store.d'
+import Checkbox from '@smui/checkbox'
+import Textfield from '@smui/textfield'
+import type { Label, LabelText } from './types.signal-list'
 
-    let {
-        idx,
-        id,
-        label = {
-            primaryInputLabel: { name: '', hasSuffix: false },
-            secondaryInputLabel: { name: '', hasSuffix: false },
-        },
-        isSelected = $bindable(false),
-        primaryInput = $bindable(''),
-        secondaryInput = $bindable(''),
-        isInColumnsZone,
-        columnsLength,
-        update,
-        reorder
-    }: Props = $props();
-    
-    
-    const ONE_SECOND_IN_MS = 1000
-    
-    const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
-    
-    function handleInputChange(key: keyof SignalRow, value: string) {
-        primaryInput = key === 'primaryInput' ? value : primaryInput
-        secondaryInput = key === 'secondaryInput' ? value : secondaryInput
-        update({ key, value })
-    }
-    
-    function createSuffixForLabelIfNeeded(label: Label) {
-        const { name, hasSuffix } = label
-        return hasSuffix ? `Column ${idx + 1} "${name}"` : name
-    }
+import { signalDndStore } from '@/stores/signal-dnd.store'
+import { debounce } from '@/utils/'
 
-    let isDraggedOver = $state(false);
+interface Props {
+	//Props
+	idx: number
+	id: string
+	label?: LabelText
+	isSelected?: boolean
+	primaryInput?: string
+	secondaryInput?: string
+	isInColumnsZone: boolean
+	columnsLength: number
+	update: (args: { key: keyof SignalRow; value: string }) => void
+	reorder: (args: { draggedIndex: number; dropIndex: number }) => void
+}
 
-    function isDropAllowed(): boolean {
-        const draggedIsInColumnsZone = signalDndStore.draggedIndex < columnsLength;
-        const targetIsInColumnsZone = idx < columnsLength;
-        
-        return draggedIsInColumnsZone === targetIsInColumnsZone;
-    }
+let {
+	idx,
+	id,
+	label = {
+		primaryInputLabel: { name: '', hasSuffix: false },
+		secondaryInputLabel: { name: '', hasSuffix: false }
+	},
+	isSelected = $bindable(false),
+	primaryInput = $bindable(''),
+	secondaryInput = $bindable(''),
+	isInColumnsZone,
+	columnsLength,
+	update,
+	reorder
+}: Props = $props()
 
-    const handleDragOver = (e: DragEvent) => {
-        e.preventDefault();
-        const isNext = idx === signalDndStore.draggedIndex;
-        const isPrevious = idx === signalDndStore.draggedIndex - 1;
-        if (isNext || isPrevious || !isDropAllowed()) {
-            isDraggedOver = false;
-            return;
-        }
+const ONE_SECOND_IN_MS = 1000
 
-        isDraggedOver = true;
+const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
 
-        if(idx < signalDndStore.draggedIndex) {
-            signalDndStore._dropIndex.set(idx + 1);
-        } else {
-            signalDndStore._dropIndex.set(idx);
-        }
-    };
+function handleInputChange(key: keyof SignalRow, value: string) {
+	primaryInput = key === 'primaryInput' ? value : primaryInput
+	secondaryInput = key === 'secondaryInput' ? value : secondaryInput
+	update({ key, value })
+}
 
-    const handleDragLeave = (e: DragEvent) => {
-        const relatedTarget = e.relatedTarget as HTMLElement;
-        if (e.currentTarget && !(e.currentTarget as HTMLElement)?.contains?.(relatedTarget)) {
-            isDraggedOver = false;
-        }
-    };
+function createSuffixForLabelIfNeeded(label: Label) {
+	const { name, hasSuffix } = label
+	return hasSuffix ? `Column ${idx + 1} "${name}"` : name
+}
 
-    const dropIntoPosition = () => {
-        isDraggedOver = false;
-        const { draggedIndex, dropIndex } = signalDndStore;
-        if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex || !isDropAllowed()) return;
+let isDraggedOver = $state(false)
 
-        reorder({ draggedIndex, dropIndex });
-        signalDndStore.handleDragEnd();
-    }
+function isDropAllowed(): boolean {
+	const draggedIsInColumnsZone = signalDndStore.draggedIndex < columnsLength
+	const targetIsInColumnsZone = idx < columnsLength
 
-    let isDragging = $derived(signalDndStore.draggedIndex === idx);
-    let isBlockedZone = $derived(signalDndStore.draggedIndex !== -1 && 
-                       (signalDndStore.draggedIndex < columnsLength) !== (idx < columnsLength));
+	return draggedIsInColumnsZone === targetIsInColumnsZone
+}
 
-    function onDragEnd() {
-        signalDndStore.handleDragEnd();
-    }
+const handleDragOver = (e: DragEvent) => {
+	e.preventDefault()
+	const isNext = idx === signalDndStore.draggedIndex
+	const isPrevious = idx === signalDndStore.draggedIndex - 1
+	if (isNext || isPrevious || !isDropAllowed()) {
+		isDraggedOver = false
+		return
+	}
 
+	isDraggedOver = true
+
+	if (idx < signalDndStore.draggedIndex) {
+		signalDndStore._dropIndex.set(idx + 1)
+	} else {
+		signalDndStore._dropIndex.set(idx)
+	}
+}
+
+const handleDragLeave = (e: DragEvent) => {
+	const relatedTarget = e.relatedTarget as HTMLElement
+	if (
+		e.currentTarget &&
+		!(e.currentTarget as HTMLElement)?.contains?.(relatedTarget)
+	) {
+		isDraggedOver = false
+	}
+}
+
+const dropIntoPosition = () => {
+	isDraggedOver = false
+	const { draggedIndex, dropIndex } = signalDndStore
+	if (
+		draggedIndex === -1 ||
+		dropIndex === -1 ||
+		draggedIndex === dropIndex ||
+		!isDropAllowed()
+	)
+		return
+
+	reorder({ draggedIndex, dropIndex })
+	signalDndStore.handleDragEnd()
+}
+
+let isDragging = $derived(signalDndStore.draggedIndex === idx)
+let isBlockedZone = $derived(
+	signalDndStore.draggedIndex !== -1 &&
+		signalDndStore.draggedIndex < columnsLength !== idx < columnsLength
+)
+
+function onDragEnd() {
+	signalDndStore.handleDragEnd()
+}
 </script>
     
     

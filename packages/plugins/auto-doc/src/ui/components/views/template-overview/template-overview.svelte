@@ -1,114 +1,118 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
+import { run } from 'svelte/legacy'
 
-    import {Table, FileSelector} from '@/ui/components';
-    import { View, type NavigateProps } from '../view-navigator/view'
-    import type { FileSelectorChangeEvent } from '@/ui/components';
-    import type {Template} from "./types.template-overview";
-    import Button, {Label} from "@smui/button"
-    import Menu from "@smui/menu"
-    import List, { Item, Text } from "@smui/list"
-    import Checkbox from '@smui/checkbox';
-    import {IconWrapper} from "@oscd-plugins/ui"
-    import {docTemplatesStore} from '@/stores'
-    import { onMount } from 'svelte';
-    import {pdfGenerator} from '@/utils'
-    import {queryAutoDocElement} from '@/utils'
+import { docTemplatesStore } from '@/stores'
+import { FileSelector, Table } from '@/ui/components'
+import type { FileSelectorChangeEvent } from '@/ui/components'
+import { pdfGenerator } from '@/utils'
+import { queryAutoDocElement } from '@/utils'
+import { IconWrapper } from '@oscd-plugins/ui'
+import Button, { Label } from '@smui/button'
+import Checkbox from '@smui/checkbox'
+import List, { Item, Text } from '@smui/list'
+import Menu from '@smui/menu'
+import { onMount } from 'svelte'
+import { type NavigateProps, View } from '../view-navigator/view'
+import type { Template } from './types.template-overview'
 
-    let { navigate }: NavigateProps = $props();
+let { navigate }: NavigateProps = $props()
 
-    let menu: Menu
-    let fileSelector: FileSelector
-    let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
-    let allTemplates: Element[] = $state([])
-    const emptyTitleOrDescription = "N/A"
+let menu: Menu
+let fileSelector: FileSelector
+let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
+let allTemplates: Element[] = $state([])
+const emptyTitleOrDescription = 'N/A'
 
-    onMount(() => {
-        fetchTemplates();
-    });
+onMount(() => {
+	fetchTemplates()
+})
 
-    function fetchTemplates() {
-        allTemplates = docTemplatesStore.getAllDocumentTemplates();
-    }
+function fetchTemplates() {
+	allTemplates = docTemplatesStore.getAllDocumentTemplates()
+}
 
-    function navigateToCreateTemplate() {
-        navigate({ view: View.Create })
-    }
+function navigateToCreateTemplate() {
+	navigate({ view: View.Create })
+}
 
-    async function onImportTemplate(e: FileSelectorChangeEvent) {
-        const file = e.detail.file
+async function onImportTemplate(e: FileSelectorChangeEvent) {
+	const file = e.detail.file
 
-        const fileAsString = await file.text()
-        const templateDoc = new DOMParser().parseFromString(fileAsString, 'text/xml')
+	const fileAsString = await file.text()
+	const templateDoc = new DOMParser().parseFromString(
+		fileAsString,
+		'text/xml'
+	)
 
-        const autoDocElement = queryAutoDocElement(templateDoc)
+	const autoDocElement = queryAutoDocElement(templateDoc)
 
-        if (autoDocElement === null) {
-            return
-        }
+	if (autoDocElement === null) {
+		return
+	}
 
-        const documentTemplates = Array.from(autoDocElement.querySelectorAll('DocumentTemplate'))
+	const documentTemplates = Array.from(
+		autoDocElement.querySelectorAll('DocumentTemplate')
+	)
 
-        docTemplatesStore.importDocumentTemplates(documentTemplates)
-        
-        // TODO: the ui should update itself after any doc change
-        allTemplates = docTemplatesStore.getAllDocumentTemplates()
-    }
+	docTemplatesStore.importDocumentTemplates(documentTemplates)
 
+	// TODO: the ui should update itself after any doc change
+	allTemplates = docTemplatesStore.getAllDocumentTemplates()
+}
 
+function mapElementToTableRow(template: Element): Template {
+	const templateDate: string = template.getAttribute('date') as string
 
+	return {
+		id: template.getAttribute('id') ?? 'No id',
+		name: template.getAttribute('title') ?? emptyTitleOrDescription,
+		description:
+			template.getAttribute('description') ?? emptyTitleOrDescription,
+		lastEdited: new Date(templateDate)
+	}
+}
 
-    function mapElementToTableRow(template: Element):Template{
-        const templateDate: string = template.getAttribute('date') as string;
-        
-        return {
-            id: template.getAttribute('id') ?? "No id",
-            name: template.getAttribute('title') ?? emptyTitleOrDescription,
-            description: template.getAttribute('description') ?? emptyTitleOrDescription,
-            lastEdited: new Date(templateDate)
-        }
-    }   
+function deleteTemplate(templateId: string) {
+	docTemplatesStore.deleteDocumentTemplate(templateId)
+	allTemplates = allTemplates.filter(
+		(template) => template.getAttribute('id') !== templateId
+	)
+}
 
-    function deleteTemplate(templateId: string){
-        docTemplatesStore.deleteDocumentTemplate(templateId)
-        allTemplates = allTemplates.filter(template => template.getAttribute('id') !== templateId)
+function downloadTemplateContent(templateId: string) {
+	pdfGenerator.downloadAsPdf(templateId)
+}
 
-    }
+function navigateToEditTemplate(templateId: string) {
+	navigate({
+		view: View.Edit,
+		templateId
+	})
+}
 
-    function downloadTemplateContent(templateId: string){
-        pdfGenerator.downloadAsPdf(templateId)
-    }
+function duplicateTemplate(templateId: string) {
+	docTemplatesStore.duplicateDocumentTemplate(templateId)
 
-    function navigateToEditTemplate(templateId: string){
-        navigate({
-            view: View.Edit,
-            templateId
-        })
-    }
+	fetchTemplates()
+}
 
-    function duplicateTemplate(templateId: string){
-        docTemplatesStore.duplicateDocumentTemplate(templateId)
+function openFileSelectorIfNotMasterTemplate() {
+	if (isMasterTemplate) {
+		console.error('No import allowed for master templates')
+		return
+	}
+	fileSelector.open()
+}
 
-       fetchTemplates();
-    }
-
-    function openFileSelectorIfNotMasterTemplate(){
-        if(isMasterTemplate){
-            console.error("No import allowed for master templates")
-            return;
-        }
-        fileSelector.open();
-    }
-
-
-
-
-    
-    let templatesConvertedToTableRow = $derived(allTemplates.map(mapElementToTableRow))
-    run(() => {
-        docTemplatesStore.setMasterTemplateFlag(isMasterTemplate);
-    });
-    let importToolTipText = $derived(isMasterTemplate ? "No import allowed for master templates" : "")
+let templatesConvertedToTableRow = $derived(
+	allTemplates.map(mapElementToTableRow)
+)
+run(() => {
+	docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
+})
+let importToolTipText = $derived(
+	isMasterTemplate ? 'No import allowed for master templates' : ''
+)
 </script>
 
 <div class="template-overview">

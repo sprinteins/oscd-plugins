@@ -1,98 +1,99 @@
 <script lang="ts">
-    import { stopPropagation, createBubbler } from 'svelte/legacy';
-    import { View, type NavigateProps } from '../view-navigator/view'
+import { createBubbler, stopPropagation } from 'svelte/legacy'
+import { type NavigateProps, View } from '../view-navigator/view'
 
-    const bubble = createBubbler();
-    import Button from "@smui/button"
-    import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-    import {TemplateBuilder, Tooltip} from '@/ui/components';
-    import Textfield from "@smui/textfield"
-    import {clickOutside} from "@/actions"
-    import {docTemplatesStore} from '@/stores'
-	import { onMount } from "svelte"
-    import {pdfGenerator} from '@/utils'
+const bubble = createBubbler()
+import { clickOutside } from '@/actions'
+import { docTemplatesStore } from '@/stores'
+import { TemplateBuilder, Tooltip } from '@/ui/components'
+import { pdfGenerator } from '@/utils'
+import { CustomIconButton } from '@oscd-plugins/ui/src/components'
+import Button from '@smui/button'
+import Textfield from '@smui/textfield'
+import { onMount } from 'svelte'
 
-    interface Props extends NavigateProps {
-        id: string | null;
-    }
+interface Props extends NavigateProps {
+	id: string | null
+}
 
-    let { 
-        id,
-        navigate
-     }: Props = $props();
+let { id, navigate }: Props = $props()
 
-    let title = $state("");
-    let description = $state("");
-    let isMetadataVisible = $state(false)
-    let templateId: string|undefined = undefined
-    let template: Element | null = $state(null);
-    
-    const NO_TITLE_TEXT = "Untitled Document";
-    
-    onMount(() => {
-        templateId = id ?? createNewTemplate();
+let title = $state('')
+let description = $state('')
+let isMetadataVisible = $state(false)
+let templateId: string | undefined = undefined
+let template: Element | null = $state(null)
 
-        template = docTemplatesStore.getDocumentTemplate(templateId);
+const NO_TITLE_TEXT = 'Untitled Document'
 
-        if (!template) {
-            navigateToOverviewPage();
-            return;
-        }
+onMount(() => {
+	templateId = id ?? createNewTemplate()
 
-        setInitialTitleAndDescription(template);
-    });
+	template = docTemplatesStore.getDocumentTemplate(templateId)
 
-    
+	if (!template) {
+		navigateToOverviewPage()
+		return
+	}
 
+	setInitialTitleAndDescription(template)
+})
 
-    function setInitialTitleAndDescription(template: Element) {
-        title = (template.getAttribute('title') as string)||"";
-        description = (template.getAttribute('description') as string)||"";
-    }
+function setInitialTitleAndDescription(template: Element) {
+	title = (template.getAttribute('title') as string) || ''
+	description = (template.getAttribute('description') as string) || ''
+}
 
-    function createNewTemplate() : string {
-       return docTemplatesStore.addDocumentTemplate() as string;
-    }
+function createNewTemplate(): string {
+	return docTemplatesStore.addDocumentTemplate() as string
+}
 
-    function askForEmptyTitleConfirmation(){
-        if (!title) {
-            const confirmNavigation = confirm("No title has been provided. Do you want to proceed?");
-            if (!confirmNavigation) {
-                return;
-            }
-        }
-        navigateToOverviewPage()
-    }
+function askForEmptyTitleConfirmation() {
+	if (!title) {
+		const confirmNavigation = confirm(
+			'No title has been provided. Do you want to proceed?'
+		)
+		if (!confirmNavigation) {
+			return
+		}
+	}
+	navigateToOverviewPage()
+}
 
-    function navigateToOverviewPage() {
-        navigate({ view: View.Home })
-    }
+function navigateToOverviewPage() {
+	navigate({ view: View.Home })
+}
 
-    function displayTitleAndDescription(){
-        isMetadataVisible = true;
-    }
-    function closeTitleAndDescription(){
-            isMetadataVisible = false
-            if(templateId){
-                updateTitleAndDescription()
-            }else{
-                console.error("Template ID is null. Cannot update title and description.");
-            }
+function displayTitleAndDescription() {
+	isMetadataVisible = true
+}
+function closeTitleAndDescription() {
+	isMetadataVisible = false
+	if (templateId) {
+		updateTitleAndDescription()
+	} else {
+		console.error(
+			'Template ID is null. Cannot update title and description.'
+		)
+	}
+}
+let templateTitle = $derived(title.length === 0 ? NO_TITLE_TEXT : title)
 
-    }   
-    let templateTitle = $derived(title.length === 0 ? NO_TITLE_TEXT : title);
+function updateTitleAndDescription() {
+	docTemplatesStore.editDocumentTemplateTitleAndDescription(
+		templateId as string,
+		title,
+		description
+	)
+}
 
-    function updateTitleAndDescription(){
-       docTemplatesStore.editDocumentTemplateTitleAndDescription(templateId as string, title, description)
-    }
+function downloadTemplateContent() {
+	if (!templateId) {
+		return
+	}
 
-    function downloadTemplateContent(){
-        if(!templateId){return}
-            
-        pdfGenerator.downloadAsPdf(templateId)
-    }
-
-
+	pdfGenerator.downloadAsPdf(templateId)
+}
 </script>
 
 <div class="template-creation-container">

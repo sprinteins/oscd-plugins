@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { resolve } from 'node:path'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
 	plugins: [svelte()],
@@ -16,7 +16,7 @@ export default defineConfig({
 		include: ['**/*.spec.ts'], // Ensure this pattern matches your test files
 		server: {
 			deps: {
-				inline: true,
+				inline: true
 			}
 		}
 	}

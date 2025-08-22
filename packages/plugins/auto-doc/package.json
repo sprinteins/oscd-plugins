@@ -17,9 +17,7 @@
 		"//====== TEST ======//": "",
 		"test": "vitest"
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"exports": {
 		".": {
 			"types": "./dist/plugin.d.ts",

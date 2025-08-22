@@ -1,7 +1,7 @@
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { type Writable, writable } from 'svelte/store'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { placeholderStore } from './placeholder.store'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 // TODO: Is it ok to use a fixed uuid for all tests?
 vi.mock('uuid', () => {
@@ -56,7 +56,7 @@ describe('placeholders', () => {
     </SCL>`
 		const xmlDoc = parser.parseFromString(xmlString, 'application/xml')
 		xmlDocument.set(xmlDoc)
-		
+
 		pluginGlobalStore.xmlDocument = xmlDoc
 		pluginGlobalStore.host = document.createElement('SCL')
 	})

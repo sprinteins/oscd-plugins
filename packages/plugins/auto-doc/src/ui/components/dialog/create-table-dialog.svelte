@@ -1,33 +1,40 @@
 <script lang="ts">
-    import Textfield from "@smui/textfield";
-    import Dialog, { Title, Content, Actions } from "@smui/dialog";
-    import Button, { Label } from "@smui/button";
+import Button, { Label } from '@smui/button'
+import Dialog, { Title, Content, Actions } from '@smui/dialog'
+import Textfield from '@smui/textfield'
 
-    interface Props {
-        isOpen?: boolean;
-        onHandleSubmit?: any;
-    }
+interface Props {
+	isOpen?: boolean
+	onHandleSubmit?: any
+}
 
-    let { isOpen = $bindable(false), onHandleSubmit = (_rows: number, _columns: number) => {} }: Props = $props();
+let {
+	isOpen = $bindable(false),
+	onHandleSubmit = (_rows: number, _columns: number) => {}
+}: Props = $props()
 
-    let rows = $state(2);
-    let columns = $state(4);
+let rows = $state(2)
+let columns = $state(4)
 
-    let minRows = 2;
-    let maxRows = 2;
-    let minColumns = 1;
-    let maxColumns = 8;
+let minRows = 2
+let maxRows = 2
+let minColumns = 1
+let maxColumns = 8
 
-    function handleSubmit() {
-        const isValidInput = Number(rows) && Number(columns);
-        const isWithinBounds = rows >= minRows && rows <= maxRows && columns >= minColumns && columns <= maxColumns;
-        
-        if(!isValidInput || !isWithinBounds) {
-            return;
-        }
+function handleSubmit() {
+	const isValidInput = Number(rows) && Number(columns)
+	const isWithinBounds =
+		rows >= minRows &&
+		rows <= maxRows &&
+		columns >= minColumns &&
+		columns <= maxColumns
 
-        onHandleSubmit(rows, columns);
-    }
+	if (!isValidInput || !isWithinBounds) {
+		return
+	}
+
+	onHandleSubmit(rows, columns)
+}
 </script>
 
 <Dialog

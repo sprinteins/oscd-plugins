@@ -1,6 +1,6 @@
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { type Writable, get, writable } from 'svelte/store'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { docTemplatesStore } from './doc-templates.store'
 import { eventStore } from './index'
 
@@ -11,7 +11,7 @@ vi.mock('uuid', () => {
 
 describe('DocumentTemplateStore', () => {
 	let xmlDocument: Writable<XMLDocument | undefined>
-	let xmlDoc: XMLDocument;
+	let xmlDoc: XMLDocument
 
 	beforeEach(() => {
 		xmlDocument = writable<XMLDocument | undefined>(undefined)

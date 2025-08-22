@@ -1,56 +1,58 @@
 <script lang="ts">
-    import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
-    import {Tooltip, Truncate} from "@/ui/components"
-    import type {Template} from "@/ui/components/views/template-overview/types.template-overview";
-    import {CustomIconButton} from "@oscd-plugins/ui/src/components"
+import { Tooltip, Truncate } from '@/ui/components'
+import type { Template } from '@/ui/components/views/template-overview/types.template-overview'
+import { CustomIconButton } from '@oscd-plugins/ui/src/components'
+import DataTable, { Head, Body, Row, Cell } from '@smui/data-table'
 
-    interface Props {
-        allTemplates: Template[];
-        deleteTemplate: (id: string) => void;
-        editTemplate: (id: string) => void;
-        downloadTemplate: (id: string) => void;
-        duplicateTemplate: (id: string) => void;
-    }
+interface Props {
+	allTemplates: Template[]
+	deleteTemplate: (id: string) => void
+	editTemplate: (id: string) => void
+	downloadTemplate: (id: string) => void
+	duplicateTemplate: (id: string) => void
+}
 
-    let {
-        allTemplates,
-        deleteTemplate,
-        editTemplate,
-        downloadTemplate,
-        duplicateTemplate
-    }: Props = $props();
+let {
+	allTemplates,
+	deleteTemplate,
+	editTemplate,
+	downloadTemplate,
+	duplicateTemplate
+}: Props = $props()
 
+function isInvalidDate(date: Date) {
+	return Number.isNaN(date.getTime())
+}
 
-    function isInvalidDate(date: Date){
-        return Number.isNaN(date.getTime());
-    }
+function formatDate(date: Date, defaultString = '-'): string {
+	if (isInvalidDate(date)) {
+		return defaultString
+	}
 
-    function formatDate(date: Date, defaultString = "-"): string{
-        if(isInvalidDate(date)){ return defaultString;}
+	return `${getDD_MM_YYYYFromDate(date)}, ${getHH_MM_FromDate(date)}`
+}
 
-        return `${getDD_MM_YYYYFromDate(date)}, ${getHH_MM_FromDate(date)}`;
-    }
+function getHH_MM_FromDate(date: Date): string {
+	const timeOptions: Intl.DateTimeFormatOptions = {
+		hour: 'numeric',
+		minute: '2-digit'
+	}
 
-    function getHH_MM_FromDate(date: Date,): string{
+	const extractedHH_MM = new Intl.DateTimeFormat('en-US', timeOptions).format(
+		date
+	)
+	return extractedHH_MM
+}
+function getDD_MM_YYYYFromDate(date: Date): string {
+	const dateOptions: Intl.DateTimeFormatOptions = {
+		month: '2-digit' as const,
+		day: '2-digit' as const,
+		year: 'numeric' as const
+	}
 
-        const timeOptions: Intl.DateTimeFormatOptions = { 
-            hour: "numeric",
-            minute: "2-digit"
-        };
-
-        const extractedHH_MM = new Intl.DateTimeFormat("en-US", timeOptions).format(date);
-        return extractedHH_MM;
-    }
-    function getDD_MM_YYYYFromDate(date: Date): string{
-        const dateOptions: Intl.DateTimeFormatOptions = { 
-            month:   "2-digit" as const, 
-            day:     "2-digit" as const,
-            year:    "numeric" as const,
-        };
-
-        const DD_MM_YYYY = new Date(date).toLocaleDateString("de-DE", dateOptions); 
-        return DD_MM_YYYY;
-    }
+	const DD_MM_YYYY = new Date(date).toLocaleDateString('de-DE', dateOptions)
+	return DD_MM_YYYY
+}
 </script>
 
 

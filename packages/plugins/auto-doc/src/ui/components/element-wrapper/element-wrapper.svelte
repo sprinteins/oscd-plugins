@@ -1,31 +1,30 @@
 <script lang="ts">
-    import {CustomIconButton} from "@oscd-plugins/ui/src/components"
-    import {MOVE_BLOCK_DIRECTION} from "@/constants"
+import { MOVE_BLOCK_DIRECTION } from '@/constants'
+import { CustomIconButton } from '@oscd-plugins/ui/src/components'
 
-    
-    interface Props {
-        //Prop
-        elementId: string;
-        children?: import('svelte').Snippet;
-        duplicateBlock(elementId: string): void,
-        moveBlock(elementId: string, direction: number): void,
-        deleteBlock(elementId: string): void
-    }
+interface Props {
+	//Prop
+	elementId: string
+	children?: import('svelte').Snippet
+	duplicateBlock(elementId: string): void
+	moveBlock(elementId: string, direction: number): void
+	deleteBlock(elementId: string): void
+}
 
-    let { elementId, children, duplicateBlock, moveBlock, deleteBlock }: Props = $props();
+let { elementId, children, duplicateBlock, moveBlock, deleteBlock }: Props =
+	$props()
 
-    function duplicateBlockElement(){
-        duplicateBlock(elementId);
-    }
+function duplicateBlockElement() {
+	duplicateBlock(elementId)
+}
 
-    function moveBlockElement(direction: number) {
-        moveBlock(elementId, direction);
-    }
+function moveBlockElement(direction: number) {
+	moveBlock(elementId, direction)
+}
 
-    function deleteBlockElement(){
-        deleteBlock(elementId);
-    }
-
+function deleteBlockElement() {
+	deleteBlock(elementId)
+}
 </script>
 
 

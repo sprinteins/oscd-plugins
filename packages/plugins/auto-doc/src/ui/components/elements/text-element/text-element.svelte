@@ -1,76 +1,78 @@
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
-    import { Editor } from '@tiptap/core';
-    import StarterKit from '@tiptap/starter-kit';
-    import TextStyle from '@tiptap/extension-text-style';
-    import ListItem from '@tiptap/extension-list-item'
-	import Underline from '@tiptap/extension-underline'
-	import {debounce} from '@/utils';
-    import PlaceholderHelpDialog from '@/ui/components/dialog/placeholder-help-dialog.svelte';
-    import Tooltip from '@/ui/components/tooltip/tooltip.svelte';
-    import { Group } from '@smui/button';
-    import CustomIconButton from '@oscd-plugins/ui/src/components/smui-wrapper/custom-icon-button.svelte';
-    import Button from '@oscd-plugins/ui/src/components/smui-wrapper/button/button.svelte';
+import PlaceholderHelpDialog from '@/ui/components/dialog/placeholder-help-dialog.svelte'
+import Tooltip from '@/ui/components/tooltip/tooltip.svelte'
+import { debounce } from '@/utils'
+import Button from '@oscd-plugins/ui/src/components/smui-wrapper/button/button.svelte'
+import CustomIconButton from '@oscd-plugins/ui/src/components/smui-wrapper/custom-icon-button.svelte'
+import { Group } from '@smui/button'
+import { Editor } from '@tiptap/core'
+import ListItem from '@tiptap/extension-list-item'
+import TextStyle from '@tiptap/extension-text-style'
+import Underline from '@tiptap/extension-underline'
+import StarterKit from '@tiptap/starter-kit'
+import { onDestroy, onMount } from 'svelte'
 
+let element: Element | undefined = $state()
+let editor: Editor | undefined = $state()
+interface Props {
+	content?: string
+	onContentChange: (newContent: string) => void
+}
 
-    let element: Element | undefined = $state();
-    let editor: Editor | undefined = $state();
-    interface Props {
-        content?: string;
-        onContentChange: (newContent: string) => void;
-    }
+let { content = $bindable(''), onContentChange }: Props = $props()
 
-    let { content = $bindable(''), onContentChange }: Props = $props();
+let isPlaceholderHelpDialogOpen = $state(false)
 
-    let isPlaceholderHelpDialogOpen = $state(false);
-    
+const ONE_SECOND_IN_MS = 1000
+const debouncedContentChange = debounce(onContentChange, ONE_SECOND_IN_MS)
 
-	const ONE_SECOND_IN_MS = 1000;
-	const debouncedContentChange = debounce(onContentChange, ONE_SECOND_IN_MS);
+onMount(() => {
+	editor = new Editor({
+		element: element,
+		extensions: [
+			TextStyle.configure({ types: [ListItem.name] }),
+			StarterKit.configure({
+				heading: {
+					levels: [1, 2, 3]
+				}
+			}),
+			Underline
+		],
+		content: content,
+		autofocus: true,
+		onUpdate: ({ editor: newEditor }) => {
+			debouncedContentChange(newEditor.getHTML())
+		},
+		onTransaction: ({ editor: newEditor }) => {
+			// force re-render so `editor.isActive` works as expected
+			editor = undefined
+			editor = newEditor
+			content = editor.getHTML()
+		}
+	})
+})
+onDestroy(() => {
+	if (editor) {
+		editor.destroy()
+	}
+})
 
-    onMount(() => {
-        editor = new Editor({
-            element: element,
-            extensions: [
-                TextStyle.configure({ types: [ListItem.name] }),
-                StarterKit.configure({
-                    heading: {
-                        levels: [1, 2, 3]
-                    }
-                }),
-				Underline,
-            ],
-            content: content,
-			autofocus: true,
-            onUpdate: ({ editor: newEditor }) => {
-                debouncedContentChange(newEditor.getHTML());
-            },
-            onTransaction: ({ editor: newEditor }) => {
-                // force re-render so `editor.isActive` works as expected
-                editor = undefined;
-                editor = newEditor;
-                content = editor.getHTML();
-            },
-        });
-    });
-    onDestroy(() => {
-        if (editor) {
-            editor.destroy();
-        }
-    });
+$effect(() => {
+	// This makes sure if the parent passes in something new it sets Tiptap to use that instead of what it was.
+	if (content !== editor?.getHTML()) {
+		editor?.commands.setContent(content)
+	}
+})
 
-    $effect(() => {
-        // This makes sure if the parent passes in something new it sets Tiptap to use that instead of what it was.
-        if (content !== editor?.getHTML()) {
-            editor?.commands.setContent(content);
-        }
-    });
-
-    function insertPlaceholder() {
-        const cursorPosition = editor!.state.selection.$anchor.pos;
-        editor!.commands.insertContent("{{ //default: }}");
-        editor!.chain().focus().setTextSelection(cursorPosition + 13).run();
-    }
+function insertPlaceholder() {
+	const cursorPosition = editor!.state.selection.$anchor.pos
+	editor!.commands.insertContent('{{ //default: }}')
+	editor!
+		.chain()
+		.focus()
+		.setTextSelection(cursorPosition + 13)
+		.run()
+}
 </script>
 
 <PlaceholderHelpDialog bind:isOpen={isPlaceholderHelpDialogOpen}/>

@@ -1,12 +1,12 @@
 <script lang="ts">
-    import Dialog, { Title, Content, Actions } from "@smui/dialog";
-    import Button, { Label } from "@smui/button";
+import Button, { Label } from '@smui/button'
+import Dialog, { Title, Content, Actions } from '@smui/dialog'
 
-    interface Props {
-        isOpen?: boolean;
-    }
+interface Props {
+	isOpen?: boolean
+}
 
-    let { isOpen = $bindable(false) }: Props = $props();
+let { isOpen = $bindable(false) }: Props = $props()
 </script>
 
 <Dialog

@@ -1,139 +1,144 @@
 <script lang="ts">
-	import Checkbox from '@smui/checkbox'
-	
-	import SignalRow from './signal-row.svelte'
-	import type {
-		SignalListOnSCD
-	} from './types.signal-list'
-	import { Columns, SignalType } from '@/stores/'
-	import type { SignalRow as SignalRowType } from '@/stores/signallist.store.d'
-	
-	
-	interface Props {
-		// prop
-		onContentChange: (newContent: string) => void;
-		content?: string;
-	}
+import Checkbox from '@smui/checkbox'
 
-	let { onContentChange, content = '' }: Props = $props();
-	
-	const parsedContent: SignalListOnSCD = isContentNotEmpty()
-		? JSON.parse(content)
-		: getEmptyValues()
-	const prevSelectedRows = parsedContent.selected
-	
-	const columns: SignalRowType[] = $state(Object.entries(Columns).map(
-		([key, value], i) => {
-			const prevSelected: SignalRowType | undefined =
-				getSelectedRowIfPreviouslySelected(key as keyof typeof Columns)
-	
-			return {
-				id: `col-${key}`,
-				index: prevSelected?.index ?? i,
-				searchKey: key as keyof typeof Columns,
-				isSelected: prevSelected?.isSelected ?? false,
-				primaryInput: prevSelected?.primaryInput ?? value,
-				secondaryInput: prevSelected?.secondaryInput ?? '',
-				label: {
-					primaryInputLabel: { name: value, hasSuffix: true },
-					secondaryInputLabel: { name: `Filter by ${value}`, hasSuffix: false }
+import { Columns, SignalType } from '@/stores/'
+import type { SignalRow as SignalRowType } from '@/stores/signallist.store.d'
+import SignalRow from './signal-row.svelte'
+import type { SignalListOnSCD } from './types.signal-list'
+
+interface Props {
+	// prop
+	onContentChange: (newContent: string) => void
+	content?: string
+}
+
+let { onContentChange, content = '' }: Props = $props()
+
+const parsedContent: SignalListOnSCD = isContentNotEmpty()
+	? JSON.parse(content)
+	: getEmptyValues()
+const prevSelectedRows = parsedContent.selected
+
+const columns: SignalRowType[] = $state(
+	Object.entries(Columns).map(([key, value], i) => {
+		const prevSelected: SignalRowType | undefined =
+			getSelectedRowIfPreviouslySelected(key as keyof typeof Columns)
+
+		return {
+			id: `col-${key}`,
+			index: prevSelected?.index ?? i,
+			searchKey: key as keyof typeof Columns,
+			isSelected: prevSelected?.isSelected ?? false,
+			primaryInput: prevSelected?.primaryInput ?? value,
+			secondaryInput: prevSelected?.secondaryInput ?? '',
+			label: {
+				primaryInputLabel: { name: value, hasSuffix: true },
+				secondaryInputLabel: {
+					name: `Filter by ${value}`,
+					hasSuffix: false
 				}
 			}
 		}
-	))
-	
-	const messages: SignalRowType[] = $state(Object.entries(SignalType).map(
-		([key, value], i) => {
-			const prevSelected: SignalRowType | undefined =
-				getSelectedRowIfPreviouslySelected(key as keyof typeof SignalType)
-	
-			return {
-				id: `msg-${key}`,
-				index: prevSelected?.index ?? (columns.length + i),
-				searchKey: key as keyof typeof SignalType,
-				isSelected: prevSelected?.isSelected ?? false,
-				primaryInput: prevSelected?.primaryInput ?? value,
-				secondaryInput: prevSelected?.secondaryInput ?? '',
-				label: {
-					primaryInputLabel: { name: value, hasSuffix: true },
-					secondaryInputLabel: { name: 'Filter by IED Name', hasSuffix: false }
+	})
+)
+
+const messages: SignalRowType[] = $state(
+	Object.entries(SignalType).map(([key, value], i) => {
+		const prevSelected: SignalRowType | undefined =
+			getSelectedRowIfPreviouslySelected(key as keyof typeof SignalType)
+
+		return {
+			id: `msg-${key}`,
+			index: prevSelected?.index ?? columns.length + i,
+			searchKey: key as keyof typeof SignalType,
+			isSelected: prevSelected?.isSelected ?? false,
+			primaryInput: prevSelected?.primaryInput ?? value,
+			secondaryInput: prevSelected?.secondaryInput ?? '',
+			label: {
+				primaryInputLabel: { name: value, hasSuffix: true },
+				secondaryInputLabel: {
+					name: 'Filter by IED Name',
+					hasSuffix: false
 				}
 			}
 		}
-	))
-	
-	let mergedColsAndMessages = $derived([...columns, ...messages].sort((a, b) => a.index - b.index))
-	let columnsLength = $derived(columns.length)
-	let areAllCheckboxesSelected = $derived(mergedColsAndMessages.every(r => r.isSelected));
-	
-	function getEmptyValues(): SignalListOnSCD {
-		return { selected: [], matches: { matchedRowsForTablePdf: [] } }
-	}
-	
-	function isContentNotEmpty() {
-		return content.trim()
-	}
-	
-	function updateSignalRow(
-		index: number,
-		key: keyof SignalRowType,
-		value: string
-	) {
-		let row = mergedColsAndMessages[index]
-		row[key] = value as unknown as never
-		emitSelectedRows()
-	}
+	})
+)
 
-	function toggleAllCheckboxes(isSelected: boolean) {
-		mergedColsAndMessages.forEach(row => row.isSelected = isSelected);
-		emitSelectedRows();
-	}
-	
-	function emitSelectedRows() {
-		const allRowsWithOrder = mergedColsAndMessages.map((row, index) => ({
-			...row,
-			index
-		}));
+let mergedColsAndMessages = $derived(
+	[...columns, ...messages].sort((a, b) => a.index - b.index)
+)
+let columnsLength = $derived(columns.length)
+let areAllCheckboxesSelected = $derived(
+	mergedColsAndMessages.every((r) => r.isSelected)
+)
 
-		const selectedWithOrder = allRowsWithOrder.filter(row => row.isSelected);
-		
-		const results = {
-			selected: selectedWithOrder
-		};
-		onContentChange(JSON.stringify(results));
-	}
-	function getSelectedRowIfPreviouslySelected(
-		searchKey: keyof typeof Columns | keyof typeof SignalType
-	): SignalRowType | undefined {
-		return prevSelectedRows.find((selected) => selected.searchKey === searchKey)
-	}
-	
-	function handleReorder(
-		event: { draggedIndex: number; dropIndex: number }
-	) {
-		const { draggedIndex, dropIndex } = event;
-		const newOrder = [...mergedColsAndMessages];
-		const [draggedRow] = newOrder.splice(draggedIndex, 1);
-		newOrder.splice(dropIndex, 0, draggedRow);
+function getEmptyValues(): SignalListOnSCD {
+	return { selected: [], matches: { matchedRowsForTablePdf: [] } }
+}
 
-		// Update index in underlying state
-		newOrder.forEach((row, idx) => {
-			row.index = idx;
-		});
+function isContentNotEmpty() {
+	return content.trim()
+}
 
-		// Mutate columns and messages in-place
-		const updatedColumns = newOrder.filter(row => row.id.startsWith('col-'));
-		const updatedMessages = newOrder.filter(row => row.id.startsWith('msg-'));
+function updateSignalRow(
+	index: number,
+	key: keyof SignalRowType,
+	value: string
+) {
+	let row = mergedColsAndMessages[index]
+	row[key] = value as unknown as never
+	emitSelectedRows()
+}
 
-		columns.splice(0, columns.length, ...updatedColumns);
-		messages.splice(0, messages.length, ...updatedMessages);
+function toggleAllCheckboxes(isSelected: boolean) {
+	mergedColsAndMessages.forEach((row) => (row.isSelected = isSelected))
+	emitSelectedRows()
+}
 
-		emitSelectedRows();
+function emitSelectedRows() {
+	const allRowsWithOrder = mergedColsAndMessages.map((row, index) => ({
+		...row,
+		index
+	}))
+
+	const selectedWithOrder = allRowsWithOrder.filter((row) => row.isSelected)
+
+	const results = {
+		selected: selectedWithOrder
 	}
-	
-	function isInColumnsZone(index: number): boolean {
-		return index < columns.length;
-	}
+	onContentChange(JSON.stringify(results))
+}
+function getSelectedRowIfPreviouslySelected(
+	searchKey: keyof typeof Columns | keyof typeof SignalType
+): SignalRowType | undefined {
+	return prevSelectedRows.find((selected) => selected.searchKey === searchKey)
+}
+
+function handleReorder(event: { draggedIndex: number; dropIndex: number }) {
+	const { draggedIndex, dropIndex } = event
+	const newOrder = [...mergedColsAndMessages]
+	const [draggedRow] = newOrder.splice(draggedIndex, 1)
+	newOrder.splice(dropIndex, 0, draggedRow)
+
+	// Update index in underlying state
+	newOrder.forEach((row, idx) => {
+		row.index = idx
+	})
+
+	// Mutate columns and messages in-place
+	const updatedColumns = newOrder.filter((row) => row.id.startsWith('col-'))
+	const updatedMessages = newOrder.filter((row) => row.id.startsWith('msg-'))
+
+	columns.splice(0, columns.length, ...updatedColumns)
+	messages.splice(0, messages.length, ...updatedMessages)
+
+	emitSelectedRows()
+}
+
+function isInColumnsZone(index: number): boolean {
+	return index < columns.length
+}
 </script>
 	
 	

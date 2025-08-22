@@ -1,33 +1,39 @@
 <script lang="ts">
-    import Textfield from "@smui/textfield";
-    
-    import { debounce } from "@/utils";
+import Textfield from '@smui/textfield'
 
-    interface Props {
-        rows?: number;
-        data?: any;
-        columnIndex: number;
-        focus: (args: { column: number, row: number }) => void,
-        inputChange: (args: { value: string, row: number }) => void,
-    }
+import { debounce } from '@/utils'
 
-    let { rows = 2, data = $bindable(["", ""]), columnIndex, focus, inputChange }: Props = $props();
-    
-    const ONE_SECOND_IN_MS = 1000;
-    
-    const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS);
+interface Props {
+	rows?: number
+	data?: any
+	columnIndex: number
+	focus: (args: { column: number; row: number }) => void
+	inputChange: (args: { value: string; row: number }) => void
+}
 
-    function getCellStyle(row: number) {
-        return row === 0 ? "filled" : "outlined";
-    }
-    
-    function handleFocus(row: number) {
-        focus({ column: columnIndex, row });
-    }
-    
-    function handleInputChange(row: number, value: string) {
-        inputChange({ row, value })
-    }
+let {
+	rows = 2,
+	data = $bindable(['', '']),
+	columnIndex,
+	focus,
+	inputChange
+}: Props = $props()
+
+const ONE_SECOND_IN_MS = 1000
+
+const debounceUserInput = debounce(handleInputChange, ONE_SECOND_IN_MS)
+
+function getCellStyle(row: number) {
+	return row === 0 ? 'filled' : 'outlined'
+}
+
+function handleFocus(row: number) {
+	focus({ column: columnIndex, row })
+}
+
+function handleInputChange(row: number, value: string) {
+	inputChange({ row, value })
+}
 </script>
 
 

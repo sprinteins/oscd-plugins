@@ -9,9 +9,9 @@ import { pluginStore } from './plugin.store'
 import { signallistStore } from './signallist.store'
 import { SignalType } from './signallist.store.d'
 
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { signalListScd1 } from '../../tests/testfiles/signallist1'
 import { signalListScd2 } from '../../tests/testfiles/signallist2'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 // TODO: Is it ok to use a fixed uuid for all tests?
 vi.mock('uuid', () => {
