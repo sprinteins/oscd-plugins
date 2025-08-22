@@ -1,7 +1,12 @@
 import { type Writable, writable } from 'svelte/store'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { pluginStore } from './index'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { placeholderStore } from './placeholder.store'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+
+// TODO: Is it ok to use a fixed uuid for all tests?
+vi.mock('uuid', () => {
+	return { v4: () => '8f197878-d499-477c-af77-84b594d320f9' }
+})
 
 describe('placeholders', () => {
 	let xmlDocument: Writable<XMLDocument | undefined>
@@ -51,10 +56,9 @@ describe('placeholders', () => {
     </SCL>`
 		const xmlDoc = parser.parseFromString(xmlString, 'application/xml')
 		xmlDocument.set(xmlDoc)
-		pluginStore.init({
-			newXMLDocument: xmlDoc,
-			newPluginHostElement: document.createElement('SCL')
-		})
+		
+		pluginGlobalStore.xmlDocument = xmlDoc
+		pluginGlobalStore.host = document.createElement('SCL')
 	})
 
 	it('should replace placeholders with corresponding XML values', () => {

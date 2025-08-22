@@ -4,24 +4,28 @@ import type {
 	MessageSubscriberFilter
 } from '@/stores/signallist.store.d'
 import { type Writable, writable } from 'svelte/store'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { pluginStore } from './plugin.store'
 import { signallistStore } from './signallist.store'
 import { SignalType } from './signallist.store.d'
 
 import { signalListScd1 } from '../../tests/testfiles/signallist1'
 import { signalListScd2 } from '../../tests/testfiles/signallist2'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+
+// TODO: Is it ok to use a fixed uuid for all tests?
+vi.mock('uuid', () => {
+	return { v4: () => '8f197878-d499-477c-af77-84b594d320f9' }
+})
 
 describe('Signallist', () => {
 	beforeEach(() => {
 		const parser = new DOMParser()
 		const xmlDoc = parser.parseFromString(signalListScd1, 'application/xml')
 
-		pluginStore.init({
-			newXMLDocument: xmlDoc,
-			newPluginHostElement: document.createElement('SCL'),
-			newEditCount: 0
-		})
+		pluginGlobalStore.xmlDocument = xmlDoc
+		pluginGlobalStore.host = document.createElement('SCL')
+		pluginGlobalStore.editCount = 0
 	})
 
 	it('should extract message publishers from XML document', () => {

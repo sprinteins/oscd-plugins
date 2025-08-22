@@ -2,16 +2,22 @@ import { type Writable, get, writable } from 'svelte/store'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { docTemplatesStore } from './doc-templates.store'
-import { eventStore, pluginStore } from './index'
+import { eventStore } from './index'
+
+// TODO: Is it ok to use a fixed uuid for all tests?
+vi.mock('uuid', () => {
+	return { v4: () => '8f197878-d499-477c-af77-84b594d320f9' }
+})
 
 describe('DocumentTemplateStore', () => {
 	let xmlDocument: Writable<XMLDocument | undefined>
+	let xmlDoc: XMLDocument;
 
 	beforeEach(() => {
 		xmlDocument = writable<XMLDocument | undefined>(undefined)
 		const parser = new DOMParser()
 		const xmlString = '<SCL></SCL>'
-		const xmlDoc = parser.parseFromString(xmlString, 'application/xml')
+		xmlDoc = parser.parseFromString(xmlString, 'application/xml')
 		xmlDocument.set(xmlDoc)
 		pluginGlobalStore.xmlDocument = xmlDoc
 		pluginGlobalStore.host = document.createElement('SCL')
@@ -38,7 +44,7 @@ describe('DocumentTemplateStore', () => {
 
 		// Assert
 		autoDocArea.subscribe((value) => {
-			const xmlDocValue = get(xmlDocument)
+			const xmlDocValue = xmlDoc
 			expect(
 				xmlDocValue?.documentElement.querySelectorAll(
 					'Private[type="AUTO_DOC"]'
