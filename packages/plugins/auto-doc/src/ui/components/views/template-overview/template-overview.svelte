@@ -124,7 +124,11 @@ let importToolTipText = $derived(
         <FileSelector bind:this={fileSelector} on:change={onImportTemplate} />
         <Menu bind:this={menu}>
             <List>
-                <Item onSMUIAction={() => navigateToCreateTemplate()}>
+                <Item onSMUIAction={() => {
+                        // Use timeout to prevent an error from dispatching smui action event
+                        // for some reason smui action event is not cancelable, so preventDefault() does not work
+                        setTimeout(navigateToCreateTemplate, 0);
+                    }}>
                     <Text>New</Text>
                 </Item>
                 <Item onSMUIAction={() => openFileSelectorIfNotMasterTemplate()}
