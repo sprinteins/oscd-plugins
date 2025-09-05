@@ -4,7 +4,8 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { IED } from "../../diagram/networking"
 	import { IED as IEDComponent } from "@oscd-plugins/ui"
-	import { Select } from "@/ui/components/select"
+	// TODO: Fix Select import
+	// import { Select } from "@/ui/components/select"
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 
 	interface PortOption {
@@ -74,12 +75,12 @@
 	<IEDComponent label={ied.name} isSelected={true} isSelectable={false} />
 
 	<div class="select-container">
-		<Select
+		<!-- TODO: Readd<Select
 			on:select={handleSelectionChange}
 			linkTargetIndex={selectedIndex}
 			items={openPorts}
 		>
-		</Select>
+		</Select> -->
 	</div>
 </div>
 

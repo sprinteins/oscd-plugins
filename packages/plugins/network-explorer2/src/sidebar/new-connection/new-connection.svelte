@@ -4,8 +4,9 @@
 	import { createEventDispatcher } from 'svelte';
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 	// TODO: Button import
-	import { Button } from "@oscd-plugins/ui/button"
-	import { Textfield } from "@/ui/components/textfield"
+	// import { Button } from "@oscd-plugins/ui/button"
+	// TODO: Textfield import
+	// import { Textfield } from "@/ui/components/textfield"
 	import type { CreateCableEvent, UpdateCableEvent } from "../../editor-events/network-events"
 	import type { IED } from "../../diagram/networking"
 	import type { ConnectionBetweenNodes } from "../../store/index"
@@ -162,7 +163,7 @@
 <div class="container">
 	<h3>Cable {cableName}</h3>
 	<div class="new-connection-textfield-container">
-		<Textfield
+		<!-- TODO: Readd <Textfield
 			bind:value={cableName}
 			invalid={errors.required || errors.cableNameInUse}
 			on:input={onCableInput}
@@ -173,17 +174,17 @@
 					{ errors.required ? "Cablename required" : errors.cableNameInUse ? "Cablename allready in use" : "" }
 				</HelperText>
 					{/snippet}
-		</Textfield>
+		</Textfield> -->
 	</div>
 	
 	<IedPortSelect ied={sourceIed} { existingCableName } on:select={onSourceSelect}/>
 	<IedPortSelect ied={targetIed} { existingCableName } on:select={onTargetSelect}/>
 	
 	<div class="actions">
-		<Button on:click={confirm} testid="create-cable" disabled={errors.required || errors.cableNameInUse}>
+		<!-- TODO: Readd <Button on:click={confirm} testid="create-cable" disabled={errors.required || errors.cableNameInUse}>
 			{ isNew ? "Create" : "Update" }
 		</Button>
-		<Button on:click={cancel} type="secondary" testid="cancel-create-cable">Cancel</Button>
+		<Button on:click={cancel} type="secondary" testid="cancel-create-cable">Cancel</Button> -->
 	</div>
 </div>
 
