@@ -3,7 +3,11 @@
   
 	type $$Props = NodeProps;
 	
-	export let data: $$Props['data'];
+	interface Props {
+		data: $$Props['data'];
+	}
+
+	let { data }: Props = $props();
   
 	const { label } = data;
 	// $: console.log({level:"dev", data, props: $$props })

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { createEventDispatcher } from 'svelte';
 	import type { IED } from "../../diagram/networking"
 	import { IED as IEDComponent } from "../../../../components/ied"
@@ -13,18 +15,22 @@
 
 	// 
 	// INPUT
-	// 
-	export let ied: IED
-	export let existingCableName: string | null = null
+	
+	interface Props {
+		// 
+		ied: IED;
+		existingCableName?: string | null;
+	}
+
+	let { ied, existingCableName = null }: Props = $props();
 
 	//
 	// Internal
 	//
 	const dispatch = createEventDispatcher();
-	let openPorts: PortOption[] = []
-	let selectedIndex: number
+	let openPorts: PortOption[] = $state([])
+	let selectedIndex: number = $state()
 
-	$: onIed(ied)
 
 	function onIed(ied: IED): void {
 		openPorts = getOpenPorts(ied)
@@ -58,6 +64,9 @@
 
 		dispatch("select", selectedPort.port)
 	}
+	run(() => {
+		onIed(ied)
+	});
 </script>
 
 

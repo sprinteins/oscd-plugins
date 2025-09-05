@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { createEventDispatcher } from 'svelte';
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 	import { Button } from "../../../../components/button"
@@ -11,26 +13,29 @@
 	
 	// 
 	// INPUT
-	// 
-	export let connectionBetweenNodes: ConnectionBetweenNodes | null
-	export let cableNames: string[]
+	
+	interface Props {
+		// 
+		connectionBetweenNodes: ConnectionBetweenNodes | null;
+		cableNames: string[];
+	}
+
+	let { connectionBetweenNodes, cableNames }: Props = $props();
 	
 	//
 	// Internal
 	//
 	const dispatch = createEventDispatcher();
-	let sourceIed: IED
+	let sourceIed: IED = $state()
 	let sourceSelectedPort: string
-	let targetIed: IED
+	let targetIed: IED = $state()
 	let targetSelectedPort: string
-	let cableName: string
-	let isNew: boolean
-	let existingCableName: string | null | undefined
+	let cableName: string = $state()
+	let isNew: boolean = $state()
+	let existingCableName: string | null | undefined = $state()
 	let cableNameSet: Set<string> = new Set()
-	let errors: { required: boolean, cableNameInUse: boolean } = { required: false, cableNameInUse: false }
+	let errors: { required: boolean, cableNameInUse: boolean } = $state({ required: false, cableNameInUse: false })
 	
-	$: onNewConnection(connectionBetweenNodes)
-	$: onCableNames(cableNames)
 	
 	function onNewConnection(newConnectionBetweenNodes: ConnectionBetweenNodes | null) {
 		if (!newConnectionBetweenNodes) {
@@ -145,6 +150,12 @@
 
 		errors = { required, cableNameInUse }
 	}
+	run(() => {
+		onNewConnection(connectionBetweenNodes)
+	});
+	run(() => {
+		onCableNames(cableNames)
+	});
 </script>
 
 <div class="container">
@@ -156,9 +167,11 @@
 			on:input={onCableInput}
 			label="Cable"
 			variant="outlined">
-			<HelperText persistent slot="helper">
-				{ errors.required ? "Cablename required" : errors.cableNameInUse ? "Cablename allready in use" : "" }
-			</HelperText>
+			{#snippet helper()}
+						<HelperText persistent >
+					{ errors.required ? "Cablename required" : errors.cableNameInUse ? "Cablename allready in use" : "" }
+				</HelperText>
+					{/snippet}
 		</Textfield>
 	</div>
 	

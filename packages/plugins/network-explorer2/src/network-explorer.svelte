@@ -10,17 +10,23 @@
 
 	// 
 	// INPUT
-	// 
-	export let doc: Element
-	export let editCount: number
+	
 
 	// 
 	// INTERNAL
-	// 
-	export let store = new DiagramStore()
-	let htmlRoot: HTMLElement
-	let editEventHandler: EditorEventHandler
-	$: editEventHandler = new EditorEventHandler(htmlRoot)
+	
+	interface Props {
+		// 
+		doc: Element;
+		editCount: number;
+		// 
+		store?: any;
+	}
+
+	let { doc, editCount, store = new DiagramStore() }: Props = $props();
+	let htmlRoot: HTMLElement = $state()
+	let editEventHandler: EditorEventHandler = $derived(new EditorEventHandler(htmlRoot))
+	
 
 	function onCreateCable(event: CustomEvent<CreateCableEvent>) {
 		editEventHandler.dispatchCreateCable(event.detail)

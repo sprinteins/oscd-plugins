@@ -25,11 +25,17 @@
 
 	// 
 	// INPUT
-	// 
-	export let nodes: Writable<Node[]>
-	export let edges: Writable<Edge[]>
-	// export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
-	export let ieds: Writable<IED[]>
+	
+	
+	interface Props {
+		// 
+		nodes: Writable<Node[]>;
+		edges: Writable<Edge[]>;
+		// export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
+		ieds: Writable<IED[]>;
+	}
+
+	let { nodes, edges, ieds }: Props = $props();
 
 	// 
 	// CONFIG

@@ -5,8 +5,13 @@
     
     // 
     // Inputs
-    // 
-    export let selectedIED: SelectedNode
+    
+    interface Props {
+        // 
+        selectedIED: SelectedNode;
+    }
+
+    let { selectedIED }: Props = $props();
 </script>
 
 <div>

@@ -3,9 +3,13 @@
   
 	type $$Props = NodeProps;
 	
-	export let data: $$Props['data'];
-	export let isConnectable: $$Props['isConnectable'];
-	export let selected: $$Props['selected'];
+	interface Props {
+		data: $$Props['data'];
+		isConnectable: $$Props['isConnectable'];
+		selected: $$Props['selected'];
+	}
+
+	let { data, isConnectable, selected }: Props = $props();
 	// export let dragging: $$Props['dragging'];
 
   

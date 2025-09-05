@@ -14,8 +14,13 @@
 	
 	// 
 	// INPUT
-	// 
-	export let store: DiagramStore
+	
+	interface Props {
+		// 
+		store: DiagramStore;
+	}
+
+	let { store }: Props = $props();
 	
 	//
 	// INTERNAL

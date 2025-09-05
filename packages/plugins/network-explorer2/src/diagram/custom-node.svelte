@@ -8,7 +8,11 @@
   
 	type $$Props = NodeProps;
   
-	export let isConnectable: $$Props['isConnectable'];
+	interface Props {
+		isConnectable: $$Props['isConnectable'];
+	}
+
+	let { isConnectable }: Props = $props();
   
 	const DEFAULT_HANDLE_STYLE = 'width: 10px; height: 10px; bottom: -5px;';
   

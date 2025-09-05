@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 /**
  * The responsibility of `diagram-container` is to:
  * 1. gather bays, and the network information if IEDs
@@ -21,12 +23,15 @@ import type { IED } from "./networking";
 
 // 
 // INPUT
-// 
-export let doc: Element
-export let editCount: number
-export let store: DiagramStore
-$: updateOnEditCount(editCount)
-$: updateOnDoc(doc)
+
+	interface Props {
+		// 
+		doc: Element;
+		editCount: number;
+		store: DiagramStore;
+	}
+
+	let { doc, editCount, store }: Props = $props();
 
 // 
 // CONFIG
@@ -35,15 +40,13 @@ $: updateOnDoc(doc)
 // 
 // INTERNAL
 // 
-let root: HTMLElement
+let root: HTMLElement = $state()
 let _editCount: number
 let _doc: Element
 
 const nodes$ = useNodes();
-$: store.updateSelectedNodes($nodes$)
 
 const edges$ = useEdges();
-$: store.updateSelectedEdges($edges$)
 
 function updateOnDoc(doc: Element): void {
 	if (doc === _doc) {
@@ -94,6 +97,18 @@ function getSourceAndTargetIed(source: string, target: string): { sourceIed: IED
 	return { sourceIed: sourceIed, targetIed: targetIed }
 }
 
+run(() => {
+		updateOnEditCount(editCount)
+	});
+run(() => {
+		updateOnDoc(doc)
+	});
+run(() => {
+		store.updateSelectedNodes($nodes$)
+	});
+run(() => {
+		store.updateSelectedEdges($edges$)
+	});
 </script>
 
 <div class="root" bind:this={root}>
