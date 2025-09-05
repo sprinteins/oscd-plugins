@@ -4,8 +4,8 @@ import { extractIEDs, findAllIEDBays, type IED } from "../diagram/networking"
 import { type Config, generateElkJSLayout } from "../diagram/elkjs-layout-generator"
 import { convertElKJSRootNodeToSvelteFlowObjects } from "../diagram/elkjs-svelteflow-converter"
 import { getIedNameFromId, hasOpenPort } from "../diagram/ied-helper"
-import { isBayNode } from "../../../components/diagram"
-import type { BayElkNode, IEDElkNode } from "../../../components/diagram"
+import { isBayNode } from "../external/diagram"
+import type { BayElkNode, IEDElkNode } from "../external/diagram"
 import { extractCableNameFromId } from "../diagram/edge-helper"
 
 

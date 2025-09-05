@@ -13,7 +13,7 @@
         type Connection,
         addEdge,
 	} from "@xyflow/svelte"
-	import { createEventDispatcher } from "svelte/internal"
+	import { createEventDispatcher } from "svelte"
 	import "@xyflow/svelte/dist/style.css"
 	import type { IEDNetworkInfoV3, Networking, PhysConnection } from "@oscd-plugins/core"
 	import { getIedNameFromId } from "./ied-helper"

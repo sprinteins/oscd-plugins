@@ -4,3 +4,5 @@ export * from './smui-wrapper'
 
 // THEME
 export * from './theme'
+
+export * from './ied'

@@ -1,16 +1,10 @@
 <script lang="ts">
-	import type { Node } from "@xyflow/svelte";
 	import type { DiagramStore, ConnectionBetweenNodes } from "../store"
 	import { IEDAccordion } from "./ied-accordion";
 	import { ScdAssumptions } from "./scd-assumptions"
 	import { writable, derived } from "svelte/store";
 	import NewConnection from "./new-connection/new-connection.svelte";
-	
-	enum SidebarMode {
-		SelectedNodes,
-		ConnectionBetweenNodes,
-		ScdAssumptions
-	}
+	import { SidebarMode } from "./types"
 	
 	// 
 	// INPUT

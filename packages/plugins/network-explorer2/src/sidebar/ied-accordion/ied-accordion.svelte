@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { IED as IEDElement } from "../../../../components/ied"
+    import { IED as IEDElement } from "@/ui/components"
     import type { SelectedNode } from "../../store/index"
-    import { CableIEDAccordion } from "../../../../components/accordion/cable-ied-accordion"
+    import { CableIEDAccordion } from "@/ui/components/accordion/cable-ied-accordion"
     
     // 
     // Inputs
