@@ -2,7 +2,7 @@
     import { Example } from "../internal"
     import Ied from "./ied.svelte"
 
-    let IEDselectedText = "deselected"
+    let IEDselectedText = $state("deselected")
 
     function IEDselectionHandler() {
     	const nowDate = new Date()

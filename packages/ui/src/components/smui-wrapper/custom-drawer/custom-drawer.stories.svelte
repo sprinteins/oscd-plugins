@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 import CustomDrawer from './custom-drawer.svelte'
 // TYPES
 import type { Meta } from '@storybook/svelte'
@@ -35,7 +35,7 @@ function handleDrawer() {
 					<h1>Main Content</h1>
 					<p>Main content goes here</p>
 					
-					<button on:click={handleDrawer}>
+					<button onclick={handleDrawer}>
 						{ $open ? 'Close drawer' : 'Open drawer' }
 					</button>
 				</main>

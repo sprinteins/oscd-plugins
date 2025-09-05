@@ -1,9 +1,16 @@
 <script lang="ts">
+    import { createBubbler } from 'svelte/legacy';
+
+    const bubble = createBubbler();
     import { createEventDispatcher } from "svelte"
 
-    export let label: string
-    export let isSelectable = false
-    export let isSelected = false
+    interface Props {
+        label: string;
+        isSelectable?: boolean;
+        isSelected?: boolean;
+    }
+
+    let { label, isSelectable = false, isSelected = $bindable(false) }: Props = $props();
 
     const eventDispatcher = createEventDispatcher()
     function selectIED() {
@@ -22,8 +29,8 @@
 <div
     class="ied ied-node-component"
     class:selected={isSelected}
-    on:click={selectIED}
-    on:keydown
+    onclick={selectIED}
+    onkeydown={bubble('keydown')}
 >
     <span>{label}</span>
 </div>

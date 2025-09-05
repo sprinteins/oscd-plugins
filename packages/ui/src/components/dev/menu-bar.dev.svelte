@@ -10,7 +10,7 @@
 			{#if pluginType && pluginType === 'editor'}
 				<div class="editor-buttons">
 					<CustomIconButton icon="upload_file" color="white" on:click={handleUpload}/>
-					<input type="file" bind:this={fileInput} style="display: none" on:change={handleFileChange} accept=".scd" name="xmlDocument" />
+					<input type="file" bind:this={fileInput} style="display: none" onchange={handleFileChange} accept=".scd" name="xmlDocument" />
 					<CustomIconButton icon="download" color="white" on:click={handleDownload}/>
 				</div>
 			{/if}
@@ -30,11 +30,16 @@ import type { PluginType } from '@oscd-plugins/core'
 
 //====== INITIALIZATION ======//
 
-// props
-export let pluginType: PluginType | undefined = undefined
+
+	interface Props {
+		// props
+		pluginType?: PluginType | undefined;
+	}
+
+	let { pluginType = undefined }: Props = $props();
 
 // local variables
-let fileInput: HTMLInputElement
+let fileInput: HTMLInputElement = $state()
 
 //====== FUNCTIONS ======//
 

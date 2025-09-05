@@ -2,9 +2,13 @@
     import type { Networking } from "@oscd-plugins/core";
 	import IconArrowDropDown from "../icons/icon-arrow-drop-down.svelte"
 	
-	export let open = false
-	export let color: string
-	export let networking: Networking
+    interface Props {
+        open?: boolean;
+        color: string;
+        networking: Networking;
+    }
+
+    let { open = $bindable(false), color, networking }: Props = $props();
 </script>
 
 <div class="accordion">

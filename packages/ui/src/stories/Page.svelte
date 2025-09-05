@@ -2,7 +2,7 @@
   import './page.css';
   import Header from './Header.svelte';
 
-  let user: { name: string } | null = null;
+  let user: { name: string } | null = $state(null);
 </script>
 
 <article>

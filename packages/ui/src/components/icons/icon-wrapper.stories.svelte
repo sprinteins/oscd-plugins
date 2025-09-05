@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 import IconWrapper from './icon-wrapper.svelte'
 import availableIcons from './icons-draw'
 // TYPES
@@ -29,11 +29,13 @@ export const meta = {
 
 </script>
 	 
-	<Template let:args>
+	<Template >
+		{#snippet children({ args })}
 		<ThemeDecorator>
-			<IconWrapper {...args} />
-		</ThemeDecorator>
-	</Template>
+				<IconWrapper {...args} />
+			</ThemeDecorator>
+			{/snippet}
+</Template>
 	
 	<Story name="Download"  args={{ icon: "download", fillColor: "black"}}/>
 	<Story name="Upload File"  args={{ icon: "upload_file", fillColor: "black"}}/>
