@@ -6,3 +6,5 @@ export * from './smui-wrapper'
 export * from './theme'
 
 export * from './ied'
+
+export * from './cable-ied-accordion'

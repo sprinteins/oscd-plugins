@@ -3,8 +3,8 @@
 
 	import { createEventDispatcher } from 'svelte';
 	import type { IED } from "../../diagram/networking"
-	import { IED as IEDComponent } from "../../../../components/ied"
-	import { Select } from "../../../../components/select"
+	import { IED as IEDComponent } from "@oscd-plugins/ui"
+	import { Select } from "@/ui/components/select"
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 
 	interface PortOption {

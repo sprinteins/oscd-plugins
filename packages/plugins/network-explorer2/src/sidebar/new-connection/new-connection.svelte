@@ -3,8 +3,9 @@
 
 	import { createEventDispatcher } from 'svelte';
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
-	import { Button } from "../../../../components/button"
-	import { Textfield } from "../../../../components/textfield"
+	// TODO: Button import
+	import { Button } from "@oscd-plugins/ui/button"
+	import { Textfield } from "@/ui/components/textfield"
 	import type { CreateCableEvent, UpdateCableEvent } from "../../editor-events/network-events"
 	import type { IED } from "../../diagram/networking"
 	import type { ConnectionBetweenNodes } from "../../store/index"

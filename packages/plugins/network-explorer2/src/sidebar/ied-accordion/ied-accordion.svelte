@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { IED as IEDElement } from "@/ui/components"
+    import { IED as IEDElement } from "@oscd-plugins/ui"
     import type { SelectedNode } from "../../store/index"
-    import { CableIEDAccordion } from "@/ui/components/accordion/cable-ied-accordion"
+    import { CableIEDAccordion } from "@oscd-plugins/ui"
     
     // 
     // Inputs
