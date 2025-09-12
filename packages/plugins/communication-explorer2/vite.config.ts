@@ -15,7 +15,8 @@ export default defineConfig({
 	],
 	resolve: {
 		alias: {
-			'@': resolve(__dirname, 'src')
+			'@': resolve(__dirname, 'src'),
+			'$lib': resolve(__dirname, 'src')
 		}
 	},
 	build: {
@@ -24,6 +25,9 @@ export default defineConfig({
 			entry: resolve(__dirname, 'src/plugin.ts'),
 			formats: ['es'],
 			fileName: 'plugin'
+		},
+		rollupOptions: {
+			external: []
 		},
 		sourcemap: isDevelopment ? 'inline' : false
 	},

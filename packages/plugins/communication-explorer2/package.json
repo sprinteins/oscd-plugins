@@ -1,11 +1,14 @@
 {
 	"name": "@oscd-plugins/communication-explorer2",
 	"private": true,
-	"version": "0.0.0",
+	"version": "0.1.0",
+	"description": "Communication Explorer Plugin - Migrated to new architecture",
 	"type": "module",
+	"main": "dist/plugin.js",
+	"types": "dist/plugin.d.ts",
 	"scripts": {
 		"//====== DEV ======//": "",
-		"dev": "vite",
+		"dev": "vite dev",
 		"//====== BUILD ======//": "",
 		"build": "vite build",
 		"build:watch": "vite build --watch",
@@ -13,7 +16,10 @@
 		"//====== INTEGRATED ======//": "",
 		"integrated": "concurrently 'npm:build:watch' 'npm:preview'",
 		"//====== SVELTE ======//": "",
-		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"test": "vitest run",
+		"test:watch": "vitest"
 	},
 	"files": [
 		"dist"
@@ -25,9 +31,11 @@
 		}
 	},
 	"devDependencies": {
+		"@oscd-plugins/core": "workspace:^",
 		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/core-standard": "workspace:^",
 		"@oscd-plugins/core-ui-svelte": "workspace:^",
+		"@oscd-plugins/ui": "workspace:^",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@tsconfig/svelte": "^5.0.4",
 		"autoprefixer": "^10.4.20",
@@ -40,6 +48,10 @@
 		"tslib": "^2.8.0",
 		"typescript": "~5.6.2",
 		"vite": "^6.0.3",
-		"vite-plugin-dts": "^4.4.0"
-	}
+		"vite-plugin-dts": "^4.4.0",
+		"elkjs": "^0.9.3",
+		"d3-path": "^3.1.0",
+		"vitest": "^2.1.1"
+	},
+	"peerDependencies": {}
 }

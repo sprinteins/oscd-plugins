@@ -1,53 +1,74 @@
-<svelte:options
+<svelte:options 
 	customElement={{
 		props: {
-			doc: { reflect: true, type: "Object" },
-			docName: { reflect: true, type: "String" },
-			editCount: { reflect: true, type: "Number" },
-			locale: { reflect: true, type: "String" },
-			pluginType: { reflect: true, type: "String" },
-			isCustomInstance: { reflect: true, type: "Boolean" },
-		},
+			doc: { reflect: true, type: 'Object'},
+			docName: { reflect: true, type: 'String'},
+			editCount: { reflect: true, type: 'Number'},
+			locale: { reflect: true, type: 'String'},
+			pluginType: { reflect: true, type: 'String'},
+			isCustomInstance: { reflect: true, type: 'Boolean'},
+		}
 	}}
 />
 
 <script lang="ts">
-	// PACKAGE
-	import jsonPackage from "../package.json";
-	// CORE
-	import { initPlugin, initSsdTemplate } from "@oscd-plugins/core-ui-svelte";
-	// TYPES
-	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
+// TYPES
+import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+// CORE
+import { initPlugin } from '@oscd-plugins/core-ui-svelte'
+// PACKAGE
+import jsonPackage from '../package.json'
 
-	// props
-	const {
-		doc,
-		docName,
-		editCount,
-		isCustomInstance,
-	}: Utils.PluginCustomComponentsProps = $props();
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { CommunicationExplorer } from './ui/index.js'
+
+// props
+const {
+	doc,
+	docName,
+	editCount,
+	isCustomInstance
+}: Utils.PluginCustomComponentsProps = $props()
+
+let hasRunInit = $state(false)
+
+$effect(() => {
+	setTimeout(() => {
+		hasRunInit = true
+	}, 0)
+})
 </script>
 
-<main
+<main 
 	use:initPlugin={{
 		getDoc: () => doc,
 		getDocName: () => docName,
 		getEditCount: () => editCount,
 		getIsCustomInstance: () => isCustomInstance,
-		getHost: () => $host() || window,
-		theme: "legacy-oscd-instance",
+		getHost: () => window,
+		theme: 'legacy-oscd-instance',
 		definition: {
-			edition: "ed2Rev1",
-		},
+			edition: 'ed2Rev1',
+		}
 	}}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	<div class="flex flex-col space-y-9 items-center justify-center h-screen">
-		<h1 class="h1 font-black text-9xl">Hello Plugin!</h1>
-		<span
-			>See the <i>README</i> file in <b>`packages/template`</b> (oscd-plugins
-			monorepo)</span
-		>
-	</div>
+	{#if hasRunInit && pluginGlobalStore.xmlDocument}
+		<CommunicationExplorer root={pluginGlobalStore.xmlDocument.documentElement} />
+	{:else}
+		<div class="file-missing">
+			<p>No XML file loaded</p>
+		</div>
+	{/if}
 </main>
+
+<style>
+	.file-missing {
+		padding-top: 20px;
+	}
+	
+	.file-missing p {
+		text-align: center;
+	}
+</style>
