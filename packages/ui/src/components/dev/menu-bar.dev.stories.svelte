@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 import DevMenuBar from './menu-bar.dev.svelte'
 // TYPES
 import type { Meta } from '@storybook/svelte'
@@ -23,11 +23,13 @@ export const meta = {
 
 </script>
 	 
-	<Template let:args>
+	<Template >
+		{#snippet children({ args })}
 		<ThemeDecorator>
-			<DevMenuBar {...args} />
-		</ThemeDecorator>
-	</Template>
+				<DevMenuBar {...args} />
+			</ThemeDecorator>
+			{/snippet}
+</Template>
 	
 	<Story name="Plugin type Editor"  args={{ pluginType: "editor"}}/>
 

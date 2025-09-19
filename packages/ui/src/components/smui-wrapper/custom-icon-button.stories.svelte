@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 import CustomIconButton from './custom-icon-button.svelte'
 // ARGS
 import availableIcons from '@/components/icons/icons-draw'
@@ -35,10 +35,12 @@ export const meta = {
  
 </script>
  
-<Template let:args>
-	<ThemeDecorator>
-		<CustomIconButton {...args} />
-	</ThemeDecorator>
+<Template >
+	{#snippet children({ args })}
+		<ThemeDecorator>
+			<CustomIconButton {...args} />
+		</ThemeDecorator>
+	{/snippet}
 </Template>
 
 <Story name="Default"  args={{ icon: "download" }}/>
