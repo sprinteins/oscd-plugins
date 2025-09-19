@@ -29,8 +29,8 @@
 	
 	interface Props {
 		// 
-		nodes: Writable<Node[]>;
-		edges: Writable<Edge[]>;
+		nodes: Node[];
+		edges: Edge[];
 		// export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
 		ieds: Writable<IED[]>;
 	}
@@ -80,8 +80,8 @@
 
 <network-diagram>
 	<SvelteFlow 
-		nodes={nodes} 
-		edges={edges} 
+		bind:nodes
+		bind:edges
 		nodesConnectable={false}
 		fitView 
 		minZoom={0.1} 

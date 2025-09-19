@@ -10,8 +10,8 @@ import { extractCableNameFromId } from "../diagram/edge-helper"
 
 
 export class DiagramStore {
-	public nodes = writable<FlowNodes[]>([])
-	public edges = writable<Edge[]>([])
+	public nodes:FlowNodes[] = $state.raw([])
+	public edges: Edge[] = $state.raw([])
 	public ieds = writable<IED[]>([])
 	
 	public selectedNodes = writable<SelectedNode[]>([])
@@ -31,7 +31,7 @@ export class DiagramStore {
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
 
-		const previousNodes = get(this.nodes)
+		const previousNodes = this.nodes
 		const isNodeStructureEquivalent = this.isNodeStructureEquivalent(
 			previousNodes as unknown as (IEDElkNode | BayElkNode)[],
 			resp.nodes as unknown as (IEDElkNode | BayElkNode)[],
@@ -39,11 +39,11 @@ export class DiagramStore {
 
 		const shouldRerenderNodes = !isNodeStructureEquivalent
 		if (shouldRerenderNodes) {
-			this.nodes.set(resp.nodes)
+			this.nodes = resp.nodes
 		}
-		this.edges.set(resp.edges)
+		this.edges = resp.edges
 
-		this.setIsConnectedable(get(this.nodes))
+		this.setIsConnectedable(this.nodes)
 	}
 
 	public updateSelectedNodes(flowNodes: FlowNodes[]){

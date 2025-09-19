@@ -104,10 +104,12 @@ run(() => {
 		updateOnDoc(doc)
 	});
 run(() => {
-		store.updateSelectedNodes($nodes$)
+		// TODO: store.updateSelectedNodes($nodes$)
+		store.updateSelectedNodes([])
 	});
 run(() => {
-		store.updateSelectedEdges($edges$)
+		// TODO: store.updateSelectedEdges($edges$)
+		store.updateSelectedEdges([])
 	});
 </script>
 
