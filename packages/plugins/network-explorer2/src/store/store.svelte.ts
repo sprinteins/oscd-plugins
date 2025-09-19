@@ -10,14 +10,13 @@ import { extractCableNameFromId } from "../diagram/edge-helper"
 
 
 export class DiagramStore {
-	public nodes:FlowNodes[] = $state.raw([])
+	public nodes: FlowNodes[] = $state.raw([])
 	public edges: Edge[] = $state.raw([])
 	public ieds = writable<IED[]>([])
 	
 	public selectedNodes = writable<SelectedNode[]>([])
 
 	public connectionBetweenNodes = writable<ConnectionBetweenNodes | null>(null)
-
 	public async updateNodesAndEdges( root: Element ) {
 		if (!root) {
 			console.info({ level: "info", msg: "initInfos: no root" })
@@ -40,8 +39,10 @@ export class DiagramStore {
 		const shouldRerenderNodes = !isNodeStructureEquivalent
 		if (shouldRerenderNodes) {
 			this.nodes = resp.nodes
+			console.log(this.nodes)
 		}
 		this.edges = resp.edges
+		console.log(this.edges)
 
 		this.setIsConnectedable(this.nodes)
 	}

@@ -88,7 +88,7 @@
 		on:edgeclick
 		on:paneclick
 		{ ondelete }
-		onbeforeconnect={ c => connect(c) }
+		onbeforeconnect={ connect }
 		panOnDrag={false}
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->

@@ -38,14 +38,14 @@
 		store.resetNewConnection()
 	}
 
-	function onDelete(event: CustomEvent<Networking[]>): void {
-		editEventHandler.dispatchDeleteCable(event.detail)
+	function onDelete(networkings: Networking[]): void {
+		editEventHandler.dispatchDeleteCable(networkings)
 	}
 </script>
 
 <SvelteFlowProvider>
 	<network-explorer bind:this={htmlRoot}>
-		<DiagramContainer {store} doc={doc.documentElement} {editCount} on:delete={onDelete}/>
+		<DiagramContainer {store} doc={doc.documentElement} {editCount} onDelete={onDelete}/>
 		<Sidebar {store} on:createCable={onCreateCable} on:updateCable={onUpdateCable} />
 	</network-explorer>
 </SvelteFlowProvider>
@@ -53,6 +53,8 @@
 <style>
 	:root, :host {
 		--header-height: 128px;
+
+		--sidebar-width: 400px;
 	}
 	network-explorer {
 		height: calc(100vh - var(--header-height));;
