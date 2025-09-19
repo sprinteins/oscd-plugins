@@ -33,9 +33,11 @@
 		edges: Edge[];
 		// export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
 		ieds: Writable<IED[]>;
+		connect: (connection: Connection) => void;
+		onDelete: (networkings: Networking[]) => void;
 	}
 
-	let { nodes, edges, ieds }: Props = $props();
+	let { nodes, edges, ieds, connect, onDelete }: Props = $props();
 
 	// 
 	// CONFIG
@@ -58,10 +60,6 @@
 	// INTERNAL
 	// 
 
-	// const connectionLineStyle = "stroke: black; stroke-width: 3;"
-	// const bgColor = writable('#1A192B');
-	const dispatch = createEventDispatcher()
-
 	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {
 		const { edges } = deleteEvent
 		const currentIEDs = $ieds
@@ -70,11 +68,7 @@
 			.map(edge => getPhysConnectionsFromEdge(edge, currentIEDs))
 			.flat()
 
-		dispatch("delete", networkings)
-	}
-
-	function onedgecreate(connection: Connection): void {
-		dispatch("connect", connection)
+		onDelete(networkings)
 	}
 </script>
 
@@ -94,7 +88,7 @@
 		on:edgeclick
 		on:paneclick
 		{ ondelete }
-		onedgecreate={ onedgecreate }
+		onbeforeconnect={ c => connect(c) }
 		panOnDrag={false}
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->
