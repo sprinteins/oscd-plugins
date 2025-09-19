@@ -17,7 +17,7 @@
 	
 	interface Props {
 		// 
-		doc: Element;
+		doc: XMLDocument;
 		editCount: number;
 		// 
 		store?: any;
@@ -45,7 +45,7 @@
 
 <SvelteFlowProvider>
 	<network-explorer bind:this={htmlRoot}>
-		<DiagramContainer {store} doc={doc} {editCount} on:delete={onDelete}/>
+		<DiagramContainer {store} doc={doc.documentElement} {editCount} on:delete={onDelete}/>
 		<Sidebar {store} on:createCable={onCreateCable} on:updateCable={onUpdateCable} />
 	</network-explorer>
 </SvelteFlowProvider>
