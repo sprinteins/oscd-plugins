@@ -355,6 +355,9 @@ importers:
 
   packages/plugins/communication-explorer2:
     devDependencies:
+      '@oscd-plugins/core':
+        specifier: workspace:^
+        version: link:../../core/legacy
       '@oscd-plugins/core-api':
         specifier: workspace:^
         version: link:../../core/api
@@ -364,6 +367,9 @@ importers:
       '@oscd-plugins/core-ui-svelte':
         specifier: workspace:^
         version: link:../../core/ui-svelte
+      '@oscd-plugins/ui':
+        specifier: workspace:^
+        version: link:../../ui
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
         version: 5.0.3(svelte@5.20.1)(vite@6.1.0(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0))
