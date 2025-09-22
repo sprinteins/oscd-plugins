@@ -12,14 +12,17 @@
 />
 
 <main 
-	use:initPlugin={{
-		getDoc: () => doc,
-		getDocName: () => docName,
-		getEditCount: () => editCount,
-		getIsCustomInstance: () => isCustomInstance,
-		host: $host(),
-		theme: 'legacy-oscd-instance'
-	}}
+use:initPlugin={{
+	getDoc: () => doc,
+	getDocName: () => docName,
+	getEditCount: () => editCount,
+	getIsCustomInstance: () => isCustomInstance,
+	getHost: () => $host() || window,
+	theme: 'legacy-oscd-instance',
+	definition: {
+		edition: 'ed2Rev1',
+	}
+}}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
