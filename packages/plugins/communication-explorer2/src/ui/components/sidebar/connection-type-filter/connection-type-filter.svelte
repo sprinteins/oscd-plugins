@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FilterChip from "../../../../components/filter-chip/filter-chip.svelte"
+	import FilterChip from "../../../../components/filter-chip/filter-chip.svelte" //TODO: move filter-chip into library
 	import { changeMessageConnectionFilterDirection } from "../../_store-view-filter"
 	export let disabled = false
 	export let isFilterIncomingActive = false

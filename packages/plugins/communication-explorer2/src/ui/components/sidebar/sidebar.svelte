@@ -2,21 +2,22 @@
 import {
 	filterState,
 	type SelectedFilter
-} from '../_store-view-filter/selected-filter-store'
+} from '../../../stores/_store-view-filter/selected-filter-store'
 import {
 	selectIEDNode,
 	clearSelection,
 	setNameFilter,
 	clearIEDSelection,
 	toggleMultiSelectionOfIED
-} from '../_store-view-filter/selected-filter-store-functions'
+} from '../../../stores/_store-view-filter/selected-filter-store-functions'
 import ConnectionSelector from './assets/connection-selector.svg'
-import type { BayNode, IEDNode, RootNode } from '../../../components/diagram'
-import { ConnectionTypeFilter } from './connection-type-filter'
-import { MessageTypeFilter } from './message-type-filter'
+import type { RootNode } from '@oscd-plugins/ui/src/components/diagram'
+// import type { BayNode, IEDNode, RootNode } from '@oscd-plugins/ui/src/components/diagram'
+// import { ConnectionTypeFilter } from './connection-type-filter'
+// import { MessageTypeFilter } from './message-type-filter'
 import ConnectionInformation from './connection-information/connection-information.svelte'
-import IEDAccordion from './ied-accordion/ied-accordion.svelte'
-import { preferences$ } from '../_store-preferences'
+// import IEDAccordion from './ied-accordion/ied-accordion.svelte'
+import { preferences$ } from '../../../stores/_store-preferences/preferences-store'
 
 export let rootNode: RootNode
 export let bays: string[]
@@ -137,21 +138,21 @@ function clearAll() {
 					</div>
 			</div>
 
-			<div class="centered">
+			<!-- <div class="centered">
 					<ConnectionTypeFilter 
 							disabled={isConnectionDirectionDisabled} 
 							isFilterIncomingActive={$filterState.incomingMessageFilterActive}
 							isFilterOutgoingActive={$filterState.outgoingMessageFilterActive}
 					/>
-			</div>
+			</div> -->
 
 			<hr class="dashed-line" />
-			<MessageTypeFilter
+			<!-- <MessageTypeFilter
 					{selectedMessageTypes}
 					filterDisabled={isIedFiltersDisabled}
-			/>
+			/> -->
 
-			{#if IEDSelections.length > 0}
+			<!-- TODO: {#if IEDSelections.length > 0}
 					<hr class="seperation-line" />
 					<ul class="ied-detail-list">
 							{#each IEDSelections as IEDSelection}
@@ -160,7 +161,7 @@ function clearAll() {
 									</li>
 							{/each}
 					</ul>
-			{/if}
+			{/if} -->
 
 			{#if ConnectionSelection !== undefined}
 					<hr class="seperation-line" />
