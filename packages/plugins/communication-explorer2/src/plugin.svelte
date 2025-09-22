@@ -26,26 +26,47 @@ use:initPlugin={{
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	<div class="flex flex-col space-y-9 items-center justify-center h-screen">
-		<h1 class="h1 font-black text-9xl">Hello Plugin!</h1>
-		<span>See the <i>README</i> file in <b>`packages/template`</b> (oscd-plugins monorepo)</span>
-	</div>
+	<MaterialTheme pluginType="editor">
+		<communication-explorer>
+			Ey jo
+			{#key root}
+				<TelemetryView {root} />
+			{/key}
+		</communication-explorer>
+	</MaterialTheme>
 </main>
 
 
 <script lang="ts">
-// PACKAGE
-import jsonPackage from '../package.json'
-// CORE
-import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+
+// CORE
+import { initPlugin } from '@oscd-plugins/core-ui-svelte'
+import { MaterialTheme } from '@oscd-plugins/ui'
+
+// PACKAGE
+import jsonPackage from '../package.json'
+import TelemetryView from "./ui/components/telemetry-view/telemetry-view.svelte"
 
 // props
 const {
 	doc,
 	docName,
 	editCount,
-	isCustomInstance
-}: Utils.PluginCustomComponentsProps = $props()
+	isCustomInstance,
+	root
+} = $props<Utils.PluginCustomComponentsProps & { root: Element }>()
+
+
 </script>
+
+
+<style>
+	communication-explorer {
+		display: block;
+		position: relative;
+		font-size: 12px;
+		min-height: 80vh;
+	}
+</style>
