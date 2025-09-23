@@ -1,7 +1,11 @@
 <script lang="ts">
 import type { IEDConnectionWithCustomValues } from '../../../../components/diagram'
 
-export let ConnectionSelection: IEDConnectionWithCustomValues
+    interface Props {
+        ConnectionSelection: IEDConnectionWithCustomValues;
+    }
+
+    let { ConnectionSelection }: Props = $props();
 </script>
 
 <table>

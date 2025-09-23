@@ -26,8 +26,13 @@ import { Sidebar } from '../sidebar'
 //
 // INPUT
 //
-// export let root: Element
-export let showSidebar = true
+
+	interface Props {
+		// export let root: Element
+		showSidebar?: boolean;
+	}
+
+	let { showSidebar = true }: Props = $props();
 
 let rootNode: RootNode | undefined = undefined
 // $: initInfos(root, $filterState, $preferences$)

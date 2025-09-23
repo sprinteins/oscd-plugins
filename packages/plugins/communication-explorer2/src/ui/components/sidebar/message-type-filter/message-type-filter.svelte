@@ -4,8 +4,12 @@ import Icons from '../../../../components/icons/icons.svelte'
 // CONSTANTS
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
 
-export let filterDisabled: boolean
-export let selectedMessageTypes: string[]
+    interface Props {
+        filterDisabled: boolean;
+        selectedMessageTypes: string[];
+    }
+
+    let { filterDisabled, selectedMessageTypes }: Props = $props();
 
 let checkboxIsClicked = true
 </script>
@@ -14,7 +18,7 @@ let checkboxIsClicked = true
     <label>
         <input
             type="checkbox"
-            on:change={setTargetMessageType}
+            onchange={setTargetMessageType}
             checked={isSelected(
                 MESSAGE_TYPE.MMS,
                 selectedMessageTypes,
@@ -35,7 +39,7 @@ let checkboxIsClicked = true
     <label>
         <input
             type="checkbox"
-            on:change={setTargetMessageType}
+            onchange={setTargetMessageType}
             checked={isSelected(
                 MESSAGE_TYPE.GOOSE,
                 selectedMessageTypes,
@@ -55,7 +59,7 @@ let checkboxIsClicked = true
     <label>
         <input
             type="checkbox"
-            on:change={setTargetMessageType}
+            onchange={setTargetMessageType}
             checked={isSelected(
                 MESSAGE_TYPE.SampledValues,
                 selectedMessageTypes,
@@ -75,7 +79,7 @@ let checkboxIsClicked = true
     <label>
         <input
             type="checkbox"
-            on:change={setTargetMessageType}
+            onchange={setTargetMessageType}
             checked={isSelected(
                 MESSAGE_TYPE.Unknown,
                 selectedMessageTypes,

@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { createBubbler } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 import {
 	filterState,
 	type SelectedFilter
@@ -19,32 +22,16 @@ import ConnectionInformation from './connection-information/connection-informati
 // import IEDAccordion from './ied-accordion/ied-accordion.svelte'
 import { preferences$ } from '../../../stores/_store-preferences/preferences-store'
 
-export let rootNode: RootNode
-export let bays: string[]
-let IEDs = rootNode.children
-let searchQuery = ''
-let filterTextFieldFocused = false
+	interface Props {
+		rootNode: RootNode;
+		bays: string[];
+	}
 
-$: IEDSelections = $filterState?.selectedIEDs
-$: ConnectionSelection = $filterState.selectedConnection
-$: selectedMessageTypes = $filterState.selectedMessageTypes
-$: isIedFiltersDisabled = $filterState?.selectedConnection !== undefined
-$: isConnectionDirectionDisabled = handleConnectionDirectionDisabled(
-	$filterState,
-	isIedFiltersDisabled
-)
-$: filteredIEDs =
-	(searchQuery &&
-		IEDs?.filter((ied) =>
-			ied.label.toLowerCase().includes(searchQuery.toLowerCase())
-		)) ||
-	IEDs
-$: filteredBays =
-	(searchQuery &&
-		bays?.filter((bay) =>
-			bay.toLowerCase().includes(searchQuery.toLowerCase())
-		)) ||
-	bays
+	let { rootNode, bays }: Props = $props();
+//let IEDs = rootNode.children
+let searchQuery = $state('')
+let filterTextFieldFocused = $state(false)
+
 
 function handleConnectionDirectionDisabled(
 	filter: SelectedFilter,
@@ -87,13 +74,33 @@ function clearAll() {
 	searchQuery = ''
 	clearSelection()
 }
+let IEDSelections = $derived($filterState?.selectedIEDs)
+let ConnectionSelection = $derived($filterState.selectedConnection)
+let selectedMessageTypes = $derived($filterState.selectedMessageTypes)
+let isIedFiltersDisabled = $derived($filterState?.selectedConnection !== undefined)
+let isConnectionDirectionDisabled = $derived(handleConnectionDirectionDisabled(
+	$filterState,
+	isIedFiltersDisabled
+))
+// let filteredIEDs =
+// 	$derived((searchQuery &&
+// 		IEDs?.filter((ied) =>
+// 			ied.label.toLowerCase().includes(searchQuery.toLowerCase())
+// 		)) ||
+// 	IEDs)
+let filteredBays =
+	$derived((searchQuery &&
+		bays?.filter((bay) =>
+			bay.toLowerCase().includes(searchQuery.toLowerCase())
+		)) ||
+	bays)
 </script>
 
 <div class="sidebar sidebar-right">
 	<div class="sidebar-content">
-			<!-- svelte-ignore a11y-missing-attribute -->
+			<!-- svelte-ignore a11y_missing_attribute -->
 			<div class="actions">
-					<a class="clear-all" on:keypress on:click={clearAll}>
+					<a class="clear-all" onkeypress={bubble('keypress')} onclick={clearAll}>
 							Clear all
 					</a>
 			</div>
@@ -105,30 +112,30 @@ function clearAll() {
 									type="text"
 									placeholder="Filter IED or bay"
 									bind:value={searchQuery}
-									on:focus={()=> filterTextFieldFocused = true}
-									on:blur={()=> filterTextFieldFocused = false}
+									onfocus={()=> filterTextFieldFocused = true}
+									onblur={()=> filterTextFieldFocused = false}
 							/>
 							{#if filterTextFieldFocused}
 									<div class="dropdown">
-											{#if filteredIEDs.length > 0}
+											<!-- {#if filteredIEDs.length > 0}
 													<div class="dropdown_label">
 															IEDs ({filteredIEDs.length})
 													</div>
 													{#each filteredIEDs as ied}
-															<div class="dropdown_content" role="button" tabindex="0" on:mousedown={handleDropdownSelect}>
+															<div class="dropdown_content" role="button" tabindex="0" onmousedown={handleDropdownSelect}>
 																	{ied.label}
 															</div>
 													{/each}
 													{#if filteredBays.length > 0}
 															<hr>
 													{/if}
-											{/if}
+											{/if} -->
 											{#if filteredBays.length > 0}
 													<div class="dropdown_label">
 															bays ({filteredBays.length})
 													</div>
 													{#each filteredBays as bay}
-															<div class="dropdown_content" role="button" tabindex="0" on:mousedown={handleDropdownSelect}>
+															<div class="dropdown_content" role="button" tabindex="0" onmousedown={handleDropdownSelect}>
 																	{bay}
 															</div>
 													{/each}
@@ -179,7 +186,7 @@ function clearAll() {
 							type="text"
 							placeholder="e.g.: XAT"
 							value={$filterState.nameFilter}
-							on:input={handleNameFilterChange}
+							oninput={handleNameFilterChange}
 					/>
 			</label>
 

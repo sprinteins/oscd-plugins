@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
 import PublisherSubscriberAccordion from '../../../../components/accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte'
 import type { IEDElkNode, RootNode } from '../../../../components/diagram'
 import { IED } from '../../../../components/ied'
@@ -13,15 +15,21 @@ import { filterState } from '../../_store-view-filter'
 // TYPES
 import type { MessageType } from '../../types'
 
-export let rootNode: RootNode
-export let IEDSelection: IEDElkNode
+    interface Props {
+        rootNode: RootNode;
+        IEDSelection: IEDElkNode;
+    }
 
-let relationsByServiceType: ServiceTypeGroup = new Map()
-$: relations = getConnectedIEDsByLabel(rootNode, IEDSelection.label)
-$: relationsByServiceType = groupRelationsByServiceType(relations)
-$: serviceTypes = Array.from(relationsByServiceType.entries())
-$: details = getIEDDetails(rootNode, IEDSelection.label)
-$: bays = Array.from(IEDSelection.bays).join(", ")
+    let { rootNode, IEDSelection }: Props = $props();
+
+let relationsByServiceType: ServiceTypeGroup = $state(new Map())
+let relations = $derived(getConnectedIEDsByLabel(rootNode, IEDSelection.label))
+run(() => {
+        relationsByServiceType = groupRelationsByServiceType(relations)
+    });
+let serviceTypes = $derived(Array.from(relationsByServiceType.entries()))
+let details = $derived(getIEDDetails(rootNode, IEDSelection.label))
+let bays = $derived(Array.from(IEDSelection.bays).join(", "))
 
 const serviceTypeColor: { [key in MessageType | 'Unknown']: string } = {
 	GOOSE: '--color-message-goose',
@@ -30,7 +38,7 @@ const serviceTypeColor: { [key in MessageType | 'Unknown']: string } = {
 	Unknown: '--color-message-unknown'
 }
 
-let detailsCollapsed = true
+let detailsCollapsed = $state(true)
 </script>
 
 {#if bays.length > 0}
@@ -68,7 +76,7 @@ let detailsCollapsed = true
             {/each}
         {/if}
         </div>
-        <button class="expand_button" on:click={() => detailsCollapsed = !detailsCollapsed}>
+        <button class="expand_button" onclick={() => detailsCollapsed = !detailsCollapsed}>
             {detailsCollapsed ? 'Show more' : 'Show less'}
         </button>
     {/if}
