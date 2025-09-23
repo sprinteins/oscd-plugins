@@ -28,7 +28,7 @@ import { preferences$ } from '../../../stores/_store-preferences/preferences-sto
 	}
 
 	let { rootNode, bays }: Props = $props();
-//let IEDs = rootNode.children
+let IEDs = $derived(rootNode?.children || [])
 let searchQuery = $state('')
 let filterTextFieldFocused = $state(false)
 

@@ -1,5 +1,7 @@
+<!-- @migration-task Error while migrating Svelte code: `$:` is not allowed in runes mode, use `$derived` or `$effect` instead
+https://svelte.dev/e/legacy_reactive_statement_invalid -->
 <script lang="ts">
-// import { calculateLayout } from '../_func-layout-calculation/node-layout'
+import { calculateLayout } from '../../../headless/services/_func-layout-calculation/node-layout'
 import {
 // 	Diagram,
 // 	type IEDConnection,
@@ -8,72 +10,72 @@ import {
 	type RootNode
 } from '@oscd-plugins/ui/src/components/diagram'
 import { Sidebar } from '../sidebar'
-// import {
-// 	filterState,
-// 	type SelectedFilter,
-// 	selectConnection,
-// 	selectIEDNode,
-// 	clearIEDSelection,
-// 	toggleMultiSelectionOfIED
-// } from '../_store-view-filter'
-// import type { Config } from '../_func-layout-calculation/config'
-// import { preferences$, type Preferences } from '../_store-preferences'
-// // SERVICES
-// import { getIEDCommunicationInfos, getBays } from '../services/ied'
-// TYPES
-// import type { IED } from '@oscd-plugins/core'
+import {
+	filterState,
+	type SelectedFilter,
+	selectConnection,
+	selectIEDNode,
+	clearIEDSelection,
+	toggleMultiSelectionOfIED
+} from '../../../stores/_store-view-filter'
+import type { Config } from '../../../headless/services/_func-layout-calculation/config'
+import { preferences$, type Preferences } from '../../../stores/_store-preferences'
+// SERVICES
+import { getIEDCommunicationInfos, getBays } from '../../../headless/services/ied/ied'
+//TYPES
+import type { IED } from '@oscd-plugins/core'
 
 //
 // INPUT
 //
 
 	interface Props {
-		// export let root: Element
+		root: Element;
 		showSidebar?: boolean;
 	}
 
-	let { showSidebar = true }: Props = $props();
+	let { root, showSidebar = true }: Props = $props();
 
 let rootNode: RootNode | undefined = undefined
-// $: initInfos(root, $filterState, $preferences$)
-// let lastUsedRoot: Element | undefined = undefined
-// let lastExtractedInfos: IED.CommunicationInfo[] = []
+let lastUsedRoot: Element | undefined = undefined
+let lastExtractedInfos: IED.CommunicationInfo[] = []
 let lastExtractedBays: Set<string>
 
+const config: Config = {
+	iedWidth: 150,
+	iedHeight: 40,
+	bayLabelHeight: 15,
+	bayLabelGap: 2
+}
+
+$effect(() => {
+	initInfos(root, $filterState, $preferences$)
+})
+
 // Note: maybe have a mutex if there are too many changes
-// async function initInfos(
-// 	root: Element,
-// 	selectedFilter: SelectedFilter,
-// 	preferences: Preferences
-// ) {
-// 	if (!root) {
-// 		console.info({ level: 'info', msg: 'initInfos: no root' })
-// 		return []
-// 	}
+async function initInfos(
+	root: Element,
+	selectedFilter: SelectedFilter,
+	preferences: Preferences
+) {
+	if (!root) {
+		console.info({ level: 'info', msg: 'initInfos: no root' })
+		return []
+	}
 
-// 	if (root !== lastUsedRoot) {
-// 		const iedInfos = getIEDCommunicationInfos(root)
-// 		lastExtractedInfos = iedInfos
-// 		lastExtractedBays = getBays(root)
-// 		lastUsedRoot = root
-// 	}
-// 	rootNode = await calculateLayout(
-// 		lastExtractedInfos,
-// 		config,
-// 		selectedFilter,
-// 		preferences
-// 	)
-// }
-
-// const config: Config = {
-// 	iedWidth: 150,
-// 	iedHeight: 40,
-// 	bayLabelHeight: 15,
-// 	bayLabelGap: 2
-// 	// spacingBetweenNodes: 100, INFO: already commented out
-// 	// spacingBase: 40, INFO: already commented out
-// 	// heightPerConnection: 20, INFO: already commented out
-// }
+	if (root !== lastUsedRoot) {
+		const iedInfos = getIEDCommunicationInfos(root)
+		lastExtractedInfos = iedInfos
+		lastExtractedBays = getBays(root)
+		lastUsedRoot = root
+	}
+	rootNode = await calculateLayout(
+		lastExtractedInfos,
+		config,
+		selectedFilter,
+		preferences
+	)
+}
 
 // function handleIEDSelect(e: CustomEvent<IEDNode>) {
 // 	selectIEDNode(e.detail)

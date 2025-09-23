@@ -354,6 +354,52 @@ importers:
         version: 3.5.2(vite@4.5.5(@types/node@22.10.1)(sass@1.82.0))
 
   packages/plugins/communication-explorer2:
+    dependencies:
+      '@smui/button':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/checkbox':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/data-table':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/dialog':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/icon-button':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/list':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/menu':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/textfield':
+        specifier: ^8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@tiptap/core':
+        specifier: ^2.11.5
+        version: 2.11.5(@tiptap/pm@2.11.5)
+      '@tiptap/extension-list-item':
+        specifier: ^2.11.5
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-text-style':
+        specifier: ^2.11.5
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-underline':
+        specifier: ^2.11.5
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/pm':
+        specifier: ^2.11.5
+        version: 2.11.5
+      '@tiptap/starter-kit':
+        specifier: ^2.11.5
+        version: 2.11.5
+      elkjs:
+        specifier: ^0.8.2
+        version: 0.8.2
     devDependencies:
       '@oscd-plugins/core':
         specifier: workspace:^
