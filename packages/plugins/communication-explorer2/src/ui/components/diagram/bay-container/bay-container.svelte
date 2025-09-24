@@ -2,9 +2,14 @@
 	import { IEDElement } from "../ied-element"
 	import type { BayNode } from "../nodes"
 
-	// Input
-	export let node: BayNode
-	export let testid = ""
+	
+	interface Props {
+		// Input
+		node: BayNode;
+		testid?: string;
+	}
+
+	let { node, testid = "" }: Props = $props();
 </script>
 
 {#if node}
