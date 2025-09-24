@@ -4,7 +4,7 @@ import { IEDElement } from '.'
 import { Example } from "../../../utils/internal/example"
 import type { IEDNode } from '../nodes'
 
-const node: IEDNode = {
+const node: IEDNode = $state({
 	id: '0',
 	iedWidth: 200,
 	iedHeight: 30,
@@ -13,7 +13,7 @@ const node: IEDNode = {
 	label: 'some longer IED name',
 	isRelevant: true,
 	children: []
-}
+})
 </script>
 
 <label>width:<input type="range" min="200" max="500" step="10" bind:value={node.iedWidth} /></label>

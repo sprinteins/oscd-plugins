@@ -3,15 +3,27 @@ import type { IEDElkNode } from '../nodes'
 
 //
 // INPUT
-//
-export let node: IEDElkNode
-export let isBaySelected = false
-export let isIEDSelected = false
-export let showBayLabels = false
-export let disabled = false
-export let testid = ''
 
-$: bays = Array.from(node.bays ?? []).join(', ')
+	interface Props {
+		//
+		node: IEDElkNode;
+		isBaySelected?: boolean;
+		isIEDSelected?: boolean;
+		showBayLabels?: boolean;
+		disabled?: boolean;
+		testid?: string;
+	}
+
+	let {
+		node,
+		isBaySelected = false,
+		isIEDSelected = false,
+		showBayLabels = false,
+		disabled = false,
+		testid = ''
+	}: Props = $props();
+
+let bays = $derived(Array.from(node.bays ?? []).join(', '))
 </script>
 
 {#if node}
