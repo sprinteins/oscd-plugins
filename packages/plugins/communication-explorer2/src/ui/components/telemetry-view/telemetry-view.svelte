@@ -3,10 +3,10 @@ https://svelte.dev/e/legacy_reactive_statement_invalid -->
 <script lang="ts">
 import { calculateLayout } from '../../../headless/services/_func-layout-calculation/node-layout'
 import {
-// 	Diagram,
-// 	type IEDConnection,
-// 	type IEDConnectionWithCustomValues,
-// 	type IEDNode,
+	Diagram,
+	type IEDConnection,
+	type IEDConnectionWithCustomValues,
+	type IEDNode, 
 	type RootNode
 } from '../diagram'
 import { Sidebar } from '../sidebar'
@@ -29,17 +29,17 @@ import type { IED } from '@oscd-plugins/core'
 // INPUT
 //
 
-	interface Props {
-		root: Element;
-		showSidebar?: boolean;
-	}
+interface Props {
+	root: Element;
+	showSidebar?: boolean;
+}
 
-	let { root, showSidebar = true }: Props = $props();
+let { root, showSidebar = true }: Props = $props();
 
-let rootNode: RootNode | undefined = undefined
+let rootNode: RootNode | undefined = $state(undefined)
 let lastUsedRoot: Element | undefined = undefined
 let lastExtractedInfos: IED.CommunicationInfo[] = []
-let lastExtractedBays: Set<string>
+let lastExtractedBays: Set<string> = $state(new Set())
 
 const config: Config = {
 	iedWidth: 150,
@@ -77,34 +77,37 @@ async function initInfos(
 	)
 }
 
-// function handleIEDSelect(e: CustomEvent<IEDNode>) {
-// 	selectIEDNode(e.detail)
-// }
-// function handleIEDAdditiveSelect(e: CustomEvent<IEDNode>) {
-// 	toggleMultiSelectionOfIED(e.detail)
-// }
-// async function handleBaySelect(e: CustomEvent<string>) {
-// 	clearIEDSelection()
-// 	await initInfos(root, $filterState, $preferences$)
-// 	for (const node of rootNode.children) {
-// 		if (node.bays?.has(e.detail)) {
-// 			toggleMultiSelectionOfIED(node)
-// 		}
-// 	}
-// }
-// function handleConnectionClick(e: CustomEvent<IEDConnection>) {
-// 	// temp till fully migrated: map element to enhanced data model
-// 	const selectedConnection = e.detail as IEDConnectionWithCustomValues
-// 	selectConnection(selectedConnection)
-// }
-// function handleClearClick() {
-// 	clearIEDSelection()
-// }
+function handleIEDSelect(e: CustomEvent<IEDNode>) {
+	selectIEDNode(e.detail)
+}
+function handleIEDAdditiveSelect(e: CustomEvent<IEDNode>) {
+	toggleMultiSelectionOfIED(e.detail)
+}
+async function handleBaySelect(e: CustomEvent<string>) {
+	clearIEDSelection()
+	await initInfos(root, $filterState, $preferences$)
+	if (rootNode?.children) {
+		for (const node of rootNode.children) {
+			if (node.bays?.has(e.detail)) {
+				toggleMultiSelectionOfIED(node)
+			}
+		}
+	}
+}
+function handleConnectionClick(e: CustomEvent<IEDConnection>) {
+	// temp till fully migrated: map element to enhanced data model
+	const selectedConnection = e.detail as IEDConnectionWithCustomValues
+	selectConnection(selectedConnection)
+}
+function handleClearClick() {
+	clearIEDSelection()
+}
 </script>
 
 <div class="root" class:showSidebar>
-	<!-- {#if rootNode} -->
-		<!-- <Diagram
+	{#if rootNode}
+		{console.log('Rendering Diagram with rootNode:', rootNode)}
+		<Diagram
 			{rootNode}
 			playAnimation={$preferences$.playConnectionAnimation}
 			showConnectionArrows={$preferences$.showConnectionArrows}
@@ -114,11 +117,12 @@ async function initInfos(
 			on:iedadditiveselect={handleIEDAdditiveSelect}
 			on:connectionclick={handleConnectionClick}
 			on:clearclick={handleClearClick}
-		/> -->
+		/>
 		{#if showSidebar}
-			<Sidebar {rootNode} bays={Array.from(new Set())} />
+			{console.log('Rendering Sidebar with bays:', Array.from(lastExtractedBays))}
+			<Sidebar {rootNode} bays={Array.from(lastExtractedBays)} />
 		{/if}
-	<!-- {/if} -->
+	{/if}
 </div>
 
 <style>

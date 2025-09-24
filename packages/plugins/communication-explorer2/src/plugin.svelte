@@ -26,14 +26,13 @@ use:initPlugin={{
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	<MaterialTheme pluginType="editor">
+	<Theme>
 		<communication-explorer>
-			Ey jo
-			{#key root}
-				<TelemetryView {root} />
-			{/key}
+			{#if doc}
+				<TelemetryView root={doc.documentElement} />
+			{/if}
 		</communication-explorer>
-	</MaterialTheme>
+	</Theme>
 </main>
 
 
@@ -41,6 +40,7 @@ use:initPlugin={{
 // TYPES
 import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 
+import { clearSelection } from "../src/stores/_store-view-filter"
 // CORE
 import { initPlugin } from '@oscd-plugins/core-ui-svelte'
 import { MaterialTheme } from '@oscd-plugins/ui'
@@ -48,15 +48,25 @@ import { MaterialTheme } from '@oscd-plugins/ui'
 // PACKAGE
 import jsonPackage from '../package.json'
 import TelemetryView from "./ui/components/telemetry-view/telemetry-view.svelte"
+// import Theme from "..//theme/theme.svelte"
+import Theme from "./ui/theme/theme.svelte"
 
-// props
-const {
-	doc,
-	docName,
-	editCount,
-	isCustomInstance,
-	root
-} = $props<Utils.PluginCustomComponentsProps & { root: Element }>()
+// Svelte 5 props syntax
+const { doc, docName, editCount, locale, pluginType, isCustomInstance }: { 
+	doc: XMLDocument;
+	docName: string;
+	editCount: number;
+	locale: string;
+	pluginType: string;
+	isCustomInstance: boolean;
+} = $props()
+
+// Svelte 5 effect instead of reactive statement
+$effect(() => {
+	if (doc) {
+		clearSelection()
+	}
+})
 
 
 </script>
