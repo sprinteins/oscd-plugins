@@ -3,10 +3,15 @@
 	import "./fonts/google/roboto-mono-v13.css"
 	import "./fonts/google/roboto-v27.css"
 	import "@material/typography/mdc-typography.scss"
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <tscd-theme>
-	<slot />
+	{@render children?.()}
 </tscd-theme>
 
 <style>
