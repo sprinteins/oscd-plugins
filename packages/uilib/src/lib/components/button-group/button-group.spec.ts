@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/svelte"
 import {describe, it, expect} from "vitest"
 
-import { ButtonGroup, type ButtonGroupOption } from "./"
+import { ButtonGroup, type ButtonGroupOption } from "."
 
 const options: ButtonGroupOption[] = [
 	{ id: "option1", label: "🍕 Pizza" },
