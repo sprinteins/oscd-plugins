@@ -8,7 +8,7 @@ export type Preferences = {
 	groupByBay: boolean;
 }
 
-const defaultPreferences: Preferences = {
+export const defaultPreferences: Preferences = {
 	playConnectionAnimation: false,
 	showConnectionArrows:    true,
 	isFocusModeOn:           false,

@@ -1,4 +1,4 @@
-import { preferences$ } from "./preferences-store"
+import { preferences$, defaultPreferences } from "./preferences-store"
 
 const KEY = "communication-explorer_preferences_ygQZRv"
 
@@ -10,7 +10,9 @@ export function initPreferences(){
 	if(stored){
 		try {
 			const parsed = JSON.parse(stored)
-			preferences$.set(parsed)
+			// CHANGED_FROM_ORIGNAL: Merge stored preferences with defaults to ensure new properties get default values
+			const mergedPreferences = { ...defaultPreferences, ...parsed }
+			preferences$.set(mergedPreferences)
 		} catch (error) {
 			console.error("Failed to parse preferences from local storage", error)
 		}
