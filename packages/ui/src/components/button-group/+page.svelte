@@ -3,7 +3,7 @@
     import type { ButtonGroupOption } from "./types"
     import { Example } from "../../../../uilib/src/lib/components/internal"
 
-    let selectedIndex = -1
+    let selectedIndex = $state(-1)
     const options: ButtonGroupOption[] = [
     	{ id: "option1", label: "🍕 Pizza" },
     	{ id: "option2", label: "🍜 Noodles" },

@@ -7,17 +7,18 @@ import {
 	type IEDNode,
 	type RootNode
 } from '.'
-import { Example } from '../internal'
-import { calculateLayout } from '../../plugins/communication-explorer/_func-layout-calculation'
+// TODO: In Internal.README it is stated that we should not use internal package
+import { Example } from "../../../../../../uilib/src/lib/components/internal/example"
+import { calculateLayout } from '../../../headless/services/_func-layout-calculation'
 import {
 	clearIEDSelection,
 	selectConnection,
 	selectIEDNode,
 	filterState,
 	toggleMultiSelectionOfIED
-} from '../../plugins/communication-explorer/_store-view-filter'
-import type { Config } from '../../plugins/communication-explorer/_func-layout-calculation/config'
-import { preferences$ } from '../../plugins/communication-explorer/_store-preferences'
+} from '../../../stores/_store-view-filter'
+import type { Config } from '../../../headless/services/_func-layout-calculation/config'
+import { preferences$ } from '../../../stores/_store-preferences'
 
 const _config: Config = {
 	iedWidth: 100,

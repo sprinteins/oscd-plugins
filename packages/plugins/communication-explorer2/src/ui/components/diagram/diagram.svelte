@@ -12,7 +12,7 @@
 	import {
 		isConnectionSelected,
 		isIEDSelected,
-	} from "../../plugins/communication-explorer/_store-view-filter"
+	} from "../../../stores/_store-view-filter"
 	import BayContainer from "./bay-container/bay-container.svelte"
 
 	//

@@ -3,7 +3,7 @@ import type {
 	IEDConnection,
 	IEDNode,
 	RootNode
-} from '@oscd-plugins/ui/src/components/diagram'
+} from '../../../ui/components/diagram'
 import type { MessageType } from '../../types'
 
 export type ConnectedIEDs = {

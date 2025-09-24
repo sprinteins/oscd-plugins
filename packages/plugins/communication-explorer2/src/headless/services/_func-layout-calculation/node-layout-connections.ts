@@ -3,7 +3,7 @@ import { hasActiveIEDSelection, isIEDSelected } from '../../../stores/_store-vie
 // TYPES
 import type { IED, Utils } from '@oscd-plugins/core'
 import type { SelectedFilter } from '../../../stores/_store-view-filter'
-import type { IEDConnectionWithCustomValues } from '@oscd-plugins/ui/src/components/diagram'
+import type { IEDConnectionWithCustomValues } from '../../../ui/components/diagram'
 
 export const messageTypeMap: {
 	[key: string]: Utils.ValueOf<typeof MESSAGE_TYPE>

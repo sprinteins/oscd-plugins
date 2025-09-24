@@ -1,5 +1,5 @@
 import type { IEDNode } from '../../../../components/diagram/nodes'
-import type { MessageType } from '../../types'
+import type { MessageType } from '../../../../headless/types'
 
 export type ServiceTypeGroup = Map<string, ServiceObject[]>
 

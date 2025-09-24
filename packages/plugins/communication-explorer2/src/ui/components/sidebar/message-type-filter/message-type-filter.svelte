@@ -1,6 +1,6 @@
 <script lang="ts">
 import { isSelected, setTargetMessageType } from '.'
-import Icons from '../../../../components/icons/icons.svelte'
+import { Icons } from '@oscd-plugins/ui/src/components/icons'
 // CONSTANTS
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
 

@@ -6,8 +6,8 @@ import { MESSAGE_TYPE } from '@oscd-plugins/core'
 import type {
 	IEDConnectionWithCustomValues,
 	IEDElkNode
-} from '../../../components/diagram'
-import type { MessageType } from '../types'
+} from '../../ui/components/diagram'
+import type { MessageType } from '../../headless/types'
 
 export function selectIEDNode(node: IEDElkNode) {
 	filterState.update((selectedFilter) => {

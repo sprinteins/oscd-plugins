@@ -1,6 +1,7 @@
 <script lang="ts">
 import { IEDElement } from '.'
-import { Example } from '../../internal'
+ //TODO: in readme it is stated, to not use internal package in app
+import { Example } from "../../../../../../../uilib/src/lib/components/internal/example"
 import type { IEDNode } from '../nodes'
 
 const node: IEDNode = {

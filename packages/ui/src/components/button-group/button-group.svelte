@@ -6,13 +6,23 @@
     import { Label } from "@smui/common"
     import { createEventDispatcher } from "svelte"
 
-    // Inputs
-    export let selectedIndex = -1
-    export let options: ButtonGroupOption[] = []
-    export let disabled = false
-    export let testid = ""
     
-    $: selected = options[selectedIndex]
+    interface Props {
+        // Inputs
+        selectedIndex?: any;
+        options?: ButtonGroupOption[];
+        disabled?: boolean;
+        testid?: string;
+    }
+
+    let {
+        selectedIndex = -1,
+        options = [],
+        disabled = false,
+        testid = ""
+    }: Props = $props();
+    
+    let selected = $derived(options[selectedIndex])
     const dispatch = createEventDispatcher()
 
     function handleChange(event: CustomEvent<{index: number, segmentedId: string, selected: boolean}>){
@@ -31,14 +41,16 @@
         {selected} 
         singleSelect 
         on:change={handleChange}
-        let:segment 
+         
         {disabled}
         {...dataProps}
     >
-        <Segment {segment} {disabled} {...{"data-testid": `${dataProps["data-testid"]}_${segment.value}`}}>
-        <Label disabled>{segment.label}</Label>
-        </Segment>
-    </SegmentedButton>
+        {#snippet children({ segment })}
+                <Segment {segment} {disabled} {...{"data-testid": `${dataProps["data-testid"]}_${segment.value}`}}>
+            <Label disabled>{segment.label}</Label>
+            </Segment>
+                    {/snippet}
+        </SegmentedButton>
 </button-group>
 
 <style>

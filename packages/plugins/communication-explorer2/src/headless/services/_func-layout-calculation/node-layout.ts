@@ -6,7 +6,7 @@ import { generateIEDLayout } from './node-layout-ieds'
 import type { IED } from '@oscd-plugins/core'
 import type { Config } from './config'
 import type { Preferences } from '../../../stores/_store-preferences'
-import type { IEDConnectionWithCustomValues, IEDNode, RootNode } from '@oscd-plugins/ui/src/components/diagram'
+import type { IEDConnectionWithCustomValues, IEDNode, RootNode } from '../../../ui/components/diagram'
 import type { SelectedFilter } from '../../../stores/_store-view-filter'
 import type { ElkNode } from 'elkjs/lib/elk.bundled'
 

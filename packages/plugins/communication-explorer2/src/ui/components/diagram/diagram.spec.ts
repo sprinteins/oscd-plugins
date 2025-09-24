@@ -1,12 +1,12 @@
 import { render, screen } from "@testing-library/svelte"
 import { describe, it, expect } from "vitest"
 import { Diagram } from "."
-import type { Config } from "../../plugins/communication-explorer/_func-layout-calculation/config"
-import { calculateLayout } from "../../plugins/communication-explorer/_func-layout-calculation"
-import { clearIEDSelection, filterState, toggleMultiSelectionOfIED } from "../../plugins/communication-explorer/_store-view-filter"
+import type { Config } from "../../../headless/services/_func-layout-calculation/config"
+import { calculateLayout } from "../../../headless/services/_func-layout-calculation"
+import { clearIEDSelection, filterState, toggleMultiSelectionOfIED } from "../../../stores/_store-view-filter"
 import { get } from "svelte/store"
 import userEvent from "@testing-library/user-event"
-import { preferences$ } from "../../plugins/communication-explorer/_store-preferences"
+import { preferences$ } from "../../../stores/_store-preferences"
 // TYPES
 import type { IED } from "@oscd-plugins/core"
 

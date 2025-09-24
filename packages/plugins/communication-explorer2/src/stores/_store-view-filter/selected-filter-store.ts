@@ -5,7 +5,7 @@ import { MESSAGE_TYPE } from '@oscd-plugins/core'
 import type {
 	IEDConnectionWithCustomValues,
 	IEDElkNode
-} from '../../../components/diagram'
+} from '../../ui/components/diagram'
 
 // TODO: we need API that returns if there is an active selection
 // and another one to check if a given IED is selected

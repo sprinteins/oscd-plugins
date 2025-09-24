@@ -1,6 +1,6 @@
-import { setSelectedMessageTypes } from '../../_store-view-filter'
+import { setSelectedMessageTypes } from '../../../../stores/_store-view-filter'
 // TYPES
-import type { MessageType } from '../../types'
+import type { MessageType } from '../../../../headless/types'
 
 export function isSelected(
 	messageType: MessageType,

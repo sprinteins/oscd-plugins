@@ -8,7 +8,7 @@ import {
 // 	type IEDConnectionWithCustomValues,
 // 	type IEDNode,
 	type RootNode
-} from '@oscd-plugins/ui/src/components/diagram'
+} from '../diagram'
 import { Sidebar } from '../sidebar'
 import {
 	filterState,

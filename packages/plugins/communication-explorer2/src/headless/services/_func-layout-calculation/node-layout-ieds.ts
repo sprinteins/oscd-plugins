@@ -2,7 +2,7 @@ import type {
 	isBayNode,
 	IEDConnectionWithCustomValues,
 	IEDNode
-} from '@oscd-plugins/ui/src/components/diagram'
+} from '../../../ui/components/diagram'
 import { hasActiveIEDSelection, isIEDSelected } from '../../../stores/_store-view-filter'
 import type { Preferences } from '../../../stores/_store-preferences'
 import type { Config } from './config'

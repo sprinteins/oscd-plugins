@@ -1,4 +1,4 @@
-import type { BayNode, IEDNode, RootNode } from '@oscd-plugins/ui/src/components/diagram'
+import type { BayNode, IEDNode, RootNode } from '../../../ui/components/diagram'
 import type { IED } from '@oscd-plugins/core'
 
 export function getIEDDetails(

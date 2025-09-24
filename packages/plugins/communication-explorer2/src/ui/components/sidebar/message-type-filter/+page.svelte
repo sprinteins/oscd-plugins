@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Example } from "../../../../components/internal"
+    import { Example } from "../../../utils/internal/example"
     import { MessageTypeFilter } from "./"
 </script>
 

@@ -14,8 +14,9 @@ import {
 	toggleMultiSelectionOfIED
 } from '../../../stores/_store-view-filter/selected-filter-store-functions'
 import ConnectionSelector from './assets/connection-selector.svg'
-import type { RootNode } from '@oscd-plugins/ui/src/components/diagram'
-// import type { BayNode, IEDNode, RootNode } from '@oscd-plugins/ui/src/components/diagram'
+// import type { RootNode } from '../diagram'
+import type { RootNode } from '../diagram'
+// import type { BayNode, IEDNode, RootNode } from '../diagram'
 // import { ConnectionTypeFilter } from './connection-type-filter'
 // import { MessageTypeFilter } from './message-type-filter'
 import ConnectionInformation from './connection-information/connection-information.svelte'

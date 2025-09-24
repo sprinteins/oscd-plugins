@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { IEDConnectionWithCustomValues } from '../../../../components/diagram'
+import type { IEDConnectionWithCustomValues } from '../../diagram'
 
     interface Props {
         ConnectionSelection: IEDConnectionWithCustomValues;
