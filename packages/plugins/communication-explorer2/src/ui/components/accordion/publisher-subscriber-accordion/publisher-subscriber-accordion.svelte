@@ -5,26 +5,26 @@
     import IconArrowDropDown from "@oscd-plugins/ui/src/components/icons/icon-arrow-drop-down.svelte"
     import {Icons, type OpenSCDIconNames} from "@oscd-plugins/ui/src/components/icons"
 
-    export let open = false
-    export let serviceType: string
-    export let serviceLabel: string | undefined = ""
-    export let affectedIEDObjects: ServiceObject[] = []
-    export let color: string
-    export let connectionDirection: ConnectionTypeDirection
+    interface Props {
+        open?: boolean;
+        serviceType: string;
+        serviceLabel?: string | undefined;
+        affectedIEDObjects?: ServiceObject[];
+        color: string;
+        connectionDirection: ConnectionTypeDirection;
+    }
 
-    $: affectedSubscriberIEDs = affectedIEDObjects
-        .filter(
-            (el) => el.connectionDirection === ConnectionTypeDirection.INCOMING,
-        )
-        .map((el) => el.node);
+    let {
+        open = $bindable(false),
+        serviceType,
+        serviceLabel = "",
+        affectedIEDObjects = [],
+        color,
+        connectionDirection
+    }: Props = $props();
 
-    $: affectedPublisherIEDs = affectedIEDObjects
-        .filter(
-            (el) => el.connectionDirection === ConnectionTypeDirection.OUTGOING,
-        )
-        .map((el) => el.node);
 
-    $: iconName = calcIconName(serviceType, connectionDirection)
+
 
     function calcIconName(serviceType: string, connectionDirection: ConnectionTypeDirection): OpenSCDIconNames {
     	let serviceTypeShort = ""
@@ -48,6 +48,17 @@
 
     	return iconName as OpenSCDIconNames
     }
+    let affectedSubscriberIEDs = $derived(affectedIEDObjects
+        .filter(
+            (el) => el.connectionDirection === ConnectionTypeDirection.INCOMING,
+        )
+        .map((el) => el.node));
+    let affectedPublisherIEDs = $derived(affectedIEDObjects
+        .filter(
+            (el) => el.connectionDirection === ConnectionTypeDirection.OUTGOING,
+        )
+        .map((el) => el.node));
+    let iconName = $derived(calcIconName(serviceType, connectionDirection))
 </script>
 
 <div class="accordion">
