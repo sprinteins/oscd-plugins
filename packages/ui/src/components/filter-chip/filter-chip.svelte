@@ -1,15 +1,25 @@
 <script lang="ts">
 	import Button, { Label } from "@smui/button"
-	// Input
-	export let label: string
-	export let isSelected: boolean
+	
 
-	export let testid = ""
-	export let disabled = false
-
-	$: dataProps = {
-		"data-testid": testid,
+	interface Props {
+		// Input
+		label: string;
+		isSelected: boolean;
+		testid?: string;
+		disabled?: boolean;
 	}
+
+	let {
+		label,
+		isSelected,
+		testid = "",
+		disabled = false
+	}: Props = $props();
+
+	let dataProps = $derived({
+		"data-testid": testid,
+	})
 </script>
 
 <div class="chip" class:isSelected {...dataProps}>
