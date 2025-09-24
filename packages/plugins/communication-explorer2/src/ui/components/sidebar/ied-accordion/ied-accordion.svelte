@@ -1,19 +1,20 @@
 <script lang="ts">
     import { run } from 'svelte/legacy';
 
-import PublisherSubscriberAccordion from '../../../../components/accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte'
-import type { IEDElkNode, RootNode } from '../../../../components/diagram'
-import { IED } from '../../../../components/ied'
-import { getConnectedIEDsByLabel } from '../../_func-layout-calculation/get-connected-ieds'
-import { getIEDDetails } from '../../_func-layout-calculation/get-ied-details'
+// import PublisherSubscriberAccordion from '../../components/accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte'
+import PublisherSubscriberAccordion from '../../accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte'
+import type { IEDElkNode, RootNode } from '../../diagram'
+import { IED } from '@oscd-plugins/ui/src/components/ied'
+import { getConnectedIEDsByLabel } from '../../../../headless/services/_func-layout-calculation/get-connected-ieds'
+import { getIEDDetails } from '../../../../headless/services/_func-layout-calculation/get-ied-details'
 import {
 	ConnectionTypeDirection,
 	groupRelationsByServiceType,
 	type ServiceTypeGroup
 } from '.'
-import { filterState } from '../../_store-view-filter'
+import { filterState } from '../../../../stores/_store-view-filter'
 // TYPES
-import type { MessageType } from '../../types'
+import type { MessageType } from '../../../../headless/types'
 
     interface Props {
         rootNode: RootNode;

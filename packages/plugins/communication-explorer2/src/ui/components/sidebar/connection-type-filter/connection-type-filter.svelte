@@ -1,6 +1,6 @@
 <script lang="ts">
-	import FilterChip from "../../../../components/filter-chip/filter-chip.svelte" //TODO: move filter-chip into library
-	import { changeMessageConnectionFilterDirection } from "../../_store-view-filter"
+	import FilterChip from "@oscd-plugins/ui/src/components/filter-chip/filter-chip.svelte" //TODO: move filter-chip into library
+	import { changeMessageConnectionFilterDirection } from "../../../../stores/_store-view-filter"
 	interface Props {
 		disabled?: boolean;
 		isFilterIncomingActive?: boolean;

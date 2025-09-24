@@ -14,13 +14,11 @@ import {
 	toggleMultiSelectionOfIED
 } from '../../../stores/_store-view-filter/selected-filter-store-functions'
 import ConnectionSelector from './assets/connection-selector.svg'
-// import type { RootNode } from '../diagram'
-import type { RootNode } from '../diagram'
-// import type { BayNode, IEDNode, RootNode } from '../diagram'
-// import { ConnectionTypeFilter } from './connection-type-filter'
-// import { MessageTypeFilter } from './message-type-filter'
+import type { BayNode, IEDNode, RootNode } from '../diagram'
+import { ConnectionTypeFilter } from './connection-type-filter'
+import { MessageTypeFilter } from './message-type-filter'
 import ConnectionInformation from './connection-information/connection-information.svelte'
-// import IEDAccordion from './ied-accordion/ied-accordion.svelte'
+import IEDAccordion from './ied-accordion/ied-accordion.svelte'
 import { preferences$ } from '../../../stores/_store-preferences/preferences-store'
 
 	interface Props {
@@ -83,12 +81,12 @@ let isConnectionDirectionDisabled = $derived(handleConnectionDirectionDisabled(
 	$filterState,
 	isIedFiltersDisabled
 ))
-// let filteredIEDs =
-// 	$derived((searchQuery &&
-// 		IEDs?.filter((ied) =>
-// 			ied.label.toLowerCase().includes(searchQuery.toLowerCase())
-// 		)) ||
-// 	IEDs)
+let filteredIEDs =
+	$derived((searchQuery &&
+		IEDs?.filter((ied) =>
+			ied.label.toLowerCase().includes(searchQuery.toLowerCase())
+		)) ||
+	IEDs)
 let filteredBays =
 	$derived((searchQuery &&
 		bays?.filter((bay) =>
@@ -118,7 +116,7 @@ let filteredBays =
 							/>
 							{#if filterTextFieldFocused}
 									<div class="dropdown">
-											<!-- {#if filteredIEDs.length > 0}
+											{#if filteredIEDs.length > 0}
 													<div class="dropdown_label">
 															IEDs ({filteredIEDs.length})
 													</div>
@@ -130,7 +128,7 @@ let filteredBays =
 													{#if filteredBays.length > 0}
 															<hr>
 													{/if}
-											{/if} -->
+											{/if}
 											{#if filteredBays.length > 0}
 													<div class="dropdown_label">
 															bays ({filteredBays.length})
@@ -146,21 +144,21 @@ let filteredBays =
 					</div>
 			</div>
 
-			<!-- <div class="centered">
+			<div class="centered">
 					<ConnectionTypeFilter 
 							disabled={isConnectionDirectionDisabled} 
 							isFilterIncomingActive={$filterState.incomingMessageFilterActive}
 							isFilterOutgoingActive={$filterState.outgoingMessageFilterActive}
 					/>
-			</div> -->
+			</div>
 
 			<hr class="dashed-line" />
-			<!-- <MessageTypeFilter
+			<MessageTypeFilter
 					{selectedMessageTypes}
 					filterDisabled={isIedFiltersDisabled}
-			/> -->
+			/>
 
-			<!-- TODO: {#if IEDSelections.length > 0}
+			{#if IEDSelections.length > 0}
 					<hr class="seperation-line" />
 					<ul class="ied-detail-list">
 							{#each IEDSelections as IEDSelection}
@@ -169,7 +167,7 @@ let filteredBays =
 									</li>
 							{/each}
 					</ul>
-			{/if} -->
+			{/if}
 
 			{#if ConnectionSelection !== undefined}
 					<hr class="seperation-line" />
