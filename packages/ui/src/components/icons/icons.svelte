@@ -3,10 +3,14 @@
 
     type IconSizes = "small" | "normal" | "rect" | "big";
 
-    export let name: OpenSCDIconNames
-    export let size: IconSizes
+    interface Props {
+        name: OpenSCDIconNames;
+        size: IconSizes;
+    }
 
-    $: icon = openSCDIcons[name] ?? ""
+    let { name, size }: Props = $props();
+
+    let icon = $derived(openSCDIcons[name] ?? "")
 </script>
 
 <div
