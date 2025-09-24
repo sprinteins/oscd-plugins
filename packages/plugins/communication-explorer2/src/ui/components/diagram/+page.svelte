@@ -8,7 +8,7 @@ import {
 	type RootNode
 } from '.'
 // TODO: In Internal.README it is stated that we should not use internal package
-import { Example } from "../../../../../../uilib/src/lib/components/internal/example"
+import { Example } from "../../utils/internal/example"
 import { calculateLayout } from '../../../headless/services/_func-layout-calculation'
 import {
 	clearIEDSelection,

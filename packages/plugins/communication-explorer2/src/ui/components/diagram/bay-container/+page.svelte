@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BayContainer } from "."
 	 //TODO: in readme it is stated, to not use internal package in app
-	import { Example } from "../../../../../../../uilib/src/lib/components/internal/example"
+	import { Example } from "../../../utils/internal/example"
 	import type { BayNode, IEDNode } from "../nodes"
 
 	const iedNode1: IEDNode = {id: "0", width: 150, height: 50, label: "IED 1", isRelevant: true, children:[]}
