@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 import type { IEDCommInfo } from '@oscd-plugins/core'
 import {
 	Diagram,
@@ -20,14 +22,14 @@ import {
 import type { Config } from '../../../headless/services/_func-layout-calculation/config'
 import { preferences$ } from '../../../stores/_store-preferences'
 
-const _config: Config = {
+const _config: Config = $state({
 	iedWidth: 100,
 	iedHeight: 40,
 	bayLabelHeight: 15,
 	bayLabelGap: 2,
 	spacingBase: 10,
 	spacingBetweenNodes: 100
-}
+})
 
 const iedInfos: IEDCommInfo[] = [
 	{ iedName: 'IED_1-1', published: [], received: [] },
@@ -63,8 +65,8 @@ iedInfos[4].published.push({
 	serviceCbName: ''
 })
 
-let rootNode: RootNode
-$: {
+let rootNode: RootNode = $state()
+run(() => {
 	;(async () => {
 		rootNode = await calculateLayout(
 			iedInfos,
@@ -73,7 +75,7 @@ $: {
 			$preferences$
 		)
 	})()
-}
+});
 
 function handleIEDSelect(e: CustomEvent<IEDNode>) {
 	selectIEDNode(e.detail)

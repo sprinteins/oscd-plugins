@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { run, createBubbler } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import type {
 		IEDConnectionWithCustomValues,
 		IEDElkNode,
@@ -17,18 +20,28 @@
 
 	//
 	// Inputs
-	//
-	export let rootNode: RootNode
-	export let playAnimation = true
-	export let showConnectionArrows = true
-	export let showBayLabels = false
+	
+	interface Props {
+		//
+		rootNode: RootNode;
+		playAnimation?: boolean;
+		showConnectionArrows?: boolean;
+		showBayLabels?: boolean;
+	}
+
+	let {
+		rootNode,
+		playAnimation = true,
+		showConnectionArrows = true,
+		showBayLabels = false
+	}: Props = $props();
 
 	//
 	// Setup
 	//
 
-	let svgRoot: SVGElement
-	let root: HTMLElement
+	let svgRoot: SVGElement = $state()
+	let root: HTMLElement = $state()
 
 	const dispatch = createEventDispatcher()
 	function handleIEDClick(e: MouseEvent, node: IEDElkNode) {
@@ -95,8 +108,8 @@
 	// Draggable Diagram
 	//
 	let pos = { top: 0, left: 0, x: 0, y: 0 }
-	let draggingEnabled = false
-	let isDragging = false
+	let draggingEnabled = $state(false)
+	let isDragging = $state(false)
 	function handleKeyDown(e: KeyboardEvent) {
 		const target = e.target as HTMLElement
 
@@ -177,11 +190,13 @@
 	//
 	let zoomModifier = 1
 	let zoomStep = 0.1
-	let svgWidth = 0
-	let svgHeight = 0
+	let svgWidth = $state(0)
+	let svgHeight = $state(0)
 	let savedRootNodeWidth = 0
 	let savedRootNodeHeight = 0
-	$: resetZoom(rootNode.width, rootNode.height)
+	run(() => {
+		resetZoom(rootNode.width, rootNode.height)
+	});
 
 	async function handleMouseWheel(e: WheelEvent) {
 		if (!e.ctrlKey && !e.metaKey) {
@@ -201,24 +216,24 @@
 	}
 </script>
 
-<svelte:body on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
+<svelte:body onkeydown={handleKeyDown} onkeyup={handleKeyUp} />
 
 {#if rootNode}
 	<diagram
 		bind:this={root}
-		on:click={handleClick}
-		on:keypress
-		on:mousedown={handleMouseDown}
-		on:mousemove={handleMouseMove}
-		on:mouseup={handleMouseUp}
-		on:mouseleave={handleMouseLeave}
-		on:wheel={handleMouseWheel}
+		onclick={handleClick}
+		onkeypress={bubble('keypress')}
+		onmousedown={handleMouseDown}
+		onmousemove={handleMouseMove}
+		onmouseup={handleMouseUp}
+		onmouseleave={handleMouseLeave}
+		onwheel={handleMouseWheel}
 		class:draggingEnabled
 		class:isDragging
 	>
 		<svg
 			bind:this={svgRoot}
-			on:keypress
+			onkeypress={bubble('keypress')}
 			viewBox={`0 0 ${rootNode.width} ${rootNode.height}`}
 			style:--width={`${svgWidth}px`}
 			style:--height={`${svgHeight}px`}
@@ -246,8 +261,8 @@
 							width={node.width}
 							height={node.height}
 							overflow="visible"
-							on:click={(e) => handleIEDClick(e, node)}
-							on:keydown
+							onclick={(e) => handleIEDClick(e, node)}
+							onkeydown={bubble('keydown')}
 						>
 							<IEDElement
 								{node}
