@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { createBubbler } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 import { path as d3Path } from 'd3-path'
 // CONSTANTS
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
@@ -8,28 +11,108 @@ import type { IEDConnection } from './nodes'
 
 //
 // Input
-//
-export let edge: IEDConnection
-export let isSelected = false
-export let isIEDSelected = false
-export let testid = ''
-export let playAnimation = true
-export let showConnectionArrows = true
+
+	interface Props {
+		//
+		edge: IEDConnection;
+		isSelected?: boolean;
+		isIEDSelected?: boolean;
+		testid?: string;
+		playAnimation?: boolean;
+		showConnectionArrows?: boolean;
+	}
+
+	let {
+		edge,
+		isSelected = false,
+		isIEDSelected = false,
+		testid = '',
+		playAnimation = true,
+		showConnectionArrows = true
+	}: Props = $props();
 
 //
-// Internal
+// Internal - Synchronized path and arrow calculation
 //
-let path: string
-$: path = drawLine(edge, showConnectionArrows)
-$: shouldPlayAnimation =
-	playAnimation && edge.isRelevant && (isSelected || isIEDSelected)
+interface PathAndArrows {
+	path: string
+	arrowData: {
+		arrowRightHeight: number
+		arrowRightWidth: number
+		arrowTopHeight: number
+		arrowTopWidth: number
+		arrowBottomHeight: number
+		arrowBottomWidth: number
+	}
+}
 
-let arrowRightHeight = 0
-let arrowRightWidth = 0
-let arrowTopHeight = 0
-let arrowTopWidth = 0
-let arrowBottomHeight = 0
-let arrowBottomWidth = 0
+const pathAndArrows = $derived.by((): PathAndArrows => {
+	const arrowSize = 7
+	const sections = edge?.sections ?? []
+	
+	// Default return for invalid data
+	const defaultArrowData = {
+		arrowRightHeight: 0,
+		arrowRightWidth: 0,
+		arrowTopHeight: 0,
+		arrowTopWidth: 0,
+		arrowBottomHeight: 0,
+		arrowBottomWidth: 0
+	}
+
+	if (sections.length === 0) {
+		return { path: '', arrowData: defaultArrowData }
+	}
+
+	const section = sections[0]
+	if (!section) {
+		return { path: '', arrowData: defaultArrowData }
+	}
+
+	const reverseDirection = section.endPoint.x < section.startPoint.x
+
+	// Draw the path
+	const path = d3Path()
+	path.moveTo(section.startPoint.x, section.startPoint.y)
+
+	if (section.bendPoints) {
+		section.bendPoints.forEach((b) => {
+			path.lineTo(b.x, b.y)
+		})
+	}
+
+	let endpointX = section.endPoint.x
+	if (showConnectionArrows) {
+		endpointX = section.endPoint.x - arrowSize
+		if (reverseDirection) {
+			endpointX = section.endPoint.x + arrowSize
+		}
+	}
+
+	path.lineTo(endpointX, section.endPoint.y)
+
+	// Calculate arrows IMMEDIATELY after path (like original)
+	let arrowData = defaultArrowData
+	if (showConnectionArrows) {
+		arrowData = {
+			arrowRightHeight: section.endPoint.y,
+			arrowRightWidth: section.endPoint.x,
+			arrowTopHeight: section.endPoint.y + arrowSize / 2,
+			arrowBottomHeight: section.endPoint.y - arrowSize / 2,
+			arrowTopWidth: reverseDirection 
+				? section.endPoint.x + arrowSize 
+				: section.endPoint.x - arrowSize,
+			arrowBottomWidth: reverseDirection 
+				? section.endPoint.x + arrowSize 
+				: section.endPoint.x - arrowSize
+		}
+	}
+
+	return { 
+		path: path.toString(), 
+		arrowData 
+	}
+})
 
 const defaultColor = 'var(--color-black)'
 const messageTypeToColorMap: { [key in keyof typeof MESSAGE_TYPE]: string } = {
@@ -59,53 +142,6 @@ const messageTypeToDashArray: { [key in keyof typeof MESSAGE_TYPE]: string } = {
 	[MESSAGE_TYPE.SampledValues]: '4, 8',
 	[MESSAGE_TYPE.MMS]: '16, 40',
 	[MESSAGE_TYPE.Unknown]: '16,40'
-}
-
-$: pathColor = calcPathColor(edge)
-$: pathHighlightColor = calcPathHighlightColor(edge)
-$: dashArray = calcDashArray(edge)
-
-function drawLine(
-	edge: IEDConnection | undefined,
-	showArrows: boolean
-): string {
-	const arrowSize = 7
-
-	const sections = edge?.sections ?? []
-	if (sections.length === 0) {
-		return ''
-	}
-
-	const section = sections[0]
-
-	if (!section) {
-		return ''
-	}
-
-	const reverseDirection = section.endPoint.x < section.startPoint.x
-
-	const path = d3Path()
-	path.moveTo(section.startPoint.x, section.startPoint.y)
-
-	if (section.bendPoints) {
-		section.bendPoints.forEach((b) => {
-			path.lineTo(b.x, b.y)
-		})
-	}
-
-	let endpointX = section.endPoint.x
-	if (showArrows) {
-		endpointX = section.endPoint.x - arrowSize
-		if (reverseDirection) {
-			endpointX = section.endPoint.x + arrowSize
-		}
-	}
-
-	path.lineTo(endpointX, section.endPoint.y)
-
-	calcArrow(section, reverseDirection, arrowSize)
-
-	return path.toString()
 }
 
 function calcPathColor(edge?: IEDConnection): string {
@@ -145,30 +181,18 @@ function calcDashArray(edge?: IEDConnection): string {
 	return dashArray
 }
 
-function calcArrow(
-	section: ElkEdgeSection,
-	reverseDirection: boolean,
-	arrowSize: number
-) {
-	arrowRightHeight = section.endPoint.y
-	arrowRightWidth = section.endPoint.x
-
-	arrowTopHeight = section.endPoint.y + arrowSize / 2
-	arrowBottomHeight = section.endPoint.y - arrowSize / 2
-
-	if (reverseDirection) {
-		arrowTopWidth = section.endPoint.x + arrowSize
-		arrowBottomWidth = section.endPoint.x + arrowSize
-	} else {
-		arrowTopWidth = section.endPoint.x - arrowSize
-		arrowBottomWidth = section.endPoint.x - arrowSize
-	}
-}
+// Derived values from synchronized calculation
+const path = $derived(pathAndArrows.path)
+const arrowData = $derived(pathAndArrows.arrowData)
+const shouldPlayAnimation = $derived(playAnimation && edge.isRelevant && (isSelected || isIEDSelected))
+const pathColor = $derived(calcPathColor(edge))
+const pathHighlightColor = $derived(calcPathHighlightColor(edge))
+const dashArray = $derived(calcDashArray(edge))
 </script>
 
 <g
-	on:click
-	on:keypress
+	onclick={bubble('click')}
+	onkeypress={bubble('keypress')}
 	class:show-selected-path={isSelected}
 	class:selected={isSelected}
 	class:ied-selected={isIEDSelected}
@@ -216,7 +240,7 @@ function calcArrow(
 		{#if showConnectionArrows}
 			<path
 				class="path-end"
-				d="M{arrowRightWidth} {arrowRightHeight} L{arrowBottomWidth} {arrowBottomHeight} L{arrowTopWidth} {arrowTopHeight} Z"
+				d="M{arrowData.arrowRightWidth} {arrowData.arrowRightHeight} L{arrowData.arrowBottomWidth} {arrowData.arrowBottomHeight} L{arrowData.arrowTopWidth} {arrowData.arrowTopHeight} Z"
 				style="fill: {pathColor};"
 			/>
 			<circle
