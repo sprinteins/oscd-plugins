@@ -10,11 +10,9 @@
 	}
 
 	let { data, isConnectable, selected }: Props = $props();
-	// export let dragging: $$Props['dragging'];
 
   
 	const { label } = data;
-	// $: console.log({level:"dev", data, props: $$props })
   </script>
   
   <Handle
