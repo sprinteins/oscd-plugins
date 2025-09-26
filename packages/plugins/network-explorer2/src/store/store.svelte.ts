@@ -42,7 +42,6 @@ export class DiagramStore {
 			console.log(this.nodes)
 		}
 		this.edges = resp.edges
-		console.log(this.edges)
 
 		this.setIsConnectedable(this.nodes)
 	}
@@ -162,6 +161,7 @@ export class DiagramStore {
 	}
 
 	private setIsConnectedable(nodes: FlowNodes[]): void {
+		// TODO: Node and edges are immutable, so we have to replace everything
 		for (const node of nodes) {
 			if (this.isNodeConnectable(node as unknown as IEDElkNode | BayElkNode)) {
 				node.connectable = true

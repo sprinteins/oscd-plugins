@@ -36,40 +36,7 @@
 		onDelete: (networkings: Networking[]) => void;
 	}
 
-	let { nodes: nodes, edges: edges, ieds, connect, onDelete }: Props = $props();
-
-	/*
-  let nodes = $state.raw([
-    {
-      id: '1',
-      data: { label: 'Hello' },
-      position: { x: 0, y: 0 }
-    },
-    {
-      id: '2',
-      data: { label: 'World' },
-      position: { x: 200, y: 0 }
-    },
-    {
-      id: '3',
-      data: { label: 'Hello World' },
-      position: { x: 100, y: 150 }
-    }
-  ]);
-
-  let edges = $state.raw([
-    {
-      id: '1-3',
-      source: '1',
-      target: '3',
-    },
-    {
-      id: '2-3',
-      source: '2',
-      target: '3',
-    }
-  ]);
-  */
+	let { nodes, edges, ieds, connect, onDelete }: Props = $props();
 
 	// 
 	// CONFIG
@@ -105,22 +72,6 @@
 </script>
 
 <network-diagram>
-	<!-- 
-		nodesConnectable={false}
-		fitView 
-		minZoom={0.1} 
-		maxZoom={2.5}
-		colorMode="light"
-		{defaultEdgeOptions}
-		{nodeTypes}
-		snapGrid={[20, 20]}
-		on:nodeclick
-		on:edgeclick
-		on:paneclick
-		{ ondelete }
-		onbeforeconnect={ connect }
-		panOnDrag={false}
-	-->
 	<SvelteFlow 
 		bind:nodes
 		bind:edges
@@ -132,9 +83,6 @@
 		{defaultEdgeOptions}
 		{nodeTypes}
 		snapGrid={[20, 20]}
-		on:nodeclick
-		on:edgeclick
-		on:paneclick
 		{ ondelete }
 		onbeforeconnect={ connect }
 		panOnDrag={false}

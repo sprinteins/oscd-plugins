@@ -46,9 +46,9 @@ let root: HTMLElement = $state()
 let _editCount: number
 let _doc: Element
 
-const nodes$ = useNodes();
+const nodes = useNodes();
 
-const edges$ = useEdges();
+const edges = useEdges();
 
 function updateOnDoc(doc: Element): void {
 	if (doc === _doc) {
@@ -99,20 +99,18 @@ function getSourceAndTargetIed(source: string, target: string): { sourceIed: IED
 	return { sourceIed: sourceIed, targetIed: targetIed }
 }
 
-run(() => {
-		updateOnEditCount(editCount)
-	});
-run(() => {
-		updateOnDoc(doc)
-	});
-run(() => {
-		// TODO: store.updateSelectedNodes($nodes$)
-		store.updateSelectedNodes([])
-	});
-run(() => {
-		// TODO: store.updateSelectedEdges($edges$)
-		store.updateSelectedEdges([])
-	});
+$effect(() => {
+	updateOnEditCount(editCount)
+})
+$effect(() => {
+	updateOnDoc(doc)
+})
+$effect(() => {
+	store.updateSelectedNodes(nodes.current)
+})
+$effect(() => {
+	store.updateSelectedEdges(edges.current)
+})
 </script>
 
 <div class="root" bind:this={root}>
