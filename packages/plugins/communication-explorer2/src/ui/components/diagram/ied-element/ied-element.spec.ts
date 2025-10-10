@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/svelte"
 import {describe, it, expect} from "vitest"
 
 import { IEDElement } from "."
-import type { IEDNode } from "../nodes"
+import type { IEDElkNode } from "../nodes"
 
 
 
@@ -11,7 +11,7 @@ describe("IED", () => {
 
 		const label = "IED1"
 	
-		const node: IEDNode = {
+		const node: IEDElkNode = {
 			id:         label,
 			label:      label,
 			isRelevant: true,
@@ -33,7 +33,7 @@ describe("IED", () => {
 		
 		const label = "IED1"
 	
-		const node: IEDNode = {
+		const node: IEDElkNode = {
 			id:         label,
 			label:      label,
 			isRelevant: false,
@@ -55,7 +55,7 @@ describe("IED", () => {
 		
 		const label = "IED1"
 	
-		const node: IEDNode = {
+		const node: IEDElkNode = {
 			id:         label,
 			label:      label,
 			isRelevant: true,

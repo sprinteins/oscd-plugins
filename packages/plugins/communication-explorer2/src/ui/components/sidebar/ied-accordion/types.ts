@@ -1,4 +1,4 @@
-import type { IEDNode } from '../../../../components/diagram/nodes'
+import type { IEDElkNode } from '../../diagram/nodes'
 import type { MessageType } from '../../../../headless/types'
 
 export type ServiceTypeGroup = Map<string, ServiceObject[]>
@@ -9,7 +9,7 @@ export enum ConnectionTypeDirection {
 }
 
 export type ServiceObject = {
-	node: IEDNode
+	node: IEDElkNode
 	serviceType: MessageType
 	serviceTypeLabel?: string
 	connectionDirection: ConnectionTypeDirection

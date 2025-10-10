@@ -7,14 +7,14 @@ import {
 	type SelectedFilter
 } from '../../../stores/_store-view-filter/selected-filter-store'
 import {
-	selectIEDNode,
+	selectIEDElkNode,
 	clearSelection,
 	setNameFilter,
 	clearIEDSelection,
 	toggleMultiSelectionOfIED
 } from '../../../stores/_store-view-filter/selected-filter-store-functions'
 import ConnectionSelector from './assets/connection-selector.svg'
-import type { BayNode, IEDNode, RootNode } from '../diagram'
+import type { RootNode } from '../diagram'
 import { ConnectionTypeFilter } from './connection-type-filter'
 import { MessageTypeFilter } from './message-type-filter'
 import ConnectionInformation from './connection-information/connection-information.svelte'
@@ -64,7 +64,7 @@ function handleDropdownSelect(e: Event) {
 			(node) => node.label == searchQuery
 		)
 		if (selectedNode) {
-			selectIEDNode(selectedNode)
+			selectIEDElkNode(selectedNode)
 		}
 	}
 }

@@ -6,7 +6,7 @@ import { generateIEDLayout } from './node-layout-ieds'
 import type { IED } from '@oscd-plugins/core'
 import type { Config } from './config'
 import type { Preferences } from '../../../stores/_store-preferences'
-import type { IEDConnectionWithCustomValues, IEDNode, RootNode } from '../../../ui/components/diagram'
+import type { IEDConnectionWithCustomValues, IEDElkNode, RootNode } from '../../../ui/components/diagram'
 import type { SelectedFilter } from '../../../stores/_store-view-filter'
 import type { ElkNode } from 'elkjs/lib/elk.bundled'
 
@@ -36,7 +36,7 @@ export async function calculateLayout(
 	}
 
 	let edges = generateConnectionLayout(ieds, selectionFilter)
-	let children: IEDNode[] = generateIEDLayout(ieds, edges, config, preferences)
+	let children: IEDElkNode[] = generateIEDLayout(ieds, edges, config, preferences)
 	if (preferences.groupByBay) {
 		children = generateBayLayout(children, edges, config)
 	}
@@ -147,10 +147,10 @@ export async function calculateLayout(
 	return root
 }
 
-function generateBayLayout(ieds: IEDNode[], edges: IEDConnectionWithCustomValues[], config: Config): IEDNode[] {
+function generateBayLayout(ieds: IEDElkNode[], edges: IEDConnectionWithCustomValues[], config: Config): IEDElkNode[] {
 
-	const children: IEDNode = []
-	const bays: IEDNode = []
+	const children: IEDElkNode[] = []
+	const bays: IEDElkNode[] = []
 	let id = 0
 	for (const ied of ieds) {
 		if (!ied.bays || ied.bays.size === 0) {
@@ -158,7 +158,7 @@ function generateBayLayout(ieds: IEDNode[], edges: IEDConnectionWithCustomValues
 			continue;
 		}
 		const bayLabel = ied.bays.values().next().value;
-		let bayNode: IEDNode = (children.find(b => b.label === bayLabel && b.isBayNode))
+		let bayNode: IEDElkNode = (children.find(b => b.label === bayLabel && b.isBayNode))
 		if (bayNode) {
 			bayNode.children.push(ied);
 			bayNode.isRelevant |= ied.isRelevant

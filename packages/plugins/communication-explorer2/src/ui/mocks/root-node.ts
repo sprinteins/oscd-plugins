@@ -1,5 +1,5 @@
 import ELK, { type ElkNode } from "elkjs/lib/elk.bundled"
-import type { IEDConnection, IEDConnectionWithCustomValues, IEDNode, RootNode } from "../components/diagram"
+import type { IEDConnection, IEDConnectionWithCustomValues, IEDElkNode, RootNode } from "../components/diagram"
 
 const config = {
 	width:  100,
@@ -19,7 +19,7 @@ export async function generateMockRootNode(): Promise<RootNode>{
 		return prefix + String(id)
 	}
 	
-	const children: IEDNode[] = [
+	const children: IEDElkNode[] = [
 		{id: ID(), width: config.width, height: config.height, label: Label(), children: []},
 		{id: ID(), width: config.width, height: config.height, label: Label(), children: []},
 		{id: ID(), width: config.width, height: config.height, label: Label(), children: []},

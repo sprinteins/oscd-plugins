@@ -2,9 +2,9 @@
 import { IEDElement } from '.'
  //TODO: in readme it is stated, to not use internal package in app
 import { Example } from "../../../utils/internal/example"
-import type { IEDNode } from '../nodes'
+import type { IEDElkNode } from '../nodes'
 
-const node: IEDNode = $state({
+const node: IEDElkNode = $state({
 	id: '0',
 	iedWidth: 200,
 	iedHeight: 30,

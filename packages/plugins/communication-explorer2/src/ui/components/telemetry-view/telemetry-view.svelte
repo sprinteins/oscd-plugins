@@ -6,7 +6,7 @@ import {
 	Diagram,
 	type IEDConnection,
 	type IEDConnectionWithCustomValues,
-	type IEDNode, 
+	type IEDElkNode, 
 	type RootNode
 } from '../diagram'
 import { Sidebar } from '../sidebar'
@@ -14,7 +14,7 @@ import {
 	filterState,
 	type SelectedFilter,
 	selectConnection,
-	selectIEDNode,
+	selectIEDElkNode,
 	clearIEDSelection,
 	toggleMultiSelectionOfIED
 } from '../../../stores/_store-view-filter'
@@ -77,10 +77,10 @@ async function initInfos(
 	)
 }
 
-function handleIEDSelect(e: CustomEvent<IEDNode>) {
-	selectIEDNode(e.detail)
+function handleIEDSelect(e: CustomEvent<IEDElkNode>) {
+	selectIEDElkNode(e.detail)
 }
-function handleIEDAdditiveSelect(e: CustomEvent<IEDNode>) {
+function handleIEDAdditiveSelect(e: CustomEvent<IEDElkNode>) {
 	toggleMultiSelectionOfIED(e.detail)
 }
 async function handleBaySelect(e: CustomEvent<string>) {
@@ -106,7 +106,7 @@ function handleClearClick() {
 
 <div class="root" class:showSidebar>
 	{#if rootNode}
-		{console.log('Rendering Diagram with rootNode:', rootNode)}
+		{console.log('Rendering Diagram with rootNodeeee:', rootNode)}
 		<Diagram
 			{rootNode}
 			playAnimation={$preferences$.playConnectionAnimation}

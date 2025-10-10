@@ -6,7 +6,7 @@ import {
 	Diagram,
 	type IEDConnection,
 	type IEDConnectionWithCustomValues,
-	type IEDNode,
+	type IEDElkNode,
 	type RootNode
 } from '.'
 // TODO: In Internal.README it is stated that we should not use internal package
@@ -15,7 +15,7 @@ import { calculateLayout } from '../../../headless/services/_func-layout-calcula
 import {
 	clearIEDSelection,
 	selectConnection,
-	selectIEDNode,
+	selectIEDElkNode,
 	filterState,
 	toggleMultiSelectionOfIED
 } from '../../../stores/_store-view-filter'
@@ -77,10 +77,10 @@ run(() => {
 	})()
 });
 
-function handleIEDSelect(e: CustomEvent<IEDNode>) {
-	selectIEDNode(e.detail)
+function handleIEDSelect(e: CustomEvent<IEDElkNode>) {
+	selectIEDElkNode(e.detail)
 }
-function handleIEDAdditiveSelect(e: CustomEvent<IEDNode>) {
+function handleIEDAdditiveSelect(e: CustomEvent<IEDElkNode>) {
 	toggleMultiSelectionOfIED(e.detail)
 }
 function handleConnectionClick(e: CustomEvent<IEDConnection>) {

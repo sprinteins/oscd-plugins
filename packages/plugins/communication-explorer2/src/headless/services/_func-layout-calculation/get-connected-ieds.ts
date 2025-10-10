@@ -1,7 +1,7 @@
 import type {
-	BayNode,
+	BayElkNode,
 	IEDConnection,
-	IEDNode,
+	IEDElkNode,
 	RootNode
 } from '../../../ui/components/diagram'
 import type { MessageType } from '../../types'
@@ -12,7 +12,7 @@ export type ConnectedIEDs = {
 }
 
 export type ConnectedIED = {
-	node: IEDNode
+	node: IEDElkNode
 	serviceType: MessageType
 	serviceTypeLabel: string | undefined
 }
@@ -33,7 +33,7 @@ export function getConnectedIEDsByLabel(
 	// find ied in nodes
 	// enforces that IED labels are unique!
 	const selectedNode = nodes.children.find(
-		(node: IEDNode | BayNode) => node.label == label
+		(node: IEDElkNode | BayElkNode) => node.label == label
 	)
 	if (!selectedNode) {
 		return connectedIEDs
@@ -56,7 +56,7 @@ export function getConnectedIEDsByLabel(
 				const targetNodeID = edge.targets.find(
 					(target) => target !== selectedNodeID
 				)
-				const targetNode = getRelatedIEDNode(
+				const targetNode = getRelatedIEDElkNode(
 					targetNodeID,
 					nodes.children
 				)
@@ -74,7 +74,7 @@ export function getConnectedIEDsByLabel(
 				const sourceNodeID = edge.sources.find(
 					(source) => source !== selectedNodeID
 				)
-				const sourceNode = getRelatedIEDNode(
+				const sourceNode = getRelatedIEDElkNode(
 					sourceNodeID,
 					nodes.children
 				)
@@ -92,10 +92,10 @@ export function getConnectedIEDsByLabel(
 	return connectedIEDs
 }
 
-function getRelatedIEDNode(
+function getRelatedIEDElkNode(
 	nodeID: string | undefined,
-	nodeChildren: IEDNode[]
-): IEDNode | undefined {
+	nodeChildren: IEDElkNode[]
+): IEDElkNode | undefined {
 	if (nodeID) {
 		return nodeChildren.find((node) => node.id === nodeID)
 	}

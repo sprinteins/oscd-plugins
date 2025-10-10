@@ -9,7 +9,7 @@ import type {
 } from '../../ui/components/diagram'
 import type { MessageType } from '../../headless/types'
 
-export function selectIEDNode(node: IEDElkNode) {
+export function selectIEDElkNode(node: IEDElkNode) {
 	filterState.update((selectedFilter) => {
 		return {
 			...selectedFilter,
@@ -174,7 +174,7 @@ function _isIEDSelected(
 	node: { label: string },
 	selectedIEDs: IEDElkNode[]
 ): boolean {
-	return selectedIEDs.some((iedNode) => iedNode.label === node.label)
+	return selectedIEDs.some((iedElkNode) => iedElkNode.label === node.label)
 }
 
 export function hasActiveIEDSelection(): boolean {

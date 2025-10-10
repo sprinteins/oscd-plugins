@@ -1,7 +1,6 @@
 import type {
-	isBayNode,
 	IEDConnectionWithCustomValues,
-	IEDNode
+	IEDElkNode
 } from '../../../ui/components/diagram'
 import { hasActiveIEDSelection, isIEDSelected } from '../../../stores/_store-view-filter'
 import type { Preferences } from '../../../stores/_store-preferences'
@@ -15,7 +14,7 @@ export function generateIEDLayout(
 	edges: IEDConnectionWithCustomValues[],
 	config: Config,
 	preferences: Preferences
-): IEDNode[] {
+): IEDElkNode[] {
 	const hasSelection = hasActiveIEDSelection()
 
 	const relevantEdges = edges.filter((edge) => edge.isRelevant)
@@ -26,7 +25,7 @@ export function generateIEDLayout(
 		})
 	})
 
-	const children: IEDNode[] = ieds.map((ied, ii) => {
+	const children: IEDElkNode[] = ieds.map((ied, ii) => {
 		let isRelevant = true
 		if (hasSelection) {
 			// TODO: smells, we should be independent of the label

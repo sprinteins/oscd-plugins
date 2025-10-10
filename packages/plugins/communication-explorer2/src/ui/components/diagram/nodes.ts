@@ -2,12 +2,12 @@
 import type { ElkExtendedEdge, ElkNode } from "elkjs"
 import type { IED, Utils, MESSAGE_TYPE } from "@oscd-plugins/core"
 
-export function newIEDNode(iedNode: IEDElkNode): IEDElkNode {
-	const newIEDNode: IEDElkNode = {
-		...iedNode,
+export function newIEDElkNode(iedElkNode: IEDElkNode): IEDElkNode {
+	const newIEDElkNode: IEDElkNode = {
+		...iedElkNode,
 	}
 
-	return newIEDNode
+	return newIEDElkNode
 }
 
 export type IEDConnection = ElkExtendedEdge & {
