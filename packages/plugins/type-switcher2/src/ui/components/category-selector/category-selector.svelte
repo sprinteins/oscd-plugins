@@ -61,7 +61,7 @@
 
 <div class="category-selector">
   {#each labels as label, ci}
-    <Set chips={[label]} choice selected={selected[ci]}>
+    <Set chips={[label]} choice bind:selected={selected[ci]}>
       {#snippet chip(chip)}
         <Chip {chip} {...dataTestid(chipTestid(testid, chip))}>
           <Text>{chip}</Text>
