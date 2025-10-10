@@ -7,7 +7,7 @@
    * and then update the `selected` property.
    */
   import Chip, { Set, Text } from "@smui/chips";
-  import type { ElementCategory } from "./categories";
+  import type { ElementCategory } from "../../../headless/types/categories";
   import type { EventDetailCategorySelect } from "./event-detail";
 
   interface Props {

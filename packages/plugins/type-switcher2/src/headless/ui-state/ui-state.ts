@@ -2,7 +2,7 @@
 
 import { derived, writable } from "svelte/store"
 import { setContext, getContext }from "svelte"
-import type {  ElementCategory } from "../category-selector/categories"
+import type {  ElementCategory } from "../types/categories"
 import type { HashedElementCollective, HashedElementGroup } from "@oscd-plugins/core"
 
 

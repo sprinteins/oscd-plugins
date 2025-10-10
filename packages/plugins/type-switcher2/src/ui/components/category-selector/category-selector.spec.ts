@@ -2,8 +2,8 @@ import { render, screen } from "@testing-library/svelte"
 import { describe, it, expect } from "vitest"
 import { CategorySelector } from "."
 import userEvent from "@testing-library/user-event"
-import type { ElementCategory } from "./categories"
-import { UIState } from "../ui-state"
+import type { ElementCategory } from "../../../headless/types/categories"
+import { UIState } from "../../../headless/ui-state"
 
 describe("GroupSelector", () => {
 

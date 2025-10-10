@@ -14,7 +14,7 @@
 	import { IconClose } from "@oscd-plugins/ui";
 	import { CategorySelector } from "../category-selector";
 	import type { EventDetailCategorySelect } from "../category-selector";
-	import type { ElementCategory } from "../category-selector/categories";
+	import type { ElementCategory } from "../../../headless/types/categories";
 	import { TypeLinker } from "../type-linker";
 	import { AffectedNodes } from "../affected-nodes";
 	import type {
@@ -56,6 +56,7 @@
 			"DA Type": [],
 			"Enum Type": [],
 		});
+
 	async function loadDuplicates() {
 		const start = performance.now();
 		const duplicates = await Promise.all([
@@ -231,6 +232,7 @@
 		const actions = createEventDetail(els.element, modifiedEl);
 		return actions;
 	}
+
 	interface Replace {
 		old: { element: Element };
 		new: { element: Element };
@@ -246,15 +248,18 @@
 
 		return detail;
 	}
-	$effect(() => {
-		init(doc);
-	});
+
 	let categoryKeys = $derived(Object.keys(categories) as ElementCategory[]);
 	let categoryLabelsWithCounter = $derived(
 		categoryKeys.map((key) => {
 			return `${key} (${categories[key].length})`;
 		}),
 	);
+
+	$effect(() => {
+		init(doc);
+	});
+
 	$effect(() => {
 		loadStructure(selectedGroup);
 	});
