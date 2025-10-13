@@ -6,6 +6,7 @@
 	} from "./events";
 	import { Select } from "@oscd-plugins/ui";
 	import { Checkbox } from "@oscd-plugins/ui";
+	import { SvelteSet } from "svelte/reactivity";
 
 	interface Props {
 		// Import
@@ -26,7 +27,7 @@
 	let selectedLinkTargetIndex = $state(-1);
 	let isSelected = $state(false);
 
-	let checkedIndexes: Set<number> = $state(new Set());
+	let checkedIndexes: SvelteSet<number> = new SvelteSet();
 
 	function handleSelectAll(e: Event) {
 		if (isSelected === false) {
@@ -44,7 +45,6 @@
 
 	function setAllCheckboxesChecked() {
 		items.forEach((_, index) => checkedIndexes.add(index));
-		checkedIndexes = new Set(checkedIndexes);
 		selected = Array(items.length)
 			.fill(true)
 			.map((_, i) => i);
@@ -52,7 +52,6 @@
 
 	function setAllCheckboxesUnChecked() {
 		items.forEach((_, index) => checkedIndexes.delete(index));
-		checkedIndexes = new Set(checkedIndexes);
 		selected = [];
 	}
 
