@@ -21,16 +21,16 @@
     margin-top: -1rem;
     margin-left: 1rem;
   }
-  :global(affected-nodes .affected-nodes-names) {
+  :global(.affected-nodes .affected-nodes-names) {
     margin-left: -1.5rem;
   }
-  :global(affected-nodes .list-typeswitcher-affected-nodes) {
+  :global(.affected-nodes .list-typeswitcher-affected-nodes) {
     margin-top: -1.5rem;
   }
-  :global(affected-nodes .secondary-text-affected-nodes) {
+  :global(.affected-nodes .secondary-text-affected-nodes) {
     margin-top: -2.25rem;
   }
-  :global(affected-nodes .item-typeswitcher-affected-nodes) {
+  :global(.affected-nodes .item-typeswitcher-affected-nodes) {
     margin-bottom: -2.25rem;
     padding-left: 0.75rem;
   }

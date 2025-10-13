@@ -331,6 +331,7 @@
 
 <style>
 	.typeswitcher {
+		background-color: #eee8d5;
 		--header-hight: 146px;
 		height: calc(100vh - var(--header-hight));
 		display: block;

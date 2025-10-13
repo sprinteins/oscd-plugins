@@ -59,6 +59,17 @@
 		--color-beige-5: #fdfbf2;
 		--color-grey-dark: #4d5d63;
 		--color-cyan: #2aa198;
+		--color-cyan-30-pc-opacity: #2aa1984d;
+		--color-green: #288409;
+		--color-green-light: #9bff00;
+		--color-pink: #c73c61;
+		--color-pink-30-pc-opacity: #c73c614d;
+		--color-pink-light: #ff40a7;
+		--color-grey-dark: #4d5d63;
+		--color-torques-30-opacity: #007d804d;
+		--color-blue-1-light: #00c0f9;
+		--color-blue-1: #3253a8;
+		--color-grey-dark-70pc-opacity: #4d5d63b3;
 
 		--font-color: var(--color-grey-dark);
 
@@ -73,6 +84,17 @@
 
 		--color-select-dropdown: #fffff4;
 		--color-select-dropdown-transparent: #fffff480;
+
+		--color-message-goose: var(--color-green);
+		--color-message-highlight-goose: var(--color-green-light);
+		--color-message-disabled-goose: var(--color-green-30pc-opacity);
+		--color-message-mms: var(--color-blue-1);
+		--color-message-highlight-mms: var(--color-blue-1-light);
+		--color-message-disabled-mms: var(--color-torques-30-opacity);
+		--color-message-sampledvalues: var(--color-pink);
+		--color-message-highlight-sampledvalues: var(--color-pink-light);
+		--color-message-disabled-samplevalues: var(--color-pink-30-pc-opacity);
+		--color-message-unknown: var(--color-black);
 	}
 
 	:host {
