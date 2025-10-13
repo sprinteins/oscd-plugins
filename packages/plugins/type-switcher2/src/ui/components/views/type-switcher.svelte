@@ -25,7 +25,6 @@
 	import type { Item } from "@oscd-plugins/ui";
 	import type { IconKeys } from "@oscd-plugins/ui";
 	import { NullParentElement, type ParentElement } from "./parent-element";
-	import { Theme } from "../theme";
 
 	interface Props {
 		// Input
@@ -265,7 +264,7 @@
 	});
 </script>
 
-<Theme>
+<MaterialTheme pluginType="editor">
 	<div class="typeswitcher" bind:this={root}>
 		<div class="columns">
 			<div class="collective">
@@ -328,7 +327,7 @@
 			</Snackbar>
 		</span>
 	</div>
-</Theme>
+</MaterialTheme>
 
 <style>
 	.typeswitcher {
@@ -359,6 +358,11 @@
 		margin-top: 0.5rem;
 		padding-bottom: 1rem;
 		margin-left: 1rem;
+		font-weight: 400;
+		letter-spacing: normal;
+		line-height: 2rem;
+		text-align: none;
+		/* webkit-font-smoothing: antialiased; THIS IS MISSING*/
 	}
 
 	.columns {
