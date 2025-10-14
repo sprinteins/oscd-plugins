@@ -36,9 +36,11 @@
 <style>
 	ul {
 		/* margin-left: -2.5rem; */
+		line-height: 1.15;
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		margin-top: 0.75rem;
 	}
 	li {
 		font-family: var(--font-family);

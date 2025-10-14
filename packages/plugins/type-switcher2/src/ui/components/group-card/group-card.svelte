@@ -96,6 +96,7 @@
     ul {
       padding: 0;
       margin: 0;
+      line-height: 1.15;
     }
 
     li {

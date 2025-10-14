@@ -78,6 +78,8 @@
 
 		--mdc-typography-headline5-font-weight: 400;
 
+		--mdc-typography-button-font-weight: 700;
+
 		--color-accent: var(--color-cyan);
 
 		--font-size-small: 8px;

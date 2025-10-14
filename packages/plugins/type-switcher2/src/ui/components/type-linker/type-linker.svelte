@@ -5,7 +5,7 @@
 		EventDetailTypeLinkerSelect,
 	} from "./events";
 	import { Select } from "@oscd-plugins/ui";
-	import { Checkbox } from "@oscd-plugins/ui";
+	import { Checkbox } from "../checkbox";
 	import { SvelteSet } from "svelte/reactivity";
 
 	interface Props {
@@ -189,6 +189,8 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-right: 0.5rem;
+		line-height: 1.15;
+		letter-spacing: 0.2;
 	}
 	:global(.item-typeswitcher-selected) {
 		margin-bottom: -0.5rem;
