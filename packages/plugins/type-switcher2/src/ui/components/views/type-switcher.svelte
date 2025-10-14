@@ -22,7 +22,7 @@
 		EventDetailTypeLinkerSelect,
 	} from "../type-linker/events";
 	import { Structure } from "../structure";
-	import type { Item } from "@oscd-plugins/ui";
+	import type { Item } from "../list";
 	import type { IconKeys } from "@oscd-plugins/ui";
 	import { NullParentElement, type ParentElement } from "./parent-element";
 

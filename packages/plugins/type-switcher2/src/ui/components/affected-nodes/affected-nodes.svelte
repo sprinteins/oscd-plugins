@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { IconKeys, openSCDIcons } from "@oscd-plugins/ui";
-  import { type Item, List } from "@oscd-plugins/ui";
+  import { type Item, List } from "../list";
 
   interface Props {
     // Input
