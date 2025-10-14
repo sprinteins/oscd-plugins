@@ -106,7 +106,6 @@ function handleClearClick() {
 
 <div class="root" class:showSidebar>
 	{#if rootNode}
-		{console.log('Rendering Diagram with rootNodeeee:', rootNode)}
 		<Diagram
 			{rootNode}
 			playAnimation={$preferences$.playConnectionAnimation}

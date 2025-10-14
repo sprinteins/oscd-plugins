@@ -243,6 +243,10 @@ let filteredBays =
 			width: var(--sidebar-width);
 			overflow: hidden;
 	}
+    .sidebar :global(h2) {
+        font-size: revert;
+        font-weight: revert;
+    }
 
 	.sidebar .sidebar-content {
 			padding: 1rem;
@@ -251,8 +255,9 @@ let filteredBays =
 			overflow: auto;
 			min-width: 330px;
 			color: var(--mdc-theme-on-background);
+			box-sizing: content-box;
 	}
-
+ 
 	.search_filter {
 			display: flex;
 			align-items: center;
