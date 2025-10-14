@@ -145,7 +145,7 @@
 
 <style lang="scss">
 	.type-linker {
-		height: calc(100% - 1rem);
+		// height: calc(100% - 1rem);
 		display: grid;
 		grid-template-rows: auto auto 1fr auto;
 		gap: 1rem;

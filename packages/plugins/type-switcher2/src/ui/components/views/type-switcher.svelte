@@ -351,6 +351,7 @@
 	.collective {
 		display: grid;
 		grid-template-rows: auto auto 1fr;
+		padding-bottom: 0 !important;
 	}
 
 	h5.mdc-typography--headline5 {

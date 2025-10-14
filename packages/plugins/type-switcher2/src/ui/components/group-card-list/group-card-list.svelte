@@ -37,7 +37,7 @@
 		flex-direction: column;
 		gap: 1rem;
 		overflow-y: auto;
-		padding: 1rem 0;
+		padding-top: 1rem;
 		/* overflow: auto; */
 	}
 </style>
