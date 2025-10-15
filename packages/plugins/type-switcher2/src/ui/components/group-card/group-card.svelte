@@ -4,7 +4,8 @@
 
   interface Props {
     // Input
-    click: (event: Event) => void;
+    onclick?: (e: Event) => void;
+    onkeydown?: (e: KeyboardEvent) => void;
     items?: string[];
     icon: IconKeys | undefined;
     dataTestid?: string;
@@ -12,7 +13,8 @@
   }
 
   let {
-    click,
+    onclick,
+    onkeydown,
     items = [],
     icon,
     dataTestid = "",
@@ -25,12 +27,11 @@
   let titleText = $derived(items.join("\n"));
 </script>
 
-<!-- TODO - Is this needed?-->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
   class="group-card"
-  onclick={(e) => click(e)}
+  {onclick}
+  {onkeydown}
   data-testid={dataTestid}
   class:selected
   title={titleText}

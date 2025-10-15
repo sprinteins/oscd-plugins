@@ -24,7 +24,7 @@
 		<GroupCard
 			icon={itemSet.icon}
 			items={itemSet.items}
-			click={() => handleClick(ii)}
+			onclick={() => handleClick(ii)}
 			dataTestid={`card_${ii}`}
 			selected={selectedIndex === ii}
 		/>

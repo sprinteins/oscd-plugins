@@ -33,13 +33,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 20px;
+    line-height: 20px; /* Adjusted to better fit prior TS */
   }
   label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    line-height: 1.15;
+    line-height: 1.15; /* Adjusted to better fit prior TS */
     accent-color: var(--color-accent);
   }
 </style>
