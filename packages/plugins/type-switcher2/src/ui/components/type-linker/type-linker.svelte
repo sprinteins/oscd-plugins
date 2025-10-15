@@ -135,7 +135,7 @@
 		<Button
 			testid="merger_button-merge"
 			disabled={!isMergePossible}
-			handleClick={handleRelink}
+			onclick={handleRelink}
 		>
 			Switch
 		</Button>

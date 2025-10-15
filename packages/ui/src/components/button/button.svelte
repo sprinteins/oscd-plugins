@@ -3,7 +3,7 @@
 
   interface Props {
     // Input
-    handleClick?: (event: MouseEvent) => void;
+    onclick?: (event: MouseEvent) => void;
     testid?: string;
     disabled?: boolean;
     componentClasses?: string;
@@ -12,7 +12,7 @@
   }
 
   let {
-    handleClick,
+    onclick,
     testid = "",
     disabled = false,
     componentClasses = "",
@@ -34,7 +34,7 @@
 
 <Button
   class="tscd-button {componentClasses} "
-  onclick={handleClick}
+  {onclick}
   {disabled}
   variant={varianTypeMap[type]}
   {...dataProps}
