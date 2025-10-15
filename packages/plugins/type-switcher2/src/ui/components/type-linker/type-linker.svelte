@@ -97,7 +97,6 @@
 
 <div class="type-linker" data-testid={testid}>
 	<!-- svelte-ignore a11y_label_has_associated_control -->
-	<!-- TODO - Error with passing children -->
 	<label>
 		<span class="choose-link">Type to switch to:</span>
 		<div class="select-menu">
@@ -154,10 +153,6 @@
 	.select-all-container {
 		display: flex;
 		margin-left: 1rem;
-		div {
-			display: flex;
-			align-items: center;
-		}
 	}
 	.select-container {
 		margin-left: 1rem;

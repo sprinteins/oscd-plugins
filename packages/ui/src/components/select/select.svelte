@@ -1,7 +1,9 @@
 <script lang="ts">
 	import Select, { Option } from "@smui/select";
+	import type { Snippet } from "svelte";
 
 	interface Props {
+		children?: Snippet | undefined;
 		handleSelect: (index: number) => void;
 		items?: { label: string }[];
 		linkTargetIndex: number;
