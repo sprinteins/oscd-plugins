@@ -1,4 +1,4 @@
-import { SCDQueries } from "@oscd-plugins/core"
+import { SCDQueries, type HashedElementCollective } from "@oscd-plugins/core"
 
 export const ElementCategories = {
 	'LN Type':   SCDQueries.SelectorLNodeType,
@@ -9,3 +9,4 @@ export const ElementCategories = {
 
 export type ElementCategory = keyof typeof ElementCategories
 
+export type ElementCategoryMap = Record<ElementCategory, HashedElementCollective>;

@@ -4,7 +4,6 @@
 		SCDQueries,
 		type SCDElement,
 		type IdentifiableElement,
-		type HashedElementCollective,
 		type HashedElementGroup,
 	} from "@oscd-plugins/core";
 	import { GroupCardList } from "../group-card-list";
@@ -14,7 +13,10 @@
 	import { IconClose } from "@oscd-plugins/ui";
 	import { CategorySelector } from "../category-selector";
 	import type { EventDetailCategorySelect } from "../category-selector";
-	import type { ElementCategory } from "../../../headless/types/categories";
+	import type {
+		ElementCategory,
+		ElementCategoryMap,
+	} from "../../../headless/types/categories";
 	import { TypeLinker } from "../type-linker";
 	import { AffectedNodes } from "../affected-nodes";
 	import type {
@@ -39,24 +41,23 @@
 	let root: HTMLElement | undefined = $state();
 	let snackbar: Snackbar | undefined = $state();
 
-	function init(document: Element) {
+	let categories: ElementCategoryMap = $state({
+		"LN Type": [],
+		"DO Type": [],
+		"DA Type": [],
+		"Enum Type": [],
+	});
+
+	async function init(document: Element) {
 		if (!document) {
 			return;
 		}
 		scdQueries = new SCDQueries(document);
 		deduper = new UCTypeTypeSwitcher(scdQueries);
-		loadDuplicates();
+		categories = await loadDuplicates(categories);
 	}
 
-	const categories: { [key in ElementCategory]: HashedElementCollective } =
-		$state({
-			"LN Type": [],
-			"DO Type": [],
-			"DA Type": [],
-			"Enum Type": [],
-		});
-
-	async function loadDuplicates() {
+	async function loadDuplicates(categories: ElementCategoryMap) {
 		const start = performance.now();
 		const duplicates = await Promise.all([
 			await deduper.findDuplicateLogicalNodeTypes(),
@@ -78,9 +79,11 @@
 			finish,
 			duration: finish - start,
 		});
+
+		return categories;
 	}
 
-	function getParent(doEl: SCDElement): ParentElement {
+	function getParent(doEl: SCDElement) {
 		const notFoundName = "~name not found~";
 		const parent = doEl.element.parentElement;
 		if (!parent) {
@@ -110,17 +113,16 @@
 		items: HashedElementGroup;
 		type: string;
 	}[]; // basically HashedElement[][]
-	// let selectedCategories: ElementCategory[] = []
 	let selectedFlattenCollectives: HashedElementTypedCollective = $state([]);
+
+	$inspect(selectedFlattenCollectives, "selectedFlattenCollectives");
+
 	function handleCategorySelect(detail: EventDetailCategorySelect) {
 		const selectedCategoryIndices = detail.selection;
 
 		const selectedCategories = selectedCategoryIndices.map(
 			(idx) => categoryKeys[idx],
 		);
-		// selectedFlattenCollectives = selectedCategories
-		// 	.map((catKey) => categories[catKey])
-		// 	.flat()
 		selectedFlattenCollectives = selectedCategories
 			.flatMap((catKey) => {
 				return categories[catKey].map((cat) => {
@@ -135,34 +137,16 @@
 		// TODO: group selection should stay if we only add new groups
 		selectedGroup = [];
 		structure = [];
-		// if( !selectedFlattenCollectives.includes(selectedGroup) ){
-		// 	// selectedGroup = []
-		// }
-		// selectedCategories = e.detail.selection
 	}
 
 	let selectedGroup: HashedElementGroup = $state([]);
+
+	$inspect(selectedGroup, "selectedGroup");
+
 	function handleGroupSelect(detail: { index: number }) {
 		const selectedGroupIndex = detail.index;
 		selectedGroup = selectedFlattenCollectives[selectedGroupIndex].items;
 		affectedNodes = [];
-	}
-
-	let structure: Item[] = $state([]);
-	function loadStructure(group: HashedElementGroup) {
-		const firstElement = group[0];
-		if (!firstElement) {
-			return;
-		}
-		const children = Array.from(firstElement.element.element.children);
-		structure = children.map((child) => {
-			return {
-				primaryText:
-					child.getAttribute("name") ?? child.textContent ?? "~",
-				secondaryText:
-					child.getAttribute("bType") ?? child.tagName ?? "~",
-			};
-		});
 	}
 
 	const iconMap: { [xmlTagName: string]: IconKeys } = {
@@ -259,8 +243,20 @@
 		init(doc);
 	});
 
-	$effect(() => {
-		loadStructure(selectedGroup);
+	let structure = $derived.by(() => {
+		const firstElement = selectedGroup[0];
+		if (!firstElement) {
+			return [];
+		}
+		const children = Array.from(firstElement.element.element.children);
+		return children.map((child) => {
+			return {
+				primaryText:
+					child.getAttribute("name") ?? child.textContent ?? "~",
+				secondaryText:
+					child.getAttribute("bType") ?? child.tagName ?? "~",
+			};
+		});
 	});
 </script>
 
