@@ -261,6 +261,12 @@
 		}),
 	);
 
+	let itemLabels = $derived(
+		selectedGroup.map((item) => ({
+			label: item.element.id,
+		})),
+	);
+
 	$effect(() => {
 		init(doc);
 	});
@@ -282,27 +288,20 @@
 			</div>
 			<div class="panel">
 				<h5 class="mdc-typography--headline5">Duplicates Types</h5>
-				{#key selectedGroup}
-					<TypeLinker
-						items={selectedGroup.map((item) => ({
-							label: item.element.id,
-						}))}
-						handleSelect={handleSourceSelect}
-						{handleRelink}
-					/>
-				{/key}
+
+				<TypeLinker
+					items={itemLabels}
+					handleSelect={handleSourceSelect}
+					{handleRelink}
+				/>
 			</div>
 			<div class="panel">
 				<h5 class="mdc-typography--headline5">Affected Nodes</h5>
-				{#key selectedGroup}
-					<AffectedNodes items={affectedNodes} />
-				{/key}
+				<AffectedNodes items={affectedNodes} />
 			</div>
 			<div class="panel">
 				<h5 class="mdc-typography--headline5">Structure</h5>
-				{#key selectedGroup}
-					<Structure items={structure} />
-				{/key}
+				<Structure items={structure} />
 			</div>
 		</div>
 
