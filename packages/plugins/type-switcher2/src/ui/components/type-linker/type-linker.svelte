@@ -29,7 +29,7 @@
 
 	let checkedIndexes: SvelteSet<number> = new SvelteSet();
 
-	function handleSelectAll(e: Event) {
+	function handleSelectAll() {
 		if (isSelected === false) {
 			isSelected = true;
 			setAllCheckboxesChecked();
@@ -59,7 +59,7 @@
 		selectedLinkTargetIndex = index;
 	}
 
-	function handleRelink(e: Event): void {
+	function handleRelink(): void {
 		if (!isMergePossible) {
 			return;
 		}

@@ -288,11 +288,15 @@
 			</div>
 			<div class="panel">
 				<h5 class="mdc-typography--headline5">Duplicates Types</h5>
-				<TypeLinker
-					items={itemLabels}
-					handleSelect={handleSourceSelect}
-					{handleRelink}
-				/>
+				{#key selectedGroup}
+					<TypeLinker
+						items={selectedGroup.map((item) => ({
+							label: item.element.id,
+						}))}
+						handleSelect={handleSourceSelect}
+						{handleRelink}
+					/>
+				{/key}
 			</div>
 			<div class="panel">
 				<h5 class="mdc-typography--headline5">Affected Nodes</h5>
