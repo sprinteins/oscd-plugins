@@ -288,7 +288,6 @@
 			</div>
 			<div class="panel">
 				<h5 class="mdc-typography--headline5">Duplicates Types</h5>
-
 				<TypeLinker
 					items={itemLabels}
 					handleSelect={handleSourceSelect}

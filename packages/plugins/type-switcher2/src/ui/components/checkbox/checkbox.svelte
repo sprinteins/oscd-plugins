@@ -1,15 +1,15 @@
 <script lang="ts">
   interface Props {
-    handleChange?: (event: Event) => void;
-    handleInput?: (event: Event) => void;
+    onchange?: (event: Event) => void;
+    oninput?: (event: Event) => void;
     checked?: boolean;
     label: string;
     testid?: string;
   }
 
   let {
-    handleChange,
-    handleInput,
+    onchange,
+    oninput,
     checked = $bindable(false),
     label,
     testid = "",
@@ -18,12 +18,7 @@
 
 <div class="checkbox" data-testid={testid}>
   <label>
-    <input
-      type="checkbox"
-      onchange={handleChange}
-      oninput={handleInput}
-      bind:checked
-    />
+    <input type="checkbox" {onchange} {oninput} bind:checked />
     <span class="checkbox">{label}</span>
   </label>
 </div>

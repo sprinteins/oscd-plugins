@@ -117,7 +117,7 @@
 		<Checkbox
 			label="Select All"
 			checked={isSelected}
-			handleChange={handleSelectAll}
+			onchange={handleSelectAll}
 		/>
 	</div>
 
@@ -126,7 +126,7 @@
 			<Checkbox
 				label={item.label}
 				checked={checkedIndexes.has(ii)}
-				handleChange={(e) => handleSelectionChange(e, ii)}
+				onchange={(e) => handleSelectionChange(e, ii)}
 			/>
 		{/each}
 	</div>
