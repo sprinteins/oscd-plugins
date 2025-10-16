@@ -60,9 +60,7 @@
 	}
 
 	function handleRelink(): void {
-		if (!isMergePossible) {
-			return;
-		}
+		if (!isMergePossible) return;
 		const detail: EventDetailRelink = {
 			sourceIndexes: selected,
 			targetIndex: selectedLinkTargetIndex,

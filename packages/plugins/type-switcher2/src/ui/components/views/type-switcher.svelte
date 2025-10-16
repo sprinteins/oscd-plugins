@@ -49,9 +49,7 @@
 	});
 
 	async function init(document: Element) {
-		if (!document) {
-			return;
-		}
+		if (!document) return;
 		scdQueries = new SCDQueries(document);
 		deduper = new UCTypeTypeSwitcher(scdQueries);
 		categories = await loadDuplicates(categories);
@@ -86,9 +84,7 @@
 	function getParent(doEl: SCDElement) {
 		const notFoundName = "~name not found~";
 		const parent = doEl.element.parentElement;
-		if (!parent) {
-			return NullParentElement;
-		}
+		if (!parent) return NullParentElement;
 
 		const prioritizedNameAttributes = ["id", "name", "desc"];
 
@@ -237,9 +233,8 @@
 
 	let structure = $derived.by(() => {
 		const firstElement = selectedGroup[0];
-		if (!firstElement) {
-			return [];
-		}
+		if (!firstElement) return [];
+
 		const children = Array.from(firstElement.element.element.children);
 		return children.map((child) => {
 			return {
@@ -259,12 +254,6 @@
 				items: itemSet.items.map((item) => item.element.id),
 			};
 		}),
-	);
-
-	let itemLabels = $derived(
-		selectedGroup.map((item) => ({
-			label: item.element.id,
-		})),
 	);
 
 	$effect(() => {
