@@ -1,4 +1,4 @@
-import type { IconKeys } from "../icons"
+import type { IconKeys } from "@oscd-plugins/ui"
 
 export type Item = {
 	icon?: IconKeys;

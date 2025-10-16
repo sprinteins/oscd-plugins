@@ -26,7 +26,7 @@
 	import { Structure } from "../structure";
 	import type { Item } from "../list";
 	import type { IconKeys } from "@oscd-plugins/ui";
-	import { NullParentElement, type ParentElement } from "./parent-element";
+	import { getParent } from "./parent-element";
 
 	interface Props {
 		// Input
@@ -79,30 +79,6 @@
 		});
 
 		return categories;
-	}
-
-	function getParent(doEl: SCDElement) {
-		const notFoundName = "~name not found~";
-		const parent = doEl.element.parentElement;
-		if (!parent) return NullParentElement;
-
-		const prioritizedNameAttributes = ["id", "name", "desc"];
-
-		let name = notFoundName;
-		for (const attr of prioritizedNameAttributes) {
-			const value = parent.getAttribute(attr);
-			if (value) {
-				name = value;
-				break;
-			}
-		}
-
-		const parentElement: ParentElement = {
-			name,
-			type: parent.tagName,
-		};
-
-		return parentElement;
 	}
 
 	type HashedElementTypedCollective = {
