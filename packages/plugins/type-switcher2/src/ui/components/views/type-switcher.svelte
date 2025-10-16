@@ -115,8 +115,6 @@
 	}[]; // basically HashedElement[][]
 	let selectedFlattenCollectives: HashedElementTypedCollective = $state([]);
 
-	$inspect(selectedFlattenCollectives, "selectedFlattenCollectives");
-
 	function handleCategorySelect(detail: EventDetailCategorySelect) {
 		const selectedCategoryIndices = detail.selection;
 
@@ -134,14 +132,12 @@
 			})
 			.filter((cat) => cat.items.length > 0);
 
-		// TODO: group selection should stay if we only add new groups
+		// TODO: The selected group in Duplicates selection should stay if we only add new categories
 		selectedGroup = [];
 		structure = [];
 	}
 
 	let selectedGroup: HashedElementGroup = $state([]);
-
-	$inspect(selectedGroup, "selectedGroup");
 
 	function handleGroupSelect(detail: { index: number }) {
 		const selectedGroupIndex = detail.index;
@@ -239,10 +235,6 @@
 		}),
 	);
 
-	$effect(() => {
-		init(doc);
-	});
-
 	let structure = $derived.by(() => {
 		const firstElement = selectedGroup[0];
 		if (!firstElement) {
@@ -258,6 +250,20 @@
 			};
 		});
 	});
+
+	let itemsWithIcons = $derived(
+		selectedFlattenCollectives.map((itemSet) => {
+			const tagName = itemSet.items[0]?.element.element.tagName;
+			return {
+				icon: iconMap[tagName],
+				items: itemSet.items.map((item) => item.element.id),
+			};
+		}),
+	);
+
+	$effect(() => {
+		init(doc);
+	});
 </script>
 
 <MaterialTheme pluginType="editor">
@@ -269,22 +275,10 @@
 					labels={categoryLabelsWithCounter}
 					handleSelect={handleCategorySelect}
 				/>
-
-				{#key selectedFlattenCollectives}
-					<GroupCardList
-						itemSets={selectedFlattenCollectives.map((itemSet) => {
-							const tagName =
-								itemSet.items[0]?.element.element.tagName;
-							return {
-								icon: iconMap[tagName],
-								items: itemSet.items.map(
-									(item) => item.element.id,
-								),
-							};
-						})}
-						select={handleGroupSelect}
-					/>
-				{/key}
+				<GroupCardList
+					itemSets={itemsWithIcons}
+					select={handleGroupSelect}
+				/>
 			</div>
 			<div class="panel">
 				<h5 class="mdc-typography--headline5">Duplicates Types</h5>
