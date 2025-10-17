@@ -36,6 +36,7 @@
 		"@smui/button": "^8.0.0-beta.3",
 		"@smui/drawer": "^8.0.0-beta.3",
 		"@smui/icon-button": "8.0.0-beta.3",
+		"@smui/select": "8.0.0-beta.3",
 		"@smui/top-app-bar": "^8.0.0-beta.3",
 		"normalize.css": "^8.0.1",
 		"svelte-material-ui": "^8.0.0-beta.3"
