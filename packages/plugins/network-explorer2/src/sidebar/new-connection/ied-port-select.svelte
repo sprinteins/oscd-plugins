@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { IED } from "../../diagram/networking"
 	import { IED as IEDComponent } from "@oscd-plugins/ui"
-	// TODO: Fix Select import
-	// import { Select } from "@/ui/components/select"
+	import { Select } from "@oscd-plugins/ui"
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 
 	interface PortOption {
@@ -50,8 +49,8 @@
 			))
 	}
 
-	function handleSelectionChange(event: CustomEvent<{ index: number }>): void {
-		const selectedPort = openPorts[event.detail.index]
+	function handleSelectionChange(index: number): void {
+		const selectedPort = openPorts[index]
 		if(!selectedPort){ return }
 
 		select(selectedPort.port);
@@ -63,12 +62,12 @@
 	<IEDComponent label={ied.name} isSelected={true} isSelectable={false} />
 
 	<div class="select-container">
-		<!-- TODO: Readd<Select
-			on:select={handleSelectionChange}
+		<Select
+			handleSelect={handleSelectionChange}
 			linkTargetIndex={selectedIndex}
 			items={openPorts}
 		>
-		</Select> -->
+		</Select>
 	</div>
 </div>
 

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
-	// TODO: Button import
-	// import { Button } from "@oscd-plugins/ui/button"
+	import { Button } from "@oscd-plugins/ui"
 	// TODO: Textfield import
 	// import { Textfield } from "@/ui/components/textfield"
 	import type { CreateCableEvent, UpdateCableEvent } from "../../editor-events/network-events"
@@ -173,10 +172,10 @@
 	<IedPortSelect ied={targetIed} { existingCableName } select={onTargetSelect}/>
 	
 	<div class="actions">
-		<!-- TODO: Readd <Button on:click={confirm} testid="create-cable" disabled={errors.required || errors.cableNameInUse}>
+		<Button onclick={confirm} testid="create-cable" disabled={errors.required || errors.cableNameInUse}>
 			{ isNew ? "Create" : "Update" }
 		</Button>
-		<Button on:click={cancel} type="secondary" testid="cancel-create-cable">Cancel</Button> -->
+		<Button onclick={cancel} type="secondary" testid="cancel-create-cable">Cancel</Button>
 	</div>
 </div>
 

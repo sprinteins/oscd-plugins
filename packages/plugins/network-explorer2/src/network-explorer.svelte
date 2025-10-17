@@ -28,13 +28,13 @@
 	let editEventHandler: EditorEventHandler = $derived(new EditorEventHandler(htmlRoot))
 	
 
-	function onCreateCable(event: CustomEvent<CreateCableEvent>) {
-		editEventHandler.dispatchCreateCable(event.detail)
+	function onCreateCable(event: CreateCableEvent) {
+		editEventHandler.dispatchCreateCable(event)
 		store.resetNewConnection()
 	}
 
-	function onUpdateCable(event: CustomEvent<UpdateCableEvent>) {
-		editEventHandler.dispatchUpdateCable(event.detail)
+	function onUpdateCable(event: UpdateCableEvent) {
+		editEventHandler.dispatchUpdateCable(event)
 		store.resetNewConnection()
 	}
 
@@ -46,7 +46,7 @@
 <SvelteFlowProvider>
 	<network-explorer bind:this={htmlRoot}>
 		<DiagramContainer {store} doc={doc.documentElement} {editCount} onDelete={onDelete}/>
-		<Sidebar {store} on:createCable={onCreateCable} on:updateCable={onUpdateCable} />
+		<Sidebar {store} createCable={onCreateCable} updateCable={onUpdateCable} />
 	</network-explorer>
 </SvelteFlowProvider>
 
