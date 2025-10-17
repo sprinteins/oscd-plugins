@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
-	import { createEventDispatcher } from 'svelte';
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 	// TODO: Button import
 	// import { Button } from "@oscd-plugins/ui/button"
@@ -20,14 +17,16 @@
 		// 
 		connectionBetweenNodes: ConnectionBetweenNodes | null;
 		cableNames: string[];
+		cancel: () => void;
+		updateCable: (event: UpdateCableEvent) => void;
+		createCable: (event: CreateCableEvent) => void;
 	}
 
-	let { connectionBetweenNodes, cableNames }: Props = $props();
+	let { connectionBetweenNodes, cableNames, updateCable, cancel, createCable }: Props = $props();
 	
 	//
 	// Internal
 	//
-	const dispatch = createEventDispatcher();
 	let sourceIed: IED = $state()
 	let sourceSelectedPort: string
 	let targetIed: IED = $state()
@@ -66,23 +65,23 @@
 		return crypto.randomUUID().substring(0, 6)
 	}
 	
-	function onSourceSelect(e: CustomEvent<string>) {
-		sourceSelectedPort = e.detail
+	function onSourceSelect(port: string) {
+		sourceSelectedPort = port
 	}
 	
-	function onTargetSelect(e: CustomEvent<string>) {
-		targetSelectedPort = e.detail
+	function onTargetSelect(port: string) {
+		targetSelectedPort = port
 	}
 
 	function confirm(): void {
 		if (isNew) {
-			createCable()
+			doCreateCable()
 		} else {
-			updateCable()
+			doUpdateCable()
 		}
 	}
 
-	function updateCable(): void {
+	function doUpdateCable(): void {
 		if (!existingCableName) {
 			throw new Error(`Existing cable not found during update`)
 		}
@@ -106,10 +105,10 @@
 			}
 		}
 
-		dispatch("updateCable", updateCableEvent)
+		updateCable(updateCableEvent)
 	}
 	
-	function createCable(): void {
+	function doCreateCable(): void {
 		const sourcePort = sourceSelectedPort || getDefaultPort(sourceIed)
 		const targetPort = targetSelectedPort || getDefaultPort(targetIed)
 		
@@ -125,11 +124,7 @@
 			},
 		}
 		
-		dispatch("createCable", createCableEvent)
-	}
-	
-	function cancel(): void {
-		dispatch("cancel")
+		createCable(createCableEvent)
 	}
 	
 	function getDefaultPort(ied: IED): string {
@@ -152,12 +147,13 @@
 
 		errors = { required, cableNameInUse }
 	}
-	run(() => {
+
+	$effect(() => {
 		onNewConnection(connectionBetweenNodes)
-	});
-	run(() => {
+	})
+	$effect(() => {
 		onCableNames(cableNames)
-	});
+	})
 </script>
 
 <div class="container">
@@ -177,8 +173,8 @@
 		</Textfield> -->
 	</div>
 	
-	<IedPortSelect ied={sourceIed} { existingCableName } on:select={onSourceSelect}/>
-	<IedPortSelect ied={targetIed} { existingCableName } on:select={onTargetSelect}/>
+	<IedPortSelect ied={sourceIed} { existingCableName } select={onSourceSelect}/>
+	<IedPortSelect ied={targetIed} { existingCableName } select={onTargetSelect}/>
 	
 	<div class="actions">
 		<!-- TODO: Readd <Button on:click={confirm} testid="create-cable" disabled={errors.required || errors.cableNameInUse}>
