@@ -26,14 +26,8 @@
 	//
 	// Internal
 	//
-	let openPorts: PortOption[] = $state([])
-	let selectedIndex: number = $state(0)
-
-
-	function onIed(ied: IED): void {
-		openPorts = getOpenPorts(ied)
-		selectedIndex = getSelectedIndex()
-	}
+	let openPorts: PortOption[] = $derived(getOpenPorts(ied))
+	let selectedIndex: number = $derived(getSelectedIndex())
 
 	function getSelectedIndex(): number {
 		if (!existingCableName) {
@@ -62,10 +56,6 @@
 
 		select(selectedPort.port);
 	}
-
-	$effect(() => {
-		onIed(ied)
-	})
 </script>
 
 

@@ -13,8 +13,8 @@
 	interface Props {
 		// 
 		store: DiagramStore;
-		createCable: (event: CreateCableEvent) => void;;
-		updateCable: (event: UpdateCableEvent) => void;;
+		createCable: (event: CreateCableEvent) => void;
+		updateCable: (event: UpdateCableEvent) => void;
 	}
 
 	let { store, createCable, updateCable }: Props = $props();

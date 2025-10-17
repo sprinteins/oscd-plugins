@@ -27,39 +27,42 @@
 	//
 	// Internal
 	//
-	let sourceIed: IED = $state()
 	let sourceSelectedPort: string
-	let targetIed: IED = $state()
 	let targetSelectedPort: string
-	let cableName: string = $state()
-	let isNew: boolean = $state()
-	let existingCableName: string | null | undefined = $state()
-	let cableNameSet: Set<string> = new Set()
 	let errors: { required: boolean, cableNameInUse: boolean } = $state({ required: false, cableNameInUse: false })
-	
-	
-	function onNewConnection(newConnectionBetweenNodes: ConnectionBetweenNodes | null) {
-		if (!newConnectionBetweenNodes) {
-			throw new Error('Input newConnectionBetweenNodes may not be null')
+
+	const {
+		isNew,
+		existingCableName,
+		sourceIed,
+		targetIed,
+		cableName
+	} = $derived.by(() => {
+		const isNew = connectionBetweenNodes.isNew
+		const existingCableName = isNew ? null : connectionBetweenNodes.cableName
+		const sourceIed = connectionBetweenNodes.source
+		const targetIed = connectionBetweenNodes.target
+		
+		const cableName = connectionBetweenNodes.cableName ?? generateCableName()
+
+		return {
+			isNew,
+			existingCableName,
+			sourceIed,
+			targetIed,
+			cableName
 		}
-		
-		isNew = newConnectionBetweenNodes.isNew
-		existingCableName = isNew ? null : newConnectionBetweenNodes.cableName
-		sourceIed = newConnectionBetweenNodes.source
-		targetIed = newConnectionBetweenNodes.target
-		
-		cableName = newConnectionBetweenNodes.cableName ?? generateCableName()
+	})
 
-		errors = { required: false, cableNameInUse: false }
-	}
-
-	function onCableNames(cableNames: string[]): void {
-		cableNameSet = new Set(cableNames)
+	const cableNameSet: Set<string> = $derived.by(() => {
+		const set = new Set(cableNames)
 
 		if (existingCableName) {
-			cableNameSet.delete(existingCableName)
+			set.delete(existingCableName)
 		}
-	}
+
+		return set
+	})
 	
 	function generateCableName(): string {
 		return crypto.randomUUID().substring(0, 6)
@@ -147,13 +150,6 @@
 
 		errors = { required, cableNameInUse }
 	}
-
-	$effect(() => {
-		onNewConnection(connectionBetweenNodes)
-	})
-	$effect(() => {
-		onCableNames(cableNames)
-	})
 </script>
 
 <div class="container">
