@@ -85,7 +85,7 @@
 		snapGrid={[20, 20]}
 		{ ondelete }
 		onbeforeconnect={ connect }
-		panOnDrag={false}
+		panOnDrag={true}
 	>
 		<!-- connectionLineType={ConnectionLineType.Straight} -->
 		<Controls />

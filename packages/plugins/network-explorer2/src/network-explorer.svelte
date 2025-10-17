@@ -91,6 +91,19 @@
 		--color-cyan-30-pc-opacity: #2aa1984d;
 		--color-select-dropdown: #fffff4;
 		--color-select-dropdown-transparent: #fffff480;
+
+		--color-accent: var(--color-cyan);
+
+		--font-family: "Roboto", sans-serif;
+		--letter-spacing: 0.2px;
+		--font-size: 12px;
+		--font-size-small: 8px;
+		--font-color: var(--color-grey-dark);
+
+		--mdc-theme-primary: var(--color-cyan);
+		--mdc-typography-button-font-weight: bold;
+		--mdc-theme-surface: var(--color-beige-3);
+		--mdc-theme-error: var(--color-red);
 	}
 
 	network-explorer {

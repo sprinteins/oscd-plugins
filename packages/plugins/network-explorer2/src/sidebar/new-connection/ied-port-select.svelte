@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
-	import { createEventDispatcher } from 'svelte';
 	import type { IED } from "../../diagram/networking"
 	import { IED as IEDComponent } from "@oscd-plugins/ui"
 	// TODO: Fix Select import
@@ -21,16 +18,16 @@
 		// 
 		ied: IED;
 		existingCableName?: string | null;
+		select: (port: string) => void;
 	}
 
-	let { ied, existingCableName = null }: Props = $props();
+	let { ied, existingCableName = null, select }: Props = $props();
 
 	//
 	// Internal
 	//
-	const dispatch = createEventDispatcher();
 	let openPorts: PortOption[] = $state([])
-	let selectedIndex: number = $state()
+	let selectedIndex: number = $state(0)
 
 
 	function onIed(ied: IED): void {
@@ -63,11 +60,12 @@
 		const selectedPort = openPorts[event.detail.index]
 		if(!selectedPort){ return }
 
-		dispatch("select", selectedPort.port)
+		select(selectedPort.port);
 	}
-	run(() => {
+
+	$effect(() => {
 		onIed(ied)
-	});
+	})
 </script>
 
 
