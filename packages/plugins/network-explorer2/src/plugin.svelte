@@ -26,8 +26,10 @@
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	<NetworkExplorer { doc } { editCount }>
-	</NetworkExplorer>
+	<MaterialTheme pluginType="editor">
+		<NetworkExplorer { doc } { editCount }>
+		</NetworkExplorer>
+	</MaterialTheme>
 </main>
 
 
@@ -36,6 +38,7 @@
 import jsonPackage from '../package.json'
 // CORE
 import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
+import { MaterialTheme } from '@oscd-plugins/ui'
 // TYPES
 import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
     import NetworkExplorer from './network-explorer.svelte';

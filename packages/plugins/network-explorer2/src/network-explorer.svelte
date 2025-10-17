@@ -92,6 +92,7 @@
 		--color-select-dropdown: #fffff4;
 		--color-select-dropdown-transparent: #fffff480;
 	}
+
 	network-explorer {
 		height: calc(100vh - var(--header-height));;
 		display: flex;
