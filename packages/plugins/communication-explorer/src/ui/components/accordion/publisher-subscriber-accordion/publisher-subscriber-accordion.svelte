@@ -2,7 +2,7 @@
     // import type { ServiceObject } from "../../../../communication-explorer/sidebar/ied-accordion"
     import type { ServiceObject } from "../../sidebar/ied-accordion"
     import { ConnectionTypeDirection } from "../../sidebar/ied-accordion"
-    import IconArrowDropDown from "@oscd-plugins/ui/src/components/icons/icon-arrow-drop-down.svelte"
+    import { IconArrowDropDown } from "@oscd-plugins/ui"
     import {Icons, type OpenSCDIconNames} from "@oscd-plugins/ui/src/components/icons"
 
     interface Props {

@@ -218,6 +218,7 @@
 <svelte:body onkeydown={handleKeyDown} onkeyup={handleKeyUp} />
 
 {#if rootNode}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<diagram
 		bind:this={root}
 		onclick={handleClick}
@@ -281,7 +282,7 @@
 						{edge}
 						isSelected={isConnectionSelected(edge)}
 						isIEDSelected={isConnectionsAnyIEDSelected(edge)}
-						on:click={() => dispatchConnectionClick(edge)}
+						onclick={() => handleConnectionClick(edge)}
 						testid={`connection-${edge.id}`}
 						{playAnimation}
 						{showConnectionArrows}

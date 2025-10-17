@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Networking } from "@oscd-plugins/core";
-	import IconArrowDropDown from "@oscd-plugins/ui/src/components/icons"
+	import { IconArrowDropDown } from "@oscd-plugins/ui"
 	
     interface Props {
         open?: boolean;

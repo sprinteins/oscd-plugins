@@ -20,6 +20,7 @@ import type { IEDConnection } from './nodes'
 		testid?: string;
 		playAnimation?: boolean;
 		showConnectionArrows?: boolean;
+		onclick?: (e: MouseEvent) => void;
 	}
 
 	let {
@@ -28,7 +29,8 @@ import type { IEDConnection } from './nodes'
 		isIEDSelected = false,
 		testid = '',
 		playAnimation = true,
-		showConnectionArrows = true
+		showConnectionArrows = true,
+		onclick
 	}: Props = $props();
 
 //
@@ -190,8 +192,9 @@ const pathHighlightColor = $derived(calcPathHighlightColor(edge))
 const dashArray = $derived(calcDashArray(edge))
 </script>
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <g
-	onclick={bubble('click')}
+	{onclick}
 	onkeypress={bubble('keypress')}
 	class:show-selected-path={isSelected}
 	class:selected={isSelected}
