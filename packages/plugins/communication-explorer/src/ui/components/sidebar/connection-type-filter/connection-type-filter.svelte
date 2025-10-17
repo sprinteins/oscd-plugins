@@ -29,13 +29,13 @@
 		label={"Published"}
 		{disabled}
 		isSelected={isFilterIncomingActive}
-		on:click={handleClickOnPublisher}
+		onclick={handleClickOnPublisher}
 	/>
 	<FilterChip
 		label={"Subscribed"}
 		{disabled}
 		isSelected={isFilterOutgoingActive}
-		on:click={handleClickOnSubscriber}
+		onclick={handleClickOnSubscriber}
 	/>
 </div>
 

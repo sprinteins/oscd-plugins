@@ -8,13 +8,15 @@
 		isSelected: boolean;
 		testid?: string;
 		disabled?: boolean;
+		onclick?: () => void;
 	}
 
 	let {
 		label,
 		isSelected,
 		testid = "",
-		disabled = false
+		disabled = false,
+		onclick
 	}: Props = $props();
 
 	let dataProps = $derived({
@@ -23,7 +25,7 @@
 </script>
 
 <div class="chip" class:isSelected {...dataProps}>
-	<Button class="tscd-button" on:click {disabled}>
+	<Button class="tscd-button" {onclick} {disabled}>
 		<Label class="button-label">{label}</Label>
 	</Button>
 </div>
