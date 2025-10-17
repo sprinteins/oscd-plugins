@@ -99,7 +99,13 @@
 		--color-message-unknown: var(--color-black);
 	}
 
+	:root,
 	:host {
-		font-size: 12px;
+		--font-size: 12px;
+		--letter-spacing: 0.2px;
+		--font-family: "Roboto", sans-serif;
+		font-family: var(--font-family);
+		letter-spacing: var(--letter-spacing);
+		font-size: var(--font-size);
 	}
 </style>
