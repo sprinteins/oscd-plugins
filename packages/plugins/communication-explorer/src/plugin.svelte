@@ -48,7 +48,6 @@ import { MaterialTheme } from '@oscd-plugins/ui'
 // PACKAGE
 import jsonPackage from '../package.json'
 import TelemetryView from "./ui/components/telemetry-view/telemetry-view.svelte"
-import Theme from "./ui/theme/theme.svelte"
 
 // Svelte 5 props syntax
 const { doc, docName, editCount, locale, pluginType, isCustomInstance }: { 
