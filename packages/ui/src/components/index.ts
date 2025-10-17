@@ -4,6 +4,7 @@ export * from './smui-wrapper'
 export * from './counter'
 export * from './button'
 export * from './select'
+export * from './checkbox'
 
 // THEME
 export * from './theme'
