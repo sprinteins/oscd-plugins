@@ -4,8 +4,7 @@
 		EventDetailRelink,
 		EventDetailTypeLinkerSelect,
 	} from "./events";
-	import { Select } from "@oscd-plugins/ui";
-	import { Checkbox } from "../checkbox";
+	import { Select, Checkbox } from "@oscd-plugins/ui";
 	import { SvelteSet } from "svelte/reactivity";
 
 	interface Props {
@@ -77,8 +76,10 @@
 
 		if (isCheckboxChecked) {
 			selected = [...selected, valueAsNumber];
+			checkedIndexes.add(valueAsNumber);
 		} else {
 			selected = selected.filter((n) => n !== valueAsNumber);
+			checkedIndexes.delete(valueAsNumber);
 		}
 
 		isSelected = Array.from(selected).length === Array.from(items).length;
