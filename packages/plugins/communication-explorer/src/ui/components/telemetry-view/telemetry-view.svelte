@@ -77,26 +77,24 @@ async function initInfos(
 	)
 }
 
-function handleIEDSelect(e: CustomEvent<IEDElkNode>) {
-	selectIEDElkNode(e.detail)
+
+function handleIEDAdditiveSelect(node: IEDElkNode) {
+	toggleMultiSelectionOfIED(node)
 }
-function handleIEDAdditiveSelect(e: CustomEvent<IEDElkNode>) {
-	toggleMultiSelectionOfIED(e.detail)
-}
-async function handleBaySelect(e: CustomEvent<string>) {
+async function handleBaySelect(bay: string) {
 	clearIEDSelection()
 	await initInfos(root, $filterState, $preferences$)
 	if (rootNode?.children) {
 		for (const node of rootNode.children) {
-			if (node.bays?.has(e.detail)) {
+			if (node.bays?.has(bay)) {
 				toggleMultiSelectionOfIED(node)
 			}
 		}
 	}
 }
-function handleConnectionClick(e: CustomEvent<IEDConnection>) {
+function handleConnectionClick(connection: IEDConnection) {
 	// temp till fully migrated: map element to enhanced data model
-	const selectedConnection = e.detail as IEDConnectionWithCustomValues
+	const selectedConnection = connection as IEDConnectionWithCustomValues
 	selectConnection(selectedConnection)
 }
 function handleClearClick() {
@@ -111,11 +109,11 @@ function handleClearClick() {
 			playAnimation={$preferences$.playConnectionAnimation}
 			showConnectionArrows={$preferences$.showConnectionArrows}
 			showBayLabels={!$preferences$.groupByBay}
-			on:iedselect={handleIEDSelect}
-			on:bayselect={handleBaySelect}
-			on:iedadditiveselect={handleIEDAdditiveSelect}
-			on:connectionclick={handleConnectionClick}
-			on:clearclick={handleClearClick}
+			handleIEDSelect={selectIEDElkNode}
+			{handleBaySelect}
+			{handleIEDAdditiveSelect}
+			{handleConnectionClick}
+			{handleClearClick}
 		/>
 		{#if showSidebar}
 			{console.log('Rendering Sidebar with bays:', Array.from(lastExtractedBays))}

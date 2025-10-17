@@ -10,7 +10,6 @@
 	import { isBayNode } from "./nodes"
 	import { IEDElement } from "./ied-element"
 	import Message from "./message.svelte"
-	import { createEventDispatcher } from "svelte"
 	import type { ElkExtendedEdge } from "elkjs"
 	import {
 		isConnectionSelected,
@@ -22,18 +21,27 @@
 	// Inputs
 	
 	interface Props {
-		//
 		rootNode: RootNode;
 		playAnimation?: boolean;
 		showConnectionArrows?: boolean;
 		showBayLabels?: boolean;
+		handleIEDSelect: (node: IEDElkNode) => void;
+		handleBaySelect: (bay: string) => void;
+		handleIEDAdditiveSelect: (node: IEDElkNode) => void;
+		handleConnectionClick: (connection: ElkExtendedEdge) => void;
+		handleClearClick: () => void;
 	}
 
 	let {
 		rootNode,
 		playAnimation = true,
 		showConnectionArrows = true,
-		showBayLabels = false
+		showBayLabels = false,
+		handleIEDSelect,
+		handleBaySelect,
+		handleIEDAdditiveSelect,
+		handleConnectionClick,
+		handleClearClick
 	}: Props = $props();
 
 	//
@@ -43,7 +51,6 @@
 	let svgRoot: SVGElement = $state()
 	let root: HTMLElement = $state()
 
-	const dispatch = createEventDispatcher()
 	function handleIEDClick(e: MouseEvent, node: IEDElkNode) {
 		if (draggingEnabled) {
 			return
@@ -57,31 +64,23 @@
 		const isAdditiveSelect = e.metaKey || e.ctrlKey || e.shiftKey
 
 		if (element.classList.contains("bayLabel")) {
-			dispatchBaySelect(element.textContent)
+			handleBaySelect(element.textContent)
 			return;
 		}
 
 		if (isAdditiveSelect) {
-			dispatchIEDAdditiveSelect(node)
+			handleIEDAdditiveSelect(node)
 			return
 		}
-		dispatchIEDSelect(node)
+		handleIEDSelect(node)
 	}
-	function dispatchIEDSelect(node: IEDElkNode) {
-		dispatch("iedselect", node)
-	}
-	function dispatchIEDAdditiveSelect(node: IEDElkNode) {
-		dispatch("iedadditiveselect", node)
-	}
-	function dispatchBaySelect(bay: string) {
-		dispatch("bayselect", bay)
-	}
+
 
 	function dispatchConnectionClick(connection: ElkExtendedEdge) {
 		if (draggingEnabled) {
 			return
 		}
-		dispatch("connectionclick", connection)
+		handleConnectionClick(connection)
 	}
 
 	function handleClick(e: Event) {
@@ -92,7 +91,7 @@
 			return
 		}
 
-		dispatch("clearclick")
+		handleClearClick()
 	}
 
 	function isConnectionsAnyIEDSelected(
