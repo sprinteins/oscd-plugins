@@ -339,7 +339,7 @@
 		height: 100%;
 		overflow: hidden;
 		display: grid;
-		grid-template-columns: 2.5fr 1.5fr 2fr 2fr;
+		grid-template-columns: 2.75fr 1.75fr 2fr 1.5fr;
 		gap: 1rem;
 	}
 	.columns > div {
