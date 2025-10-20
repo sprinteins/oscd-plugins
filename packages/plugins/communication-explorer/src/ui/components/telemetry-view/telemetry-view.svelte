@@ -4,7 +4,6 @@ import {
 	Diagram,
 	type IEDConnection,
 	type IEDConnectionWithCustomValues,
-	type IEDElkNode, 
 	type RootNode
 } from '../diagram'
 import { Sidebar } from '../sidebar'
@@ -75,10 +74,6 @@ async function initInfos(
 	)
 }
 
-
-function handleIEDAdditiveSelect(node: IEDElkNode) {
-	toggleMultiSelectionOfIED(node)
-}
 async function handleBaySelect(bay: string) {
 	clearIEDSelection()
 	await initInfos(root, $filterState, $preferences$)
@@ -90,13 +85,11 @@ async function handleBaySelect(bay: string) {
 		}
 	}
 }
+
 function handleConnectionClick(connection: IEDConnection) {
 	// temp till fully migrated: map element to enhanced data model
 	const selectedConnection = connection as IEDConnectionWithCustomValues
 	selectConnection(selectedConnection)
-}
-function handleClearClick() {
-	clearIEDSelection()
 }
 </script>
 
@@ -109,9 +102,9 @@ function handleClearClick() {
 			showBayLabels={!$preferences$.groupByBay}
 			handleIEDSelect={selectIEDElkNode}
 			{handleBaySelect}
-			{handleIEDAdditiveSelect}
+			handleIEDAdditiveSelect={toggleMultiSelectionOfIED}
 			{handleConnectionClick}
-			{handleClearClick}
+			handleClearClick={clearIEDSelection}
 		/>
 		{#if showSidebar}
 			{console.log('Rendering Sidebar with bays:', Array.from(lastExtractedBays))}

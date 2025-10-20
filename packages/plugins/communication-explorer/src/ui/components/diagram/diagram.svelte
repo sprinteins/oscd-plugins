@@ -75,14 +75,6 @@
 		handleIEDSelect(node)
 	}
 
-
-	function dispatchConnectionClick(connection: ElkExtendedEdge) {
-		if (draggingEnabled) {
-			return
-		}
-		handleConnectionClick(connection)
-	}
-
 	function handleClick(e: Event) {
 		if (draggingEnabled || isDragging) {
 			return
