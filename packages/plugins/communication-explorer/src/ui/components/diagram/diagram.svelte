@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { run, createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	import type {
 		IEDConnectionWithCustomValues,
 		IEDElkNode,
@@ -185,7 +182,7 @@
 	let svgHeight = $state(0)
 	let savedRootNodeWidth = 0
 	let savedRootNodeHeight = 0
-	run(() => {
+	$effect(() => {
 		resetZoom(rootNode.width, rootNode.height)
 	});
 
@@ -211,10 +208,10 @@
 
 {#if rootNode}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<diagram
 		bind:this={root}
 		onclick={handleClick}
-		onkeypress={bubble('keypress')}
 		onmousedown={handleMouseDown}
 		onmousemove={handleMouseMove}
 		onmouseup={handleMouseUp}
@@ -225,7 +222,6 @@
 	>
 		<svg
 			bind:this={svgRoot}
-			onkeypress={bubble('keypress')}
 			viewBox={`0 0 ${rootNode.width} ${rootNode.height}`}
 			style:--width={`${svgWidth}px`}
 			style:--height={`${svgHeight}px`}
@@ -254,7 +250,6 @@
 							height={node.height}
 							overflow="visible"
 							onclick={(e) => handleIEDClick(e, node)}
-							onkeydown={bubble('keydown')}
 						>
 							<IEDElement
 								{node}

@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 import {
 	filterState,
 	type SelectedFilter
@@ -99,7 +96,9 @@ let filteredBays =
 	<div class="sidebar-content">
 			<!-- svelte-ignore a11y_missing_attribute -->
 			<div class="actions">
-					<a class="clear-all" onkeypress={bubble('keypress')} onclick={clearAll}>
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<a class="clear-all" onclick={clearAll}>
 							Clear all
 					</a>
 			</div>
