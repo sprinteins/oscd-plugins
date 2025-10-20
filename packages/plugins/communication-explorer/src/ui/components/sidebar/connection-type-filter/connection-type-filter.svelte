@@ -1,0 +1,52 @@
+<script lang="ts">
+	import FilterChip from "@oscd-plugins/ui/src/components/filter-chip/filter-chip.svelte" //TODO: move filter-chip into library
+	import { changeMessageConnectionFilterDirection } from "../../../../stores/_store-view-filter"
+	interface Props {
+		disabled?: boolean;
+		isFilterIncomingActive?: boolean;
+		isFilterOutgoingActive?: boolean;
+	}
+
+	let { disabled = false, isFilterIncomingActive = false, isFilterOutgoingActive = false }: Props = $props();
+
+	function handleClickOnPublisher() {
+		changeMessageConnectionFilterDirection(
+			!isFilterIncomingActive,
+			isFilterOutgoingActive
+		)
+	}
+
+	function handleClickOnSubscriber() {
+		changeMessageConnectionFilterDirection(
+			isFilterIncomingActive,
+			!isFilterOutgoingActive
+		)
+	}
+</script>
+
+<div class="ButtonGroup">
+	<FilterChip
+		label={"Published"}
+		{disabled}
+		isSelected={isFilterIncomingActive}
+		onclick={handleClickOnPublisher}
+	/>
+	<FilterChip
+		label={"Subscribed"}
+		{disabled}
+		isSelected={isFilterOutgoingActive}
+		onclick={handleClickOnSubscriber}
+	/>
+</div>
+
+<style>
+	:global(.ButtonGroup) {
+		border-radius: 1rem;
+	}
+	:global(.ButtonGroup .chip:first-of-type button) {
+		margin-left: 0;
+	}
+	:global(.ButtonGroup .chip:last-of-type button) {
+		margin-right: 0;
+	}
+</style>
