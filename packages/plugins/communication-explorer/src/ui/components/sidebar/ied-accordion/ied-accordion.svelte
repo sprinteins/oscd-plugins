@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
 // import PublisherSubscriberAccordion from '../../components/accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte'
 import PublisherSubscriberAccordion from '../../accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte'
 import type { IEDElkNode, RootNode } from '../../diagram'
@@ -23,11 +21,8 @@ import type { MessageType } from '../../../../headless/types'
 
     let { rootNode, IEDSelection }: Props = $props();
 
-let relationsByServiceType: ServiceTypeGroup = $state(new Map())
 let relations = $derived(getConnectedIEDsByLabel(rootNode, IEDSelection.label))
-run(() => {
-        relationsByServiceType = groupRelationsByServiceType(relations)
-    });
+let relationsByServiceType: ServiceTypeGroup = $derived(groupRelationsByServiceType(relations));
 let serviceTypes = $derived(Array.from(relationsByServiceType.entries()))
 let details = $derived(getIEDDetails(rootNode, IEDSelection.label))
 let bays = $derived(Array.from(IEDSelection.bays).join(", "))
