@@ -13,10 +13,6 @@
 	import { IconClose } from "@oscd-plugins/ui";
 	import { CategorySelector } from "../category-selector";
 	import type { EventDetailCategorySelect } from "../category-selector";
-	import type {
-		ElementCategory,
-		ElementCategoryMap,
-	} from "../../../headless/types/categories";
 	import { TypeLinker } from "../type-linker";
 	import { AffectedNodes } from "../affected-nodes";
 	import type {
@@ -27,6 +23,8 @@
 	import type { Item } from "../list";
 	import type { IconKeys } from "@oscd-plugins/ui";
 	import { getParent } from "./parent-element";
+    import type { ElementCategoryMap, Replace } from "@/headless/types";
+    import { CATEGORY_KEY_REGEX } from "@/headless/regex/categoryKey";
 
 	interface Props {
 		// Input
@@ -55,6 +53,10 @@
 		categories = await loadDuplicates(categories);
 	}
 
+	$effect(() => {
+		init(doc);
+	});
+
 	async function loadDuplicates(categories: ElementCategoryMap) {
 		const start = performance.now();
 		const duplicates = await Promise.all([
@@ -81,39 +83,56 @@
 		return categories;
 	}
 
-	type HashedElementTypedCollective = {
-		items: HashedElementGroup;
-		type: string;
-	}[]; // basically HashedElement[][]
-	let selectedFlattenCollectives: HashedElementTypedCollective = $state([]);
+	let selectedCategoryLabels = $state<string[]>([]);
 
-	function handleCategorySelect(detail: EventDetailCategorySelect) {
-		const selectedCategoryIndices = detail.selection;
+	let selectedFlattenCollectives = $derived.by(() => {
+		// Convert labels like "LN Type (5)" back to category keys like "LN Type"
+		const selectedCatKeys = selectedCategoryLabels.length === 0
+			? categoryKeys
+			: selectedCategoryLabels.map((label) => {
+				const match = label.match(CATEGORY_KEY_REGEX);
+				return match ? match[1] : label;
+			}) as (keyof ElementCategoryMap)[];
 
-		const selectedCategories = selectedCategoryIndices.map(
-			(idx) => categoryKeys[idx],
-		);
-		selectedFlattenCollectives = selectedCategories
-			.flatMap((catKey) => {
-				return categories[catKey].map((cat) => {
-					return {
-						type: catKey,
-						items: cat,
-					};
-				});
-			})
-			.filter((cat) => cat.items.length > 0);
-
-		// TODO: The selected group in Duplicates selection should stay if we only add new categories
-		selectedGroup = [];
-		structure = [];
-	}
+		return selectedCatKeys.flatMap((catKey) => {
+			const categoryItems = categories[catKey];
+			if (!categoryItems) return [];
+			return categoryItems.map((cat) => {
+				return {
+					type: catKey,
+					items: cat,
+				};
+			});
+		});
+	});
 
 	let selectedGroup: HashedElementGroup = $state([]);
 
-	function handleGroupSelect(detail: { index: number }) {
-		const selectedGroupIndex = detail.index;
-		selectedGroup = selectedFlattenCollectives[selectedGroupIndex].items;
+	// Update selectedIndex based on selectedGroup's position in selectedFlattenCollectives
+	$effect(() => {
+		if (selectedGroup.length === 0) {
+			selectedIndex = -1;
+			return;
+		}
+
+		const newIndex = selectedFlattenCollectives.findIndex((collective) => 
+			collective.items === selectedGroup
+		);
+
+		if (newIndex === -1) {
+			selectedGroup = [];
+			affectedNodes = [];
+			selectedIndex = -1;
+		} else {
+			selectedIndex = newIndex;
+		}
+	});
+
+	let selectedIndex = $state(-1);
+
+	function handleGroupSelect(index: number) {
+		selectedIndex = index;
+		selectedGroup = selectedFlattenCollectives[selectedIndex].items;
 		affectedNodes = [];
 	}
 
@@ -184,13 +203,6 @@
 		return actions;
 	}
 
-	interface Replace {
-		old: { element: Element };
-		new: { element: Element };
-		derived?: boolean;
-		checkValidity?: () => boolean;
-	}
-
 	function createEventDetail(oldEl: Element, newEl: Element) {
 		const detail: Replace = {
 			old: { element: oldEl },
@@ -200,7 +212,8 @@
 		return detail;
 	}
 
-	let categoryKeys = $derived(Object.keys(categories) as ElementCategory[]);
+	let categoryKeys = $derived(Object.keys(categories) as (keyof ElementCategoryMap)[]);
+
 	let categoryLabelsWithCounter = $derived(
 		categoryKeys.map((key) => {
 			return `${key} (${categories[key].length})`;
@@ -231,10 +244,6 @@
 			};
 		}),
 	);
-
-	$effect(() => {
-		init(doc);
-	});
 </script>
 
 <MaterialTheme pluginType="editor">
@@ -244,11 +253,12 @@
 				<h5 class="mdc-typography--headline5">Duplicates</h5>
 				<CategorySelector
 					labels={categoryLabelsWithCounter}
-					handleSelect={handleCategorySelect}
+					bind:selected={selectedCategoryLabels}
 				/>
 				<GroupCardList
 					itemSets={itemsWithIcons}
-					select={handleGroupSelect}
+					onclick={handleGroupSelect}
+					bind:selectedIndex={selectedIndex}
 				/>
 			</div>
 			<div class="panel">
