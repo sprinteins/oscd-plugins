@@ -61,7 +61,7 @@ function handleDropdownSelect(e: Event) {
 		}
 	} else {
 		let selectedNode = rootNode.children.find(
-			(node) => node.label == searchQuery
+			(node) => node.label === searchQuery
 		)
 		if (selectedNode) {
 			selectIEDElkNode(selectedNode)
