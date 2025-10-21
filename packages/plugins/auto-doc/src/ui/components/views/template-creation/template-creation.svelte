@@ -1,8 +1,6 @@
 <script lang="ts">
-import { createBubbler, stopPropagation } from 'svelte/legacy'
 import { type NavigateProps, View } from '../view-navigator/view'
 
-const bubble = createBubbler()
 import { clickOutside } from '@/actions'
 import { docTemplatesStore } from '@/stores'
 import { TemplateBuilder, Tooltip } from '@/ui/components'
@@ -64,7 +62,8 @@ function navigateToOverviewPage() {
 	navigate({ view: View.Home })
 }
 
-function displayTitleAndDescription() {
+function displayTitleAndDescription(e: (MouseEvent & { currentTarget: EventTarget & HTMLDivElement; }) | (KeyboardEvent & { currentTarget: EventTarget & HTMLDivElement; })) {
+    e.stopPropagation();
 	isMetadataVisible = true
 }
 function closeTitleAndDescription() {
@@ -102,8 +101,8 @@ function downloadTemplateContent() {
                 <div class="template-title">
                     <CustomIconButton icon="arrow_back" color="black" onclick={askForEmptyTitleConfirmation}/>
                     <Tooltip text="Rename">
-                        <div class="title" role="button" tabindex="0" onclick={stopPropagation(displayTitleAndDescription)} 
-                        onkeydown={(e) => e.key === 'Enter' && displayTitleAndDescription()}
+                        <div class="title" role="button" tabindex="0" onclick={(e) => displayTitleAndDescription(e)} 
+                        onkeydown={(e) => e.key === 'Enter' && displayTitleAndDescription(e)}
                         >
                         {templateTitle}
                     </Tooltip>
@@ -118,9 +117,9 @@ function downloadTemplateContent() {
 
 
     {#if isMetadataVisible}
+        <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
         <div class="template-metadata"
             use:clickOutside={closeTitleAndDescription}
-            onclick={stopPropagation(bubble('click'))}
             role="dialog"
             onkeydown={(e) => e.key === 'Escape' && closeTitleAndDescription()}
             >
