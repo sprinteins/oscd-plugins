@@ -122,6 +122,7 @@ function downloadTemplateContent() {
             use:clickOutside={closeTitleAndDescription}
             role="dialog"
             onkeydown={(e) => e.key === 'Escape' && closeTitleAndDescription()}
+            onclick={(e) => e.stopPropagation()}
             >
                 <Textfield
                     bind:value={title}
