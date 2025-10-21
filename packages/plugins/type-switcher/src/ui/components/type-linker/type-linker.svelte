@@ -124,6 +124,7 @@
 		{#each items as item, ii}
 			<Checkbox
 				label={item.label}
+				title={item.label}
 				checked={checkedIndexes.has(ii)}
 				onchange={(e) => handleSelectionChange(e, ii)}
 			/>
