@@ -1,1 +1,0 @@
-export const CATEGORY_KEY_REGEX = /^(.+?)\s*\(\d+\)$/;

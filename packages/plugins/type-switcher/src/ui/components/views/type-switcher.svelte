@@ -12,7 +12,6 @@ import Snackbar, { Actions, Label } from '@smui/snackbar'
 import IconButton from '@smui/icon-button'
 import { IconClose } from '@oscd-plugins/ui'
 import { CategorySelector } from '../category-selector'
-import type { EventDetailCategorySelect } from '../category-selector'
 import { TypeLinker } from '../type-linker'
 import { AffectedNodes } from '../affected-nodes'
 import type {
@@ -24,7 +23,6 @@ import type { Item } from '../list'
 import type { IconKeys } from '@oscd-plugins/ui'
 import { getParent } from './parent-element'
 import type { ElementCategoryMap, Replace } from '@/headless/types'
-import { CATEGORY_KEY_REGEX } from '@/headless/regex/categoryKey'
 
 interface Props {
 	// Input
@@ -86,25 +84,21 @@ async function loadDuplicates(categories: ElementCategoryMap) {
 let selectedCategoryLabels = $state<string[]>([])
 
 let selectedFlattenCollectives = $derived.by(() => {
-	// Convert labels like "LN Type (5)" back to category keys like "LN Type"
-	const selectedCatKeys =
-		selectedCategoryLabels.length === 0
-			? categoryKeys
-			: (selectedCategoryLabels.map((label) => {
-					const match = label.match(CATEGORY_KEY_REGEX)
-					return match ? match[1] : label
-				}) as (keyof ElementCategoryMap)[])
-
-	return selectedCatKeys.flatMap((catKey) => {
-		const categoryItems = categories[catKey]
-		if (!categoryItems) return []
-		return categoryItems.map((cat) => {
-			return {
-				type: catKey,
-				items: cat
-			}
-		})
-	})
+    let selectedCatKeys = categoryKeys
+    if (selectedCategoryLabels.length > 0) {
+        selectedCatKeys = selectedCategoryLabels.map((label) => {
+            const idx = categoryLabelsWithCounter.indexOf(label)
+            return categoryKeys[idx]
+        })
+    }
+    return selectedCatKeys.flatMap((catKey) => {
+        const categoryItems = categories[catKey]
+        if (!categoryItems) return []
+        return categoryItems.map((cat) => ({
+            type: catKey,
+            items: cat
+        }))
+    })
 })
 
 let selectedGroup: HashedElementGroup = $state([])
