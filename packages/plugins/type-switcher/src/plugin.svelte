@@ -12,21 +12,22 @@
 />
 
 <script lang="ts">
-	// PACKAGE
-	import jsonPackage from "../package.json";
-	// CORE
-	import { initPlugin, initSsdTemplate } from "@oscd-plugins/core-ui-svelte";
-	// TYPES
-	import type { Utils } from "@oscd-plugins/core-api/plugin/v1";
-	import TypeSwitcher from "./ui/components/views/type-switcher.svelte";
+// PACKAGE
+import jsonPackage from '../package.json'
+// CORE
+import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
+// TYPES
+import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import TypeSwitcher from './ui/components/views/type-switcher.svelte'
+import { LegacyTheme, MaterialTheme } from '@oscd-plugins/ui'
 
-	// props
-	const {
-		doc,
-		docName,
-		editCount,
-		isCustomInstance,
-	}: Utils.PluginCustomComponentsProps = $props();
+// props
+const {
+	doc,
+	docName,
+	editCount,
+	isCustomInstance
+}: Utils.PluginCustomComponentsProps = $props()
 </script>
 
 <main
@@ -44,14 +45,18 @@
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	{#if doc}
-		{#key doc}
-			<TypeSwitcher doc={doc?.documentElement} />
-		{/key}
-	{/if}
+<MaterialTheme pluginType="editor">
+	<LegacyTheme>
+		{#if doc}
+			{#key doc}
+				<TypeSwitcher doc={doc?.documentElement} />
+			{/key}
+		{/if}
+	</LegacyTheme>
+</MaterialTheme>
 </main>
 
-<style>
+<!-- <style>
 	main {
 		/* Missing Styles */
 		--color-white: #f9f7f1;
@@ -108,4 +113,4 @@
 		letter-spacing: var(--letter-spacing);
 		font-size: var(--font-size);
 	}
-</style>
+</style> -->
