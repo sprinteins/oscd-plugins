@@ -19,7 +19,7 @@ import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 import TypeSwitcher from './ui/components/views/type-switcher.svelte'
-import { LegacyTheme, MaterialTheme } from '@oscd-plugins/ui'
+import { LegacyTheme } from '@oscd-plugins/ui'
 
 // props
 const {
@@ -45,7 +45,6 @@ const {
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-<MaterialTheme pluginType="editor">
 	<LegacyTheme>
 		{#if doc}
 			{#key doc}
@@ -53,7 +52,6 @@ const {
 			{/key}
 		{/if}
 	</LegacyTheme>
-</MaterialTheme>
 </main>
 
 <!-- <style>
