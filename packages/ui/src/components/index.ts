@@ -8,6 +8,7 @@ export * from './checkbox'
 
 // THEME
 export * from './theme'
+export * from './theme-legacy'
 
 export * from './ied'
 

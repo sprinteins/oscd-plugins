@@ -4,19 +4,12 @@
 
 	interface Props {
 		// Input
-		select: (detail: { index: number }) => void;
+		onclick: (index: number) => void;
 		itemSets?: CardItem[];
+		selectedIndex?: number;
 	}
 
-	let { select, itemSets = [] }: Props = $props();
-
-	// Internal
-	let selectedIndex = $state(-1);
-
-	function handleClick(index: number) {
-		selectedIndex = index;
-		select({ index });
-	}
+	let { onclick, itemSets = [], selectedIndex = $bindable<number>() }: Props = $props();
 </script>
 
 <div class="group-card-list">
@@ -24,7 +17,7 @@
 		<GroupCard
 			icon={itemSet.icon}
 			items={itemSet.items}
-			onclick={() => handleClick(ii)}
+			onclick={() => onclick(ii)}
 			dataTestid={`card_${ii}`}
 			selected={selectedIndex === ii}
 		/>

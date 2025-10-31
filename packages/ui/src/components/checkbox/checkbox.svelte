@@ -3,6 +3,7 @@
     checked?: boolean;
     label: string;
     testid?: string;
+    title?: string;
     onchange?: (e: Event) => void;
     oninput?: (e: Event) => void;
   }
@@ -10,13 +11,14 @@
   let {
     onchange,
     oninput,
+    title = "",
     checked = $bindable(false),
     label,
     testid = "",
   }: Props = $props();
 </script>
 
-<div class="checkbox" data-testid={testid}>
+<div class="checkbox" data-testid={testid} {title}>
   <label>
     <input type="checkbox" {onchange} {oninput} bind:checked />
     <span class="checkbox">{label}</span>
