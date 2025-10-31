@@ -237,54 +237,52 @@
 	});
 </script>
 
-<MaterialTheme pluginType="editor">
-	<div class="typeswitcher" bind:this={root}>
-		<div class="columns">
-			<div class="collective">
-				<h5 class="mdc-typography--headline5">Duplicates</h5>
-				<CategorySelector
-					labels={categoryLabelsWithCounter}
-					handleSelect={handleCategorySelect}
-				/>
-				<GroupCardList
-					itemSets={itemsWithIcons}
-					select={handleGroupSelect}
-				/>
-			</div>
-			<div class="panel">
-				<h5 class="mdc-typography--headline5">Duplicates Types</h5>
-				{#key selectedGroup}
-					<TypeLinker
-						items={selectedGroup.map((item) => ({
-							label: item.element.id,
-						}))}
-						handleSelect={handleSourceSelect}
-						{handleRelink}
-					/>
-				{/key}
-			</div>
-			<div class="panel">
-				<h5 class="mdc-typography--headline5">Affected Nodes</h5>
-				<AffectedNodes items={affectedNodes} />
-			</div>
-			<div class="panel">
-				<h5 class="mdc-typography--headline5">Structure</h5>
-				<Structure items={structure} />
-			</div>
+<div class="typeswitcher" bind:this={root}>
+	<div class="columns">
+		<div class="collective">
+			<h5 class="mdc-typography--headline5">Duplicates</h5>
+			<CategorySelector
+				labels={categoryLabelsWithCounter}
+				handleSelect={handleCategorySelect}
+			/>
+			<GroupCardList
+				itemSets={itemsWithIcons}
+				select={handleGroupSelect}
+			/>
 		</div>
-
-		<span class="success">
-			<Snackbar bind:this={snackbar} class="snackbar-position-fix">
-				<Label>Relink was successful</Label>
-				<Actions>
-					<IconButton class="material-icons" title="Dismiss">
-						<IconClose />
-					</IconButton>
-				</Actions>
-			</Snackbar>
-		</span>
+		<div class="panel">
+			<h5 class="mdc-typography--headline5">Duplicates Types</h5>
+			{#key selectedGroup}
+				<TypeLinker
+					items={selectedGroup.map((item) => ({
+						label: item.element.id,
+					}))}
+					handleSelect={handleSourceSelect}
+					{handleRelink}
+				/>
+			{/key}
+		</div>
+		<div class="panel">
+			<h5 class="mdc-typography--headline5">Affected Nodes</h5>
+			<AffectedNodes items={affectedNodes} />
+		</div>
+		<div class="panel">
+			<h5 class="mdc-typography--headline5">Structure</h5>
+			<Structure items={structure} />
+		</div>
 	</div>
-</MaterialTheme>
+
+	<span class="success">
+		<Snackbar bind:this={snackbar} class="snackbar-position-fix">
+			<Label>Relink was successful</Label>
+			<Actions>
+				<IconButton class="material-icons" title="Dismiss">
+					<IconClose />
+				</IconButton>
+			</Actions>
+		</Snackbar>
+	</span>
+</div>
 
 <style>
 	.typeswitcher {
