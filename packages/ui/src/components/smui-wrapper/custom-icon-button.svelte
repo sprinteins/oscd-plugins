@@ -13,13 +13,21 @@ import type { AvailableIcon } from '../icons/types.icon'
 
 //====== INITIALIZATION ======//
 
+interface Props {
+	icon: AvailableIcon
+	size?: 'small' | 'large'
+	color?: string
+	class?: string
+	onclick?: (e: MouseEvent) => void
+}
+
 let {
 	icon,
 	size,
 	color,
 	class: className = '',
 	onclick
-} = $props();
+}: Props = $props();
 
 //====== REACTIVITY ======//
 

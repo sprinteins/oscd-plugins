@@ -3,7 +3,6 @@ import { run } from 'svelte/legacy'
 
 import { docTemplatesStore } from '@/stores'
 import { FileSelector, Table } from '@/ui/components'
-import type { FileSelectorChangeEvent } from '@/ui/components'
 import { pdfGenerator } from '@/utils'
 import { queryAutoDocElement } from '@/utils'
 import { IconWrapper } from '@oscd-plugins/ui'
@@ -35,9 +34,7 @@ function navigateToCreateTemplate() {
 	navigate({ view: View.Create })
 }
 
-async function onImportTemplate(e: FileSelectorChangeEvent) {
-	const file = e.detail.file
-
+async function onImportTemplate(file: File) {
 	const fileAsString = await file.text()
 	const templateDoc = new DOMParser().parseFromString(
 		fileAsString,
@@ -107,7 +104,7 @@ function openFileSelectorIfNotMasterTemplate() {
 let templatesConvertedToTableRow = $derived(
 	allTemplates.map(mapElementToTableRow)
 )
-run(() => {
+$effect(() => {
 	docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
 })
 let importToolTipText = $derived(
@@ -121,7 +118,7 @@ let importToolTipText = $derived(
             <IconWrapper fillColor="white" icon="add"/>
            <Label>Add template</Label> 
         </Button>
-        <FileSelector bind:this={fileSelector} on:change={onImportTemplate} />
+        <FileSelector bind:this={fileSelector} onchange={onImportTemplate} />
         <Menu bind:this={menu}>
             <List>
                 <Item onSMUIAction={() => {
