@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 	import { Button } from "@oscd-plugins/ui"
-	// TODO: Textfield import
-	// import { Textfield } from "@/ui/components/textfield"
+	import Textfield from "@smui/textfield"
 	import type { CreateCableEvent, UpdateCableEvent } from "../../editor-events/network-events"
 	import type { IED } from "../../diagram/networking"
 	import type { ConnectionBetweenNodes } from "../../store/index"
@@ -14,7 +13,7 @@
 	
 	interface Props {
 		// 
-		connectionBetweenNodes: ConnectionBetweenNodes | null;
+		connectionBetweenNodes: ConnectionBetweenNodes;
 		cableNames: string[];
 		cancel: () => void;
 		updateCable: (event: UpdateCableEvent) => void;
@@ -28,28 +27,36 @@
 	//
 	let sourceSelectedPort: string
 	let targetSelectedPort: string
-	let errors: { required: boolean, cableNameInUse: boolean } = $state({ required: false, cableNameInUse: false })
+
+	const errors: { required: boolean, cableNameInUse: boolean } = $derived.by(() => {
+		const required = !cableName
+		const cableNameInUse = !required && cableNameSet.has(cableName)
+
+		return { required, cableNameInUse }
+	})
+
+	let cableName: string = $state('')
+
+	$effect(() => {
+		cableName = connectionBetweenNodes.cableName ?? generateCableName()
+	})
 
 	const {
 		isNew,
 		existingCableName,
 		sourceIed,
-		targetIed,
-		cableName
+		targetIed
 	} = $derived.by(() => {
 		const isNew = connectionBetweenNodes.isNew
 		const existingCableName = isNew ? null : connectionBetweenNodes.cableName
 		const sourceIed = connectionBetweenNodes.source
 		const targetIed = connectionBetweenNodes.target
-		
-		const cableName = connectionBetweenNodes.cableName ?? generateCableName()
 
 		return {
 			isNew,
 			existingCableName,
 			sourceIed,
-			targetIed,
-			cableName
+			targetIed
 		}
 	})
 
@@ -142,30 +149,22 @@
 
 		return port
 	}
-
-	function onCableInput(): void {
-		const required = !cableName
-		const cableNameInUse = !required && cableNameSet.has(cableName)
-
-		errors = { required, cableNameInUse }
-	}
 </script>
 
 <div class="container">
 	<h3>Cable {cableName}</h3>
 	<div class="new-connection-textfield-container">
-		<!-- TODO: Readd <Textfield
+		<Textfield
 			bind:value={cableName}
 			invalid={errors.required || errors.cableNameInUse}
-			on:input={onCableInput}
 			label="Cable"
 			variant="outlined">
 			{#snippet helper()}
-						<HelperText persistent >
+				<HelperText persistent >
 					{ errors.required ? "Cablename required" : errors.cableNameInUse ? "Cablename allready in use" : "" }
 				</HelperText>
-					{/snippet}
-		</Textfield> -->
+			{/snippet}
+		</Textfield>
 	</div>
 	
 	<IedPortSelect ied={sourceIed} { existingCableName } select={onSourceSelect}/>
