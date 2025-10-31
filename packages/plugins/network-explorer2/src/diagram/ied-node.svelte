@@ -1,15 +1,22 @@
 <script lang="ts">
-	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
+	import { Handle, Position, type NodeProps, type HandleProps } from '@xyflow/svelte';
   
 	type $$Props = NodeProps;
+	type $$HandleProps = HandleProps;
 	
 	interface Props {
 		data: $$Props['data'];
 		isConnectable: $$Props['isConnectable'];
 		selected: $$Props['selected'];
+		onconnect: $$HandleProps['onconnect'];
 	}
 
-	let { data, isConnectable, selected }: Props = $props();
+	let {
+		data,
+		isConnectable,
+		selected,
+		onconnect
+	}: Props = $props();
 
   
 	const { label } = data;
@@ -19,9 +26,7 @@
 	type="target"
 	position={Position.Left}
 	{isConnectable}
-	on:connect
-	on:connectend
-	on:connectstart
+	{ onconnect }
   />
 	<div
 		class="ied"
@@ -34,9 +39,7 @@
 	position={Position.Right}
 	id="a"
 	{isConnectable}
-	on:connect
-	on:connectend
-	on:connectstart
+	{ onconnect }
   />
   <!-- <Handle
 	type="source"
