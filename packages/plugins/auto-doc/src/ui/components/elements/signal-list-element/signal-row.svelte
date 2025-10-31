@@ -1,7 +1,4 @@
 <script lang="ts">
-import { createBubbler, preventDefault } from 'svelte/legacy'
-
-const bubble = createBubbler()
 import type { SignalRow } from '@/stores/signallist.store.d'
 import Checkbox from '@smui/checkbox'
 import Textfield from '@smui/textfield'
@@ -92,7 +89,8 @@ const handleDragLeave = (e: DragEvent) => {
 	}
 }
 
-const dropIntoPosition = () => {
+const dropIntoPosition = (e: DragEvent) => {
+	e.preventDefault()
 	isDraggedOver = false
 	const { draggedIndex, dropIndex } = signalDndStore
 	if (
@@ -124,7 +122,7 @@ function onDragEnd() {
                 role="row"
                 tabindex="0"
                 aria-label="Draggable signal row"
-                ondrop={preventDefault(dropIntoPosition)}
+                ondrop={dropIntoPosition}
                 ondragover={handleDragOver}
                 ondragleave={handleDragLeave}>
                 <div class="signal-row"
@@ -141,10 +139,12 @@ function onDragEnd() {
                                                 tabindex="0"
                                                 aria-label="Drag handle"
                                                 ondragstart={(event) => {
-                                                    const row = event.target.closest('.signal-row');
-                                                    event.dataTransfer?.setDragImage(row, 16, 36);
-                                                    signalDndStore.handleDragStart(idx);
-                                                }}
+                                                        const target = event.target as HTMLElement;
+                                                        const row = target.closest('.signal-row');
+                                                        if (!row) return;
+                                                        event.dataTransfer?.setDragImage(row, 16, 36);
+                                                        signalDndStore.handleDragStart(idx);
+                                                        }}
                                                 ondragend={() => onDragEnd()}
                                         >
                                                 <svg viewBox="0 0 24 24" width="24" height="24" class="grip-dots">
@@ -185,8 +185,7 @@ function onDragEnd() {
                         class:active={isDraggedOver && 
                                      idx !== signalDndStore.draggedIndex &&
                                      isDropAllowed()}
-                        ondrop={preventDefault(dropIntoPosition)}
-                        ondragover={preventDefault(bubble('dragover'))}
+                        ondrop={dropIntoPosition}
                 ></div>
         </div>
     </div>

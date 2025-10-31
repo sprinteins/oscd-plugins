@@ -1,16 +1,14 @@
-<script module lang="ts">
-export type FileSelectorChangeEvent = CustomEvent<{ file: File }>
-</script>
-
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte'
+    interface Props {
+        onchange: (file: File) => void
+    }
+    let { onchange }: Props = $props()
 
     export const accept = '.scd'
     export function open() {
         input.click()
     }
 
-    const dispatch = createEventDispatcher()
     let input: HTMLInputElement = $state()
 
     function onChange(e: Event) {
@@ -21,7 +19,7 @@ export type FileSelectorChangeEvent = CustomEvent<{ file: File }>
             throw new Error('No file selected')
         }
 
-        dispatch('change', { file })
+        onchange(file)
 
         input.value = ''
     }

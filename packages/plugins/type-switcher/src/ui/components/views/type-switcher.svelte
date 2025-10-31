@@ -84,21 +84,21 @@ async function loadDuplicates(categories: ElementCategoryMap) {
 let selectedCategoryLabels = $state<string[]>([])
 
 let selectedFlattenCollectives = $derived.by(() => {
-    let selectedCatKeys = categoryKeys
-    if (selectedCategoryLabels.length > 0) {
-        selectedCatKeys = selectedCategoryLabels.map((label) => {
-            const idx = categoryLabelsWithCounter.indexOf(label)
-            return categoryKeys[idx]
-        })
-    }
-    return selectedCatKeys.flatMap((catKey) => {
-        const categoryItems = categories[catKey]
-        if (!categoryItems) return []
-        return categoryItems.map((cat) => ({
-            type: catKey,
-            items: cat
-        }))
-    })
+	let selectedCatKeys = categoryKeys
+	if (selectedCategoryLabels.length > 0) {
+		selectedCatKeys = selectedCategoryLabels.map((label) => {
+			const idx = categoryLabelsWithCounter.indexOf(label)
+			return categoryKeys[idx]
+		})
+	}
+	return selectedCatKeys.flatMap((catKey) => {
+		const categoryItems = categories[catKey]
+		if (!categoryItems) return []
+		return categoryItems.map((cat) => ({
+			type: catKey,
+			items: cat
+		}))
+	})
 })
 
 let selectedGroup: HashedElementGroup = $state([])
@@ -275,7 +275,6 @@ let itemsWithIcons = $derived(
 				<Structure items={structure} />
 			</div>
 		</div>
-
 		<span class="success">
 			<Snackbar bind:this={snackbar} class="snackbar-position-fix">
 				<Label>Relink was successful</Label>
