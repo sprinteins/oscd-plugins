@@ -17,9 +17,10 @@ let editor: Editor | undefined = $state()
 interface Props {
 	content?: string
 	onContentChange: (newContent: string) => void
+	doc?: XMLDocument
 }
 
-let { content = $bindable(''), onContentChange }: Props = $props()
+let { content = '', onContentChange }: Props = $props()
 
 let isPlaceholderHelpDialogOpen = $state(false)
 

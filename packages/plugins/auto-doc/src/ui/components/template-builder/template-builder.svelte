@@ -8,6 +8,7 @@ import ImageElement from '@/ui/components/elements/image-element/image-element.s
 import SignalListElement from '@/ui/components/elements/signal-list-element/signal-list-element.svelte'
 import TableElement from '@/ui/components/elements/table-element/table-element.svelte'
 import TextElement from '@/ui/components/elements/text-element/text-element.svelte'
+import CommunicationElement from '@/ui/components/elements/communication-element/communication-element.svelte'
 
 import { MOVE_BLOCK_DIRECTION } from '@/constants'
 import { docTemplatesStore } from '@/stores'
@@ -19,10 +20,11 @@ import type {
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 interface Props {
 	// Prop
-	template: Element
+	template: Element;
+	doc: XMLDocument;
 }
 
-let { template }: Props = $props()
+let { template, doc }: Props = $props()
 
 const allBlocks = $derived.by(() => {
 	// Editcount is referenced to trigger updates on changes
@@ -48,7 +50,8 @@ const componentMap: ElementMap = {
 	text: TextElement,
 	image: ImageElement,
 	signalList: SignalListElement,
-	table: TableElement
+	table: TableElement,
+	communication: CommunicationElement
 }
 
 function createTableElement(rows: number, columns: number) {
@@ -139,7 +142,8 @@ function handleContentChange(elementId: string, newContent: string) {
                     {@const SvelteComponent = componentMap[blockElement.type]}
                     <SvelteComponent
                         content={blockElement.content}
-                        onContentChange={(newContent) => handleContentChange(blockElement.id, newContent)}
+                        onContentChange={(newContent: string) => handleContentChange(blockElement.id, newContent)}
+                        {doc}
                     />
                 </ElementWrapper>
             {/each}
@@ -158,6 +162,7 @@ function handleContentChange(elementId: string, newContent: string) {
                     <Button variant="outlined" onclick={()=>{addElement("image")}}>Image</Button>
                     <Button variant="outlined" onclick={()=>{addElement("signalList")}}>Signal List</Button>
                     <Button variant="outlined" onclick={() => isCreateTableDialogOpen = true}>Table</Button>
+                    <Button variant="outlined" onclick={()=>{addElement("communication")}}>Communication Explorer (POC)</Button>
                 {/if}
             </div>
         </footer>

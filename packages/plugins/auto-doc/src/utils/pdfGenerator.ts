@@ -28,7 +28,8 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		text: handleRichTextEditorBlock,
 		image: processImageForPdfGeneration,
 		signalList: processSignalListForPdfGeneration,
-		table: processTableForPdfGeneration
+		table: processTableForPdfGeneration,
+		communication: handleCommunicationBlock
 	}
 
 	function incrementVerticalPositionForNextLine(lineHeight?: number) {
@@ -290,6 +291,14 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 		renderTextLine(pdfHintText)
 		zipcelx(config)
+	}
+
+	function handleCommunicationBlock(block: Element) {
+		// Communication diagrams are interactive and complex, so we add a placeholder text
+		// In the future, this could render a snapshot of the diagram
+		handleText('Communication Explorer Diagram', 16, 'bold')
+		handleText('(Interactive diagram not included in PDF export)', 10, 'italic')
+		incrementVerticalPositionForNextLine()
 	}
 
 	function allocateSpaceForRows(

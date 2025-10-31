@@ -10,6 +10,7 @@ interface Props {
 	// prop
 	onContentChange: (newContent: string) => void
 	content?: string
+	doc?: XMLDocument
 }
 
 let { onContentChange, content = '' }: Props = $props()

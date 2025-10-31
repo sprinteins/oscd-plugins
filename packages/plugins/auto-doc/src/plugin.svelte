@@ -29,7 +29,7 @@
 	<MaterialTheme pluginType="editor">
 		<auto-doc class="auto-doc">
 			{#if hasRunInit && pluginGlobalStore.xmlDocument}
-				<ViewNavigator></ViewNavigator>
+				<ViewNavigator {doc}></ViewNavigator>
 			{:else}
 				<div class="file-missing">
 					<p>No XML file loaded</p>

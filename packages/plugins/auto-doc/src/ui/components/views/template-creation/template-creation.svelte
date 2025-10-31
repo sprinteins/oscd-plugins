@@ -11,10 +11,11 @@ import Textfield from '@smui/textfield'
 import { onMount } from 'svelte'
 
 interface Props extends NavigateProps {
-	id: string | null
+	id: string | null;
+	doc: XMLDocument;
 }
 
-let { id, navigate }: Props = $props()
+let { id, navigate, doc }: Props = $props()
 
 let title = $state('')
 let description = $state('')
@@ -146,7 +147,7 @@ function downloadTemplateContent() {
 
     <main class="template-builder-container">
         {#if template}
-            <TemplateBuilder {template}/>
+            <TemplateBuilder {template} {doc}/>
         {/if}
     </main>
 </div>

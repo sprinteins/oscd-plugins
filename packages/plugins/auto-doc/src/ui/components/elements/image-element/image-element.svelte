@@ -4,6 +4,7 @@ import type { ImageData } from './types.image'
 interface Props {
 	content?: string
 	onContentChange: (newContent: string) => void
+	doc?: XMLDocument
 }
 
 let { content = '', onContentChange }: Props = $props()
