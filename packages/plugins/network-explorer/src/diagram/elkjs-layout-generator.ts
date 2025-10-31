@@ -32,6 +32,8 @@ export async function generateElkJSLayout(
 	const bayElkNodes: BayElkNode[] = Object.keys(bayIedMap).map(bayName => createBayElkNode(bayName, config))
 	const iedElkNodes: IEDElkNode[] = ieds.map(ied =>  createIEDElkNode(ied.name, config))
 
+	console.log(iedElkNodes)
+
 	const iedsWithoutBay: IEDElkNode[] = []
 	iedElkNodes.forEach(iedNode => assignNodeToBay(iedNode, bayIedMap, bayElkNodes, iedsWithoutBay) )
 	
