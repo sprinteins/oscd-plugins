@@ -26,7 +26,7 @@
 				{/if}
 				<div class="text-container">
 					<div class="primary-text">{item.primaryText}</div>
-					<div class="secondary-text">{item.secondaryText}</div>
+					<div class="secondary-text" title={item.secondaryText}>{item.secondaryText}</div>
 				</div>
 			</li>
 		{/each}
