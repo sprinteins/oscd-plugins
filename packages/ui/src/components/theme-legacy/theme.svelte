@@ -1,15 +1,18 @@
 <script lang="ts">
-    import type { Snippet } from "svelte";
+import type { Snippet } from 'svelte'
+import { MaterialTheme } from '../theme'
 
-    interface Props {
-        children?: Snippet;
-    }
+interface Props {
+	children?: Snippet
+}
 
-    let { children }: Props = $props();
+let { children }: Props = $props()
 </script>
 
 <legacy-theme>
-    {@render children?.()}
+    <MaterialTheme>
+        {@render children?.()}
+    </MaterialTheme>
 </legacy-theme>
 
 <style>
