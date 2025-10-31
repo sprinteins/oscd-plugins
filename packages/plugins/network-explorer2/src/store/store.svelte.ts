@@ -43,7 +43,7 @@ export class DiagramStore {
 		}
 		this.edges = resp.edges
 
-		this.setIsConnectedable(this.nodes)
+		this.setIsConnectedable()
 	}
 
 	public updateSelectedNodes(flowNodes: FlowNodes[]){
@@ -160,13 +160,11 @@ export class DiagramStore {
 		})
 	}
 
-	private setIsConnectedable(nodes: FlowNodes[]): void {
-		// TODO: Node and edges are immutable, so we have to replace everything
-		for (const node of nodes) {
-			if (this.isNodeConnectable(node as unknown as IEDElkNode | BayElkNode)) {
-				node.connectable = true
-			}
-		}
+	private setIsConnectedable(): void {
+		this.nodes = this.nodes.map(n => ({
+			...n,
+			connectable: true
+		}))
 	}
 
 	private isNodeConnectable(node: IEDElkNode | BayElkNode): boolean {
