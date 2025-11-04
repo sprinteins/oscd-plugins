@@ -39,7 +39,6 @@ export class DiagramStore {
 		const shouldRerenderNodes = !isNodeStructureEquivalent
 		if (shouldRerenderNodes) {
 			this.nodes = resp.nodes
-			console.log(this.nodes)
 		}
 		this.edges = resp.edges
 
