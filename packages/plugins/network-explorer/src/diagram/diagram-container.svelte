@@ -31,9 +31,10 @@ import type { Networking } from "@oscd-plugins/core"
 		editCount: number;
 		store: DiagramStore;
 		onDelete: (networkings: Networking[]) => void;
+		flowPane?: HTMLElement | null;
 	}
 
-	let { doc, editCount, store, onDelete }: Props = $props();
+	let { doc, editCount, store, onDelete, flowPane = $bindable() }: Props = $props();
 
 // 
 // CONFIG
@@ -110,6 +111,15 @@ $effect(() => {
 })
 $effect(() => {
 	store.updateSelectedEdges(edges.current)
+})
+
+$effect(() => {
+	if (root) {
+		const pane = root.querySelector<HTMLElement>('.svelte-flow__pane')
+		if (pane) {
+			flowPane = pane
+		}
+	}
 })
 </script>
 

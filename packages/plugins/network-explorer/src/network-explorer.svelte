@@ -16,6 +16,7 @@
 
 	let { doc, editCount, store = new DiagramStore() }: Props = $props();
 	let htmlRoot: HTMLElement | undefined = $state()
+	let flowPane: HTMLElement | null = $state(null)
 	let editEventHandler: EditorEventHandler = $derived(new EditorEventHandler(htmlRoot!))
 	
 
@@ -35,9 +36,15 @@
 </script>
 
 <SvelteFlowProvider>
-	<ExportPng />
+	<ExportPng {flowPane} />
 	<network-explorer bind:this={htmlRoot}>
-		<DiagramContainer {store} doc={doc.documentElement} {editCount} onDelete={onDelete}/>
+		<DiagramContainer 
+			{store} 
+			doc={doc.documentElement} 
+			{editCount} 
+			onDelete={onDelete}
+			bind:flowPane={flowPane}
+		/>
 		<Sidebar {store} createCable={onCreateCable} updateCable={onUpdateCable} />
 	</network-explorer>
 </SvelteFlowProvider>

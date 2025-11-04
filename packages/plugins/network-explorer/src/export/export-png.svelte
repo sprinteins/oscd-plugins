@@ -13,26 +13,15 @@
   const imageWidth = 1024;
   const imageHeight = 768;
 
-  let possibleShadowElement: HTMLElement;
-  let root: Document | ShadowRoot;
+  export let flowPane: HTMLElement | null = null;
 
-  onMount(() => {
-    root = possibleShadowElement.getRootNode() as Document | ShadowRoot;
-  });
-
-  function getPaneInRoot(): HTMLElement | null {
-    if (!root) return null;
-    const pane = root.querySelector<HTMLElement>('.svelte-flow__pane');
-    return pane ?? null;
+  if (!flowPane) {
+    console.warn('Flow pane reference not provided to export component')
   }
 
   async function handleClick() {
-    const viewportDomNode = getPaneInRoot();
-
-    if (!viewportDomNode) {
-      console.error(
-        'Could not find .svelte-flow__pane. If the component uses a closed ShadowRoot, it cannot be accessed.'
-      );
+    if (!flowPane) {
+      console.error('Flow pane reference not available');
       return;
     }
 
@@ -52,7 +41,7 @@
     }
 
     try {
-      const dataUrl = await toPng(viewportDomNode, {
+      const dataUrl = await toPng(flowPane, {
         backgroundColor: '#1a365d',
         width: imageWidth,
         height: imageHeight,
@@ -75,6 +64,5 @@
 </script>
 
 <Panel position="top-right">
-  <div bind:this={possibleShadowElement}></div>
   <Button onclick={handleClick}>Download Image</Button>
 </Panel>
