@@ -20,6 +20,7 @@ import type { Connection, Edge } from "@xyflow/svelte";
 import { getIedNameFromId } from "./ied-helper"
 import { extractCableNameFromId } from "./edge-helper"
 import type { IED } from "./networking";
+import type { Networking } from "@oscd-plugins/core"
 
 // 
 // INPUT
@@ -29,9 +30,10 @@ import type { IED } from "./networking";
 		doc: Element;
 		editCount: number;
 		store: DiagramStore;
+		onDelete: (networkings: Networking[]) => void;
 	}
 
-	let { doc, editCount, store }: Props = $props();
+	let { doc, editCount, store, onDelete }: Props = $props();
 
 // 
 // CONFIG
@@ -44,9 +46,9 @@ let root: HTMLElement = $state()
 let _editCount: number
 let _doc: Element
 
-const nodes$ = useNodes();
+const nodes = useNodes();
 
-const edges$ = useEdges();
+const edges = useEdges();
 
 function updateOnDoc(doc: Element): void {
 	if (doc === _doc) {
@@ -66,8 +68,8 @@ function updateOnEditCount(editCount: number): void {
 	store.updateNodesAndEdges(doc)
 }
 
-function onconnect(event: CustomEvent<Connection>): void {
-	const { source, target } = event.detail
+function onconnect(connection: Connection): void {
+	const { source, target } = connection
 	const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
 
 	store.connectionBetweenNodes.set({
@@ -97,18 +99,18 @@ function getSourceAndTargetIed(source: string, target: string): { sourceIed: IED
 	return { sourceIed: sourceIed, targetIed: targetIed }
 }
 
-run(() => {
-		updateOnEditCount(editCount)
-	});
-run(() => {
-		updateOnDoc(doc)
-	});
-run(() => {
-		store.updateSelectedNodes($nodes$)
-	});
-run(() => {
-		store.updateSelectedEdges($edges$)
-	});
+$effect(() => {
+	updateOnEditCount(editCount)
+})
+$effect(() => {
+	updateOnDoc(doc)
+})
+$effect(() => {
+	store.updateSelectedNodes(nodes.current)
+})
+$effect(() => {
+	store.updateSelectedEdges(edges.current)
+})
 </script>
 
 <div class="root" bind:this={root}>
@@ -117,8 +119,8 @@ run(() => {
 			nodes={store.nodes}
 			edges={store.edges}
 			ieds={store.ieds}
-			on:delete
-			on:connect={onconnect}
+			onDelete={onDelete}
+			connect={onconnect}
 		/>	
 	{/if}
 </div>

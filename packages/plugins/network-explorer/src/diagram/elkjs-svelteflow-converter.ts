@@ -29,7 +29,7 @@ export function convertElKJSRootNodeToSvelteFlowObjects(rootNode: RootNode<Netwo
 		.map( (node: Node) => node.children.map((childNode: Node) => {
 			return {
 				...convertNetworkNode(childNode),
-				parentNode: node.id,
+				parentId: node.id,
 			}
 		}))
 		.flat()

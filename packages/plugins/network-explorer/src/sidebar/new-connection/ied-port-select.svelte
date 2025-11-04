@@ -1,11 +1,7 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
-	import { createEventDispatcher } from 'svelte';
 	import type { IED } from "../../diagram/networking"
 	import { IED as IEDComponent } from "@oscd-plugins/ui"
-	// TODO: Fix Select import
-	// import { Select } from "@/ui/components/select"
+	import { Select } from "@oscd-plugins/ui"
 	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
 
 	interface PortOption {
@@ -21,22 +17,16 @@
 		// 
 		ied: IED;
 		existingCableName?: string | null;
+		select: (port: string) => void;
 	}
 
-	let { ied, existingCableName = null }: Props = $props();
+	let { ied, existingCableName = null, select }: Props = $props();
 
 	//
 	// Internal
 	//
-	const dispatch = createEventDispatcher();
-	let openPorts: PortOption[] = $state([])
-	let selectedIndex: number = $state()
-
-
-	function onIed(ied: IED): void {
-		openPorts = getOpenPorts(ied)
-		selectedIndex = getSelectedIndex()
-	}
+	let openPorts: PortOption[] = $derived(getOpenPorts(ied))
+	let selectedIndex: number = $derived(getSelectedIndex())
 
 	function getSelectedIndex(): number {
 		if (!existingCableName) {
@@ -59,15 +49,12 @@
 			))
 	}
 
-	function handleSelectionChange(event: CustomEvent<{ index: number }>): void {
-		const selectedPort = openPorts[event.detail.index]
+	function handleSelectionChange(index: number): void {
+		const selectedPort = openPorts[index]
 		if(!selectedPort){ return }
 
-		dispatch("select", selectedPort.port)
+		select(selectedPort.port);
 	}
-	run(() => {
-		onIed(ied)
-	});
 </script>
 
 
@@ -75,12 +62,12 @@
 	<IEDComponent label={ied.name} isSelected={true} isSelectable={false} />
 
 	<div class="select-container">
-		<!-- TODO: Readd<Select
-			on:select={handleSelectionChange}
+		<Select
+			handleSelect={handleSelectionChange}
 			linkTargetIndex={selectedIndex}
 			items={openPorts}
 		>
-		</Select> -->
+		</Select>
 	</div>
 </div>
 
