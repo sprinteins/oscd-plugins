@@ -1,31 +1,22 @@
 <script lang="ts">
 	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import type { Networking } from "@oscd-plugins/core";
-	// import Theme from "../../theme/theme.svelte"
 	import { DiagramContainer } from "./diagram"
 	import { DiagramStore } from "./store"
 	import { Sidebar } from "./sidebar"
-    import type { CreateCableEvent, UpdateCableEvent } from "./editor-events/network-events";
+	import type { CreateCableEvent, UpdateCableEvent } from "./editor-events/network-events";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler"
-
-	// 
-	// INPUT
-	
-
-	// 
-	// INTERNAL
+  import ExportPng from './export/export-png.svelte';
 	
 	interface Props {
-		// 
 		doc: XMLDocument;
 		editCount: number;
-		// 
 		store?: any;
 	}
 
 	let { doc, editCount, store = new DiagramStore() }: Props = $props();
-	let htmlRoot: HTMLElement = $state()
-	let editEventHandler: EditorEventHandler = $derived(new EditorEventHandler(htmlRoot))
+	let htmlRoot: HTMLElement | undefined = $state()
+	let editEventHandler: EditorEventHandler = $derived(new EditorEventHandler(htmlRoot!))
 	
 
 	function onCreateCable(event: CreateCableEvent) {
@@ -44,6 +35,7 @@
 </script>
 
 <SvelteFlowProvider>
+	<ExportPng />
 	<network-explorer bind:this={htmlRoot}>
 		<DiagramContainer {store} doc={doc.documentElement} {editCount} onDelete={onDelete}/>
 		<Sidebar {store} createCable={onCreateCable} updateCable={onUpdateCable} />
@@ -111,6 +103,5 @@
 		display: flex;
  	 	align-items: stretch;
 		position: relative;
-		/* font-size: 12px; */
 	}
 </style>
