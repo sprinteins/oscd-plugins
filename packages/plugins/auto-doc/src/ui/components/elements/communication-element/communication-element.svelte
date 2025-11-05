@@ -148,6 +148,32 @@ function updateTargetIEDValidation(index: number, event: Event) {
 		availableIEDs
 	)
 }
+
+// ============================================================================
+// TEST SAMPLE DATA - Remove this section when not testing
+// ============================================================================
+
+// const bayFilter = undefined
+
+const bayFilter = "Koppelveld"
+
+const communicationMatrix = undefined
+
+// const communicationMatrix: CommunicationMatrix = {
+// 	filters: [
+// 		{ type: 'GOOSE',
+// 			sourceIEDs: ['Relay_CouplField'],
+// 			targetIEDs: ['Relay_VELDA']
+// 		 },
+// 		{ type: 'MMS'}
+// 	]
+// }
+
+// ============================================================================
+// END TEST SAMPLE DATA
+// ============================================================================
+
+
 </script>
 
 <div class="communication-overview-container">
@@ -280,7 +306,7 @@ function updateTargetIEDValidation(index: number, event: Event) {
 	{#if doc && doc.documentElement}
 		<div class="diagram-container"> 
             <!-- style="position: absolute; left: -9999px; top: -9999px; visibility: hidden;"> -->
-			<TelemetryView root={doc.documentElement} showSidebar={false} />
+			<TelemetryView root={doc.documentElement} showSidebar={false} {bayFilter} {communicationMatrix} />
 		</div>
 	{:else}
 		<div class="no-data">
