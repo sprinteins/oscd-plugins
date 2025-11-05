@@ -112,7 +112,7 @@ export const SCD_ELEMENTS = {
 		element: {
 			tag: 'LNode',
 			name: 'Logical Node',
-			standardAttributes: [...BASE_STANDARD_ATTRIBUTES, 'lnClass'],
+			standardAttributes: [...BASE_STANDARD_ATTRIBUTES, 'lnClass', 'iedName'],
 			customAttributes: []
 		},
 		type: {

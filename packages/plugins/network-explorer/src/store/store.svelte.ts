@@ -10,14 +10,13 @@ import { extractCableNameFromId } from "../diagram/edge-helper"
 
 
 export class DiagramStore {
-	public nodes = writable<FlowNodes[]>([])
-	public edges = writable<Edge[]>([])
+	public nodes: FlowNodes[] = $state.raw([])
+	public edges: Edge[] = $state.raw([])
 	public ieds = writable<IED[]>([])
 	
 	public selectedNodes = writable<SelectedNode[]>([])
 
 	public connectionBetweenNodes = writable<ConnectionBetweenNodes | null>(null)
-
 	public async updateNodesAndEdges( root: Element ) {
 		if (!root) {
 			console.info({ level: "info", msg: "initInfos: no root" })
@@ -31,7 +30,7 @@ export class DiagramStore {
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
 
-		const previousNodes = get(this.nodes)
+		const previousNodes = this.nodes
 		const isNodeStructureEquivalent = this.isNodeStructureEquivalent(
 			previousNodes as unknown as (IEDElkNode | BayElkNode)[],
 			resp.nodes as unknown as (IEDElkNode | BayElkNode)[],
@@ -39,11 +38,11 @@ export class DiagramStore {
 
 		const shouldRerenderNodes = !isNodeStructureEquivalent
 		if (shouldRerenderNodes) {
-			this.nodes.set(resp.nodes)
+			this.nodes = resp.nodes
 		}
-		this.edges.set(resp.edges)
+		this.edges = resp.edges
 
-		this.setIsConnectedable(get(this.nodes))
+		this.setIsConnectedable()
 	}
 
 	public updateSelectedNodes(flowNodes: FlowNodes[]){
@@ -160,12 +159,11 @@ export class DiagramStore {
 		})
 	}
 
-	private setIsConnectedable(nodes: FlowNodes[]): void {
-		for (const node of nodes) {
-			if (this.isNodeConnectable(node as unknown as IEDElkNode | BayElkNode)) {
-				node.connectable = true
-			}
-		}
+	private setIsConnectedable(): void {
+		this.nodes = this.nodes.map(n => ({
+			...n,
+			connectable: true
+		}))
 	}
 
 	private isNodeConnectable(node: IEDElkNode | BayElkNode): boolean {

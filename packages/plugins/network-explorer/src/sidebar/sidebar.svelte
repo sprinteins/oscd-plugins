@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { DiagramStore, ConnectionBetweenNodes } from "../store"
+	import type { CreateCableEvent, UpdateCableEvent } from "../editor-events/network-events"
 	import { IEDAccordion } from "./ied-accordion";
 	import { ScdAssumptions } from "./scd-assumptions"
 	import { writable, derived } from "svelte/store";
@@ -12,9 +13,11 @@
 	interface Props {
 		// 
 		store: DiagramStore;
+		createCable: (event: CreateCableEvent) => void;
+		updateCable: (event: UpdateCableEvent) => void;
 	}
 
-	let { store }: Props = $props();
+	let { store, createCable, updateCable }: Props = $props();
 	
 	//
 	// INTERNAL
@@ -40,21 +43,21 @@
 <div class="sidebar sidebar-right">
 	<div class="sidebar-content">
 		{#if $sidebarMode$ === SidebarMode.SelectedNodes}
-		{#each $selectedNodes$ as node }
-		<IEDAccordion
-		selectedIED={node}
-		/>
-		{/each}
+			{#each $selectedNodes$ as node }
+				<IEDAccordion
+					selectedIED={node}
+				/>
+			{/each}
 		{:else if $sidebarMode$ === SidebarMode.ConnectionBetweenNodes}
-		<NewConnection
-		connectionBetweenNodes={$connectionBetweenNodes$}
-		cableNames={$cableNames$}
-		on:createCable
-		on:updateCable
-		on:cancel={onCancelConnection}
-		/>
+			<NewConnection
+				connectionBetweenNodes={$connectionBetweenNodes$}
+				cableNames={$cableNames$}
+				{ createCable }
+				{ updateCable }
+				cancel={onCancelConnection}
+			/>
 		{:else}
-		<ScdAssumptions />
+			<ScdAssumptions />
 		{/if}
 	</div>
 </div>

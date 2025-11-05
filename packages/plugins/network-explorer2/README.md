@@ -1,3 +1,0 @@
-# OSCD Plugin Template
-
-TODO
