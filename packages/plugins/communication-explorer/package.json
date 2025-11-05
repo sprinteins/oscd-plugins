@@ -23,6 +23,10 @@
 			"types": "./dist/plugin.d.ts",
 			"default": "./dist/plugin.js"
 		},
+		"./telemetry-view": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
 		"./src/ui/components/telemetry-view/telemetry-view.svelte": "./src/ui/components/telemetry-view/telemetry-view.svelte"
 	},
 	"dependencies": {
