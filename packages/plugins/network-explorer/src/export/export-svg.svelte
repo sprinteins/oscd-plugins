@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { toPng } from 'html-to-image';
+  import { toSvg } from 'html-to-image';
   import {
     Panel,
     getNodesBounds,
@@ -14,7 +14,7 @@
   export let imageHeight: number = 768;
   export let imageWidth: number = 1024;
   export let backgroundColor: string = 'var(--global-background-color)';
-  export let fileName: string = 'svelte-flow.png';
+  export let fileName: string = 'svelte-flow.svg';
 
   if (!flowPane) {
     console.warn('Flow pane reference not provided to export component')
@@ -43,7 +43,7 @@
     }
 
     try {
-      const dataUrl = await toPng(flowPane, {
+      const dataUrl = await toSvg(flowPane, {
         backgroundColor: backgroundColor,
         width: imageWidth,
         height: imageHeight,
@@ -55,9 +55,9 @@
       link.href = dataUrl;
       link.click();
     } catch (err) {
-      console.error('toPng failed', err);
+      console.error('toSvg failed', err);
     }
   }
 </script>
 
-<Button onclick={handleClick}>Download PNG</Button>
+<Button onclick={handleClick}>Download SVG</Button>

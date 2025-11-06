@@ -6,8 +6,8 @@
 	import { Sidebar } from "./sidebar"
 	import type { CreateCableEvent, UpdateCableEvent } from "./editor-events/network-events";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler"
-  import ExportPng from './export/export-png.svelte';
-	
+	import { ExportPng, ExportSvg } from './export';
+
 	interface Props {
 		doc: XMLDocument;
 		editCount: number;
@@ -15,10 +15,18 @@
 	}
 
 	let { doc, editCount, store = new DiagramStore() }: Props = $props();
-	let htmlRoot: HTMLElement | undefined = $state()
+	let htmlRoot: HTMLElement | null = $state(null)
 	let flowPane: HTMLElement | null = $state(null)
 	let editEventHandler: EditorEventHandler = $derived(new EditorEventHandler(htmlRoot!))
-	
+
+	$effect(() => {
+		if (htmlRoot) {
+			const pane = htmlRoot.querySelector<HTMLElement>('.svelte-flow__pane')
+			if (pane) {
+				flowPane = pane
+			}
+		}
+	})
 
 	function onCreateCable(event: CreateCableEvent) {
 		editEventHandler.dispatchCreateCable(event)
@@ -36,14 +44,16 @@
 </script>
 
 <SvelteFlowProvider>
-	<ExportPng {flowPane} />
+	<div>
+		<ExportPng {flowPane} />
+		<ExportSvg {flowPane} />
+	</div>
 	<network-explorer bind:this={htmlRoot}>
 		<DiagramContainer 
 			{store} 
 			doc={doc.documentElement} 
 			{editCount} 
 			onDelete={onDelete}
-			bind:flowPane={flowPane}
 		/>
 		<Sidebar {store} createCable={onCreateCable} updateCable={onUpdateCable} />
 	</network-explorer>
