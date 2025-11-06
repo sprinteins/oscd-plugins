@@ -2,9 +2,12 @@ import type { ImageData } from '@/ui/components/elements/image-element/types.ima
 import type { SignalListOnSCD } from '@/ui/components/elements/signal-list-element/types.signal-list'
 import type { ElementType } from '@/ui/components/elements/types.elements'
 import jsPDF from 'jspdf'
+import { } from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import 'svg2pdf.js'
 import zipcelx from 'zipcelx'
 import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
+import { getSVGDimensions } from './svg-utils'
 
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
@@ -202,6 +205,27 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		})
 	}
 
+	async function addSVGToPdf(svgString: string, x: number, y: number, maxWidth: number, scale: number = 1) {
+		const parser = new DOMParser()
+		const svgElement = parser.parseFromString(svgString, "image/svg+xml").documentElement as unknown as SVGElement;
+		const {width, height } = getSVGDimensions(svgElement, scale, maxWidth)
+
+		if (contentExceedsCurrentPage(height)) {
+			createNewPage()
+		}
+		
+		await doc.svg(svgElement, {
+			x,
+			y,
+			width,
+			height
+		})
+		
+		const padding = Math.round(height) + DEFAULT_LINE_HEIGHT
+		incrementVerticalPositionForNextLine(padding)
+		return { width, height }
+	}
+
 	function getImageScaleFactor(scale: string) {
 		switch (scale.toLowerCase()) {
 			case 'small':
@@ -222,37 +246,43 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		}
 
 		const parsedContent = JSON.parse(content) as ImageData
-		const imageSource = parsedContent.base64Data
-		if (!imageSource) {
-			return
-		}
-
-		const image = await loadImage(imageSource)
-		const format = content.split(';')[0].split('/')[1]
-
 		const maxWidth = 186
 		const scaleFactor = getImageScaleFactor(parsedContent.scale)
+		const format = content.split(';')[0].split('/')[1]
 
-		const aspectRatio = image.height / image.width
+		if (format === 'svg+xml') {
+			const svgData = block.textContent
+			if (!svgData) {
+				return
+			}
+			await addSVGToPdf(svgData, 10, marginTop, maxWidth, scaleFactor)
+		} else {
+			const imageSource = parsedContent.base64Data
+			if (!imageSource) {
+				return
+			}
 
-		const width = scaleFactor * maxWidth
-		const height = width * aspectRatio
+			const image = await loadImage(imageSource)
+			const aspectRatio = image.height / image.width
+			const width = scaleFactor * maxWidth
+			const height = width * aspectRatio
 
-		if (contentExceedsCurrentPage(height)) {
-			createNewPage()
+			if (contentExceedsCurrentPage(height)) {
+				createNewPage()
+			}
+
+			doc.addImage(
+				imageSource,
+				format.toUpperCase(),
+				10,
+				marginTop,
+				width,
+				height
+			)
+
+			const padding = Math.round(height) + DEFAULT_LINE_HEIGHT
+			incrementVerticalPositionForNextLine(padding)
 		}
-
-		doc.addImage(
-			imageSource,
-			format.toUpperCase(),
-			10,
-			marginTop,
-			width,
-			height
-		)
-
-		const padding = Math.round(height) + DEFAULT_LINE_HEIGHT
-		incrementVerticalPositionForNextLine(padding)
 	}
 
 	function processSignalListForPdfGeneration(block: Element) {

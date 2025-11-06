@@ -245,6 +245,9 @@ importers:
       jspdf-autotable:
         specifier: ^3.8.4
         version: 3.8.4(jspdf@2.5.2)
+      svg2pdf.js:
+        specifier: ^2.6.0
+        version: 2.6.0(jspdf@2.5.2)
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
@@ -5273,6 +5276,9 @@ packages:
   flatted@3.3.2:
     resolution: {integrity: sha512-AiwGJM8YcNOaobumgtng+6NHuOqC3A7MixFeDafM3X9cIUM+xUXoS5Vfgf+OihAYe20fxqNM9yPBXJzRtZ/4eA==}
 
+  font-family-papandreou@0.2.0-patch2:
+    resolution: {integrity: sha512-l/YiRdBSH/eWv6OF3sLGkwErL+n0MqCICi9mppTZBOCL5vixWGDqCYvRcuxB2h7RGCTzaTKOHT2caHvCXQPRlw==}
+
   for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
 
@@ -6908,6 +6914,10 @@ packages:
   spawn-command@0.0.2:
     resolution: {integrity: sha512-zC8zGoGkmc8J9ndvml8Xksr1Amk9qBujgbF0JAIWO7kXr43w0h/0GJNM/Vustixu+YE8N/MTrQ7N31FvHUACxQ==}
 
+  specificity@0.4.1:
+    resolution: {integrity: sha512-1klA3Gi5PD1Wv9Q0wUoOQN1IWAuPu0D1U03ThXTr0cJ20+/iq2tHSDnK7Kk/0LXJ1ztUB2/1Os0wKmfyNgUQfg==}
+    hasBin: true
+
   split2@4.2.0:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
     engines: {node: '>= 10.x'}
@@ -7206,6 +7216,14 @@ packages:
   svg-pathdata@6.0.3:
     resolution: {integrity: sha512-qsjeeq5YjBZ5eMdFuUa4ZosMLxgr5RZ+F+Y1OrDhuOCEInRMA3x74XdBtggJcj9kOeInz0WE+LgCPDkZFlBYJw==}
     engines: {node: '>=12.0.0'}
+
+  svg2pdf.js@2.6.0:
+    resolution: {integrity: sha512-IXdzgjDT7BoeiU3nI2WWy3jh4CoHPqOlpKsY+6aCBDJ/8bIrBTjIdY0rHeXtbiwTN9Yz0ccSmNfgIv/0vxaPIA==}
+    peerDependencies:
+      jspdf: ^3.0.0 || ^2.0.0
+
+  svgpath@2.6.0:
+    resolution: {integrity: sha512-OIWR6bKzXvdXYyO4DK/UWa1VA1JeKq8E+0ug2DG98Y/vOmMpfZNj+TIG988HjfYSqtcy/hFOtZq/n/j5GSESNg==}
 
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
@@ -13447,6 +13465,8 @@ snapshots:
 
   flatted@3.3.2: {}
 
+  font-family-papandreou@0.2.0-patch2: {}
+
   for-each@0.3.3:
     dependencies:
       is-callable: 1.2.7
@@ -15218,6 +15238,8 @@ snapshots:
 
   spawn-command@0.0.2: {}
 
+  specificity@0.4.1: {}
+
   split2@4.2.0: {}
 
   sprintf-js@1.0.3: {}
@@ -15670,6 +15692,16 @@ snapshots:
 
   svg-pathdata@6.0.3:
     optional: true
+
+  svg2pdf.js@2.6.0(jspdf@2.5.2):
+    dependencies:
+      cssesc: 3.0.0
+      font-family-papandreou: 0.2.0-patch2
+      jspdf: 2.5.2
+      specificity: 0.4.1
+      svgpath: 2.6.0
+
+  svgpath@2.6.0: {}
 
   symbol-tree@3.2.4: {}
 
