@@ -1,7 +1,6 @@
-// SVELTE
-import { get } from 'svelte/store'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // STORES
-import { SignalType, pluginStore } from './index'
+import { SignalType } from './index'
 // TYPES
 import type {
 	DataObjectInformation,
@@ -13,7 +12,8 @@ import type {
 	PdfRowStructure
 } from './signallist.store.d'
 
-import { MESSAGE_PUBLISHER } from '../constants'
+import { MESSAGE_PUBLISHER } from '@/constants'
+import type { SignalRow } from '@/ui/components/elements/signal-list-element/types.signal-list'
 import {
 	queryDataSetForControl,
 	queryDataTypeLeaf,
@@ -22,11 +22,6 @@ import {
 	queryLN,
 	queryLNode
 } from '../utils'
-// TYPES
-import type { SignalRow } from './signallist.store.d'
-
-//====== STORES ======//
-const { xmlDocument } = pluginStore
 
 interface TargetContext {
 	ied: Element
@@ -67,7 +62,7 @@ interface SourceTarget {
 function getSignalList(
 	invaliditiesReports: InvalditiesReport[]
 ): MessagePublisher[] {
-	const xmlDoc = get(xmlDocument)
+	const xmlDoc = pluginGlobalStore.xmlDocument
 	if (!xmlDoc) {
 		throw new Error('XML Document is not defined')
 	}
@@ -141,7 +136,7 @@ function fillMessagePublisherData(context: SourceTarget): MessagePublisher {
 function getDataObjectInformation(
 	context: SourceTarget
 ): DataObjectInformation {
-	const xmlDoc = get(xmlDocument)
+	const xmlDoc = pluginGlobalStore.xmlDocument
 	if (!xmlDoc) {
 		throw new Error('XML Document is not defined')
 	}
@@ -277,7 +272,7 @@ function handleExtRef(targetContext: TargetContext) {
 }
 
 function getSourceContext(targetContext: TargetContext): SourceContext | null {
-	const xmlDoc = get(xmlDocument)
+	const xmlDoc = pluginGlobalStore.xmlDocument
 	if (!xmlDoc) {
 		throw new Error('XML Document is not defined')
 	}
@@ -498,8 +493,9 @@ function setSubscriber(filteredPdfRows: PdfRowStructure[]): PdfRowStructure[] {
 	return filteredPdfRows.map((r) => {
 		const gooseSubscribers =
 			r.matchedSubscribers[SignalType.GOOSE].join(', ')
-		const mmsSubscribers = r.matchedSubscribers[SignalType.MMS].join(', ')
-		const svSubscribers = r.matchedSubscribers[SignalType.SV].join(', ')
+		const mmsSubscribers =
+			r.matchedSubscribers[SignalType.Report].join(', ')
+		const svSubscribers = r.matchedSubscribers[SignalType.SMV].join(', ')
 
 		const matchedFilteredValuesForPdf = [
 			...r.matchedFilteredValuesForPdf[0],
@@ -531,8 +527,8 @@ function filterSubscriber(
 	filter: MessageSubscriberFilter
 ): PdfRowStructure[] {
 	const gooseFilter = filter[SignalType.GOOSE]
-	const mmsFilter = filter[SignalType.MMS]
-	const svFilter = filter[SignalType.SV]
+	const mmsFilter = filter[SignalType.Report]
+	const svFilter = filter[SignalType.SMV]
 
 	return pdfRows.map((pdfRow) => {
 		const gooseSubscribers = gooseFilter
@@ -541,30 +537,22 @@ function filterSubscriber(
 				)
 			: pdfRow.matchedSubscribers[SignalType.GOOSE]
 		const mmsSubscribers = mmsFilter
-			? pdfRow.matchedSubscribers[SignalType.MMS].filter((s) =>
+			? pdfRow.matchedSubscribers[SignalType.Report].filter((s) =>
 					doesNameMatchFilter(s, mmsFilter)
 				)
-			: pdfRow.matchedSubscribers[SignalType.MMS]
+			: pdfRow.matchedSubscribers[SignalType.Report]
 		const svSubscribers = svFilter
-			? pdfRow.matchedSubscribers[SignalType.SV].filter((s) =>
+			? pdfRow.matchedSubscribers[SignalType.SMV].filter((s) =>
 					doesNameMatchFilter(s, svFilter)
 				)
-			: pdfRow.matchedSubscribers[SignalType.SV]
+			: pdfRow.matchedSubscribers[SignalType.SMV]
 
 		return {
 			...pdfRow,
 			matchedSubscribers: {
-				[SignalType.GOOSE]: Object.keys(filter).includes(
-					SignalType.GOOSE
-				)
-					? gooseSubscribers
-					: [],
-				[SignalType.MMS]: Object.keys(filter).includes(SignalType.MMS)
-					? mmsSubscribers
-					: [],
-				[SignalType.SV]: Object.keys(filter).includes(SignalType.SV)
-					? svSubscribers
-					: []
+				[SignalType.GOOSE]: gooseSubscribers,
+				[SignalType.Report]: mmsSubscribers,
+				[SignalType.SMV]: svSubscribers
 			}
 		}
 	})
@@ -640,9 +628,9 @@ function filterMessagePublishers(
 
 			if (signalType === SignalType.GOOSE) {
 				gooseSubscriber.push(publisher.targetIEDName)
-			} else if (signalType === SignalType.MMS) {
+			} else if (signalType === SignalType.Report) {
 				mmsSubscriber.push(publisher.targetIEDName)
-			} else if (signalType === SignalType.SV) {
+			} else if (signalType === SignalType.SMV) {
 				svSubscriber.push(publisher.targetIEDName)
 			}
 
@@ -652,8 +640,8 @@ function filterMessagePublishers(
 				publisher,
 				matchedSubscribers: {
 					[SignalType.GOOSE]: gooseSubscriber,
-					[SignalType.MMS]: mmsSubscriber,
-					[SignalType.SV]: svSubscriber
+					[SignalType.Report]: mmsSubscriber,
+					[SignalType.SMV]: svSubscriber
 				}
 			})
 		}
@@ -689,7 +677,7 @@ function getValueFromNestedProperty(
 }
 
 function doesIncludeSignalType(searchKey: string) {
-	return [SignalType.GOOSE, SignalType.MMS, SignalType.SV].includes(
+	return [SignalType.GOOSE, SignalType.Report, SignalType.SMV].includes(
 		SignalType[searchKey as unknown as keyof typeof SignalType]
 	)
 }

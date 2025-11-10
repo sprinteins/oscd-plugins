@@ -14,6 +14,8 @@
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^1.9.0",
+		"@smui/common": "8.0.0-beta.3",
+		"@smui/segmented-button": "8.0.0-beta.3",
 		"@storybook/addon-essentials": "^8.3.5",
 		"@storybook/addon-interactions": "^8.3.5",
 		"@storybook/addon-links": "^8.3.5",
@@ -22,10 +24,10 @@
 		"@storybook/svelte": "^8.3.5",
 		"@storybook/svelte-vite": "^8.3.5",
 		"@storybook/test": "^8.3.5",
-		"@sveltejs/vite-plugin-svelte": "^3.1.2",
+		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@tsconfig/svelte": "^5.0.4",
 		"storybook": "^8.3.5",
-		"svelte": "^4.2.19",
+		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.4",
 		"tslib": "^2.7.0",
 		"typescript": "^5.5.3",
@@ -33,11 +35,12 @@
 	},
 	"dependencies": {
 		"@oscd-plugins/core": "workspace:^",
-		"@smui/button": "^7.0.0",
-		"@smui/drawer": "^7.0.0",
-		"@smui/icon-button": "7.0.0",
-		"@smui/top-app-bar": "^7.0.0",
+		"@smui/button": "^8.0.0-beta.3",
+		"@smui/drawer": "^8.0.0-beta.3",
+		"@smui/icon-button": "8.0.0-beta.3",
+		"@smui/select": "8.0.0-beta.3",
+		"@smui/top-app-bar": "^8.0.0-beta.3",
 		"normalize.css": "^8.0.1",
-		"svelte-material-ui": "^7.0.0"
+		"svelte-material-ui": "^8.0.0-beta.3"
 	}
 }

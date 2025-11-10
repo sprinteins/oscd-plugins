@@ -1,72 +1,77 @@
+<svelte:options 
+	customElement={{
+		props: {
+			doc: { reflect: true, type: 'Object'},
+			docName: { reflect: true, type: 'String'},
+			editCount: { reflect: true, type: 'Number'},
+			locale: { reflect: true, type: 'String'},
+			pluginType: { reflect: true, type: 'String'},
+			isCustomInstance: { reflect: true, type: 'Boolean'},
+		}
+	}}
+/>
+
+<main 
+	use:initPlugin={{
+		getDoc: () => doc,
+		getDocName: () => docName,
+		getEditCount: () => editCount,
+		getIsCustomInstance: () => isCustomInstance,
+		getHost: () => $host() || window,
+		theme: 'legacy-oscd-instance',
+		definition: {
+			edition: 'ed2Rev1',
+		}
+	}}
+	data-plugin-name={jsonPackage.name}
+	data-plugin-version={jsonPackage.version}
+>
+	<MaterialTheme pluginType="editor">
+		<auto-doc class="auto-doc">
+			{#if hasRunInit && pluginGlobalStore.xmlDocument}
+				<ViewNavigator></ViewNavigator>
+			{:else}
+				<div class="file-missing">
+					<p>No XML file loaded</p>
+				</div>
+			{/if}
+		</auto-doc>
+	</MaterialTheme>
+</main>
+
 
 <script lang="ts">
-import { routes } from '@/routes/routes'
-// COMPONENTS
-import { CustomIconButton, MaterialTheme } from '@oscd-plugins/ui'
-import Router from 'svelte-spa-router'
-
 // TYPES
-import type { PluginType } from '@oscd-plugins/core'
+import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+// CORE
+import { initPlugin } from '@oscd-plugins/core-ui-svelte'
+import { MaterialTheme } from '@oscd-plugins/ui'
 // PACKAGE
 import jsonPackage from '../package.json'
-// STORES
-import { docTemplatesStore, pluginStore } from './stores'
 
-//==== INITIALIZATION ====//
-//props
-export let xmlDocument: XMLDocument | undefined = undefined
-export let pluginHostElement: Element
-export let pluginType: PluginType = 'editor'
-export let editCount: number
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
-//==== REACTIVITY ====//
+import { docTemplatesStore } from './stores'
 
-$: triggerUpdate({
-	updateTrigger: editCount,
-	newXMLDocument: xmlDocument,
-	newPluginHostElement: pluginHostElement,
-	newEditCount: editCount
+import ViewNavigator from './ui/components/views/view-navigator/view-navigator.svelte'
+
+// props
+const {
+	doc,
+	docName,
+	editCount,
+	isCustomInstance
+}: Utils.PluginCustomComponentsProps = $props()
+
+let hasRunInit = $state(false)
+
+$effect(() => {
+	setTimeout(() => {
+		docTemplatesStore.init()
+		hasRunInit = true
+	}, 0)
 })
-
-async function triggerUpdate({
-	updateTrigger,
-	newXMLDocument,
-	newPluginHostElement,
-	newEditCount
-}: {
-	updateTrigger: number
-	newXMLDocument: XMLDocument | undefined
-	newPluginHostElement: Element
-	newEditCount: number
-}) {
-	await pluginStore.init({
-		newXMLDocument,
-		newPluginHostElement,
-		newEditCount
-	})
-	docTemplatesStore.init()
-}
 </script>
-	
-
-
-<!-- Plugin logs -->
-<input type="hidden" name="package-name" value={jsonPackage.name} />
-<input type="hidden" name="package-version" value={jsonPackage.version} />
-
-
-<MaterialTheme pluginType={pluginType}>
-	<auto-doc class="auto-doc">
-		{#if xmlDocument}
-			<Router {routes} />
-		{:else}
-			<div class="file-missing">
-				<p>No XML file loaded</p>
-			</div>
-		{/if}
-	</auto-doc>
-</MaterialTheme>
-
 
 <style lang="scss">
 	.file-missing{
@@ -89,5 +94,3 @@ async function triggerUpdate({
 		z-index: 1;
 	}
 </style>
-
-	

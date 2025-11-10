@@ -1,10 +1,7 @@
 // SVELTE
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { get } from 'svelte/store'
 // STORES
-import { pluginStore } from './index'
-
-//====== STORES ======//
-const { xmlDocument } = pluginStore
 
 //====== TYPES ======//
 type Placeholder = string
@@ -53,7 +50,7 @@ function createNamespaceResolver(
 // );
 // Don't forget to add the namespace in the XPath expression
 function fillPlaceholder(markdownText: string): string {
-	const xmlDoc = get(xmlDocument)
+	const xmlDoc = pluginGlobalStore.xmlDocument
 	if (!xmlDoc) {
 		throw new Error('XML Document is not defined')
 	}

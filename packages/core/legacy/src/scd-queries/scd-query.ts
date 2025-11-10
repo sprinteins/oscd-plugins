@@ -44,7 +44,7 @@ export class SCDQueries {
 	public static SelectorLNode = 'LNode'
 	public static AttributeListLNode: Array<
 		keyof LNodeElementStandardAttributes
-	> = ['name']
+	> = ['name', 'iedName']
 	public searchLNodes(options?: CommonOptions): LNodeElement[] {
 		const selector = 'LNode'
 		return this.searchElement<LNodeElement>(

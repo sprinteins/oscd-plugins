@@ -1,4 +1,4 @@
-<IconButton size="button" style={cssDynamicStyles} on:click class={className}>
+<IconButton size="button" style={cssDynamicStyles} { onclick } class={className}>
 	<IconWrapper icon={icon} fillColor={color} class="custom-icon-button-wrapper"/>
 </IconButton>
 
@@ -13,30 +13,35 @@ import type { AvailableIcon } from '../icons/types.icon'
 
 //====== INITIALIZATION ======//
 
-// props
-export let icon: AvailableIcon
-export let size: 'small' | 'medium' | 'large' = 'medium'
-export let color: string | 'primary' | 'secondary' = 'primary'
-let className = ''
-export { className as class }
-
-// local variables
-const cssFixedStyles = {
-	'button-size': ''
+interface Props {
+	icon: AvailableIcon
+	size?: 'small' | 'large'
+	color?: string
+	class?: string
+	onclick?: (e: MouseEvent) => void
 }
+
+let {
+	icon,
+	size,
+	color,
+	class: className = '',
+	onclick
+}: Props = $props();
 
 //====== REACTIVITY ======//
 
-$: cssFixedStyles['button-size'] = setButtonSize(size)
-$: cssDynamicStyles = setInlineStyles(cssFixedStyles)
+const cssFixedStyles = $derived.by(() => {
+	let buttonSize = '48px'
 
-//====== FUNCTIONS ======//
+	if (size === 'small') buttonSize = '42px'
+	if (size === 'large') buttonSize = '56px'
 
-function setButtonSize(inputSize: 'small' | 'medium' | 'large') {
-	if (inputSize === 'small') return '42px'
-	if (inputSize === 'large') return '56px'
-	return '48px'
-}
+	return { 'button-size': buttonSize }
+});
+
+const cssDynamicStyles = $derived(setInlineStyles(cssFixedStyles))
+
 </script>
 
 <style>

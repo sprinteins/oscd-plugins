@@ -1,0 +1,1 @@
+export { default as LegacyTheme }from './theme.svelte'

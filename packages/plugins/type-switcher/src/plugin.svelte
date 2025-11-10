@@ -1,18 +1,55 @@
-<svelte:options customElement={null} />
+<svelte:options
+	customElement={{
+		props: {
+			doc: { reflect: true, type: "Object" },
+			docName: { reflect: true, type: "String" },
+			editCount: { reflect: true, type: "Number" },
+			locale: { reflect: true, type: "String" },
+			pluginType: { reflect: true, type: "String" },
+			isCustomInstance: { reflect: true, type: "Boolean" },
+		},
+	}}
+/>
 
 <script lang="ts">
-  import { TypeSwitcher } from "@oscd-plugins/uilib/src/lib/plugins/type-switcher";
-  import * as pckg from "../package.json";
+// PACKAGE
+import jsonPackage from '../package.json'
+// CORE
+import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
+// TYPES
+import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import TypeSwitcher from './ui/components/views/type-switcher.svelte'
+import { LegacyTheme } from '@oscd-plugins/ui'
 
-  // Inputs
-  export let doc: XMLDocument;
+// props
+const {
+	doc,
+	docName,
+	editCount,
+	isCustomInstance
+}: Utils.PluginCustomComponentsProps = $props()
 </script>
 
-{#if doc}
-  {#key doc}
-    <TypeSwitcher doc={doc?.documentElement} />
-  {/key}
-{/if}
-
-<input type="hidden" name="package-name" value={pckg.name} />
-<input type="hidden" name="package-version" value={pckg.version} />
+<main
+	use:initPlugin={{
+		getDoc: () => doc,
+		getDocName: () => docName,
+		getEditCount: () => editCount,
+		getIsCustomInstance: () => isCustomInstance,
+		getHost: () => $host() || window,
+		theme: "legacy-oscd-instance",
+		definition: {
+			edition: "ed2Rev1",
+		},
+	}}
+	data-plugin-name={jsonPackage.name}
+	data-plugin-version={jsonPackage.version}
+>
+	<LegacyTheme>
+		{#if doc}
+			{#key doc}
+				<TypeSwitcher doc={doc?.documentElement} />
+			{/key}
+		{/if}
+	</LegacyTheme>
+</main>

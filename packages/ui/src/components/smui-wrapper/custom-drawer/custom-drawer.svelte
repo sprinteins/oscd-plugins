@@ -6,12 +6,12 @@
 		</Header>
 		<Content>
 			{#if $drawer.component}
-				<svelte:component this={InnerComponent} {...$drawer.componentProps}/>
+				<InnerComponent {...$drawer.componentProps}/>
 			{/if}
 		</Content>
 	</Drawer>
 	<AppContent class="app-content" >
-		<slot />
+		{@render children?.()}
 	</AppContent>
 </div>
 
@@ -26,13 +26,18 @@ import Drawer, {
 } from '@smui/drawer'
 // STORES
 import drawerStore from './custom-drawer.store'
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 
 //====== INITIALIZATION ====//
 
 //stores
 const { drawer } = drawerStore
 
-$: InnerComponent = $drawer.component || null
+let InnerComponent = $derived($drawer.component || null)
 </script>
 	
 <style>

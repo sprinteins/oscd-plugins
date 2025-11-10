@@ -1,4 +1,4 @@
-import type { ElementType } from '@/components/elements/types.elements'
+import type { ElementType } from '@/ui/components/elements/types.elements'
 import { v4 as uuidv4 } from 'uuid'
 
 // OPENSCD
@@ -6,17 +6,17 @@ import { createElement } from '@oscd-plugins/core'
 // SVELTE
 import { get, writable } from 'svelte/store'
 // STORES
-import { eventStore, pluginStore } from './index'
+import { eventStore } from './index'
 
 //====== STORES ======//
-const { xmlDocument } = pluginStore
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 //==== STATE
 const autoDocArea = writable<Element | null>(null)
 
 //==== PRIVATE ACTIONS
 function setAutoDocArea() {
-	const xmlDoc = get(xmlDocument)
+	const xmlDoc = pluginGlobalStore.xmlDocument
 	if (!xmlDoc) {
 		throw new Error('XML Document is not defined')
 	}
@@ -84,7 +84,7 @@ function getBlockOfDocumentTemplate(docTemplateId: string, blockId: string) {
 
 function addDocumentTemplate(): string | null {
 	let generatedId: string | null = null
-	const xmlDoc = get(xmlDocument)
+	const xmlDoc = pluginGlobalStore.xmlDocument
 	if (!xmlDoc) {
 		throw new Error('XML Document is not defined')
 	}
@@ -106,7 +106,7 @@ function addDocumentTemplate(): string | null {
 }
 
 function importDocumentTemplates(docTemplates: Element[]) {
-	const xmlDoc = get(xmlDocument)
+	const xmlDoc = pluginGlobalStore.xmlDocument
 	if (!xmlDoc) {
 		throw new Error('XML Document is not defined')
 	}
@@ -167,7 +167,7 @@ function addBlockToDocumentTemplate(
 	reference?: Element | null
 ) {
 	const generatedId = uuidv4()
-	const xmlDoc = get(xmlDocument)
+	const xmlDoc = pluginGlobalStore.xmlDocument
 	if (!xmlDoc) {
 		throw new Error('XML Document is not defined')
 	}
@@ -267,7 +267,7 @@ function duplicateBlockFromDocumentTemplate(
 }
 
 function duplicateDocumentTemplate(docTemplateId: string) {
-	const xmlDoc = get(xmlDocument)
+	const xmlDoc = pluginGlobalStore.xmlDocument
 	if (!xmlDoc) {
 		throw new Error('XML Document is not defined')
 	}

@@ -7,11 +7,13 @@
 	<DevMenuBar pluginType={pluginType}/>
 {/if}
 <tscd-theme style={cssDynamicStyles}>
-	<slot />
+	{@render children?.()}
 </tscd-theme>
 
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 // STYLES
 import fontsUrl from '../../assets/styles/fonts.css?url'
 import themeUrl from '../../assets/styles/theme.css?url'
@@ -25,8 +27,14 @@ import type { PluginType } from '@oscd-plugins/core'
 
 //====== INITIALIZATION ======//
 
-// props
-export let pluginType: PluginType | undefined = undefined
+
+	interface Props {
+		// props
+		pluginType?: PluginType | undefined;
+		children?: import('svelte').Snippet;
+	}
+
+	let { pluginType = undefined, children }: Props = $props();
 
 // local variables
 
@@ -36,25 +44,12 @@ const fontCss = new URL(fontsUrl, baseURL).href
 const themeCss = new URL(themeUrl, baseURL).href
 const svelteMaterialUiCss = new URL(svelteMaterialUiUrl, baseURL).href
 
-const cssFixedStyles = {
+const cssFixedStyles = $state({
 	'header-height': '',
 	'global-height': '',
 	'global-background-color': ''
-}
+})
 
-//====== REACTIVITY ======//
-
-// stand alone mode works with this setting vite --mode STAND_ALONE
-$: mode = {
-	isStandAlone: import.meta.env.DEV && import.meta.env.MODE === 'STAND_ALONE',
-	isStorybook: import.meta.env.DEV && import.meta.env.MODE === 'STORYBOOK'
-}
-$: if (mode.isStandAlone) import('normalize.css/normalize.css')
-// style
-$: cssFixedStyles['header-height'] = setHeaderHeight(mode)
-$: cssFixedStyles['global-height'] = setGlobalHeight(mode)
-$: cssFixedStyles['global-background-color'] = setGlobalBackgroundColor(mode)
-$: cssDynamicStyles = setInlineStyles(cssFixedStyles)
 
 //====== FUNCTIONS ======//
 
@@ -82,6 +77,27 @@ function setGlobalBackgroundColor(mode: {
 	if (mode.isStorybook) return 'inherit'
 	return 'var(--mdc-theme-surface)'
 }
+//====== REACTIVITY ======//
+
+// stand alone mode works with this setting vite --mode STAND_ALONE
+let mode = $derived({
+	isStandAlone: import.meta.env.DEV && import.meta.env.MODE === 'STAND_ALONE',
+	isStorybook: import.meta.env.DEV && import.meta.env.MODE === 'STORYBOOK'
+})
+run(() => {
+		if (mode.isStandAlone) import('normalize.css/normalize.css')
+	});
+// style
+run(() => {
+		cssFixedStyles['header-height'] = setHeaderHeight(mode)
+	});
+run(() => {
+		cssFixedStyles['global-height'] = setGlobalHeight(mode)
+	});
+run(() => {
+		cssFixedStyles['global-background-color'] = setGlobalBackgroundColor(mode)
+	});
+let cssDynamicStyles = $derived(setInlineStyles(cssFixedStyles))
 </script>
 
 <style>
