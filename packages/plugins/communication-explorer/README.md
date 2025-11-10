@@ -31,4 +31,3 @@ See `src > lib >headless > actions` in `core-ui-svelte`
 
 * initPlugin : takes care of the plugin initialization (theme + document load in the xmlDocumentStore)
 * initSsdTemplate : takes care of the initialization of a ssd `template` file for plugin working exclusively with this type of file
-
