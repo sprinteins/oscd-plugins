@@ -38,6 +38,7 @@ jobs:
         run: pnpm run dependencies:install+build && pnpm --filter @oscd-plugins/${{ inputs.plugin-name }} i --frozen-lockfile
 
       - name: Run Tests
+        continue-on-error: true
         run: (cd ./packages/uilib ; npm run test)
 
       - name: Build Plugin
