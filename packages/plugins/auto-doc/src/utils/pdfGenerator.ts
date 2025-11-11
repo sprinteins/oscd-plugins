@@ -206,24 +206,45 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	}
 
 	async function addSVGToPdf(svgString: string, x: number, y: number, maxWidth: number, scale: number = 1) {
-		const parser = new DOMParser()
-		const svgElement = parser.parseFromString(svgString, "image/svg+xml").documentElement as unknown as SVGElement;
-		const {width, height } = getSVGDimensions(svgElement, scale, maxWidth)
+		try {
+			const parser = new DOMParser()
+			const svgDoc = parser.parseFromString(svgString, "image/svg+xml")
+			
+			const parseError = svgDoc.querySelector('parsererror')
+			if (parseError) {
+				console.error('SVG parsing error:', parseError.textContent)
+				console.error('SVG data:', svgString.substring(0, 200) + '...')
+				return { width: 0, height: 0 }
+			}
+			
+			const svgElement = svgDoc.documentElement as unknown as SVGElement
+			if (!svgElement || svgElement.tagName.toLowerCase() !== 'svg') {
+				console.error('Invalid SVG element')
+				return { width: 0, height: 0 }
+			}
+			
+			const {width, height } = getSVGDimensions(svgElement, scale, maxWidth)
 
-		if (contentExceedsCurrentPage(height)) {
-			createNewPage()
+			if (contentExceedsCurrentPage(height)) {
+				createNewPage()
+			}
+			
+			await doc.svg(svgElement, {
+				x: x,
+				y: marginTop,
+				width,
+				height
+			})
+			console.log("added svg to pdf", {width, height})
+
+			const padding = Math.round(height) + DEFAULT_LINE_HEIGHT
+			incrementVerticalPositionForNextLine(padding)
+			return { width, height }
+		} catch (error) {
+			console.error('Error processing SVG:', error)
+			console.error('SVG data:', svgString.substring(0, 200) + '...')
+			return { width: 0, height: 0 }
 		}
-		
-		await doc.svg(svgElement, {
-			x,
-			y,
-			width,
-			height
-		})
-		
-		const padding = Math.round(height) + DEFAULT_LINE_HEIGHT
-		incrementVerticalPositionForNextLine(padding)
-		return { width, height }
 	}
 
 	function getImageScaleFactor(scale: string) {
@@ -248,14 +269,18 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		const parsedContent = JSON.parse(content) as ImageData
 		const maxWidth = 186
 		const scaleFactor = getImageScaleFactor(parsedContent.scale)
-		const format = content.split(';')[0].split('/')[1]
+		const format = parsedContent.base64Data.split(';')[0].split('/')[1]
 
 		if (format === 'svg+xml') {
-			const svgData = block.textContent
+			const svgData = parsedContent.base64Data.split(',')[1]
 			if (!svgData) {
+				console.error('No SVG data found in Image Block')
 				return
 			}
-			await addSVGToPdf(svgData, 10, marginTop, maxWidth, scaleFactor)
+			
+			const decodedSvgData = atob(svgData)
+			await addSVGToPdf(decodedSvgData, 10, marginTop, maxWidth, scaleFactor)
+			console.log("processed svg for pdf generation", decodedSvgData)
 		} else {
 			const imageSource = parsedContent.base64Data
 			if (!imageSource) {
