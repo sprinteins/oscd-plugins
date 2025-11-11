@@ -23,9 +23,15 @@ export default defineConfig({
 		lib: {
 			entry: resolve(__dirname, 'src/plugin.ts'),
 			formats: ['es'],
-			fileName: 'plugin'
+			fileName: 'index'
 		},
-		sourcemap: isDevelopment ? 'inline' : false
+		sourcemap: isDevelopment ? 'inline' : false,
+		rollupOptions: {
+			output: {
+				inlineDynamicImports: true
+			}
+		},
+		cssCodeSplit: false
 	},
 	server: {
 		port: 4178,
