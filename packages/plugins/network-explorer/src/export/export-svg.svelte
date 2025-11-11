@@ -1,63 +1,50 @@
 <script lang="ts">
-  import { toSvg } from 'html-to-image';
-  import {
-    Panel,
-    getNodesBounds,
-    getViewportForBounds,
-    useNodes,
-  } from '@xyflow/svelte';
+  import { elementToSVG } from 'dom-to-svg';
   import Button from '@oscd-plugins/ui/src/components/button/button.svelte';
-
-  const nodes = useNodes();
 
   export let flowPane: HTMLElement | null = null;
   export let imageHeight: number = 768;
   export let imageWidth: number = 1024;
-  export let backgroundColor: string = 'var(--global-background-color)';
-  export let fileName: string = 'svelte-flow.svg';
+  export let backgroundColor: string = '#ffffff';
+  export let fileName: string = 'network-diagram.svg';
 
-  if (!flowPane) {
-    console.warn('Flow pane reference not provided to export component')
-  }
+  async function exportFlowToSVG(width: number, height: number) {
+    if (!flowPane) throw new Error(`No pane provided`);
 
-  async function handleClick() {
-    if (!flowPane) {
-      console.error('Flow pane reference not available');
-      return;
-    }
+    const iframe = document.createElement("iframe");
+    iframe.style.width = `${width}px`;
+    iframe.style.height = `${height}px`;
+    iframe.style.position = "absolute";
+    iframe.style.top = "150%";
+    iframe.style.left = "150%";
+    document.body.append(iframe);
 
-    const nodesBounds = getNodesBounds(nodes.current);
-    console.log('Nodes bounds:', nodesBounds);
-    const viewport = getViewportForBounds(
-      nodesBounds,
-      imageWidth,
-      imageHeight,
-      0.5,
-      2.0,
-      0.2,
-    );
+    const iframeDocument = iframe.contentDocument;
+    if (!iframeDocument) throw new Error("Could not get iframe document");
 
-    if (!viewport) {
-      console.error('Could not determine viewport for nodes bounds');
-      return;
-    }
+    const iframeStyle = iframeDocument.createElement("style");
+    iframeStyle.innerHTML = `
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: ${backgroundColor};
+      }
+    `;
+    iframeDocument.body.append(iframeStyle);
+    const clone = flowPane.cloneNode(true) as HTMLElement;
+    clone.style.transform = "none";
+    iframeDocument.body.append(clone);
 
-    try {
-      const dataUrl = await toSvg(flowPane, {
-        backgroundColor: backgroundColor,
-        width: imageWidth,
-        height: imageHeight,
-        cacheBust: true,
-      });
+    const svgDocument = elementToSVG(iframeDocument.documentElement);
+    const svgString = new XMLSerializer().serializeToString(svgDocument);
+    const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+    const svgUrl = URL.createObjectURL(svgBlob);
 
-      const link = document.createElement('a');
-      link.download = fileName;
-      link.href = dataUrl;
-      link.click();
-    } catch (err) {
-      console.error('toSvg failed', err);
-    }
-  }
+    const a = document.createElement("a");
+    a.href = svgUrl;
+    a.download = fileName;
+    a.click();
+  };
 </script>
 
-<Button onclick={handleClick}>Download SVG</Button>
+<Button onclick={() => exportFlowToSVG(imageWidth, imageHeight)}>Download SVG</Button>
