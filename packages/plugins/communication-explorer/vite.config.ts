@@ -24,7 +24,13 @@ export default defineConfig({
             formats: ['es'],
             fileName: 'index'
         },
-        sourcemap: isDevelopment ? 'inline' : false
+        sourcemap: isDevelopment ? 'inline' : false,
+		rollupOptions: {
+			output: {
+				inlineDynamicImports: true
+			}
+		},
+		cssCodeSplit: false
     },
     server: {
         port: 4178,
