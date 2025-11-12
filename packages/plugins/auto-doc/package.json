@@ -45,6 +45,8 @@
 		"zipcelx": "^1.6.2"
 	},
 	"devDependencies": {
+		"html-to-image": "1.11.11",
+		"@xyflow/svelte": "^1.4.1",
 		"@oscd-plugins/core": "workspace:^",
 		"@oscd-plugins/ui": "workspace:^",
 		"@oscd-plugins/core-api": "workspace:^",

@@ -276,12 +276,18 @@ importers:
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
+      '@xyflow/svelte':
+        specifier: ^1.4.1
+        version: 1.4.1(svelte@5.20.1)
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.5.2)
       concurrently:
         specifier: ^7.6.0
         version: 7.6.0
+      html-to-image:
+        specifier: 1.11.11
+        version: 1.11.11
       playwright:
         specifier: ^1.48.1
         version: 1.49.1
@@ -5458,6 +5464,9 @@ packages:
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
+
+  html-to-image@1.11.11:
+    resolution: {integrity: sha512-9gux8QhvjRO/erSnDPv28noDZcPZmYE7e1vFsBLKLlRlKDSqNJYebj6Qz1TGd5lsRV+X+xYyjCKjuZdABinWjA==}
 
   html2canvas@1.4.1:
     resolution: {integrity: sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==}
@@ -10932,6 +10941,10 @@ snapshots:
     dependencies:
       svelte: 3.59.2
 
+  '@svelte-put/shortcut@4.1.0(svelte@5.20.1)':
+    dependencies:
+      svelte: 5.20.1
+
   '@svelte-put/shortcut@4.1.0(svelte@5.43.5)':
     dependencies:
       svelte: 5.43.5
@@ -12017,6 +12030,12 @@ snapshots:
       '@xyflow/system': 0.0.14
       classcat: 5.0.5
       svelte: 3.59.2
+
+  '@xyflow/svelte@1.4.1(svelte@5.20.1)':
+    dependencies:
+      '@svelte-put/shortcut': 4.1.0(svelte@5.20.1)
+      '@xyflow/system': 0.0.72
+      svelte: 5.20.1
 
   '@xyflow/svelte@1.4.1(svelte@5.43.5)':
     dependencies:
@@ -13688,6 +13707,8 @@ snapshots:
       whatwg-encoding: 2.0.0
 
   html-escaper@2.0.2: {}
+
+  html-to-image@1.11.11: {}
 
   html2canvas@1.4.1:
     dependencies:
