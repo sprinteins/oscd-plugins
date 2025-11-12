@@ -27,6 +27,7 @@
 	data-plugin-version={jsonPackage.version}
 >
 	<MaterialTheme pluginType="editor">
+		<TelemetryView root={doc.documentElement} showSidebar={false} />
 		<auto-doc class="auto-doc">
 			{#if hasRunInit && pluginGlobalStore.xmlDocument}
 				<ViewNavigator></ViewNavigator>
@@ -54,6 +55,7 @@ import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { docTemplatesStore } from './stores'
 
 import ViewNavigator from './ui/components/views/view-navigator/view-navigator.svelte'
+import TelemetryView from '@oscd-plugins/communication-explorer/src/ui/components/telemetry-view/telemetry-view.svelte'
 
 // props
 const {

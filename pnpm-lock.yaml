@@ -252,6 +252,9 @@ importers:
         specifier: ^1.6.2
         version: 1.6.2
     devDependencies:
+      '@oscd-plugins/communication-explorer':
+        specifier: workspace:^
+        version: link:../communication-explorer
       '@oscd-plugins/core':
         specifier: workspace:^
         version: link:../../core/legacy
