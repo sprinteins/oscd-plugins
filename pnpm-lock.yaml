@@ -276,9 +276,6 @@ importers:
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
-      '@xyflow/svelte':
-        specifier: ^1.4.1
-        version: 1.4.1(svelte@5.20.1)
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.5.2)
@@ -10941,10 +10938,6 @@ snapshots:
     dependencies:
       svelte: 3.59.2
 
-  '@svelte-put/shortcut@4.1.0(svelte@5.20.1)':
-    dependencies:
-      svelte: 5.20.1
-
   '@svelte-put/shortcut@4.1.0(svelte@5.43.5)':
     dependencies:
       svelte: 5.43.5
@@ -12030,12 +12023,6 @@ snapshots:
       '@xyflow/system': 0.0.14
       classcat: 5.0.5
       svelte: 3.59.2
-
-  '@xyflow/svelte@1.4.1(svelte@5.20.1)':
-    dependencies:
-      '@svelte-put/shortcut': 4.1.0(svelte@5.20.1)
-      '@xyflow/system': 0.0.72
-      svelte: 5.20.1
 
   '@xyflow/svelte@1.4.1(svelte@5.43.5)':
     dependencies:
