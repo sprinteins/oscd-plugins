@@ -5,6 +5,7 @@ import { resolve } from 'node:path'
 const isDevelopment = process.env.NODE_ENV === 'development'
 
 export default defineConfig({
+    base: './',
     plugins: [
         svelte({
             compilerOptions: {
