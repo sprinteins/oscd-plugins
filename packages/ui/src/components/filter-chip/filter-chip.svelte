@@ -1,29 +1,28 @@
 <script lang="ts">
 	import Button, { Label } from "@smui/button"
-	import { createEventDispatcher } from "svelte"
 
 	interface Props {
 		label: string;
 		isSelected: boolean;
 		testid?: string;
 		disabled?: boolean;
+		onclick?: (event: MouseEvent) => void;
 	}
 
 	let {
 		label,
 		isSelected,
 		testid = "",
-		disabled = false
+		disabled = false,
+		onclick
 	}: Props = $props();
-
-	const dispatch = createEventDispatcher()
 
 	function handleClick(event: MouseEvent) {
 		if (disabled) {
 			event.preventDefault()
 			return
 		}
-		dispatch("click", event)
+		onclick?.(event)
 	}
 
 	let dataProps = $derived({
@@ -31,7 +30,7 @@
 	})
 </script>
 
-<div class="chip" class:isSelected {...dataProps} on:click={handleClick}>
+<div class="chip" class:isSelected {...dataProps} onclick={handleClick}>
 	<Button class="tscd-button" disabled={disabled}>
 		<Label class="button-label">{label}</Label>
 	</Button>
