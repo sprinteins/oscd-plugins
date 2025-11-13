@@ -1,31 +1,38 @@
 <script lang="ts">
 	import Button, { Label } from "@smui/button"
-	
+	import { createEventDispatcher } from "svelte"
 
 	interface Props {
-		// Input
 		label: string;
 		isSelected: boolean;
 		testid?: string;
 		disabled?: boolean;
-		onclick?: () => void;
 	}
 
 	let {
 		label,
 		isSelected,
 		testid = "",
-		disabled = false,
-		onclick
+		disabled = false
 	}: Props = $props();
+
+	const dispatch = createEventDispatcher()
+
+	function handleClick(event: MouseEvent) {
+		if (disabled) {
+			event.preventDefault()
+			return
+		}
+		dispatch("click", event)
+	}
 
 	let dataProps = $derived({
 		"data-testid": testid,
 	})
 </script>
 
-<div class="chip" class:isSelected {...dataProps}>
-	<Button class="tscd-button" {onclick} {disabled}>
+<div class="chip" class:isSelected {...dataProps} on:click={handleClick}>
+	<Button class="tscd-button" disabled={disabled}>
 		<Label class="button-label">{label}</Label>
 	</Button>
 </div>
@@ -48,29 +55,23 @@
 		display: inline-flex;
 
 		:global(.mdc-button) {
-            background-color: var(--color-filter-chips-background);
-            color: var(--font-color);
-            font-weight: 400;
-            font-size: var(--font-size);
-            border-radius: 12px;
-            height: auto;
-            padding: 0.75rem 1rem;
-            box-shadow: none;
-            outline: 1px var(--color-grey-3) solid;
-            margin: 0.5rem;
-        }
+			background-color: var(--color-filter-chips-background);
+			color: var(--font-color);
+			font-weight: 400;
+			font-size: var(--font-size);
+			border-radius: 12px;
+			height: auto;
+			padding: 0.75rem 1rem;
+			box-shadow: none;
+			outline: 1px var(--color-grey-3) solid;
+			margin: 0.5rem;
+		}
 		:global(button.tscd-button:hover) {
 			background-color: var(--color-filter-chips-background);
 			outline: 1px var(--mdc-theme-primary) dashed;
 			cursor: pointer;
 		}
 
-		// :global(.mdc-button.clicked) {
-		//   border-color: black;
-		// }
-		// :global(.mdc-button--ripple) {
-		//   background-color: black;
-		// }
 		:global(button.tscd-button:disabled) {
 			background-color: var(--color-filter-chips-background);
 			color: var(--font-color);
