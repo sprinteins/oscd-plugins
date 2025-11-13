@@ -46,6 +46,7 @@
 	},
 	"devDependencies": {
 		"html-to-image": "1.11.11",
+		"@oscd-plugins/network-explorer": "workspace:^",
 		"@oscd-plugins/core": "workspace:^",
 		"@oscd-plugins/ui": "workspace:^",
 		"@oscd-plugins/core-api": "workspace:^",

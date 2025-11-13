@@ -8,6 +8,7 @@ import ImageElement from '@/ui/components/elements/image-element/image-element.s
 import SignalListElement from '@/ui/components/elements/signal-list-element/signal-list-element.svelte'
 import TableElement from '@/ui/components/elements/table-element/table-element.svelte'
 import TextElement from '@/ui/components/elements/text-element/text-element.svelte'
+import NetworkElement from '@/ui/components/elements/network-element/network-element.svelte'
 
 import { MOVE_BLOCK_DIRECTION } from '@/constants'
 import { docTemplatesStore } from '@/stores'
@@ -48,7 +49,8 @@ const componentMap: ElementMap = {
 	text: TextElement,
 	image: ImageElement,
 	signalList: SignalListElement,
-	table: TableElement
+	table: TableElement,
+	network: NetworkElement
 }
 
 function createTableElement(rows: number, columns: number) {
@@ -158,6 +160,7 @@ function handleContentChange(elementId: string, newContent: string) {
                     <Button variant="outlined" onclick={()=>{addElement("image")}}>Image</Button>
                     <Button variant="outlined" onclick={()=>{addElement("signalList")}}>Signal List</Button>
                     <Button variant="outlined" onclick={() => isCreateTableDialogOpen = true}>Table</Button>
+										<Button variant="outlined" onclick={()=>{addElement("network")}}>Network</Button>
                 {/if}
             </div>
         </footer>
