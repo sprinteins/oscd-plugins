@@ -4,7 +4,6 @@ type Base64String = string;
 
 type ExportProps = {
   flowPane: HTMLElement;
-  fileName?: string;
 };
 
 type ExportPNGProps = ExportProps & {
