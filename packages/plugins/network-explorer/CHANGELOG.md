@@ -5,6 +5,10 @@ All notable changes to the communication explorer plugin will be documented here
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Exports the Network-Explorer Component from the Network Explorer
+
 ## [0.0.10] - 11.11.2025
 ### Fixed
 - `Uncaught (in promise) ReferenceError: process is not defined` Apparently elkjs contains a reference to the node process which fails in browser (not verified)
