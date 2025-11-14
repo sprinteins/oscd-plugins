@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NetworkExplorer from "@oscd-plugins/network-explorer";
+  import NetworkExplorer from "@oscd-plugins/network-explorer/.src/network-explorer.svelte";
   import { pluginGlobalStore } from "@oscd-plugins/core-ui-svelte";
   import { MaterialTheme } from "@oscd-plugins/ui";
 </script>
