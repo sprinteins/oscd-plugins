@@ -9,39 +9,41 @@
 
 type Environment = "NETWORK_EXPLORER" | "AUTO_DOC";
 
-type Props =
-  | {
-      doc: XMLDocument;
-      environment: "AUTO_DOC";
-      editCount?: never;
-      // biome-ignore lint/suspicious/noExplicitAny: Has been here before, should be investigated properly
-      store?: any;
-    }
-  | {
-      doc: XMLDocument;
-      environment?: Exclude<Environment, "AUTO_DOC">;
-      editCount: number;
-			// biome-ignore lint/suspicious/noExplicitAny: Has been here before, should be investigated properly
-      store?: any;
-    };
+interface BaseProps {
+  doc: XMLDocument;
+  // biome-ignore lint/suspicious/noExplicitAny: Has been here before, should be investigated properly
+  store?: any;
+}
 
-	let { doc, editCount, environment = "NETWORK_EXPLORER", store = new DiagramStore() }: Props = $props();
-	let htmlRoot: HTMLElement | null = $state(null)
-	let editEventHandler: EditorEventHandler = $derived(new EditorEventHandler(htmlRoot!))
+interface AutoDocProps extends BaseProps {
+  environment: "AUTO_DOC";
+  editCount?: undefined; 
+}
+
+interface NetworkExplorerProps extends BaseProps {
+  environment?: Exclude<Environment, "AUTO_DOC">;
+  editCount: number;
+}
+
+type Props = AutoDocProps | NetworkExplorerProps;
+
+	let { doc, environment = "NETWORK_EXPLORER", store = new DiagramStore(), editCount }: Props & { editCount?: number } = $props();
+	let htmlRoot: HTMLElement | null = $state(null)
+	let editEventHandler: EditorEventHandler | null = $derived(htmlRoot ? new EditorEventHandler(htmlRoot) : null)
 	
 
 	function onCreateCable(event: CreateCableEvent) {
-		editEventHandler.dispatchCreateCable(event)
+		editEventHandler?.dispatchCreateCable(event)
 		store.resetNewConnection()
 	}
 
 	function onUpdateCable(event: UpdateCableEvent) {
-		editEventHandler.dispatchUpdateCable(event)
+		editEventHandler?.dispatchUpdateCable(event)
 		store.resetNewConnection()
 	}
 
 	function onDelete(networkings: Networking[]): void {
-		editEventHandler.dispatchDeleteCable(networkings)
+		editEventHandler?.dispatchDeleteCable(networkings)
 	}
 </script>
 
