@@ -7,7 +7,7 @@
 	import type { CreateCableEvent, UpdateCableEvent } from "./editor-events/network-events";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler"
 
-type Environment = "NETWORK_EXPLORER" | "AUTO_DOC";
+	export type Environment = "NETWORK_EXPLORER" | "AUTO_DOC";
 
 interface BaseProps {
   doc: XMLDocument;
@@ -49,7 +49,7 @@ type Props = AutoDocProps | NetworkExplorerProps;
 
 <SvelteFlowProvider>
 	<network-explorer bind:this={htmlRoot}>
-		<DiagramContainer {store} doc={doc.documentElement} {editCount} onDelete={onDelete}/>
+		<DiagramContainer store={store} doc={doc.documentElement} editCount={editCount} environment={environment} onDelete={onDelete}/>
 		{#if environment === "NETWORK_EXPLORER"}
 			<Sidebar {store} createCable={onCreateCable} updateCable={onUpdateCable} />
 		{/if}

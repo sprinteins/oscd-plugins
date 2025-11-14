@@ -9,64 +9,40 @@
 		Background,
 		BackgroundVariant,
 		Controls,
-		MiniMap,
-        type Connection,
-        addEdge,
+    type Connection,
 	} from "@xyflow/svelte"
 	import "@xyflow/svelte/dist/style.css"
-	import type { IEDNetworkInfoV3, Networking, PhysConnection } from "@oscd-plugins/core"
-	import { getIedNameFromId } from "./ied-helper"
+	import type { Networking } from "@oscd-plugins/core"
 	import IEDNode from "./ied-node.svelte"
 	import BayNode from "./bay-node.svelte"
-    import type { Writable } from "svelte/store";
+  import type { Writable } from "svelte/store";
 	import { getPhysConnectionsFromEdge } from "./edge-helper"
-    import type { IED } from "./networking";
+  import type { IED } from "./networking";
+  import type { Environment } from "../network-explorer.svelte"
 
-	// 
-	// INPUT
-	
-	
 	interface Props {
-		// 
 		nodes: Node[];
 		edges: Edge[];
-		// export let iedNetworkInfos: Writable<IEDNetworkInfoV3[]>
 		ieds: Writable<IED[]>;
+		environment?: Environment;
 		connect: (connection: Connection) => void;
 		onDelete: (networkings: Networking[]) => void;
 	}
 
-	let { nodes, edges, ieds, connect, onDelete }: Props = $props();
+	let { nodes, edges, ieds, environment = "NETWORK_EXPLORER", connect, onDelete }: Props = $props();
 
-	// 
-	// CONFIG
-	// 
+	const isPreviewMode = environment === "AUTO_DOC";
+
 	const nodeTypes = {
 		ied: IEDNode,
 		bay: BayNode,
 	}
 
-	const defaultEdgeOptions = {
-		// style: "stroke-width: 2; stroke: black;",
-		// type:  "floating",
-		// markerEnd: {
-		// 	type: MarkerType.ArrowClosed,
-		// 		color: 'black'
-		// }
-	}
-
-	// 
-	// INTERNAL
-	// 
-
-	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {
+	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {		
 		const { edges } = deleteEvent
 		const currentIEDs = $ieds
-
 		const networkings: Networking[] = edges
-			.map(edge => getPhysConnectionsFromEdge(edge, currentIEDs))
-			.flat()
-
+			.flatMap(edge => getPhysConnectionsFromEdge(edge, currentIEDs))
 		onDelete(networkings)
 	}
 </script>
@@ -75,22 +51,29 @@
 	<SvelteFlow 
 		bind:nodes
 		bind:edges
-		nodesConnectable={false}
+		nodesConnectable={isPreviewMode ? false : false}
+		nodesDraggable={!isPreviewMode}
+		nodesSelectable={!isPreviewMode}
+		edgesSelectable={!isPreviewMode}
+		elementsSelectable={!isPreviewMode}
+    preventScrolling={!isPreviewMode}
 		fitView 
 		minZoom={0.1} 
 		maxZoom={2.5}
 		colorMode="light"
-		{defaultEdgeOptions}
 		{nodeTypes}
 		snapGrid={[20, 20]}
-		{ ondelete }
-		onbeforeconnect={ connect }
-		panOnDrag={true}
+		ondelete={isPreviewMode ? undefined : ondelete}
+		onbeforeconnect={isPreviewMode ? undefined : connect}
+		panOnDrag={!isPreviewMode}
+		zoomOnPinch={!isPreviewMode}
+		zoomOnScroll={!isPreviewMode}
+		zoomOnDoubleClick={!isPreviewMode}
 	>
-		<!-- connectionLineType={ConnectionLineType.Straight} -->
-		<Controls />
+		{#if !isPreviewMode}
+			<Controls />
+		{/if}
 		<Background variant={BackgroundVariant.Dots} />
-		<!-- <MiniMap /> -->
 	</SvelteFlow>
 </network-diagram>
 
@@ -107,7 +90,7 @@
 		cursor: unset;
 	}
 
-	.svelte-flow {
+.svelte-flow {
   direction: ltr;
 
   --xy-edge-stroke-default: #b1b1b7;

@@ -18,15 +18,17 @@
 	import { getIedNameFromId } from "./ied-helper"
 	import type { IED } from "./networking";
 	import type { Networking } from "@oscd-plugins/core"
+	import type { Environment } from "../network-explorer.svelte"
 
 	interface Props {
 		doc: Element;
 		editCount?: number;
 		store: DiagramStore;
+		environment?: Environment;
 		onDelete: (networkings: Networking[]) => void;
 	}
 
-	let { doc, editCount, store, onDelete }: Props = $props();
+	let { doc, editCount, store, environment = "NETWORK_EXPLORER", onDelete }: Props = $props();
 	let root: HTMLElement | null = $state(null)
 	let _editCount: number
 	let _doc: Element
@@ -50,6 +52,8 @@
 	}
 
 	function onconnect(connection: Connection): void {
+		if (environment === "AUTO_DOC") return;
+		
 		const { source, target } = connection
 		const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
 
@@ -100,6 +104,7 @@
 			nodes={store.nodes}
 			edges={store.edges}
 			ieds={store.ieds}
+			environment={environment}
 			onDelete={onDelete}
 			connect={onconnect}
 		/>	
