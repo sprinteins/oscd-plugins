@@ -5,6 +5,7 @@
   import NoXmlWarnign from "../../no-xml-warning/no-xml-warnign.svelte";
   import { exportPngFromHTMLElement } from "@/utils/diagram-export";
   import type { ImageData } from '../image-element/types.image';
+  import Select from "@oscd-plugins/ui/src/components/select/select.svelte";
 
   const SVELTE_FLOW__PANE = '.svelte-flow__pane';
   const DELAY_BEFORE_FLOW_PANE = 2000;
@@ -58,6 +59,10 @@
 
 {#if pluginGlobalStore.xmlDocument}
   <div class="communication-element" bind:this={htmlRoot}>
+    <h3>Network Overview</h3>
+    <sub>Choose the bays you want to display in the diagram</sub>
+    
+    <h4>Preview</h4>
     <MaterialTheme pluginType="editor">
       <NetworkExplorer doc={pluginGlobalStore.xmlDocument} environment="AUTO_DOC" />
     </MaterialTheme>
