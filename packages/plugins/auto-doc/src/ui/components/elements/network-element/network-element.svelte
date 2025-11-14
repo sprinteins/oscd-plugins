@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NetworkExplorer from "@oscd-plugins/network-explorer/.src/network-explorer.svelte";
+  import NetworkExplorer from "@oscd-plugins/network-explorer/src/network-explorer.svelte";
   import { pluginGlobalStore } from "@oscd-plugins/core-ui-svelte";
   import { MaterialTheme } from "@oscd-plugins/ui";
 </script>
@@ -7,7 +7,7 @@
 {#if pluginGlobalStore.xmlDocument}
   <div class="communication-element">
     <MaterialTheme pluginType="editor">
-      <NetworkExplorer doc={pluginGlobalStore.xmlDocument} editCount={1} />
+      <NetworkExplorer doc={pluginGlobalStore.xmlDocument} environment="AUTO_DOC" />
     </MaterialTheme>
   </div>
 {:else}

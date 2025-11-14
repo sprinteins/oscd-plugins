@@ -1,31 +1,33 @@
 <script lang="ts">
 	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import type { Networking } from "@oscd-plugins/core";
-	// import Theme from "../../theme/theme.svelte"
 	import { DiagramContainer } from "./diagram"
 	import { DiagramStore } from "./store"
 	import { Sidebar } from "./sidebar"
-    import type { CreateCableEvent, UpdateCableEvent } from "./editor-events/network-events";
+	import type { CreateCableEvent, UpdateCableEvent } from "./editor-events/network-events";
 	import { EditorEventHandler } from "./editor-events/editor-event-handler"
 
-	// 
-	// INPUT
-	
+type Environment = "NETWORK_EXPLORER" | "AUTO_DOC";
 
-	// 
-	// INTERNAL
-	
-	interface Props {
-		// 
-		doc: XMLDocument;
-		editCount: number;
-		// 
-		store?: any;
-	}
+type Props =
+  | {
+      doc: XMLDocument;
+      environment: "AUTO_DOC";
+      editCount?: never;
+      // biome-ignore lint/suspicious/noExplicitAny: Has been here before, should be investigated properly
+      store?: any;
+    }
+  | {
+      doc: XMLDocument;
+      environment?: Exclude<Environment, "AUTO_DOC">;
+      editCount: number;
+			// biome-ignore lint/suspicious/noExplicitAny: Has been here before, should be investigated properly
+      store?: any;
+    };
 
-	let { doc, editCount, store = new DiagramStore() }: Props = $props();
-	let htmlRoot: HTMLElement = $state()
-	let editEventHandler: EditorEventHandler = $derived(new EditorEventHandler(htmlRoot))
+	let { doc, editCount, environment = "NETWORK_EXPLORER", store = new DiagramStore() }: Props = $props();
+	let htmlRoot: HTMLElement | null = $state(null)
+	let editEventHandler: EditorEventHandler = $derived(new EditorEventHandler(htmlRoot!))
 	
 
 	function onCreateCable(event: CreateCableEvent) {
@@ -46,16 +48,16 @@
 <SvelteFlowProvider>
 	<network-explorer bind:this={htmlRoot}>
 		<DiagramContainer {store} doc={doc.documentElement} {editCount} onDelete={onDelete}/>
-		<Sidebar {store} createCable={onCreateCable} updateCable={onUpdateCable} />
+		{#if environment === "NETWORK_EXPLORER"}
+			<Sidebar {store} createCable={onCreateCable} updateCable={onUpdateCable} />
+		{/if}
 	</network-explorer>
 </SvelteFlowProvider>
 
 <style>
 	:root, :host {
 		--header-height: 128px;
-
 		--sidebar-width: 400px;
-
 		--color-paper-white: #ffffff;
 		--color-white: #f9f7f1;
 		--color-white-dark: #f2f2f2;
@@ -82,16 +84,13 @@
 		--color-pink-light: #ff40a7;
 		--color-grey-1: #626262;
 		--color-grey-2: #808080;
-
 		--color-grey-3: #bdbdbd;
 		--color-grey-dark: #4d5d63;
 		--color-grey-dark-70pc-opacity: #4d5d63b3;
-
 		--color-cyan: #2aa198;
 		--color-cyan-30-pc-opacity: #2aa1984d;
 		--color-select-dropdown: #fffff4;
 		--color-select-dropdown-transparent: #fffff480;
-
 		--color-accent: var(--color-cyan);
 
 		--font-family: "Roboto", sans-serif;
@@ -111,6 +110,5 @@
 		display: flex;
  	 	align-items: stretch;
 		position: relative;
-		/* font-size: 12px; */
 	}
 </style>

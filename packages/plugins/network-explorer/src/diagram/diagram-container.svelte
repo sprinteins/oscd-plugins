@@ -1,116 +1,97 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
+	/**
+	 * The responsibility of `diagram-container` is to:
+	 * 1. gather bays, and the network information if IEDs
+	 * 2. calculate the layout of the diagram
+	 * 3. render the diagram by converting ELKjs nodes to svelte-flow nodes
+	 * 
+	 * > See [network-explorer.tldr](../network-explorer.tldr) for 
+	 * > a graphical representation
+	 */
 
-/**
- * The responsibility of `diagram-container` is to:
- * 1. gather bays, and the network information if IEDs
- * 2. calculate the layout of the diagram
- * 3. render the diagram by converting ELKjs nodes to svelte-flow nodes
- * 
- * > See [network-explorer.tldr](../network-explorer.tldr) for 
- * > a graphical representation
- */
+	import type { DiagramStore } from "../store";
+	import { get } from "svelte/store"
+	import Diagram from "./diagram.svelte";
+	import { useNodes, useEdges } from '@xyflow/svelte';
 
-import type { DiagramStore } from "../store";
-import { get } from "svelte/store"
-import Diagram from "./diagram.svelte";
-import { useNodes, useEdges, type Node as ElkNode } from '@xyflow/svelte';
-
-import type { Connection, Edge } from "@xyflow/svelte";
-import { getIedNameFromId } from "./ied-helper"
-import { extractCableNameFromId } from "./edge-helper"
-import type { IED } from "./networking";
-import type { Networking } from "@oscd-plugins/core"
-
-// 
-// INPUT
+	import type { Connection } from "@xyflow/svelte";
+	import { getIedNameFromId } from "./ied-helper"
+	import type { IED } from "./networking";
+	import type { Networking } from "@oscd-plugins/core"
 
 	interface Props {
-		// 
 		doc: Element;
-		editCount: number;
+		editCount?: number;
 		store: DiagramStore;
 		onDelete: (networkings: Networking[]) => void;
 	}
 
 	let { doc, editCount, store, onDelete }: Props = $props();
+	let root: HTMLElement | null = $state(null)
+	let _editCount: number
+	let _doc: Element
+	const nodes = useNodes();
+	const edges = useEdges();
 
-// 
-// CONFIG
-// 
-
-// 
-// INTERNAL
-// 
-let root: HTMLElement = $state()
-let _editCount: number
-let _doc: Element
-
-const nodes = useNodes();
-
-const edges = useEdges();
-
-function updateOnDoc(doc: Element): void {
-	if (doc === _doc) {
-		return
+	function updateOnDoc(doc: Element): void {
+		if (doc === _doc) {
+			return
+		}
+		_doc = doc
+		store.updateNodesAndEdges(doc)
 	}
 
-	_doc = doc
-	store.updateNodesAndEdges(doc)
-}
-
-function updateOnEditCount(editCount: number): void {
-	if (editCount < 0 || editCount === _editCount) {
-		return
+	function updateOnEditCount(editCount?: number): void {
+		if (editCount === undefined || editCount < 0 || editCount === _editCount) {
+			return
+		}
+		_editCount = editCount
+		store.updateNodesAndEdges(doc)
 	}
 
-	_editCount = editCount
-	store.updateNodesAndEdges(doc)
-}
+	function onconnect(connection: Connection): void {
+		const { source, target } = connection
+		const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
 
-function onconnect(connection: Connection): void {
-	const { source, target } = connection
-	const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
+		store.connectionBetweenNodes.set({
+			isNew: true,
+			source: sourceIed,
+			target: targetIed
+		})
+	}
 
-	store.connectionBetweenNodes.set({
-		isNew: true,
-		source: sourceIed,
-		target: targetIed
+
+	function getSourceAndTargetIed(source: string, target: string): { sourceIed: IED, targetIed: IED } {
+		const sourceIedName = getIedNameFromId(source)
+		const targetIedName = getIedNameFromId(target)
+		const ieds = get(store.ieds)
+		const targetAndSource = ieds.filter(ied => ied.name === sourceIedName || ied.name === targetIedName)
+		const sourceIed = targetAndSource.find(ied => ied.name === sourceIedName)
+		const targetIed = targetAndSource.find(ied => ied.name === targetIedName)
+
+		if (!sourceIed) {
+			throw new Error(`Ied ${sourceIedName} not found`)
+		}
+
+		if (!targetIed) {
+			throw new Error(`Ied ${targetIedName} not found`)
+		}
+
+		return { sourceIed: sourceIed, targetIed: targetIed }
+	}
+
+	$effect(() => {
+		updateOnEditCount(editCount)
 	})
-}
-
-
-function getSourceAndTargetIed(source: string, target: string): { sourceIed: IED, targetIed: IED } {
-	const sourceIedName = getIedNameFromId(source)
-	const targetIedName = getIedNameFromId(target)
-	const ieds = get(store.ieds)
-	const targetAndSource = ieds.filter(ied => ied.name === sourceIedName || ied.name === targetIedName)
-	const sourceIed = targetAndSource.find(ied => ied.name === sourceIedName)
-	const targetIed = targetAndSource.find(ied => ied.name === targetIedName)
-
-	if (!sourceIed) {
-		throw new Error(`Ied ${sourceIedName} not found`)
-	}
-
-	if (!targetIed) {
-		throw new Error(`Ied ${targetIedName} not found`)
-	}
-
-	return { sourceIed: sourceIed, targetIed: targetIed }
-}
-
-$effect(() => {
-	updateOnEditCount(editCount)
-})
-$effect(() => {
-	updateOnDoc(doc)
-})
-$effect(() => {
-	store.updateSelectedNodes(nodes.current)
-})
-$effect(() => {
-	store.updateSelectedEdges(edges.current)
-})
+	$effect(() => {
+		updateOnDoc(doc)
+	})
+	$effect(() => {
+		store.updateSelectedNodes(nodes.current)
+	})
+	$effect(() => {
+		store.updateSelectedEdges(edges.current)
+	})
 </script>
 
 <div class="root" bind:this={root}>

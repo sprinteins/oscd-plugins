@@ -27,8 +27,7 @@
 	data-plugin-version={jsonPackage.version}
 >
 	<MaterialTheme pluginType="editor">
-		<NetworkExplorer { doc } { editCount }>
-		</NetworkExplorer>
+		<NetworkExplorer doc={doc} editCount={editCount} />
 	</MaterialTheme>
 </main>
 
