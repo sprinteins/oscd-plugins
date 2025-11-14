@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Adds a new Element for the Communication Explorer
+- Export to PNG feature for HTMLElements
 
 ## [1.17.6] - 11.11.2025
 ### Changed
