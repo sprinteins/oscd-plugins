@@ -23,7 +23,7 @@
 </script>
 
 <div class="chip" class:isSelected {...dataProps}>
-	<Button class="tscd-button" {onclick} disabled={disabled}>
+	<Button class="tscd-button" {onclick} {disabled}>
 		<Label class="button-label">{label}</Label>
 	</Button>
 </div>
