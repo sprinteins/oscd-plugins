@@ -20,7 +20,7 @@ let imageScale: string = $state(parsedContent?.scale || 'Small')
 
 async function handleImageUpload(event) {
 	const file = event.target.files[0]
-	if (file && file.type.startsWith('image/')) {
+	if (file?.type.startsWith('image/')) {
 		const base64String = await imageUtils.convertImageToBase64(file)
 		const reader = new FileReader()
 		reader.onload = (e: ProgressEvent<FileReader>) => {
