@@ -6,7 +6,7 @@
 		isSelected: boolean;
 		testid?: string;
 		disabled?: boolean;
-		onclick?: (event: MouseEvent) => void;
+		onclick?: () => void;
 	}
 
 	let {
@@ -17,21 +17,13 @@
 		onclick
 	}: Props = $props();
 
-	function handleClick(event: MouseEvent) {
-		if (disabled) {
-			event.preventDefault()
-			return
-		}
-		onclick?.(event)
-	}
-
 	let dataProps = $derived({
 		"data-testid": testid,
 	})
 </script>
 
-<div class="chip" class:isSelected {...dataProps} onclick={handleClick}>
-	<Button class="tscd-button" disabled={disabled}>
+<div class="chip" class:isSelected {...dataProps}>
+	<Button class="tscd-button" {onclick} disabled={disabled}>
 		<Label class="button-label">{label}</Label>
 	</Button>
 </div>
