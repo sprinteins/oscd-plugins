@@ -7,6 +7,7 @@
   import type { ImageData } from '../image-element/types.image';
 
   const SVELTE_FLOW__PANE = '.svelte-flow__pane';
+  const DELAY_BEFORE_FLOW_PANE = 2000;
 
   interface Props {
     content?: string
@@ -38,9 +39,8 @@
     }
   };
 
-  const waitForDiagramAndExport = async () => {
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    exportNetworkDiagram();
+  const waitForDiagramToRender = async (): Promise<void> => {
+    await new Promise(resolve => setTimeout(resolve, DELAY_BEFORE_FLOW_PANE));
   };
 
   $effect(() => {
@@ -48,7 +48,9 @@
 			const pane = htmlRoot.querySelector<HTMLElement>(SVELTE_FLOW__PANE)
 			if (pane) {
 				flowPane = pane
-        waitForDiagramAndExport();
+        waitForDiagramToRender().then(() => {
+          exportNetworkDiagram();
+        });
 			}
 		}
 	})
