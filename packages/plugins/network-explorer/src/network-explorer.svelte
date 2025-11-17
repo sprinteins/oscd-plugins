@@ -1,50 +1,59 @@
 <script lang="ts">
-	import { SvelteFlowProvider } from '@xyflow/svelte';
-	import type { Networking } from "@oscd-plugins/core";
-	import { DiagramContainer } from "./diagram"
-	import { DiagramStore } from "./store"
-	import { Sidebar } from "./sidebar"
-	import type { CreateCableEvent, UpdateCableEvent } from "./editor-events/network-events";
-	import { EditorEventHandler } from "./editor-events/editor-event-handler"
+import { SvelteFlowProvider } from '@xyflow/svelte'
+import type { Networking } from '@oscd-plugins/core'
+import { DiagramContainer } from './diagram'
+import { DiagramStore } from './store'
+import { Sidebar } from './sidebar'
+import type {
+	CreateCableEvent,
+	UpdateCableEvent
+} from './editor-events/network-events'
+import { EditorEventHandler } from './editor-events/editor-event-handler'
 
-	export type Environment = "NETWORK_EXPLORER" | "AUTO_DOC";
+export type Environment = 'NETWORK_EXPLORER' | 'AUTO_DOC'
 
 interface BaseProps {
-  doc: XMLDocument;
-  // biome-ignore lint/suspicious/noExplicitAny: Has been here before, should be investigated properly
-  store?: any;
+	doc: XMLDocument
+	// biome-ignore lint/suspicious/noExplicitAny: Has been here before, should be investigated properly
+	store?: any
 }
 
 interface AutoDocProps extends BaseProps {
-  environment: "AUTO_DOC";
-  editCount?: undefined; 
+	environment: 'AUTO_DOC'
+	editCount?: undefined
 }
 
 interface NetworkExplorerProps extends BaseProps {
-  environment?: Exclude<Environment, "AUTO_DOC">;
-  editCount: number;
+	environment?: Exclude<Environment, 'AUTO_DOC'>
+	editCount: number
 }
 
-type Props = AutoDocProps | NetworkExplorerProps;
+type Props = AutoDocProps | NetworkExplorerProps
 
-	let { doc, environment = "NETWORK_EXPLORER", store = new DiagramStore(), editCount }: Props & { editCount?: number } = $props();
-	let htmlRoot: HTMLElement | null = $state(null)
-	let editEventHandler: EditorEventHandler | null = $derived(htmlRoot ? new EditorEventHandler(htmlRoot) : null)
-	
+let {
+	doc,
+	environment = 'NETWORK_EXPLORER',
+	store = new DiagramStore(),
+	editCount
+}: Props & { editCount?: number } = $props()
+let htmlRoot: HTMLElement | null = $state(null)
+let editEventHandler: EditorEventHandler | null = $derived(
+	htmlRoot ? new EditorEventHandler(htmlRoot) : null
+)
 
-	function onCreateCable(event: CreateCableEvent) {
-		editEventHandler?.dispatchCreateCable(event)
-		store.resetNewConnection()
-	}
+function onCreateCable(event: CreateCableEvent) {
+	editEventHandler?.dispatchCreateCable(event)
+	store.resetNewConnection()
+}
 
-	function onUpdateCable(event: UpdateCableEvent) {
-		editEventHandler?.dispatchUpdateCable(event)
-		store.resetNewConnection()
-	}
+function onUpdateCable(event: UpdateCableEvent) {
+	editEventHandler?.dispatchUpdateCable(event)
+	store.resetNewConnection()
+}
 
-	function onDelete(networkings: Networking[]): void {
-		editEventHandler?.dispatchDeleteCable(networkings)
-	}
+function onDelete(networkings: Networking[]): void {
+	editEventHandler?.dispatchDeleteCable(networkings)
+}
 </script>
 
 <SvelteFlowProvider>
