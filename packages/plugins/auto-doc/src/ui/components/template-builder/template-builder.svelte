@@ -8,7 +8,7 @@ import ImageElement from '@/ui/components/elements/image-element/image-element.s
 import SignalListElement from '@/ui/components/elements/signal-list-element/signal-list-element.svelte'
 import TableElement from '@/ui/components/elements/table-element/table-element.svelte'
 import TextElement from '@/ui/components/elements/text-element/text-element.svelte'
-import CommunicationElement from '../elements/communication-element/communication-element.svelte';
+import CommunicationElement from '../elements/communication-element/communication-element.svelte'
 
 import { MOVE_BLOCK_DIRECTION } from '@/constants'
 import { docTemplatesStore } from '@/stores'

@@ -1,16 +1,14 @@
 <script lang="ts">
-    import TelemetryView from "@oscd-plugins/communication-explorer/src/ui/components/telemetry-view/telemetry-view.svelte";
-    import { pluginGlobalStore } from "@oscd-plugins/core-ui-svelte";
-    import { LegacyTheme } from "@oscd-plugins/ui";
+import TelemetryView from '@oscd-plugins/communication-explorer/src/ui/components/telemetry-view/telemetry-view.svelte'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { LegacyTheme } from '@oscd-plugins/ui'
 
-    interface Props {
-    // prop
-    onContentChange: (newContent: string) => void
-    content?: string
+interface Props {
+	onContentChange: (newContent: string) => void
+	content?: string
 }
 
-    let { onContentChange, content = '' }: Props = $props()
-
+let { onContentChange, content = '' }: Props = $props()
 </script>
 
 {#if pluginGlobalStore.xmlDocument}
