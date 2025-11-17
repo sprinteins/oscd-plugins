@@ -1,50 +1,58 @@
 <script lang="ts">
-	/**
-	 * This component is responsible to configure SvelteFlow
-	*/
-	import { 
-		type Node, 
-		type Edge,
-		SvelteFlow,
-		Background,
-		BackgroundVariant,
-		Controls,
-    type Connection,
-	} from "@xyflow/svelte"
-	import "@xyflow/svelte/dist/style.css"
-	import type { Networking } from "@oscd-plugins/core"
-	import IEDNode from "./ied-node.svelte"
-	import BayNode from "./bay-node.svelte"
-  import type { Writable } from "svelte/store";
-	import { getPhysConnectionsFromEdge } from "./edge-helper"
-  import type { IED } from "./networking";
-  import type { Environment } from "../network-explorer.svelte"
+/**
+ * This component is responsible to configure SvelteFlow
+ */
+import {
+	type Node,
+	type Edge,
+	SvelteFlow,
+	Background,
+	BackgroundVariant,
+	Controls,
+	type Connection
+} from '@xyflow/svelte'
+import '@xyflow/svelte/dist/style.css'
+import type { Networking } from '@oscd-plugins/core'
+import IEDNode from './ied-node.svelte'
+import BayNode from './bay-node.svelte'
+import type { Writable } from 'svelte/store'
+import { getPhysConnectionsFromEdge } from './edge-helper'
+import type { IED } from './networking'
+import type { Environment } from '../network-explorer.svelte'
 
-	interface Props {
-		nodes: Node[];
-		edges: Edge[];
-		ieds: Writable<IED[]>;
-		environment?: Environment;
-		connect: (connection: Connection) => void;
-		onDelete: (networkings: Networking[]) => void;
-	}
+interface Props {
+	nodes: Node[]
+	edges: Edge[]
+	ieds: Writable<IED[]>
+	environment?: Environment
+	connect: (connection: Connection) => void
+	onDelete: (networkings: Networking[]) => void
+}
 
-	let { nodes, edges, ieds, environment = "NETWORK_EXPLORER", connect, onDelete }: Props = $props();
+let {
+	nodes,
+	edges,
+	ieds,
+	environment = 'NETWORK_EXPLORER',
+	connect,
+	onDelete
+}: Props = $props()
 
-	const isPreviewMode = environment === "AUTO_DOC";
+const isPreviewMode = environment === 'AUTO_DOC'
 
-	const nodeTypes = {
-		ied: IEDNode,
-		bay: BayNode,
-	}
+const nodeTypes = {
+	ied: IEDNode,
+	bay: BayNode
+}
 
-	function ondelete(deleteEvent: { nodes: Node[], edges: Edge[] }): void {		
-		const { edges } = deleteEvent
-		const currentIEDs = $ieds
-		const networkings: Networking[] = edges
-			.flatMap(edge => getPhysConnectionsFromEdge(edge, currentIEDs))
-		onDelete(networkings)
-	}
+function ondelete(deleteEvent: { nodes: Node[]; edges: Edge[] }): void {
+	const { edges } = deleteEvent
+	const currentIEDs = $ieds
+	const networkings: Networking[] = edges.flatMap((edge) =>
+		getPhysConnectionsFromEdge(edge, currentIEDs)
+	)
+	onDelete(networkings)
+}
 </script>
 
 <network-diagram>
