@@ -5,6 +5,10 @@ All notable changes to the communication explorer plugin will be documented here
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.13] - 13.11.2025
+### Changed
+- Version bumped to 0.0.13 to avoid conflicts with older versions present on gh-pages. This ensures continuity and prevents overlap with previously published releases.
+
 ## [0.0.10] - 11.11.2025
 ### Fixed
 - `Uncaught (in promise) ReferenceError: process is not defined` Apparently elkjs contains a reference to the node process which fails in browser (not verified)
