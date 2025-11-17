@@ -160,7 +160,7 @@ function handleContentChange(elementId: string, newContent: string) {
                     <Button variant="outlined" onclick={()=>{addElement("image")}}>Image</Button>
                     <Button variant="outlined" onclick={()=>{addElement("signalList")}}>Signal List</Button>
                     <Button variant="outlined" onclick={() => isCreateTableDialogOpen = true}>Table</Button>
-										<Button variant="outlined" onclick={()=>{addElement("network")}}>Network</Button>
+					<Button variant="outlined" onclick={()=>{addElement("network")}}>Network</Button>
                 {/if}
             </div>
         </footer>
