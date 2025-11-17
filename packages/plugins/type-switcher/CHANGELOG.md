@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.17] - 11.11.2025
 ### Changed
 - Setup rollupOptions to bundle to a single file
+### Fixed
+- Set relative path for .css files
 
 ## [0.0.16] - 04.11.2025
 

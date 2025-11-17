@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Exports the Network-Explorer Component from the Network Explorer
 
+## [0.0.13] - 13.11.2025
+### Changed
+- Version bumped to 0.0.13 to avoid conflicts with older versions present on gh-pages. This ensures continuity and prevents overlap with previously published releases.
+
 ## [0.0.10] - 11.11.2025
 ### Fixed
 - `Uncaught (in promise) ReferenceError: process is not defined` Apparently elkjs contains a reference to the node process which fails in browser (not verified)
