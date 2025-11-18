@@ -1,9 +1,7 @@
 <script lang="ts">
 	import Button, { Label } from "@smui/button"
-	
 
 	interface Props {
-		// Input
 		label: string;
 		isSelected: boolean;
 		testid?: string;
@@ -48,29 +46,23 @@
 		display: inline-flex;
 
 		:global(.mdc-button) {
-            background-color: var(--color-filter-chips-background);
-            color: var(--font-color);
-            font-weight: 400;
-            font-size: var(--font-size);
-            border-radius: 12px;
-            height: auto;
-            padding: 0.75rem 1rem;
-            box-shadow: none;
-            outline: 1px var(--color-grey-3) solid;
-            margin: 0.5rem;
-        }
+			background-color: var(--color-filter-chips-background);
+			color: var(--font-color);
+			font-weight: 400;
+			font-size: var(--font-size);
+			border-radius: 12px;
+			height: auto;
+			padding: 0.75rem 1rem;
+			box-shadow: none;
+			outline: 1px var(--color-grey-3) solid;
+			margin: 0.5rem;
+		}
 		:global(button.tscd-button:hover) {
 			background-color: var(--color-filter-chips-background);
 			outline: 1px var(--mdc-theme-primary) dashed;
 			cursor: pointer;
 		}
 
-		// :global(.mdc-button.clicked) {
-		//   border-color: black;
-		// }
-		// :global(.mdc-button--ripple) {
-		//   background-color: black;
-		// }
 		:global(button.tscd-button:disabled) {
 			background-color: var(--color-filter-chips-background);
 			color: var(--font-color);

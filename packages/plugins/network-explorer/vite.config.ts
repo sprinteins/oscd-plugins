@@ -5,7 +5,8 @@ import { resolve } from 'node:path'
 const isDevelopment = process.env.NODE_ENV === 'development'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+	base: './',
 	plugins: [
 		svelte({
 			compilerOptions: {
@@ -17,6 +18,10 @@ export default defineConfig({
 		alias: {
 			'@': resolve(__dirname, 'src')
 		}
+	},
+	define: {
+		'process.env.NODE_ENV': JSON.stringify(mode || 'production'),
+		'process.env': '{}'
 	},
 	build: {
 		target: 'esnext',
@@ -41,4 +46,4 @@ export default defineConfig({
 		port: 41768,
 		cors: true
 	}
-})
+}))
