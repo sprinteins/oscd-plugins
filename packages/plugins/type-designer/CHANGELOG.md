@@ -5,37 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.16.0] - 06.06.2025
+## [3.16.0] - 2025-06-06
 
 ### Added
 
 - Update LNode lnInst attributes on ref deletion
 
-## [3.15.0] - 06.06.2025
+## [3.15.0] - 2025-06-06
 
 ### Added
 
 - Type refs are always visible in the import container (even after importing a linked type)
 
-## [3.14.1] - 06.06.2025
+## [3.14.1] - 2025-06-06
 
 ### Fixed
 
 - Import naming on duplicate elements
 
-## [3.14.0] - 06.06.2025
+## [3.14.0] - 2025-06-06
 
 ### Added
 
 - Imported bays are always written after the `Bay[name="Template"]`
 
-## [3.13.0] - 06.06.2025
+## [3.13.0] - 2025-06-06
 
 ### Added
 
 - Update notification dot and tooltip 
 
-## [3.12.0] - 05.06.2025
+## [3.12.0] - 2025-06-05
 
 ### Changed
 
@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Scrollbar adjust its position for the last type element item in the list, so that it is now possible to easily drop elements.
 
-## [3.11.0] - 23.05.2025
+## [3.11.0] - 2025-05-23
 
 ### Added
 
@@ -62,31 +62,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - import dropdown menu in all columns
 
-## [3.10.4] - 02.05.2025
+## [3.10.4] - 2025-05-02
 
 ### Fixed
 
 - Create a new element named after one that was deleted
 
-## [3.10.3] - 02.05.2025
+## [3.10.3] - 2025-05-02
 
 ### Fixed
 
 - Uuids are recursively added to element that are not part of DataTypeTemplates
 
-## [3.10.2] - 16.04.2025
+## [3.10.2] - 2025-04-16
 
 ### Changed
 
 - Adapt the dialog calls to its newer logic
 
-## [3.10.1] - 31.03.2025
+## [3.10.1] - 2025-03-31
 
 ### Fixed
 
 - The allowed dropzone have been restricted to go along with the UI
 
-## [3.10.0] - 31.03.2025
+## [3.10.0] - 2025-03-31
 
 ### Changed 
 
@@ -97,25 +97,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - importing `Function` opens the container in the right column if there is no type to import
 
-## [3.9.0] - 27.03.2025
+## [3.9.0] - 2025-03-27
 
 ### Added 
 
 - Add duplicate ref menu entry
 
-## [3.8.0] - 27.03.2025
+## [3.8.0] - 2025-03-27
 
 ### Added 
 
 - Bay refs badges to differentiate function from equipment
 
-## [3.7.0] - 27.03.2025
+## [3.7.0] - 2025-03-27
 
 ### Added 
 
 - Drag and Drop adaptions 
 
-## [3.6.0] - 26.03.2025
+## [3.6.0] - 2025-03-26
 
 ### Added 
 
@@ -124,26 +124,26 @@ Note that :
   - some of them have a fixed number defined by the standard, and thus the dropdown is disabled
 	- the default number at creation has been restricted to two.
 
-## [3.5.0] - 24.03.2025
+## [3.5.0] - 2025-03-24
 
 ### Added 
 
 - Add occurrence on refs name
 
-## [3.4.1] - 21.03.2025
+## [3.4.1] - 2025-03-21
 
 ### Fixed 
 
 - Sidebar input validation on names : i.e. changing to a non-unique value is no longer allowed
 
-## [3.4.0] - 20.03.2025
+## [3.4.0] - 2025-03-20
 
 ### Added 
 
 - Add user decision dialog thats displays the imports/changes to be made
 - Deep import (resolves all nested and related elements - ref to type)
 
-## [3.3.0] - 14.03-2025
+## [3.3.0] - 2025-03-14
 
 ### Added
 
@@ -162,7 +162,7 @@ Note that :
 
 - Reactive creation of the `TEMPLATE` structure
 
-## [3.2.0] - 27-02-2025
+## [3.2.0] - 2025-02-27
 
 ### Added
 
@@ -170,13 +170,13 @@ Note that :
 - Sidebar close on type deletion
 - Names are unique (custom or automated) - each iteration is assigned a new occurrence
 
-## [3.1.0] - 26-02-2025
+## [3.1.0] - 2025-02-26
 
 ### Added
 
 - Add Terminals on ConductingEquipment creation
 
-## [3.0.0] - 25-02-2025
+## [3.0.0] - 2025-02-25
 
 ### Added
 
@@ -202,14 +202,14 @@ Note that :
   - `GeneralEquipmentType` (custom)
 	- `ConductingEquipmentType` (custom)
 
-## [2.4.0] - 17-02-2025
+## [2.4.0] - 2025-02-17
 
 ### Added
 
 - Search input for each columns
 - The searched result is automatically displayed
 
-## [2.3.0] - 17-02-2025
+## [2.3.0] - 2025-02-17
 
 ### Added
 
@@ -222,14 +222,14 @@ Note that :
 - Private element at the top of the file below the `Header` (as per definition)
 - New namespaces added to the `SCL` (root) element
 
-## [2.2.0] - 12-02-2025
+## [2.2.0] - 2025-02-12
 
 ### Added
 
 - Duplicate entry in Type menu
 - Type (and related refs) duplication with default naming following this pattern : `${parentName}_Copy_${occurrence}`
 
-## [2.1.0] - 10-02-2025
+## [2.1.0] - 2025-02-10
 
 ### Added
 
@@ -248,7 +248,7 @@ Note that :
 - Type namespaced attributes from unstable revision to type-designer
 - Reset equipment selection when changing from GenEq to CondEq and vice versa
 
-## [2.0.0] - 10-01-2025
+## [2.0.0] - 2025-01-10
 
 ### Added 
 
@@ -280,7 +280,7 @@ Note that :
 - Add and remove typeRefs through drawer
 - SCD XSD schema file for Type Designer
 
-## [1.0.0] - 04-10-2024
+## [1.0.0] - 2024-10-04
 
 ### Added
 
