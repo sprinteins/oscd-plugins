@@ -14,10 +14,6 @@
 	} from "../../../stores/_store-view-filter"
 	import BayContainer from "./bay-container/bay-container.svelte"
 
-	// Zoom borders; scales relative to original root node size
-	const MIN_SCALE = 0.2
-	const MAX_SCALE = 4
-	
 
 
 	interface Props {
@@ -185,7 +181,11 @@
 	let svgHeight = $state(0)
 	let savedRootNodeWidth = 0
 	let savedRootNodeHeight = 0
+	
 	// Zoom borders; scales relative to original root node size
+	const MIN_SCALE = 0.2
+	const MAX_SCALE = 4
+	
 	$effect(() => {
 		if (rootNode?.width != null && rootNode?.height != null) {
 			resetZoom(rootNode.width, rootNode.height)
