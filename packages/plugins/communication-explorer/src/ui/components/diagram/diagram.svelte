@@ -182,15 +182,23 @@
 	let svgHeight = $state(0)
 	let savedRootNodeWidth = 0
 	let savedRootNodeHeight = 0
+	// Zoom borders; scales relative to original root node size
+	const minScale = 0.2
+	const maxScale = 4
 	$effect(() => {
-		resetZoom(rootNode.width, rootNode.height)
+		if (rootNode?.width != null && rootNode?.height != null) {
+			resetZoom(rootNode.width, rootNode.height)
+		}
 	});
 
 	async function handleMouseWheel(e: WheelEvent) {
+
 		if (!e.ctrlKey && !e.metaKey) {
 			return
 		}
-
+		// Prevent browser/page zoom and further propagation
+		e.preventDefault()
+		e.stopPropagation()
 		const direction = e.deltaY < 0 ? 1 : -1
 		const zooming = zoomModifier + zoomStep * direction
 		const newSVGWidth = svgWidth * zooming
@@ -198,7 +206,15 @@
 		if (newSVGWidth < 0 || newSVGHeight < 0) {
 			return
 		}
-
+		// Determine candidate scale relative to original size
+		const baseWidth = savedRootNodeWidth || rootNode?.width || 0
+		if (baseWidth === 0) {
+			return
+		}
+		const scaleCandidate = newSVGWidth / baseWidth
+		if (scaleCandidate < minScale || scaleCandidate > maxScale) {
+			return
+		}
 		svgHeight = newSVGHeight
 		svgWidth = newSVGWidth
 	}
