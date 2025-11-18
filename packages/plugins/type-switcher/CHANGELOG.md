@@ -5,13 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.17] - 11.11.2025
+## [0.0.17] - 2025-11-11
 ### Changed
 - Setup rollupOptions to bundle to a single file
 ### Fixed
 - Set relative path for .css files
 
-## [0.0.16] - 04.11.2025
+## [0.0.16] - 2025-11-04
 
 ### Changed
 - Migrated to Svelte 5
