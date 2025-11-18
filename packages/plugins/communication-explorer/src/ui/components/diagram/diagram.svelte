@@ -14,9 +14,8 @@
 	} from "../../../stores/_store-view-filter"
 	import BayContainer from "./bay-container/bay-container.svelte"
 
-	//
-	// Inputs
-	
+
+
 	interface Props {
 		rootNode: RootNode;
 		playAnimation?: boolean;
@@ -182,15 +181,25 @@
 	let svgHeight = $state(0)
 	let savedRootNodeWidth = 0
 	let savedRootNodeHeight = 0
+	
+	// Zoom borders; scales relative to original root node size
+	const MIN_SCALE = 0.2
+	const MAX_SCALE = 4
+	
 	$effect(() => {
-		resetZoom(rootNode.width, rootNode.height)
+		if (rootNode?.width != null && rootNode?.height != null) {
+			resetZoom(rootNode.width, rootNode.height)
+		}
 	});
 
 	async function handleMouseWheel(e: WheelEvent) {
+
 		if (!e.ctrlKey && !e.metaKey) {
 			return
 		}
-
+		// Prevent browser/page zoom and further propagation e.g. into sidebar
+		e.preventDefault()
+		e.stopPropagation()
 		const direction = e.deltaY < 0 ? 1 : -1
 		const zooming = zoomModifier + zoomStep * direction
 		const newSVGWidth = svgWidth * zooming
@@ -198,7 +207,15 @@
 		if (newSVGWidth < 0 || newSVGHeight < 0) {
 			return
 		}
-
+		// Determine candidate scale relative to original size
+		const baseWidth = savedRootNodeWidth || rootNode?.width || 0
+		if (baseWidth === 0) {
+			return
+		}
+		const scaleCandidate = newSVGWidth / baseWidth
+		if (scaleCandidate < MIN_SCALE || scaleCandidate > MAX_SCALE) {
+			return
+		}
 		svgHeight = newSVGHeight
 		svgWidth = newSVGWidth
 	}
