@@ -196,7 +196,7 @@
 		if (!e.ctrlKey && !e.metaKey) {
 			return
 		}
-		// Prevent browser/page zoom and further propagation
+		// Prevent browser/page zoom and further propagation e.g. into sidebar
 		e.preventDefault()
 		e.stopPropagation()
 		const direction = e.deltaY < 0 ? 1 : -1

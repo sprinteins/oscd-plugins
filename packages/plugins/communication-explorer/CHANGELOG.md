@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.0.36] - 04.11.2025
+### Fixed
+- Communication Explorer: Fixed zoom propagation e.g. to sidebar
+- Communication Explorer: Add relative max and min zoom levels
+
+## [0.0.36] - 04.11.2025
 ### Changed
 - Migrated to Svelte 5
 
