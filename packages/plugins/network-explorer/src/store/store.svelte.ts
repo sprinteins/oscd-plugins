@@ -36,13 +36,14 @@ export class DiagramStore {
 			resp.nodes as unknown as (IEDElkNode | BayElkNode)[],
 		)
 
+		const nodesWithPreservedPositions = this.preserveNodePositions(previousNodes, resp.nodes)
+
 		const shouldRerenderNodes = !isNodeStructureEquivalent
 		if (shouldRerenderNodes) {
-			this.nodes = resp.nodes
+			this.nodes = nodesWithPreservedPositions
+			this.setIsConnectedable()
 		}
 		this.edges = resp.edges
-
-		this.setIsConnectedable()
 	}
 
 	public updateSelectedNodes(flowNodes: FlowNodes[]){
@@ -120,6 +121,24 @@ export class DiagramStore {
 
 	public resetNewConnection(): void {
 		this.connectionBetweenNodes.set(null)
+	}
+
+	private preserveNodePositions(previousNodes: FlowNodes[], newNodes: FlowNodes[]): FlowNodes[] {
+		const previousNodePositions = new Map(
+			previousNodes.map(n => [n.id, { position: n.position, measured: n.measured }])
+		)
+		
+		return newNodes.map(node => {
+			const existingNodeData = previousNodePositions.get(node.id)
+			if (existingNodeData) {
+				return {
+					...node,
+					position: existingNodeData.position,
+					measured: existingNodeData.measured,
+				}
+			}
+			return node
+		})
 	}
 
 	private isNodeStructureEquivalent(previousNodes: (IEDElkNode | BayElkNode)[], nodes: (IEDElkNode | BayElkNode)[]): boolean {
