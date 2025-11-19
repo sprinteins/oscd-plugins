@@ -6,6 +6,7 @@ import dts from 'vite-plugin-dts'
 const isDevelopment = process.env.NODE_ENV === 'development'
 
 export default defineConfig({
+	base: './',
 	plugins: [svelte(), dts({ rollupTypes: true })],
 	resolve: {
 		alias: {

@@ -9,13 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Exports the TelemetryView Component from the Communication Explorer
 
-## [0.0.37] - 11.11.2025
+## [0.0.38] - 2025-11-18
+### Fixed
+- Communication Explorer: Fixed zoom propagation e.g. to sidebar
+### Added
+- Communication Explorer: Add relative max and min zoom levels
+
+## [0.0.37] - 2025-11-11
 ### Changed
 - Setup rollupOptions to bundle to a single file
 ### Fixed
 - Set relative path for .css files
 
-## [0.0.36] - 04.11.2025
+## [0.0.36] - 2025-11-04
 ### Changed
 - Migrated to Svelte 5
 
