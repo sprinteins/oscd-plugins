@@ -5,6 +5,11 @@ All notable changes to the communication explorer plugin will be documented here
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.15] - 2025-11-19
+### Fixed
+- Do not reset position of nodes when creating cables for example
+- Use a temporary cable while creating a new connection
+
 ## [0.0.14] - 2025-11-14
 ### Fixed
 - Set relative path for .css files
