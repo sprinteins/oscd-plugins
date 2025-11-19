@@ -22,7 +22,8 @@
 		".": {
 			"types": "./dist/plugin.d.ts",
 			"default": "./dist/plugin.js"
-		}
+		},
+		"./src/network-explorer.svelte": "./src/network-explorer.svelte"
 	},
 	"dependencies": {
 		"@smui-extra/accordion": "^8.0.3",
