@@ -5,13 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.1] - 12.05.2025
+## [3.0.1] - 2025-05-12
 
 ### Add
 
 - Multiple Data Object selection is allowed
 
-## [3.0.0] - 30.04.2025
+## [3.0.0] - 2025-04-30
 
 ### Add
 
@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LNodeType ref as `lnType`
 - Opening new files reset the state
 
-## [2.0.0] - 09.04.2025
+## [2.0.0] - 2025-04-09
 
 ### Add
 
@@ -55,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - LCs and LPs stays in the canvas when selected and on changes
 
-## [1.3.0] - 07.04.2025
+## [1.3.0] - 2025-04-07
 
 ### Add
 
