@@ -12,11 +12,18 @@ import { extractCableNameFromId } from "../diagram/edge-helper"
 export class DiagramStore {
 	public nodes: FlowNodes[] = $state.raw([])
 	public edges: Edge[] = $state.raw([])
+	private temporaryEdge: Edge | null = $state(null)
 	public ieds = writable<IED[]>([])
 	
 	public selectedNodes = writable<SelectedNode[]>([])
 
 	public connectionBetweenNodes = writable<ConnectionBetweenNodes | null>(null)
+
+	public get allEdges(): Edge[] {
+		return this.temporaryEdge 
+			? [...this.edges, this.temporaryEdge]
+			: this.edges
+	}
 	public async updateNodesAndEdges( root: Element ) {
 		if (!root) {
 			console.info({ level: "info", msg: "initInfos: no root" })
@@ -69,10 +76,10 @@ export class DiagramStore {
 		
 		const isSelectionReset = selectedEdges.length === 0
 		if(isSelectionReset){
-			this.connectionBetweenNodes.set(null)
 			return
 		}
 
+		this.resetNewConnection()
 
 		const selectedEdge = selectedEdges[0]
 		const sourceIedName = getIedNameFromId(selectedEdge.source)
@@ -119,8 +126,28 @@ export class DiagramStore {
 		return connectedIEDs
 	}
 
+	public setNewConnection(sourceIed: IED, targetIed: IED): void {
+		const tempEdgeId = `temp-${sourceIed.name}-${targetIed.name}`
+		
+		this.temporaryEdge = {
+			id: tempEdgeId,
+			source: `ied-${sourceIed.name}`,
+			target: `ied-${targetIed.name}`,
+			type: "bezier",
+			style: "stroke-dasharray: 5; stroke: #ff9800; stroke-width: 2;",
+			data: { temporary: true }
+		}
+		
+		this.connectionBetweenNodes.set({
+			isNew: true,
+			source: sourceIed,
+			target: targetIed
+		})
+	}
+
 	public resetNewConnection(): void {
 		this.connectionBetweenNodes.set(null)
+		this.temporaryEdge = null
 	}
 
 	private preserveNodePositions(previousNodes: FlowNodes[], newNodes: FlowNodes[]): FlowNodes[] {
