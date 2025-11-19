@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Exports the Network-Explorer Component from the Network Explorer
+### Changed
+- Switched to LegacyTheme
 
 ## [0.0.13] - 13.11.2025
 ### Changed
