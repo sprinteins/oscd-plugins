@@ -2,6 +2,7 @@
 import TelemetryView from '@oscd-plugins/communication-explorer/src/ui/components/telemetry-view/telemetry-view.svelte'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { LegacyTheme } from '@oscd-plugins/ui'
+import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte';
 
 interface Props {
 	onContentChange: (newContent: string) => void
@@ -18,18 +19,11 @@ let { onContentChange, content = '' }: Props = $props()
         </LegacyTheme>
     </div>
 {:else}
-    <div class="no-xml-warning">
-        <p>No XML document loaded. Please load an XML document to use this component.</p>
-    </div>
+    <NoXmlWarning />
 {/if}
 
 <style>
     .communication-element {
         border: 1px solid #ccc;
-    }
-
-    .no-xml-warning {
-        color: red;
-        font-weight: bold;
     }
 </style>

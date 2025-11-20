@@ -2,7 +2,7 @@
 import NetworkExplorer from '@oscd-plugins/network-explorer/src/network-explorer.svelte'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { MaterialTheme } from '@oscd-plugins/ui'
-import NoXmlWarnign from '../../no-xml-warning/no-xml-warnign.svelte'
+import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
 import { exportPngFromHTMLElement } from '@/utils/diagram-export'
 import type { ImageData } from '../image-element/types.image'
 
@@ -67,5 +67,5 @@ $effect(() => {
     </MaterialTheme>
   </div>
 {:else}
-  <NoXmlWarnign />
+  <NoXmlWarning />
 {/if}
