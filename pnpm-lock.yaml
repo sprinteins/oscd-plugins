@@ -273,6 +273,15 @@ importers:
       '@oscd-plugins/ui':
         specifier: workspace:^
         version: link:../../ui
+      '@smui/form-field':
+        specifier: ^8.0.3
+        version: 8.0.3
+      '@smui/radio':
+        specifier: ^8.0.3
+        version: 8.0.3
+      '@smui/select':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
         version: 5.0.3(svelte@5.20.1)(vite@6.1.0(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0))
@@ -2884,6 +2893,9 @@ packages:
   '@smui/form-field@8.0.0-beta.3':
     resolution: {integrity: sha512-gHXEMmj3ABDZ+P9s7zCHmOioLlyyPowomVhzVMBcuTqhBRXIfVwJkybcYseWtLrzE3eEjf0Ifi9m7LKzMeLYGg==}
 
+  '@smui/form-field@8.0.3':
+    resolution: {integrity: sha512-CqFvsIjR5dl83/9YknflmgW8FrEXdE0sCFp6yeUuPDoaqtV2IFd/6wJmaH2M/hGgWk+fnjk4Tu+KmAOyXEa72g==}
+
   '@smui/icon-button@8.0.0-beta.3':
     resolution: {integrity: sha512-3tT3RHGsGaelfdl8o9lzvcHhg9XiaOFBYjz4cBPhkJIJ01/FBo2x9M/jno37+7Ic8CTffA8cZlQSqtF5P9epKA==}
 
@@ -2937,6 +2949,9 @@ packages:
 
   '@smui/radio@8.0.0-beta.3':
     resolution: {integrity: sha512-PkbXEBoSmniFQPx8b5uh3k9a+yeRnXrXpBpKANEn7AaItdIrfe84YpgNeenP16TuT4sbXefk5hiyckBUrrRqCw==}
+
+  '@smui/radio@8.0.3':
+    resolution: {integrity: sha512-eaXiOoxB0dbf61kfKf/OUYt5ZHgJwsYIrJpIf4wyzqCZdIMD+9KkTmagkC1PYWAFhyhDd9ZROO3ojbn3+WY4Ag==}
 
   '@smui/ripple@8.0.0-beta.3':
     resolution: {integrity: sha512-4CCrNNuj7a0DD4LmR1SRT9TsDyP529bbbIzS3C3f0fcJvH5cQfvGjf/jkcz0nK2alMqbCKA3CEC3SZ3D9o3bRg==}
@@ -10172,8 +10187,8 @@ snapshots:
       '@smui-extra/autocomplete': 8.0.0-beta.3
       '@smui/chips': 8.0.0-beta.3
       '@smui/common': 8.0.0-beta.3
-      '@smui/floating-label': 8.0.0-beta.3
-      '@smui/line-ripple': 8.0.0-beta.3
+      '@smui/floating-label': 8.0.3
+      '@smui/line-ripple': 8.0.3
       '@smui/list': 8.0.0-beta.3
       '@smui/textfield': 8.0.3
 
@@ -10302,6 +10317,13 @@ snapshots:
       '@material/rtl': 14.0.0
       '@smui/common': 8.0.0-beta.3
 
+  '@smui/form-field@8.0.3':
+    dependencies:
+      '@material/feature-targeting': 14.0.0
+      '@material/form-field': 14.0.0
+      '@material/rtl': 14.0.0
+      '@smui/common': 8.0.3
+
   '@smui/icon-button@8.0.0-beta.3':
     dependencies:
       '@material/density': 14.0.0
@@ -10421,6 +10443,12 @@ snapshots:
       '@smui/common': 8.0.0-beta.3
       '@smui/ripple': 8.0.3
 
+  '@smui/radio@8.0.3':
+    dependencies:
+      '@material/radio': 14.0.0
+      '@smui/common': 8.0.3
+      '@smui/ripple': 8.0.3
+
   '@smui/ripple@8.0.0-beta.3':
     dependencies:
       '@material/dom': 14.0.0
@@ -10452,10 +10480,10 @@ snapshots:
       '@smui/floating-label': 8.0.3
       '@smui/line-ripple': 8.0.3
       '@smui/list': 8.0.0-beta.3
-      '@smui/menu': 8.0.0-beta.3
-      '@smui/menu-surface': 8.0.0-beta.3
-      '@smui/notched-outline': 8.0.0-beta.3
-      '@smui/ripple': 8.0.0-beta.3
+      '@smui/menu': 8.0.3
+      '@smui/menu-surface': 8.0.3
+      '@smui/notched-outline': 8.0.3
+      '@smui/ripple': 8.0.3
 
   '@smui/select@8.0.3':
     dependencies:

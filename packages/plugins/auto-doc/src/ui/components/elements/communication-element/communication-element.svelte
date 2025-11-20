@@ -5,6 +5,7 @@ import { LegacyTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
 import type { ImageData } from '../image-element/types.image'
 import { exportPngFromHTMLElement } from '@/utils/diagram-export'
+import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
 
 interface Props {
 	onContentChange: (newContent: string) => void
@@ -15,15 +16,18 @@ let { onContentChange, content = '' }: Props = $props()
 
 let htmlRoot: HTMLElement | null = $state(null)
 const DELAY_BEFORE_DIAGRAM = 2000
+let selectedBays: string[] = $state([])
 
 async function exportNetworkDiagram(): Promise<void> {
-    console.log('Starting export of communication diagram as PNG...')
+	console.log('Starting export of communication diagram as PNG...')
 	if (!htmlRoot) {
 		console.error('HTML root is not available for export.')
 		return
 	}
 	try {
-		const pngBase64 = await exportPngFromHTMLElement({ element: htmlRoot })
+		const pngBase64 = await exportPngFromHTMLElement({
+			element: htmlRoot
+		})
 		const fullDataUri = `data:image/png;base64,${pngBase64}`
 
 		console.log('Generated full data URI for PNG:', fullDataUri)
@@ -40,35 +44,36 @@ async function exportNetworkDiagram(): Promise<void> {
 }
 
 async function waitForDiagramToRender(): Promise<void> {
-    console.log('Waiting for diagram to render...');
+	console.log('Waiting for diagram to render...')
 	await new Promise((resolve) => setTimeout(resolve, DELAY_BEFORE_DIAGRAM))
 }
 
 $effect(() => {
 	if (htmlRoot) {
 		;(async () => {
-            console.log('HTML root is set, proceeding to export diagram...');
 			await waitForDiagramToRender()
-			console.log('Diagram has rendered, starting export...');
 			await exportNetworkDiagram()
-            console.log('Export process completed.');
 		})()
 	}
 })
 </script>
 
 {#if pluginGlobalStore.xmlDocument}
-    <div class="communication-element" bind:this={htmlRoot}>
-        <LegacyTheme>
-            <TelemetryView root={pluginGlobalStore.xmlDocument} showSidebar={false} />
-        </LegacyTheme>
-    </div>
+<DiagramWithBaySelector bind:selectedBays />
+	<div class="communication-element" bind:this={htmlRoot}>
+		<LegacyTheme>
+			<TelemetryView
+				root={pluginGlobalStore.xmlDocument as unknown as Element}
+				showSidebar={false}
+			/>
+		</LegacyTheme>
+	</div>
 {:else}
-    <NoXmlWarning />
+	<NoXmlWarning />
 {/if}
 
 <style>
-    .communication-element {
-        border: 1px solid #ccc;
-    }
+	.communication-element {
+		border: 1px solid #ccc;
+	}
 </style>

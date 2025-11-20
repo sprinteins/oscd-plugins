@@ -5,6 +5,7 @@ import { MaterialTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
 import { exportPngFromHTMLElement } from '@/utils/diagram-export'
 import type { ImageData } from '../image-element/types.image'
+import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
 
 const SVELTE_FLOW__PANE = '.svelte-flow__pane'
 const DELAY_BEFORE_FLOW_PANE = 2000
@@ -18,6 +19,7 @@ let { content = '', onContentChange }: Props = $props()
 
 let htmlRoot: HTMLElement | null = $state(null)
 let flowPane: HTMLElement | null = $state(null)
+let selectedBays: string[] = $state([])
 
 const exportNetworkDiagram = async () => {
 	if (!flowPane) {
@@ -25,7 +27,9 @@ const exportNetworkDiagram = async () => {
 		return
 	}
 	try {
-		const pngBase64 = await exportPngFromHTMLElement({ element: flowPane })
+		const pngBase64 = await exportPngFromHTMLElement({
+			element: flowPane
+		})
 		const fullDataUri = `data:image/png;base64,${pngBase64}`
 
 		const data: ImageData = {
@@ -57,15 +61,15 @@ $effect(() => {
 </script>
 
 {#if pluginGlobalStore.xmlDocument}
-  <div class="communication-element" bind:this={htmlRoot}>
-    <h3>Network Overview</h3>
-    <sub>Choose the bays you want to display in the diagram</sub>
-    
-    <h4>Preview</h4>
-    <MaterialTheme pluginType="editor">
-      <NetworkExplorer doc={pluginGlobalStore.xmlDocument} environment="AUTO_DOC" />
-    </MaterialTheme>
-  </div>
+	<div class="communication-element" bind:this={htmlRoot}>
+		<DiagramWithBaySelector bind:selectedBays />
+		<MaterialTheme pluginType="editor">
+			<NetworkExplorer
+				doc={pluginGlobalStore.xmlDocument}
+				environment="AUTO_DOC"
+			/>
+		</MaterialTheme>
+	</div>
 {:else}
-  <NoXmlWarning />
+	<NoXmlWarning />
 {/if}
