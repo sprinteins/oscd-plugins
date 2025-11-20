@@ -29,7 +29,8 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		image: processImageForPdfGeneration,
 		signalList: processSignalListForPdfGeneration,
 		table: processTableForPdfGeneration,
-		network: processImageForPdfGeneration
+		network: processImageForPdfGeneration,
+		communication: processImageForPdfGeneration
 	}
 
 	function incrementVerticalPositionForNextLine(lineHeight?: number) {
