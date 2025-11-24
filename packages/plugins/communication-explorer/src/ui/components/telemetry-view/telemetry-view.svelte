@@ -29,9 +29,10 @@ import type { IED } from '@oscd-plugins/core'
 interface Props {
 	root: Element;
 	showSidebar?: boolean;
+	selectedBays?: string[];
 }
 
-let { root, showSidebar = true }: Props = $props();
+let { root, showSidebar = true, selectedBays = $bindable([]) }: Props = $props();
 
 let rootNode: RootNode | undefined = $state(undefined)
 let lastUsedRoot: Element | undefined = undefined
@@ -46,14 +47,15 @@ const config: Config = {
 }
 
 $effect(() => {
-	initInfos(root, $filterState, $preferences$)
+	initInfos(root, $filterState, $preferences$, selectedBays)
 })
 
 // Note: maybe have a mutex if there are too many changes
 async function initInfos(
 	root: Element,
 	selectedFilter: SelectedFilter,
-	preferences: Preferences
+	preferences: Preferences,
+	selectedBays?: string[]
 ) {
 	if (!root) {
 		console.info({ level: 'info', msg: 'initInfos: no root' })
@@ -66,8 +68,19 @@ async function initInfos(
 		lastExtractedBays = getBays(root)
 		lastUsedRoot = root
 	}
+
+	// Filter IEDs by selected bays if provided
+	let filteredInfos = lastExtractedInfos
+	if (selectedBays && selectedBays.length > 0) {
+		filteredInfos = lastExtractedInfos.filter((ied) => {
+			// Check if the IED belongs to any of the selected bays
+			if (!ied.bays || ied.bays.size === 0) return false
+			return Array.from(ied.bays).some((bay: string) => selectedBays.includes(bay))
+		})
+	}
+
 	rootNode = await calculateLayout(
-		lastExtractedInfos,
+		filteredInfos,
 		config,
 		selectedFilter,
 		preferences
@@ -76,7 +89,7 @@ async function initInfos(
 
 async function handleBaySelect(bay: string) {
 	clearIEDSelection()
-	await initInfos(root, $filterState, $preferences$)
+	await initInfos(root, $filterState, $preferences$, selectedBays)
 	if (rootNode?.children) {
 		for (const node of rootNode.children) {
 			if (node.bays?.has(bay)) {

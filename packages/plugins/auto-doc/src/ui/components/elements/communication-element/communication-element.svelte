@@ -45,7 +45,7 @@ async function waitForDiagramToRender(): Promise<void> {
 }
 
 $effect(() => {
-	if (htmlRoot) {
+	if (htmlRoot || selectedBays) {
 		waitForDiagramToRender().then(() => exportNetworkDiagram())
 	}
 })
@@ -55,10 +55,13 @@ $effect(() => {
 <DiagramWithBaySelector bind:selectedBays />
 	<div class="communication-element" bind:this={htmlRoot}>
 		<LegacyTheme>
+			<div class="communication-preview-wrapper">
 			<TelemetryView
 				root={pluginGlobalStore.xmlDocument as unknown as Element}
 				showSidebar={false}
+				bind:selectedBays
 			/>
+			</div>
 		</LegacyTheme>
 	</div>
 {:else}
@@ -66,7 +69,7 @@ $effect(() => {
 {/if}
 
 <style>
-	.communication-element {
-		border: 1px solid #ccc;
+	.communication-preview-wrapper :global(*) {
+		pointer-events: none !important;
 	}
 </style>
