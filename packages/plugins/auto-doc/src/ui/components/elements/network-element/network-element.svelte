@@ -2,9 +2,10 @@
 import NetworkExplorer from '@oscd-plugins/network-explorer/src/network-explorer.svelte'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { MaterialTheme } from '@oscd-plugins/ui'
-import NoXmlWarnign from '../../no-xml-warning/no-xml-warnign.svelte'
+import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
 import { exportPngFromHTMLElement } from '@/utils/diagram-export'
 import type { ImageData } from '../image-element/types.image'
+import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
 
 const SVELTE_FLOW__PANE = '.svelte-flow__pane'
 const DELAY_BEFORE_FLOW_PANE = 2000
@@ -17,6 +18,7 @@ interface Props {
 let { content = '', onContentChange }: Props = $props()
 
 let htmlRoot: HTMLElement | null = $state(null)
+let selectedBays: string[] = $state([])
 
 async function exportNetworkDiagram(flowPane: HTMLElement) {
 	if (!flowPane) {
@@ -56,10 +58,7 @@ $effect(() => {
 
 {#if pluginGlobalStore.xmlDocument}
 	<div class="communication-element" bind:this={htmlRoot}>
-		<h3>Network Overview</h3>
-		<sub>Choose the bays you want to display in the diagram</sub>
-
-		<h4>Preview</h4>
+		<DiagramWithBaySelector bind:selectedBays />
 		<MaterialTheme pluginType="editor">
 			<div class="network-preview-wrapper">
 				<NetworkExplorer
@@ -70,7 +69,7 @@ $effect(() => {
 		</MaterialTheme>
 	</div>
 {:else}
-	<NoXmlWarnign />
+	<NoXmlWarning />
 {/if}
 
 <style>
