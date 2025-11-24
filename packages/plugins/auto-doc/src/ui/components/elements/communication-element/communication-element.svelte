@@ -40,7 +40,7 @@ async function exportNetworkDiagram(): Promise<void> {
 	}
 }
 
-async function waitForDiagramToRender(): Promise<void> {s
+async function waitForDiagramToRender(): Promise<void> {
 	await new Promise((resolve) => setTimeout(resolve, DELAY_BEFORE_DIAGRAM))
 }
 
