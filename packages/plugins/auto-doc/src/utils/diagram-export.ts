@@ -3,7 +3,7 @@ import { toPng } from "html-to-image";
 type Base64String = string;
 
 type ExportProps = {
-  flowPane: HTMLElement;
+  element: HTMLElement;
 };
 
 type ExportPNGProps = ExportProps & {
@@ -12,14 +12,14 @@ type ExportPNGProps = ExportProps & {
   backgroundColor?: string;
 };
 
-export async function exportPngFromFlowPane({
-  flowPane,
+export async function exportPngFromHTMLElement({
+  element,
   imageWidth = 1024,
   imageHeight = 768,
   backgroundColor = "var(--global-background-color)",
 }: ExportPNGProps): Promise<Base64String> {
   try {
-    const dataUrl = await toPng(flowPane, {
+    const dataUrl = await toPng(element, {
       backgroundColor,
       width: imageWidth,
       height: imageHeight,

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Integrate NE view into AD, generate PDF with exported PNG preview
 - Adds a new Element for the Communication Explorer
 - Export to PNG feature for HTMLElements
 
