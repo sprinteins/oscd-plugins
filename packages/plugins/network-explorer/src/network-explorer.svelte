@@ -33,7 +33,7 @@ let {
 	isOutsidePluginContext = false,
 	store = new DiagramStore(),
 	editCount
-}: Props & { editCount?: number } = $props()
+}: Props = $props()
 let htmlRoot: HTMLElement | null = $state(null)
 let editEventHandler: EditorEventHandler | null = $derived(
 	htmlRoot ? new EditorEventHandler(htmlRoot) : null
