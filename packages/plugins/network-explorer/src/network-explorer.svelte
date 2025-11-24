@@ -30,7 +30,7 @@ type Props = isOutsidePluginContextProps | StandaloneProps
 
 let {
 	doc,
-	isOutsidePluginContext = true,
+	isOutsidePluginContext = false,
 	store = new DiagramStore(),
 	editCount
 }: Props & { editCount?: number } = $props()
