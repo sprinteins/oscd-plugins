@@ -19,7 +19,6 @@ const DELAY_BEFORE_DIAGRAM = 2000
 let selectedBays: string[] = $state([])
 
 async function exportNetworkDiagram(): Promise<void> {
-	console.log('Starting export of communication diagram as PNG...')
 	if (!htmlRoot) {
 		console.error('HTML root is not available for export.')
 		return
@@ -29,8 +28,6 @@ async function exportNetworkDiagram(): Promise<void> {
 			element: htmlRoot
 		})
 		const fullDataUri = `data:image/png;base64,${pngBase64}`
-
-		console.log('Generated full data URI for PNG:', fullDataUri)
 
 		const data: ImageData = {
 			scale: 'Large',
@@ -43,17 +40,13 @@ async function exportNetworkDiagram(): Promise<void> {
 	}
 }
 
-async function waitForDiagramToRender(): Promise<void> {
-	console.log('Waiting for diagram to render...')
+async function waitForDiagramToRender(): Promise<void> {s
 	await new Promise((resolve) => setTimeout(resolve, DELAY_BEFORE_DIAGRAM))
 }
 
 $effect(() => {
 	if (htmlRoot) {
-		;(async () => {
-			await waitForDiagramToRender()
-			await exportNetworkDiagram()
-		})()
+		waitForDiagramToRender().then(() => exportNetworkDiagram())
 	}
 })
 </script>
