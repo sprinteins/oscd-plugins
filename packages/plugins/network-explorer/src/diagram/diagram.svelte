@@ -57,12 +57,6 @@ function ondelete(deleteEvent: { nodes: Node[]; edges: Edge[] }): void {
 	<SvelteFlow 
 		bind:nodes
 		bind:edges
-		nodesConnectable={isPreviewMode ? false : false}
-		nodesDraggable={!isPreviewMode}
-		nodesSelectable={!isPreviewMode}
-		edgesSelectable={!isPreviewMode}
-		elementsSelectable={!isPreviewMode}
-    preventScrolling={!isPreviewMode}
 		fitView 
 		minZoom={0.1} 
 		maxZoom={2.5}
