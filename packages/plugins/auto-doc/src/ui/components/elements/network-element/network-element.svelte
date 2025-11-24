@@ -18,10 +18,9 @@ interface Props {
 let { content = '', onContentChange }: Props = $props()
 
 let htmlRoot: HTMLElement | null = $state(null)
-let flowPane: HTMLElement | null = $state(null)
 let selectedBays: string[] = $state([])
 
-const exportNetworkDiagram = async () => {
+async function exportNetworkDiagram(flowPane: HTMLElement) {
 	if (!flowPane) {
 		console.error('Flow pane is not available for export.')
 		return
@@ -43,7 +42,7 @@ const exportNetworkDiagram = async () => {
 	}
 }
 
-const waitForDiagramToRender = async (): Promise<void> => {
+async function waitForDiagramToRender(): Promise<void> {
 	await new Promise((resolve) => setTimeout(resolve, DELAY_BEFORE_FLOW_PANE))
 }
 
@@ -51,10 +50,7 @@ $effect(() => {
 	if (htmlRoot) {
 		const pane = htmlRoot.querySelector<HTMLElement>(SVELTE_FLOW__PANE)
 		if (pane) {
-			flowPane = pane
-			waitForDiagramToRender().then(() => {
-				exportNetworkDiagram()
-			})
+			waitForDiagramToRender().then(() => exportNetworkDiagram(pane))
 		}
 	}
 })
@@ -64,12 +60,20 @@ $effect(() => {
 	<div class="communication-element" bind:this={htmlRoot}>
 		<DiagramWithBaySelector bind:selectedBays />
 		<MaterialTheme pluginType="editor">
-			<NetworkExplorer
-				doc={pluginGlobalStore.xmlDocument}
-				environment="AUTO_DOC"
-			/>
+			<div class="network-preview-wrapper">
+				<NetworkExplorer
+					doc={pluginGlobalStore.xmlDocument}
+					isOutsidePluginContext={true}
+				/>
+			</div>
 		</MaterialTheme>
 	</div>
 {:else}
 	<NoXmlWarning />
 {/if}
+
+<style>
+	.network-preview-wrapper :global(*) {
+		pointer-events: none !important;
+	}
+</style>

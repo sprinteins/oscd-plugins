@@ -18,13 +18,12 @@ import BayNode from './bay-node.svelte'
 import type { Writable } from 'svelte/store'
 import { getPhysConnectionsFromEdge } from './edge-helper'
 import type { IED } from './networking'
-import type { Environment } from '../network-explorer.svelte'
 
 interface Props {
 	nodes: Node[]
 	edges: Edge[]
 	ieds: Writable<IED[]>
-	environment?: Environment
+	isOutsidePluginContext?: boolean
 	connect: (connection: Connection) => void
 	onDelete: (networkings: Networking[]) => void
 }
@@ -33,12 +32,11 @@ let {
 	nodes,
 	edges,
 	ieds,
-	environment = 'NETWORK_EXPLORER',
+	isOutsidePluginContext = false,
 	connect,
 	onDelete
 }: Props = $props()
 
-const isPreviewMode = environment === 'AUTO_DOC'
 
 const nodeTypes = {
 	ied: IEDNode,
@@ -71,14 +69,11 @@ function ondelete(deleteEvent: { nodes: Node[]; edges: Edge[] }): void {
 		colorMode="light"
 		{nodeTypes}
 		snapGrid={[20, 20]}
-		ondelete={isPreviewMode ? undefined : ondelete}
-		onbeforeconnect={isPreviewMode ? undefined : connect}
-		panOnDrag={!isPreviewMode}
-		zoomOnPinch={!isPreviewMode}
-		zoomOnScroll={!isPreviewMode}
-		zoomOnDoubleClick={!isPreviewMode}
+		{ondelete}
+		onbeforeconnect={connect}
+		panOnDrag={!isOutsidePluginContext}
 	>
-		{#if !isPreviewMode}
+		{#if !isOutsidePluginContext}
 			<Controls />
 		{/if}
 		<Background variant={BackgroundVariant.Dots} />

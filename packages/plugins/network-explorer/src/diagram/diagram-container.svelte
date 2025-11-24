@@ -18,23 +18,16 @@ import type { Connection } from '@xyflow/svelte'
 import { getIedNameFromId } from './ied-helper'
 import type { IED } from './networking'
 import type { Networking } from '@oscd-plugins/core'
-import type { Environment } from '../network-explorer.svelte'
 
 interface Props {
 	doc: Element
 	editCount?: number
 	store: DiagramStore
-	environment?: Environment
+	isOutsidePluginContext?: boolean
 	onDelete: (networkings: Networking[]) => void
 }
 
-let {
-	doc,
-	editCount,
-	store,
-	environment = 'NETWORK_EXPLORER',
-	onDelete
-}: Props = $props()
+let { doc, editCount, store, isOutsidePluginContext = false, onDelete }: Props = $props()
 let root: HTMLElement | null = $state(null)
 let _editCount: number
 let _doc: Element
@@ -58,7 +51,7 @@ function updateOnEditCount(editCount?: number): void {
 }
 
 function onconnect(connection: Connection): void {
-	if (environment === 'AUTO_DOC') return
+	if (isOutsidePluginContext) return
 
 	const { source, target } = connection
 	const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
@@ -110,14 +103,14 @@ $effect(() => {
 
 <div class="root" bind:this={root}>
 	{#if store}
-		<Diagram 
+		<Diagram
 			nodes={store.nodes}
 			edges={store.edges}
 			ieds={store.ieds}
-			environment={environment}
-			onDelete={onDelete}
+			{isOutsidePluginContext}
+			{onDelete}
 			connect={onconnect}
-		/>	
+		/>
 	{/if}
 </div>
 
