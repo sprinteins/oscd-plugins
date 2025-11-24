@@ -18,13 +18,12 @@ import BayNode from './bay-node.svelte'
 import type { Writable } from 'svelte/store'
 import { getPhysConnectionsFromEdge } from './edge-helper'
 import type { IED } from './networking'
-import type { Environment } from '../network-explorer.svelte'
 
 interface Props {
 	nodes: Node[]
 	edges: Edge[]
 	ieds: Writable<IED[]>
-	environment?: Environment
+	pluginMode?: boolean
 	connect: (connection: Connection) => void
 	onDelete: (networkings: Networking[]) => void
 }
@@ -33,12 +32,12 @@ let {
 	nodes,
 	edges,
 	ieds,
-	environment = 'NETWORK_EXPLORER',
+	pluginMode = true,
 	connect,
 	onDelete
 }: Props = $props()
 
-const isPreviewMode = environment === 'AUTO_DOC'
+const isPreviewMode = !pluginMode
 
 const nodeTypes = {
 	ied: IEDNode,
@@ -59,26 +58,18 @@ function ondelete(deleteEvent: { nodes: Node[]; edges: Edge[] }): void {
 	<SvelteFlow 
 		bind:nodes
 		bind:edges
-		nodesConnectable={isPreviewMode ? false : false}
-		nodesDraggable={!isPreviewMode}
-		nodesSelectable={!isPreviewMode}
-		edgesSelectable={!isPreviewMode}
-		elementsSelectable={!isPreviewMode}
-    preventScrolling={!isPreviewMode}
+		nodesConnectable={false}
 		fitView 
 		minZoom={0.1} 
 		maxZoom={2.5}
 		colorMode="light"
 		{nodeTypes}
 		snapGrid={[20, 20]}
-		ondelete={isPreviewMode ? undefined : ondelete}
-		onbeforeconnect={isPreviewMode ? undefined : connect}
+		{ondelete}
+		onbeforeconnect={connect}
 		panOnDrag={!isPreviewMode}
-		zoomOnPinch={!isPreviewMode}
-		zoomOnScroll={!isPreviewMode}
-		zoomOnDoubleClick={!isPreviewMode}
 	>
-		{#if !isPreviewMode}
+		{#if pluginMode}
 			<Controls />
 		{/if}
 		<Background variant={BackgroundVariant.Dots} />

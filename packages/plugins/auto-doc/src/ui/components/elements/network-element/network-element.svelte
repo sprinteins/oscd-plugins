@@ -17,15 +17,16 @@ interface Props {
 let { content = '', onContentChange }: Props = $props()
 
 let htmlRoot: HTMLElement | null = $state(null)
-let flowPane: HTMLElement | null = $state(null)
 
-const exportNetworkDiagram = async () => {
+async function exportNetworkDiagram(flowPane: HTMLElement) {
 	if (!flowPane) {
 		console.error('Flow pane is not available for export.')
 		return
 	}
 	try {
-		const pngBase64 = await exportPngFromHTMLElement({ element: flowPane })
+		const pngBase64 = await exportPngFromHTMLElement({
+			element: flowPane
+		})
 		const fullDataUri = `data:image/png;base64,${pngBase64}`
 
 		const data: ImageData = {
@@ -39,7 +40,7 @@ const exportNetworkDiagram = async () => {
 	}
 }
 
-const waitForDiagramToRender = async (): Promise<void> => {
+async function waitForDiagramToRender(): Promise<void> {
 	await new Promise((resolve) => setTimeout(resolve, DELAY_BEFORE_FLOW_PANE))
 }
 
@@ -47,25 +48,33 @@ $effect(() => {
 	if (htmlRoot) {
 		const pane = htmlRoot.querySelector<HTMLElement>(SVELTE_FLOW__PANE)
 		if (pane) {
-			flowPane = pane
-			waitForDiagramToRender().then(() => {
-				exportNetworkDiagram()
-			})
+			waitForDiagramToRender().then(() => exportNetworkDiagram(pane))
 		}
 	}
 })
 </script>
 
 {#if pluginGlobalStore.xmlDocument}
-  <div class="communication-element" bind:this={htmlRoot}>
-    <h3>Network Overview</h3>
-    <sub>Choose the bays you want to display in the diagram</sub>
-    
-    <h4>Preview</h4>
-    <MaterialTheme pluginType="editor">
-      <NetworkExplorer doc={pluginGlobalStore.xmlDocument} environment="AUTO_DOC" />
-    </MaterialTheme>
-  </div>
+	<div class="communication-element" bind:this={htmlRoot}>
+		<h3>Network Overview</h3>
+		<sub>Choose the bays you want to display in the diagram</sub>
+
+		<h4>Preview</h4>
+		<MaterialTheme pluginType="editor">
+			<div class="network-preview-wrapper">
+				<NetworkExplorer
+					doc={pluginGlobalStore.xmlDocument}
+					pluginMode={false}
+				/>
+			</div>
+		</MaterialTheme>
+	</div>
 {:else}
-  <NoXmlWarnign />
+	<NoXmlWarnign />
 {/if}
+
+<style>
+	.network-preview-wrapper :global(*) {
+		pointer-events: none !important;
+	}
+</style>
