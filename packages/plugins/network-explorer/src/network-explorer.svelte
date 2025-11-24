@@ -10,20 +10,30 @@ import type {
 } from './editor-events/network-events'
 import { EditorEventHandler } from './editor-events/editor-event-handler'
 
-interface Props {
+interface BaseProps {
 	doc: XMLDocument
 	// biome-ignore lint/suspicious/noExplicitAny: Has been here before, should be investigated properly
 	store?: any
-	pluginMode?: boolean
-	editCount?: number
 }
+
+type isOutsidePluginContextProps = BaseProps & {
+	isOutsidePluginContext: true
+	editCount?: undefined
+}
+
+type StandaloneProps = BaseProps & {
+	isOutsidePluginContext?: false | undefined
+	editCount: number
+}
+
+type Props = isOutsidePluginContextProps | StandaloneProps
 
 let {
 	doc,
-	pluginMode = true,
+	isOutsidePluginContext = true,
 	store = new DiagramStore(),
 	editCount
-}: Props = $props()
+}: Props & { editCount?: number } = $props()
 let htmlRoot: HTMLElement | null = $state(null)
 let editEventHandler: EditorEventHandler | null = $derived(
 	htmlRoot ? new EditorEventHandler(htmlRoot) : null
@@ -49,11 +59,11 @@ function onDelete(networkings: Networking[]): void {
 		<DiagramContainer
 			{store}
 			doc={doc.documentElement}
-			{editCount}
-			{pluginMode}
+			editCount={isOutsidePluginContext ? undefined : editCount}
+			{isOutsidePluginContext}
 			{onDelete}
 		/>
-		{#if pluginMode}
+		{#if !isOutsidePluginContext}
 			<Sidebar
 				{store}
 				createCable={onCreateCable}

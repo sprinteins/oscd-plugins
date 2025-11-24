@@ -23,7 +23,7 @@ interface Props {
 	nodes: Node[]
 	edges: Edge[]
 	ieds: Writable<IED[]>
-	pluginMode?: boolean
+	isOutsidePluginContext?: boolean
 	connect: (connection: Connection) => void
 	onDelete: (networkings: Networking[]) => void
 }
@@ -32,12 +32,11 @@ let {
 	nodes,
 	edges,
 	ieds,
-	pluginMode = true,
+	isOutsidePluginContext = false,
 	connect,
 	onDelete
 }: Props = $props()
 
-const isPreviewMode = !pluginMode
 
 const nodeTypes = {
 	ied: IEDNode,
@@ -67,9 +66,9 @@ function ondelete(deleteEvent: { nodes: Node[]; edges: Edge[] }): void {
 		snapGrid={[20, 20]}
 		{ondelete}
 		onbeforeconnect={connect}
-		panOnDrag={!isPreviewMode}
+		panOnDrag={!isOutsidePluginContext}
 	>
-		{#if pluginMode}
+		{#if !isOutsidePluginContext}
 			<Controls />
 		{/if}
 		<Background variant={BackgroundVariant.Dots} />

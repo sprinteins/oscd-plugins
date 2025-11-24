@@ -23,11 +23,11 @@ interface Props {
 	doc: Element
 	editCount?: number
 	store: DiagramStore
-	pluginMode?: boolean
+	isOutsidePluginContext?: boolean
 	onDelete: (networkings: Networking[]) => void
 }
 
-let { doc, editCount, store, pluginMode = true, onDelete }: Props = $props()
+let { doc, editCount, store, isOutsidePluginContext = false, onDelete }: Props = $props()
 let root: HTMLElement | null = $state(null)
 let _editCount: number
 let _doc: Element
@@ -51,7 +51,7 @@ function updateOnEditCount(editCount?: number): void {
 }
 
 function onconnect(connection: Connection): void {
-	if (!pluginMode) return
+	if (isOutsidePluginContext) return
 
 	const { source, target } = connection
 	const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
@@ -107,7 +107,7 @@ $effect(() => {
 			nodes={store.nodes}
 			edges={store.edges}
 			ieds={store.ieds}
-			{pluginMode}
+			{isOutsidePluginContext}
 			{onDelete}
 			connect={onconnect}
 		/>

@@ -64,7 +64,7 @@ $effect(() => {
 			<div class="network-preview-wrapper">
 				<NetworkExplorer
 					doc={pluginGlobalStore.xmlDocument}
-					pluginMode={false}
+					isOutsidePluginContext={true}
 				/>
 			</div>
 		</MaterialTheme>
