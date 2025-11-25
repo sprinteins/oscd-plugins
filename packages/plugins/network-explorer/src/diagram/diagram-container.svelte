@@ -25,10 +25,10 @@ interface Props {
 	store: DiagramStore
 	isOutsidePluginContext?: boolean
 	onDelete: (networkings: Networking[]) => void
-	filterBay?: string | null
+	filterBay?: string 
 }
 
-let { doc, editCount, store, isOutsidePluginContext = false, onDelete, filterBay = null }: Props = $props()
+let { doc, editCount, store, isOutsidePluginContext = false, onDelete, filterBay = undefined }: Props = $props()
 let root: HTMLElement | null = $state(null)
 let _editCount: number
 let _doc: Element

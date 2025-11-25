@@ -14,17 +14,18 @@ interface BaseProps {
 	doc: XMLDocument
 	// biome-ignore lint/suspicious/noExplicitAny: Has been here before, should be investigated properly
 	store?: any
-	filterBay?: string | null
 }
 
 type isOutsidePluginContextProps = BaseProps & {
 	isOutsidePluginContext: true
 	editCount?: undefined
+	filterBay: string 
 }
 
 type StandaloneProps = BaseProps & {
 	isOutsidePluginContext?: false | undefined
 	editCount: number
+	filterBay?: undefined
 }
 
 type Props = isOutsidePluginContextProps | StandaloneProps
@@ -34,7 +35,7 @@ let {
 	isOutsidePluginContext = false,
 	store = new DiagramStore(),
 	editCount,
-	filterBay = null
+	filterBay
 }: Props = $props()
 let htmlRoot: HTMLElement | null = $state(null)
 let editEventHandler: EditorEventHandler | null = $derived(
@@ -52,7 +53,9 @@ function onUpdateCable(event: UpdateCableEvent) {
 }
 
 function onDelete(networkings: Networking[]): void {
-	editEventHandler?.dispatchDeleteCable(networkings)
+	if (!isOutsidePluginContext){
+		editEventHandler?.dispatchDeleteCable(networkings)
+	}
 }
 </script>
 

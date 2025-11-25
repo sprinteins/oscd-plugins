@@ -13,7 +13,7 @@ export class DiagramStore {
 	public nodes: FlowNodes[] = $state.raw([])
 	public edges: Edge[] = $state.raw([])
 	public ieds = writable<IED[]>([])
-	public filterBayName: string | null = $state(null)
+	public filterBayName?: string  = $state(undefined)
 	
 	public selectedNodes = writable<SelectedNode[]>([])
 
@@ -30,8 +30,6 @@ export class DiagramStore {
 		const rootNode = await generateElkJSLayout(ieds, iedBayMap, config)
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
-
-		// Apply bay filtering if filterBayName is set
 		let filteredNodes = resp.nodes
 		let filteredEdges = resp.edges
 		
@@ -133,7 +131,7 @@ export class DiagramStore {
 		this.connectionBetweenNodes.set(null)
 	}
 
-	public setFilterBay(bayName: string | null): void {
+	public setFilterBay(bayName?: string): void {
 		this.filterBayName = bayName
 	}
 
