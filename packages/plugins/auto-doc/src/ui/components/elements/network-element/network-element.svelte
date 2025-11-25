@@ -28,9 +28,6 @@ function filterXmlDocumentByBay(xmlDoc: XMLDocument, selectedBay: string): XMLDo
 
 	const modifiedXmlDoc = xmlDoc.cloneNode(true) as XMLDocument
 	const root = modifiedXmlDoc.documentElement
-
-  const scdQueries = new SCDQueries(root)
-  const iedService = new IEDService(root)
   
 	const allBayElements = root.querySelectorAll('Bay')
 	for (const bayElement of allBayElements) {
@@ -38,27 +35,7 @@ function filterXmlDocumentByBay(xmlDoc: XMLDocument, selectedBay: string): XMLDo
 		if (bayName && bayName !== selectedBay) {
 			bayElement.remove()
 		}
-		
-		if (bayName && bayName === selectedBay) {
-			// const lNodeElements = bayElement.querySelectorAll('LNode')
-			// for (const lNode of lNodeElements) {
-			// 	const lNodeName = lNode.getAttribute('iedName')
-			// 	console.log("found LNODE", lNodeName)
-			// 	if (lNodeName === 'AARSC-PSA2') {
-			// 		console.log("REMOVING LNODE", lNode)
-			// 		lNode.remove()
-			// 	}
-			// }
-
-			// const conductingEquipmentElements = bayElement.querySelectorAll('ConductingEquipment')
-			// console.log("CONDUCTING EQUIP ELEMENTS", conductingEquipmentElements.length)
-			// for (const ce of conductingEquipmentElements) {
-			// 	ce.remove()
-			// }
-		}
 	}
-
-
 
 	console.log("FILTERED ROOT", root)
 	return root.ownerDocument as XMLDocument
