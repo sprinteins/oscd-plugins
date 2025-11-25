@@ -53,9 +53,7 @@ function onUpdateCable(event: UpdateCableEvent) {
 }
 
 function onDelete(networkings: Networking[]): void {
-	if (!isOutsidePluginContext){
-		editEventHandler?.dispatchDeleteCable(networkings)
-	}
+	editEventHandler?.dispatchDeleteCable(networkings)
 }
 </script>
 
@@ -64,7 +62,7 @@ function onDelete(networkings: Networking[]): void {
 		<DiagramContainer
 			{store}
 			doc={doc.documentElement}
-			editCount={isOutsidePluginContext ? undefined : editCount}
+			{editCount}
 			{isOutsidePluginContext}
 			{onDelete}
 			{filterBay}
