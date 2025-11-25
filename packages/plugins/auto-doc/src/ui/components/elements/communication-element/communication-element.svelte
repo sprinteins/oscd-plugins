@@ -106,8 +106,14 @@ async function exportNetworkDiagram(): Promise<void> {
 
 	isExporting = true
 	try {
+		// Use actual diagram dimensions for export to avoid empty space
+		const exportWidth = diagramDimensions ? Math.ceil(diagramDimensions.width * calculatedZoom) : undefined
+		const exportHeight = diagramDimensions ? Math.ceil(diagramDimensions.height * calculatedZoom) : undefined
+		
 		const pngBase64 = await exportPngFromHTMLElement({
-			element: htmlRoot
+			element: htmlRoot,
+			imageWidth: exportWidth,
+			imageHeight: exportHeight
 		})
 		const fullDataUri = `data:image/png;base64,${pngBase64}`
 
@@ -201,6 +207,7 @@ $effect(() => {
 
 	<div class="communication-element">
 		<LegacyTheme>
+			<div class="fit-middle">
 			<div class="communication-preview-wrapper" bind:this={htmlRoot}>
 				<TelemetryView
 					root={pluginGlobalStore.xmlDocument as unknown as Element}
@@ -213,6 +220,7 @@ $effect(() => {
 					onDiagramSizeCalculated={handleDiagramSizeCalculated}
 				/>
 			</div>
+			</div>
 		</LegacyTheme>
 	</div>
 {:else}
@@ -220,6 +228,17 @@ $effect(() => {
 {/if}
 
 <style>
+	.fit-middle {
+		justify-content: center;
+		align-items: center;
+	}
+
+	.communication-preview-wrapper {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+	
 	.communication-preview-wrapper :global(*) {
 		pointer-events: none !important;
 	}

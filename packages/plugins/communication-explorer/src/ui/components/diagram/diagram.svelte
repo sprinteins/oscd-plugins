@@ -169,11 +169,14 @@
 		//only reset zoom if rootNodeWidth / height actually changed
 		//(the rune also triggers when they didn't for some reason...)
 		if (width !== savedRootNodeWidth && height !== savedRootNodeHeight) {
-			svgWidth = width
-			svgHeight = height
 			if (isOutsidePluginContext) {
+				// For outside context (preview), apply the zoom directly
 				svgWidth = width * zoom
 				svgHeight = height * zoom
+			} else {
+				// For normal context, use actual dimensions
+				svgWidth = width
+				svgHeight = height
 			}
 			savedRootNodeWidth = width
 			savedRootNodeHeight = height
@@ -325,6 +328,5 @@
 		width: var(--width);
 		height: var(--height);
 		display: block;
-		margin: auto;
 	}
 </style>
