@@ -19,27 +19,6 @@ let { content = '', onContentChange }: Props = $props()
 
 let htmlRoot: HTMLElement | null = $state(null)
 let selectedBay: string = $state('')
-let filteredXmlDocument: XMLDocument | null = $state(null)
-
-function filterXmlDocumentByBay(xmlDoc: XMLDocument, selectedBay: string): XMLDocument {
-	if (!xmlDoc || !selectedBay) {
-		return xmlDoc
-	}
-
-	const modifiedXmlDoc = xmlDoc.cloneNode(true) as XMLDocument
-	const root = modifiedXmlDoc.documentElement
-  
-	const allBayElements = root.querySelectorAll('Bay')
-	for (const bayElement of allBayElements) {
-		const bayName = bayElement.getAttribute('name')
-		if (bayName && bayName !== selectedBay) {
-			bayElement.remove()
-		}
-	}
-
-	console.log("FILTERED ROOT", root)
-	return root.ownerDocument as XMLDocument
-}
 
 async function exportNetworkDiagram(flowPane: HTMLElement) {
 	if (!flowPane) {
@@ -68,12 +47,6 @@ async function waitForDiagramToRender(): Promise<void> {
 }
 
 $effect(() => {
-	if (pluginGlobalStore.xmlDocument) {
-		filteredXmlDocument = filterXmlDocumentByBay(pluginGlobalStore.xmlDocument, selectedBay)
-	} 
-})
-
-$effect(() => {
 	if (htmlRoot) {
 		const pane = htmlRoot.querySelector<HTMLElement>(SVELTE_FLOW__PANE)
 		if (pane) {
@@ -88,10 +61,11 @@ $effect(() => {
 		<DiagramWithBaySelector bind:selectedBay />
 		<MaterialTheme pluginType="editor">
 			<div class="network-preview-wrapper">
-				{#if filteredXmlDocument}
+				{#if pluginGlobalStore.xmlDocument}
 					<NetworkExplorer
-						doc={filteredXmlDocument}
+						doc={pluginGlobalStore.xmlDocument}
 						isOutsidePluginContext={true}
+						filterBay={selectedBay}
 					/>
 				{/if}
 			</div>

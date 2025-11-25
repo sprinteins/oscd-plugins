@@ -25,9 +25,10 @@ interface Props {
 	store: DiagramStore
 	isOutsidePluginContext?: boolean
 	onDelete: (networkings: Networking[]) => void
+	filterBay?: string | null
 }
 
-let { doc, editCount, store, isOutsidePluginContext = false, onDelete }: Props = $props()
+let { doc, editCount, store, isOutsidePluginContext = false, onDelete, filterBay = null }: Props = $props()
 let root: HTMLElement | null = $state(null)
 let _editCount: number
 let _doc: Element
@@ -98,6 +99,12 @@ $effect(() => {
 })
 $effect(() => {
 	store.updateSelectedEdges(edges.current)
+})
+$effect(() => {
+	if (store.filterBayName !== filterBay) {
+		store.setFilterBay(filterBay)
+		store.updateNodesAndEdges(doc)
+	}
 })
 </script>
 

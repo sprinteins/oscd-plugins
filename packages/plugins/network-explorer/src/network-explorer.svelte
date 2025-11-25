@@ -14,6 +14,7 @@ interface BaseProps {
 	doc: XMLDocument
 	// biome-ignore lint/suspicious/noExplicitAny: Has been here before, should be investigated properly
 	store?: any
+	filterBay?: string | null
 }
 
 type isOutsidePluginContextProps = BaseProps & {
@@ -32,7 +33,8 @@ let {
 	doc,
 	isOutsidePluginContext = false,
 	store = new DiagramStore(),
-	editCount
+	editCount,
+	filterBay = null
 }: Props = $props()
 let htmlRoot: HTMLElement | null = $state(null)
 let editEventHandler: EditorEventHandler | null = $derived(
@@ -62,6 +64,7 @@ function onDelete(networkings: Networking[]): void {
 			editCount={isOutsidePluginContext ? undefined : editCount}
 			{isOutsidePluginContext}
 			{onDelete}
+			{filterBay}
 		/>
 		{#if !isOutsidePluginContext}
 			<Sidebar
