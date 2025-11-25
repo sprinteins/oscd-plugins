@@ -134,7 +134,7 @@ export class DiagramStore {
 			source: `ied-${sourceIed.name}`,
 			target: `ied-${targetIed.name}`,
 			type: "bezier",
-			style: "stroke-dasharray: 10, 5; stroke: #7E57C2; stroke-width: 3;",
+			style: "stroke-dasharray: 10, 5; stroke-width: 3;",
 			data: { temporary: true }
 		}
 		
