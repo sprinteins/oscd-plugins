@@ -23,6 +23,8 @@ const DELAY_BEFORE_DIAGRAM = 1000 // Increased delay to reduce export frequency
 let selectedBays: string[] = $state([])
 let exportTimeout: ReturnType<typeof setTimeout> | null = null
 let isExporting = $state(false)
+let calculatedZoom = $state(0.5) // Default zoom for export
+let diagramDimensions = $state<{ width: number; height: number } | null>(null)
 
 let showLegend = $state(false)
 let showBayList = $state(false)
@@ -70,6 +72,32 @@ let messageTypeRows: MessageTypeRow[] = $state([
 let selectedMessageTypes = $derived(
 	messageTypeRows.filter((row) => row.enabled).map((row) => row.messageType)
 )
+
+function calculateFitToContainerZoom(): number {
+	if (!htmlRoot || !diagramDimensions) return 0.5
+	
+	const containerWidth = htmlRoot.offsetWidth || 800
+	const containerHeight = htmlRoot.offsetHeight || 600
+	
+	// Use actual diagram dimensions from the layout calculation
+	const diagramWidth = diagramDimensions.width
+	const diagramHeight = diagramDimensions.height
+	
+	if (diagramWidth === 0 || diagramHeight === 0) return 0.5
+	
+	const widthRatio = containerWidth / diagramWidth
+	const heightRatio = containerHeight / diagramHeight
+	
+	// Use the smaller ratio to ensure the entire diagram fits
+	// Add some padding (0.9) to prevent edge clipping
+	return Math.min(widthRatio, heightRatio) * 0.9
+}
+
+function handleDiagramSizeCalculated(width: number, height: number) {
+	diagramDimensions = { width, height }
+	// Recalculate zoom with the new dimensions
+	calculatedZoom = calculateFitToContainerZoom()
+}
 
 async function exportNetworkDiagram(): Promise<void> {
 	if (!htmlRoot || isExporting) {
@@ -180,6 +208,8 @@ $effect(() => {
 					{selectedBays}
 					{selectedMessageTypes}
 					focusMode={true}
+					initialZoom={calculatedZoom}
+					onDiagramSizeCalculated={handleDiagramSizeCalculated}
 				/>
 			</div>
 		</LegacyTheme>

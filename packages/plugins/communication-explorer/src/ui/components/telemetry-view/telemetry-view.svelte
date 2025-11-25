@@ -32,9 +32,11 @@ interface Props {
 	selectedBays?: string[];
 	selectedMessageTypes?: string[];
 	focusMode?: boolean;
+	initialZoom?: number;
+	onDiagramSizeCalculated?: (width: number, height: number) => void;
 }
 
-let { root, showSidebar = true, selectedBays, selectedMessageTypes, focusMode }: Props = $props();
+let { root, showSidebar = true, selectedBays, selectedMessageTypes, focusMode, initialZoom, onDiagramSizeCalculated }: Props = $props();
 
 let rootNode: RootNode | undefined = $state(undefined)
 let lastUsedRoot: Element | undefined = undefined
@@ -98,6 +100,11 @@ async function initInfos(
 		filterWithOverrides,
 		preferencesWithOverrides
 	)
+	
+	// Notify parent of diagram dimensions
+	if (rootNode && onDiagramSizeCalculated) {
+		onDiagramSizeCalculated(rootNode.width || 0, rootNode.height || 0)
+	}
 }
 
 async function handleBaySelect(bay: string) {
@@ -126,6 +133,7 @@ function handleConnectionClick(connection: IEDConnection) {
 			playAnimation={$preferences$.playConnectionAnimation}
 			showConnectionArrows={$preferences$.showConnectionArrows}
 			showBayLabels={!$preferences$.groupByBay}
+			{initialZoom}
 			handleIEDSelect={selectIEDElkNode}
 			{handleBaySelect}
 			handleIEDAdditiveSelect={toggleMultiSelectionOfIED}
