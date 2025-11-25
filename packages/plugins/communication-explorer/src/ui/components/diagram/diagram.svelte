@@ -21,7 +21,8 @@
 		playAnimation?: boolean;
 		showConnectionArrows?: boolean;
 		showBayLabels?: boolean;
-		initialZoom?: number;
+		zoom?: number;
+		isOutsidePluginContext?: boolean;
 		handleIEDSelect: (node: IEDElkNode) => void;
 		handleBaySelect: (bay: string) => void;
 		handleIEDAdditiveSelect: (node: IEDElkNode) => void;
@@ -34,7 +35,8 @@
 		playAnimation = true,
 		showConnectionArrows = true,
 		showBayLabels = false,
-		initialZoom = 1.0,
+		zoom = 1.0,
+		isOutsidePluginContext = false,
 		handleIEDSelect,
 		handleBaySelect,
 		handleIEDAdditiveSelect,
@@ -167,8 +169,12 @@
 		//only reset zoom if rootNodeWidth / height actually changed
 		//(the rune also triggers when they didn't for some reason...)
 		if (width !== savedRootNodeWidth && height !== savedRootNodeHeight) {
-			svgWidth = width * initialZoom
-			svgHeight = height * initialZoom
+			svgWidth = width
+			svgHeight = height
+			if (isOutsidePluginContext) {
+				svgWidth = width * zoom
+				svgHeight = height * zoom
+			}
 			savedRootNodeWidth = width
 			savedRootNodeHeight = height
 		}

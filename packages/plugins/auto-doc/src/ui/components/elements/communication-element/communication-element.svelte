@@ -208,7 +208,8 @@ $effect(() => {
 					{selectedBays}
 					{selectedMessageTypes}
 					focusMode={true}
-					initialZoom={calculatedZoom}
+					isOutsidePluginContext={true}
+					zoom={calculatedZoom}
 					onDiagramSizeCalculated={handleDiagramSizeCalculated}
 				/>
 			</div>

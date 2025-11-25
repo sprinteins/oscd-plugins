@@ -29,14 +29,15 @@ import type { IED } from '@oscd-plugins/core'
 interface Props {
 	root: Element;
 	showSidebar?: boolean;
+	isOutsidePluginContext?: boolean;
 	selectedBays?: string[];
 	selectedMessageTypes?: string[];
 	focusMode?: boolean;
-	initialZoom?: number;
+	zoom?: number;
 	onDiagramSizeCalculated?: (width: number, height: number) => void;
 }
-
-let { root, showSidebar = true, selectedBays, selectedMessageTypes, focusMode, initialZoom, onDiagramSizeCalculated }: Props = $props();
+	
+let { root, showSidebar = true, isOutsidePluginContext = false, selectedBays, selectedMessageTypes, focusMode, zoom, onDiagramSizeCalculated }: Props = $props();
 
 let rootNode: RootNode | undefined = $state(undefined)
 let lastUsedRoot: Element | undefined = undefined
@@ -133,7 +134,8 @@ function handleConnectionClick(connection: IEDConnection) {
 			playAnimation={$preferences$.playConnectionAnimation}
 			showConnectionArrows={$preferences$.showConnectionArrows}
 			showBayLabels={!$preferences$.groupByBay}
-			{initialZoom}
+			{zoom}
+			{isOutsidePluginContext}
 			handleIEDSelect={selectIEDElkNode}
 			{handleBaySelect}
 			handleIEDAdditiveSelect={toggleMultiSelectionOfIED}
