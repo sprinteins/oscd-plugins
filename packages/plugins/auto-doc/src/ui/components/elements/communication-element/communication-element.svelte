@@ -15,14 +15,17 @@ interface Props {
 let { onContentChange, content = '' }: Props = $props()
 
 let htmlRoot: HTMLElement | null = $state(null)
-const DELAY_BEFORE_DIAGRAM = 2000
+const DELAY_BEFORE_DIAGRAM = 1000 // Increased delay to reduce export frequency
 let selectedBays: string[] = $state([])
+let exportTimeout: ReturnType<typeof setTimeout> | null = null
+let isExporting = $state(false)
 
 async function exportNetworkDiagram(): Promise<void> {
-	if (!htmlRoot) {
-		console.error('HTML root is not available for export.')
+	if (!htmlRoot || isExporting) {
 		return
 	}
+	
+	isExporting = true
 	try {
 		const pngBase64 = await exportPngFromHTMLElement({
 			element: htmlRoot
@@ -33,29 +36,36 @@ async function exportNetworkDiagram(): Promise<void> {
 			scale: 'Large',
 			base64Data: fullDataUri
 		}
-
 		onContentChange(JSON.stringify(data))
 	} catch (error) {
 		console.error('Error exporting diagram as PNG:', error)
+	} finally {
+		isExporting = false
 	}
-}
-
-async function waitForDiagramToRender(): Promise<void> {
-	await new Promise((resolve) => setTimeout(resolve, DELAY_BEFORE_DIAGRAM))
 }
 
 $effect(() => {
-	if (htmlRoot || selectedBays) {
-		waitForDiagramToRender().then(() => exportNetworkDiagram())
+	const bays = selectedBays
+	
+	if (!htmlRoot) return
+	
+	if (exportTimeout) {
+		clearTimeout(exportTimeout)
+		exportTimeout = null
 	}
+	
+	exportTimeout = setTimeout(() => {
+		exportNetworkDiagram()
+		exportTimeout = null
+	}, DELAY_BEFORE_DIAGRAM)
 })
 </script>
 
 {#if pluginGlobalStore.xmlDocument}
 <DiagramWithBaySelector bind:selectedBays />
-	<div class="communication-element" bind:this={htmlRoot}>
+	<div class="communication-element" >
 		<LegacyTheme>
-			<div class="communication-preview-wrapper">
+			<div class="communication-preview-wrapper" bind:this={htmlRoot}>
 			<TelemetryView
 				root={pluginGlobalStore.xmlDocument as unknown as Element}
 				showSidebar={false}
