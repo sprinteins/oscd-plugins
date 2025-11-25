@@ -24,12 +24,10 @@ let selectedBays: string[] = $state([])
 let exportTimeout: ReturnType<typeof setTimeout> | null = null
 let isExporting = $state(false)
 
-// Further details state
 let showLegend = $state(false)
 let showBayList = $state(false)
 let showIEDList = $state(false)
 
-// Communication matrix state
 interface MessageTypeRow {
 	id: number
 	enabled: boolean
@@ -62,12 +60,16 @@ let messageTypeRows: MessageTypeRow[] = $state([
 	},
 	{
 		id: 4,
-		enabled: false,
+		enabled: true,
 		messageType: MESSAGE_TYPE.Unknown,
 		sourceIED: '',
 		targetIED: ''
 	}
 ])
+
+let selectedMessageTypes = $derived(
+	messageTypeRows.filter((row) => row.enabled).map((row) => row.messageType)
+)
 
 async function exportNetworkDiagram(): Promise<void> {
 	if (!htmlRoot || isExporting) {
@@ -95,6 +97,7 @@ async function exportNetworkDiagram(): Promise<void> {
 
 $effect(() => {
 	const bays = selectedBays
+	const messageTypes = selectedMessageTypes
 
 	if (!htmlRoot) return
 
@@ -174,7 +177,9 @@ $effect(() => {
 				<TelemetryView
 					root={pluginGlobalStore.xmlDocument as unknown as Element}
 					showSidebar={false}
-					bind:selectedBays
+					{selectedBays}
+					{selectedMessageTypes}
+					focusMode={true}
 				/>
 			</div>
 		</LegacyTheme>

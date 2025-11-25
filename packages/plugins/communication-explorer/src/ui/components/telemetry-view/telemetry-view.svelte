@@ -30,9 +30,11 @@ interface Props {
 	root: Element;
 	showSidebar?: boolean;
 	selectedBays?: string[];
+	selectedMessageTypes?: string[];
+	focusMode?: boolean;
 }
 
-let { root, showSidebar = true, selectedBays = $bindable([]) }: Props = $props();
+let { root, showSidebar = true, selectedBays, selectedMessageTypes, focusMode }: Props = $props();
 
 let rootNode: RootNode | undefined = $state(undefined)
 let lastUsedRoot: Element | undefined = undefined
@@ -47,7 +49,7 @@ const config: Config = {
 }
 
 $effect(() => {
-	initInfos(root, $filterState, $preferences$, selectedBays)
+	initInfos(root, $filterState, $preferences$, selectedBays, selectedMessageTypes, focusMode)
 })
 
 // Note: maybe have a mutex if there are too many changes
@@ -55,7 +57,9 @@ async function initInfos(
 	root: Element,
 	selectedFilter: SelectedFilter,
 	preferences: Preferences,
-	selectedBays?: string[]
+	selectedBays?: string[],
+	selectedMessageTypes?: string[],
+	focusMode?: boolean
 ) {
 	if (!root) {
 		console.info({ level: 'info', msg: 'initInfos: no root' })
@@ -79,11 +83,20 @@ async function initInfos(
 		})
 	}
 
+	// Override filter and preferences if props provided
+	const filterWithOverrides = selectedMessageTypes !== undefined
+		? { ...selectedFilter, selectedMessageTypes }
+		: selectedFilter
+
+	const preferencesWithOverrides = focusMode !== undefined
+		? { ...preferences, isFocusModeOn: focusMode }
+		: preferences
+
 	rootNode = await calculateLayout(
 		filteredInfos,
 		config,
-		selectedFilter,
-		preferences
+		filterWithOverrides,
+		preferencesWithOverrides
 	)
 }
 
