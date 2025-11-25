@@ -9,8 +9,9 @@ import {
 	Background,
 	BackgroundVariant,
 	Controls,
-	type Connection
+	type Connection,
 } from '@xyflow/svelte'
+import { useSvelteFlow } from '@xyflow/svelte';
 import '@xyflow/svelte/dist/style.css'
 import type { Networking } from '@oscd-plugins/core'
 import IEDNode from './ied-node.svelte'
@@ -42,6 +43,13 @@ const nodeTypes = {
 	ied: IEDNode,
 	bay: BayNode
 }
+
+const { fitView } = useSvelteFlow();
+$effect(() => {
+  if (nodes.length > 0 || edges.length > 0) {
+    fitView();
+  }
+});
 
 function ondelete(deleteEvent: { nodes: Node[]; edges: Edge[] }): void {
 	const { edges } = deleteEvent
