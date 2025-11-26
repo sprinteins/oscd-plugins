@@ -47,7 +47,7 @@ async function waitForDiagramToRender(): Promise<void> {
 }
 
 $effect(() => {
-	if (htmlRoot) {
+	if (htmlRoot && selectedBays) {
 		const pane = htmlRoot.querySelector<HTMLElement>(SVELTE_FLOW__PANE)
 		if (pane) {
 			waitForDiagramToRender().then(() => exportNetworkDiagram(pane))
