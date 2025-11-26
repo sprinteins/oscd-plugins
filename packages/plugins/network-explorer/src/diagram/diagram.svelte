@@ -46,7 +46,7 @@ const nodeTypes = {
 
 const { fitView } = useSvelteFlow();
 $effect(() => {
-  if (nodes.length > 0 || edges.length > 0) {
+  if (isOutsidePluginContext) {
     fitView();
   }
 });
