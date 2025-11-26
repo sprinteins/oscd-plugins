@@ -18,7 +18,7 @@ interface Props {
 let { content = '', onContentChange }: Props = $props()
 
 let htmlRoot: HTMLElement | null = $state(null)
-let selectedBay: string = $state('')
+let selectedBays: string[] = $state([])
 
 async function exportNetworkDiagram(flowPane: HTMLElement) {
 	if (!flowPane) {
@@ -58,13 +58,13 @@ $effect(() => {
 
 {#if pluginGlobalStore.xmlDocument}
 	<div class="communication-element" bind:this={htmlRoot}>
-		<DiagramWithBaySelector bind:selectedBay />
+		<DiagramWithBaySelector bind:selectedBays />
 		<MaterialTheme pluginType="editor">
 			<div class="network-preview-wrapper">
 				<NetworkExplorer
 					doc={pluginGlobalStore.xmlDocument}
 					isOutsidePluginContext={true}
-					filterBay={selectedBay}
+					filterBay={selectedBays[0]}
 				/>
 			</div>
 		</MaterialTheme>
