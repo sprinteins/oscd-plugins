@@ -18,8 +18,10 @@ interface Props {
 
 let { onContentChange, content = '' }: Props = $props()
 
-let htmlRoot: HTMLElement | null = $state(null)
 const DELAY_BEFORE_DIAGRAM = 1000 // Increased delay to reduce export frequency
+const DEFAULT_EXPORT_PIXEL_RATIO = 10
+
+let htmlRoot: HTMLElement | null = $state(null)
 let selectedBays: string[] = $state([])
 let exportTimeout: ReturnType<typeof setTimeout> | null = null
 let isExporting = $state(false)
@@ -38,27 +40,28 @@ interface MessageTypeRow {
 	targetIED: string
 }
 
+// placeholder rows for message type selection
 let messageTypeRows: MessageTypeRow[] = $state([
 	{
 		id: 1,
 		enabled: true,
 		messageType: MESSAGE_TYPE.GOOSE,
-		sourceIED: 'SMU01',
-		targetIED: 'BCU01'
+		sourceIED: '',
+		targetIED: ''
 	},
 	{
 		id: 2,
 		enabled: true,
 		messageType: MESSAGE_TYPE.MMS,
-		sourceIED: 'BCU01',
-		targetIED: 'SMU01'
+		sourceIED: '',
+		targetIED: ''
 	},
 	{
 		id: 3,
 		enabled: true,
 		messageType: MESSAGE_TYPE.SampledValues,
-		sourceIED: 'BPU01',
-		targetIED: 'RTU01'
+		sourceIED: '',
+		targetIED: ''
 	},
 	{
 		id: 4,
@@ -109,7 +112,7 @@ async function exportNetworkDiagram(): Promise<void> {
 			element: htmlRoot,
 			imageWidth: exportWidth,
 			imageHeight: exportHeight,
-			pixelRatio: 10,
+			pixelRatio: DEFAULT_EXPORT_PIXEL_RATIO,
 			quality: 1
 		})
 		const fullDataUri = `data:image/png;base64,${pngBase64}`
