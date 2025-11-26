@@ -23,7 +23,7 @@ const DELAY_BEFORE_DIAGRAM = 1000 // Increased delay to reduce export frequency
 let selectedBays: string[] = $state([])
 let exportTimeout: ReturnType<typeof setTimeout> | null = null
 let isExporting = $state(false)
-let calculatedZoom = $state(0.5) // Default zoom for export
+let calculatedZoom = $state(1.0)
 let diagramDimensions = $state<{ width: number; height: number } | null>(null)
 
 let showLegend = $state(false)
@@ -74,7 +74,7 @@ let selectedMessageTypes = $derived(
 )
 
 function calculateFitToContainerZoom(): number {
-	if (!htmlRoot || !diagramDimensions) return 0.5
+	if (!htmlRoot || !diagramDimensions) return 1.0
 	
 	const containerWidth = htmlRoot.offsetWidth || 800
 	const containerHeight = htmlRoot.offsetHeight || 600
@@ -113,7 +113,9 @@ async function exportNetworkDiagram(): Promise<void> {
 		const pngBase64 = await exportPngFromHTMLElement({
 			element: htmlRoot,
 			imageWidth: exportWidth,
-			imageHeight: exportHeight
+			imageHeight: exportHeight,
+			pixelRatio: 10,
+			quality: 1
 		})
 		const fullDataUri = `data:image/png;base64,${pngBase64}`
 

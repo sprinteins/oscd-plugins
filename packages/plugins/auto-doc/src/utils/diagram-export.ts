@@ -10,6 +10,8 @@ type ExportPNGProps = ExportProps & {
   imageWidth?: number;
   imageHeight?: number;
   backgroundColor?: string;
+  pixelRatio?: number;
+  quality?: number;
 };
 
 export async function exportPngFromHTMLElement({
@@ -17,6 +19,8 @@ export async function exportPngFromHTMLElement({
   imageWidth,
   imageHeight,
   backgroundColor = "var(--global-background-color)",
+  pixelRatio = 2,
+  quality = 1,
 }: ExportPNGProps): Promise<Base64String> {
   // Use actual element dimensions if not specified
   const width = imageWidth || element.offsetWidth || 1024;
@@ -26,6 +30,8 @@ export async function exportPngFromHTMLElement({
       backgroundColor,
       width,
       height,
+      pixelRatio,
+      quality,
       cacheBust: true,
     });
 
