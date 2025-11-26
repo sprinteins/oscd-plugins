@@ -7,12 +7,13 @@ import { getIedNameFromId, hasOpenPort } from "../diagram/ied-helper"
 import { isBayNode } from "../external/diagram"
 import type { BayElkNode, IEDElkNode } from "../external/diagram"
 import { extractCableNameFromId } from "../diagram/edge-helper"
-
+import { filterNodesAndEdgesForBay } from "../diagram/bay-filter-helper"
 
 export class DiagramStore {
 	public nodes: FlowNodes[] = $state.raw([])
 	public edges: Edge[] = $state.raw([])
 	public ieds = writable<IED[]>([])
+	public filterBayName?: string  = $state(undefined)
 	
 	public selectedNodes = writable<SelectedNode[]>([])
 
@@ -29,18 +30,26 @@ export class DiagramStore {
 		const rootNode = await generateElkJSLayout(ieds, iedBayMap, config)
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
+		let filteredNodes = resp.nodes
+		let filteredEdges = resp.edges
+		
+		if (this.filterBayName) {
+			const filtered = filterNodesAndEdgesForBay(this.filterBayName, resp.nodes, resp.edges, iedBayMap)
+   		filteredNodes = filtered.nodes
+    	filteredEdges = filtered.edges
+		}
 
 		const previousNodes = this.nodes
 		const isNodeStructureEquivalent = this.isNodeStructureEquivalent(
 			previousNodes as unknown as (IEDElkNode | BayElkNode)[],
-			resp.nodes as unknown as (IEDElkNode | BayElkNode)[],
+			filteredNodes as unknown as (IEDElkNode | BayElkNode)[],
 		)
 
 		const shouldRerenderNodes = !isNodeStructureEquivalent
 		if (shouldRerenderNodes) {
-			this.nodes = resp.nodes
+			this.nodes = filteredNodes
 		}
-		this.edges = resp.edges
+		this.edges = filteredEdges
 
 		this.setIsConnectedable()
 	}
@@ -120,6 +129,10 @@ export class DiagramStore {
 
 	public resetNewConnection(): void {
 		this.connectionBetweenNodes.set(null)
+	}
+
+	public setFilterBay(bayName?: string): void {
+		this.filterBayName = bayName
 	}
 
 	private isNodeStructureEquivalent(previousNodes: (IEDElkNode | BayElkNode)[], nodes: (IEDElkNode | BayElkNode)[]): boolean {

@@ -47,7 +47,7 @@ async function waitForDiagramToRender(): Promise<void> {
 }
 
 $effect(() => {
-	if (htmlRoot) {
+	if (htmlRoot && selectedBays) {
 		const pane = htmlRoot.querySelector<HTMLElement>(SVELTE_FLOW__PANE)
 		if (pane) {
 			waitForDiagramToRender().then(() => exportNetworkDiagram(pane))
@@ -64,6 +64,7 @@ $effect(() => {
 				<NetworkExplorer
 					doc={pluginGlobalStore.xmlDocument}
 					isOutsidePluginContext={true}
+					filterBay={selectedBays[0]}
 				/>
 			</div>
 		</MaterialTheme>

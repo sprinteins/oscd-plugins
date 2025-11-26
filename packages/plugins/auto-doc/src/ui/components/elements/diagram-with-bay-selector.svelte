@@ -39,30 +39,23 @@ const segments = [
 
 function handleSegmentChange(event?: Event) {
     if (mode === 'all') {
-        selectedBays = [...availableBays]
+        selectedBays = []
     } else {
         selectedBays = selectedBay ? [selectedBay] : []
     }
 }
 
-function handleBaySelect() {
+$effect(() => {
 	if (selectedBay) {
 		mode = 'bay'
 		selectedBays = [selectedBay]
-	} else {
+	} else if (mode === 'bay') {
 		selectedBays = []
 	}
-}
+})
 
 onMount(() => {
 	loadAvailableBays()
-	if (mode === 'all') {
-		selectedBays = [...availableBays]
-	} else if (selectedBay) {
-		selectedBays = [selectedBay]
-	} else {
-		selectedBays = []
-	}
 })
 </script>
 
@@ -86,7 +79,6 @@ onMount(() => {
     <div class="bay-select">
         <Select
             bind:value={selectedBay}
-            onchange={handleBaySelect}
             disabled={mode !== "bay"}
             variant="outlined"
             label="Bay Name"
@@ -104,6 +96,7 @@ onMount(() => {
         flex-direction: column;
         gap: 8px;
         padding: 8px 0;
+        margin-bottom: 1rem;
     }
 
     .mode-controls {

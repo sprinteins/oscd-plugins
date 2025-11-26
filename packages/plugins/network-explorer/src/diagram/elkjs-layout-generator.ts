@@ -1,6 +1,6 @@
 import ELK, { type ElkNode } from "elkjs/lib/elk.bundled"
 import type { BayElkNode, IEDConnection, IEDElkNode, NetworkNode, RootNode } from "../../../components/diagram"
-import {type BayIEDNameMap, createCableNetowrkingMap, type IED } from "./networking"
+import {type BayIEDNameMap, createCableNetworkingMap, type IED } from "./networking"
 // import type { IEDBayMap } from "./ied-network-info"
 import { createCableId } from "./edge-helper"
 import type { Networking } from "@oscd-plugins/core"
@@ -35,7 +35,7 @@ export async function generateElkJSLayout(
 	const iedsWithoutBay: IEDElkNode[] = []
 	iedElkNodes.forEach(iedNode => assignNodeToBay(iedNode, bayIedMap, bayElkNodes, iedsWithoutBay) )
 	
-	const cableNetworkingMap = createCableNetowrkingMap(ieds)
+	const cableNetworkingMap = createCableNetworkingMap(ieds)
 	const networkingPairs = Object
 		.values(cableNetworkingMap)
 		.filter(function isAnExectPair(networkingList) { return networkingList.length === 2 })
