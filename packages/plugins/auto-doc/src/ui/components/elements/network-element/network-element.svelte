@@ -61,13 +61,11 @@ $effect(() => {
 		<DiagramWithBaySelector bind:selectedBay />
 		<MaterialTheme pluginType="editor">
 			<div class="network-preview-wrapper">
-				{#if pluginGlobalStore.xmlDocument}
-					<NetworkExplorer
-						doc={pluginGlobalStore.xmlDocument}
-						isOutsidePluginContext={true}
-						filterBay={selectedBay}
-					/>
-				{/if}
+				<NetworkExplorer
+					doc={pluginGlobalStore.xmlDocument}
+					isOutsidePluginContext={true}
+					filterBay={selectedBay}
+				/>
 			</div>
 		</MaterialTheme>
 	</div>
