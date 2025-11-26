@@ -135,15 +135,6 @@ export class DiagramStore {
 		this.filterBayName = bayName
 	}
 
-	// private filterForBay(
-	// 	targetBayName: string,
-	// 	nodes: FlowNodes[],
-	// 	edges: Edge[],
-	// 	iedBayMap: ReturnType<typeof findAllIEDBays>
-	// ): { nodes: FlowNodes[], edges: Edge[] } {
-	// 	return filterNodesAndEdgesForBay(targetBayName, nodes, edges, iedBayMap)
-	// }
-
 	private isNodeStructureEquivalent(previousNodes: (IEDElkNode | BayElkNode)[], nodes: (IEDElkNode | BayElkNode)[]): boolean {
 		const previousIEDNodes = previousNodes.filter(n => !isBayNode(n))
 		const IEDNodes = nodes.filter(n => !isBayNode(n))
