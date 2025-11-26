@@ -7,7 +7,7 @@ import { getIedNameFromId, hasOpenPort } from "../diagram/ied-helper"
 import { isBayNode } from "../external/diagram"
 import type { BayElkNode, IEDElkNode } from "../external/diagram"
 import { extractCableNameFromId } from "../diagram/edge-helper"
-
+import { filterNodesAndEdgesForBay } from "../diagram/bay-filter-helper"
 
 export class DiagramStore {
 	public nodes: FlowNodes[] = $state.raw([])
@@ -34,9 +34,9 @@ export class DiagramStore {
 		let filteredEdges = resp.edges
 		
 		if (this.filterBayName) {
-			const filtered = this.filterForBay(this.filterBayName, resp.nodes, resp.edges, iedBayMap)
-			filteredNodes = filtered.nodes
-			filteredEdges = filtered.edges
+			const filtered = filterNodesAndEdgesForBay(this.filterBayName, resp.nodes, resp.edges, iedBayMap)
+   		filteredNodes = filtered.nodes
+    	filteredEdges = filtered.edges
 		}
 
 		const previousNodes = this.nodes
@@ -135,68 +135,14 @@ export class DiagramStore {
 		this.filterBayName = bayName
 	}
 
-	private filterForBay(
-		targetBayName: string,
-		nodes: FlowNodes[],
-		edges: Edge[],
-		iedBayMap: ReturnType<typeof findAllIEDBays>
-	): { nodes: FlowNodes[], edges: Edge[] } {
-		// Get IEDs in the target bay
-		const iedsInTargetBay = iedBayMap[targetBayName] || []
-		const iedIdsInTargetBay = new Set(iedsInTargetBay.map(name => `ied-${name}`))
-
-		// Find the target bay node
-		const targetBayNode = nodes.find(n => n.id === `bay-${targetBayName}`)
-		if (!targetBayNode) {
-			console.warn(`Bay ${targetBayName} not found`)
-			return { nodes: [], edges: [] }
-		}
-
-		// Get all IEDs connected to IEDs in the target bay
-		const connectedIedIds = new Set<string>()
-		for (const edge of edges) {
-			const sourceInTargetBay = iedIdsInTargetBay.has(edge.source)
-			const targetInTargetBay = iedIdsInTargetBay.has(edge.target)
-
-			if (sourceInTargetBay) {
-				connectedIedIds.add(edge.target)
-			}
-			if (targetInTargetBay) {
-				connectedIedIds.add(edge.source)
-			}
-		}
-
-		// Filter out IEDs that belong to other bays
-		const filteredConnectedIedIds = new Set<string>()
-		for (const iedId of connectedIedIds) {
-			const iedName = getIedNameFromId(iedId)
-			const belongsToOtherBay = Object.keys(iedBayMap).some(bayName => {
-				return bayName !== targetBayName && iedBayMap[bayName].includes(iedName)
-			})
-			
-			if (!belongsToOtherBay) {
-				filteredConnectedIedIds.add(iedId)
-			}
-		}
-
-		// Combine all allowed IED IDs
-		const allowedIedIds = new Set([...iedIdsInTargetBay, ...filteredConnectedIedIds])
-
-		// Filter nodes: include target bay and allowed IEDs
-		const filteredNodes = nodes.filter(node => {
-			if (node.id === `bay-${targetBayName}`) {
-				return true
-			}
-			return allowedIedIds.has(node.id)
-		})
-
-		// Filter edges: only include edges between allowed IEDs
-		const filteredEdges = edges.filter(edge => {
-			return allowedIedIds.has(edge.source) && allowedIedIds.has(edge.target)
-		})
-
-		return { nodes: filteredNodes, edges: filteredEdges }
-	}
+	// private filterForBay(
+	// 	targetBayName: string,
+	// 	nodes: FlowNodes[],
+	// 	edges: Edge[],
+	// 	iedBayMap: ReturnType<typeof findAllIEDBays>
+	// ): { nodes: FlowNodes[], edges: Edge[] } {
+	// 	return filterNodesAndEdgesForBay(targetBayName, nodes, edges, iedBayMap)
+	// }
 
 	private isNodeStructureEquivalent(previousNodes: (IEDElkNode | BayElkNode)[], nodes: (IEDElkNode | BayElkNode)[]): boolean {
 		const previousIEDNodes = previousNodes.filter(n => !isBayNode(n))
