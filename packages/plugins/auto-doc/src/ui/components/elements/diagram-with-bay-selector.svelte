@@ -21,7 +21,6 @@ function loadAvailableBays() {
 			pluginGlobalStore.xmlDocument.documentElement
 		)
 		availableBays = Array.from(svc.Bays())
-		console.log('Available bays loaded:', availableBays)
 	} catch (e) {
 		console.error('Failed to load bays from IEDService', e)
 		availableBays = []
