@@ -79,7 +79,6 @@ function calculateFitToContainerZoom(): number {
 	const containerWidth = htmlRoot.offsetWidth || 800
 	const containerHeight = htmlRoot.offsetHeight || 600
 	
-	// Use actual diagram dimensions from the layout calculation
 	const diagramWidth = diagramDimensions.width
 	const diagramHeight = diagramDimensions.height
 	
@@ -88,14 +87,11 @@ function calculateFitToContainerZoom(): number {
 	const widthRatio = containerWidth / diagramWidth
 	const heightRatio = containerHeight / diagramHeight
 	
-	// Use the smaller ratio to ensure the entire diagram fits
-	// Add some padding (0.9) to prevent edge clipping
 	return Math.min(widthRatio, heightRatio) * 0.9
 }
 
 function handleDiagramSizeCalculated(width: number, height: number) {
 	diagramDimensions = { width, height }
-	// Recalculate zoom with the new dimensions
 	calculatedZoom = calculateFitToContainerZoom()
 }
 
@@ -106,7 +102,6 @@ async function exportNetworkDiagram(): Promise<void> {
 
 	isExporting = true
 	try {
-		// Use actual diagram dimensions for export to avoid empty space
 		const exportWidth = diagramDimensions ? Math.ceil(diagramDimensions.width * calculatedZoom) : undefined
 		const exportHeight = diagramDimensions ? Math.ceil(diagramDimensions.height * calculatedZoom) : undefined
 		

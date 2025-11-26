@@ -16,28 +16,37 @@ import {
 	toggleMultiSelectionOfIED
 } from '../../../stores/_store-view-filter'
 import type { Config } from '../../../headless/services/_func-layout-calculation/config'
-import { preferences$, type Preferences } from '../../../stores/_store-preferences'
-// SERVICES
-import { getIEDCommunicationInfos, getBays } from '../../../headless/services/ied/ied'
-//TYPES
+import {
+	preferences$,
+	type Preferences
+} from '../../../stores/_store-preferences'
+import {
+	getIEDCommunicationInfos,
+	getBays
+} from '../../../headless/services/ied/ied'
 import type { IED } from '@oscd-plugins/core'
 
-//
-// INPUT
-//
-
 interface Props {
-	root: Element;
-	showSidebar?: boolean;
-	isOutsidePluginContext?: boolean;
-	selectedBays?: string[];
-	selectedMessageTypes?: string[];
-	focusMode?: boolean;
-	zoom?: number;
-	onDiagramSizeCalculated?: (width: number, height: number) => void;
+	root: Element
+	showSidebar?: boolean
+	isOutsidePluginContext?: boolean
+	selectedBays?: string[]
+	selectedMessageTypes?: string[]
+	focusMode?: boolean
+	zoom?: number
+	onDiagramSizeCalculated?: (width: number, height: number) => void
 }
-	
-let { root, showSidebar = true, isOutsidePluginContext = false, selectedBays, selectedMessageTypes, focusMode, zoom, onDiagramSizeCalculated }: Props = $props();
+
+let {
+	root,
+	showSidebar = true,
+	isOutsidePluginContext = false,
+	selectedBays,
+	selectedMessageTypes,
+	focusMode,
+	zoom,
+	onDiagramSizeCalculated
+}: Props = $props()
 
 let rootNode: RootNode | undefined = $state(undefined)
 let lastUsedRoot: Element | undefined = undefined
@@ -52,7 +61,14 @@ const config: Config = {
 }
 
 $effect(() => {
-	initInfos(root, $filterState, $preferences$, selectedBays, selectedMessageTypes, focusMode)
+	initInfos(
+		root,
+		$filterState,
+		$preferences$,
+		selectedBays,
+		selectedMessageTypes,
+		focusMode
+	)
 })
 
 // Note: maybe have a mutex if there are too many changes
@@ -76,24 +92,25 @@ async function initInfos(
 		lastUsedRoot = root
 	}
 
-	// Filter IEDs by selected bays if provided
 	let filteredInfos = lastExtractedInfos
 	if (selectedBays && selectedBays.length > 0) {
 		filteredInfos = lastExtractedInfos.filter((ied) => {
-			// Check if the IED belongs to any of the selected bays
 			if (!ied.bays || ied.bays.size === 0) return false
-			return Array.from(ied.bays).some((bay: string) => selectedBays.includes(bay))
+			return Array.from(ied.bays).some((bay: string) =>
+				selectedBays.includes(bay)
+			)
 		})
 	}
 
-	// Override filter and preferences if props provided
-	const filterWithOverrides = selectedMessageTypes !== undefined
-		? { ...selectedFilter, selectedMessageTypes }
-		: selectedFilter
+	const filterWithOverrides =
+		selectedMessageTypes !== undefined
+			? { ...selectedFilter, selectedMessageTypes }
+			: selectedFilter
 
-	const preferencesWithOverrides = focusMode !== undefined
-		? { ...preferences, isFocusModeOn: focusMode }
-		: preferences
+	const preferencesWithOverrides =
+		focusMode !== undefined
+			? { ...preferences, isFocusModeOn: focusMode }
+			: preferences
 
 	rootNode = await calculateLayout(
 		filteredInfos,
@@ -101,8 +118,7 @@ async function initInfos(
 		filterWithOverrides,
 		preferencesWithOverrides
 	)
-	
-	// Notify parent of diagram dimensions
+
 	if (rootNode && onDiagramSizeCalculated) {
 		onDiagramSizeCalculated(rootNode.width || 0, rootNode.height || 0)
 	}

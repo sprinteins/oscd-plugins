@@ -22,7 +22,6 @@ export async function exportPngFromHTMLElement({
   pixelRatio = 2,
   quality = 1,
 }: ExportPNGProps): Promise<Base64String> {
-  // Use actual element dimensions if not specified
   const width = imageWidth || element.offsetWidth || 1024;
   const height = imageHeight || element.offsetHeight || 768;
   try {
