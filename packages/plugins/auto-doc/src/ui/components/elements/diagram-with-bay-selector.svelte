@@ -6,7 +6,7 @@ import List, { Item, Text } from '@smui/list'
 import Checkbox from '@smui/checkbox'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { IEDService } from '@oscd-plugins/core'
-import { onMount, untrack } from 'svelte'
+import { onMount } from 'svelte'
 
 interface Props {
 	selectedBays: string[]
@@ -17,7 +17,7 @@ let { selectedBays = $bindable([]) }: Props = $props()
 let availableBays: string[] = $state([])
 let mode: 'all' | 'bay' = $state('all')
 let menu: Menu
-let selectedBaysSet = $state(new Set<string>())
+let selectedBaysSet = $derived(new Set(selectedBays))
 let isMenuOpen = $state(false)
 let anchorElement: HTMLDivElement | null = $state(null)
 let menuElement: HTMLDivElement
@@ -33,9 +33,7 @@ function handleClickOutside(event: MouseEvent) {
 
 $effect(() => {
 	if (isMenuOpen) {
-		setTimeout(() => {
-			document.addEventListener('click', handleClickOutside)
-		}, 0)
+		document.addEventListener('click', handleClickOutside)
 	} else {
 		document.removeEventListener('click', handleClickOutside)
 	}
@@ -79,7 +77,6 @@ function toggleBaySelection(bay: string) {
 	} else {
 		selectedBays = [...selectedBays, bay]
 	}
-	selectedBaysSet = new Set(selectedBays)
 }
 
 function isBaySelected(bay: string): boolean {
@@ -98,7 +95,6 @@ const displayText = $derived.by(() => {
 
 onMount(() => {
 	loadAvailableBays()
-	selectedBaysSet = new Set(selectedBays)
 })
 </script>
 
@@ -206,7 +202,6 @@ onMount(() => {
         border: 1px solid rgba(0, 0, 0, 0.38);
         border-radius: 4px;
         cursor: pointer;
-        font-size: 16px;
     }
 
     .select-trigger:hover:not(.disabled) {
