@@ -16,7 +16,6 @@
 
   let availableBays: string[] = $state([]);
   let mode: "all" | "bay" = $state("all");
-  let selectedBaysSet = $derived(new Set(selectedBays));
   let isMenuOpen = $state(false);
   let anchorElement: HTMLDivElement | null = $state(null);
   let menuElement: HTMLDivElement;
@@ -26,28 +25,28 @@
     { value: "bay", label: "Bay selection" },
   ];
 
-  function handleClickOutside(event: MouseEvent) {
-    if (isMenuOpen && menuElement && anchorElement) {
-      const target = event.target as Node;
-      if (!menuElement.contains(target) && !anchorElement.contains(target)) {
-        isMenuOpen = false;
-      }
+  function closeMenuOnOutsideClick(event: MouseEvent) {
+    if (!isMenuOpen || !menuElement || !anchorElement) return;
+    
+    const target = event.target as Node;
+    const isClickOutside = !menuElement.contains(target) && !anchorElement.contains(target);
+    
+    if (isClickOutside) {
+      isMenuOpen = false;
     }
   }
 
   $effect(() => {
-    if (isMenuOpen) {
-      const timeoutId = setTimeout(() => {
-        document.addEventListener("click", handleClickOutside);
-      }, 0);
-      
-      return () => {
-        clearTimeout(timeoutId);
-        document.removeEventListener("click", handleClickOutside);
-      };
-    }
+    if (!isMenuOpen) return;
     
-    document.removeEventListener("click", handleClickOutside);
+    const timeoutId = setTimeout(() => {
+      document.addEventListener("click", closeMenuOnOutsideClick);
+    }, 0);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener("click", closeMenuOnOutsideClick);
+    };
   });
 
   function loadAvailableBays() {
@@ -64,7 +63,7 @@
     }
   }
 
-  function handleSegmentChange() {
+  function onModeChange() {
     if (mode === "all") {
       selectedBays = [];
       isMenuOpen = false;
@@ -72,24 +71,44 @@
   }
 
   function toggleBaySelection(bay: string) {
-    if (selectedBays.includes(bay)) {
-      selectedBays = selectedBays.filter((b) => b !== bay);
+    if (isBaySelected(bay)) {
+      selectedBays = selectedBays.filter((selectedBay) => selectedBay !== bay);
     } else {
       selectedBays = [...selectedBays, bay];
     }
   }
 
   function isBaySelected(bay: string): boolean {
-    return selectedBaysSet.has(bay);
+    return selectedBays.includes(bay);
   }
 
-  const displayText = $derived.by(() => {
-    if (mode === "all" || selectedBays.length === 0) {
-      return "Select bays...";
+  function openMenuIfBayModeActive(e: MouseEvent) {
+    if (mode !== "all") {
+      e.stopPropagation();
+      isMenuOpen = true;
     }
-    if (selectedBays.length === 1) {
-      return selectedBays[0];
+  }
+
+  function handleKeyboardMenuOpen(e: KeyboardEvent) {
+    const isActivationKey = e.key === "Enter" || e.key === " ";
+    if (isActivationKey && mode !== "all") {
+      isMenuOpen = true;
     }
+  }
+
+  function handleBayItemClick(e: MouseEvent, bay: string) {
+    e.stopPropagation();
+    e.preventDefault();
+    toggleBaySelection(bay);
+  }
+
+  const dropdownText = $derived.by(() => {
+    const hasNoBaysSelected = mode === "all" || selectedBays.length === 0;
+    if (hasNoBaysSelected) return "Select bays...";
+    
+    const hasSingleBay = selectedBays.length === 1;
+    if (hasSingleBay) return selectedBays[0];
+    
     return `${selectedBays.length} bays selected`;
   });
 
@@ -106,7 +125,7 @@
           id="radio-{segment.value}"
           bind:group={mode}
           value={segment.value}
-          onchange={handleSegmentChange}
+          onchange={onModeChange}
         />
         {#snippet label()}
           {segment.label}
@@ -120,21 +139,12 @@
       bind:this={anchorElement}
       class="select-trigger"
       class:disabled={mode === "all"}
-      onclick={(e) => {
-        if (mode !== "all") {
-          e.stopPropagation();
-          isMenuOpen = true;
-        }
-      }}
-      onkeydown={(e) => {
-        if ((e.key === "Enter" || e.key === " ") && mode !== "all") {
-          isMenuOpen = true;
-        }
-      }}
+      onclick={openMenuIfBayModeActive}
+      onkeydown={handleKeyboardMenuOpen}
       role="button"
       tabindex={mode === "all" ? -1 : 0}
     >
-      <span class="select-text">{displayText}</span>
+      <span class="select-text">{dropdownText}</span>
       <span class="select-dropdown-icon">▼</span>
     </div>
   </div>
@@ -150,11 +160,7 @@
       <List>
         {#each availableBays as bay (bay)}
           <Item
-            onclick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              toggleBaySelection(bay);
-            }}
+            onclick={(e) => handleBayItemClick(e, bay)}
             class="bay-item"
           >
             <span class="checkbox-wrapper">
