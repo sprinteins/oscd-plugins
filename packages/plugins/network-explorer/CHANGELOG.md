@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Exports the Network-Explorer Component from the Network Explorer
+- Accepts prop selectedBays to filter view for selectedBays
+- store filtering logic for bays
+
 ### Changed
 - Switched to LegacyTheme
 ## [0.0.16] - 2025-11-24

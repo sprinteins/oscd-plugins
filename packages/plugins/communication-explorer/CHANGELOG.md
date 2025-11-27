@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Exports the TelemetryView Component from the Communication Explorer
+- Accepts prop selectedBays to filter view for selectedBays
+- filtering logic for bays
 
 ## [0.0.38] - 2025-11-18
 ### Fixed

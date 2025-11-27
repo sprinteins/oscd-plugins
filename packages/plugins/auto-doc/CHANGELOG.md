@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integrate NE view into AD, generate PDF with exported PNG preview
 - Adds a new Element for the Communication Explorer
 - Export to PNG feature for HTMLElements
+- Filter NE and CE preview for selected bays
 
 ## [1.17.7] - 2025-11-14
 ### Fixed
