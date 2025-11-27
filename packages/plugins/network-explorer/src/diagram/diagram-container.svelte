@@ -57,11 +57,7 @@ function onconnect(connection: Connection): void {
 	const { source, target } = connection
 	const { sourceIed, targetIed } = getSourceAndTargetIed(source, target)
 
-	store.connectionBetweenNodes.set({
-		isNew: true,
-		source: sourceIed,
-		target: targetIed
-	})
+	store.setNewConnection(sourceIed, targetIed)
 }
 
 function getSourceAndTargetIed(
@@ -112,7 +108,7 @@ $effect(() => {
 	{#if store}
 		<Diagram
 			nodes={store.nodes}
-			edges={store.edges}
+			edges={store.allEdges}
 			ieds={store.ieds}
 			{isOutsidePluginContext}
 			{onDelete}

@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exports the Network-Explorer Component from the Network Explorer
 ### Changed
 - Switched to LegacyTheme
+## [0.0.16] - 2025-11-24
+### Changed
+- use default color for temp edge
+
+## [0.0.15] - 2025-11-19
+### Fixed
+- Do not reset position of nodes when creating cables for example
+- Use a temporary cable while creating a new connection
 
 ## [0.0.14] - 2025-11-14
 ### Fixed

@@ -12,10 +12,17 @@ import { filterNodesAndEdgesForBays } from "../diagram/bay-filter-helper"
 export class DiagramStore {
 	public nodes: FlowNodes[] = $state.raw([])
 	public edges: Edge[] = $state.raw([])
+	private temporaryEdge: Edge | null = $state(null)
 	public ieds = writable<IED[]>([])
 	public selectedBays?: string[]  = $state(undefined)
 	public selectedNodes = writable<SelectedNode[]>([])
 	public connectionBetweenNodes = writable<ConnectionBetweenNodes | null>(null)
+
+	public get allEdges(): Edge[] {
+		return this.temporaryEdge 
+			? [...this.edges, this.temporaryEdge]
+			: this.edges
+	}
 	public async updateNodesAndEdges( root: Element ) {
 		if (!root) {
 			console.info({ level: "info", msg: "initInfos: no root" })
@@ -43,9 +50,11 @@ export class DiagramStore {
 			filteredNodes as unknown as (IEDElkNode | BayElkNode)[],
 		)
 
+		const nodesWithPreservedPositions = this.preserveNodePositions(previousNodes, filteredNodes)
+
 		const shouldRerenderNodes = !isNodeStructureEquivalent
 		if (shouldRerenderNodes) {
-			this.nodes = filteredNodes
+			this.nodes = nodesWithPreservedPositions
 		}
 		this.edges = filteredEdges
 
@@ -75,10 +84,10 @@ export class DiagramStore {
 		
 		const isSelectionReset = selectedEdges.length === 0
 		if(isSelectionReset){
-			this.connectionBetweenNodes.set(null)
 			return
 		}
 
+		this.resetNewConnection()
 
 		const selectedEdge = selectedEdges[0]
 		const sourceIedName = getIedNameFromId(selectedEdge.source)
@@ -125,8 +134,46 @@ export class DiagramStore {
 		return connectedIEDs
 	}
 
+	public setNewConnection(sourceIed: IED, targetIed: IED): void {
+		const tempEdgeId = `temp-${sourceIed.name}-${targetIed.name}`
+		
+		this.temporaryEdge = {
+			id: tempEdgeId,
+			source: `ied-${sourceIed.name}`,
+			target: `ied-${targetIed.name}`,
+			type: "bezier",
+			style: "stroke-dasharray: 10, 5; stroke-width: 3;",
+			data: { temporary: true }
+		}
+		
+		this.connectionBetweenNodes.set({
+			isNew: true,
+			source: sourceIed,
+			target: targetIed
+		})
+	}
+
 	public resetNewConnection(): void {
 		this.connectionBetweenNodes.set(null)
+		this.temporaryEdge = null
+	}
+
+	private preserveNodePositions(previousNodes: FlowNodes[], newNodes: FlowNodes[]): FlowNodes[] {
+		const previousNodePositions = new Map(
+			previousNodes.map(n => [n.id, { position: n.position, measured: n.measured }])
+		)
+		
+		return newNodes.map(node => {
+			const existingNodeData = previousNodePositions.get(node.id)
+			if (existingNodeData) {
+				return {
+					...node,
+					position: existingNodeData.position,
+					measured: existingNodeData.measured,
+				}
+			}
+			return node
+		})
 	}
 
 	public setSelectedBays(bayNames?: string[]): void {
