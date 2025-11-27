@@ -5,7 +5,43 @@ import type { BayIEDNameMap } from "./networking";
 const IED_ID_PREFIX = "ied-";
 const BAY_ID_PREFIX = "bay-";
 
-export function filterNodesAndEdgesForBay(
+export function filterNodesAndEdgesForBays(
+  targetBayNames: string[],
+  nodes: FlowNodes[],
+  edges: Edge[],
+  iedBayMap: BayIEDNameMap
+): { nodes: FlowNodes[]; edges: Edge[] } {
+  const aggregatedNodes: FlowNodes[] = [];
+  const aggregatedEdges: Edge[] = [];
+
+  for (const targetBayName of targetBayNames) {
+    const { nodes: bayNodes, edges: bayEdges } = filterNodesAndEdgesForBay(
+      targetBayName,
+      nodes,
+      edges,
+      iedBayMap
+    );
+
+    for (const node of bayNodes) {
+      if (!aggregatedNodes.some((n) => n.id === node.id)) {
+        aggregatedNodes.push(node);
+      }
+    }
+
+    for (const edge of bayEdges) {
+      if (
+        !aggregatedEdges.some(
+          (e) => e.source === edge.source && e.target === edge.target
+        )
+      ) {
+        aggregatedEdges.push(edge);
+      }
+    }
+  }
+  return { nodes: aggregatedNodes, edges: aggregatedEdges };
+}
+
+function filterNodesAndEdgesForBay(
   targetBayName: string,
   nodes: FlowNodes[],
   edges: Edge[],
