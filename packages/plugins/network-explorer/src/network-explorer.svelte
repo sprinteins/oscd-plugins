@@ -19,13 +19,13 @@ interface BaseProps {
 type isOutsidePluginContextProps = BaseProps & {
 	isOutsidePluginContext: true
 	editCount?: undefined
-	filterBay: string 
+	selectedBays?: string[]
 }
 
 type StandaloneProps = BaseProps & {
 	isOutsidePluginContext?: false | undefined
 	editCount: number
-	filterBay?: undefined
+	selectedBays?: undefined
 }
 
 type Props = isOutsidePluginContextProps | StandaloneProps
@@ -35,7 +35,7 @@ let {
 	isOutsidePluginContext = false,
 	store = new DiagramStore(),
 	editCount,
-	filterBay
+	selectedBays
 }: Props = $props()
 let htmlRoot: HTMLElement | null = $state(null)
 let editEventHandler: EditorEventHandler | null = $derived(
@@ -65,7 +65,7 @@ function onDelete(networkings: Networking[]): void {
 			{editCount}
 			{isOutsidePluginContext}
 			{onDelete}
-			{filterBay}
+			{selectedBays}
 		/>
 		{#if !isOutsidePluginContext}
 			<Sidebar

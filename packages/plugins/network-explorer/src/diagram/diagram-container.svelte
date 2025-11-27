@@ -25,10 +25,10 @@ interface Props {
 	store: DiagramStore
 	isOutsidePluginContext?: boolean
 	onDelete: (networkings: Networking[]) => void
-	filterBay?: string 
+	selectedBays?: string[]
 }
 
-let { doc, editCount, store, isOutsidePluginContext = false, onDelete, filterBay = undefined }: Props = $props()
+let { doc, editCount, store, isOutsidePluginContext = false, onDelete, selectedBays = undefined }: Props = $props()
 let root: HTMLElement | null = $state(null)
 let _editCount: number
 let _doc: Element
@@ -100,9 +100,9 @@ $effect(() => {
 $effect(() => {
 	store.updateSelectedEdges(edges.current)
 })
-$effect(() => {
-	if (store.filterBayName !== filterBay) {
-		store.setFilterBay(filterBay)
+$effect(() => {	
+	if (JSON.stringify(store.selectedBays) !== JSON.stringify(selectedBays)) {
+		store.setSelectedBays(selectedBays)
 		store.updateNodesAndEdges(doc)
 	}
 })

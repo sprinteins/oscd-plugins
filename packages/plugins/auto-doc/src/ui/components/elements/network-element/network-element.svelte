@@ -8,14 +8,13 @@ import type { ImageData } from '../image-element/types.image'
 import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
 
 const SVELTE_FLOW__PANE = '.svelte-flow__pane'
-const DELAY_BEFORE_FLOW_PANE = 2000
+const DELAY_BEFORE_FLOW_PANE = 500
 
 interface Props {
-	content?: string
 	onContentChange: (newContent: string) => void
 }
 
-let { content = '', onContentChange }: Props = $props()
+let { onContentChange }: Props = $props()
 
 let htmlRoot: HTMLElement | null = $state(null)
 let selectedBays: string[] = $state([])
@@ -64,7 +63,7 @@ $effect(() => {
 				<NetworkExplorer
 					doc={pluginGlobalStore.xmlDocument}
 					isOutsidePluginContext={true}
-					filterBay={selectedBays[0]}
+					selectedBays={selectedBays.length > 0 ? selectedBays : undefined}
 				/>
 			</div>
 		</MaterialTheme>

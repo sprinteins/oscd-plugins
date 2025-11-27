@@ -212,7 +212,7 @@ $effect(() => {
 				<TelemetryView
 					root={pluginGlobalStore.xmlDocument as unknown as Element}
 					showSidebar={false}
-					{selectedBays}
+					selectedBays={selectedBays.length > 0 ? selectedBays : undefined}
 					{selectedMessageTypes}
 					focusMode={true}
 					isOutsidePluginContext={true}
