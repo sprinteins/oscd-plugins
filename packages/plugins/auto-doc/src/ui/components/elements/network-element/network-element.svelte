@@ -8,7 +8,7 @@ import type { ImageData } from '../image-element/types.image'
 import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
 
 const SVELTE_FLOW__PANE = '.svelte-flow__pane'
-const DELAY_BEFORE_FLOW_PANE = 2000
+const DELAY_BEFORE_FLOW_PANE = 500
 
 interface Props {
 	onContentChange: (newContent: string) => void
