@@ -3,27 +3,13 @@ import type { SignalListOnSCD } from '@/ui/components/elements/signal-list-eleme
 import type { ElementType } from '@/ui/components/elements/types.elements'
 import CommunicationElement from '@/ui/components/elements/communication-element/communication-element.svelte'
 import NetworkElement from '@/ui/components/elements/network-element/network-element.svelte'
-import { exportPngFromHTMLElement } from '@/utils/diagram-export'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import zipcelx from 'zipcelx'
-import { mount, unmount } from 'svelte'
 import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
-
-// Type definitions for diagram parameters
-interface CommunicationElementParameters {
-	selectedBays: string[]
-	selectedMessageTypes: string[]
-	showLegend: boolean
-	showBayList: boolean
-	showIEDList: boolean
-	zoom: number
-	diagramDimensions: { width: number; height: number } | null
-}
-
-interface NetworkElementParameters {
-	selectedBays: string[]
-}
+import type { CommunicationElementParameters } from '@/ui/components/elements/communication-element/types.communication'
+import type { NetworkElementParameters } from '@/ui/components/elements/network-element/types.network'
+import { renderComponentOffscreen } from './renderComponentOffScreen'
 
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
@@ -43,7 +29,10 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth()
 	const marginBottom = INITIAL_LOWER_PAGE_COORDINATE
 
-	const blockHandler: Record<ElementType, (block: Element) => void | Promise<void>> = {
+	const blockHandler: Record<
+		ElementType,
+		(block: Element) => void | Promise<void>
+	> = {
 		text: handleRichTextEditorBlock,
 		image: processImageForPdfGeneration,
 		signalList: processSignalListForPdfGeneration,
@@ -396,100 +385,6 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		}
 	}
 
-	// Helper function to render Svelte component offscreen and capture as PNG
-	async function renderComponentOffscreen(
-		component: typeof CommunicationElement | typeof NetworkElement,
-		props: Record<string, unknown>,
-		componentName: string
-	): Promise<string> {
-		console.log(`[pdfGenerator] Rendering ${componentName} offscreen with props:`, props)
-		
-		// Create hidden container
-		const container = document.createElement('div')
-		container.style.position = 'absolute'
-		container.style.left = '-9999px'
-		container.style.top = '-9999px'
-		container.style.width = '1200px' // Fixed width for rendering
-		container.style.height = '800px' // Fixed height for rendering
-		document.body.appendChild(container)
-
-		return new Promise((resolve, reject) => {
-			try {
-				let renderCompleted = false
-				const timeoutDuration = 5000
-
-				const handleRenderComplete = async () => {
-					if (renderCompleted) return
-					renderCompleted = true
-					
-					console.log(`[pdfGenerator] ${componentName} render complete, capturing PNG...`)
-					
-					// Wait a bit more for any animations/layout to settle
-					await new Promise(r => setTimeout(r, 500))
-					
-					try {
-						// Find the actual diagram element
-						const diagramElement = container.querySelector('.communication-preview-wrapper, .network-preview-wrapper') as HTMLElement
-						const targetElement = diagramElement || container.firstElementChild as HTMLElement
-						
-						if (!targetElement) {
-							throw new Error(`No element found to capture in ${componentName}`)
-						}
-						
-						console.log('[pdfGenerator] Capturing element:', targetElement)
-						
-						// Export as PNG
-						const pngBase64 = await exportPngFromHTMLElement({
-							element: targetElement,
-							pixelRatio: 2,
-							quality: 1
-						})
-						
-						console.log(`[pdfGenerator] PNG captured successfully for ${componentName}`)
-						
-						// Cleanup
-						unmount(componentInstance)
-						document.body.removeChild(container)
-						
-						resolve(`data:image/png;base64,${pngBase64}`)
-					} catch (error) {
-						console.error(`[pdfGenerator] Error capturing PNG for ${componentName}:`, error)
-						unmount(componentInstance)
-						document.body.removeChild(container)
-						reject(error)
-					}
-				}
-
-			// Mount component with onRenderComplete callback
-			const componentInstance = mount(component, {
-				target: container,
-				props: {
-					...props,
-					onContentChange: () => {
-						// No-op during offscreen rendering for PDF
-						console.log('[pdfGenerator] onContentChange called during offscreen render (no-op)')
-					},
-					onRenderComplete: handleRenderComplete
-				}
-			})				
-			console.log(`[pdfGenerator] ${componentName} mounted, waiting for render...`)
-
-				// Fallback timeout in case onRenderComplete is never called
-				setTimeout(() => {
-					if (!renderCompleted) {
-						console.warn(`[pdfGenerator] ${componentName} render timeout, capturing anyway...`)
-						handleRenderComplete()
-					}
-				}, timeoutDuration)
-				
-			} catch (error) {
-				console.error(`[pdfGenerator] Error mounting ${componentName}:`, error)
-				document.body.removeChild(container)
-				reject(error)
-			}
-		})
-	}
-
 	async function processCommunicationForPdfGeneration(block: Element) {
 		console.log('[pdfGenerator] Processing Communication element for PDF')
 		const content = block.textContent
@@ -501,30 +396,33 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		try {
 			const params = JSON.parse(content) as CommunicationElementParameters
 			console.log('[pdfGenerator] Communication parameters:', params)
-			
+
 			// Render component offscreen and get PNG
 			const base64Data = await renderComponentOffscreen(
 				CommunicationElement,
 				{ content },
 				'CommunicationElement'
 			)
-			
+
 			// Create ImageData structure for processImageForPdfGeneration
 			const imageData: ImageData = {
 				scale: 'Large',
 				base64Data
 			}
-			
+
 			// Create a temporary block element with the image data
 			const tempBlock = document.createElement('Block')
 			tempBlock.textContent = JSON.stringify(imageData)
-			
+
 			// Use existing image processing logic
 			await processImageForPdfGeneration(tempBlock)
-			
+
 			console.log('[pdfGenerator] Communication element added to PDF')
 		} catch (error) {
-			console.error('[pdfGenerator] Error processing Communication element:', error)
+			console.error(
+				'[pdfGenerator] Error processing Communication element:',
+				error
+			)
 			// Don't fail the entire PDF generation, just skip this element
 			renderTextLine('[Communication Diagram - Failed to render]')
 		}
@@ -541,30 +439,33 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		try {
 			const params = JSON.parse(content) as NetworkElementParameters
 			console.log('[pdfGenerator] Network parameters:', params)
-			
+
 			// Render component offscreen and get PNG
 			const base64Data = await renderComponentOffscreen(
 				NetworkElement,
 				{ content },
 				'NetworkElement'
 			)
-			
+
 			// Create ImageData structure for processImageForPdfGeneration
 			const imageData: ImageData = {
 				scale: 'Large',
 				base64Data
 			}
-			
+
 			// Create a temporary block element with the image data
 			const tempBlock = document.createElement('Block')
 			tempBlock.textContent = JSON.stringify(imageData)
-			
+
 			// Use existing image processing logic
 			await processImageForPdfGeneration(tempBlock)
-			
+
 			console.log('[pdfGenerator] Network element added to PDF')
 		} catch (error) {
-			console.error('[pdfGenerator] Error processing Network element:', error)
+			console.error(
+				'[pdfGenerator] Error processing Network element:',
+				error
+			)
 			// Don't fail the entire PDF generation, just skip this element
 			renderTextLine('[Network Diagram - Failed to render]')
 		}
