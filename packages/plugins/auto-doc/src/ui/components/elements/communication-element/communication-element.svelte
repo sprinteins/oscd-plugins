@@ -3,23 +3,12 @@ import TelemetryView from '@oscd-plugins/communication-explorer/src/ui/component
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { LegacyTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
-import type { ImageData } from '../image-element/types.image'
-import { exportPngFromHTMLElement } from '@/utils/diagram-export'
 import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
 import Checkbox from '@smui/checkbox'
 import FormField from '@smui/form-field'
 import Textfield from '@smui/textfield'
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
-
-interface CommunicationElementParameters {
-	selectedBays: string[]
-	selectedMessageTypes: string[]
-	showLegend: boolean
-	showBayList: boolean
-	showIEDList: boolean
-	zoom: number
-	diagramDimensions: { width: number; height: number } | null
-}
+import type { CommunicationElementParameters } from './types.communication'
 
 interface Props {
 	onContentChange: (newContent: string) => void
@@ -29,15 +18,12 @@ interface Props {
 
 let { onContentChange, onRenderComplete, content = '' }: Props = $props()
 
-// Parse stored parameters from content (only on initial mount)
 let initialParams: CommunicationElementParameters | null = null
-let hasInitialized = false
 
-if (content && !hasInitialized) {
+if (content) {
 	try {
 		initialParams = JSON.parse(content) as CommunicationElementParameters
 		console.log('[CommunicationElement] Loaded stored parameters:', initialParams)
-		hasInitialized = true
 	} catch (e) {
 		console.warn('[CommunicationElement] Failed to parse stored parameters:', e)
 	}
@@ -60,37 +46,28 @@ interface MessageTypeRow {
 	targetIED: string
 }
 
-// placeholder rows for message type selection
-let messageTypeRows: MessageTypeRow[] = $state([
-	{
-		id: 1,
-		enabled: true,
-		messageType: MESSAGE_TYPE.GOOSE,
+// Initialize message type rows from saved parameters or default to all enabled
+function initializeMessageTypeRows(): MessageTypeRow[] {
+	const savedMessageTypes = initialParams?.selectedMessageTypes
+	
+	// Default message types in order
+	const defaultMessageTypes = [
+		MESSAGE_TYPE.GOOSE,
+		MESSAGE_TYPE.MMS,
+		MESSAGE_TYPE.SampledValues,
+		MESSAGE_TYPE.Unknown
+	]
+	
+	return defaultMessageTypes.map((messageType, index) => ({
+		id: index + 1,
+		enabled: savedMessageTypes ? savedMessageTypes.includes(messageType) : true,
+		messageType,
 		sourceIED: '',
 		targetIED: ''
-	},
-	{
-		id: 2,
-		enabled: true,
-		messageType: MESSAGE_TYPE.MMS,
-		sourceIED: '',
-		targetIED: ''
-	},
-	{
-		id: 3,
-		enabled: true,
-		messageType: MESSAGE_TYPE.SampledValues,
-		sourceIED: '',
-		targetIED: ''
-	},
-	{
-		id: 4,
-		enabled: true,
-		messageType: MESSAGE_TYPE.Unknown,
-		sourceIED: '',
-		targetIED: ''
-	}
-])
+	}))
+}
+
+let messageTypeRows: MessageTypeRow[] = $state(initializeMessageTypeRows())
 
 let selectedMessageTypes = $derived(
 	messageTypeRows.filter((row) => row.enabled).map((row) => row.messageType)

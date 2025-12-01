@@ -16,7 +16,9 @@
   let { selectedBays = $bindable(new Set<string>()), onchange }: Props = $props();
 
   let availableBays: string[] = $state([]);
-  let mode: "all" | "bay" = $state("all");
+  let mode: "all" | "bay" = $state(
+    selectedBays.size > 0 ? "bay" : "all"
+  );
   let isMenuOpen = $state(false);
   let anchorElement: HTMLDivElement | null = $state(null);
   let menuElement: HTMLDivElement;
