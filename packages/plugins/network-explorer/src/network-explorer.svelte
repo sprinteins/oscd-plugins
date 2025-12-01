@@ -42,6 +42,8 @@ let editEventHandler: EditorEventHandler | null = $derived(
 	htmlRoot ? new EditorEventHandler(htmlRoot) : null
 )
 
+store.isOutsidePluginContext = isOutsidePluginContext
+
 function onCreateCable(event: CreateCableEvent) {
 	editEventHandler?.dispatchCreateCable(event)
 	store.resetNewConnection()

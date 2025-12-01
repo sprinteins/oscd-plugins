@@ -22,6 +22,7 @@ export class DiagramStore {
 	public connectionBetweenNodes = writable<ConnectionBetweenNodes | null>(
 		null
 	)
+	public isOutsidePluginContext = $state(false)
 
 	public get allEdges(): Edge[] {
 		return this.temporaryEdge
@@ -41,7 +42,7 @@ export class DiagramStore {
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
 
-		if (this.selectedBays && this.selectedBays.size > 0) {
+		if (this.isOutsidePluginContext && this.selectedBays && this.selectedBays.size > 0) {
 			const filtered = filterNodesAndEdgesForBays(
 				this.selectedBays,
 				resp.nodes,
