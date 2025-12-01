@@ -17,7 +17,7 @@ export class DiagramStore {
 	public edges: Edge[] = $state.raw([])
 	private temporaryEdge: Edge | null = $state(null)
 	public ieds = writable<IED[]>([])
-	public selectedBays?: Set<string> = $state(undefined)
+	public selectedBays: Set<string> | undefined = $state(undefined)
 	public selectedNodes = writable<SelectedNode[]>([])
 	public connectionBetweenNodes = writable<ConnectionBetweenNodes | null>(
 		null
