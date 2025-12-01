@@ -43,8 +43,8 @@ function updateOnDoc(doc: Element): void {
 	store.updateNodesAndEdges(doc)
 }
 
-function updateOnEditCount(editCount?: number): void {
-	if (editCount === undefined || editCount < 0 || editCount === _editCount) {
+function updateOnEditCount(editCount = -1): void {
+	if (editCount < 0 || editCount === _editCount) {
 		return
 	}
 	_editCount = editCount
