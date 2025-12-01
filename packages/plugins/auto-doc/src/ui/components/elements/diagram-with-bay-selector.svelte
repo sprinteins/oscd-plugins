@@ -9,10 +9,10 @@
   import { onMount } from "svelte";
 
   interface Props {
-    selectedBays: string[];
+    selectedBays: Set<string>;
   }
 
-  let { selectedBays = $bindable([]) }: Props = $props();
+  let { selectedBays = $bindable(new Set<string>()) }: Props = $props();
 
   let availableBays: string[] = $state([]);
   let mode: "all" | "bay" = $state("all");
@@ -65,21 +65,23 @@
 
   function onModeChange() {
     if (mode === "all") {
-      selectedBays = [];
+      selectedBays = new Set<string>();
       isMenuOpen = false;
     }
   }
 
   function toggleBaySelection(bay: string) {
-    if (isBaySelected(bay)) {
-      selectedBays = selectedBays.filter((selectedBay) => selectedBay !== bay);
+    const newSet = new Set(selectedBays);
+    if (newSet.has(bay)) {
+      newSet.delete(bay);
     } else {
-      selectedBays = [...selectedBays, bay];
+      newSet.add(bay);
     }
+    selectedBays = newSet;
   }
 
   function isBaySelected(bay: string): boolean {
-    return selectedBays.includes(bay);
+    return selectedBays.has(bay);
   }
 
   function openMenuIfBayModeActive(e: MouseEvent) {
@@ -103,13 +105,13 @@
   }
 
   const dropdownText = $derived.by(() => {
-    const hasNoBaysSelected = mode === "all" || selectedBays.length === 0;
+    const hasNoBaysSelected = mode === "all" || selectedBays.size === 0;
     if (hasNoBaysSelected) return "Select bays...";
     
-    const hasSingleBay = selectedBays.length === 1;
-    if (hasSingleBay) return selectedBays[0];
+    const hasSingleBay = selectedBays.size === 1;
+    if (hasSingleBay) return Array.from(selectedBays)[0];
     
-    return `${selectedBays.length} bays selected`;
+    return `${selectedBays.size} bays selected`;
   });
 
   onMount(() => {

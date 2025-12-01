@@ -22,7 +22,7 @@ const DELAY_BEFORE_DIAGRAM = 1000 // Increased delay to reduce export frequency
 const DEFAULT_EXPORT_PIXEL_RATIO = 10
 
 let htmlRoot: HTMLElement | null = $state(null)
-let selectedBays: string[] = $state([])
+let selectedBays: Set<string> = $state(new Set<string>())
 let exportTimeout: ReturnType<typeof setTimeout> | null = null
 let isExporting = $state(false)
 let calculatedZoom = $state(1.0)
@@ -212,7 +212,7 @@ $effect(() => {
 				<TelemetryView
 					root={pluginGlobalStore.xmlDocument as unknown as Element}
 					showSidebar={false}
-					selectedBays={selectedBays.length > 0 ? selectedBays : undefined}
+					selectedBays={selectedBays.size > 0 ? selectedBays : undefined}
 					{selectedMessageTypes}
 					focusMode={true}
 					isOutsidePluginContext={true}

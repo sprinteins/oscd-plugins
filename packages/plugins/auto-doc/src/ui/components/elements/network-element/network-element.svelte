@@ -17,7 +17,7 @@ interface Props {
 let { onContentChange }: Props = $props()
 
 let htmlRoot: HTMLElement | null = $state(null)
-let selectedBays: string[] = $state([])
+let selectedBays: Set<string> = $state(new Set<string>())
 
 async function exportNetworkDiagram(flowPane: HTMLElement) {
 	if (!flowPane) {
@@ -63,7 +63,7 @@ $effect(() => {
 				<NetworkExplorer
 					doc={pluginGlobalStore.xmlDocument}
 					isOutsidePluginContext={true}
-					selectedBays={selectedBays.length > 0 ? selectedBays : undefined}
+					selectedBays={selectedBays.size > 0 ? selectedBays : undefined}
 				/>
 			</div>
 		</MaterialTheme>

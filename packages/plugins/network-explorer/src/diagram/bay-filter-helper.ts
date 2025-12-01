@@ -6,7 +6,7 @@ const IED_ID_PREFIX = "ied-";
 const BAY_ID_PREFIX = "bay-";
 
 export function filterNodesAndEdgesForBays(
-  targetBayNames: string[],
+  targetBayNames: Set<string>,
   nodes: FlowNodes[],
   edges: Edge[],
   iedBayMap: BayIEDNameMap

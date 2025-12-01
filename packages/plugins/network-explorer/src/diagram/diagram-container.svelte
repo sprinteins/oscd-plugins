@@ -25,7 +25,7 @@ interface Props {
 	store: DiagramStore
 	isOutsidePluginContext?: boolean
 	onDelete: (networkings: Networking[]) => void
-	selectedBays?: string[]
+	selectedBays?: Set<string>
 }
 
 let { doc, editCount, store, isOutsidePluginContext = false, onDelete, selectedBays = undefined }: Props = $props()
@@ -96,8 +96,11 @@ $effect(() => {
 $effect(() => {
 	store.updateSelectedEdges(edges.current)
 })
-$effect(() => {	
-	if (JSON.stringify(store.selectedBays) !== JSON.stringify(selectedBays)) {
+$effect(() => {
+	const storeBays = store.selectedBays ?? new Set<string>()
+	const currentBays = selectedBays ?? new Set<string>()
+	
+	if (storeBays.symmetricDifference(currentBays).size > 0) {
 		store.setSelectedBays(selectedBays)
 		store.updateNodesAndEdges(doc)
 	}

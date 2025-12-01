@@ -17,7 +17,7 @@ export class DiagramStore {
 	public edges: Edge[] = $state.raw([])
 	private temporaryEdge: Edge | null = $state(null)
 	public ieds = writable<IED[]>([])
-	public selectedBays?: string[] = $state(undefined)
+	public selectedBays?: Set<string> = $state(undefined)
 	public selectedNodes = writable<SelectedNode[]>([])
 	public connectionBetweenNodes = writable<ConnectionBetweenNodes | null>(
 		null
@@ -41,7 +41,7 @@ export class DiagramStore {
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
 
-		if (this.selectedBays && this.selectedBays.length > 0) {
+		if (this.selectedBays && this.selectedBays.size > 0) {
 			const filtered = filterNodesAndEdgesForBays(
 				this.selectedBays,
 				resp.nodes,
@@ -202,7 +202,7 @@ export class DiagramStore {
 		})
 	}
 
-	public setSelectedBays(bayNames?: string[]): void {
+	public setSelectedBays(bayNames?: Set<string>): void {
 		this.selectedBays = bayNames
 	}
 

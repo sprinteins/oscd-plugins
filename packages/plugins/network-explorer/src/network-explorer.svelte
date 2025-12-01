@@ -19,7 +19,7 @@ interface BaseProps {
 type isOutsidePluginContextProps = BaseProps & {
 	isOutsidePluginContext: true
 	editCount?: undefined
-	selectedBays?: string[]
+	selectedBays?: Set<string>
 }
 
 type StandaloneProps = BaseProps & {

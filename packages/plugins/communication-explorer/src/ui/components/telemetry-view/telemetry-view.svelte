@@ -30,7 +30,7 @@ interface Props {
 	root: Element
 	showSidebar?: boolean
 	isOutsidePluginContext?: boolean
-	selectedBays?: string[]
+	selectedBays?: Set<string>
 	selectedMessageTypes?: string[]
 	focusMode?: boolean
 	zoom?: number
@@ -76,7 +76,7 @@ async function initInfos(
 	root: Element,
 	selectedFilter: SelectedFilter,
 	preferences: Preferences,
-	selectedBays?: string[],
+	selectedBays?: Set<string>,
 	selectedMessageTypes?: string[],
 	focusMode?: boolean
 ) {
@@ -93,11 +93,11 @@ async function initInfos(
 	}
 
 	let filteredInfos = lastExtractedInfos
-	if (selectedBays && selectedBays.length > 0) {
+	if (selectedBays && selectedBays.size > 0) {
 		filteredInfos = lastExtractedInfos.filter((ied) => {
 			if (!ied.bays || ied.bays.size === 0) return false
 			return Array.from(ied.bays).some((bay: string) =>
-				selectedBays.includes(bay)
+				selectedBays.has(bay)
 			)
 		})
 	}
