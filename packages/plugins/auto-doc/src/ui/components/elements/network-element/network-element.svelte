@@ -3,13 +3,8 @@ import NetworkExplorer from '@oscd-plugins/network-explorer/src/network-explorer
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { MaterialTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
-import { exportPngFromHTMLElement } from '@/utils/diagram-export'
-import type { ImageData } from '../image-element/types.image'
 import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
-
-interface NetworkElementParameters {
-	selectedBays: string[]
-}
+import type { NetworkElementParameters } from './types.network'
 
 interface Props {
 	onContentChange: (newContent: string) => void
@@ -34,7 +29,9 @@ if (content && !hasInitialized) {
 }
 
 let htmlRoot: HTMLElement | null = $state(null)
-let selectedBays: Set<string> = $state(initialParams ? new Set(initialParams.selectedBays) : new Set<string>())
+let selectedBays: Set<string> = $state(
+	initialParams ? new Set(initialParams.selectedBays) : new Set<string>()
+)
 
 function saveParameters(): void {
 	console.log('[NetworkElement] Saving parameters...')
