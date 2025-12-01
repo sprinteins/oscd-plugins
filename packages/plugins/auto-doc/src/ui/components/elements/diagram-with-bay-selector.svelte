@@ -10,9 +10,10 @@
 
   interface Props {
     selectedBays: Set<string>;
+    onchange?: () => void;
   }
 
-  let { selectedBays = $bindable(new Set<string>()) }: Props = $props();
+  let { selectedBays = $bindable(new Set<string>()), onchange }: Props = $props();
 
   let availableBays: string[] = $state([]);
   let mode: "all" | "bay" = $state("all");
@@ -67,6 +68,7 @@
     if (mode === "all") {
       selectedBays = new Set<string>();
       isMenuOpen = false;
+      onchange?.();
     }
   }
 
@@ -78,6 +80,7 @@
       newSet.add(bay);
     }
     selectedBays = newSet;
+    onchange?.();
   }
 
   function isBaySelected(bay: string): boolean {

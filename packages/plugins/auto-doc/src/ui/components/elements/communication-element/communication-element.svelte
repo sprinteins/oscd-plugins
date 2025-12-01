@@ -11,26 +11,46 @@ import FormField from '@smui/form-field'
 import Textfield from '@smui/textfield'
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
 
+interface CommunicationElementParameters {
+	selectedBays: string[]
+	selectedMessageTypes: string[]
+	showLegend: boolean
+	showBayList: boolean
+	showIEDList: boolean
+	zoom: number
+	diagramDimensions: { width: number; height: number } | null
+}
+
 interface Props {
 	onContentChange: (newContent: string) => void
+	onRenderComplete?: () => void
 	content?: string
 }
 
-let { onContentChange, content = '' }: Props = $props()
+let { onContentChange, onRenderComplete, content = '' }: Props = $props()
 
-const DELAY_BEFORE_DIAGRAM = 1000 // Increased delay to reduce export frequency
-const DEFAULT_EXPORT_PIXEL_RATIO = 10
+// Parse stored parameters from content (only on initial mount)
+let initialParams: CommunicationElementParameters | null = null
+let hasInitialized = false
+
+if (content && !hasInitialized) {
+	try {
+		initialParams = JSON.parse(content) as CommunicationElementParameters
+		console.log('[CommunicationElement] Loaded stored parameters:', initialParams)
+		hasInitialized = true
+	} catch (e) {
+		console.warn('[CommunicationElement] Failed to parse stored parameters:', e)
+	}
+}
 
 let htmlRoot: HTMLElement | null = $state(null)
-let selectedBays: Set<string> = $state(new Set<string>())
-let exportTimeout: ReturnType<typeof setTimeout> | null = null
-let isExporting = $state(false)
-let calculatedZoom = $state(1.0)
-let diagramDimensions = $state<{ width: number; height: number } | null>(null)
+let selectedBays: Set<string> = $state(initialParams ? new Set(initialParams.selectedBays) : new Set<string>())
+let calculatedZoom = $state(initialParams?.zoom ?? 1.0)
+let diagramDimensions = $state<{ width: number; height: number } | null>(initialParams?.diagramDimensions ?? null)
 
-let showLegend = $state(false)
-let showBayList = $state(false)
-let showIEDList = $state(false)
+let showLegend = $state(initialParams?.showLegend ?? false)
+let showBayList = $state(initialParams?.showBayList ?? false)
+let showIEDList = $state(initialParams?.showIEDList ?? false)
 
 interface MessageTypeRow {
 	id: number
@@ -96,77 +116,53 @@ function calculateFitToContainerZoom(): number {
 function handleDiagramSizeCalculated(width: number, height: number) {
 	diagramDimensions = { width, height }
 	calculatedZoom = calculateFitToContainerZoom()
+	saveParameters()
 }
 
-async function exportNetworkDiagram(): Promise<void> {
-	if (!htmlRoot || isExporting) {
-		return
+function saveParameters(): void {
+	console.log('[CommunicationElement] Saving parameters...')
+	const params: CommunicationElementParameters = {
+		selectedBays: Array.from(selectedBays),
+		selectedMessageTypes,
+		showLegend,
+		showBayList,
+		showIEDList,
+		zoom: calculatedZoom,
+		diagramDimensions
 	}
-
-	isExporting = true
-	try {
-		const exportWidth = diagramDimensions ? Math.ceil(diagramDimensions.width * calculatedZoom) : undefined
-		const exportHeight = diagramDimensions ? Math.ceil(diagramDimensions.height * calculatedZoom) : undefined
-		
-		const pngBase64 = await exportPngFromHTMLElement({
-			element: htmlRoot,
-			imageWidth: exportWidth,
-			imageHeight: exportHeight,
-			pixelRatio: DEFAULT_EXPORT_PIXEL_RATIO,
-			quality: 1
-		})
-		const fullDataUri = `data:image/png;base64,${pngBase64}`
-
-		const data: ImageData = {
-			scale: 'Large',
-			base64Data: fullDataUri
-		}
-		onContentChange(JSON.stringify(data))
-	} catch (error) {
-		console.error('Error exporting diagram as PNG:', error)
-	} finally {
-		isExporting = false
-	}
+	console.log('[CommunicationElement] Parameters:', params)
+	onContentChange(JSON.stringify(params))
 }
 
+// Notify when render is complete (for offscreen rendering during PDF generation)
 $effect(() => {
-	const bays = selectedBays
-	const messageTypes = selectedMessageTypes
-
-	if (!htmlRoot) return
-
-	if (exportTimeout) {
-		clearTimeout(exportTimeout)
-		exportTimeout = null
+	if (htmlRoot && onRenderComplete) {
+		console.log('[CommunicationElement] Render complete, notifying parent')
+		onRenderComplete()
 	}
-
-	exportTimeout = setTimeout(() => {
-		exportNetworkDiagram()
-		exportTimeout = null
-	}, DELAY_BEFORE_DIAGRAM)
 })
 </script>
 
 {#if pluginGlobalStore.xmlDocument}
 	<div class="diagram-configuration">
 		<div>Bay selection</div>
-		<DiagramWithBaySelector bind:selectedBays />
+		<DiagramWithBaySelector bind:selectedBays={selectedBays} onchange={saveParameters} />
 		<div>Further details</div>
 		<div class="further-details-options">
 			<FormField>
-				<Checkbox bind:checked={showLegend} />
+				<Checkbox bind:checked={showLegend} onchange={saveParameters} />
 				{#snippet label()}
 					Show legend
 				{/snippet}
 			</FormField>
 			<FormField>
-				<Checkbox bind:checked={showBayList} />
+				<Checkbox bind:checked={showBayList} onchange={saveParameters} />
 				{#snippet label()}
 					Show list of bays
 				{/snippet}
 			</FormField>
 			<FormField>
-				<Checkbox bind:checked={showIEDList} />
+				<Checkbox bind:checked={showIEDList} onchange={saveParameters} />
 				{#snippet label()}
 					Show list of IEDs and IED details
 				{/snippet}
@@ -176,10 +172,10 @@ $effect(() => {
 		<div>Communication matrix</div>
 		<div class="communication-matrix">
 			{#each messageTypeRows as row (row.id)}
-				<div class="matrix-row">
-					<FormField>
-						<Checkbox bind:checked={row.enabled} />
-					</FormField>
+			<div class="matrix-row">
+				<FormField>
+					<Checkbox bind:checked={row.enabled} onchange={saveParameters} />
+				</FormField>
 					<div class="row-fields">
 						<Textfield
 							bind:value={row.messageType}

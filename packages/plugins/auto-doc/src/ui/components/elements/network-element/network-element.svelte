@@ -7,57 +7,56 @@ import { exportPngFromHTMLElement } from '@/utils/diagram-export'
 import type { ImageData } from '../image-element/types.image'
 import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
 
-const SVELTE_FLOW__PANE = '.svelte-flow__pane'
-const DELAY_BEFORE_FLOW_PANE = 500
+interface NetworkElementParameters {
+	selectedBays: string[]
+}
 
 interface Props {
 	onContentChange: (newContent: string) => void
+	onRenderComplete?: () => void
+	content?: string
 }
 
-let { onContentChange }: Props = $props()
+let { onContentChange, onRenderComplete, content = '' }: Props = $props()
+
+// Parse stored parameters from content (only on initial mount)
+let initialParams: NetworkElementParameters | null = null
+let hasInitialized = false
+
+if (content && !hasInitialized) {
+	try {
+		initialParams = JSON.parse(content) as NetworkElementParameters
+		console.log('[NetworkElement] Loaded stored parameters:', initialParams)
+		hasInitialized = true
+	} catch (e) {
+		console.warn('[NetworkElement] Failed to parse stored parameters:', e)
+	}
+}
 
 let htmlRoot: HTMLElement | null = $state(null)
-let selectedBays: Set<string> = $state(new Set<string>())
+let selectedBays: Set<string> = $state(initialParams ? new Set(initialParams.selectedBays) : new Set<string>())
 
-async function exportNetworkDiagram(flowPane: HTMLElement) {
-	if (!flowPane) {
-		console.error('Flow pane is not available for export.')
-		return
+function saveParameters(): void {
+	console.log('[NetworkElement] Saving parameters...')
+	const params: NetworkElementParameters = {
+		selectedBays: Array.from(selectedBays)
 	}
-	try {
-		const pngBase64 = await exportPngFromHTMLElement({
-			element: flowPane
-		})
-		const fullDataUri = `data:image/png;base64,${pngBase64}`
-
-		const data: ImageData = {
-			scale: 'Large',
-			base64Data: fullDataUri
-		}
-
-		onContentChange(JSON.stringify(data))
-	} catch (error) {
-		console.error('Error exporting diagram as PNG:', error)
-	}
+	console.log('[NetworkElement] Parameters:', params)
+	onContentChange(JSON.stringify(params))
 }
 
-async function waitForDiagramToRender(): Promise<void> {
-	await new Promise((resolve) => setTimeout(resolve, DELAY_BEFORE_FLOW_PANE))
-}
-
+// Notify when render is complete (for offscreen rendering during PDF generation)
 $effect(() => {
-	if (htmlRoot && selectedBays) {
-		const pane = htmlRoot.querySelector<HTMLElement>(SVELTE_FLOW__PANE)
-		if (pane) {
-			waitForDiagramToRender().then(() => exportNetworkDiagram(pane))
-		}
+	if (htmlRoot && onRenderComplete) {
+		console.log('[NetworkElement] Render complete, notifying parent')
+		onRenderComplete()
 	}
 })
 </script>
 
 {#if pluginGlobalStore.xmlDocument}
 	<div class="communication-element" bind:this={htmlRoot}>
-		<DiagramWithBaySelector bind:selectedBays />
+		<DiagramWithBaySelector bind:selectedBays={selectedBays} onchange={saveParameters} />
 		<MaterialTheme pluginType="editor">
 			<div class="network-preview-wrapper">
 				<NetworkExplorer
