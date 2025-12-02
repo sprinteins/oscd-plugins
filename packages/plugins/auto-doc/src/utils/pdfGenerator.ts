@@ -7,8 +7,6 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import zipcelx from 'zipcelx'
 import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
-import type { CommunicationElementParameters } from '@/ui/components/elements/communication-element/types.communication'
-import type { NetworkElementParameters } from '@/ui/components/elements/network-element/types.network'
 import { renderComponentOffscreen } from './renderComponentOffScreen'
 
 /*
@@ -387,62 +385,39 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 	async function processVisualizationElementForPdfGeneration(
 		block: Element,
-		Component: typeof CommunicationElement | typeof NetworkElement,
-		elementName: string
+		Component: typeof CommunicationElement | typeof NetworkElement
 	) {
-		console.log(`[pdfGenerator] Processing ${elementName} element for PDF`)
 		const content = block.textContent || ''
-		
-		// Allow empty content - component will render with defaults
-		console.log(`[pdfGenerator] ${elementName} content:`, content || '(empty - will use defaults)')
-
 		try {
+			const base64Data = await renderComponentOffscreen(Component, {
+				content
+			})
 
-			// Render component offscreen and get PNG
-			const base64Data = await renderComponentOffscreen(
-				Component,
-				{ content },
-				elementName
-			)
-
-			// Create ImageData structure for processImageForPdfGeneration
 			const imageData: ImageData = {
 				scale: 'Large',
 				base64Data
 			}
 
-			// Create a temporary block element with the image data
 			const tempBlock = document.createElement('Block')
 			tempBlock.textContent = JSON.stringify(imageData)
 
-			// Use existing image processing logic
 			await processImageForPdfGeneration(tempBlock)
-
-			console.log(`[pdfGenerator] ${elementName} element added to PDF`)
 		} catch (error) {
-			console.error(
-				`[pdfGenerator] Error processing ${elementName} element:`,
-				error
-			)
+			console.error('[pdfGenerator] Error processing element:', error)
 			// Don't fail the entire PDF generation, just skip this element
-			renderTextLine(`[${elementName} Diagram - Failed to render]`)
+			renderTextLine('[Element Diagram - Failed to render]')
 		}
 	}
 
 	async function processCommunicationForPdfGeneration(block: Element) {
 		await processVisualizationElementForPdfGeneration(
 			block,
-			CommunicationElement,
-			'Communication'
+			CommunicationElement
 		)
 	}
 
 	async function processNetworkForPdfGeneration(block: Element) {
-		await processVisualizationElementForPdfGeneration(
-			block,
-			NetworkElement,
-			'Network'
-		)
+		await processVisualizationElementForPdfGeneration(block, NetworkElement)
 	}
 
 	for (const block of allBlocks) {

@@ -14,13 +14,11 @@ interface Props {
 
 let { onContentChange, onRenderComplete, content = '' }: Props = $props()
 
-// Parse stored parameters from content (only on initial mount)
 let initialParams: NetworkElementParameters | null = null
 
 if (content) {
 	try {
 		initialParams = JSON.parse(content) as NetworkElementParameters
-		console.log('[NetworkElement] Loaded stored parameters:', initialParams)
 	} catch (e) {
 		console.warn('[NetworkElement] Failed to parse stored parameters:', e)
 	}
@@ -32,18 +30,14 @@ let selectedBays: Set<string> = $state(
 )
 
 function saveParameters(): void {
-	console.log('[NetworkElement] Saving parameters...')
 	const params: NetworkElementParameters = {
 		selectedBays: Array.from(selectedBays)
 	}
-	console.log('[NetworkElement] Parameters:', params)
 	onContentChange(JSON.stringify(params))
 }
 
-// Notify when render is complete (for offscreen rendering during PDF generation)
 $effect(() => {
 	if (htmlRoot && onRenderComplete) {
-		console.log('[NetworkElement] Render complete, notifying parent')
 		onRenderComplete()
 	}
 })

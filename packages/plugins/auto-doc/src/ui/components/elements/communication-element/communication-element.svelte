@@ -28,10 +28,6 @@ let initialParams: CommunicationElementParameters | null = null
 if (content) {
 	try {
 		initialParams = JSON.parse(content) as CommunicationElementParameters
-		console.log(
-			'[CommunicationElement] Loaded stored parameters:',
-			initialParams
-		)
 	} catch (e) {
 		console.warn(
 			'[CommunicationElement] Failed to parse stored parameters:',
@@ -114,7 +110,6 @@ function handleDiagramSizeCalculated(width: number, height: number) {
 }
 
 function saveParameters(): void {
-	console.log('[CommunicationElement] Saving parameters...')
 	const params: CommunicationElementParameters = {
 		selectedBays: Array.from(selectedBays),
 		selectedMessageTypes,
@@ -124,14 +119,11 @@ function saveParameters(): void {
 		zoom: calculatedZoom,
 		diagramDimensions
 	}
-	console.log('[CommunicationElement] Parameters:', params)
 	onContentChange(JSON.stringify(params))
 }
 
-// Notify when render is complete (for offscreen rendering during PDF generation)
 $effect(() => {
 	if (htmlRoot && onRenderComplete) {
-		console.log('[CommunicationElement] Render complete, notifying parent')
 		onRenderComplete()
 	}
 })
