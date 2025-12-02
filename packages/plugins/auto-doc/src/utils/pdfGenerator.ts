@@ -391,15 +391,12 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		elementName: string
 	) {
 		console.log(`[pdfGenerator] Processing ${elementName} element for PDF`)
-		const content = block.textContent
-		if (!content) {
-			console.warn(`[pdfGenerator] ${elementName} block has no content`)
-			return
-		}
+		const content = block.textContent || ''
+		
+		// Allow empty content - component will render with defaults
+		console.log(`[pdfGenerator] ${elementName} content:`, content || '(empty - will use defaults)')
 
 		try {
-			const params = JSON.parse(content)
-			console.log(`[pdfGenerator] ${elementName} parameters:`, params)
 
 			// Render component offscreen and get PNG
 			const base64Data = await renderComponentOffscreen(
