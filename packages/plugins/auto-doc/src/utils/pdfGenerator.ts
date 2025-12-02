@@ -385,23 +385,27 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		}
 	}
 
-	async function processCommunicationForPdfGeneration(block: Element) {
-		console.log('[pdfGenerator] Processing Communication element for PDF')
+	async function processVisualizationElementForPdfGeneration(
+		block: Element,
+		Component: typeof CommunicationElement | typeof NetworkElement,
+		elementName: string
+	) {
+		console.log(`[pdfGenerator] Processing ${elementName} element for PDF`)
 		const content = block.textContent
 		if (!content) {
-			console.warn('[pdfGenerator] Communication block has no content')
+			console.warn(`[pdfGenerator] ${elementName} block has no content`)
 			return
 		}
 
 		try {
-			const params = JSON.parse(content) as CommunicationElementParameters
-			console.log('[pdfGenerator] Communication parameters:', params)
+			const params = JSON.parse(content)
+			console.log(`[pdfGenerator] ${elementName} parameters:`, params)
 
 			// Render component offscreen and get PNG
 			const base64Data = await renderComponentOffscreen(
-				CommunicationElement,
+				Component,
 				{ content },
-				'CommunicationElement'
+				elementName
 			)
 
 			// Create ImageData structure for processImageForPdfGeneration
@@ -417,58 +421,31 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			// Use existing image processing logic
 			await processImageForPdfGeneration(tempBlock)
 
-			console.log('[pdfGenerator] Communication element added to PDF')
+			console.log(`[pdfGenerator] ${elementName} element added to PDF`)
 		} catch (error) {
 			console.error(
-				'[pdfGenerator] Error processing Communication element:',
+				`[pdfGenerator] Error processing ${elementName} element:`,
 				error
 			)
 			// Don't fail the entire PDF generation, just skip this element
-			renderTextLine('[Communication Diagram - Failed to render]')
+			renderTextLine(`[${elementName} Diagram - Failed to render]`)
 		}
 	}
 
+	async function processCommunicationForPdfGeneration(block: Element) {
+		await processVisualizationElementForPdfGeneration(
+			block,
+			CommunicationElement,
+			'Communication'
+		)
+	}
+
 	async function processNetworkForPdfGeneration(block: Element) {
-		console.log('[pdfGenerator] Processing Network element for PDF')
-		const content = block.textContent
-		if (!content) {
-			console.warn('[pdfGenerator] Network block has no content')
-			return
-		}
-
-		try {
-			const params = JSON.parse(content) as NetworkElementParameters
-			console.log('[pdfGenerator] Network parameters:', params)
-
-			// Render component offscreen and get PNG
-			const base64Data = await renderComponentOffscreen(
-				NetworkElement,
-				{ content },
-				'NetworkElement'
-			)
-
-			// Create ImageData structure for processImageForPdfGeneration
-			const imageData: ImageData = {
-				scale: 'Large',
-				base64Data
-			}
-
-			// Create a temporary block element with the image data
-			const tempBlock = document.createElement('Block')
-			tempBlock.textContent = JSON.stringify(imageData)
-
-			// Use existing image processing logic
-			await processImageForPdfGeneration(tempBlock)
-
-			console.log('[pdfGenerator] Network element added to PDF')
-		} catch (error) {
-			console.error(
-				'[pdfGenerator] Error processing Network element:',
-				error
-			)
-			// Don't fail the entire PDF generation, just skip this element
-			renderTextLine('[Network Diagram - Failed to render]')
-		}
+		await processVisualizationElementForPdfGeneration(
+			block,
+			NetworkElement,
+			'Network'
+		)
 	}
 
 	for (const block of allBlocks) {

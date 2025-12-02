@@ -13,13 +13,22 @@ export async function renderComponentOffscreen(
 		props
 	)
 
+    const DEFAULT_RENDERING_WIDTH = "1200px"
+    const DEFAULT_RENDERING_HEIGHT = "800px"
+
+    const COMMUNICATION_ELEMENT_CLASS = 'communication-preview-wrapper'
+    const NETWORK_ELEMENT_CLASS = 'network-preview-wrapper'
+
+    const PIXEL_RATIO = 10
+    const QUALITY = 1
+
 	// Create hidden container
 	const container = document.createElement('div')
 	container.style.position = 'absolute'
 	container.style.left = '-9999px'
 	container.style.top = '-9999px'
-	container.style.width = '1200px' // Fixed width for rendering
-	container.style.height = '800px' // Fixed height for rendering
+	container.style.width = DEFAULT_RENDERING_WIDTH
+	container.style.height = DEFAULT_RENDERING_HEIGHT
 	document.body.appendChild(container)
 
 	return new Promise((resolve, reject) => {
@@ -41,7 +50,7 @@ export async function renderComponentOffscreen(
 				try {
 					// Find the actual diagram element
 					const diagramElement = container.querySelector(
-						'.communication-preview-wrapper, .network-preview-wrapper'
+						`.${COMMUNICATION_ELEMENT_CLASS}, .${NETWORK_ELEMENT_CLASS}`
 					) as HTMLElement
 					const targetElement =
 						diagramElement ||
@@ -61,8 +70,8 @@ export async function renderComponentOffscreen(
 					// Export as PNG
 					const pngBase64 = await exportPngFromHTMLElement({
 						element: targetElement,
-						pixelRatio: 10,
-						quality: 1
+						pixelRatio: PIXEL_RATIO,
+						quality: QUALITY
 					})
 
 					console.log(

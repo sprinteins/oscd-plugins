@@ -18,21 +18,36 @@ interface Props {
 
 let { onContentChange, onRenderComplete, content = '' }: Props = $props()
 
+const DEFAULT_ZOOM = 1.0
+const DEFAULT_WIDTH = 800
+const DEFAULT_HEIGHT = 600
+const ZOOM_PADDING_FACTOR = 0.9
+
 let initialParams: CommunicationElementParameters | null = null
 
 if (content) {
 	try {
 		initialParams = JSON.parse(content) as CommunicationElementParameters
-		console.log('[CommunicationElement] Loaded stored parameters:', initialParams)
+		console.log(
+			'[CommunicationElement] Loaded stored parameters:',
+			initialParams
+		)
 	} catch (e) {
-		console.warn('[CommunicationElement] Failed to parse stored parameters:', e)
+		console.warn(
+			'[CommunicationElement] Failed to parse stored parameters:',
+			e
+		)
 	}
 }
 
 let htmlRoot: HTMLElement | null = $state(null)
-let selectedBays: Set<string> = $state(initialParams ? new Set(initialParams.selectedBays) : new Set<string>())
+let selectedBays: Set<string> = $state(
+	initialParams ? new Set(initialParams.selectedBays) : new Set<string>()
+)
 let calculatedZoom = $state(initialParams?.zoom ?? 1.0)
-let diagramDimensions = $state<{ width: number; height: number } | null>(initialParams?.diagramDimensions ?? null)
+let diagramDimensions = $state<{ width: number; height: number } | null>(
+	initialParams?.diagramDimensions ?? null
+)
 
 let showLegend = $state(initialParams?.showLegend ?? false)
 let showBayList = $state(initialParams?.showBayList ?? false)
@@ -49,7 +64,7 @@ interface MessageTypeRow {
 // Initialize message type rows from saved parameters or default to all enabled
 function initializeMessageTypeRows(): MessageTypeRow[] {
 	const savedMessageTypes = initialParams?.selectedMessageTypes
-	
+
 	// Default message types in order
 	const defaultMessageTypes = [
 		MESSAGE_TYPE.GOOSE,
@@ -57,10 +72,12 @@ function initializeMessageTypeRows(): MessageTypeRow[] {
 		MESSAGE_TYPE.SampledValues,
 		MESSAGE_TYPE.Unknown
 	]
-	
+
 	return defaultMessageTypes.map((messageType, index) => ({
 		id: index + 1,
-		enabled: savedMessageTypes ? savedMessageTypes.includes(messageType) : true,
+		enabled: savedMessageTypes
+			? savedMessageTypes.includes(messageType)
+			: true,
 		messageType,
 		sourceIED: '',
 		targetIED: ''
@@ -74,20 +91,20 @@ let selectedMessageTypes = $derived(
 )
 
 function calculateFitToContainerZoom(): number {
-	if (!htmlRoot || !diagramDimensions) return 1.0
-	
-	const containerWidth = htmlRoot.offsetWidth || 800
-	const containerHeight = htmlRoot.offsetHeight || 600
-	
+	if (!htmlRoot || !diagramDimensions) return DEFAULT_ZOOM
+
+	const containerWidth = htmlRoot.offsetWidth || DEFAULT_WIDTH
+	const containerHeight = htmlRoot.offsetHeight || DEFAULT_HEIGHT
+
 	const diagramWidth = diagramDimensions.width
 	const diagramHeight = diagramDimensions.height
-	
-	if (diagramWidth === 0 || diagramHeight === 0) return 0.5
-	
+
+	if (diagramWidth === 0 || diagramHeight === 0) return DEFAULT_ZOOM
+
 	const widthRatio = containerWidth / diagramWidth
 	const heightRatio = containerHeight / diagramHeight
-	
-	return Math.min(widthRatio, heightRatio) * 0.9
+
+	return Math.min(widthRatio, heightRatio) * ZOOM_PADDING_FACTOR
 }
 
 function handleDiagramSizeCalculated(width: number, height: number) {
@@ -123,7 +140,7 @@ $effect(() => {
 {#if pluginGlobalStore.xmlDocument}
 	<div class="diagram-configuration">
 		<div>Bay selection</div>
-		<DiagramWithBaySelector bind:selectedBays={selectedBays} onchange={saveParameters} />
+		<DiagramWithBaySelector bind:selectedBays onchange={saveParameters} />
 		<div>Further details</div>
 		<div class="further-details-options">
 			<FormField>
@@ -133,13 +150,19 @@ $effect(() => {
 				{/snippet}
 			</FormField>
 			<FormField>
-				<Checkbox bind:checked={showBayList} onchange={saveParameters} />
+				<Checkbox
+					bind:checked={showBayList}
+					onchange={saveParameters}
+				/>
 				{#snippet label()}
 					Show list of bays
 				{/snippet}
 			</FormField>
 			<FormField>
-				<Checkbox bind:checked={showIEDList} onchange={saveParameters} />
+				<Checkbox
+					bind:checked={showIEDList}
+					onchange={saveParameters}
+				/>
 				{#snippet label()}
 					Show list of IEDs and IED details
 				{/snippet}
@@ -149,10 +172,13 @@ $effect(() => {
 		<div>Communication matrix</div>
 		<div class="communication-matrix">
 			{#each messageTypeRows as row (row.id)}
-			<div class="matrix-row">
-				<FormField>
-					<Checkbox bind:checked={row.enabled} onchange={saveParameters} />
-				</FormField>
+				<div class="matrix-row">
+					<FormField>
+						<Checkbox
+							bind:checked={row.enabled}
+							onchange={saveParameters}
+						/>
+					</FormField>
 					<div class="row-fields">
 						<Textfield
 							bind:value={row.messageType}
@@ -181,18 +207,20 @@ $effect(() => {
 	<div class="communication-element">
 		<LegacyTheme>
 			<div class="fit-middle">
-			<div class="communication-preview-wrapper" bind:this={htmlRoot}>
-				<TelemetryView
-					root={pluginGlobalStore.xmlDocument as unknown as Element}
-					showSidebar={false}
-					selectedBays={selectedBays.size > 0 ? selectedBays : undefined}
-					{selectedMessageTypes}
-					focusMode={true}
-					isOutsidePluginContext={true}
-					zoom={calculatedZoom}
-					onDiagramSizeCalculated={handleDiagramSizeCalculated}
-				/>
-			</div>
+				<div class="communication-preview-wrapper" bind:this={htmlRoot}>
+					<TelemetryView
+						root={pluginGlobalStore.xmlDocument as unknown as Element}
+						showSidebar={false}
+						selectedBays={selectedBays.size > 0
+							? selectedBays
+							: undefined}
+						{selectedMessageTypes}
+						focusMode={true}
+						isOutsidePluginContext={true}
+						zoom={calculatedZoom}
+						onDiagramSizeCalculated={handleDiagramSizeCalculated}
+					/>
+				</div>
 			</div>
 		</LegacyTheme>
 	</div>
@@ -211,7 +239,7 @@ $effect(() => {
 		height: 100%;
 		overflow: hidden;
 	}
-	
+
 	.communication-preview-wrapper :global(*) {
 		pointer-events: none !important;
 	}

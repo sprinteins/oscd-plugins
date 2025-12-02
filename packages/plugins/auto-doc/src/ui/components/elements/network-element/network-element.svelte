@@ -53,13 +53,15 @@ $effect(() => {
 
 {#if pluginGlobalStore.xmlDocument}
 	<div class="communication-element" bind:this={htmlRoot}>
-		<DiagramWithBaySelector bind:selectedBays={selectedBays} onchange={saveParameters} />
+		<DiagramWithBaySelector bind:selectedBays onchange={saveParameters} />
 		<MaterialTheme pluginType="editor">
 			<div class="network-preview-wrapper">
 				<NetworkExplorer
 					doc={pluginGlobalStore.xmlDocument}
 					isOutsidePluginContext={true}
-					selectedBays={selectedBays.size > 0 ? selectedBays : undefined}
+					selectedBays={selectedBays.size > 0
+						? selectedBays
+						: undefined}
 				/>
 			</div>
 		</MaterialTheme>
