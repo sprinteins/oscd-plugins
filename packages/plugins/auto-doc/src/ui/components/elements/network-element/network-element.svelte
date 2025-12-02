@@ -16,13 +16,11 @@ let { onContentChange, onRenderComplete, content = '' }: Props = $props()
 
 // Parse stored parameters from content (only on initial mount)
 let initialParams: NetworkElementParameters | null = null
-let hasInitialized = false
 
-if (content && !hasInitialized) {
+if (content) {
 	try {
 		initialParams = JSON.parse(content) as NetworkElementParameters
 		console.log('[NetworkElement] Loaded stored parameters:', initialParams)
-		hasInitialized = true
 	} catch (e) {
 		console.warn('[NetworkElement] Failed to parse stored parameters:', e)
 	}
