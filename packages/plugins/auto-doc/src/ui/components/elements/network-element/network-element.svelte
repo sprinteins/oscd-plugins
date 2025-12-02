@@ -1,7 +1,7 @@
 <script lang="ts">
 import NetworkExplorer from '@oscd-plugins/network-explorer/src/network-explorer.svelte'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { MaterialTheme } from '@oscd-plugins/ui'
+import { LegacyTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
 import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
 import type { NetworkElementParameters } from './types.network'
@@ -52,7 +52,7 @@ $effect(() => {
 {#if pluginGlobalStore.xmlDocument}
 	<div class="communication-element" bind:this={htmlRoot}>
 		<DiagramWithBaySelector bind:selectedBays onchange={saveParameters} />
-		<MaterialTheme pluginType="editor">
+		<LegacyTheme>
 			<div class="network-preview-wrapper">
 				<NetworkExplorer
 					doc={pluginGlobalStore.xmlDocument}
@@ -62,7 +62,7 @@ $effect(() => {
 						: undefined}
 				/>
 			</div>
-		</MaterialTheme>
+		</LegacyTheme>
 	</div>
 {:else}
 	<NoXmlWarning />
