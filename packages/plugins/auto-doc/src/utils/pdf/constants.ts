@@ -1,19 +1,19 @@
 export const TEXT_SIZES = {
-  H1: 20 as TextSize,
-  H2: 16 as TextSize,
-  H3: 14 as TextSize,
-  NORMAL: 10 as TextSize,
+  H1: 20,
+  H2: 16,
+  H3: 14,
+  NORMAL: 10,
 }
 
-export type TextSize = 20 | 16 | 14 | 10
+export type TextSize = number;
+export type FontStyle = string;
+
 
 export const FONT_STYLES = {
-  NORMAL: 'normal' as FontStyle,
-  BOLD: 'bold' as FontStyle,
-  ITALIC: 'italic' as FontStyle,
+  NORMAL: 'normal',
+  BOLD: 'bold',
+  ITALIC: 'italic',
 }
-
-export type FontStyle = 'normal' | 'bold' | 'italic'
 
 export const IMAGE_SCALE_FACTORS = {
 	small: 0.25,

@@ -8,7 +8,7 @@ import autoTable from 'jspdf-autotable'
 import zipcelx from 'zipcelx'
 import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
 import { renderComponentOffscreen } from './renderComponentOffscreen'
-import { FONT_STYLES, PDF_CONSTANTS, TEXT_SIZES, type FontStyle, type TextSize } from './pdf/constants'
+import { FONT_STYLES, PDF_CONSTANTS, TEXT_SIZES, type TextSize, type FontStyle } from './pdf/constants'
 import { loadImage, getImageScaleFactor, extractImageFormat } from './pdf/image-utils'
 import { PdfPageManager } from './pdf/page-manager'
 /*
