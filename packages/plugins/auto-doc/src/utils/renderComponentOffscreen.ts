@@ -6,7 +6,7 @@ import type NetworkElement from '@/ui/components/elements/network-element/networ
 export async function renderComponentOffscreen(
 	component: typeof CommunicationElement | typeof NetworkElement,
 	props: Record<string, unknown>
-): Promise<Base64URLString> {
+): Promise<string> {
 	const DEFAULT_RENDERING_WIDTH = '1200px'
 	const DEFAULT_RENDERING_HEIGHT = '800px'
 
