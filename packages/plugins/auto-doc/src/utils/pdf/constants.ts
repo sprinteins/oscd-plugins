@@ -18,7 +18,7 @@ export const FONT_STYLES = {
 export const IMAGE_SCALE_FACTORS = {
 	small: 0.25,
 	medium: 0.5,
-	large: 1,
+	large: 1
 } as const
 
 export type ImageScale = keyof typeof IMAGE_SCALE_FACTORS
@@ -31,5 +31,5 @@ export const PDF_CONSTANTS = {
 	MAX_IMAGE_WIDTH: 186,
 	TEXT_MARGIN_OFFSET: 35,
 	PAGE_BUFFER: 10,
-	NESTED_LIST_INDENT: 10,
+	NESTED_LIST_INDENT: 10
 } as const
