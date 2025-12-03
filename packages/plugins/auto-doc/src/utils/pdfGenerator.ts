@@ -7,8 +7,7 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import zipcelx from 'zipcelx'
 import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
-import { renderComponentOffscreen } from './renderComponentOffScreen'
-
+import { renderComponentOffscreen } from './renderComponentOffscreen'
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
