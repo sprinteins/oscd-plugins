@@ -331,18 +331,18 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		const formattedBody: string[][] = [data.map((row: string[]) => row[1])]
 
 		const filledBody = formattedBody.map((row) =>
-			row.map((cell) => (cell = placeholderStore.fillPlaceholder(cell)))
+			row.map((cell) => placeholderStore.fillPlaceholder(cell))
 		)
 
 		let rows = data[0].length
 		let maxNeededRows = rows
 
-		filledBody[0].forEach((row) => {
+		for (const row of filledBody[0]) {
 			const entries = row.split(', ').length
 			if (entries > maxNeededRows) {
 				maxNeededRows = entries
 			}
-		})
+		}
 
 		let newFilledBody: string[][] = []
 
@@ -382,6 +382,17 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		}
 	}
 
+	async function processCommunicationForPdfGeneration(block: Element) {
+		await processVisualizationElementForPdfGeneration(
+			block,
+			CommunicationElement
+		)
+	}
+
+	async function processNetworkForPdfGeneration(block: Element) {
+		await processVisualizationElementForPdfGeneration(block, NetworkElement)
+	}
+
 	async function processVisualizationElementForPdfGeneration(
 		block: Element,
 		Component: typeof CommunicationElement | typeof NetworkElement
@@ -406,17 +417,6 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			// Don't fail the entire PDF generation, just skip this element
 			renderTextLine('[Element Diagram - Failed to render]')
 		}
-	}
-
-	async function processCommunicationForPdfGeneration(block: Element) {
-		await processVisualizationElementForPdfGeneration(
-			block,
-			CommunicationElement
-		)
-	}
-
-	async function processNetworkForPdfGeneration(block: Element) {
-		await processVisualizationElementForPdfGeneration(block, NetworkElement)
 	}
 
 	for (const block of allBlocks) {
