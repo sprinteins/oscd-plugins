@@ -8,87 +8,12 @@ import autoTable from 'jspdf-autotable'
 import zipcelx from 'zipcelx'
 import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
 import { renderComponentOffscreen } from './renderComponentOffscreen'
+import { FONT_STYLES, PDF_CONSTANTS, TEXT_SIZES, type FontStyle, type TextSize } from './pdf/constants'
+import { loadImage, getImageScaleFactor, extractImageFormat } from './pdf/image-utils'
+import { PdfPageManager } from './pdf/page-manager'
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
-
-const PDF_CONSTANTS = {
-	DEFAULT_FONT_SIZE: 10,
-	INITIAL_PAGE_MARGIN: 10,
-	DEFAULT_LINE_HEIGHT: 7,
-	HORIZONTAL_SPACING: 10,
-	MAX_IMAGE_WIDTH: 186,
-	TEXT_MARGIN_OFFSET: 35,
-	PAGE_BUFFER: 10,
-	NESTED_LIST_INDENT: 10,
-} as const
-
-const IMAGE_SCALE_FACTORS = {
-	small: 0.25,
-	medium: 0.5,
-	large: 1,
-} as const
-
-type ImageScale = keyof typeof IMAGE_SCALE_FACTORS
-
-function loadImage(dataUrl: string): Promise<HTMLImageElement> {
-	return new Promise((resolve, reject) => {
-		const img = new Image()
-		img.onload = () => resolve(img)
-		img.onerror = (error) => reject(error)
-		img.src = dataUrl
-	})
-}
-
-function getImageScaleFactor(scale: string): number {
-	const normalizedScale = scale.toLowerCase() as ImageScale
-	return IMAGE_SCALE_FACTORS[normalizedScale] ?? IMAGE_SCALE_FACTORS.small
-}
-
-function extractImageFormat(dataUrl: string): string | null {
-	try {
-		const parts = dataUrl.split(';')[0]?.split('/')
-		return parts?.[1] ?? null
-	} catch {
-		return null
-	}
-}
-
-class PdfPageManager {
-	private currentMarginTop: number
-
-	constructor(
-		private readonly doc: jsPDF,
-		private readonly pageHeight: number,
-		private readonly marginBottom: number,
-		initialMarginTop: number
-	) {
-		this.currentMarginTop = initialMarginTop
-	}
-
-	getCurrentPosition(): number {
-		return this.currentMarginTop
-	}
-
-	incrementPosition(lineHeight: number = PDF_CONSTANTS.DEFAULT_LINE_HEIGHT): void {
-		this.currentMarginTop += lineHeight
-	}
-
-	contentExceedsPage(contentHeight: number = PDF_CONSTANTS.PAGE_BUFFER): boolean {
-		return this.currentMarginTop + contentHeight > this.pageHeight - this.marginBottom
-	}
-
-	createNewPage(): void {
-		this.doc.addPage()
-		this.currentMarginTop = PDF_CONSTANTS.INITIAL_PAGE_MARGIN
-	}
-
-	ensureSpace(contentHeight?: number): void {
-		if (this.contentExceedsPage(contentHeight)) {
-			this.createNewPage()
-		}
-	}
-}
 
 async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	const doc = new jsPDF()
@@ -128,13 +53,13 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		for (const element of HTMLElements) {
 			switch (element.tagName.toLowerCase()) {
 				case 'h1':
-					renderText(element.textContent ?? '', 20, 'bold')
+					renderText(element.textContent ?? '', TEXT_SIZES.H1, FONT_STYLES.BOLD)
 					break
 				case 'h2':
-					renderText(element.textContent ?? '', 16, 'bold')
+					renderText(element.textContent ?? '', TEXT_SIZES.H2, FONT_STYLES.BOLD)
 					break
 				case 'h3':
-					renderText(element.textContent ?? '', 14, 'bold')
+					renderText(element.textContent ?? '', TEXT_SIZES.H3, FONT_STYLES.BOLD)
 					break
 				case 'p':
 					processParagraph(element)
@@ -143,14 +68,14 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 					renderText(
 						element.textContent ?? '',
 						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
-						'bold'
+						FONT_STYLES.BOLD
 					)
 					break
 				case 'em':
 					renderText(
 						element.textContent ?? '',
 						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
-						'italic'
+						FONT_STYLES.ITALIC
 					)
 					break
 				case 'ul':
@@ -167,8 +92,8 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 	function renderText(
 		text: string,
-		fontSize: number,
-		fontStyle: 'normal' | 'bold' | 'italic',
+		fontSize: TextSize,
+		fontStyle: FontStyle,
 		indent = 0
 	) {
 		const textWithPlaceholder = placeholderStore.fillPlaceholder(text)
@@ -190,14 +115,14 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	function processParagraph(paragraph: Element) {
 		for (const node of paragraph.childNodes) {
 			if (node.nodeType === Node.TEXT_NODE) {
-				renderText(node.textContent ?? '', PDF_CONSTANTS.DEFAULT_FONT_SIZE, 'normal')
+				renderText(node.textContent ?? '', PDF_CONSTANTS.DEFAULT_FONT_SIZE, FONT_STYLES.NORMAL)
 			} else if (node.nodeType === Node.ELEMENT_NODE) {
 				const element = node as Element
-				let fontStyle: 'normal' | 'bold' | 'italic' = 'normal'
+				let fontStyle: FontStyle = FONT_STYLES.NORMAL
 				if (element.tagName.toLowerCase() === 'strong') {
-					fontStyle = 'bold'
+					fontStyle = FONT_STYLES.BOLD
 				} else if (element.tagName.toLowerCase() === 'em') {
-					fontStyle = 'italic'
+					fontStyle = FONT_STYLES.ITALIC
 				}
 				renderText(
 					element.textContent ?? '',
@@ -223,7 +148,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 					renderText(
 						bullet + firstParagraph.textContent,
 						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
-						'normal',
+						FONT_STYLES.NORMAL,
 						indent
 					)
 					firstParagraph.remove()
@@ -231,7 +156,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 					renderText(
 						bullet + (li.textContent ?? ''),
 						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
-						'normal',
+						FONT_STYLES.NORMAL,
 						indent
 					)
 				}
