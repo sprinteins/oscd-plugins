@@ -12,47 +12,112 @@ import { renderComponentOffscreen } from './renderComponentOffscreen'
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
 
+const PDF_CONSTANTS = {
+	DEFAULT_FONT_SIZE: 10,
+	INITIAL_PAGE_MARGIN: 10,
+	DEFAULT_LINE_HEIGHT: 7,
+	HORIZONTAL_SPACING: 10,
+	MAX_IMAGE_WIDTH: 186,
+	TEXT_MARGIN_OFFSET: 35,
+	PAGE_BUFFER: 10,
+	NESTED_LIST_INDENT: 10,
+} as const
+
+const IMAGE_SCALE_FACTORS = {
+	small: 0.25,
+	medium: 0.5,
+	large: 1,
+} as const
+
+type ImageScale = keyof typeof IMAGE_SCALE_FACTORS
+
+function loadImage(dataUrl: string): Promise<HTMLImageElement> {
+	return new Promise((resolve, reject) => {
+		const img = new Image()
+		img.onload = () => resolve(img)
+		img.onerror = (error) => reject(error)
+		img.src = dataUrl
+	})
+}
+
+function getImageScaleFactor(scale: string): number {
+	const normalizedScale = scale.toLowerCase() as ImageScale
+	return IMAGE_SCALE_FACTORS[normalizedScale] ?? IMAGE_SCALE_FACTORS.small
+}
+
+function extractImageFormat(dataUrl: string): string | null {
+	try {
+		const parts = dataUrl.split(';')[0]?.split('/')
+		return parts?.[1] ?? null
+	} catch {
+		return null
+	}
+}
+
+class PdfPageManager {
+	private currentMarginTop: number
+
+	constructor(
+		private readonly doc: jsPDF,
+		private readonly pageHeight: number,
+		private readonly marginBottom: number,
+		initialMarginTop: number
+	) {
+		this.currentMarginTop = initialMarginTop
+	}
+
+	getCurrentPosition(): number {
+		return this.currentMarginTop
+	}
+
+	incrementPosition(lineHeight: number = PDF_CONSTANTS.DEFAULT_LINE_HEIGHT): void {
+		this.currentMarginTop += lineHeight
+	}
+
+	contentExceedsPage(contentHeight: number = PDF_CONSTANTS.PAGE_BUFFER): boolean {
+		return this.currentMarginTop + contentHeight > this.pageHeight - this.marginBottom
+	}
+
+	createNewPage(): void {
+		this.doc.addPage()
+		this.currentMarginTop = PDF_CONSTANTS.INITIAL_PAGE_MARGIN
+	}
+
+	ensureSpace(contentHeight?: number): void {
+		if (this.contentExceedsPage(contentHeight)) {
+			this.createNewPage()
+		}
+	}
+}
+
 async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	const doc = new jsPDF()
-	const DEFAULT_FONT_SIZE = 10
-	doc.setFontSize(DEFAULT_FONT_SIZE)
-	const INITIAL_UPPER_PAGE_COORDINATE = 10
-	const INITIAL_LOWER_PAGE_COORDINATE = 10
-	const DEFAULT_LINE_HEIGHT = 7
-
-	let marginTop = INITIAL_UPPER_PAGE_COORDINATE
+	doc.setFontSize(PDF_CONSTANTS.DEFAULT_FONT_SIZE)
+	
 	const pageHeight = doc.internal.pageSize.height
 	const pageSize = doc.internal.pageSize
 	const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth()
-	const marginBottom = INITIAL_LOWER_PAGE_COORDINATE
+	
+	const pageManager = new PdfPageManager(
+		doc,
+		pageHeight,
+		PDF_CONSTANTS.INITIAL_PAGE_MARGIN,
+		PDF_CONSTANTS.INITIAL_PAGE_MARGIN
+	)
 
 	const blockHandler: Record<
 		ElementType,
 		(block: Element) => void | Promise<void>
 	> = {
-		text: handleRichTextEditorBlock,
-		image: processImageBlockForPdfGeneration,
-		signalList: processSignalListForPdfGeneration,
-		table: processTableForPdfGeneration,
-		network: processNetworkForPdfGeneration,
-		communication: processCommunicationForPdfGeneration
+		text: processRichTextBlock,
+		image: processImageBlock,
+		signalList: processSignalListBlock,
+		table: processTableBlock,
+		network: processNetworkBlock,
+		communication: processCommunicationBlock
 	}
 
-	function incrementVerticalPositionForNextLine(lineHeight?: number) {
-		marginTop += lineHeight || DEFAULT_LINE_HEIGHT
-	}
-
-	function contentExceedsCurrentPage(height?: number) {
-		const bufferToBottomPage = height || 10
-		return marginTop + bufferToBottomPage > pageHeight - marginBottom
-	}
-
-	function createNewPage() {
-		doc.addPage()
-		marginTop = INITIAL_UPPER_PAGE_COORDINATE
-	}
-
-	function handleRichTextEditorBlock(block: Element) {
+	function processRichTextBlock(block: Element) {
 		const parser = new DOMParser()
 		const parsedBlockContent = parser.parseFromString(
 			block.textContent ?? '',
@@ -63,28 +128,28 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		for (const element of HTMLElements) {
 			switch (element.tagName.toLowerCase()) {
 				case 'h1':
-					handleText(element.textContent ?? '', 20, 'bold')
+					renderText(element.textContent ?? '', 20, 'bold')
 					break
 				case 'h2':
-					handleText(element.textContent ?? '', 16, 'bold')
+					renderText(element.textContent ?? '', 16, 'bold')
 					break
 				case 'h3':
-					handleText(element.textContent ?? '', 14, 'bold')
+					renderText(element.textContent ?? '', 14, 'bold')
 					break
 				case 'p':
 					processParagraph(element)
 					break
 				case 'strong':
-					handleText(
+					renderText(
 						element.textContent ?? '',
-						DEFAULT_FONT_SIZE,
+						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
 						'bold'
 					)
 					break
 				case 'em':
-					handleText(
+					renderText(
 						element.textContent ?? '',
-						DEFAULT_FONT_SIZE,
+						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
 						'italic'
 					)
 					break
@@ -100,7 +165,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		}
 	}
 
-	function handleText(
+	function renderText(
 		text: string,
 		fontSize: number,
 		fontStyle: 'normal' | 'bold' | 'italic',
@@ -112,24 +177,20 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 		const wrappedText: string[] = doc.splitTextToSize(
 			textWithPlaceholder ?? '',
-			pageWidth - (35 - indent)
+			pageWidth - (PDF_CONSTANTS.TEXT_MARGIN_OFFSET - indent)
 		)
 
 		for (const line of wrappedText) {
-			if (contentExceedsCurrentPage()) {
-				createNewPage()
-			}
-
-			const horizontalSpacing = 10
-			doc.text(line, horizontalSpacing, marginTop)
-			incrementVerticalPositionForNextLine()
+			pageManager.ensureSpace()
+			doc.text(line, PDF_CONSTANTS.HORIZONTAL_SPACING, pageManager.getCurrentPosition())
+			pageManager.incrementPosition()
 		}
 	}
 
 	function processParagraph(paragraph: Element) {
 		for (const node of paragraph.childNodes) {
 			if (node.nodeType === Node.TEXT_NODE) {
-				handleText(node.textContent ?? '', DEFAULT_FONT_SIZE, 'normal')
+				renderText(node.textContent ?? '', PDF_CONSTANTS.DEFAULT_FONT_SIZE, 'normal')
 			} else if (node.nodeType === Node.ELEMENT_NODE) {
 				const element = node as Element
 				let fontStyle: 'normal' | 'bold' | 'italic' = 'normal'
@@ -138,9 +199,9 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 				} else if (element.tagName.toLowerCase() === 'em') {
 					fontStyle = 'italic'
 				}
-				handleText(
+				renderText(
 					element.textContent ?? '',
-					DEFAULT_FONT_SIZE,
+					PDF_CONSTANTS.DEFAULT_FONT_SIZE,
 					fontStyle
 				)
 			}
@@ -159,30 +220,29 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 				const firstParagraph = li.querySelector('p')
 				if (firstParagraph) {
-					handleText(
+					renderText(
 						bullet + firstParagraph.textContent,
-						10,
+						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
 						'normal',
 						indent
 					)
-					firstParagraph.remove() // Prevent duplicate text processing
+					firstParagraph.remove()
 				} else {
-					handleText(
+					renderText(
 						bullet + (li.textContent ?? ''),
-						10,
+						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
 						'normal',
 						indent
 					)
 				}
 
-				// Check for nested lists inside this list item
 				// biome-ignore lint/complexity/noForEach: <explanation>
 				Array.from(li.children).forEach((child) => {
 					if (
 						child.tagName.toLowerCase() === 'ul' ||
 						child.tagName.toLowerCase() === 'ol'
 					) {
-						processList(child, indent + 10) // Increase indent for nested lists
+						processList(child, indent + PDF_CONSTANTS.NESTED_LIST_INDENT)
 					}
 				})
 			}
@@ -190,75 +250,47 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	}
 
 	function renderTextLine(text: string) {
-		if (contentExceedsCurrentPage()) {
-			createNewPage()
-		}
-		const horizontalSpacing = 10
-		doc.text(text, horizontalSpacing, marginTop)
-		incrementVerticalPositionForNextLine()
+		pageManager.ensureSpace()
+		doc.text(text, PDF_CONSTANTS.HORIZONTAL_SPACING, pageManager.getCurrentPosition())
+		pageManager.incrementPosition()
 	}
 
-	async function loadImage(base64: string): Promise<HTMLImageElement> {
-		return new Promise((resolve, reject) => {
-			const img = new Image()
-			img.onload = () => {
-				resolve(img)
-			}
-			img.onerror = (error) => reject(error)
-			img.src = base64
-		})
-	}
-
-	function getImageScaleFactor(scale: string) {
-		switch (scale.toLowerCase()) {
-			case 'small':
-				return 0.25
-			case 'medium':
-				return 0.5
-			case 'large':
-				return 1
-			default:
-				return 0.25
-		}
-	}
-
-	async function processImageForPdfGeneration(
-		base64Url: Base64URLString,
+	async function processImage(
+		dataUrl: string,
 		scale = 'small'
 	) {
-		if (!base64Url) {
+		if (!dataUrl) {
 			return
 		}
 
-		const image = await loadImage(base64Url)
-		const format = base64Url.split(';')[0].split('/')[1]
-
-		const maxWidth = 186
-		const scaleFactor = getImageScaleFactor(scale)
-
-		const aspectRatio = image.height / image.width
-
-		const width = scaleFactor * maxWidth
-		const height = width * aspectRatio
-
-		if (contentExceedsCurrentPage(height)) {
-			createNewPage()
+		const image = await loadImage(dataUrl)
+		const format = extractImageFormat(dataUrl)
+		if (!format) {
+			console.error('[pdfGenerator] Invalid image format in Data URL')
+			return
 		}
 
+		const scaleFactor = getImageScaleFactor(scale)
+		const aspectRatio = image.height / image.width
+		const width = scaleFactor * PDF_CONSTANTS.MAX_IMAGE_WIDTH
+		const height = width * aspectRatio
+
+		pageManager.ensureSpace(height)
+
 		doc.addImage(
-			base64Url,
+			dataUrl,
 			format.toUpperCase(),
-			10,
-			marginTop,
+			PDF_CONSTANTS.HORIZONTAL_SPACING,
+			pageManager.getCurrentPosition(),
 			width,
 			height
 		)
 
-		const padding = Math.round(height) + DEFAULT_LINE_HEIGHT
-		incrementVerticalPositionForNextLine(padding)
+		const padding = Math.round(height) + PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
+		pageManager.incrementPosition(padding)
 	}
 
-	async function processImageBlockForPdfGeneration(block: Element) {
+	async function processImageBlock(block: Element) {
 		const content = block.textContent
 		if (!content) {
 			return
@@ -270,13 +302,13 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			return
 		}
 
-		await processImageForPdfGeneration(
+		await processImage(
 			imageSource,
 			parsedContent.scale
 		)
 	}
 
-	function processSignalListForPdfGeneration(block: Element) {
+	function processSignalListBlock(block: Element) {
 		if (!block.textContent) {
 			console.error('No content found in Signal List Block')
 			return
@@ -330,7 +362,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		}
 	}
 
-	function processTableForPdfGeneration(block: Element) {
+	function processTableBlock(block: Element) {
 		const content = block.textContent
 		if (!content) {
 			console.error('No content found in Table Block')
@@ -379,31 +411,31 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		autoTable(doc, {
 			head: formattedHeader,
 			body: newFilledBody,
-			startY: marginTop,
+			startY: pageManager.getCurrentPosition(),
 			margin: {
-				left: 10
+				left: PDF_CONSTANTS.HORIZONTAL_SPACING
 			},
 			headStyles: {
 				fillColor: 'black'
 			}
 		})
 
-		const tableHeight = rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT
-		if (contentExceedsCurrentPage(tableHeight)) {
-			createNewPage()
+		const tableHeight = rows * PDF_CONSTANTS.DEFAULT_LINE_HEIGHT + PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
+		if (pageManager.contentExceedsPage(tableHeight)) {
+			pageManager.createNewPage()
 		} else {
-			incrementVerticalPositionForNextLine(tableHeight)
+			pageManager.incrementPosition(tableHeight)
 		}
 	}
 
-	async function processCommunicationForPdfGeneration(block: Element) {
+	async function processCommunicationBlock(block: Element) {
 		await processVisualizationElementForPdfGeneration(
 			block,
 			CommunicationElement
 		)
 	}
 
-	async function processNetworkForPdfGeneration(block: Element) {
+	async function processNetworkBlock(block: Element) {
 		await processVisualizationElementForPdfGeneration(block, NetworkElement)
 	}
 
@@ -413,11 +445,11 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	) {
 		const content = block.textContent || ''
 		try {
-			const base64Url = await renderComponentOffscreen(Component, {
+			const dataUrl = await renderComponentOffscreen(Component, {
 				content
 			})
 
-			await processImageForPdfGeneration(base64Url, 'large')
+			await processImage(dataUrl, 'large')
 		} catch (error) {
 			console.error('[pdfGenerator] Error processing element:', error)
 			// Don't fail the entire PDF generation, just skip this element
@@ -435,30 +467,6 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 	doc.save(`${templateTitle}.pdf`)
 }
-
-/*
-function generateTableBody(tableRows: string[][], tableHeader: TableHeader []) {
-   const generatedRows =  tableRows.map((row) => {
-        return tableHeader.reduce((acc: Record<string, string>, col, index) => {
-            acc[col.dataKey as string] = row[index];
-            return acc;
-        }, {} as Record<string, string>);
-    });
-    return generatedRows
-}
-
-type TableHeader = {
-    header: string;
-    dataKey: keyof typeof SignalType | keyof typeof Columns;
-}
-
-function generateTableHeader(selectedRows: SignalRow[]): TableHeader[] {
-    return selectedRows.map(row => ({
-        header: row.primaryInput,
-        dataKey: row.searchKey
-    }));
-}
-*/
 
 function downloadAsPdf(templateId: string) {
 	const template = docTemplatesStore.getDocumentTemplate(templateId)
