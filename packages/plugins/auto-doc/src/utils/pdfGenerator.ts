@@ -31,7 +31,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		(block: Element) => void | Promise<void>
 	> = {
 		text: handleRichTextEditorBlock,
-		image: processImageForPdfGeneration,
+		image: processImageBlockForPdfGeneration,
 		signalList: processSignalListForPdfGeneration,
 		table: processTableForPdfGeneration,
 		network: processNetworkForPdfGeneration,
@@ -222,23 +222,19 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		}
 	}
 
-	async function processImageForPdfGeneration(block: Element) {
-		const content = block.textContent
-		if (!content) {
+	async function processImageForPdfGeneration(
+		base64Url: Base64URLString,
+		scale = 'small'
+	) {
+		if (!base64Url) {
 			return
 		}
 
-		const parsedContent = JSON.parse(content) as ImageData
-		const imageSource = parsedContent.base64Data
-		if (!imageSource) {
-			return
-		}
-
-		const image = await loadImage(imageSource)
-		const format = content.split(';')[0].split('/')[1]
+		const image = await loadImage(base64Url)
+		const format = base64Url.split(';')[0].split('/')[1]
 
 		const maxWidth = 186
-		const scaleFactor = getImageScaleFactor(parsedContent.scale)
+		const scaleFactor = getImageScaleFactor(scale)
 
 		const aspectRatio = image.height / image.width
 
@@ -250,7 +246,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		}
 
 		doc.addImage(
-			imageSource,
+			base64Url,
 			format.toUpperCase(),
 			10,
 			marginTop,
@@ -260,6 +256,24 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 		const padding = Math.round(height) + DEFAULT_LINE_HEIGHT
 		incrementVerticalPositionForNextLine(padding)
+	}
+
+	async function processImageBlockForPdfGeneration(block: Element) {
+		const content = block.textContent
+		if (!content) {
+			return
+		}
+
+		const parsedContent = JSON.parse(content) as ImageData
+		const imageSource = parsedContent.base64Data
+		if (!imageSource) {
+			return
+		}
+
+		await processImageForPdfGeneration(
+			imageSource,
+			parsedContent.scale
+		)
 	}
 
 	function processSignalListForPdfGeneration(block: Element) {
@@ -399,19 +413,11 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	) {
 		const content = block.textContent || ''
 		try {
-			const base64Data = await renderComponentOffscreen(Component, {
+			const base64Url = await renderComponentOffscreen(Component, {
 				content
 			})
 
-			const imageData: ImageData = {
-				scale: 'Large',
-				base64Data
-			}
-
-			const tempBlock = document.createElement('Block')
-			tempBlock.textContent = JSON.stringify(imageData)
-
-			await processImageForPdfGeneration(tempBlock)
+			await processImageForPdfGeneration(base64Url, 'large')
 		} catch (error) {
 			console.error('[pdfGenerator] Error processing element:', error)
 			// Don't fail the entire PDF generation, just skip this element

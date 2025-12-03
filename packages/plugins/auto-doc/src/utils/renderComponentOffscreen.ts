@@ -6,7 +6,7 @@ import type NetworkElement from '@/ui/components/elements/network-element/networ
 export async function renderComponentOffscreen(
 	component: typeof CommunicationElement | typeof NetworkElement,
 	props: Record<string, unknown>
-): Promise<string> {
+): Promise<Base64URLString> {
 	const DEFAULT_RENDERING_WIDTH = '1200px'
 	const DEFAULT_RENDERING_HEIGHT = '800px'
 
@@ -59,7 +59,7 @@ export async function renderComponentOffscreen(
 					unmount(componentInstance)
 					document.body.removeChild(container)
 
-					resolve(`data:image/png;base64,${pngBase64}`)
+					resolve(`data:image/png;base64,${pngBase64}` as Base64URLString)
 				} catch (error) {
 					console.error(
 						'[pdfGenerator] Error capturing PNG for Component:',
