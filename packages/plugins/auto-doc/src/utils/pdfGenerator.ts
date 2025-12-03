@@ -8,8 +8,16 @@ import autoTable from 'jspdf-autotable'
 import zipcelx from 'zipcelx'
 import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
 import { renderComponentOffscreen } from './renderComponentOffscreen'
-import { FONT_STYLES, PDF_CONSTANTS, TEXT_SIZES, type FontStyle, type TextSize } from './pdf/constants'
-import { loadImage, getImageScaleFactor, extractImageFormat } from './pdf/image-utils'
+import {
+	FONT_STYLES,
+	PDF_CONSTANTS,
+	TEXT_SIZES,
+	type FontStyle,
+	type TextSize,
+	loadImage,
+	getImageScaleFactor,
+	extractImageFormat
+} from './pdf'
 import { PdfPageManager } from './pdf/page-manager'
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
@@ -18,11 +26,11 @@ import { PdfPageManager } from './pdf/page-manager'
 async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	const doc = new jsPDF()
 	doc.setFontSize(PDF_CONSTANTS.DEFAULT_FONT_SIZE)
-	
+
 	const pageHeight = doc.internal.pageSize.height
 	const pageSize = doc.internal.pageSize
 	const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth()
-	
+
 	const pageManager = new PdfPageManager(
 		doc,
 		pageHeight,
@@ -53,13 +61,25 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		for (const element of HTMLElements) {
 			switch (element.tagName.toLowerCase()) {
 				case 'h1':
-					renderText(element.textContent ?? '', TEXT_SIZES.H1, FONT_STYLES.BOLD)
+					renderText(
+						element.textContent ?? '',
+						TEXT_SIZES.H1,
+						FONT_STYLES.BOLD
+					)
 					break
 				case 'h2':
-					renderText(element.textContent ?? '', TEXT_SIZES.H2, FONT_STYLES.BOLD)
+					renderText(
+						element.textContent ?? '',
+						TEXT_SIZES.H2,
+						FONT_STYLES.BOLD
+					)
 					break
 				case 'h3':
-					renderText(element.textContent ?? '', TEXT_SIZES.H3, FONT_STYLES.BOLD)
+					renderText(
+						element.textContent ?? '',
+						TEXT_SIZES.H3,
+						FONT_STYLES.BOLD
+					)
 					break
 				case 'p':
 					processParagraph(element)
@@ -107,7 +127,11 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 		for (const line of wrappedText) {
 			pageManager.ensureSpace()
-			doc.text(line, PDF_CONSTANTS.HORIZONTAL_SPACING, pageManager.getCurrentPosition())
+			doc.text(
+				line,
+				PDF_CONSTANTS.HORIZONTAL_SPACING,
+				pageManager.getCurrentPosition()
+			)
 			pageManager.incrementPosition()
 		}
 	}
@@ -115,7 +139,11 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	function processParagraph(paragraph: Element) {
 		for (const node of paragraph.childNodes) {
 			if (node.nodeType === Node.TEXT_NODE) {
-				renderText(node.textContent ?? '', PDF_CONSTANTS.DEFAULT_FONT_SIZE, FONT_STYLES.NORMAL)
+				renderText(
+					node.textContent ?? '',
+					PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+					FONT_STYLES.NORMAL
+				)
 			} else if (node.nodeType === Node.ELEMENT_NODE) {
 				const element = node as Element
 				let fontStyle: FontStyle = FONT_STYLES.NORMAL
@@ -167,7 +195,10 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 						child.tagName.toLowerCase() === 'ul' ||
 						child.tagName.toLowerCase() === 'ol'
 					) {
-						processList(child, indent + PDF_CONSTANTS.NESTED_LIST_INDENT)
+						processList(
+							child,
+							indent + PDF_CONSTANTS.NESTED_LIST_INDENT
+						)
 					}
 				})
 			}
@@ -176,14 +207,15 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 	function renderTextLine(text: string) {
 		pageManager.ensureSpace()
-		doc.text(text, PDF_CONSTANTS.HORIZONTAL_SPACING, pageManager.getCurrentPosition())
+		doc.text(
+			text,
+			PDF_CONSTANTS.HORIZONTAL_SPACING,
+			pageManager.getCurrentPosition()
+		)
 		pageManager.incrementPosition()
 	}
 
-	async function processImage(
-		dataUrl: string,
-		scale = 'small'
-	) {
+	async function processImage(dataUrl: string, scale = 'small') {
 		if (!dataUrl) {
 			return
 		}
@@ -227,10 +259,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			return
 		}
 
-		await processImage(
-			imageSource,
-			parsedContent.scale
-		)
+		await processImage(imageSource, parsedContent.scale)
 	}
 
 	function processSignalListBlock(block: Element) {
@@ -345,7 +374,9 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			}
 		})
 
-		const tableHeight = rows * PDF_CONSTANTS.DEFAULT_LINE_HEIGHT + PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
+		const tableHeight =
+			rows * PDF_CONSTANTS.DEFAULT_LINE_HEIGHT +
+			PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
 		if (pageManager.contentExceedsPage(tableHeight)) {
 			pageManager.createNewPage()
 		} else {
