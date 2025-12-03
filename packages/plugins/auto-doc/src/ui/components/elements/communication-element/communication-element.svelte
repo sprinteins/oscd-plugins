@@ -9,6 +9,7 @@ import FormField from '@smui/form-field'
 import Textfield from '@smui/textfield'
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
 import type { CommunicationElementParameters } from './types.communication'
+    import { tick } from 'svelte';
 
 interface Props {
 	onContentChange: (newContent: string) => void
@@ -123,9 +124,12 @@ function saveParameters(): void {
 }
 
 $effect(() => {
-	if (htmlRoot && onRenderComplete) {
-		onRenderComplete()
-	}
+	if (!htmlRoot) return
+
+	;(async () => {
+		await tick()
+		onRenderComplete?.()
+	})()
 })
 </script>
 
