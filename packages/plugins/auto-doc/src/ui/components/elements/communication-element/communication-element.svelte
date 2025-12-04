@@ -201,21 +201,19 @@ $effect(() => {
 
 	<div class="communication-element">
 		<LegacyTheme>
-			<div class="fit-middle">
-				<div class="communication-preview-wrapper" bind:this={htmlRoot}>
-					<TelemetryView
-						root={pluginGlobalStore.xmlDocument as unknown as Element}
-						showSidebar={false}
-						selectedBays={selectedBays.size > 0
-							? selectedBays
-							: undefined}
-						{selectedMessageTypes}
-						focusMode={true}
-						isOutsidePluginContext={true}
-						zoom={calculatedZoom}
-						onDiagramSizeCalculated={handleDiagramSizeCalculated}
-					/>
-				</div>
+			<div class="communication-preview-wrapper" bind:this={htmlRoot}>
+				<TelemetryView
+					root={pluginGlobalStore.xmlDocument as unknown as Element}
+					showSidebar={false}
+					selectedBays={selectedBays.size > 0
+						? selectedBays
+						: undefined}
+					{selectedMessageTypes}
+					focusMode={true}
+					isOutsidePluginContext={true}
+					zoom={calculatedZoom}
+					onDiagramSizeCalculated={handleDiagramSizeCalculated}
+				/>
 			</div>
 		</LegacyTheme>
 	</div>
@@ -224,11 +222,6 @@ $effect(() => {
 {/if}
 
 <style>
-	.fit-middle {
-		justify-content: center;
-		align-items: center;
-	}
-
 	.communication-preview-wrapper {
 		width: 100%;
 		height: 100%;

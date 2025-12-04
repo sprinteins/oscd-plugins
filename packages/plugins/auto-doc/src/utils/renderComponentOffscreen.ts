@@ -3,8 +3,8 @@ import { exportPngFromHTMLElement } from './diagram-export'
 import type CommunicationElement from '@/ui/components/elements/communication-element/communication-element.svelte'
 import type NetworkElement from '@/ui/components/elements/network-element/network-element.svelte'
 
-const DEFAULT_RENDERING_WIDTH = '1200px'
-const DEFAULT_RENDERING_HEIGHT = '800px'
+const DEFAULT_RENDERING_WIDTH = '2400px'
+const DEFAULT_RENDERING_HEIGHT = '1600px'
 const COMMUNICATION_ELEMENT_CLASS = 'communication-preview-wrapper'
 const NETWORK_ELEMENT_CLASS = 'network-preview-wrapper'
 const PIXEL_RATIO = 4
