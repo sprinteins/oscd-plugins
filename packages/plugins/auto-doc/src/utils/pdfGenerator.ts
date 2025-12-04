@@ -4,7 +4,7 @@ import type { ElementType } from "@/ui/components/elements/types.elements";
 import CommunicationElement from "@/ui/components/elements/communication-element/communication-element.svelte";
 import NetworkElement from "@/ui/components/elements/network-element/network-element.svelte";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import autoTable, { type FontStyle } from "jspdf-autotable";
 import zipcelx from "zipcelx";
 import {
   docTemplatesStore,
@@ -17,11 +17,10 @@ import {
   FONT_STYLES,
   PDF_CONSTANTS,
   TEXT_SIZES,
-  type TextSize,
-  type FontStyle,
   loadImage,
   getImageScaleFactor,
   extractImageFormat,
+  type TextSize,
 } from "./pdf";
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html

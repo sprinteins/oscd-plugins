@@ -1,19 +1,15 @@
-export type TextSize = number;
-export type FontStyle = string;
-export type ImageScale = keyof typeof IMAGE_SCALE_FACTORS;
-
 export const TEXT_SIZES = {
   H1: 20,
   H2: 16,
   H3: 14,
   NORMAL: 10,
-};
+} as const;
 
 export const FONT_STYLES = {
   NORMAL: "normal",
   BOLD: "bold",
   ITALIC: "italic",
-};
+} as const;
 
 export const IMAGE_SCALE_FACTORS = {
   small: 0.25,
