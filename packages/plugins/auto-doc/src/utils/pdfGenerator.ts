@@ -8,6 +8,9 @@ import autoTable from 'jspdf-autotable'
 import zipcelx from 'zipcelx'
 import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
 import { renderComponentOffscreen } from './renderComponentOffscreen'
+import { writeCommunicationContentToPdf } from './communicationPdfContent'
+import { IEDService } from '@oscd-plugins/core'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
@@ -410,10 +413,52 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	}
 
 	async function processCommunicationForPdfGeneration(block: Element) {
+		// First render the diagram as an image
 		await processVisualizationElementForPdfGeneration(
 			block,
 			CommunicationElement
 		)
+
+		// Then add the legend, bay list, and IED list as text
+		const content = block.textContent || ''
+		if (!content) return
+
+		try {
+			const parameters = JSON.parse(content)
+			const xmlDocument = pluginGlobalStore.xmlDocument
+
+			if (
+				xmlDocument &&
+				(parameters.showLegend ||
+					parameters.showBayList ||
+					parameters.showIEDList)
+			) {
+				const iedService = new IEDService(xmlDocument.documentElement)
+
+				marginTop = writeCommunicationContentToPdf(
+					doc,
+					marginTop,
+					pageHeight,
+					pageWidth,
+					marginBottom,
+					iedService,
+					parameters,
+					() => {
+						createNewPage()
+						return INITIAL_UPPER_PAGE_COORDINATE
+					},
+					(height?: number) => {
+						incrementVerticalPositionForNextLine(height)
+						return marginTop
+					}
+				)
+			}
+		} catch (error) {
+			console.error(
+				'[pdfGenerator] Error writing communication content:',
+				error
+			)
+		}
 	}
 
 	async function processNetworkForPdfGeneration(block: Element) {
