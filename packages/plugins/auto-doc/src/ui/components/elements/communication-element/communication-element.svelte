@@ -224,7 +224,6 @@ $effect(() => {
 <style>
 	.communication-preview-wrapper {
 		width: 100%;
-		height: 100%;
 		overflow: hidden;
 	}
 
