@@ -711,55 +711,55 @@ importers:
         version: 4.5.0(@types/node@22.10.1)(rollup@4.53.2)(typescript@5.6.3)(vite@6.1.0(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0))
 
   packages/plugins/type-distributor:
-    devDependencies:
-      '@oscd-plugins/core-api':
-        specifier: workspace:^
-        version: link:../../core/api
-      '@oscd-plugins/core-standard':
-        specifier: workspace:^
-        version: link:../../core/standard
-      '@oscd-plugins/core-ui-svelte':
-        specifier: workspace:^
-        version: link:../../core/ui-svelte
-      '@sveltejs/vite-plugin-svelte':
-        specifier: ^5.0.3
-        version: 5.1.1(svelte@5.43.5)(vite@6.4.1(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0))
-      '@tsconfig/svelte':
-        specifier: ^5.0.4
-        version: 5.0.5
-      autoprefixer:
-        specifier: ^10.4.20
-        version: 10.4.21(postcss@8.5.6)
-      concurrently:
-        specifier: ^7.6.0
-        version: 7.6.0
-      postcss:
-        specifier: ^8.4.49
-        version: 8.5.6
-      svelte:
-        specifier: ^5.17.0
-        version: 5.43.5
-      svelte-check:
-        specifier: ^4.1.2
-        version: 4.3.3(picomatch@4.0.3)(svelte@5.43.5)(typescript@5.6.3)
-      tailwindcss:
-        specifier: ^3.4.15
-        version: 3.4.18(yaml@2.7.0)
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.18(yaml@2.7.0))
-      tslib:
-        specifier: ^2.8.0
-        version: 2.8.1
-      typescript:
-        specifier: ~5.6.2
-        version: 5.6.3
-      vite:
-        specifier: ^6.0.3
-        version: 6.4.1(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0)
-      vite-plugin-dts:
-        specifier: ^4.4.0
-        version: 4.5.4(@types/node@22.10.1)(rollup@4.53.2)(typescript@5.6.3)(vite@6.4.1(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0))
+      devDependencies:
+        '@oscd-plugins/core-api':
+          specifier: workspace:^
+          version: link:../../core/api
+        '@oscd-plugins/core-standard':
+          specifier: workspace:^
+          version: link:../../core/standard
+        '@oscd-plugins/core-ui-svelte':
+          specifier: workspace:^
+          version: link:../../core/ui-svelte
+        '@sveltejs/vite-plugin-svelte':
+          specifier: ^5.0.3
+          version: 5.1.1(svelte@5.43.5)(vite@6.4.1(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0))
+        '@tsconfig/svelte':
+          specifier: ^5.0.4
+          version: 5.0.5
+        autoprefixer:
+          specifier: ^10.4.20
+          version: 10.4.21(postcss@8.5.6)
+        concurrently:
+          specifier: ^7.6.0
+          version: 7.6.0
+        postcss:
+          specifier: ^8.4.49
+          version: 8.5.6
+        svelte:
+          specifier: ^5.17.0
+          version: 5.43.5
+        svelte-check:
+          specifier: ^4.1.2
+          version: 4.3.3(picomatch@4.0.3)(svelte@5.43.5)(typescript@5.6.3)
+        tailwindcss:
+          specifier: ^3.4.15
+          version: 3.4.18(yaml@2.7.0)
+        tailwindcss-animate:
+          specifier: ^1.0.7
+          version: 1.0.7(tailwindcss@3.4.18(yaml@2.7.0))
+        tslib:
+          specifier: ^2.8.0
+          version: 2.8.1
+        typescript:
+          specifier: ~5.6.2
+          version: 5.6.3
+        vite:
+          specifier: ^6.0.3
+          version: 6.4.1(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0)
+        vite-plugin-dts:
+          specifier: ^4.4.0
+          version: 4.5.4(@types/node@22.10.1)(rollup@4.53.2)(typescript@5.6.3)(vite@6.4.1(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0))
 
   packages/plugins/type-switcher:
     dependencies:
@@ -8698,8 +8698,8 @@ snapshots:
       valibot: 0.31.1
     optionalDependencies:
       '@types/json-schema': 7.0.15
-      esbuild: 0.25.12
-      esbuild-runner: 2.2.2(esbuild@0.25.12)
+      esbuild: 0.24.2
+      esbuild-runner: 2.2.2(esbuild@0.24.2)
     optional: true
 
   '@hapi/hoek@9.3.0':
@@ -9881,7 +9881,7 @@ snapshots:
 
   '@rollup/pluginutils@5.1.4(rollup@4.53.2)':
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.6
       estree-walker: 2.0.2
       picomatch: 4.0.2
     optionalDependencies:
@@ -10987,9 +10987,9 @@ snapshots:
     dependencies:
       svelte: 5.43.5
 
-  '@sveltejs/acorn-typescript@1.0.6(acorn@8.15.0)':
+  '@sveltejs/acorn-typescript@1.0.6(acorn@8.14.0)':
     dependencies:
-      acorn: 8.15.0
+      acorn: 8.14.0
 
   '@sveltejs/adapter-auto@1.0.3(@sveltejs/kit@1.30.4(svelte@3.59.2)(vite@4.5.5(@types/node@22.10.1)(sass@1.82.0)))':
     dependencies:
@@ -12111,12 +12111,12 @@ snapshots:
 
   acorn-globals@7.0.1:
     dependencies:
-      acorn: 8.15.0
+      acorn: 8.14.0
       acorn-walk: 8.3.4
 
-  acorn-jsx@5.3.2(acorn@8.15.0):
+  acorn-jsx@5.3.2(acorn@8.14.0):
     dependencies:
-      acorn: 8.15.0
+      acorn: 8.14.0
 
   acorn-typescript@1.4.13(acorn@8.14.0):
     dependencies:
@@ -12592,8 +12592,8 @@ snapshots:
   code-red@1.0.4:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
-      '@types/estree': 1.0.8
-      acorn: 8.15.0
+      '@types/estree': 1.0.6
+      acorn: 8.14.0
       estree-walker: 3.0.3
       periscopic: 3.1.0
 
@@ -13067,9 +13067,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  esbuild-runner@2.2.2(esbuild@0.25.12):
+  esbuild-runner@2.2.2(esbuild@0.24.2):
     dependencies:
-      esbuild: 0.25.12
+      esbuild: 0.24.2
       source-map-support: 0.5.21
       tslib: 2.4.0
     optional: true
@@ -13368,14 +13368,14 @@ snapshots:
 
   espree@9.2.0:
     dependencies:
-      acorn: 8.15.0
-      acorn-jsx: 5.3.2(acorn@8.15.0)
+      acorn: 8.14.0
+      acorn-jsx: 5.3.2(acorn@8.14.0)
       eslint-visitor-keys: 3.4.3
 
   espree@9.6.1:
     dependencies:
-      acorn: 8.15.0
-      acorn-jsx: 5.3.2(acorn@8.15.0)
+      acorn: 8.14.0
+      acorn-jsx: 5.3.2(acorn@8.14.0)
       eslint-visitor-keys: 3.4.3
 
   esprima@4.0.1: {}
@@ -13387,12 +13387,12 @@ snapshots:
   esrap@1.2.2:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.6
 
   esrap@1.2.3:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.6
 
   esrap@1.4.5:
     dependencies:
@@ -13416,7 +13416,7 @@ snapshots:
 
   estree-walker@3.0.3:
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.6
 
   esutils@2.0.3: {}
 
@@ -14591,7 +14591,7 @@ snapshots:
 
   periscopic@3.1.0:
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.6
       estree-walker: 3.0.3
       is-reference: 3.0.3
 
@@ -15728,9 +15728,9 @@ snapshots:
     dependencies:
       '@jridgewell/remapping': 2.3.5
       '@jridgewell/sourcemap-codec': 1.5.0
-      '@sveltejs/acorn-typescript': 1.0.6(acorn@8.15.0)
-      '@types/estree': 1.0.8
-      acorn: 8.15.0
+      '@sveltejs/acorn-typescript': 1.0.6(acorn@8.14.0)
+      '@types/estree': 1.0.6
+      acorn: 8.14.0
       aria-query: 5.3.2
       axobject-query: 4.1.0
       clsx: 2.1.1
@@ -16091,7 +16091,7 @@ snapshots:
 
   unplugin@1.16.0:
     dependencies:
-      acorn: 8.15.0
+      acorn: 8.14.0
       webpack-virtual-modules: 0.6.2
 
   update-browserslist-db@1.1.2(browserslist@4.24.4):
