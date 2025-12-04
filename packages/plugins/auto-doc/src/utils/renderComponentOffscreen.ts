@@ -32,7 +32,7 @@ function mountComponent(
 	context: RenderContext,
 	component: typeof CommunicationElement | typeof NetworkElement,
 	props: Record<string, unknown>,
-	onRenderComplete: () => boolean
+	triggerDiagramReady: () => boolean
 ): Promise<void> {
 	return new Promise((resolve, reject) => {
 		try {
@@ -43,17 +43,17 @@ function mountComponent(
 					onContentChange: () => {
 						// No-op during offscreen rendering for PDF
 					},
-					onRenderComplete: () => {
-						if (onRenderComplete()) {
+					triggerDiagramReady: () => {
+						if (triggerDiagramReady()) {
 							resolve()
 						}
 					}
 				}
 			})
 
-			// Fallback timeout in case onRenderComplete is never called
+			// Fallback timeout in case triggerDiagramReady is never called
 			setTimeout(() => {
-				if (onRenderComplete()) {
+				if (triggerDiagramReady()) {
 					console.warn(
 						'[pdfGenerator] Component render timeout, capturing anyway...'
 					)

@@ -8,11 +8,11 @@ import type { NetworkElementParameters } from './types.network'
 
 interface Props {
 	onContentChange: (newContent: string) => void
-	onRenderComplete?: () => void
+	triggerDiagramReady?: () => void
 	content?: string
 }
 
-let { onContentChange, onRenderComplete, content = '' }: Props = $props()
+let { onContentChange, triggerDiagramReady, content = '' }: Props = $props()
 
 let initialParams: NetworkElementParameters | null = null
 
@@ -37,8 +37,8 @@ function saveParameters(): void {
 }
 
 $effect(() => {
-	if (htmlRoot && onRenderComplete) {
-		onRenderComplete()
+	if (htmlRoot && triggerDiagramReady) {
+		triggerDiagramReady()
 	}
 })
 </script>

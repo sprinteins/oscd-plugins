@@ -13,11 +13,11 @@ import { tick } from 'svelte'
 
 interface Props {
 	onContentChange: (newContent: string) => void
-	onRenderComplete?: () => void
+	triggerDiagramReady?: () => void
 	content?: string
 }
 
-let { onContentChange, onRenderComplete, content = '' }: Props = $props()
+let { onContentChange, triggerDiagramReady, content = '' }: Props = $props()
 
 const DEFAULT_ZOOM = 1.0
 const DEFAULT_WIDTH = 800
@@ -127,7 +127,7 @@ $effect(() => {
 	if (!htmlRoot) return
 	;(async () => {
 		await tick()
-		onRenderComplete?.()
+		triggerDiagramReady?.()
 	})()
 })
 </script>
