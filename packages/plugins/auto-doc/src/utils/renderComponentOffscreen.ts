@@ -59,7 +59,7 @@ export async function renderComponentOffscreen(
 					unmount(componentInstance)
 					document.body.removeChild(container)
 
-					resolve(`data:image/png;base64,${pngBase64}`)
+					resolve(`data:image/png;base64,${pngBase64}` as Base64URLString)
 				} catch (error) {
 					console.error(
 						'[pdfGenerator] Error capturing PNG for Component:',
