@@ -5,13 +5,17 @@ import dts from 'vite-plugin-dts'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
 	base: './',
 	plugins: [svelte(), dts({ rollupTypes: true })],
 	resolve: {
 		alias: {
 			'@': resolve(__dirname, 'src')
 		}
+	},
+	define: {
+		'process.env.NODE_ENV': JSON.stringify(mode || 'production'),
+		'process.env': '{}'
 	},
 	build: {
 		target: 'esnext',
@@ -36,4 +40,4 @@ export default defineConfig({
 		port: 41761,
 		cors: true
 	}
-})
+}))

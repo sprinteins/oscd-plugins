@@ -5,6 +5,14 @@ All notable changes to the communication explorer plugin will be documented here
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.17] - 2025-11-28
+### Added
+- Exports the Network-Explorer Component from the Network Explorer
+- Accepts prop selectedBays to filter view for selectedBays
+- store filtering logic for bays
+### Changed
+- Switched to LegacyTheme
+
 ## [0.0.16] - 2025-11-24
 ### Changed
 - use default color for temp edge

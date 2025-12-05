@@ -198,29 +198,29 @@ importers:
   packages/plugins/auto-doc:
     dependencies:
       '@smui/button':
-        specifier: 8.0.0-beta.3
-        version: 8.0.0-beta.3
+        specifier: 8.0.3
+        version: 8.0.3
       '@smui/checkbox':
-        specifier: ^8.0.0-beta.3
-        version: 8.0.0-beta.3
+        specifier: ^8.0.3
+        version: 8.0.3
       '@smui/data-table':
-        specifier: ^8.0.0-beta.3
-        version: 8.0.0-beta.3
+        specifier: ^8.0.3
+        version: 8.0.3
       '@smui/dialog':
-        specifier: 8.0.0-beta.3
-        version: 8.0.0-beta.3
+        specifier: 8.0.3
+        version: 8.0.3
       '@smui/icon-button':
-        specifier: ^8.0.0-beta.3
-        version: 8.0.0-beta.3
+        specifier: ^8.0.3
+        version: 8.0.3
       '@smui/list':
-        specifier: ^8.0.0-beta.3
-        version: 8.0.0-beta.3
+        specifier: ^8.0.3
+        version: 8.0.3
       '@smui/menu':
-        specifier: ^8.0.0-beta.3
-        version: 8.0.0-beta.3
+        specifier: ^8.0.3
+        version: 8.0.3
       '@smui/textfield':
-        specifier: ^8.0.0-beta.3
-        version: 8.0.0-beta.3
+        specifier: ^8.0.3
+        version: 8.0.3
       '@tiptap/core':
         specifier: ^2.11.5
         version: 2.11.5(@tiptap/pm@2.11.5)
@@ -252,6 +252,9 @@ importers:
         specifier: ^1.6.2
         version: 1.6.2
     devDependencies:
+      '@oscd-plugins/communication-explorer':
+        specifier: workspace:^
+        version: link:../communication-explorer
       '@oscd-plugins/core':
         specifier: workspace:^
         version: link:../../core/legacy
@@ -264,9 +267,21 @@ importers:
       '@oscd-plugins/core-ui-svelte':
         specifier: workspace:^
         version: link:../../core/ui-svelte
+      '@oscd-plugins/network-explorer':
+        specifier: workspace:^
+        version: link:../network-explorer
       '@oscd-plugins/ui':
         specifier: workspace:^
         version: link:../../ui
+      '@smui/form-field':
+        specifier: ^8.0.3
+        version: 8.0.3
+      '@smui/radio':
+        specifier: ^8.0.3
+        version: 8.0.3
+      '@smui/select':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
         version: 5.0.3(svelte@5.20.1)(vite@6.1.0(@types/node@22.10.1)(jiti@1.21.7)(sass@1.82.0)(yaml@2.7.0))
@@ -282,6 +297,9 @@ importers:
       concurrently:
         specifier: ^7.6.0
         version: 7.6.0
+      html-to-image:
+        specifier: 1.11.11
+        version: 1.11.11
       playwright:
         specifier: ^1.48.1
         version: 1.49.1
@@ -2902,14 +2920,14 @@ packages:
   '@smui/common@8.0.3':
     resolution: {integrity: sha512-Zgsp8KE4NH0+eLihHdhxYSzbV8M2w0B53BnM+5WvEEEJWzHcKhpvYNHTT6tG909IsIrU7uNNVJosNIw7leU8Wg==}
 
-  '@smui/data-table@8.0.0-beta.3':
-    resolution: {integrity: sha512-jXs23ZsUnDMxyI1xMR+wFb+JDmBW22nSBTbwSyK0odfed+dHyGGKGMHTt3eWsz1ImUJNod6eVLrhQ0vnST6wPA==}
-
   '@smui/data-table@8.0.3':
     resolution: {integrity: sha512-uOhf4AL1fj+e0LukISZpgvWJ8lqswGjrU45gjrT3rKxjKJuNIFu8ApAoX8OrbjhFcZdtvBls82ymQEcD8kVY7Q==}
 
   '@smui/dialog@8.0.0-beta.3':
     resolution: {integrity: sha512-bsOviW/jsSQwhBHOMjz+5iEpsaI2HZ6Baszp5Z1bVhgh+waVWcIZRTXV0TGLJEcQpian759Z7GaOkiaLFYsc6A==}
+
+  '@smui/dialog@8.0.3':
+    resolution: {integrity: sha512-CXHzsoqzE2e7cf1m8mtEGDiYvMKpzNQfEJUe6zD4EtOBpQ8+TUk7dW4ZRpg2yYV/uDxe1XdVizHJnsHVIzTJFA==}
 
   '@smui/drawer@8.0.0-beta.3':
     resolution: {integrity: sha512-hMRopQV+oKTSf3IvV9t/Dc1gtalBMYj0fyiYpElfXP85ZNSmN0EfSoD39M7E9CgLywTgAmNTFUql10hNo5mdNw==}
@@ -2925,6 +2943,9 @@ packages:
 
   '@smui/form-field@8.0.0-beta.3':
     resolution: {integrity: sha512-gHXEMmj3ABDZ+P9s7zCHmOioLlyyPowomVhzVMBcuTqhBRXIfVwJkybcYseWtLrzE3eEjf0Ifi9m7LKzMeLYGg==}
+
+  '@smui/form-field@8.0.3':
+    resolution: {integrity: sha512-CqFvsIjR5dl83/9YknflmgW8FrEXdE0sCFp6yeUuPDoaqtV2IFd/6wJmaH2M/hGgWk+fnjk4Tu+KmAOyXEa72g==}
 
   '@smui/icon-button@8.0.0-beta.3':
     resolution: {integrity: sha512-3tT3RHGsGaelfdl8o9lzvcHhg9XiaOFBYjz4cBPhkJIJ01/FBo2x9M/jno37+7Ic8CTffA8cZlQSqtF5P9epKA==}
@@ -2959,9 +2980,6 @@ packages:
   '@smui/menu-surface@8.0.3':
     resolution: {integrity: sha512-3D86+7GoQSTtnSP2S2Cl6Us9D51jpbcalNBfmMJtujY8FnFdoOCrQomBqtZ5o1EAXZUPIwiii+j+czPorMXpKQ==}
 
-  '@smui/menu@8.0.0-beta.3':
-    resolution: {integrity: sha512-AKkHOGIKihpkfgyOODlQeHibrmuT7bo+b8GQTmkv61FLpX9AlAQ/YBo3cs4wJWvUGu4QmdS1JyGB9uPNW+ut8Q==}
-
   '@smui/menu@8.0.3':
     resolution: {integrity: sha512-I7+SRTXMq+1O052GMS2Xhkd1fOxYk7oF8nASQr8+2bpfMwMJxh1QNXDIaLX2Tymf79QpA/N0AP0D662jvvkIjQ==}
 
@@ -2979,6 +2997,9 @@ packages:
 
   '@smui/radio@8.0.0-beta.3':
     resolution: {integrity: sha512-PkbXEBoSmniFQPx8b5uh3k9a+yeRnXrXpBpKANEn7AaItdIrfe84YpgNeenP16TuT4sbXefk5hiyckBUrrRqCw==}
+
+  '@smui/radio@8.0.3':
+    resolution: {integrity: sha512-eaXiOoxB0dbf61kfKf/OUYt5ZHgJwsYIrJpIf4wyzqCZdIMD+9KkTmagkC1PYWAFhyhDd9ZROO3ojbn3+WY4Ag==}
 
   '@smui/ripple@8.0.0-beta.3':
     resolution: {integrity: sha512-4CCrNNuj7a0DD4LmR1SRT9TsDyP529bbbIzS3C3f0fcJvH5cQfvGjf/jkcz0nK2alMqbCKA3CEC3SZ3D9o3bRg==}
@@ -5509,6 +5530,9 @@ packages:
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
+
+  html-to-image@1.11.11:
+    resolution: {integrity: sha512-9gux8QhvjRO/erSnDPv28noDZcPZmYE7e1vFsBLKLlRlKDSqNJYebj6Qz1TGd5lsRV+X+xYyjCKjuZdABinWjA==}
 
   html2canvas@1.4.1:
     resolution: {integrity: sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==}
@@ -10185,7 +10209,7 @@ snapshots:
   '@smui-extra/autocomplete@8.0.0-beta.3':
     dependencies:
       '@smui/common': 8.0.0-beta.3
-      '@smui/list': 8.0.0-beta.3
+      '@smui/list': 8.0.3
       '@smui/menu': 8.0.3
       '@smui/menu-surface': 8.0.3
       '@smui/textfield': 8.0.3
@@ -10211,9 +10235,9 @@ snapshots:
       '@smui-extra/autocomplete': 8.0.0-beta.3
       '@smui/chips': 8.0.0-beta.3
       '@smui/common': 8.0.0-beta.3
-      '@smui/floating-label': 8.0.0-beta.3
-      '@smui/line-ripple': 8.0.0-beta.3
-      '@smui/list': 8.0.0-beta.3
+      '@smui/floating-label': 8.0.3
+      '@smui/line-ripple': 8.0.3
+      '@smui/list': 8.0.3
       '@smui/textfield': 8.0.3
 
   '@smui/banner@8.0.0-beta.3':
@@ -10246,9 +10270,9 @@ snapshots:
   '@smui/card@8.0.0-beta.3':
     dependencies:
       '@material/card': 14.0.0
-      '@smui/button': 8.0.0-beta.3
+      '@smui/button': 8.0.3
       '@smui/common': 8.0.0-beta.3
-      '@smui/icon-button': 8.0.0-beta.3
+      '@smui/icon-button': 8.0.3
       '@smui/ripple': 8.0.0-beta.3
 
   '@smui/checkbox@8.0.0-beta.3':
@@ -10284,16 +10308,6 @@ snapshots:
     dependencies:
       '@material/dom': 14.0.0
 
-  '@smui/data-table@8.0.0-beta.3':
-    dependencies:
-      '@material/data-table': 14.0.0
-      '@material/dom': 14.0.0
-      '@smui/checkbox': 8.0.0-beta.3
-      '@smui/common': 8.0.0-beta.3
-      '@smui/icon-button': 8.0.0-beta.3
-      '@smui/ripple': 8.0.0-beta.3
-      '@smui/select': 8.0.0-beta.3
-
   '@smui/data-table@8.0.3':
     dependencies:
       '@material/data-table': 14.0.0
@@ -10310,6 +10324,13 @@ snapshots:
       '@material/dialog': 14.0.0
       '@material/dom': 14.0.0
       '@smui/common': 8.0.0-beta.3
+
+  '@smui/dialog@8.0.3':
+    dependencies:
+      '@material/button': 14.0.0
+      '@material/dialog': 14.0.0
+      '@material/dom': 14.0.0
+      '@smui/common': 8.0.3
 
   '@smui/drawer@8.0.0-beta.3':
     dependencies:
@@ -10340,6 +10361,13 @@ snapshots:
       '@material/form-field': 14.0.0
       '@material/rtl': 14.0.0
       '@smui/common': 8.0.0-beta.3
+
+  '@smui/form-field@8.0.3':
+    dependencies:
+      '@material/feature-targeting': 14.0.0
+      '@material/form-field': 14.0.0
+      '@material/rtl': 14.0.0
+      '@smui/common': 8.0.3
 
   '@smui/icon-button@8.0.0-beta.3':
     dependencies:
@@ -10408,14 +10436,6 @@ snapshots:
       '@material/menu-surface': 14.0.0
       '@smui/common': 8.0.3
 
-  '@smui/menu@8.0.0-beta.3':
-    dependencies:
-      '@material/dom': 14.0.0
-      '@material/menu': 14.0.0
-      '@smui/common': 8.0.0-beta.3
-      '@smui/list': 8.0.0-beta.3
-      '@smui/menu-surface': 8.0.0-beta.3
-
   '@smui/menu@8.0.3':
     dependencies:
       '@material/dom': 14.0.0
@@ -10460,6 +10480,12 @@ snapshots:
       '@smui/common': 8.0.0-beta.3
       '@smui/ripple': 8.0.3
 
+  '@smui/radio@8.0.3':
+    dependencies:
+      '@material/radio': 14.0.0
+      '@smui/common': 8.0.3
+      '@smui/ripple': 8.0.3
+
   '@smui/ripple@8.0.0-beta.3':
     dependencies:
       '@material/dom': 14.0.0
@@ -10490,11 +10516,11 @@ snapshots:
       '@smui/common': 8.0.0-beta.3
       '@smui/floating-label': 8.0.3
       '@smui/line-ripple': 8.0.3
-      '@smui/list': 8.0.0-beta.3
-      '@smui/menu': 8.0.0-beta.3
-      '@smui/menu-surface': 8.0.0-beta.3
-      '@smui/notched-outline': 8.0.0-beta.3
-      '@smui/ripple': 8.0.0-beta.3
+      '@smui/list': 8.0.3
+      '@smui/menu': 8.0.3
+      '@smui/menu-surface': 8.0.3
+      '@smui/notched-outline': 8.0.3
+      '@smui/ripple': 8.0.3
 
   '@smui/select@8.0.3':
     dependencies:
@@ -13740,6 +13766,8 @@ snapshots:
 
   html-escaper@2.0.2: {}
 
+  html-to-image@1.11.11: {}
+
   html2canvas@1.4.1:
     dependencies:
       css-line-break: 2.1.0
@@ -15555,24 +15583,24 @@ snapshots:
       '@smui-extra/bottom-app-bar': 8.0.0-beta.3
       '@smui-extra/chip-input': 8.0.0-beta.3
       '@smui/banner': 8.0.0-beta.3
-      '@smui/button': 8.0.0-beta.3
+      '@smui/button': 8.0.3
       '@smui/card': 8.0.0-beta.3
       '@smui/checkbox': 8.0.3
       '@smui/chips': 8.0.0-beta.3
       '@smui/circular-progress': 8.0.0-beta.3
       '@smui/common': 8.0.0-beta.3
       '@smui/data-table': 8.0.3
-      '@smui/dialog': 8.0.0-beta.3
+      '@smui/dialog': 8.0.3
       '@smui/drawer': 8.0.0-beta.3
       '@smui/fab': 8.0.0-beta.3
       '@smui/floating-label': 8.0.0-beta.3
       '@smui/form-field': 8.0.0-beta.3
-      '@smui/icon-button': 8.0.0-beta.3
+      '@smui/icon-button': 8.0.3
       '@smui/image-list': 8.0.0-beta.3
       '@smui/layout-grid': 8.0.0-beta.3
       '@smui/line-ripple': 8.0.0-beta.3
       '@smui/linear-progress': 8.0.0-beta.3
-      '@smui/list': 8.0.0-beta.3
+      '@smui/list': 8.0.3
       '@smui/menu': 8.0.3
       '@smui/menu-surface': 8.0.0-beta.3
       '@smui/notched-outline': 8.0.0-beta.3

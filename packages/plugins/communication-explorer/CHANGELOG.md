@@ -5,12 +5,18 @@ All notable changes to the communication explorer plugin will be documented here
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.39] - 2025-11-28
+### Added
+- Exports the TelemetryView Component from the Communication Explorer
+- Accepts prop selectedBays to filter view for selectedBays
+- filtering logic for bays
+
 ## [0.0.38] - 2025-11-18
 ### Fixed
 - Communication Explorer: Fixed zoom propagation e.g. to sidebar
 ### Added
 - Communication Explorer: Add relative max and min zoom levels
-- 
+
 ## [0.0.37] - 2025-11-11
 ### Changed
 - Setup rollupOptions to bundle to a single file

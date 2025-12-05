@@ -118,3 +118,5 @@ _build_
 # GitHub Copilot
 .github/instructions/AGENTS.instructions.md
 .github/copilot-instructions.md
+.github/prompts
+.github/instructions
