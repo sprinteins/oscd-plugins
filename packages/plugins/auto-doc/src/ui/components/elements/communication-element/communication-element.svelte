@@ -9,14 +9,15 @@ import FormField from '@smui/form-field'
 import Textfield from '@smui/textfield'
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
 import type { CommunicationElementParameters } from './types.communication'
+import { tick } from 'svelte'
 
 interface Props {
 	onContentChange: (newContent: string) => void
-	onRenderComplete?: () => void
+	triggerDiagramReady?: () => void
 	content?: string
 }
 
-let { onContentChange, onRenderComplete, content = '' }: Props = $props()
+let { onContentChange, triggerDiagramReady, content = '' }: Props = $props()
 
 const DEFAULT_ZOOM = 1.0
 const DEFAULT_WIDTH = 800
@@ -123,9 +124,8 @@ function saveParameters(): void {
 }
 
 $effect(() => {
-	if (htmlRoot && onRenderComplete) {
-		onRenderComplete()
-	}
+	if (!htmlRoot) return
+	tick().then(() => triggerDiagramReady?.())
 })
 </script>
 
@@ -198,21 +198,19 @@ $effect(() => {
 
 	<div class="communication-element">
 		<LegacyTheme>
-			<div class="fit-middle">
-				<div class="communication-preview-wrapper" bind:this={htmlRoot}>
-					<TelemetryView
-						root={pluginGlobalStore.xmlDocument as unknown as Element}
-						showSidebar={false}
-						selectedBays={selectedBays.size > 0
-							? selectedBays
-							: undefined}
-						{selectedMessageTypes}
-						focusMode={true}
-						isOutsidePluginContext={true}
-						zoom={calculatedZoom}
-						onDiagramSizeCalculated={handleDiagramSizeCalculated}
-					/>
-				</div>
+			<div class="communication-preview-wrapper" bind:this={htmlRoot}>
+				<TelemetryView
+					root={pluginGlobalStore.xmlDocument as unknown as Element}
+					showSidebar={false}
+					selectedBays={selectedBays.size > 0
+						? selectedBays
+						: undefined}
+					{selectedMessageTypes}
+					focusMode={true}
+					isOutsidePluginContext={true}
+					zoom={calculatedZoom}
+					onDiagramSizeCalculated={handleDiagramSizeCalculated}
+				/>
 			</div>
 		</LegacyTheme>
 	</div>
@@ -221,11 +219,6 @@ $effect(() => {
 {/if}
 
 <style>
-	.fit-middle {
-		justify-content: center;
-		align-items: center;
-	}
-
 	.communication-preview-wrapper {
 		width: 100%;
 		height: 100%;
