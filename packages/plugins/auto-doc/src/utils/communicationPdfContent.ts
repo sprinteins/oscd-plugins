@@ -1,5 +1,7 @@
-import type { IED, IEDService } from '@oscd-plugins/core'
+import type { IEDService } from '@oscd-plugins/core'
 import type jsPDF from 'jspdf'
+import type { PdfPageManager } from './pdf/page-manager'
+import { PDF_CONSTANTS } from './pdf/constants'
 
 interface CommunicationElementParameters {
 	selectedBays: string[]
@@ -13,26 +15,17 @@ interface CommunicationElementParameters {
 
 export function writeCommunicationContentToPdf(
 	doc: jsPDF,
-	marginTop: number,
-	pageHeight: number,
+	pageManager: PdfPageManager,
 	pageWidth: number,
-	marginBottom: number,
 	iedService: IEDService,
-	parameters: CommunicationElementParameters,
-	createNewPage: () => number,
-	incrementVerticalPosition: (height?: number) => number
-): number {
-	const DEFAULT_LINE_HEIGHT = 7
-	const DEFAULT_FONT_SIZE = 10
-	let currentMarginTop = marginTop
-
-	function contentExceedsCurrentPage(height = 10): boolean {
-		return currentMarginTop + height > pageHeight - marginBottom
-	}
+	parameters: CommunicationElementParameters
+): void {
+	const DEFAULT_LINE_HEIGHT = PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
+	const DEFAULT_FONT_SIZE = PDF_CONSTANTS.DEFAULT_FONT_SIZE
 
 	function renderText(
 		text: string,
-		fontSize = DEFAULT_FONT_SIZE,
+		fontSize: number = DEFAULT_FONT_SIZE,
 		fontStyle: 'normal' | 'bold' | 'italic' = 'normal',
 		indent = 0
 	) {
@@ -45,22 +38,18 @@ export function writeCommunicationContentToPdf(
 		)
 
 		for (const line of wrappedText) {
-			if (contentExceedsCurrentPage()) {
-				currentMarginTop = createNewPage()
-			}
+			pageManager.ensureSpace()
 
-			const horizontalSpacing = 10 + indent
-			doc.text(line, horizontalSpacing, currentMarginTop)
-			currentMarginTop += DEFAULT_LINE_HEIGHT
+			const horizontalSpacing = PDF_CONSTANTS.HORIZONTAL_SPACING + indent
+			doc.text(line, horizontalSpacing, pageManager.getCurrentPosition())
+			pageManager.incrementPosition(DEFAULT_LINE_HEIGHT)
 		}
 	}
 
 	function renderHeading(text: string, fontSize: number) {
-		if (contentExceedsCurrentPage(fontSize)) {
-			currentMarginTop = createNewPage()
-		}
+		pageManager.ensureSpace(fontSize)
 		renderText(text, fontSize, 'bold')
-		currentMarginTop += 2 // Extra spacing after heading
+		pageManager.incrementPosition(2) // Extra spacing after heading
 	}
 
 	// Get relevant bays and IEDs based on selection
@@ -109,32 +98,31 @@ export function writeCommunicationContentToPdf(
 		const iconRadius = 1.5 // Circle radius in mm
 
 		while (currentItem < messageTypes.length) {
-			if (contentExceedsCurrentPage()) {
-				currentMarginTop = createNewPage()
-			}
+			pageManager.ensureSpace()
 
 			const rowItems = messageTypes.slice(currentItem, currentItem + itemsPerRow)
 			const columnWidth = (pageWidth - 20) / itemsPerRow
+			const currentY = pageManager.getCurrentPosition()
 
 			for (let i = 0; i < rowItems.length; i++) {
 				const messageType = rowItems[i]
-				const xOffset = 10 + (i * columnWidth)
+				const xOffset = PDF_CONSTANTS.HORIZONTAL_SPACING + (i * columnWidth)
 
 				// Draw filled circle icon
 				doc.setFillColor(messageType.color.r, messageType.color.g, messageType.color.b)
-				doc.circle(xOffset + iconRadius, currentMarginTop - 1.5, iconRadius, 'F')
+				doc.circle(xOffset + iconRadius, currentY - 1.5, iconRadius, 'F')
 
 				// Draw text next to icon
 				doc.setFontSize(DEFAULT_FONT_SIZE)
 				doc.setTextColor(0, 0, 0)
-				doc.text(messageType.name, xOffset + (iconRadius * 3), currentMarginTop)
+				doc.text(messageType.name, xOffset + (iconRadius * 3), currentY)
 			}
 
 			currentItem += itemsPerRow
-			currentMarginTop += DEFAULT_LINE_HEIGHT
+			pageManager.incrementPosition(DEFAULT_LINE_HEIGHT)
 		}
 
-		currentMarginTop += 5 // Extra spacing after section
+		pageManager.incrementPosition(5) // Extra spacing after section
 	}
 
 	// Render Bay List
@@ -149,7 +137,7 @@ export function writeCommunicationContentToPdf(
 			renderText('No bays found', DEFAULT_FONT_SIZE, 'italic', 5)
 		}
 
-		currentMarginTop += 5 // Extra spacing after section
+		pageManager.incrementPosition(5) // Extra spacing after section
 	}
 
 	// Render IED List with Details
@@ -158,9 +146,7 @@ export function writeCommunicationContentToPdf(
 
 		if (relevantIEDs.length > 0) {
 			for (const ied of relevantIEDs) {
-				if (contentExceedsCurrentPage(30)) {
-					currentMarginTop = createNewPage()
-				}
+				pageManager.ensureSpace(30)
 
 				// IED Name
 				renderText(ied.iedName, 12, 'bold')
@@ -213,12 +199,10 @@ export function writeCommunicationContentToPdf(
 					}
 				}
 
-				currentMarginTop += 5 // Extra spacing between IEDs
+				pageManager.incrementPosition(5) // Extra spacing between IEDs
 			}
 		} else {
 			renderText('No IEDs found', DEFAULT_FONT_SIZE, 'italic', 5)
 		}
 	}
-
-	return currentMarginTop
 }

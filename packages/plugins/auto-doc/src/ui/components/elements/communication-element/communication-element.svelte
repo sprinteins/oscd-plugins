@@ -125,10 +125,7 @@ function saveParameters(): void {
 
 $effect(() => {
 	if (!htmlRoot) return
-	;(async () => {
-		await tick()
-		triggerDiagramReady?.()
-	})()
+	tick().then(() => triggerDiagramReady?.())
 })
 </script>
 
@@ -224,6 +221,7 @@ $effect(() => {
 <style>
 	.communication-preview-wrapper {
 		width: 100%;
+		height: 100%;
 		overflow: hidden;
 	}
 

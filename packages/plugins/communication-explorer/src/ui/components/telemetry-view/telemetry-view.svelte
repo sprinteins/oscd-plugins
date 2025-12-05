@@ -143,7 +143,11 @@ function handleConnectionClick(connection: IEDConnection) {
 }
 </script>
 
-<div class="root" class:showSidebar style:height={isOutsidePluginContext ? '100%' : 'calc(100vh - var(--header-height))'}>
+<div
+	class="root"
+	class:showSidebar
+	class:outsidePluginContext={isOutsidePluginContext}
+>
 	{#if rootNode}
 		<Diagram
 			{rootNode}
@@ -172,9 +176,14 @@ function handleConnectionClick(connection: IEDConnection) {
 		grid-template-columns: auto 0;
 		width: 100%;
 		overflow-x: hidden;
+		height: calc(100vh - var(--header-height));
 	}
-	
+
 	.root.showSidebar {
 		grid-template-columns: auto var(--sidebar-width);
+	}
+
+	.root.outsidePluginContext {
+		height: 100%;
 	}
 </style>
