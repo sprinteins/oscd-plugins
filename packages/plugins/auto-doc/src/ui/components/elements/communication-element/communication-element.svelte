@@ -1,14 +1,23 @@
 <script lang="ts">
-import TelemetryView from '@oscd-plugins/communication-explorer/src/ui/components/telemetry-view/telemetry-view.svelte'
+import TelemetryView, {
+	type ConnectionFilter
+} from '@oscd-plugins/communication-explorer/src/ui/components/telemetry-view/telemetry-view.svelte'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { LegacyTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
 import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
+import IedPatternHelpDialog from '../../dialog/ied-pattern-help-dialog.svelte'
+import Tooltip from '../../tooltip/tooltip.svelte'
 import Checkbox from '@smui/checkbox'
 import FormField from '@smui/form-field'
 import Textfield from '@smui/textfield'
+import Select, { Option } from '@smui/select'
+import { CustomIconButton } from '@oscd-plugins/ui/src/components'
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
-import type { CommunicationElementParameters } from './types.communication'
+import type {
+	CommunicationElementParameters,
+	MessageTypeRow
+} from './types.communication'
 import { tick } from 'svelte'
 
 interface Props {
@@ -50,17 +59,94 @@ let showLegend = $state(initialParams?.showLegend ?? false)
 let showBayList = $state(initialParams?.showBayList ?? false)
 let showIEDList = $state(initialParams?.showIEDList ?? false)
 
-interface MessageTypeRow {
-	id: number
-	enabled: boolean
-	messageType: string
-	sourceIED: string
-	targetIED: string
+let isPatternHelpDialogOpen = $state(false)
+
+let nextRowId = $state(1)
+
+function createNamespaceResolver(
+	xmlDocument: XMLDocument
+): (prefix: string | null) => string | null {
+	const namespaces: { [key: string]: string } = {}
+	const attributes = xmlDocument.documentElement.attributes
+	for (let i = 0; i < attributes.length; i++) {
+		const attr = attributes[i]
+		if (attr.name.startsWith('xmlns:')) {
+			const prefix = attr.name.split(':')[1]
+			namespaces[prefix] = attr.value
+		} else if (attr.name === 'xmlns') {
+			namespaces.default = attr.value
+		}
+	}
+	return (prefix: string | null): string | null => {
+		if (prefix === null) return null
+		return namespaces[prefix] || namespaces.default || null
+	}
+}
+
+function queryIEDsByPattern(pattern: string): string[] {
+	if (!pluginGlobalStore.xmlDocument) return []
+
+	if (!pattern || pattern.trim() === '') {
+		const allIEDs = pluginGlobalStore.xmlDocument.querySelectorAll('IED')
+		return Array.from(allIEDs)
+			.map((ied) => ied.getAttribute('name') || '')
+			.filter((name) => name !== '')
+	}
+
+	try {
+		let xpath: string
+
+		if (pattern.startsWith('//')) {
+			xpath = pattern
+		} else if (pattern.includes('*')) {
+			const cleanPattern = pattern.replace(/\*/g, '')
+			if (cleanPattern) {
+				xpath = `//default:IED[contains(@name,'${cleanPattern}')]`
+			} else {
+				xpath = '//default:IED'
+			}
+		} else {
+			xpath = `//default:IED[@name='${pattern}']`
+		}
+
+		const namespaceResolver = createNamespaceResolver(
+			pluginGlobalStore.xmlDocument
+		)
+		const result = pluginGlobalStore.xmlDocument.evaluate(
+			xpath,
+			pluginGlobalStore.xmlDocument,
+			namespaceResolver,
+			XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+			null
+		)
+
+		const matchedIEDs: string[] = []
+		let node = result.iterateNext()
+		while (node) {
+			const name = (node as Element).getAttribute('name')
+			if (name) matchedIEDs.push(name)
+			node = result.iterateNext()
+		}
+
+		return matchedIEDs
+	} catch (e) {
+		console.warn(`Invalid IED XPath pattern: ${pattern}`, e)
+		return []
+	}
 }
 
 // Initialize message type rows from saved parameters or default to all enabled
 function initializeMessageTypeRows(): MessageTypeRow[] {
-	const savedMessageTypes = initialParams?.selectedMessageTypes
+	if (
+		initialParams?.messageTypeRows &&
+		initialParams.messageTypeRows.length > 0
+	) {
+		const maxId = Math.max(
+			...initialParams.messageTypeRows.map((row) => row.id)
+		)
+		nextRowId = maxId + 1
+		return initialParams.messageTypeRows
+	}
 
 	// Default message types in order
 	const defaultMessageTypes = [
@@ -70,22 +156,62 @@ function initializeMessageTypeRows(): MessageTypeRow[] {
 		MESSAGE_TYPE.Unknown
 	]
 
-	return defaultMessageTypes.map((messageType, index) => ({
+	const rows = defaultMessageTypes.map((messageType, index) => ({
 		id: index + 1,
-		enabled: savedMessageTypes
-			? savedMessageTypes.includes(messageType)
-			: true,
+		enabled: true,
 		messageType,
-		sourceIED: '',
-		targetIED: ''
+		sourceIEDPattern: '',
+		targetIEDPattern: ''
 	}))
+
+	nextRowId = rows.length + 1
+	return rows
 }
 
 let messageTypeRows: MessageTypeRow[] = $state(initializeMessageTypeRows())
 
-let selectedMessageTypes = $derived(
-	messageTypeRows.filter((row) => row.enabled).map((row) => row.messageType)
-)
+function addMessageTypeRow() {
+	messageTypeRows = [
+		...messageTypeRows,
+		{
+			id: nextRowId++,
+			enabled: true,
+			messageType: MESSAGE_TYPE.GOOSE,
+			sourceIEDPattern: '',
+			targetIEDPattern: ''
+		}
+	]
+	saveParameters()
+}
+
+function removeMessageTypeRow(id: number) {
+	messageTypeRows = messageTypeRows.filter((row) => row.id !== id)
+	saveParameters()
+}
+
+let connectionFilters = $derived.by(() => {
+	const filters: ConnectionFilter[] = []
+
+	for (const row of messageTypeRows) {
+		if (!row.enabled) continue
+
+		const sourceIEDs = queryIEDsByPattern(row.sourceIEDPattern)
+		const targetIEDs = queryIEDsByPattern(row.targetIEDPattern)
+
+		filters.push({
+			sourceIEDs,
+			targetIEDs,
+			messageType: row.messageType
+		})
+
+		console.log(
+			`[Connection Filter] ${row.messageType}: source=${row.sourceIEDPattern} (${sourceIEDs.length} IEDs), target=${row.targetIEDPattern} (${targetIEDs.length} IEDs)`
+		)
+	}
+
+	console.log('[Connection Filters] Total filters:', filters.length, filters)
+	return filters
+})
 
 function calculateFitToContainerZoom(): number {
 	if (!htmlRoot || !diagramDimensions) return DEFAULT_ZOOM
@@ -113,7 +239,7 @@ function handleDiagramSizeCalculated(width: number, height: number) {
 function saveParameters(): void {
 	const params: CommunicationElementParameters = {
 		selectedBays: Array.from(selectedBays),
-		selectedMessageTypes,
+		messageTypeRows,
 		showLegend,
 		showBayList,
 		showIEDList,
@@ -133,6 +259,8 @@ $effect(() => {
 </script>
 
 {#if pluginGlobalStore.xmlDocument}
+	<IedPatternHelpDialog bind:isOpen={isPatternHelpDialogOpen} />
+
 	<div class="diagram-configuration">
 		<div>Bay selection</div>
 		<DiagramWithBaySelector bind:selectedBays onchange={saveParameters} />
@@ -164,7 +292,16 @@ $effect(() => {
 			</FormField>
 		</div>
 
-		<div>Communication matrix</div>
+		<div class="communication-matrix-header">
+			<div>Communication matrix</div>
+			<Tooltip text="Pattern Help">
+				<CustomIconButton
+					icon="help"
+					size="small"
+					onclick={() => (isPatternHelpDialogOpen = true)}
+				/>
+			</Tooltip>
+		</div>
 		<div class="communication-matrix">
 			{#each messageTypeRows as row (row.id)}
 				<div class="matrix-row">
@@ -175,27 +312,58 @@ $effect(() => {
 						/>
 					</FormField>
 					<div class="row-fields">
-						<Textfield
+						<Select
 							bind:value={row.messageType}
 							label="Message Type"
 							variant="outlined"
-							disabled={true}
-						/>
+							disabled={!row.enabled}
+							onchange={saveParameters}
+						>
+							<Option value={MESSAGE_TYPE.GOOSE}>GOOSE</Option>
+							<Option value={MESSAGE_TYPE.MMS}>MMS</Option>
+							<Option value={MESSAGE_TYPE.SampledValues}
+								>SampledValues</Option
+							>
+							<Option value={MESSAGE_TYPE.Unknown}>Unknown</Option
+							>
+						</Select>
 						<Textfield
-							bind:value={row.sourceIED}
+							bind:value={row.sourceIEDPattern}
 							label="Source IED"
 							variant="outlined"
 							disabled={!row.enabled}
+							onchange={saveParameters}
+							placeholder="e.g., *PROT*"
 						/>
 						<Textfield
-							bind:value={row.targetIED}
+							bind:value={row.targetIEDPattern}
 							label="Target IED"
 							variant="outlined"
 							disabled={!row.enabled}
+							onchange={saveParameters}
+							placeholder="e.g., *BAY*"
 						/>
 					</div>
+					{#if messageTypeRows.length > 1}
+						<span title="Remove row">
+							<CustomIconButton
+								icon="delete"
+								size="small"
+								onclick={() => removeMessageTypeRow(row.id)}
+							/>
+						</span>
+					{/if}
 				</div>
 			{/each}
+			<div class="add-row-button">
+				<span title="Add filter row">
+					<CustomIconButton
+						icon="add"
+						size="small"
+						onclick={addMessageTypeRow}
+					/>
+				</span>
+			</div>
 		</div>
 	</div>
 
@@ -208,7 +376,7 @@ $effect(() => {
 					selectedBays={selectedBays.size > 0
 						? selectedBays
 						: undefined}
-					{selectedMessageTypes}
+					{connectionFilters}
 					focusMode={true}
 					isOutsidePluginContext={true}
 					zoom={calculatedZoom}
@@ -224,7 +392,7 @@ $effect(() => {
 <style>
 	.communication-preview-wrapper {
 		width: 100%;
-		overflow: hidden;
+		overflow: auto;
 	}
 
 	.communication-preview-wrapper :global(*) {
@@ -242,6 +410,12 @@ $effect(() => {
 		margin-bottom: 1rem;
 	}
 
+	.communication-matrix-header {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
 	.communication-matrix {
 		display: flex;
 		flex-direction: column;
@@ -253,6 +427,29 @@ $effect(() => {
 	.matrix-row {
 		display: flex;
 		align-items: center;
-		gap: 1rem;
+		gap: 0.5rem;
+	}
+
+	.row-fields {
+		display: flex;
+		gap: 0.5rem;
+		flex: 1;
+		align-items: center;
+	}
+
+	.row-fields :global(.mdc-text-field) {
+		min-width: 0;
+		flex: 1;
+	}
+
+	.row-fields :global(.mdc-select) {
+		min-width: 140px;
+		max-width: 140px;
+	}
+
+	.add-row-button {
+		display: flex;
+		justify-content: center;
+		padding: 0.5rem;
 	}
 </style>

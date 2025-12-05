@@ -26,12 +26,19 @@ import {
 } from '../../../headless/services/ied/ied'
 import type { IED } from '@oscd-plugins/core'
 
+export interface ConnectionFilter {
+	sourceIEDs: string[]
+	targetIEDs: string[]
+	messageType: string
+}
+
 interface Props {
 	root: Element
 	showSidebar?: boolean
 	isOutsidePluginContext?: boolean
 	selectedBays?: Set<string>
 	selectedMessageTypes?: string[]
+	connectionFilters?: ConnectionFilter[]
 	focusMode?: boolean
 	zoom?: number
 	onDiagramSizeCalculated?: (width: number, height: number) => void
@@ -43,6 +50,7 @@ let {
 	isOutsidePluginContext = false,
 	selectedBays,
 	selectedMessageTypes,
+	connectionFilters,
 	focusMode,
 	zoom,
 	onDiagramSizeCalculated
@@ -67,6 +75,7 @@ $effect(() => {
 		$preferences$,
 		selectedBays,
 		selectedMessageTypes,
+		connectionFilters,
 		focusMode
 	)
 })
@@ -78,6 +87,7 @@ async function initInfos(
 	preferences: Preferences,
 	selectedBays?: Set<string>,
 	selectedMessageTypes?: string[],
+	connectionFilters?: ConnectionFilter[],
 	focusMode?: boolean
 ) {
 	if (!root) {
@@ -93,7 +103,56 @@ async function initInfos(
 	}
 
 	let filteredInfos = lastExtractedInfos
-	if (selectedBays && selectedBays.size > 0) {
+
+	if (connectionFilters && connectionFilters.length > 0) {
+		const visibleIEDs = new Set<string>()
+		for (const filter of connectionFilters) {
+			for (const ied of filter.sourceIEDs) {
+				visibleIEDs.add(ied)
+			}
+			for (const ied of filter.targetIEDs) {
+				visibleIEDs.add(ied)
+			}
+		}
+
+		filteredInfos = lastExtractedInfos
+			.filter((ied) => visibleIEDs.has(ied.iedName))
+			.map((ied) => {
+				const filteredPublished = ied.published.filter((pub) => {
+					return connectionFilters.some((filter) => {
+						const sourceMatch =
+							filter.sourceIEDs.length === 0 ||
+							filter.sourceIEDs.includes(ied.iedName)
+						const targetMatch =
+							filter.targetIEDs.length === 0 ||
+							filter.targetIEDs.includes(pub.targetIEDName)
+						const typeMatch = pub.serviceType === filter.messageType
+						const matches = sourceMatch && targetMatch && typeMatch
+						return matches
+					})
+				})
+
+				const filteredReceived = ied.received.filter((rec) => {
+					return connectionFilters.some((filter) => {
+						const sourceMatch =
+							filter.sourceIEDs.length === 0 ||
+							filter.sourceIEDs.includes(rec.iedName)
+						const targetMatch =
+							filter.targetIEDs.length === 0 ||
+							filter.targetIEDs.includes(ied.iedName)
+						const typeMatch = rec.serviceType === filter.messageType
+						const matches = sourceMatch && targetMatch && typeMatch
+						return matches
+					})
+				})
+
+				return {
+					...ied,
+					published: filteredPublished,
+					received: filteredReceived
+				}
+			})
+	} else if (selectedBays && selectedBays.size > 0) {
 		filteredInfos = lastExtractedInfos.filter((ied) => {
 			if (!ied.bays || ied.bays.size === 0) return false
 			return Array.from(ied.bays).some((bay: string) =>
