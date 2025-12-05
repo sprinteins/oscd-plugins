@@ -125,10 +125,7 @@ function saveParameters(): void {
 
 $effect(() => {
 	if (!htmlRoot) return
-	;(async () => {
-		await tick()
-		triggerDiagramReady?.()
-	})()
+	tick().then(() => triggerDiagramReady?.())
 })
 </script>
 
