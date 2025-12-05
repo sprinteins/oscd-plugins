@@ -4,10 +4,18 @@ import type { ElementType } from '@/ui/components/elements/types.elements'
 import CommunicationElement from '@/ui/components/elements/communication-element/communication-element.svelte'
 import NetworkElement from '@/ui/components/elements/network-element/network-element.svelte'
 import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
+import autoTable, { type FontStyle } from 'jspdf-autotable'
 import zipcelx from 'zipcelx'
 import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
 import { renderComponentOffscreen } from './renderComponentOffscreen'
+import type { PDF_CONSTANTS, TEXT_SIZES, FONT_STYLES } from './pdf/constants'
+import {
+	loadImage,
+	extractImageFormat,
+	getImageScaleFactor
+} from './pdf/image-utils'
+import { PdfPageManager } from './pdf/page-manager'
+import type { TextSize } from './pdf/pdf.types'
 
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
@@ -15,45 +23,32 @@ import { renderComponentOffscreen } from './renderComponentOffscreen'
 
 async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	const doc = new jsPDF()
-	const DEFAULT_FONT_SIZE = 10
-	doc.setFontSize(DEFAULT_FONT_SIZE)
-	const INITIAL_UPPER_PAGE_COORDINATE = 10
-	const INITIAL_LOWER_PAGE_COORDINATE = 10
-	const DEFAULT_LINE_HEIGHT = 7
+	doc.setFontSize(PDF_CONSTANTS.DEFAULT_FONT_SIZE)
 
-	let marginTop = INITIAL_UPPER_PAGE_COORDINATE
 	const pageHeight = doc.internal.pageSize.height
 	const pageSize = doc.internal.pageSize
 	const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth()
-	const marginBottom = INITIAL_LOWER_PAGE_COORDINATE
+
+	const pageManager = new PdfPageManager(
+		doc,
+		pageHeight,
+		PDF_CONSTANTS.INITIAL_PAGE_MARGIN,
+		PDF_CONSTANTS.INITIAL_PAGE_MARGIN
+	)
 
 	const blockHandler: Record<
 		ElementType,
 		(block: Element) => void | Promise<void>
 	> = {
-		text: handleRichTextEditorBlock,
-		image: processImageForPdfGeneration,
-		signalList: processSignalListForPdfGeneration,
-		table: processTableForPdfGeneration,
-		network: processNetworkForPdfGeneration,
-		communication: processCommunicationForPdfGeneration
+		text: processRichTextBlock,
+		image: processImageBlock,
+		signalList: processSignalListBlock,
+		table: processTableBlock,
+		network: processNetworkBlock,
+		communication: processCommunicationBlock
 	}
 
-	function incrementVerticalPositionForNextLine(lineHeight?: number) {
-		marginTop += lineHeight || DEFAULT_LINE_HEIGHT
-	}
-
-	function contentExceedsCurrentPage(height?: number) {
-		const bufferToBottomPage = height || 10
-		return marginTop + bufferToBottomPage > pageHeight - marginBottom
-	}
-
-	function createNewPage() {
-		doc.addPage()
-		marginTop = INITIAL_UPPER_PAGE_COORDINATE
-	}
-
-	function handleRichTextEditorBlock(block: Element) {
+	function processRichTextBlock(block: Element) {
 		const parser = new DOMParser()
 		const parsedBlockContent = parser.parseFromString(
 			block.textContent ?? '',
@@ -64,29 +59,41 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		for (const element of HTMLElements) {
 			switch (element.tagName.toLowerCase()) {
 				case 'h1':
-					handleText(element.textContent ?? '', 20, 'bold')
+					renderText(
+						element.textContent ?? '',
+						TEXT_SIZES.H1,
+						FONT_STYLES.BOLD
+					)
 					break
 				case 'h2':
-					handleText(element.textContent ?? '', 16, 'bold')
+					renderText(
+						element.textContent ?? '',
+						TEXT_SIZES.H2,
+						FONT_STYLES.BOLD
+					)
 					break
 				case 'h3':
-					handleText(element.textContent ?? '', 14, 'bold')
+					renderText(
+						element.textContent ?? '',
+						TEXT_SIZES.H3,
+						FONT_STYLES.BOLD
+					)
 					break
 				case 'p':
 					processParagraph(element)
 					break
 				case 'strong':
-					handleText(
+					renderText(
 						element.textContent ?? '',
-						DEFAULT_FONT_SIZE,
-						'bold'
+						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+						FONT_STYLES.BOLD
 					)
 					break
 				case 'em':
-					handleText(
+					renderText(
 						element.textContent ?? '',
-						DEFAULT_FONT_SIZE,
-						'italic'
+						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+						FONT_STYLES.ITALIC
 					)
 					break
 				case 'ul':
@@ -101,10 +108,10 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		}
 	}
 
-	function handleText(
+	function renderText(
 		text: string,
-		fontSize: number,
-		fontStyle: 'normal' | 'bold' | 'italic',
+		fontSize: TextSize,
+		fontStyle: FontStyle,
 		indent = 0
 	) {
 		const textWithPlaceholder = placeholderStore.fillPlaceholder(text)
@@ -113,35 +120,39 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 		const wrappedText: string[] = doc.splitTextToSize(
 			textWithPlaceholder ?? '',
-			pageWidth - (35 - indent)
+			pageWidth - (PDF_CONSTANTS.TEXT_MARGIN_OFFSET - indent)
 		)
 
 		for (const line of wrappedText) {
-			if (contentExceedsCurrentPage()) {
-				createNewPage()
-			}
-
-			const horizontalSpacing = 10
-			doc.text(line, horizontalSpacing, marginTop)
-			incrementVerticalPositionForNextLine()
+			pageManager.ensureSpace()
+			doc.text(
+				line,
+				PDF_CONSTANTS.HORIZONTAL_SPACING,
+				pageManager.getCurrentPosition()
+			)
+			pageManager.incrementPosition()
 		}
 	}
 
 	function processParagraph(paragraph: Element) {
 		for (const node of paragraph.childNodes) {
 			if (node.nodeType === Node.TEXT_NODE) {
-				handleText(node.textContent ?? '', DEFAULT_FONT_SIZE, 'normal')
+				renderText(
+					node.textContent ?? '',
+					PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+					FONT_STYLES.NORMAL
+				)
 			} else if (node.nodeType === Node.ELEMENT_NODE) {
 				const element = node as Element
-				let fontStyle: 'normal' | 'bold' | 'italic' = 'normal'
+				let fontStyle: FontStyle = FONT_STYLES.NORMAL
 				if (element.tagName.toLowerCase() === 'strong') {
-					fontStyle = 'bold'
+					fontStyle = FONT_STYLES.BOLD
 				} else if (element.tagName.toLowerCase() === 'em') {
-					fontStyle = 'italic'
+					fontStyle = FONT_STYLES.ITALIC
 				}
-				handleText(
+				renderText(
 					element.textContent ?? '',
-					DEFAULT_FONT_SIZE,
+					PDF_CONSTANTS.DEFAULT_FONT_SIZE,
 					fontStyle
 				)
 			}
@@ -160,30 +171,32 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 				const firstParagraph = li.querySelector('p')
 				if (firstParagraph) {
-					handleText(
+					renderText(
 						bullet + firstParagraph.textContent,
-						10,
-						'normal',
+						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+						FONT_STYLES.NORMAL,
 						indent
 					)
-					firstParagraph.remove() // Prevent duplicate text processing
+					firstParagraph.remove()
 				} else {
-					handleText(
+					renderText(
 						bullet + (li.textContent ?? ''),
-						10,
-						'normal',
+						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+						FONT_STYLES.NORMAL,
 						indent
 					)
 				}
 
-				// Check for nested lists inside this list item
 				// biome-ignore lint/complexity/noForEach: <explanation>
 				Array.from(li.children).forEach((child) => {
 					if (
 						child.tagName.toLowerCase() === 'ul' ||
 						child.tagName.toLowerCase() === 'ol'
 					) {
-						processList(child, indent + 10) // Increase indent for nested lists
+						processList(
+							child,
+							indent + PDF_CONSTANTS.NESTED_LIST_INDENT
+						)
 					}
 				})
 			}
@@ -191,39 +204,48 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	}
 
 	function renderTextLine(text: string) {
-		if (contentExceedsCurrentPage()) {
-			createNewPage()
+		pageManager.ensureSpace()
+		doc.text(
+			text,
+			PDF_CONSTANTS.HORIZONTAL_SPACING,
+			pageManager.getCurrentPosition()
+		)
+		pageManager.incrementPosition()
+	}
+
+	async function processImage(dataUrl: string, scale = 'small') {
+		if (!dataUrl) {
+			return
 		}
-		const horizontalSpacing = 10
-		doc.text(text, horizontalSpacing, marginTop)
-		incrementVerticalPositionForNextLine()
-	}
 
-	async function loadImage(base64: string): Promise<HTMLImageElement> {
-		return new Promise((resolve, reject) => {
-			const img = new Image()
-			img.onload = () => {
-				resolve(img)
-			}
-			img.onerror = (error) => reject(error)
-			img.src = base64
-		})
-	}
-
-	function getImageScaleFactor(scale: string) {
-		switch (scale.toLowerCase()) {
-			case 'small':
-				return 0.25
-			case 'medium':
-				return 0.5
-			case 'large':
-				return 1
-			default:
-				return 0.25
+		const image = await loadImage(dataUrl)
+		const format = extractImageFormat(dataUrl)
+		if (!format) {
+			console.error('[pdfGenerator] Invalid image format in Data URL')
+			return
 		}
+
+		const scaleFactor = getImageScaleFactor(scale)
+		const aspectRatio = image.height / image.width
+		const width = scaleFactor * PDF_CONSTANTS.MAX_IMAGE_WIDTH
+		const height = width * aspectRatio
+
+		pageManager.ensureSpace(height)
+
+		doc.addImage(
+			dataUrl,
+			format.toUpperCase(),
+			PDF_CONSTANTS.HORIZONTAL_SPACING,
+			pageManager.getCurrentPosition(),
+			width,
+			height
+		)
+
+		const padding = Math.round(height) + PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
+		pageManager.incrementPosition(padding)
 	}
 
-	async function processImageForPdfGeneration(block: Element) {
+	async function processImageBlock(block: Element) {
 		const content = block.textContent
 		if (!content) {
 			return
@@ -235,35 +257,10 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			return
 		}
 
-		const image = await loadImage(imageSource)
-		const format = content.split(';')[0].split('/')[1]
-
-		const maxWidth = 186
-		const scaleFactor = getImageScaleFactor(parsedContent.scale)
-
-		const aspectRatio = image.height / image.width
-
-		const width = scaleFactor * maxWidth
-		const height = width * aspectRatio
-
-		if (contentExceedsCurrentPage(height)) {
-			createNewPage()
-		}
-
-		doc.addImage(
-			imageSource,
-			format.toUpperCase(),
-			10,
-			marginTop,
-			width,
-			height
-		)
-
-		const padding = Math.round(height) + DEFAULT_LINE_HEIGHT
-		incrementVerticalPositionForNextLine(padding)
+		await processImage(imageSource, parsedContent.scale)
 	}
 
-	function processSignalListForPdfGeneration(block: Element) {
+	function processSignalListBlock(block: Element) {
 		if (!block.textContent) {
 			console.error('No content found in Signal List Block')
 			return
@@ -317,7 +314,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		}
 	}
 
-	function processTableForPdfGeneration(block: Element) {
+	function processTableBlock(block: Element) {
 		const content = block.textContent
 		if (!content) {
 			console.error('No content found in Table Block')
@@ -332,18 +329,18 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		const formattedBody: string[][] = [data.map((row: string[]) => row[1])]
 
 		const filledBody = formattedBody.map((row) =>
-			row.map((cell) => (cell = placeholderStore.fillPlaceholder(cell)))
+			row.map((cell) => placeholderStore.fillPlaceholder(cell))
 		)
 
 		let rows = data[0].length
 		let maxNeededRows = rows
 
-		filledBody[0].forEach((row) => {
+		for (const row of filledBody[0]) {
 			const entries = row.split(', ').length
 			if (entries > maxNeededRows) {
 				maxNeededRows = entries
 			}
-		})
+		}
 
 		let newFilledBody: string[][] = []
 
@@ -366,21 +363,34 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		autoTable(doc, {
 			head: formattedHeader,
 			body: newFilledBody,
-			startY: marginTop,
+			startY: pageManager.getCurrentPosition(),
 			margin: {
-				left: 10
+				left: PDF_CONSTANTS.HORIZONTAL_SPACING
 			},
 			headStyles: {
 				fillColor: 'black'
 			}
 		})
 
-		const tableHeight = rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT
-		if (contentExceedsCurrentPage(tableHeight)) {
-			createNewPage()
+		const tableHeight =
+			rows * PDF_CONSTANTS.DEFAULT_LINE_HEIGHT +
+			PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
+		if (pageManager.contentExceedsPage(tableHeight)) {
+			pageManager.createNewPage()
 		} else {
-			incrementVerticalPositionForNextLine(tableHeight)
+			pageManager.incrementPosition(tableHeight)
 		}
+	}
+
+	async function processCommunicationBlock(block: Element) {
+		await processVisualizationElementForPdfGeneration(
+			block,
+			CommunicationElement
+		)
+	}
+
+	async function processNetworkBlock(block: Element) {
+		await processVisualizationElementForPdfGeneration(block, NetworkElement)
 	}
 
 	async function processVisualizationElementForPdfGeneration(
@@ -389,35 +399,16 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	) {
 		const content = block.textContent || ''
 		try {
-			const base64Data = await renderComponentOffscreen(Component, {
+			const dataUrl = await renderComponentOffscreen(Component, {
 				content
 			})
 
-			const imageData: ImageData = {
-				scale: 'Large',
-				base64Data
-			}
-
-			const tempBlock = document.createElement('Block')
-			tempBlock.textContent = JSON.stringify(imageData)
-
-			await processImageForPdfGeneration(tempBlock)
+			await processImage(dataUrl, 'large')
 		} catch (error) {
 			console.error('[pdfGenerator] Error processing element:', error)
 			// Don't fail the entire PDF generation, just skip this element
 			renderTextLine('[Element Diagram - Failed to render]')
 		}
-	}
-
-	async function processCommunicationForPdfGeneration(block: Element) {
-		await processVisualizationElementForPdfGeneration(
-			block,
-			CommunicationElement
-		)
-	}
-
-	async function processNetworkForPdfGeneration(block: Element) {
-		await processVisualizationElementForPdfGeneration(block, NetworkElement)
 	}
 
 	for (const block of allBlocks) {
@@ -430,30 +421,6 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 	doc.save(`${templateTitle}.pdf`)
 }
-
-/*
-function generateTableBody(tableRows: string[][], tableHeader: TableHeader []) {
-   const generatedRows =  tableRows.map((row) => {
-        return tableHeader.reduce((acc: Record<string, string>, col, index) => {
-            acc[col.dataKey as string] = row[index];
-            return acc;
-        }, {} as Record<string, string>);
-    });
-    return generatedRows
-}
-
-type TableHeader = {
-    header: string;
-    dataKey: keyof typeof SignalType | keyof typeof Columns;
-}
-
-function generateTableHeader(selectedRows: SignalRow[]): TableHeader[] {
-    return selectedRows.map(row => ({
-        header: row.primaryInput,
-        dataKey: row.searchKey
-    }));
-}
-*/
 
 function downloadAsPdf(templateId: string) {
 	const template = docTemplatesStore.getDocumentTemplate(templateId)
