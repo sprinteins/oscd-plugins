@@ -3,34 +3,52 @@ import TelemetryView from '@oscd-plugins/communication-explorer/src/ui/component
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { LegacyTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
-import type { ImageData } from '../image-element/types.image'
-import { exportPngFromHTMLElement } from '@/utils/diagram-export'
 import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
 import Checkbox from '@smui/checkbox'
 import FormField from '@smui/form-field'
 import Textfield from '@smui/textfield'
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
+import type { CommunicationElementParameters } from './types.communication'
+import { tick } from 'svelte'
 
 interface Props {
 	onContentChange: (newContent: string) => void
+	triggerDiagramReady?: () => void
 	content?: string
 }
 
-let { onContentChange, content = '' }: Props = $props()
+let { onContentChange, triggerDiagramReady, content = '' }: Props = $props()
 
-const DELAY_BEFORE_DIAGRAM = 1000 // Increased delay to reduce export frequency
-const DEFAULT_EXPORT_PIXEL_RATIO = 10
+const DEFAULT_ZOOM = 1.0
+const DEFAULT_WIDTH = 800
+const DEFAULT_HEIGHT = 600
+const ZOOM_PADDING_FACTOR = 0.9
+
+let initialParams: CommunicationElementParameters | null = null
+
+if (content) {
+	try {
+		initialParams = JSON.parse(content) as CommunicationElementParameters
+	} catch (e) {
+		console.warn(
+			'[CommunicationElement] Failed to parse stored parameters:',
+			e
+		)
+	}
+}
 
 let htmlRoot: HTMLElement | null = $state(null)
-let selectedBays: Set<string> = $state(new Set<string>())
-let exportTimeout: ReturnType<typeof setTimeout> | null = null
-let isExporting = $state(false)
-let calculatedZoom = $state(1.0)
-let diagramDimensions = $state<{ width: number; height: number } | null>(null)
+let selectedBays: Set<string> = $state(
+	initialParams ? new Set(initialParams.selectedBays) : new Set<string>()
+)
+let calculatedZoom = $state(initialParams?.zoom ?? 1.0)
+let diagramDimensions = $state<{ width: number; height: number } | null>(
+	initialParams?.diagramDimensions ?? null
+)
 
-let showLegend = $state(false)
-let showBayList = $state(false)
-let showIEDList = $state(false)
+let showLegend = $state(initialParams?.showLegend ?? false)
+let showBayList = $state(initialParams?.showBayList ?? false)
+let showIEDList = $state(initialParams?.showIEDList ?? false)
 
 interface MessageTypeRow {
 	id: number
@@ -40,133 +58,103 @@ interface MessageTypeRow {
 	targetIED: string
 }
 
-// placeholder rows for message type selection
-let messageTypeRows: MessageTypeRow[] = $state([
-	{
-		id: 1,
-		enabled: true,
-		messageType: MESSAGE_TYPE.GOOSE,
+// Initialize message type rows from saved parameters or default to all enabled
+function initializeMessageTypeRows(): MessageTypeRow[] {
+	const savedMessageTypes = initialParams?.selectedMessageTypes
+
+	// Default message types in order
+	const defaultMessageTypes = [
+		MESSAGE_TYPE.GOOSE,
+		MESSAGE_TYPE.MMS,
+		MESSAGE_TYPE.SampledValues,
+		MESSAGE_TYPE.Unknown
+	]
+
+	return defaultMessageTypes.map((messageType, index) => ({
+		id: index + 1,
+		enabled: savedMessageTypes
+			? savedMessageTypes.includes(messageType)
+			: true,
+		messageType,
 		sourceIED: '',
 		targetIED: ''
-	},
-	{
-		id: 2,
-		enabled: true,
-		messageType: MESSAGE_TYPE.MMS,
-		sourceIED: '',
-		targetIED: ''
-	},
-	{
-		id: 3,
-		enabled: true,
-		messageType: MESSAGE_TYPE.SampledValues,
-		sourceIED: '',
-		targetIED: ''
-	},
-	{
-		id: 4,
-		enabled: true,
-		messageType: MESSAGE_TYPE.Unknown,
-		sourceIED: '',
-		targetIED: ''
-	}
-])
+	}))
+}
+
+let messageTypeRows: MessageTypeRow[] = $state(initializeMessageTypeRows())
 
 let selectedMessageTypes = $derived(
 	messageTypeRows.filter((row) => row.enabled).map((row) => row.messageType)
 )
 
 function calculateFitToContainerZoom(): number {
-	if (!htmlRoot || !diagramDimensions) return 1.0
-	
-	const containerWidth = htmlRoot.offsetWidth || 800
-	const containerHeight = htmlRoot.offsetHeight || 600
-	
+	if (!htmlRoot || !diagramDimensions) return DEFAULT_ZOOM
+
+	const containerWidth = htmlRoot.offsetWidth || DEFAULT_WIDTH
+	const containerHeight = htmlRoot.offsetHeight || DEFAULT_HEIGHT
+
 	const diagramWidth = diagramDimensions.width
 	const diagramHeight = diagramDimensions.height
-	
-	if (diagramWidth === 0 || diagramHeight === 0) return 0.5
-	
+
+	if (diagramWidth === 0 || diagramHeight === 0) return DEFAULT_ZOOM
+
 	const widthRatio = containerWidth / diagramWidth
 	const heightRatio = containerHeight / diagramHeight
-	
-	return Math.min(widthRatio, heightRatio) * 0.9
+
+	return Math.min(widthRatio, heightRatio) * ZOOM_PADDING_FACTOR
 }
 
 function handleDiagramSizeCalculated(width: number, height: number) {
 	diagramDimensions = { width, height }
 	calculatedZoom = calculateFitToContainerZoom()
+	saveParameters()
 }
 
-async function exportNetworkDiagram(): Promise<void> {
-	if (!htmlRoot || isExporting) {
-		return
+function saveParameters(): void {
+	const params: CommunicationElementParameters = {
+		selectedBays: Array.from(selectedBays),
+		selectedMessageTypes,
+		showLegend,
+		showBayList,
+		showIEDList,
+		zoom: calculatedZoom,
+		diagramDimensions
 	}
-
-	isExporting = true
-	try {
-		const exportWidth = diagramDimensions ? Math.ceil(diagramDimensions.width * calculatedZoom) : undefined
-		const exportHeight = diagramDimensions ? Math.ceil(diagramDimensions.height * calculatedZoom) : undefined
-		
-		const pngBase64 = await exportPngFromHTMLElement({
-			element: htmlRoot,
-			imageWidth: exportWidth,
-			imageHeight: exportHeight,
-			pixelRatio: DEFAULT_EXPORT_PIXEL_RATIO,
-			quality: 1
-		})
-		const fullDataUri = `data:image/png;base64,${pngBase64}`
-
-		const data: ImageData = {
-			scale: 'Large',
-			base64Data: fullDataUri
-		}
-		onContentChange(JSON.stringify(data))
-	} catch (error) {
-		console.error('Error exporting diagram as PNG:', error)
-	} finally {
-		isExporting = false
-	}
+	onContentChange(JSON.stringify(params))
 }
 
 $effect(() => {
-	const bays = selectedBays
-	const messageTypes = selectedMessageTypes
-
 	if (!htmlRoot) return
-
-	if (exportTimeout) {
-		clearTimeout(exportTimeout)
-		exportTimeout = null
-	}
-
-	exportTimeout = setTimeout(() => {
-		exportNetworkDiagram()
-		exportTimeout = null
-	}, DELAY_BEFORE_DIAGRAM)
+	tick().then(() => triggerDiagramReady?.())
 })
 </script>
 
 {#if pluginGlobalStore.xmlDocument}
 	<div class="diagram-configuration">
 		<div>Bay selection</div>
-		<DiagramWithBaySelector bind:selectedBays />
+		<DiagramWithBaySelector bind:selectedBays onchange={saveParameters} />
 		<div>Further details</div>
 		<div class="further-details-options">
 			<FormField>
-				<Checkbox bind:checked={showLegend} />
+				<Checkbox bind:checked={showLegend} onchange={saveParameters} />
 				{#snippet label()}
 					Show legend
 				{/snippet}
 			</FormField>
 			<FormField>
-				<Checkbox bind:checked={showBayList} />
+				<Checkbox
+					bind:checked={showBayList}
+					onchange={saveParameters}
+				/>
 				{#snippet label()}
 					Show list of bays
 				{/snippet}
 			</FormField>
 			<FormField>
-				<Checkbox bind:checked={showIEDList} />
+				<Checkbox
+					bind:checked={showIEDList}
+					onchange={saveParameters}
+				/>
 				{#snippet label()}
 					Show list of IEDs and IED details
 				{/snippet}
@@ -178,7 +166,10 @@ $effect(() => {
 			{#each messageTypeRows as row (row.id)}
 				<div class="matrix-row">
 					<FormField>
-						<Checkbox bind:checked={row.enabled} />
+						<Checkbox
+							bind:checked={row.enabled}
+							onchange={saveParameters}
+						/>
 					</FormField>
 					<div class="row-fields">
 						<Textfield
@@ -207,19 +198,19 @@ $effect(() => {
 
 	<div class="communication-element">
 		<LegacyTheme>
-			<div class="fit-middle">
 			<div class="communication-preview-wrapper" bind:this={htmlRoot}>
 				<TelemetryView
 					root={pluginGlobalStore.xmlDocument as unknown as Element}
 					showSidebar={false}
-					selectedBays={selectedBays.size > 0 ? selectedBays : undefined}
+					selectedBays={selectedBays.size > 0
+						? selectedBays
+						: undefined}
 					{selectedMessageTypes}
 					focusMode={true}
 					isOutsidePluginContext={true}
 					zoom={calculatedZoom}
 					onDiagramSizeCalculated={handleDiagramSizeCalculated}
 				/>
-			</div>
 			</div>
 		</LegacyTheme>
 	</div>
@@ -228,17 +219,12 @@ $effect(() => {
 {/if}
 
 <style>
-	.fit-middle {
-		justify-content: center;
-		align-items: center;
-	}
-
 	.communication-preview-wrapper {
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
 	}
-	
+
 	.communication-preview-wrapper :global(*) {
 		pointer-events: none !important;
 	}
