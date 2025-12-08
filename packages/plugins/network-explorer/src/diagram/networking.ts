@@ -92,7 +92,7 @@ export function findAllIEDBays(root: Element): BayIEDNameMap {
 
 export type CableNetworkingMap = {[cable: string]: Networking[]}
 
-export function createCableNetowrkingMap(
+export function createCableNetworkingMap(
 	ieds: IED[],
 ): CableNetworkingMap {
 

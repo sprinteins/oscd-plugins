@@ -1,7 +1,7 @@
 {
 	"name": "@oscd-plugins/communication-explorer",
 	"private": true,
-	"version": "0.0.38",
+	"version": "0.0.39",
 	"type": "module",
 	"scripts": {
 		"//====== DEV ======//": "",
@@ -22,7 +22,8 @@
 		".": {
 			"types": "./dist/plugin.d.ts",
 			"default": "./dist/plugin.js"
-		}
+		},
+		"./src/ui/components/telemetry-view/telemetry-view.svelte": "./src/ui/components/telemetry-view/telemetry-view.svelte"
 	},
 	"dependencies": {
 		"@material/typography": "^14.0.0",

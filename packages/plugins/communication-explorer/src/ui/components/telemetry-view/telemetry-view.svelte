@@ -16,22 +16,37 @@ import {
 	toggleMultiSelectionOfIED
 } from '../../../stores/_store-view-filter'
 import type { Config } from '../../../headless/services/_func-layout-calculation/config'
-import { preferences$, type Preferences } from '../../../stores/_store-preferences'
-// SERVICES
-import { getIEDCommunicationInfos, getBays } from '../../../headless/services/ied/ied'
-//TYPES
+import {
+	preferences$,
+	type Preferences
+} from '../../../stores/_store-preferences'
+import {
+	getIEDCommunicationInfos,
+	getBays
+} from '../../../headless/services/ied/ied'
 import type { IED } from '@oscd-plugins/core'
 
-//
-// INPUT
-//
-
 interface Props {
-	root: Element;
-	showSidebar?: boolean;
+	root: Element
+	showSidebar?: boolean
+	isOutsidePluginContext?: boolean
+	selectedBays?: Set<string>
+	selectedMessageTypes?: string[]
+	focusMode?: boolean
+	zoom?: number
+	onDiagramSizeCalculated?: (width: number, height: number) => void
 }
 
-let { root, showSidebar = true }: Props = $props();
+let {
+	root,
+	showSidebar = true,
+	isOutsidePluginContext = false,
+	selectedBays,
+	selectedMessageTypes,
+	focusMode,
+	zoom,
+	onDiagramSizeCalculated
+}: Props = $props()
 
 let rootNode: RootNode | undefined = $state(undefined)
 let lastUsedRoot: Element | undefined = undefined
@@ -46,14 +61,24 @@ const config: Config = {
 }
 
 $effect(() => {
-	initInfos(root, $filterState, $preferences$)
+	initInfos(
+		root,
+		$filterState,
+		$preferences$,
+		selectedBays,
+		selectedMessageTypes,
+		focusMode
+	)
 })
 
 // Note: maybe have a mutex if there are too many changes
 async function initInfos(
 	root: Element,
 	selectedFilter: SelectedFilter,
-	preferences: Preferences
+	preferences: Preferences,
+	selectedBays?: Set<string>,
+	selectedMessageTypes?: string[],
+	focusMode?: boolean
 ) {
 	if (!root) {
 		console.info({ level: 'info', msg: 'initInfos: no root' })
@@ -66,17 +91,42 @@ async function initInfos(
 		lastExtractedBays = getBays(root)
 		lastUsedRoot = root
 	}
+
+	let filteredInfos = lastExtractedInfos
+	if (selectedBays && selectedBays.size > 0) {
+		filteredInfos = lastExtractedInfos.filter((ied) => {
+			if (!ied.bays || ied.bays.size === 0) return false
+			return Array.from(ied.bays).some((bay: string) =>
+				selectedBays.has(bay)
+			)
+		})
+	}
+
+	const filterWithOverrides =
+		selectedMessageTypes !== undefined
+			? { ...selectedFilter, selectedMessageTypes }
+			: selectedFilter
+
+	const preferencesWithOverrides =
+		focusMode !== undefined
+			? { ...preferences, isFocusModeOn: focusMode }
+			: preferences
+
 	rootNode = await calculateLayout(
-		lastExtractedInfos,
+		filteredInfos,
 		config,
-		selectedFilter,
-		preferences
+		filterWithOverrides,
+		preferencesWithOverrides
 	)
+
+	if (rootNode && onDiagramSizeCalculated) {
+		onDiagramSizeCalculated(rootNode.width || 0, rootNode.height || 0)
+	}
 }
 
 async function handleBaySelect(bay: string) {
 	clearIEDSelection()
-	await initInfos(root, $filterState, $preferences$)
+	await initInfos(root, $filterState, $preferences$, selectedBays)
 	if (rootNode?.children) {
 		for (const node of rootNode.children) {
 			if (node.bays?.has(bay)) {
@@ -93,13 +143,19 @@ function handleConnectionClick(connection: IEDConnection) {
 }
 </script>
 
-<div class="root" class:showSidebar>
+<div
+	class="root"
+	class:showSidebar
+	class:outsidePluginContext={isOutsidePluginContext}
+>
 	{#if rootNode}
 		<Diagram
 			{rootNode}
 			playAnimation={$preferences$.playConnectionAnimation}
 			showConnectionArrows={$preferences$.showConnectionArrows}
 			showBayLabels={!$preferences$.groupByBay}
+			{zoom}
+			{isOutsidePluginContext}
 			handleIEDSelect={selectIEDElkNode}
 			{handleBaySelect}
 			handleIEDAdditiveSelect={toggleMultiSelectionOfIED}
@@ -118,12 +174,16 @@ function handleConnectionClick(connection: IEDConnection) {
 		--header-height: 128px;
 		display: grid;
 		grid-template-columns: auto 0;
-		height: calc(100vh - var(--header-height));
 		width: 100%;
 		overflow-x: hidden;
+		height: calc(100vh - var(--header-height));
 	}
-	
+
 	.root.showSidebar {
 		grid-template-columns: auto var(--sidebar-width);
+	}
+
+	.root.outsidePluginContext {
+		height: 100%;
 	}
 </style>
