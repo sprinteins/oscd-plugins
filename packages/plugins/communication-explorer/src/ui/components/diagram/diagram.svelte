@@ -178,13 +178,8 @@ function resetZoom(width: number, height: number) {
 	//only reset zoom if rootNodeWidth / height actually changed
 	//(the rune also triggers when they didn't for some reason...)
 	if (width !== savedRootNodeWidth && height !== savedRootNodeHeight) {
-		if (isOutsidePluginContext) {
-			svgWidth = width * zoom
-			svgHeight = height * zoom
-		} else {
-			svgWidth = width
-			svgHeight = height
-		}
+		svgWidth = width
+		svgHeight = height
 		savedRootNodeWidth = width
 		savedRootNodeHeight = height
 	}
@@ -247,9 +242,10 @@ async function handleMouseWheel(e: WheelEvent) {
 		<svg
 			bind:this={svgRoot}
 			viewBox={`0 0 ${rootNode.width} ${rootNode.height}`}
-			style:--width={`${svgWidth}px`}
-			style:--height={`${svgHeight}px`}
+			style:--width={isOutsidePluginContext ? "100%" : `${svgWidth}px`}
+			style:--height={isOutsidePluginContext ? "100%" : `${svgHeight}px`}
 			xmlns="http://www.w3.org/2000/svg"
+			class:pluginContext={!isOutsidePluginContext}
 		>
 			{#if rootNode.children}
 				{#each rootNode.children as node}
@@ -261,10 +257,7 @@ async function handleMouseWheel(e: WheelEvent) {
 							height={node.height}
 							overflow="visible"
 						>
-							<BayContainer
-								{node}
-								testid={`bay-${node.label}`}
-							/>
+							<BayContainer {node} testid={`bay-${node.label}`} />
 						</foreignObject>
 					{:else}
 						<foreignObject
@@ -277,9 +270,9 @@ async function handleMouseWheel(e: WheelEvent) {
 						>
 							<IEDElement
 								{node}
-								isBaySelected= {false}
+								isBaySelected={false}
 								isIEDSelected={isIEDSelected(node)}
-								showBayLabels={showBayLabels}
+								{showBayLabels}
 								testid={`ied-${node.label}`}
 							/>
 						</foreignObject>
@@ -324,5 +317,9 @@ async function handleMouseWheel(e: WheelEvent) {
 		width: var(--width);
 		height: var(--height);
 		display: block;
+	}
+
+	svg.pluginContext {
+		margin: auto;
 	}
 </style>

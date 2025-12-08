@@ -1,72 +1,62 @@
 <script lang="ts">
 import NetworkExplorer from '@oscd-plugins/network-explorer/src/network-explorer.svelte'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { MaterialTheme } from '@oscd-plugins/ui'
+import { LegacyTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
-import { exportPngFromHTMLElement } from '@/utils/diagram-export'
-import type { ImageData } from '../image-element/types.image'
 import DiagramWithBaySelector from '../diagram-with-bay-selector.svelte'
-
-const SVELTE_FLOW__PANE = '.svelte-flow__pane'
-const DELAY_BEFORE_FLOW_PANE = 500
+import type { NetworkElementParameters } from './types.network'
 
 interface Props {
 	onContentChange: (newContent: string) => void
+	triggerDiagramReady?: () => void
+	content?: string
 }
 
-let { onContentChange }: Props = $props()
+let { onContentChange, triggerDiagramReady, content = '' }: Props = $props()
+
+let initialParams: NetworkElementParameters | null = null
+
+if (content) {
+	try {
+		initialParams = JSON.parse(content) as NetworkElementParameters
+	} catch (e) {
+		console.warn('[NetworkElement] Failed to parse stored parameters:', e)
+	}
+}
 
 let htmlRoot: HTMLElement | null = $state(null)
-let selectedBays: Set<string> = $state(new Set<string>())
+let selectedBays: Set<string> = $state(
+	initialParams ? new Set(initialParams.selectedBays) : new Set<string>()
+)
 
-async function exportNetworkDiagram(flowPane: HTMLElement) {
-	if (!flowPane) {
-		console.error('Flow pane is not available for export.')
-		return
+function saveParameters(): void {
+	const params: NetworkElementParameters = {
+		selectedBays: Array.from(selectedBays)
 	}
-	try {
-		const pngBase64 = await exportPngFromHTMLElement({
-			element: flowPane
-		})
-		const fullDataUri = `data:image/png;base64,${pngBase64}`
-
-		const data: ImageData = {
-			scale: 'Large',
-			base64Data: fullDataUri
-		}
-
-		onContentChange(JSON.stringify(data))
-	} catch (error) {
-		console.error('Error exporting diagram as PNG:', error)
-	}
-}
-
-async function waitForDiagramToRender(): Promise<void> {
-	await new Promise((resolve) => setTimeout(resolve, DELAY_BEFORE_FLOW_PANE))
+	onContentChange(JSON.stringify(params))
 }
 
 $effect(() => {
-	if (htmlRoot && selectedBays) {
-		const pane = htmlRoot.querySelector<HTMLElement>(SVELTE_FLOW__PANE)
-		if (pane) {
-			waitForDiagramToRender().then(() => exportNetworkDiagram(pane))
-		}
+	if (htmlRoot && triggerDiagramReady) {
+		triggerDiagramReady()
 	}
 })
 </script>
 
 {#if pluginGlobalStore.xmlDocument}
 	<div class="communication-element" bind:this={htmlRoot}>
-		<DiagramWithBaySelector bind:selectedBays />
-		<MaterialTheme pluginType="editor">
+		<DiagramWithBaySelector bind:selectedBays onchange={saveParameters} />
+		<LegacyTheme>
 			<div class="network-preview-wrapper">
 				<NetworkExplorer
 					doc={pluginGlobalStore.xmlDocument}
 					isOutsidePluginContext={true}
-					selectedBays={selectedBays.size > 0 ? selectedBays : undefined}
+					selectedBays={selectedBays.size > 0
+						? selectedBays
+						: undefined}
 				/>
 			</div>
-		</MaterialTheme>
+		</LegacyTheme>
 	</div>
 {:else}
 	<NoXmlWarning />

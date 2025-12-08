@@ -32,6 +32,7 @@ export async function exportPngFromHTMLElement({
       pixelRatio,
       quality,
       cacheBust: true,
+      skipFonts: true,
     });
 
     return extractBase64FromDataUrl(dataUrl);
