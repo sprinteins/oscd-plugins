@@ -2,16 +2,7 @@ import type { IEDService } from '@oscd-plugins/core'
 import type jsPDF from 'jspdf'
 import type { PdfPageManager } from './pdf/page-manager'
 import { PDF_CONSTANTS } from './pdf/constants'
-
-interface CommunicationElementParameters {
-	selectedBays: string[]
-	selectedMessageTypes: string[]
-	showLegend: boolean
-	showBayList: boolean
-	showIEDList: boolean
-	zoom: number
-	diagramDimensions: { width: number; height: number } | null
-}
+import type { CommunicationElementParameters } from '@/ui/components/elements/communication-element'
 
 export function writeCommunicationContentToPdf(
 	doc: jsPDF,
