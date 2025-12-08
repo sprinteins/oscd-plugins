@@ -19,6 +19,7 @@ let { id, navigate }: Props = $props()
 let title = $state('')
 let description = $state('')
 let isMetadataVisible = $state(false)
+let isGenerating = $state(false)
 let templateId: string | undefined = undefined
 let template: Element | null = $state(null)
 
@@ -86,13 +87,18 @@ function updateTitleAndDescription() {
 	)
 }
 
-function downloadTemplateContent() {
-	if (!templateId) {
-		return
-	}
+async function downloadTemplateContent() {
+	if (!templateId || isGenerating) return
 
-	pdfGenerator.downloadAsPdf(templateId)
+	isGenerating = true
+	await pdfGenerator
+		.downloadAsPdf(templateId)
+		.catch((error) => console.error('Error generating PDF:', error))
+		.finally(() => {
+			isGenerating = false
+		})
 }
+
 </script>
 
 <div class="template-creation-container">
@@ -111,7 +117,9 @@ function downloadTemplateContent() {
                 <Button>open template</Button>
                 <Button>save template</Button>
             </div> -->
-            <Button variant="raised" onclick={downloadTemplateContent}>Generate Document</Button>
+            <Button variant="raised" onclick={downloadTemplateContent} disabled={isGenerating}>
+                {isGenerating ? 'Generating...' : 'Generate Document'}
+            </Button>
         </div>
     </header>
 

@@ -455,7 +455,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	doc.save(`${templateTitle}.pdf`)
 }
 
-function downloadAsPdf(templateId: string) {
+async function downloadAsPdf(templateId: string) {
 	const template = docTemplatesStore.getDocumentTemplate(templateId)
 	if (!template) {
 		console.error('Template not found')
@@ -465,7 +465,7 @@ function downloadAsPdf(templateId: string) {
 	const allBlocks: NodeList = template.querySelectorAll('Block')
 	const blockConvertedToArray: Element[] =
 		Array.prototype.slice.call(allBlocks)
-	generatePdf(templateTitle, blockConvertedToArray)
+	await generatePdf(templateTitle, blockConvertedToArray)
 }
 
 export const pdfGenerator = {
