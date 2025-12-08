@@ -390,7 +390,6 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			block,
 			CommunicationElement
 		)
-
 		// Then add the legend, bay list, and IED list as text
 		const content = block.textContent || ''
 		if (!content) return

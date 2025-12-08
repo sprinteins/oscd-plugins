@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds a new Element for the CE and NE
 - Export to PNG feature for HTMLElements
 - Filter NE and CE preview for selected bays
+- Render NE and CE offscreen for document generation
 
 ## [1.17.7] - 2025-11-14
 ### Fixed
