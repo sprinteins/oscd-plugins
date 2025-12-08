@@ -245,6 +245,7 @@ async function handleMouseWheel(e: WheelEvent) {
 			style:--width={isOutsidePluginContext ? "100%" : `${svgWidth}px`}
 			style:--height={isOutsidePluginContext ? "100%" : `${svgHeight}px`}
 			xmlns="http://www.w3.org/2000/svg"
+			class:pluginContext={!isOutsidePluginContext}
 		>
 			{#if rootNode.children}
 				{#each rootNode.children as node}
@@ -316,5 +317,9 @@ async function handleMouseWheel(e: WheelEvent) {
 		width: var(--width);
 		height: var(--height);
 		display: block;
+	}
+
+	svg.pluginContext {
+		margin: auto;
 	}
 </style>
