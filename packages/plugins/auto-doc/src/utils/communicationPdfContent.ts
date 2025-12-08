@@ -3,6 +3,7 @@ import type jsPDF from 'jspdf'
 import type { PdfPageManager } from './pdf/page-manager'
 import { PDF_CONSTANTS } from './pdf/constants'
 import type { CommunicationElementParameters } from '@/ui/components/elements/communication-element'
+import type { FontStyle } from 'jspdf-autotable'
 
 export function writeCommunicationContentToPdf(
 	doc: jsPDF,
@@ -17,15 +18,16 @@ export function writeCommunicationContentToPdf(
 	function renderText(
 		text: string,
 		fontSize: number = DEFAULT_FONT_SIZE,
-		fontStyle: 'normal' | 'bold' | 'italic' = 'normal',
+		fontStyle: FontStyle = 'normal',
 		indent = 0
 	) {
 		doc.setFontSize(fontSize)
 		doc.setFont('helvetica', fontStyle)
 
+		const TEXT_MARGIN = 35
 		const wrappedText: string[] = doc.splitTextToSize(
 			text,
-			pageWidth - (35 - indent)
+			pageWidth - (TEXT_MARGIN - indent)
 		)
 
 		for (const line of wrappedText) {
@@ -40,10 +42,9 @@ export function writeCommunicationContentToPdf(
 	function renderHeading(text: string, fontSize: number) {
 		pageManager.ensureSpace(fontSize)
 		renderText(text, fontSize, 'bold')
-		pageManager.incrementPosition(2) // Extra spacing after heading
+		pageManager.incrementPosition(2)
 	}
 
-	// Get relevant bays and IEDs based on selection
 	const selectedBaysSet = new Set(parameters.selectedBays)
 	const allBays = Array.from(iedService.Bays()).sort()
 	const relevantBays =
@@ -58,65 +59,73 @@ export function writeCommunicationContentToPdf(
 					return Array.from(ied.bays).some((bay) =>
 						selectedBaysSet.has(bay)
 					)
-			  })
+				})
 
-	// Render Message Type Legend
 	if (parameters.showLegend) {
 		renderHeading('Message Type Legend', 14)
 
 		const messageTypes = [
-			{ 
-				name: 'MMS', 
+			{
+				name: 'MMS',
 				color: { r: 50, g: 83, b: 168 } // #3253A8
 			},
-			{ 
-				name: 'GOOSE', 
+			{
+				name: 'GOOSE',
 				color: { r: 40, g: 132, b: 9 } // #288409
 			},
-			{ 
-				name: 'Sampled Values', 
+			{
+				name: 'Sampled Values',
 				color: { r: 199, g: 60, b: 97 } // #C73C61
 			},
-			{ 
-				name: 'Unknown', 
+			{
+				name: 'Unknown',
 				color: { r: 1, g: 27, b: 34 } // #011B22
 			}
 		]
 
-		// Render in a grid-like layout similar to the component
 		const itemsPerRow = 2
 		let currentItem = 0
-		const iconRadius = 1.5 // Circle radius in mm
+		const iconRadius = 1.5
 
 		while (currentItem < messageTypes.length) {
 			pageManager.ensureSpace()
 
-			const rowItems = messageTypes.slice(currentItem, currentItem + itemsPerRow)
+			const rowItems = messageTypes.slice(
+				currentItem,
+				currentItem + itemsPerRow
+			)
 			const columnWidth = (pageWidth - 20) / itemsPerRow
 			const currentY = pageManager.getCurrentPosition()
 
 			for (let i = 0; i < rowItems.length; i++) {
 				const messageType = rowItems[i]
-				const xOffset = PDF_CONSTANTS.HORIZONTAL_SPACING + (i * columnWidth)
+				const xOffset =
+					PDF_CONSTANTS.HORIZONTAL_SPACING + i * columnWidth
 
-				// Draw filled circle icon
-				doc.setFillColor(messageType.color.r, messageType.color.g, messageType.color.b)
-				doc.circle(xOffset + iconRadius, currentY - 1.5, iconRadius, 'F')
+				doc.setFillColor(
+					messageType.color.r,
+					messageType.color.g,
+					messageType.color.b
+				)
+				doc.circle(
+					xOffset + iconRadius,
+					currentY - 1.5,
+					iconRadius,
+					'F'
+				)
 
-				// Draw text next to icon
 				doc.setFontSize(DEFAULT_FONT_SIZE)
 				doc.setTextColor(0, 0, 0)
-				doc.text(messageType.name, xOffset + (iconRadius * 3), currentY)
+				doc.text(messageType.name, xOffset + iconRadius * 3, currentY)
 			}
 
 			currentItem += itemsPerRow
 			pageManager.incrementPosition(DEFAULT_LINE_HEIGHT)
 		}
 
-		pageManager.incrementPosition(5) // Extra spacing after section
+		pageManager.incrementPosition(5)
 	}
 
-	// Render Bay List
 	if (parameters.showBayList) {
 		renderHeading('List of Bays', 14)
 
@@ -128,10 +137,9 @@ export function writeCommunicationContentToPdf(
 			renderText('No bays found', DEFAULT_FONT_SIZE, 'italic', 5)
 		}
 
-		pageManager.incrementPosition(5) // Extra spacing after section
+		pageManager.incrementPosition(5)
 	}
 
-	// Render IED List with Details
 	if (parameters.showIEDList) {
 		renderHeading('List of IEDs', 14)
 
@@ -139,18 +147,19 @@ export function writeCommunicationContentToPdf(
 			for (const ied of relevantIEDs) {
 				pageManager.ensureSpace(30)
 
-				// IED Name
 				renderText(ied.iedName, 12, 'bold')
 
-				// Bays
 				if (ied.bays && ied.bays.size > 0) {
 					const baysList = Array.from(ied.bays).join(', ')
-					renderText(`Bays: ${baysList}`, DEFAULT_FONT_SIZE, 'normal', 5)
+					renderText(
+						`Bays: ${baysList}`,
+						DEFAULT_FONT_SIZE,
+						'normal',
+						5
+					)
 				}
 
-				// IED Details
 				if (ied.iedDetails) {
-					// Logical Nodes
 					if (ied.iedDetails.logicalNodes.length > 0) {
 						renderText(
 							'Logical Nodes:',
@@ -163,7 +172,6 @@ export function writeCommunicationContentToPdf(
 						}
 					}
 
-					// Data Objects
 					if (ied.iedDetails.dataObjects.length > 0) {
 						renderText(
 							'Data Objects:',
@@ -176,7 +184,6 @@ export function writeCommunicationContentToPdf(
 						}
 					}
 
-					// Data Attributes
 					if (ied.iedDetails.dataAttributes.length > 0) {
 						renderText(
 							'Data Attributes:',
@@ -190,7 +197,7 @@ export function writeCommunicationContentToPdf(
 					}
 				}
 
-				pageManager.incrementPosition(5) // Extra spacing between IEDs
+				pageManager.incrementPosition(5)
 			}
 		} else {
 			renderText('No IEDs found', DEFAULT_FONT_SIZE, 'italic', 5)
