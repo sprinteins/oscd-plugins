@@ -196,6 +196,7 @@ function handleContentChange(elementId: string, newContent: string) {
 
     .elements-container{
         margin-top: 2rem;
+				margin-bottom: 4rem;
         display: flex;
         gap: 1.5rem;
         flex-wrap: wrap;
