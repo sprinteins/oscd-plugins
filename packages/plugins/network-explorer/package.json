@@ -16,14 +16,18 @@
 		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"src"
 	],
 	"exports": {
 		".": {
 			"types": "./dist/plugin.d.ts",
 			"default": "./dist/plugin.js"
 		},
-		"./src/network-explorer.svelte": "./src/network-explorer.svelte"
+		"./lib": {
+			"types": "./src/lib/index.ts",
+			"svelte": "./src/lib/index.ts"
+		}
 	},
 	"dependencies": {
 		"@smui-extra/accordion": "^8.0.3",

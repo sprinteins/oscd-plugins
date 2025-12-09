@@ -197,6 +197,9 @@ importers:
 
   packages/plugins/auto-doc:
     dependencies:
+      '@oscd-plugins/network-explorer':
+        specifier: workspace:^
+        version: link:../network-explorer
       '@smui/button':
         specifier: 8.0.3
         version: 8.0.3
@@ -267,9 +270,6 @@ importers:
       '@oscd-plugins/core-ui-svelte':
         specifier: workspace:^
         version: link:../../core/ui-svelte
-      '@oscd-plugins/network-explorer':
-        specifier: workspace:^
-        version: link:../network-explorer
       '@oscd-plugins/ui':
         specifier: workspace:^
         version: link:../../ui
