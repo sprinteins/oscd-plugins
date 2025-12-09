@@ -252,7 +252,7 @@ export function initPlugin(
 				main {
 					${cssVariables};
 					font-family: "Roboto", sans-serif;
-					height: var(--plugin-container-height);
+					min-height: var(--plugin-container-height);
 					display: block;
 					position: relative;
 				}
