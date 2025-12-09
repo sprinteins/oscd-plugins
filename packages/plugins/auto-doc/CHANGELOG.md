@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED] - 2025-12-08
 ### Added
 - Loading state for 'generate PDF' button
+- 'Further details' section in CE element exporting legend / bay list / IED list and details to the pdf
 
 ## [1.17.8] - 2025-11-28
 ### Added
