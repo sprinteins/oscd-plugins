@@ -1,7 +1,7 @@
 import type { IEDService } from '@oscd-plugins/core'
 import type jsPDF from 'jspdf'
 import type { PdfPageManager } from './pdf/page-manager'
-import { FONT_STYLES, PDF_CONSTANTS } from './pdf/constants'
+import { FONT_STYLES, PDF_CONSTANTS, TEXT_SIZES } from './pdf/constants'
 import type { CommunicationElementParameters } from '@/ui/components/elements/communication-element'
 import type { FontStyle } from 'jspdf-autotable'
 
@@ -118,7 +118,7 @@ function renderMessageTypeLegend(
 	const DEFAULT_FONT_SIZE = PDF_CONSTANTS.DEFAULT_FONT_SIZE
 	const DEFAULT_LINE_HEIGHT = PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
 
-	renderer.renderHeading('Message Type Legend', 14)
+	renderer.renderHeading('Message Type Legend', TEXT_SIZES.H3)
 
 	const itemsPerRow = 2
 	const iconRadius = 1.5
@@ -154,7 +154,7 @@ function renderBaysList(
 ) {
 	const DEFAULT_FONT_SIZE = PDF_CONSTANTS.DEFAULT_FONT_SIZE
 
-	renderer.renderHeading('List of Bays', 14)
+	renderer.renderHeading('List of Bays', TEXT_SIZES.H3)
 
 	if (relevantBays.length > 0) {
 		for (const bay of relevantBays) {
@@ -198,7 +198,7 @@ function renderIEDsList(
 ) {
 	const DEFAULT_FONT_SIZE = PDF_CONSTANTS.DEFAULT_FONT_SIZE
 
-	renderer.renderHeading('List of IEDs', 14)
+	renderer.renderHeading('List of IEDs', TEXT_SIZES.H3)
 
 	if (relevantIEDs.length === 0) {
 		renderer.renderText('No IEDs found', DEFAULT_FONT_SIZE, FONT_STYLES.ITALIC, 5)
