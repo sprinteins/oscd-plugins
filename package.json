@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"//====== AUTO DOC ======//": "",
-		"auto-doc:install": "pnpm dependencies:install+build && pnpm --filter @oscd-plugins/auto-doc i --frozen-lockfile",
+		"auto-doc:install": "pnpm dependencies:install+build && pnpm network-explorer-lib:install && pnpm communication-explorer-lib:install && pnpm --filter @oscd-plugins/auto-doc i --frozen-lockfile",
 		"auto-doc:dev": "pnpm auto-doc:install && pnpm --filter @oscd-plugins/auto-doc dev",
 		"auto-doc:integrated": "pnpm auto-doc:install && pnpm --filter @oscd-plugins/auto-doc integrated",
 		"//====== COMMUNICATION EXPLORER ======//": "",
@@ -56,7 +56,7 @@
 		"network-explorer-lib:install": "pnpm --filter @oscd-plugins/network-explorer i --frozen-lockfile",
 		"communication-explorer-lib:install": "pnpm --filter @oscd-plugins/communication-explorer i --frozen-lockfile",
 		"//====== LOCAL DEPENDENCIES BUILD ======//": "",
-		"dependencies:install": "pnpm core-api:install && pnpm core-ui-svelte:install && pnpm core-standard:install && pnpm legacy-core:install && pnpm legacy-ui:install && pnpm legacy-uilib:install && pnpm network-explorer-lib:install && pnpm communication-explorer-lib:install",
+		"dependencies:install": "pnpm core-api:install && pnpm core-ui-svelte:install && pnpm core-standard:install && pnpm legacy-core:install && pnpm legacy-ui:install && pnpm legacy-uilib:install",
 		"dependencies:build": "pnpm core-standard:build && pnpm core-api:build && pnpm core-ui-svelte:build && pnpm legacy-core:build",
 		"dependencies:install+build": "pnpm dependencies:install && pnpm dependencies:build",
 		"//====== STORYBOOK ======//": "",
