@@ -23,12 +23,14 @@ const MESSAGE_TYPES: MessageType[] = [
 	{ name: 'Unknown', color: { r: 1, g: 27, b: 34 } }
 ]
 
+const DEFAULT_FONT_SIZE = PDF_CONSTANTS.DEFAULT_FONT_SIZE
+const LIST_INDENT = PDF_CONSTANTS.LIST_INDENT
+const NESTED_LIST_INDENT = PDF_CONSTANTS.NESTED_LIST_INDENT
+const DEFAULT_LINE_HEIGHT = PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
+const TEXT_MARGIN = PDF_CONSTANTS.TEXT_MARGIN_OFFSET
+
 function createTextRenderer(context: RenderContext) {
 	const { doc, pageManager, pageWidth } = context
-	const DEFAULT_LINE_HEIGHT = PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
-	const DEFAULT_FONT_SIZE = PDF_CONSTANTS.DEFAULT_FONT_SIZE
-	const TEXT_MARGIN = 35
-
 	return {
 		renderText(
 			text: string,
@@ -115,9 +117,6 @@ function renderMessageTypeLegend(
 	renderer: ReturnType<typeof createTextRenderer>
 ) {
 	const { doc, pageManager, pageWidth } = context
-	const DEFAULT_FONT_SIZE = PDF_CONSTANTS.DEFAULT_FONT_SIZE
-	const DEFAULT_LINE_HEIGHT = PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
-
 	renderer.renderHeading('Message Type Legend', TEXT_SIZES.H3)
 
 	const itemsPerRow = 2
@@ -152,16 +151,14 @@ function renderBaysList(
 	renderer: ReturnType<typeof createTextRenderer>,
 	pageManager: PdfPageManager
 ) {
-	const DEFAULT_FONT_SIZE = PDF_CONSTANTS.DEFAULT_FONT_SIZE
-
 	renderer.renderHeading('List of Bays', TEXT_SIZES.H3)
 
 	if (relevantBays.length > 0) {
 		for (const bay of relevantBays) {
-			renderer.renderText(`• ${bay}`, DEFAULT_FONT_SIZE, FONT_STYLES.NORMAL, 5)
+			renderer.renderText(`• ${bay}`, DEFAULT_FONT_SIZE, FONT_STYLES.NORMAL, LIST_INDENT)
 		}
 	} else {
-		renderer.renderText('No bays found', DEFAULT_FONT_SIZE, FONT_STYLES.ITALIC, 5)
+		renderer.renderText('No bays found', DEFAULT_FONT_SIZE, FONT_STYLES.ITALIC, LIST_INDENT)
 	}
 
 	pageManager.incrementPosition(5)
@@ -171,8 +168,6 @@ function renderIEDDetails(
 	ied: ReturnType<IEDService['IEDCommunicationInfos']>[0],
 	renderer: ReturnType<typeof createTextRenderer>
 ) {
-	const DEFAULT_FONT_SIZE = PDF_CONSTANTS.DEFAULT_FONT_SIZE
-
 	if (!ied.iedDetails) return
 
 	const sections = [
@@ -183,9 +178,9 @@ function renderIEDDetails(
 
 	for (const section of sections) {
 		if (section.items.length > 0) {
-			renderer.renderText(section.title, DEFAULT_FONT_SIZE, FONT_STYLES.BOLD, 5)
+			renderer.renderText(section.title, DEFAULT_FONT_SIZE, FONT_STYLES.BOLD, LIST_INDENT)
 			for (const item of section.items) {
-				renderer.renderText(`- ${item}`, 9, FONT_STYLES.NORMAL, 10)
+				renderer.renderText(`- ${item}`, 9, FONT_STYLES.NORMAL, NESTED_LIST_INDENT)
 			}
 		}
 	}
@@ -196,8 +191,6 @@ function renderIEDsList(
 	renderer: ReturnType<typeof createTextRenderer>,
 	pageManager: PdfPageManager
 ) {
-	const DEFAULT_FONT_SIZE = PDF_CONSTANTS.DEFAULT_FONT_SIZE
-
 	renderer.renderHeading('List of IEDs', TEXT_SIZES.H3)
 
 	if (relevantIEDs.length === 0) {
@@ -216,7 +209,7 @@ function renderIEDsList(
 				`Bays: ${baysList}`,
 				DEFAULT_FONT_SIZE,
 				FONT_STYLES.NORMAL,
-				5
+				LIST_INDENT
 			)
 		}
 

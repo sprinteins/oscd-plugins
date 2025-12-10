@@ -26,4 +26,5 @@ export const PDF_CONSTANTS = {
   TEXT_MARGIN_OFFSET: 35,
   PAGE_BUFFER: 10,
   NESTED_LIST_INDENT: 10,
+  LIST_INDENT: 5,
 } as const;
