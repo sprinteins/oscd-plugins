@@ -21,7 +21,8 @@
 		theme: 'legacy-oscd-instance',
 		definition: {
 			edition: 'ed2Rev1',
-		}
+		},
+		layout: 'flexible',
 	}}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
