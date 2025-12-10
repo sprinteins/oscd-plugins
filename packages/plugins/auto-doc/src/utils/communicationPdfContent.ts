@@ -1,7 +1,7 @@
 import type { IEDService } from '@oscd-plugins/core'
 import type jsPDF from 'jspdf'
 import type { PdfPageManager } from './pdf/page-manager'
-import { PDF_CONSTANTS } from './pdf/constants'
+import { FONT_STYLES, PDF_CONSTANTS } from './pdf/constants'
 import type { CommunicationElementParameters } from '@/ui/components/elements/communication-element'
 import type { FontStyle } from 'jspdf-autotable'
 
@@ -33,7 +33,7 @@ function createTextRenderer(context: RenderContext) {
 		renderText(
 			text: string,
 			fontSize: number = DEFAULT_FONT_SIZE,
-			fontStyle: FontStyle = 'normal',
+			fontStyle: FontStyle = FONT_STYLES.NORMAL,
 			indent = 0
 		) {
 			doc.setFontSize(fontSize)
@@ -59,7 +59,7 @@ function createTextRenderer(context: RenderContext) {
 
 		renderHeading(text: string, fontSize: number) {
 			pageManager.ensureSpace(fontSize)
-			this.renderText(text, fontSize, 'bold')
+			this.renderText(text, fontSize, FONT_STYLES.BOLD)
 			pageManager.incrementPosition(2)
 		}
 	}
@@ -158,10 +158,10 @@ function renderBaysList(
 
 	if (relevantBays.length > 0) {
 		for (const bay of relevantBays) {
-			renderer.renderText(`• ${bay}`, DEFAULT_FONT_SIZE, 'normal', 5)
+			renderer.renderText(`• ${bay}`, DEFAULT_FONT_SIZE, FONT_STYLES.NORMAL, 5)
 		}
 	} else {
-		renderer.renderText('No bays found', DEFAULT_FONT_SIZE, 'italic', 5)
+		renderer.renderText('No bays found', DEFAULT_FONT_SIZE, FONT_STYLES.ITALIC, 5)
 	}
 
 	pageManager.incrementPosition(5)
@@ -183,9 +183,9 @@ function renderIEDDetails(
 
 	for (const section of sections) {
 		if (section.items.length > 0) {
-			renderer.renderText(section.title, DEFAULT_FONT_SIZE, 'bold', 5)
+			renderer.renderText(section.title, DEFAULT_FONT_SIZE, FONT_STYLES.BOLD, 5)
 			for (const item of section.items) {
-				renderer.renderText(`- ${item}`, 9, 'normal', 10)
+				renderer.renderText(`- ${item}`, 9, FONT_STYLES.NORMAL, 10)
 			}
 		}
 	}
@@ -201,21 +201,21 @@ function renderIEDsList(
 	renderer.renderHeading('List of IEDs', 14)
 
 	if (relevantIEDs.length === 0) {
-		renderer.renderText('No IEDs found', DEFAULT_FONT_SIZE, 'italic', 5)
+		renderer.renderText('No IEDs found', DEFAULT_FONT_SIZE, FONT_STYLES.ITALIC, 5)
 		return
 	}
 
 	for (const ied of relevantIEDs) {
 		pageManager.ensureSpace(30)
 
-		renderer.renderText(ied.iedName, 12, 'bold')
+		renderer.renderText(ied.iedName, 12,  FONT_STYLES.BOLD)
 
 		if (ied.bays && ied.bays.size > 0) {
 			const baysList = Array.from(ied.bays).join(', ')
 			renderer.renderText(
 				`Bays: ${baysList}`,
 				DEFAULT_FONT_SIZE,
-				'normal',
+				FONT_STYLES.NORMAL,
 				5
 			)
 		}
