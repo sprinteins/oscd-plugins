@@ -7,18 +7,18 @@ import jsPDF from 'jspdf'
 import autoTable, { type FontStyle } from 'jspdf-autotable'
 import zipcelx from 'zipcelx'
 import { docTemplatesStore, placeholderStore, signallistStore } from '../stores'
-import { renderComponentOffscreen } from './renderComponentOffscreen'
-import { writeCommunicationContentToPdf } from './communicationPdfContent'
+import { renderComponentOffscreen } from './rendering'
+import { writeCommunicationContentToPdf } from './content-processing'
 import { IEDService } from '@oscd-plugins/core'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { PDF_CONSTANTS, TEXT_SIZES, FONT_STYLES } from './pdf/constants'
+import { PDF_CONSTANTS, TEXT_SIZES, FONT_STYLES } from './core'
 import {
 	loadImage,
 	extractImageFormat,
 	getImageScaleFactor
-} from './pdf/image-utils'
-import { PdfPageManager } from './pdf/page-manager'
-import type { TextSize } from './pdf/pdf.types'
+} from './core'
+import { PdfPageManager } from './core'
+import type { TextSize } from './core'
 
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html

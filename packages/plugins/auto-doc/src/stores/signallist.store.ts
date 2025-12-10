@@ -21,7 +21,7 @@ import {
 	queryLDevice,
 	queryLN,
 	queryLNode
-} from '../utils'
+} from '@/utils'
 
 interface TargetContext {
 	ied: Element

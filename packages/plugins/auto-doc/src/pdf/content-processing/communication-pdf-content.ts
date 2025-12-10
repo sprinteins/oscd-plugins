@@ -1,7 +1,7 @@
 import type { IEDService } from '@oscd-plugins/core'
 import type jsPDF from 'jspdf'
-import type { PdfPageManager } from './pdf/page-manager'
-import { FONT_STYLES, PDF_CONSTANTS, TEXT_SIZES } from './pdf/constants'
+import type { PdfPageManager } from '../core'
+import { FONT_STYLES, PDF_CONSTANTS, TEXT_SIZES } from '../core'
 import type { CommunicationElementParameters } from '@/ui/components/elements/communication-element'
 import type { FontStyle } from 'jspdf-autotable'
 
