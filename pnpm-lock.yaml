@@ -197,6 +197,12 @@ importers:
 
   packages/plugins/auto-doc:
     dependencies:
+      '@oscd-plugins/communication-explorer':
+        specifier: workspace:^
+        version: link:../communication-explorer
+      '@oscd-plugins/network-explorer':
+        specifier: workspace:^
+        version: link:../network-explorer
       '@smui/button':
         specifier: 8.0.3
         version: 8.0.3
@@ -252,9 +258,6 @@ importers:
         specifier: ^1.6.2
         version: 1.6.2
     devDependencies:
-      '@oscd-plugins/communication-explorer':
-        specifier: workspace:^
-        version: link:../communication-explorer
       '@oscd-plugins/core':
         specifier: workspace:^
         version: link:../../core/legacy
@@ -267,9 +270,6 @@ importers:
       '@oscd-plugins/core-ui-svelte':
         specifier: workspace:^
         version: link:../../core/ui-svelte
-      '@oscd-plugins/network-explorer':
-        specifier: workspace:^
-        version: link:../network-explorer
       '@oscd-plugins/ui':
         specifier: workspace:^
         version: link:../../ui

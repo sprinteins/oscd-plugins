@@ -131,78 +131,106 @@ function handleContentChange(elementId: string, newContent: string) {
 }
 </script>
 
-
-<CreateTableDialog bind:isOpen={isCreateTableDialogOpen} onHandleSubmit={createTableElement}/>
+<CreateTableDialog
+  bind:isOpen={isCreateTableDialogOpen}
+  onHandleSubmit={createTableElement}
+/>
 
 <div class="template-builder">
-    <div class="card">
-
-        <div class="elements-list">
-            {#each blockElements as blockElement (blockElement.id)}
-                <ElementWrapper elementId={blockElement.id} duplicateBlock={duplicateBlockElement} deleteBlock={deleteBlockElement} moveBlock={moveBlockElement}>
-                    {@const SvelteComponent = componentMap[blockElement.type]}
-                    <SvelteComponent
-                        content={blockElement.content}
-                        onContentChange={(newContent) => handleContentChange(blockElement.id, newContent)}
-                    />
-                </ElementWrapper>
-            {/each}
-        </div>
-
-        <footer>
-            <Button onclick={()=> isElementsChoiceVisible = !isElementsChoiceVisible}>
-                <IconWrapper icon="add" fillColor="#2aa198"/>
-                <Label>
-                    add element 
-                </Label> 
-            </Button>
-            <div class="elements-container">
-                {#if isElementsChoiceVisible}
-                    <Button variant="outlined" onclick={()=>{addElement('text')}}>Text</Button>
-                    <Button variant="outlined" onclick={()=>{addElement("image")}}>Image</Button>
-                    <Button variant="outlined" onclick={()=>{addElement("signalList")}}>Signal List</Button>
-                    <Button variant="outlined" onclick={() => isCreateTableDialogOpen = true}>Table</Button>
-					<Button variant="outlined" onclick={()=>{addElement("network")}}>Network</Button>
-					<Button variant="outlined" onclick={()=>{addElement("communication")}}>Communication</Button>
-                {/if}
-            </div>
-        </footer>
+  <div class="card">
+    <div class="elements-list">
+      {#each blockElements as blockElement (blockElement.id)}
+        <ElementWrapper
+          elementId={blockElement.id}
+          duplicateBlock={duplicateBlockElement}
+          deleteBlock={deleteBlockElement}
+          moveBlock={moveBlockElement}
+        >
+          {@const SvelteComponent = componentMap[blockElement.type]}
+          <SvelteComponent
+            content={blockElement.content}
+            onContentChange={(newContent) =>
+              handleContentChange(blockElement.id, newContent)}
+          />
+        </ElementWrapper>
+      {/each}
     </div>
+
+    <footer>
+      <Button
+        onclick={() => (isElementsChoiceVisible = !isElementsChoiceVisible)}
+      >
+        <IconWrapper icon="add" fillColor="#2aa198" />
+        <Label>add element</Label>
+      </Button>
+      <div class="elements-container">
+        {#if isElementsChoiceVisible}
+          <Button
+            variant="outlined"
+            onclick={() => {
+              addElement("text");
+            }}>Text</Button
+          >
+          <Button
+            variant="outlined"
+            onclick={() => {
+              addElement("image");
+            }}>Image</Button
+          >
+          <Button
+            variant="outlined"
+            onclick={() => {
+              addElement("signalList");
+            }}>Signal List</Button
+          >
+          <Button
+            variant="outlined"
+            onclick={() => (isCreateTableDialogOpen = true)}>Table</Button
+          >
+          <Button
+            variant="outlined"
+            onclick={() => {
+              addElement("network");
+            }}>Network</Button
+          >
+          <Button
+            variant="outlined"
+            onclick={() => {
+              addElement("communication");
+            }}>Communication</Button
+          >
+        {/if}
+      </div>
+    </footer>
+  </div>
 </div>
 
-
-
 <style>
+  .template-builder {
+    width: 70%;
+  }
+  .card {
+    background-color: white;
+    min-height: 50vh;
+    overflow-y: auto;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .elements-list {
+    display: flex;
+    flex-direction: column;
+  }
 
-    .template-builder{
-        width: 70%;
-    }
-    .card{
-        background-color: white;
-        min-height: 50vh;
-        overflow-y: auto;
-        border-radius: .5rem;
-        padding: 1.5rem;
-				margin-bottom: 2rem;
-    }
+  footer {
+    margin-top: 2rem;
+  }
 
-    .elements-list{
-        display: flex;
-        flex-direction: column;
-    }
-
-    footer{
-        margin-top: 2rem;
-    }
-
-    .elements-container{
-        margin-top: 2rem;
-        display: flex;
-        gap: 1.5rem;
-        flex-wrap: wrap;
-    }
-
+  .elements-container {
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
 </style>
-
-
-
