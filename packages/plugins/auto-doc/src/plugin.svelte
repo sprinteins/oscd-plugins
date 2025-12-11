@@ -22,7 +22,6 @@
 		definition: {
 			edition: 'ed2Rev1',
 		},
-		layout: 'flexible',
 	}}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
@@ -75,6 +74,11 @@ $effect(() => {
 </script>
 
 <style lang="scss">
+		:global(main) {
+			min-height: var(--plugin-container-height);
+			height: auto;
+    }
+
 	.file-missing{
 		padding-top: 20px;
 		p{
