@@ -361,8 +361,8 @@ $effect(() => {
 	}
 
 	.row-fields :global(.mdc-select) {
-		min-width: 140px;
-		max-width: 140px;
+		min-width: 180px;
+		max-width: 180px;
 	}
 
 	.add-row-button {
