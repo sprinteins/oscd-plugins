@@ -1,9 +1,13 @@
 # Changelog
 
-All notable changes to the communication explorer plugin will be documented here
+All notable changes to the network explorer plugin will be documented here
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.0.18] - 2025-12-10
+### Changed
+- the way we export the network explorer for use in Auto Doc
 
 ## [0.0.17] - 2025-11-28
 ### Added

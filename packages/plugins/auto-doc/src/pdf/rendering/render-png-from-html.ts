@@ -14,7 +14,7 @@ type ExportPNGProps = ExportProps & {
   quality?: number;
 };
 
-export async function exportPngFromHTMLElement({
+export async function renderPngFromHtml({
   element,
   imageWidth,
   imageHeight,

@@ -1,5 +1,5 @@
 <script lang="ts">
-import NetworkExplorer from '@oscd-plugins/network-explorer/src/network-explorer.svelte'
+import { NetworkExplorer } from '@oscd-plugins/network-explorer/lib'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { LegacyTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
@@ -65,5 +65,13 @@ $effect(() => {
 <style>
 	.network-preview-wrapper :global(*) {
 		pointer-events: none !important;
+	}
+
+	.network-preview-wrapper :global(.svelte-flow) {
+		background-color: transparent !important;
+	}
+
+	.network-preview-wrapper :global(.svelte-flow__background) {
+		background-color: transparent !important;
 	}
 </style>

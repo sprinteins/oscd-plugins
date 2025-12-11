@@ -3,7 +3,7 @@ import { run } from 'svelte/legacy'
 
 import { docTemplatesStore } from '@/stores'
 import { FileSelector, Table } from '@/ui/components'
-import { pdfGenerator } from '@/utils'
+import { pdfGenerator } from '@/pdf'
 import { queryAutoDocElement } from '@/utils'
 import { IconWrapper } from '@oscd-plugins/ui'
 import Button, { Label } from '@smui/button'
