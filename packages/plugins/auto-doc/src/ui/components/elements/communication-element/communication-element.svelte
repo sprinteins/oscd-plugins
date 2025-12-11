@@ -14,6 +14,7 @@ import { CustomIconButton } from '@oscd-plugins/ui/src/components'
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
 import type {
 	CommunicationElementParameters,
+	ConnectionFilter,
 	MessageTypeRow
 } from './types.communication'
 import { tick } from 'svelte'
@@ -60,78 +61,6 @@ let showIEDList = $state(initialParams?.showIEDList ?? false)
 let isPatternHelpDialogOpen = $state(false)
 
 let nextRowId = $state(1)
-
-function createNamespaceResolver(
-	xmlDocument: XMLDocument
-): (prefix: string | null) => string | null {
-	const namespaces: { [key: string]: string } = {}
-	const attributes = xmlDocument.documentElement.attributes
-	for (let i = 0; i < attributes.length; i++) {
-		const attr = attributes[i]
-		if (attr.name.startsWith('xmlns:')) {
-			const prefix = attr.name.split(':')[1]
-			namespaces[prefix] = attr.value
-		} else if (attr.name === 'xmlns') {
-			namespaces.default = attr.value
-		}
-	}
-	return (prefix: string | null): string | null => {
-		if (prefix === null) return null
-		return namespaces[prefix] || namespaces.default || null
-	}
-}
-
-function queryIEDsByPattern(pattern: string): string[] {
-	if (!pluginGlobalStore.xmlDocument) return []
-
-	if (!pattern || pattern.trim() === '') {
-		const allIEDs = pluginGlobalStore.xmlDocument.querySelectorAll('IED')
-		return Array.from(allIEDs)
-			.map((ied) => ied.getAttribute('name') || '')
-			.filter((name) => name !== '')
-	}
-
-	try {
-		let xpath: string
-
-		if (pattern.startsWith('//')) {
-			xpath = pattern
-		} else if (pattern.includes('*')) {
-			const cleanPattern = pattern.replace(/\*/g, '')
-			if (cleanPattern) {
-				xpath = `//default:IED[contains(@name,'${cleanPattern}')]`
-			} else {
-				xpath = '//default:IED'
-			}
-		} else {
-			xpath = `//default:IED[@name='${pattern}']`
-		}
-
-		const namespaceResolver = createNamespaceResolver(
-			pluginGlobalStore.xmlDocument
-		)
-		const result = pluginGlobalStore.xmlDocument.evaluate(
-			xpath,
-			pluginGlobalStore.xmlDocument,
-			namespaceResolver,
-			XPathResult.ORDERED_NODE_ITERATOR_TYPE,
-			null
-		)
-
-		const matchedIEDs: string[] = []
-		let node = result.iterateNext()
-		while (node) {
-			const name = (node as Element).getAttribute('name')
-			if (name) matchedIEDs.push(name)
-			node = result.iterateNext()
-		}
-
-		return matchedIEDs
-	} catch (e) {
-		console.warn(`Invalid IED XPath pattern: ${pattern}`, e)
-		return []
-	}
-}
 
 // Initialize message type rows from saved parameters or default to all enabled
 function initializeMessageTypeRows(): MessageTypeRow[] {
@@ -187,28 +116,21 @@ function removeMessageTypeRow(id: number) {
 	saveParameters()
 }
 
-let connectionFilters = $derived.by(() => {
-	const filters: ConnectionFilter[] = []
-
-	for (const row of messageTypeRows) {
-		if (!row.enabled) continue
-
-		const sourceIEDs = queryIEDsByPattern(row.sourceIEDPattern)
-		const targetIEDs = queryIEDsByPattern(row.targetIEDPattern)
-
-		filters.push({
-			sourceIEDs,
-			targetIEDs,
+function buildConnectionFilters(
+	messageTypeRows: MessageTypeRow[]
+): ConnectionFilter[] {
+	return messageTypeRows
+		.filter((row) => row.enabled)
+		.map((row) => ({
+			sourceIEDPattern: row.sourceIEDPattern,
+			targetIEDPattern: row.targetIEDPattern,
 			messageType: row.messageType
-		})
+		}))
+}
 
-		console.log(
-			`[Connection Filter] ${row.messageType}: source=${row.sourceIEDPattern} (${sourceIEDs.length} IEDs), target=${row.targetIEDPattern} (${targetIEDs.length} IEDs)`
-		)
-	}
-
-	console.log('[Connection Filters] Total filters:', filters.length, filters)
-	return filters
+let connectionFilters = $derived.by(() => {
+	console.log('Rebuilding connection filters...')
+	return buildConnectionFilters(messageTypeRows)
 })
 
 function calculateFitToContainerZoom(): number {

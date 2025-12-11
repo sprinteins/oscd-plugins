@@ -25,12 +25,14 @@ import {
 	getBays
 } from '../../../headless/services/ied/ied'
 import type { IED } from '@oscd-plugins/core'
+import {
+	applyConnectionFilters,
+	filterIEDsByBays,
+	type ConnectionFilter
+} from './connection-filter-utils'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
-export interface ConnectionFilter {
-	sourceIEDs: string[]
-	targetIEDs: string[]
-	messageType: string
-}
+export type { ConnectionFilter }
 
 interface Props {
 	root: Element
@@ -104,61 +106,21 @@ async function initInfos(
 
 	let filteredInfos = lastExtractedInfos
 
+	// Apply bay filters first if provided
+	if (selectedBays && selectedBays.size > 0) {
+		filteredInfos = filterIEDsByBays(filteredInfos, selectedBays)
+	}
+
+	// Then apply connection filters on top of bay filters (cumulative)
 	if (connectionFilters && connectionFilters.length > 0) {
-		const visibleIEDs = new Set<string>()
-		for (const filter of connectionFilters) {
-			for (const ied of filter.sourceIEDs) {
-				visibleIEDs.add(ied)
-			}
-			for (const ied of filter.targetIEDs) {
-				visibleIEDs.add(ied)
-			}
-		}
-
-		filteredInfos = lastExtractedInfos
-			.filter((ied) => visibleIEDs.has(ied.iedName))
-			.map((ied) => {
-				const filteredPublished = ied.published.filter((pub) => {
-					return connectionFilters.some((filter) => {
-						const sourceMatch =
-							filter.sourceIEDs.length === 0 ||
-							filter.sourceIEDs.includes(ied.iedName)
-						const targetMatch =
-							filter.targetIEDs.length === 0 ||
-							filter.targetIEDs.includes(pub.targetIEDName)
-						const typeMatch = pub.serviceType === filter.messageType
-						const matches = sourceMatch && targetMatch && typeMatch
-						return matches
-					})
-				})
-
-				const filteredReceived = ied.received.filter((rec) => {
-					return connectionFilters.some((filter) => {
-						const sourceMatch =
-							filter.sourceIEDs.length === 0 ||
-							filter.sourceIEDs.includes(rec.iedName)
-						const targetMatch =
-							filter.targetIEDs.length === 0 ||
-							filter.targetIEDs.includes(ied.iedName)
-						const typeMatch = rec.serviceType === filter.messageType
-						const matches = sourceMatch && targetMatch && typeMatch
-						return matches
-					})
-				})
-
-				return {
-					...ied,
-					published: filteredPublished,
-					received: filteredReceived
-				}
-			})
-	} else if (selectedBays && selectedBays.size > 0) {
-		filteredInfos = lastExtractedInfos.filter((ied) => {
-			if (!ied.bays || ied.bays.size === 0) return false
-			return Array.from(ied.bays).some((bay: string) =>
-				selectedBays.has(bay)
+		const xmlDocument = pluginGlobalStore.xmlDocument
+		if (xmlDocument) {
+			filteredInfos = applyConnectionFilters(
+				filteredInfos,
+				connectionFilters,
+				xmlDocument
 			)
-		})
+		}
 	}
 
 	const filterWithOverrides =
