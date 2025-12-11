@@ -32,7 +32,6 @@ export function initPlugin(
 		}
 		getHost: () => HTMLElement | undefined
 		customNamespaces?: Record<'namespacePrefix' | 'namespaceUri', string>[]
-		layout?: 'fixed' | 'flexible'
 	}
 ) {
 	const isInitialized = $derived(
@@ -43,7 +42,6 @@ export function initPlugin(
 
 	//====== INIT GETTERS ======//
 
-	const layout = params.layout ?? 'fixed'
 	const doc = $derived(params.getDoc())
 	const docName = $derived(params.getDocName())
 	const editCount = $derived(params.getEditCount())
@@ -254,7 +252,7 @@ export function initPlugin(
 				main {
 					${cssVariables};
 					font-family: "Roboto", sans-serif;
-					${layout === 'flexible' ? 'min-height' : 'height'}: var(--plugin-container-height);
+					height: var(--plugin-container-height);
 					display: block;
 					position: relative;
 				}
