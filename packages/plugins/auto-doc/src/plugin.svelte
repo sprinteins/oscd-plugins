@@ -1,45 +1,15 @@
-<svelte:options 
-	customElement={{
-		props: {
-			doc: { reflect: true, type: 'Object'},
-			docName: { reflect: true, type: 'String'},
-			editCount: { reflect: true, type: 'Number'},
-			locale: { reflect: true, type: 'String'},
-			pluginType: { reflect: true, type: 'String'},
-			isCustomInstance: { reflect: true, type: 'Boolean'},
-		}
-	}}
+<svelte:options
+  customElement={{
+    props: {
+      doc: { reflect: true, type: "Object" },
+      docName: { reflect: true, type: "String" },
+      editCount: { reflect: true, type: "Number" },
+      locale: { reflect: true, type: "String" },
+      pluginType: { reflect: true, type: "String" },
+      isCustomInstance: { reflect: true, type: "Boolean" },
+    },
+  }}
 />
-
-<main 
-	use:initPlugin={{
-		getDoc: () => doc,
-		getDocName: () => docName,
-		getEditCount: () => editCount,
-		getIsCustomInstance: () => isCustomInstance,
-		getHost: () => $host() || window,
-		theme: 'legacy-oscd-instance',
-		definition: {
-			edition: 'ed2Rev1',
-		},
-		layout: 'flexible',
-	}}
-	data-plugin-name={jsonPackage.name}
-	data-plugin-version={jsonPackage.version}
->
-	<MaterialTheme pluginType="editor">
-		<auto-doc class="auto-doc">
-			{#if hasRunInit && pluginGlobalStore.xmlDocument}
-				<ViewNavigator></ViewNavigator>
-			{:else}
-				<div class="file-missing">
-					<p>No XML file loaded</p>
-				</div>
-			{/if}
-		</auto-doc>
-	</MaterialTheme>
-</main>
-
 
 <script lang="ts">
 // TYPES
@@ -74,24 +44,52 @@ $effect(() => {
 })
 </script>
 
-<style lang="scss">
-	.file-missing{
-		padding-top: 20px;
-		p{
-			text-align: center;
-		}
-	}
+<main
+  use:initPlugin={{
+    getDoc: () => doc,
+    getDocName: () => docName,
+    getEditCount: () => editCount,
+    getIsCustomInstance: () => isCustomInstance,
+    getHost: () => $host() || window,
+    theme: "legacy-oscd-instance",
+    definition: {
+      edition: "ed2Rev1",
+    },
+  }}
+  data-plugin-name={jsonPackage.name}
+  data-plugin-version={jsonPackage.version}
+>
+  <MaterialTheme pluginType="editor">
+    <auto-doc class="auto-doc">
+      {#if hasRunInit && pluginGlobalStore.xmlDocument}
+        <ViewNavigator></ViewNavigator>
+      {:else}
+        <div class="file-missing">
+          <p>No XML file loaded</p>
+        </div>
+      {/if}
+    </auto-doc>
+  </MaterialTheme>
+</main>
 
-	.banner {
-		align-items: center;
-		justify-content: space-between;
-		padding: .25rem 2rem;
-		width: 100%;
-		background-color: var(--mdc-theme-error);
-		color: white;
-		position:fixed;
-		top: var(--header-height);
-		box-sizing: border-box;
-		z-index: 1;
-	}
+<style lang="scss">
+  .file-missing {
+    padding-top: 20px;
+    p {
+      text-align: center;
+    }
+  }
+
+  .banner {
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.25rem 2rem;
+    width: 100%;
+    background-color: var(--mdc-theme-error);
+    color: white;
+    position: fixed;
+    top: var(--header-height);
+    box-sizing: border-box;
+    z-index: 1;
+  }
 </style>
