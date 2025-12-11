@@ -1,7 +1,5 @@
 <script lang="ts">
-import TelemetryView, {
-	type ConnectionFilter
-} from '@oscd-plugins/communication-explorer/src/ui/components/telemetry-view/telemetry-view.svelte'
+import { TelemetryView } from '@oscd-plugins/communication-explorer/lib'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { LegacyTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'
@@ -251,10 +249,7 @@ function saveParameters(): void {
 
 $effect(() => {
 	if (!htmlRoot) return
-	;(async () => {
-		await tick()
-		triggerDiagramReady?.()
-	})()
+	tick().then(() => triggerDiagramReady?.())
 })
 </script>
 
@@ -392,7 +387,8 @@ $effect(() => {
 <style>
 	.communication-preview-wrapper {
 		width: 100%;
-		overflow: auto;
+		height: 100%;
+		overflow: hidden;
 	}
 
 	.communication-preview-wrapper :global(*) {
