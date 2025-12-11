@@ -27,10 +27,10 @@ import {
 import type { IED } from '@oscd-plugins/core'
 import {
 	applyConnectionFilters,
-	filterIEDsByBays,
-	type ConnectionFilter
+	filterIEDsByBays
 } from './connection-filter-utils'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import type { ConnectionFilter } from '@/headless/types'
 
 export type { ConnectionFilter }
 

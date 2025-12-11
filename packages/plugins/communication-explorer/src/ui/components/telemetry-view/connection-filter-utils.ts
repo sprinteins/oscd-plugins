@@ -1,30 +1,23 @@
-export interface ConnectionFilter {
-	sourceIEDPattern: string
-	targetIEDPattern: string
-	messageType: string
-}
+import type {
+	ConnectionFilter,
+	IEDInfo,
+	IEDInfoWithBays,
+	PublishedConnection,
+	ReceivedConnection,
+	ResolvedFilter
+} from '@/headless/types'
 
-/**
- * Maps SCL message type values to display constants.
- * This matches the mapping used in node-layout-connections.ts
- */
 const MESSAGE_TYPE_TO_SCL_MAP: Record<string, string> = {
-	'GOOSE': 'GOOSE',
-	'MMS': 'MMS',
-	'SampledValues': 'SMV',
-	'Unknown': ''  // Empty string in SCL data
+	GOOSE: 'GOOSE',
+	MMS: 'MMS',
+	SampledValues: 'SMV',
+	Unknown: ''
 }
 
-/**
- * Normalizes a message type from display format to SCL format.
- */
 function normalizeMessageType(displayType: string): string {
 	return MESSAGE_TYPE_TO_SCL_MAP[displayType] ?? displayType
 }
 
-/**
- * Creates a namespace resolver for XPath queries on SCL XML documents.
- */
 function createNamespaceResolver(
 	xmlDocument: XMLDocument
 ): (prefix: string | null) => string | null {
@@ -47,16 +40,12 @@ function createNamespaceResolver(
 	}
 }
 
-/**
- * Query IEDs from an SCL XML document using a flexible pattern.
- */
 function queryIEDsByPattern(
 	xmlDocument: XMLDocument | null,
 	pattern: string
 ): string[] {
 	if (!xmlDocument) return []
 
-	// Empty pattern returns all IEDs
 	if (!pattern || pattern.trim() === '') {
 		const allIEDs = xmlDocument.querySelectorAll('IED')
 		return Array.from(allIEDs)
@@ -67,21 +56,16 @@ function queryIEDsByPattern(
 	try {
 		let xpath: string
 
-		// Use pattern as-is if it's already an XPath expression
 		if (pattern.startsWith('//')) {
 			xpath = pattern
-		}
-		// Handle wildcard patterns
-		else if (pattern.includes('*')) {
+		} else if (pattern.includes('*')) {
 			const cleanPattern = pattern.replace(/\*/g, '')
 			if (cleanPattern) {
 				xpath = `//default:IED[contains(@name,'${cleanPattern}')]`
 			} else {
 				xpath = '//default:IED'
 			}
-		}
-		// Handle exact name match
-		else {
+		} else {
 			xpath = `//default:IED[@name='${pattern}']`
 		}
 
@@ -109,85 +93,44 @@ function queryIEDsByPattern(
 	}
 }
 
-export function applyConnectionFilters<
-	T extends {
-		iedName: string
-		published: Array<{ targetIEDName: string; serviceType: string }>
-		received: Array<{ iedName: string; serviceType: string }>
-	}
->(
-	iedInfos: T[],
-	connectionFilters: ConnectionFilter[],
+function resolveFilter(
+	filter: ConnectionFilter,
 	xmlDocument: XMLDocument | null
-): T[] {
-	console.log('[applyConnectionFilters] Input filters:', connectionFilters)
-	console.log('[applyConnectionFilters] Input IED count:', iedInfos.length)
+): ResolvedFilter {
+	const sourceIEDs = queryIEDsByPattern(xmlDocument, filter.sourceIEDPattern)
+	const targetIEDs = queryIEDsByPattern(xmlDocument, filter.targetIEDPattern)
 
-	// Log all available message types in the data
-	const allMessageTypes = new Set<string>()
-	for (const ied of iedInfos) {
-		for (const pub of ied.published) {
-			allMessageTypes.add(pub.serviceType)
-		}
-		for (const rec of ied.received) {
-			allMessageTypes.add(rec.serviceType)
-		}
+	const sourceMatchAll =
+		!filter.sourceIEDPattern || filter.sourceIEDPattern.trim() === ''
+	const targetMatchAll =
+		!filter.targetIEDPattern || filter.targetIEDPattern.trim() === ''
+
+	const normalizedType = normalizeMessageType(filter.messageType)
+
+	return {
+		sourceIEDs,
+		targetIEDs,
+		sourceMatchAll,
+		targetMatchAll,
+		messageType: normalizedType
 	}
-	console.log(
-		'[applyConnectionFilters] Available message types in data:',
-		Array.from(allMessageTypes)
-	)
+}
 
-	// Resolve patterns to IED names for each filter
-	const resolvedFilters = connectionFilters.map((filter) => {
-		const sourceIEDs = queryIEDsByPattern(
-			xmlDocument,
-			filter.sourceIEDPattern
-		)
-		const targetIEDs = queryIEDsByPattern(
-			xmlDocument,
-			filter.targetIEDPattern
-		)
-
-		// Track if patterns were empty (meaning match all)
-		const sourceMatchAll =
-			!filter.sourceIEDPattern || filter.sourceIEDPattern.trim() === ''
-		const targetMatchAll =
-			!filter.targetIEDPattern || filter.targetIEDPattern.trim() === ''
-
-		// Normalize message type from display format to SCL format
-		const normalizedType = normalizeMessageType(filter.messageType)
-
-		console.log(
-			`[Filter Resolution] Type: ${filter.messageType} → ${normalizedType} | ` +
-				`Source: "${filter.sourceIEDPattern}" → ${sourceIEDs.length} IEDs (matchAll: ${sourceMatchAll}) | ` +
-				`Target: "${filter.targetIEDPattern}" → ${targetIEDs.length} IEDs (matchAll: ${targetMatchAll})`
-		)
-
-		return {
-			sourceIEDs,
-			targetIEDs,
-			sourceMatchAll,
-			targetMatchAll,
-			messageType: normalizedType
-		}
-	})
-
-	// Collect all IEDs that should be visible based on filters
+function determineVisibleIEDs(
+	iedInfos: IEDInfo[],
+	resolvedFilters: ResolvedFilter[]
+): Set<string> {
 	const visibleIEDs = new Set<string>()
 
-	// Check if any filter has empty patterns (meaning match all)
 	const hasMatchAllFilter = resolvedFilters.some(
 		(filter) => filter.sourceMatchAll || filter.targetMatchAll
 	)
 
-	// If there's a match-all filter, start with all IEDs
 	if (hasMatchAllFilter) {
 		for (const ied of iedInfos) {
 			visibleIEDs.add(ied.iedName)
 		}
 	} else {
-		// Otherwise, only add IEDs explicitly mentioned in filters
 		for (const filter of resolvedFilters) {
 			for (const ied of filter.sourceIEDs) {
 				visibleIEDs.add(ied)
@@ -198,54 +141,80 @@ export function applyConnectionFilters<
 		}
 	}
 
-	// Filter IEDs and their connections
+	return visibleIEDs
+}
+
+function filterPublishedConnections(
+	iedName: string,
+	published: PublishedConnection[],
+	resolvedFilters: ResolvedFilter[]
+): PublishedConnection[] {
+	return published.filter((pub) => {
+		return resolvedFilters.some((filter) => {
+			const sourceMatch =
+				filter.sourceMatchAll || filter.sourceIEDs.includes(iedName)
+			const targetMatch =
+				filter.targetMatchAll ||
+				filter.targetIEDs.includes(pub.targetIEDName)
+			const typeMatch = pub.serviceType === filter.messageType
+
+			return sourceMatch && targetMatch && typeMatch
+		})
+	})
+}
+
+function filterReceivedConnections(
+	iedName: string,
+	received: ReceivedConnection[],
+	resolvedFilters: ResolvedFilter[]
+): ReceivedConnection[] {
+	return received.filter((rec) => {
+		return resolvedFilters.some((filter) => {
+			const sourceMatch =
+				filter.sourceMatchAll || filter.sourceIEDs.includes(rec.iedName)
+			const targetMatch =
+				filter.targetMatchAll || filter.targetIEDs.includes(iedName)
+			const typeMatch = rec.serviceType === filter.messageType
+
+			return sourceMatch && targetMatch && typeMatch
+		})
+	})
+}
+
+export function applyConnectionFilters<T extends IEDInfo>(
+	iedInfos: T[],
+	connectionFilters: ConnectionFilter[],
+	xmlDocument: XMLDocument | null
+): T[] {
+	const resolvedFilters = connectionFilters.map((filter) =>
+		resolveFilter(filter, xmlDocument)
+	)
+
+	const visibleIEDs = determineVisibleIEDs(iedInfos, resolvedFilters)
+
 	const result = iedInfos
 		.filter((ied) => visibleIEDs.has(ied.iedName))
-		.map((ied) => {
-			const filteredPublished = ied.published.filter((pub) => {
-				return resolvedFilters.some((filter) => {
-					const sourceMatch =
-						filter.sourceMatchAll ||
-						filter.sourceIEDs.includes(ied.iedName)
-					const targetMatch =
-						filter.targetMatchAll ||
-						filter.targetIEDs.includes(pub.targetIEDName)
-					const typeMatch = pub.serviceType === filter.messageType
-					
-					return sourceMatch && targetMatch && typeMatch
-				})
-			})
+		.map((ied) => ({
+			...ied,
+			published: filterPublishedConnections(
+				ied.iedName,
+				ied.published,
+				resolvedFilters
+			),
+			received: filterReceivedConnections(
+				ied.iedName,
+				ied.received,
+				resolvedFilters
+			)
+		}))
 
-			const filteredReceived = ied.received.filter((rec) => {
-				return resolvedFilters.some((filter) => {
-					const sourceMatch =
-						filter.sourceMatchAll ||
-						filter.sourceIEDs.includes(rec.iedName)
-					const targetMatch =
-						filter.targetMatchAll ||
-						filter.targetIEDs.includes(ied.iedName)
-					const typeMatch = rec.serviceType === filter.messageType
-					
-					return sourceMatch && targetMatch && typeMatch
-				})
-			})
-
-			return {
-				...ied,
-				published: filteredPublished,
-				received: filteredReceived
-			}
-		})
-
-	console.log('[applyConnectionFilters] Result:', result.length, 'IEDs with filtered connections')
 	return result
 }
 
-export function filterIEDsByBays<
-	T extends {
-		bays?: Set<string>
-	}
->(iedInfos: T[], selectedBays: Set<string>): T[] {
+export function filterIEDsByBays<T extends IEDInfoWithBays>(
+	iedInfos: T[],
+	selectedBays: Set<string>
+): T[] {
 	if (selectedBays.size === 0) return iedInfos
 
 	return iedInfos.filter((ied) => {
