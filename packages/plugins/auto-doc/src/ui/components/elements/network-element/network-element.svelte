@@ -66,12 +66,4 @@ $effect(() => {
 	.network-preview-wrapper :global(*) {
 		pointer-events: none !important;
 	}
-
-	.network-preview-wrapper :global(.svelte-flow) {
-		background-color: transparent !important;
-	}
-
-	.network-preview-wrapper :global(.svelte-flow__background) {
-		background-color: transparent !important;
-	}
 </style>
