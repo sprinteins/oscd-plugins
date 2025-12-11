@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored '/utils' into '/pdf' and '/utils
 
 ### Fixed
+- dual tone background on template-builder scroll
+
+### Fixed
 - background reset on pdf export for NE
 - missing margin on template-builder scroll
 
