@@ -1,5 +1,9 @@
 import type jsPDF from 'jspdf'
-import { PDF_CONSTANTS } from './constants'
+import {
+	DEFAULT_LINE_HEIGHT,
+	PAGE_BUFFER,
+	INITIAL_PAGE_MARGIN
+} from './constants'
 
 export class PdfPageManager {
 	private currentMarginTop: number
@@ -17,15 +21,11 @@ export class PdfPageManager {
 		return this.currentMarginTop
 	}
 
-	incrementPosition(
-		lineHeight: number = PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
-	): void {
+	incrementPosition(lineHeight: number = DEFAULT_LINE_HEIGHT): void {
 		this.currentMarginTop += lineHeight
 	}
 
-	contentExceedsPage(
-		contentHeight: number = PDF_CONSTANTS.PAGE_BUFFER
-	): boolean {
+	contentExceedsPage(contentHeight: number = PAGE_BUFFER): boolean {
 		return (
 			this.currentMarginTop + contentHeight >
 			this.pageHeight - this.marginBottom
@@ -34,7 +34,7 @@ export class PdfPageManager {
 
 	createNewPage(): void {
 		this.doc.addPage()
-		this.currentMarginTop = PDF_CONSTANTS.INITIAL_PAGE_MARGIN
+		this.currentMarginTop = INITIAL_PAGE_MARGIN
 	}
 
 	ensureSpace(contentHeight?: number): void {
