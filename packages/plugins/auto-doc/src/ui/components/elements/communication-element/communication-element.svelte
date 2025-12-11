@@ -1,5 +1,5 @@
 <script lang="ts">
-import TelemetryView from '@oscd-plugins/communication-explorer/src/ui/components/telemetry-view/telemetry-view.svelte'
+import { TelemetryView } from '@oscd-plugins/communication-explorer/lib'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { LegacyTheme } from '@oscd-plugins/ui'
 import NoXmlWarning from '../../no-xml-warning/no-xml-warning.svelte'

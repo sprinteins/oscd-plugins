@@ -5,11 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED] - 2025-12-08
+## [UNRELEASED] - 2025-12-11
 ### Added
 - Loading state for 'generate PDF' button
 - 'Further details' section in CE element exporting legend / bay list / IED list and details to the pdf
 - Additional padding below input buttons
+
+## [1.17.9] - 2025-12-10
+### Changed
+- Made Communcation Explorer and Network Explorer dependencies and updated paths
 
 ## [1.17.8] - 2025-11-28
 ### Added

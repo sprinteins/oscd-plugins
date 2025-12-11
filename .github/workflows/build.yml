@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install Dependencies
-        run: pnpm run dependencies:install+build && pnpm --filter @oscd-plugins/${{ inputs.plugin-name }} i --frozen-lockfile
+        run: pnpm run ${{ inputs.plugin-name }}:install
 
       - name: Run Tests
         continue-on-error: true
@@ -47,7 +47,7 @@ jobs:
       - name: Retrieve Version
         id: version
         run: |
-          cd ./packages/plugins/${{inputs.plugin-name}}
+          cd ./packages/plugins/${{ inputs.plugin-name }}
           echo "version=$(npm pkg get version)" >> "$GITHUB_OUTPUT"
 
       - name: Prep-Build
@@ -65,12 +65,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd $GITHUB_WORKSPACE/_build_
-          mkdir -p $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}
+          mkdir -p $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{ steps.version.outputs.version }}
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
-          cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}/
+          cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/index.js $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{ steps.version.outputs.version }}/
           cp -f $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/package.json $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/
           find $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/ -name "*.css" -exec cp -f {} $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/ \;
-          find $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/ -name "*.css" -exec cp -f {} $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{steps.version.outputs.version}}/ \;
+          find $GITHUB_WORKSPACE/packages/plugins/${{ inputs.plugin-name }}/dist/ -name "*.css" -exec cp -f {} $GITHUB_WORKSPACE/_build_/${{ inputs.plugin-name }}/${{ steps.version.outputs.version }}/ \;
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
