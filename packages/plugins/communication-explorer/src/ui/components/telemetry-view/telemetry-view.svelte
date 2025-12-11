@@ -39,7 +39,6 @@ interface Props {
 	showSidebar?: boolean
 	isOutsidePluginContext?: boolean
 	selectedBays?: Set<string>
-	selectedMessageTypes?: string[]
 	connectionFilters?: ConnectionFilter[]
 	focusMode?: boolean
 	zoom?: number
@@ -51,7 +50,6 @@ let {
 	showSidebar = true,
 	isOutsidePluginContext = false,
 	selectedBays,
-	selectedMessageTypes,
 	connectionFilters,
 	focusMode,
 	zoom,
@@ -76,7 +74,6 @@ $effect(() => {
 		$filterState,
 		$preferences$,
 		selectedBays,
-		selectedMessageTypes,
 		connectionFilters,
 		focusMode
 	)
@@ -88,7 +85,6 @@ async function initInfos(
 	selectedFilter: SelectedFilter,
 	preferences: Preferences,
 	selectedBays?: Set<string>,
-	selectedMessageTypes?: string[],
 	connectionFilters?: ConnectionFilter[],
 	focusMode?: boolean
 ) {
@@ -123,11 +119,6 @@ async function initInfos(
 		}
 	}
 
-	const filterWithOverrides =
-		selectedMessageTypes !== undefined
-			? { ...selectedFilter, selectedMessageTypes }
-			: selectedFilter
-
 	const preferencesWithOverrides =
 		focusMode !== undefined
 			? { ...preferences, isFocusModeOn: focusMode }
@@ -136,7 +127,7 @@ async function initInfos(
 	rootNode = await calculateLayout(
 		filteredInfos,
 		config,
-		filterWithOverrides,
+		selectedFilter,
 		preferencesWithOverrides
 	)
 
