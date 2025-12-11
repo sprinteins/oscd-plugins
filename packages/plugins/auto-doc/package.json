@@ -1,7 +1,7 @@
 {
 	"name": "@oscd-plugins/auto-doc",
 	"private": true,
-	"version": "1.17.8",
+	"version": "1.17.9",
 	"type": "module",
 	"scripts": {
 		"//====== DEV ======//": "",
@@ -27,6 +27,8 @@
 		}
 	},
 	"dependencies": {
+		"@oscd-plugins/communication-explorer": "workspace:^",
+		"@oscd-plugins/network-explorer": "workspace:^",
 		"@smui/button": "8.0.3",
 		"@smui/checkbox": "^8.0.3",
 		"@smui/data-table": "^8.0.3",
@@ -47,12 +49,10 @@
 		"zipcelx": "^1.6.2"
 	},
 	"devDependencies": {
-		"@oscd-plugins/communication-explorer": "workspace:^",
 		"@oscd-plugins/core": "workspace:^",
 		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/core-standard": "workspace:^",
 		"@oscd-plugins/core-ui-svelte": "workspace:^",
-		"@oscd-plugins/network-explorer": "workspace:^",
 		"@oscd-plugins/ui": "workspace:^",
 		"@smui/form-field": "^8.0.3",
 		"@smui/radio": "^8.0.3",
