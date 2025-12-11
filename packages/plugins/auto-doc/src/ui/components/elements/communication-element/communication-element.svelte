@@ -62,7 +62,6 @@ let isPatternHelpDialogOpen = $state(false)
 
 let nextRowId = $state(1)
 
-// Initialize message type rows from saved parameters or default to all enabled
 function initializeMessageTypeRows(): MessageTypeRow[] {
 	if (
 		initialParams?.messageTypeRows &&
@@ -75,7 +74,6 @@ function initializeMessageTypeRows(): MessageTypeRow[] {
 		return initialParams.messageTypeRows
 	}
 
-	// Default message types in order
 	const defaultMessageTypes = [
 		MESSAGE_TYPE.GOOSE,
 		MESSAGE_TYPE.MMS,
@@ -129,7 +127,6 @@ function buildConnectionFilters(
 }
 
 let connectionFilters = $derived.by(() => {
-	console.log('Rebuilding connection filters...')
 	return buildConnectionFilters(messageTypeRows)
 })
 
