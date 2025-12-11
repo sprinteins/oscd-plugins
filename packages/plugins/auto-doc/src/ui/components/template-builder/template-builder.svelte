@@ -215,8 +215,8 @@ function handleContentChange(elementId: string, newContent: string) {
     overflow-y: auto;
     border-radius: 0.5rem;
     padding: 1.5rem;
+    margin-bottom: 2rem;
   }
-
   .elements-list {
     display: flex;
     flex-direction: column;

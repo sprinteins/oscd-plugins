@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Refactored '/utils' into '/pdf' and '/utils
 
+### Fixed
+- background reset on pdf export for NE
+- missing margin on template-builder scroll
+
 ## [1.17.9] - 2025-12-10
 ### Changed
 - Made Communcation Explorer and Network Explorer dependencies and updated paths
