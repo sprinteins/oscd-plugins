@@ -1,7 +1,7 @@
 {
 	"name": "@oscd-plugins/auto-doc",
 	"private": true,
-	"version": "1.17.7",
+	"version": "1.17.9",
 	"type": "module",
 	"scripts": {
 		"//====== DEV ======//": "",
@@ -17,7 +17,9 @@
 		"//====== TEST ======//": "",
 		"test": "vitest"
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"exports": {
 		".": {
 			"types": "./dist/plugin.d.ts",
@@ -25,14 +27,16 @@
 		}
 	},
 	"dependencies": {
-		"@smui/button": "8.0.0-beta.3",
-		"@smui/checkbox": "^8.0.0-beta.3",
-		"@smui/data-table": "^8.0.0-beta.3",
-		"@smui/dialog": "8.0.0-beta.3",
-		"@smui/icon-button": "^8.0.0-beta.3",
-		"@smui/list": "^8.0.0-beta.3",
-		"@smui/menu": "^8.0.0-beta.3",
-		"@smui/textfield": "^8.0.0-beta.3",
+		"@oscd-plugins/communication-explorer": "workspace:^",
+		"@oscd-plugins/network-explorer": "workspace:^",
+		"@smui/button": "8.0.3",
+		"@smui/checkbox": "^8.0.3",
+		"@smui/data-table": "^8.0.3",
+		"@smui/dialog": "8.0.3",
+		"@smui/icon-button": "^8.0.3",
+		"@smui/list": "^8.0.3",
+		"@smui/menu": "^8.0.3",
+		"@smui/textfield": "^8.0.3",
 		"@tiptap/core": "^2.11.5",
 		"@tiptap/extension-list-item": "^2.11.5",
 		"@tiptap/extension-text-style": "^2.11.5",
@@ -46,25 +50,29 @@
 	},
 	"devDependencies": {
 		"@oscd-plugins/core": "workspace:^",
-		"@oscd-plugins/ui": "workspace:^",
 		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/core-standard": "workspace:^",
 		"@oscd-plugins/core-ui-svelte": "workspace:^",
+		"@oscd-plugins/ui": "workspace:^",
+		"@smui/form-field": "^8.0.3",
+		"@smui/radio": "^8.0.3",
+		"@smui/select": "8.0.0-beta.3",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@tsconfig/svelte": "^5.0.4",
+		"@types/uuid": "^10.0.0",
 		"autoprefixer": "^10.4.20",
 		"concurrently": "^7.6.0",
+		"html-to-image": "1.11.11",
+		"playwright": "^1.48.1",
 		"postcss": "^8.4.49",
 		"svelte": "^5.19.8",
 		"svelte-check": "^4.1.4",
+		"tailwindcss": "^3.4.15",
+		"tailwindcss-animate": "^1.0.7",
 		"tslib": "^2.8.0",
 		"typescript": "~5.6.2",
 		"vite": "6.1.0",
 		"vite-plugin-dts": "^4.5.0",
-		"playwright": "^1.48.1",
-		"vitest": "^3.0.5",
-		"tailwindcss": "^3.4.15",
-		"tailwindcss-animate": "^1.0.7",
-		"@types/uuid": "^10.0.0"
+		"vitest": "^3.0.5"
 	}
 }
