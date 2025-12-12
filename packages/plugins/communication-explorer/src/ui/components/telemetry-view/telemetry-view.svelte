@@ -25,13 +25,21 @@ import {
 	getBays
 } from '../../../headless/services/ied/ied'
 import type { IED } from '@oscd-plugins/core'
+import {
+	applyConnectionFilters,
+	filterIEDsByBays
+} from './connection-filter-utils'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import type { ConnectionFilter } from '@/headless/types'
+
+export type { ConnectionFilter }
 
 interface Props {
 	root: Element
 	showSidebar?: boolean
 	isOutsidePluginContext?: boolean
 	selectedBays?: Set<string>
-	selectedMessageTypes?: string[]
+	connectionFilters?: ConnectionFilter[]
 	focusMode?: boolean
 	zoom?: number
 	onDiagramSizeCalculated?: (width: number, height: number) => void
@@ -42,7 +50,7 @@ let {
 	showSidebar = true,
 	isOutsidePluginContext = false,
 	selectedBays,
-	selectedMessageTypes,
+	connectionFilters,
 	focusMode,
 	zoom,
 	onDiagramSizeCalculated
@@ -66,7 +74,7 @@ $effect(() => {
 		$filterState,
 		$preferences$,
 		selectedBays,
-		selectedMessageTypes,
+		connectionFilters,
 		focusMode
 	)
 })
@@ -77,7 +85,7 @@ async function initInfos(
 	selectedFilter: SelectedFilter,
 	preferences: Preferences,
 	selectedBays?: Set<string>,
-	selectedMessageTypes?: string[],
+	connectionFilters?: ConnectionFilter[],
 	focusMode?: boolean
 ) {
 	if (!root) {
@@ -93,19 +101,23 @@ async function initInfos(
 	}
 
 	let filteredInfos = lastExtractedInfos
+
+	// Apply bay filters first if provided
 	if (selectedBays && selectedBays.size > 0) {
-		filteredInfos = lastExtractedInfos.filter((ied) => {
-			if (!ied.bays || ied.bays.size === 0) return false
-			return Array.from(ied.bays).some((bay: string) =>
-				selectedBays.has(bay)
-			)
-		})
+		filteredInfos = filterIEDsByBays(filteredInfos, selectedBays)
 	}
 
-	const filterWithOverrides =
-		selectedMessageTypes !== undefined
-			? { ...selectedFilter, selectedMessageTypes }
-			: selectedFilter
+	// Then apply connection filters on top of bay filters (cumulative)
+	if (connectionFilters && connectionFilters.length > 0) {
+		const xmlDocument = pluginGlobalStore.xmlDocument
+		if (xmlDocument) {
+			filteredInfos = applyConnectionFilters(
+				filteredInfos,
+				connectionFilters,
+				xmlDocument
+			)
+		}
+	}
 
 	const preferencesWithOverrides =
 		focusMode !== undefined
@@ -115,7 +127,7 @@ async function initInfos(
 	rootNode = await calculateLayout(
 		filteredInfos,
 		config,
-		filterWithOverrides,
+		selectedFilter,
 		preferencesWithOverrides
 	)
 

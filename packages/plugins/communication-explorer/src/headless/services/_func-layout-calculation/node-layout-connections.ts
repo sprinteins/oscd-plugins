@@ -21,7 +21,7 @@ export function generateConnectionLayout(
 	const hasSelection = hasActiveIEDSelection()
 
 	const incomingEdges: IEDConnectionWithCustomValues[] = ieds
-		.map((targetIED, index) => {
+		.flatMap((targetIED, index) => {
 			const receivedConnections = convertReceivedMessagesToConnections(
 				targetIED,
 				ieds,
@@ -32,10 +32,9 @@ export function generateConnectionLayout(
 
 			return receivedConnections
 		})
-		.flat()
 
 	const outgoingEdges: IEDConnectionWithCustomValues[] = ieds
-		.map((sourceIED, iedIndex) => {
+		.flatMap((sourceIED, iedIndex) => {
 			const publishedConnections = convertPublishedMessagesToConnections(
 				sourceIED,
 				ieds,
@@ -46,7 +45,6 @@ export function generateConnectionLayout(
 
 			return publishedConnections
 		})
-		.flat()
 
 	return [...incomingEdges, ...outgoingEdges]
 }
@@ -62,7 +60,7 @@ function convertPublishedMessagesToConnections(
 	let connectionCounter = 0
 	const iedConnections: IEDConnectionWithCustomValues[] = []
 
-	sourceIED.published.forEach((message) => {
+	for (const message of sourceIED.published) {
 		//
 		// Prepare
 		//
@@ -77,7 +75,7 @@ function convertPublishedMessagesToConnections(
 				targetIEDName,
 				ieds
 			})
-			return
+			continue
 		}
 		const targetIED = ieds[targetIEDIndex]
 		const messageType = messageTypeMap[message.serviceType]
@@ -122,7 +120,7 @@ function convertPublishedMessagesToConnections(
 		}
 
 		iedConnections.push(connection)
-	})
+	}
 	return iedConnections
 }
 
@@ -135,7 +133,7 @@ function convertReceivedMessagesToConnections(
 ): IEDConnectionWithCustomValues[] {
 	let connectionCounter = 0
 	const iedConnections: IEDConnectionWithCustomValues[] = []
-	targetIED.received.forEach((message) => {
+	for (const message of targetIED.received) {
 		//
 		// Prepare
 		//
@@ -150,7 +148,7 @@ function convertReceivedMessagesToConnections(
 				sourceIEDName,
 				ieds
 			})
-			return
+			continue
 		}
 		const sourceIED = ieds[sourceIEDIndex]
 		const targetIED = ieds[iedIndex]
@@ -200,7 +198,7 @@ function convertReceivedMessagesToConnections(
 			messageTypeLabel: messageTypeLabel
 		}
 		iedConnections.push(connection)
-	})
+	}
 	return iedConnections
 }
 
