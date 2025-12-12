@@ -5,7 +5,7 @@ import Textfield from '@smui/textfield'
 import type { Label, LabelText } from './types.signal-list'
 
 import { signalDndStore } from '@/stores/signal-dnd.store'
-import { debounce } from '@/utils/'
+import { debounce } from '@/utils'
 
 interface Props {
 	//Props

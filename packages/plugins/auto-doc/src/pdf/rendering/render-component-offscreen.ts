@@ -1,5 +1,5 @@
 import { unmount, mount } from 'svelte'
-import { exportPngFromHTMLElement } from './diagram-export'
+import { renderPngFromHtml } from './render-png-from-html'
 import type CommunicationElement from '@/ui/components/elements/communication-element/communication-element.svelte'
 import type NetworkElement from '@/ui/components/elements/network-element/network-element.svelte'
 
@@ -86,7 +86,7 @@ function findTargetElement(container: HTMLElement): HTMLElement {
 }
 
 async function captureAsBase64(element: HTMLElement): Promise<string> {
-	const pngBase64 = await exportPngFromHTMLElement({
+	const pngBase64 = await renderPngFromHtml({
 		element,
 		pixelRatio: PIXEL_RATIO,
 		quality: QUALITY
