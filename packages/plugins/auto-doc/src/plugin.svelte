@@ -73,6 +73,11 @@ $effect(() => {
 </main>
 
 <style lang="scss">
+	:global(main) {
+		min-height: var(--plugin-container-height);
+		height: auto;
+	}
+
   .file-missing {
     padding-top: 20px;
     p {
