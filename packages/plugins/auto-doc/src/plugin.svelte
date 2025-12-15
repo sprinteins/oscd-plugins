@@ -84,4 +84,17 @@ $effect(() => {
       text-align: center;
     }
   }
+
+  .banner {
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.25rem 2rem;
+    width: 100%;
+    background-color: var(--mdc-theme-error);
+    color: white;
+    position: fixed;
+    top: var(--header-height);
+    box-sizing: border-box;
+    z-index: 1;
+  }
 </style>
