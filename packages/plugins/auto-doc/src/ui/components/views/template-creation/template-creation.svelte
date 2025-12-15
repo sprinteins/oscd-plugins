@@ -149,10 +149,7 @@ function downloadTemplateContent() {
       onkeydown={(e) => e.key === "Escape" && closeTitleAndDescription()}
       onclick={(e) => e.stopPropagation()}
     >
-      <Textfield
-        bind:value={title}
-        variant="outlined"
-        label="Title"
+      <Textfield bind:value={title} variant="outlined" label="Title"
       ></Textfield>
       <Textfield
         bind:value={description}
