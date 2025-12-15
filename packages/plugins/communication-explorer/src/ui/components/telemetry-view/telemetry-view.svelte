@@ -28,7 +28,7 @@ import type { IED } from '@oscd-plugins/core'
 import {
 	applyConnectionFilters,
 	filterIEDsByBays
-} from './connection-filter-utils'
+} from '../../../headless/services/filtering'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type { ConnectionFilter } from '@/headless/types'
 
