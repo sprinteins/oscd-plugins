@@ -1,4 +1,4 @@
-import { IMAGE_SCALE_FACTORS, type ImageScale } from './constants'
+import { IMAGE_SCALE_FACTORS } from './constants'
 
 export function loadImage(dataUrl: string): Promise<HTMLImageElement> {
 	return new Promise((resolve, reject) => {
@@ -10,7 +10,7 @@ export function loadImage(dataUrl: string): Promise<HTMLImageElement> {
 }
 
 export function getImageScaleFactor(scale: string): number {
-	const normalizedScale = scale.toLowerCase() as ImageScale
+	const normalizedScale = scale.toLowerCase() as keyof typeof IMAGE_SCALE_FACTORS
 	return IMAGE_SCALE_FACTORS[normalizedScale] ?? IMAGE_SCALE_FACTORS.small
 }
 
