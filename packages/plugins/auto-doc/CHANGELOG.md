@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED] - 2025-12-16
+### Added
+- Source and Target filtering for each message type CE preview
+- Helper instructions for Source and Target filtering
+
 ## [UNRELEASED] - 2025-12-11
 ### Added
 - Loading state for 'generate PDF' button
