@@ -1,15 +1,15 @@
 <script lang="ts">
-	import ChevronRight from "lucide-svelte/icons/chevron-right";
-	import type { WithElementRef } from "bits-ui";
-	import type { HTMLLiAttributes } from "svelte/elements";
-	import { cn } from "$lib/utils/shadcn.js";
+import ChevronRight from '@lucide/svelte/icons/chevron-right'
+import type { WithElementRef } from 'bits-ui'
+import type { HTMLLiAttributes } from 'svelte/elements'
+import { cn } from '$lib/utils/shadcn.js'
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		children,
-		...restProps
-	}: WithElementRef<HTMLLiAttributes> = $props();
+let {
+	ref = $bindable(null),
+	class: className,
+	children,
+	...restProps
+}: WithElementRef<HTMLLiAttributes> = $props()
 </script>
 
 <li

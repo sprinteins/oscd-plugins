@@ -9,7 +9,7 @@ SEE: https://github.com/huntabyte/bits-ui/issues/828
 import { clickOutside } from '$lib/headless/actions/index.js'
 // COMPONENTS
 import { Button } from '$lib/ui/shadcn/index.js'
-import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical'
+import EllipsisVertical from '@lucide/svelte/icons/ellipsis-vertical'
 // UTILS
 import { cn } from '$lib/utils/shadcn.js'
 // TYPES
