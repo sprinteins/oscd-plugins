@@ -1,5 +1,5 @@
 <script lang="ts">
-import { FileX } from 'lucide-svelte'
+import FileX from '@lucide/svelte/icons/file-x'
 const { pluginName, errorMessage } = $props()
 </script>
 

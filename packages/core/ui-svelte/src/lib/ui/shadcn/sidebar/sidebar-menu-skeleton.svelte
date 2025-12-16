@@ -28,7 +28,7 @@ const width = `${Math.floor(Math.random() * 40) + 50}%`
 		<Skeleton class="size-4 rounded-md" data-sidebar="menu-skeleton-icon" />
 	{/if}
 	<Skeleton
-		class="h-4 max-w-[--skeleton-width] flex-1"
+		class="h-4 max-w-[var(--skeleton-width)] flex-1"
 		data-sidebar="menu-skeleton-text"
 		style="--skeleton-width: {width};"
 	/>

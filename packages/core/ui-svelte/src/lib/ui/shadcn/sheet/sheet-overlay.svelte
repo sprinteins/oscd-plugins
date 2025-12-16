@@ -7,6 +7,8 @@ let {
 	class: className,
 	...restProps
 }: SheetPrimitive.OverlayProps = $props()
+
+export { className as class }
 </script>
 
 <SheetPrimitive.Overlay

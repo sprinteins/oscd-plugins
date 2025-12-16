@@ -1,14 +1,14 @@
 <script lang="ts">
-	import Ellipsis from "lucide-svelte/icons/ellipsis";
-	import type { WithElementRef, WithoutChildren } from "bits-ui";
-	import type { HTMLAttributes } from "svelte/elements";
-	import { cn } from "$lib/utils/shadcn.js";
+import Ellipsis from '@lucide/svelte/icons/ellipsis'
+import type { WithElementRef, WithoutChildren } from 'bits-ui'
+import type { HTMLAttributes } from 'svelte/elements'
+import { cn } from '$lib/utils/shadcn.js'
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		...restProps
-	}: WithoutChildren<WithElementRef<HTMLAttributes<HTMLSpanElement>>> = $props();
+let {
+	ref = $bindable(null),
+	class: className,
+	...restProps
+}: WithoutChildren<WithElementRef<HTMLAttributes<HTMLSpanElement>>> = $props()
 </script>
 
 <span

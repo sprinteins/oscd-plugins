@@ -27,7 +27,6 @@ export {
 	HeadCell,
 	NextButton,
 	PrevButton,
-	Root,
 	//
 	Root as RangeCalendar
 }

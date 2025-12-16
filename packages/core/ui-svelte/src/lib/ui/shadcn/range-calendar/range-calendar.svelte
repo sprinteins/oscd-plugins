@@ -1,16 +1,19 @@
 <script lang="ts">
-	import { RangeCalendar as RangeCalendarPrimitive, type WithoutChildrenOrChild } from "bits-ui";
-	import * as RangeCalendar from "./index.js";
-	import { cn } from "$lib/utils/shadcn.js";
+import {
+	RangeCalendar as RangeCalendarPrimitive,
+	type WithoutChildrenOrChild
+} from 'bits-ui'
+import * as RangeCalendar from './index.js'
+import { cn } from '$lib/utils/shadcn.js'
 
-	let {
-		ref = $bindable(null),
-		value = $bindable(),
-		placeholder = $bindable(),
-		weekdayFormat = "short",
-		class: className,
-		...restProps
-	}: WithoutChildrenOrChild<RangeCalendarPrimitive.RootProps> = $props();
+let {
+	ref = $bindable(null),
+	value = $bindable(),
+	placeholder = $bindable(),
+	weekdayFormat = 'short',
+	class: className,
+	...restProps
+}: WithoutChildrenOrChild<RangeCalendarPrimitive.RootProps> = $props()
 </script>
 
 <RangeCalendarPrimitive.Root
@@ -28,11 +31,11 @@
 			<RangeCalendar.NextButton />
 		</RangeCalendar.Header>
 		<RangeCalendar.Months>
-			{#each months as month}
+			{#each months as month (month)}
 				<RangeCalendar.Grid>
 					<RangeCalendar.GridHead>
 						<RangeCalendar.GridRow class="flex">
-							{#each weekdays as weekday}
+							{#each weekdays as weekday (weekday)}
 								<RangeCalendar.HeadCell>
 									{weekday.slice(0, 2)}
 								</RangeCalendar.HeadCell>
@@ -40,9 +43,9 @@
 						</RangeCalendar.GridRow>
 					</RangeCalendar.GridHead>
 					<RangeCalendar.GridBody>
-						{#each month.weeks as weekDates}
+						{#each month.weeks as weekDates (weekDates)}
 							<RangeCalendar.GridRow class="mt-2 w-full">
-								{#each weekDates as date}
+								{#each weekDates as date (date)}
 									<RangeCalendar.Cell {date} month={month.value}>
 										<RangeCalendar.Day />
 									</RangeCalendar.Cell>

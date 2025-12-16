@@ -1,2 +1,2 @@
-export * from './style'
-export * from './shadcn'
+export * from './style.js'
+export * from './shadcn.js'

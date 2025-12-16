@@ -1,4 +1,4 @@
-import { fontFamily } from 'tailwindcss/defaultTheme'
+import { fontFamily } from 'tailwindcss/defaultTheme.js'
 import tailwindcssAnimate from 'tailwindcss-animate'
 // TYPES
 import type { Config } from 'tailwindcss'

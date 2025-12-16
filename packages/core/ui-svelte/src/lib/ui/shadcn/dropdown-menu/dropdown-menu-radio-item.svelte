@@ -1,14 +1,17 @@
 <script lang="ts">
-	import { DropdownMenu as DropdownMenuPrimitive, type WithoutChild } from "bits-ui";
-	import Circle from "lucide-svelte/icons/circle";
-	import { cn } from "$lib/utils/shadcn.js";
+import {
+	DropdownMenu as DropdownMenuPrimitive,
+	type WithoutChild
+} from 'bits-ui'
+import Circle from '@lucide/svelte/icons/circle'
+import { cn } from '$lib/utils/shadcn.js'
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		children: childrenProp,
-		...restProps
-	}: WithoutChild<DropdownMenuPrimitive.RadioItemProps> = $props();
+let {
+	ref = $bindable(null),
+	class: className,
+	children: childrenProp,
+	...restProps
+}: WithoutChild<DropdownMenuPrimitive.RadioItemProps> = $props()
 </script>
 
 <DropdownMenuPrimitive.RadioItem
