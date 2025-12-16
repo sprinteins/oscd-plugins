@@ -181,6 +181,12 @@ function filterReceivedConnections(
 	})
 }
 
+function filterDetachedIEDs<T extends IEDInfo>(iedInfos: T[]): T[] {
+	return iedInfos.filter(
+		(ied) => ied.published.length > 0 || ied.received.length > 0
+	)
+}
+
 export function applyConnectionFilters<T extends IEDInfo>(
 	iedInfos: T[],
 	connectionFilters: ConnectionFilter[],
@@ -209,12 +215,6 @@ export function applyConnectionFilters<T extends IEDInfo>(
 		}))
 
 	return filterDetachedIEDs(result)
-}
-
-function filterDetachedIEDs<T extends IEDInfo>(iedInfos: T[]): T[] {
-	return iedInfos.filter(
-		(ied) => ied.published.length > 0 || ied.received.length > 0
-	)
 }
 
 export function filterIEDsByBays<T extends IEDInfoWithBays>(
