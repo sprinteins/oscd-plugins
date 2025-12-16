@@ -187,6 +187,25 @@ function filterDetachedIEDs<T extends IEDInfo>(iedInfos: T[]): T[] {
 	)
 }
 
+function shouldFilterDetachedIEDs(
+	connectionFilters: ConnectionFilter[],
+	resolvedFilters: ResolvedFilter[]
+): boolean {
+	if (connectionFilters.length === 0) {
+		return false
+	}
+
+	const allMessageTypes = new Set(Object.values(MESSAGE_TYPE_TO_SCL_MAP))
+	const selectedMessageTypes = new Set(
+		resolvedFilters.map((filter) => filter.messageType)
+	)
+	const hasAllMessageTypes = Array.from(allMessageTypes).every((type) =>
+		selectedMessageTypes.has(type)
+	)
+
+	return !hasAllMessageTypes
+}
+
 export function applyConnectionFilters<T extends IEDInfo>(
 	iedInfos: T[],
 	connectionFilters: ConnectionFilter[],
@@ -214,7 +233,11 @@ export function applyConnectionFilters<T extends IEDInfo>(
 			)
 		}))
 
-	return filterDetachedIEDs(result)
+	if (shouldFilterDetachedIEDs(connectionFilters, resolvedFilters)) {
+		return filterDetachedIEDs(result)
+	}
+
+	return result
 }
 
 export function filterIEDsByBays<T extends IEDInfoWithBays>(
