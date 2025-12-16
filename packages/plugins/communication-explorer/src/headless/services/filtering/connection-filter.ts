@@ -208,7 +208,13 @@ export function applyConnectionFilters<T extends IEDInfo>(
 			)
 		}))
 
-	return result
+	return filterDetachedIEDs(result)
+}
+
+function filterDetachedIEDs<T extends IEDInfo>(iedInfos: T[]): T[] {
+	return iedInfos.filter(
+		(ied) => ied.published.length > 0 || ied.received.length > 0
+	)
 }
 
 export function filterIEDsByBays<T extends IEDInfoWithBays>(
