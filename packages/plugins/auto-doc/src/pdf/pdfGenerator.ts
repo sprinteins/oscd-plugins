@@ -11,12 +11,18 @@ import { renderComponentOffscreen } from './rendering'
 import { writeCommunicationContentToPdf } from './content-processing'
 import { IEDService } from '@oscd-plugins/core'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { PDF_CONSTANTS, TEXT_SIZES, FONT_STYLES } from './core'
 import {
-	loadImage,
-	extractImageFormat,
-	getImageScaleFactor
+	TEXT_SIZES,
+	FONT_STYLES,
+	DEFAULT_FONT_SIZE,
+	DEFAULT_LINE_HEIGHT,
+	HORIZONTAL_SPACING,
+	INITIAL_PAGE_MARGIN,
+	MAX_IMAGE_WIDTH,
+	NESTED_LIST_INDENT,
+	TEXT_MARGIN_OFFSET
 } from './core'
+import { loadImage, extractImageFormat, getImageScaleFactor } from './core'
 import { PdfPageManager } from './core'
 import type { TextSize } from './core'
 
@@ -26,7 +32,7 @@ import type { TextSize } from './core'
 
 async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	const doc = new jsPDF()
-	doc.setFontSize(PDF_CONSTANTS.DEFAULT_FONT_SIZE)
+	doc.setFontSize(DEFAULT_FONT_SIZE)
 
 	const pageHeight = doc.internal.pageSize.height
 	const pageSize = doc.internal.pageSize
@@ -35,8 +41,8 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	const pageManager = new PdfPageManager(
 		doc,
 		pageHeight,
-		PDF_CONSTANTS.INITIAL_PAGE_MARGIN,
-		PDF_CONSTANTS.INITIAL_PAGE_MARGIN
+		INITIAL_PAGE_MARGIN,
+		INITIAL_PAGE_MARGIN
 	)
 
 	const blockHandler: Record<
@@ -88,14 +94,14 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 				case 'strong':
 					renderText(
 						element.textContent ?? '',
-						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+						DEFAULT_FONT_SIZE,
 						FONT_STYLES.BOLD
 					)
 					break
 				case 'em':
 					renderText(
 						element.textContent ?? '',
-						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+						DEFAULT_FONT_SIZE,
 						FONT_STYLES.ITALIC
 					)
 					break
@@ -123,16 +129,12 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 		const wrappedText: string[] = doc.splitTextToSize(
 			textWithPlaceholder ?? '',
-			pageWidth - (PDF_CONSTANTS.TEXT_MARGIN_OFFSET - indent)
+			pageWidth - (TEXT_MARGIN_OFFSET - indent)
 		)
 
 		for (const line of wrappedText) {
 			pageManager.ensureSpace()
-			doc.text(
-				line,
-				PDF_CONSTANTS.HORIZONTAL_SPACING,
-				pageManager.getCurrentPosition()
-			)
+			doc.text(line, HORIZONTAL_SPACING, pageManager.getCurrentPosition())
 			pageManager.incrementPosition()
 		}
 	}
@@ -142,7 +144,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			if (node.nodeType === Node.TEXT_NODE) {
 				renderText(
 					node.textContent ?? '',
-					PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+					DEFAULT_FONT_SIZE,
 					FONT_STYLES.NORMAL
 				)
 			} else if (node.nodeType === Node.ELEMENT_NODE) {
@@ -155,7 +157,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 				}
 				renderText(
 					element.textContent ?? '',
-					PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+					DEFAULT_FONT_SIZE,
 					fontStyle
 				)
 			}
@@ -176,7 +178,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 				if (firstParagraph) {
 					renderText(
 						bullet + firstParagraph.textContent,
-						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+						DEFAULT_FONT_SIZE,
 						FONT_STYLES.NORMAL,
 						indent
 					)
@@ -184,7 +186,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 				} else {
 					renderText(
 						bullet + (li.textContent ?? ''),
-						PDF_CONSTANTS.DEFAULT_FONT_SIZE,
+						DEFAULT_FONT_SIZE,
 						FONT_STYLES.NORMAL,
 						indent
 					)
@@ -196,10 +198,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 						child.tagName.toLowerCase() === 'ul' ||
 						child.tagName.toLowerCase() === 'ol'
 					) {
-						processList(
-							child,
-							indent + PDF_CONSTANTS.NESTED_LIST_INDENT
-						)
+						processList(child, indent + NESTED_LIST_INDENT)
 					}
 				})
 			}
@@ -208,11 +207,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 	function renderTextLine(text: string) {
 		pageManager.ensureSpace()
-		doc.text(
-			text,
-			PDF_CONSTANTS.HORIZONTAL_SPACING,
-			pageManager.getCurrentPosition()
-		)
+		doc.text(text, HORIZONTAL_SPACING, pageManager.getCurrentPosition())
 		pageManager.incrementPosition()
 	}
 
@@ -230,7 +225,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 		const scaleFactor = getImageScaleFactor(scale)
 		const aspectRatio = image.height / image.width
-		const width = scaleFactor * PDF_CONSTANTS.MAX_IMAGE_WIDTH
+		const width = scaleFactor * MAX_IMAGE_WIDTH
 		const height = width * aspectRatio
 
 		pageManager.ensureSpace(height)
@@ -238,13 +233,13 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		doc.addImage(
 			dataUrl,
 			format.toUpperCase(),
-			PDF_CONSTANTS.HORIZONTAL_SPACING,
+			HORIZONTAL_SPACING,
 			pageManager.getCurrentPosition(),
 			width,
 			height
 		)
 
-		const padding = Math.round(height) + PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
+		const padding = Math.round(height) + DEFAULT_LINE_HEIGHT
 		pageManager.incrementPosition(padding)
 	}
 
@@ -368,16 +363,14 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			body: newFilledBody,
 			startY: pageManager.getCurrentPosition(),
 			margin: {
-				left: PDF_CONSTANTS.HORIZONTAL_SPACING
+				left: HORIZONTAL_SPACING
 			},
 			headStyles: {
 				fillColor: 'black'
 			}
 		})
 
-		const tableHeight =
-			rows * PDF_CONSTANTS.DEFAULT_LINE_HEIGHT +
-			PDF_CONSTANTS.DEFAULT_LINE_HEIGHT
+		const tableHeight = rows * DEFAULT_LINE_HEIGHT + DEFAULT_LINE_HEIGHT
 		if (pageManager.contentExceedsPage(tableHeight)) {
 			pageManager.createNewPage()
 		} else {

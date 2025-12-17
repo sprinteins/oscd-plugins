@@ -11,10 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Helper instructions for Source and Target filtering
 
 ## [UNRELEASED] - 2025-12-11
+## [1.18.1] - 2025-12-15
+### Fixed
+- dual tone background on template-builder scroll
+
+## [1.18.0] - 2025-12-11
 ### Added
 - Loading state for 'generate PDF' button
 - 'Further details' section in CE element exporting legend / bay list / IED list and details to the pdf
 - Additional padding below input buttons
+
+### Changed
+- Refactored '/utils' into '/pdf' and '/utils
+
+### Fixed
+- background reset on pdf export for NE
+- missing margin on template-builder scroll
 
 ## [1.17.9] - 2025-12-10
 ### Changed

@@ -17,14 +17,12 @@ export const IMAGE_SCALE_FACTORS = {
   large: 1,
 } as const;
 
-export const PDF_CONSTANTS = {
-  DEFAULT_FONT_SIZE: TEXT_SIZES.NORMAL,
-  INITIAL_PAGE_MARGIN: 10,
-  DEFAULT_LINE_HEIGHT: 7,
-  HORIZONTAL_SPACING: 10,
-  MAX_IMAGE_WIDTH: 186,
-  TEXT_MARGIN_OFFSET: 35,
-  PAGE_BUFFER: 10,
-  NESTED_LIST_INDENT: 10,
-  LIST_INDENT: 5,
-} as const;
+export const DEFAULT_FONT_SIZE = TEXT_SIZES.NORMAL;
+export const INITIAL_PAGE_MARGIN = 10;
+export const DEFAULT_LINE_HEIGHT = 7;
+export const HORIZONTAL_SPACING = 10;
+export const MAX_IMAGE_WIDTH = 186;
+export const TEXT_MARGIN_OFFSET = 35;
+export const PAGE_BUFFER = 10;
+export const NESTED_LIST_INDENT = 10;
+export const LIST_INDENT = 5;
