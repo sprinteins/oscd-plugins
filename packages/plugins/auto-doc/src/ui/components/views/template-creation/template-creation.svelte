@@ -102,7 +102,6 @@ function downloadTemplateContent() {
 			isGenerating = false
 		})
 }
-
 </script>
 
 <div class="template-creation-container">
