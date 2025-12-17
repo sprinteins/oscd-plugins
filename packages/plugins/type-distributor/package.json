@@ -15,7 +15,7 @@
 		"//====== TEST ======//": "",
 		"test": "vitest",
 		"//====== SVELTE ======//": "",
-		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
+		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json --noEmit"
 	},
 	"files": [
 		"dist"
