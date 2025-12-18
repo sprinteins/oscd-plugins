@@ -18,6 +18,8 @@ import jsonPackage from '../package.json'
 import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
+// COMPONENTS
+import { Toolbar, TypeDistributorView } from '@/ui/components/views'
 
 // props
 const {
@@ -42,12 +44,10 @@ const {
 	}}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
+	class="overflow-hidden"
 >
-	<div class="flex flex-col space-y-9 items-center justify-center h-screen">
-		<h1 class="h1 font-black text-9xl">Hello World!</h1>
-		<span
-			>See the <i>HELLO</i> file in <b>`packages/template`</b> (oscd-plugins
-			monorepo)</span
-		>
+	<div class="flex flex-col w-full h-[--plugin-container-height] min-h-full">
+		<Toolbar />
+		<TypeDistributorView />
 	</div>
 </main>
