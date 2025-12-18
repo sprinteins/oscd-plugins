@@ -6,13 +6,7 @@ import type {
 	ReceivedConnection,
 	ResolvedFilter
 } from '@/headless/types'
-
-const MESSAGE_TYPE_TO_SCL_MAP: Record<string, string> = {
-	GOOSE: 'GOOSE',
-	MMS: 'MMS',
-	SampledValues: 'SMV',
-	Unknown: ''
-}
+import { MESSAGE_TYPE_TO_SCL_MAP } from './message-type-to-scl-map'
 
 function normalizeMessageType(displayType: string): string {
 	return MESSAGE_TYPE_TO_SCL_MAP[displayType] ?? displayType
@@ -182,9 +176,55 @@ function filterReceivedConnections(
 }
 
 function filterDetachedIEDs<T extends IEDInfo>(iedInfos: T[]): T[] {
-	return iedInfos.filter(
+	const ieds = iedInfos.filter(
 		(ied) => ied.published.length > 0 || ied.received.length > 0
 	)
+
+	return ieds
+}
+
+function ensureReferencedIEDsIncluded<T extends IEDInfo>(
+	filteredIEDs: T[],
+	allIEDs: T[],
+	resolvedFilters: ResolvedFilter[]
+): T[] {
+	const result = [...filteredIEDs]
+	const includedIEDNames = new Set(result.map(ied => ied.iedName))
+	const allIEDsMap = new Map(allIEDs.map(ied => [ied.iedName, ied]))
+	
+	const applyConnectionFiltersToIED = (ied: T): T => ({
+		...ied,
+		published: filterPublishedConnections(ied.iedName, ied.published, resolvedFilters),
+		received: filterReceivedConnections(ied.iedName, ied.received, resolvedFilters)
+	} as T)
+	
+	const addMissingIED = (iedName: string): boolean => {
+		if (includedIEDNames.has(iedName)) return false
+		
+		const missingIED = allIEDsMap.get(iedName)
+		if (!missingIED) return false
+		
+		result.push(applyConnectionFiltersToIED(missingIED))
+		includedIEDNames.add(iedName)
+		return true
+	}
+	
+	const collectReferencedIEDNames = (ied: T): string[] => [
+		...ied.published.map(pub => pub.targetIEDName),
+		...ied.received.map(rec => rec.iedName)
+	]
+	
+	let hasChanges = true
+	while (hasChanges) {
+		const currentSize = includedIEDNames.size
+		
+		const referencedNames = result.flatMap(collectReferencedIEDNames)
+		referencedNames.forEach(addMissingIED)
+		
+		hasChanges = includedIEDNames.size > currentSize
+	}
+	
+	return result
 }
 
 function shouldFilterDetachedIEDs(
@@ -194,7 +234,7 @@ function shouldFilterDetachedIEDs(
 	if (connectionFilters.length === 0) {
 		return false
 	}
-
+	// CHECKING WETHER ALL MESSAGE TYPE ARE SELECTeD IS NOt FEASIBLE SINCE USERS CAN ADD AND REMOVE MESSAGE, IN ADDITION TO DISABLING THEM
 	const allMessageTypes = new Set(Object.values(MESSAGE_TYPE_TO_SCL_MAP))
 	const selectedMessageTypes = new Set(
 		resolvedFilters.map((filter) => filter.messageType)
@@ -202,7 +242,6 @@ function shouldFilterDetachedIEDs(
 	const hasAllMessageTypes = Array.from(allMessageTypes).every((type) =>
 		selectedMessageTypes.has(type)
 	)
-
 	return !hasAllMessageTypes
 }
 
@@ -217,7 +256,7 @@ export function applyConnectionFilters<T extends IEDInfo>(
 
 	const visibleIEDs = determineVisibleIEDs(iedInfos, resolvedFilters)
 
-	const result = iedInfos
+	let result = iedInfos
 		.filter((ied) => visibleIEDs.has(ied.iedName))
 		.map((ied) => ({
 			...ied,
@@ -234,9 +273,9 @@ export function applyConnectionFilters<T extends IEDInfo>(
 		}))
 
 	if (shouldFilterDetachedIEDs(connectionFilters, resolvedFilters)) {
-		return filterDetachedIEDs(result)
-	}
-
+		result = filterDetachedIEDs(result)
+		return ensureReferencedIEDsIncluded(result, iedInfos, resolvedFilters)
+	} 
 	return result
 }
 
