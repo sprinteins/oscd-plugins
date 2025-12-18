@@ -21,7 +21,11 @@ class UseBayTypesStore {
 		return {
 			...bayType,
 			conductingEquipmentTemplates: bayType.conductingEquipments
-				.map((ce) => ssdImportStore.getConductingEquipmentTemplate(ce.templateUuid))
+				.map((ce) =>
+					ssdImportStore.getConductingEquipmentTemplate(
+						ce.templateUuid
+					)
+				)
 				.filter(Boolean),
 			functionTemplates: bayType.functions
 				.map((f) => ssdImportStore.getFunctionTemplate(f.templateUuid))

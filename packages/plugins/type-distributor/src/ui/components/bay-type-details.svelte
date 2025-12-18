@@ -17,13 +17,14 @@ const {
 <!-- Equipment Functions -->
 {#if conductingEquipmentTemplates && conductingEquipmentTemplates.length > 0}
     <div class="space-y-2 mb-2">
-        <h3 class="text-sm font-semibold text-gray-700">
-            Equipment Functions
-        </h3>
+        <h3 class="text-sm font-semibold text-gray-700">Equipment Functions</h3>
         {#each conductingEquipmentTemplates as equipment}
             {#if equipment.eqFunctions && equipment.eqFunctions.length > 0}
                 {#each equipment.eqFunctions as eqFunc}
-                    <EquipmentItem eqFunction={eqFunc} equipmentName={equipment.name} />
+                    <EquipmentItem
+                        eqFunction={eqFunc}
+                        equipmentName={equipment.name}
+                    />
                 {/each}
             {/if}
         {/each}

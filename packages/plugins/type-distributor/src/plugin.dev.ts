@@ -9,6 +9,6 @@ mount(Plugin, {
 		docName: 'scl-mock-A',
 		editCount: 0,
 		locale: 'en',
-		isCustomInstance: false,
+		isCustomInstance: false
 	}
 })

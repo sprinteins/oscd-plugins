@@ -44,7 +44,8 @@ class UseImportSSDStore {
 
 		const templates = parseTemplates(this.loadedSSDDocument)
 		this.functionTemplates = templates.functionTemplates
-		this.conductingEquipmentTemplates = templates.conductingEquipmentTemplates
+		this.conductingEquipmentTemplates =
+			templates.conductingEquipmentTemplates
 
 		const dts = parseDataTypeTemplates(this.loadedSSDDocument)
 		this.lnodeTypes = dts.lnodeTypes

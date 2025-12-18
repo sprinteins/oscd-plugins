@@ -1,14 +1,13 @@
 <script lang="ts">
-    import { Card } from "@oscd-plugins/core-ui-svelte";
-    import type { LNodeRef } from "@/headless/types";
+import { Card } from '@oscd-plugins/core-ui-svelte'
+import type { LNodeRef } from '@/headless/types'
 
-    const {
-        lnode
-    }: {
-        lnode: LNodeRef;
-    } = $props();
+const {
+	lnode
+}: {
+	lnode: LNodeRef
+} = $props()
 </script>
-
 
 <Card.Root>
     <Card.Content class="p-2">
