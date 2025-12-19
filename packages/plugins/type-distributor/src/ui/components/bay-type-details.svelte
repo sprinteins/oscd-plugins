@@ -3,7 +3,7 @@ import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate
 } from '@/headless/types'
-import { EquipmentItem, FunctionItem } from '@/ui/components'
+import { EquipmentItem, FunctionItem } from '@/ui/components/items'
 
 const {
 	functionTemplates,
@@ -14,7 +14,6 @@ const {
 } = $props()
 </script>
 
-<!-- Equipment Functions -->
 {#if conductingEquipmentTemplates && conductingEquipmentTemplates.length > 0}
     <div class="space-y-2 mb-2">
         <h3 class="text-sm font-semibold text-gray-700">Equipment Functions</h3>
@@ -31,7 +30,6 @@ const {
     </div>
 {/if}
 
-<!-- Functions -->
 {#if functionTemplates && functionTemplates.length > 0}
     <div class="space-y-2">
         <h3 class="text-sm font-semibold text-gray-700">Functions</h3>

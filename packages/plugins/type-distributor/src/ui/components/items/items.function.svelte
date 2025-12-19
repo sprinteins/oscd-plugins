@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Card, Collapsible } from '@oscd-plugins/core-ui-svelte'
+import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
 import type { FunctionTemplate } from '@/headless/types'
 import LnodeCard from './lnode-card.svelte'

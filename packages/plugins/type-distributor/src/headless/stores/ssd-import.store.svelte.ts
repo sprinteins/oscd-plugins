@@ -5,7 +5,6 @@ import type {
 	DOType,
 	EnumType,
 	FunctionTemplate,
-	LNodeRef,
 	LNodeType
 } from '@/headless/types'
 

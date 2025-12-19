@@ -2,9 +2,8 @@
 import { Card, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { bayTypesStore } from '@/headless/stores'
 import type { BayType } from '@/headless/types'
-import BayTypeDetails from '../bay-type-details.svelte'
+import { BayTypeDetails } from '@/ui/components'
 
-// Options for bay types / templates (use bayTypes which maps to templateEquipments)
 const bayTypeOptions = $derived(
 	bayTypesStore.bayTypes.map((bt: BayType) => ({
 		value: bt.uuid,
@@ -12,7 +11,6 @@ const bayTypeOptions = $derived(
 	}))
 )
 
-// Get the full bay type with templates resolved
 const bayTypeWithTemplates = $derived(
 	bayTypesStore.selectedBayType
 		? bayTypesStore.getBayTypeWithTemplates(bayTypesStore.selectedBayType)

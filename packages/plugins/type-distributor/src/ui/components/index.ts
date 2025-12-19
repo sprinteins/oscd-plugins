@@ -1,1 +1,1 @@
-export * from './items'
+export { default as BayTypeDetails} from './bay-type-details.svelte'

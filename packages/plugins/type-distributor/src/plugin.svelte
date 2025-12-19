@@ -15,7 +15,7 @@
 // PACKAGE
 import jsonPackage from '../package.json'
 // CORE
-import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
+import { initPlugin } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 // COMPONENTS
