@@ -5,7 +5,6 @@ export function shouldRemoveDetachedIEDs(
 	connectionFilters: ConnectionFilter[],
 	resolvedFilters: ResolvedFilter[]
 ): boolean {
-	console.log("Connection Filters:", connectionFilters)
 	if (connectionFilters.length === 0) {
 		return false
 	}
