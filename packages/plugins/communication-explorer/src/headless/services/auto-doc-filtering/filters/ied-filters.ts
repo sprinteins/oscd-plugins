@@ -76,7 +76,9 @@ export function ensureReferencedIEDsIncluded<T extends IEDInfo>(
 	return result
 }
 
-function collectFilteredIEDNames(resolvedFilters: ResolvedFilter[]): Set<string> {
+function collectFilteredIEDNames(
+	resolvedFilters: ResolvedFilter[]
+): Set<string> {
 	const visibleIEDs = new Set<string>()
 
 	for (const filter of resolvedFilters) {

@@ -1,38 +1,30 @@
 <script lang="ts">
-import { calculateLayout } from '../../../headless/services/_func-layout-calculation/node-layout'
-import {
-	Diagram,
-	type IEDConnection,
-	type IEDConnectionWithCustomValues,
-	type RootNode
-} from '../diagram'
-import { Sidebar } from '../sidebar'
-import {
-	filterState,
-	type SelectedFilter,
-	selectConnection,
-	selectIEDElkNode,
-	clearIEDSelection,
-	toggleMultiSelectionOfIED
-} from '../../../stores/_store-view-filter'
-import type { Config } from '../../../headless/services/_func-layout-calculation/config'
-import {
-	preferences$,
-	type Preferences
-} from '../../../stores/_store-preferences'
-import {
-	getIEDCommunicationInfos,
-	getBays
-} from '../../../headless/services/ied/ied'
-import type { IED } from '@oscd-plugins/core'
+import { calculateLayout } from '../../../headless/services/_func-layout-calculation'
 import {
 	applyConnectionFilters,
 	filterIEDsByBays
 } from '../../../headless/services/auto-doc-filtering'
+import { getIEDCommunicationInfos, getBays } from '../../../headless/services/ied/ied'
+import type { ConnectionFilter } from '../../../headless/types'
+import { type Preferences, preferences$ } from '../../../stores/_store-preferences'
+import {
+	type SelectedFilter,
+	clearIEDSelection,
+	toggleMultiSelectionOfIED,
+	selectConnection,
+	filterState,
+	selectIEDElkNode
+} from '../../../stores/_store-view-filter'
+import type { IED } from '@oscd-plugins/core'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import type { ConnectionFilter } from '@/headless/types'
-
-export type { ConnectionFilter }
+import {
+	type RootNode,
+	type IEDConnection,
+	type IEDConnectionWithCustomValues,
+	Diagram
+} from '../diagram'
+import type { Config } from '../../../headless/services/_func-layout-calculation/config'
+import { Sidebar } from '../sidebar'
 
 interface Props {
 	root: Element

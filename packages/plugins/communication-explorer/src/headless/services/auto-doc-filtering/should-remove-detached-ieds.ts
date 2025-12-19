@@ -12,8 +12,6 @@ export function shouldRemoveDetachedIEDs(
 	return !areAllMessageTypesSelected(resolvedFilters)
 }
 
-
-
 function areAllMessageTypesSelected(resolvedFilters: ResolvedFilter[]): boolean {
 	const allMessageTypes = new Set(Object.values(MESSAGE_TYPE_TO_SCL_MAP))
 	const selectedMessageTypes = new Set(

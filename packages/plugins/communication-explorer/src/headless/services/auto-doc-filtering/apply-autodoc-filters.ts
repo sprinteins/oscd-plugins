@@ -1,14 +1,16 @@
-import type { ConnectionFilter, IEDInfo, ResolvedFilter } from '@/headless/types'
-import { resolveConnectionFilter } from './filters/resolve-filter'
+import type {
+	IEDInfo,
+	ConnectionFilter,
+	ResolvedFilter
+} from '@/headless/types'
 import {
-	determineVisibleIEDs,
-	removeDetachedIEDs,
-	ensureReferencedIEDsIncluded
-} from './filters/ied-filters'
-import {
+	resolveConnectionFilter,
 	filterPublishedConnections,
-	filterReceivedConnections
-} from './filters/connection-filters'
+	filterReceivedConnections,
+	determineVisibleIEDs,
+	ensureReferencedIEDsIncluded,
+	removeDetachedIEDs
+} from './filters'
 import { shouldRemoveDetachedIEDs } from './should-remove-detached-ieds'
 
 export function applyConnectionFilters<T extends IEDInfo>(
@@ -22,7 +24,11 @@ export function applyConnectionFilters<T extends IEDInfo>(
 
 	const visibleIEDs = determineVisibleIEDs(iedInfos, resolvedFilters)
 
-	let result = applyFiltersToVisibleIEDs(iedInfos, visibleIEDs, resolvedFilters)
+	let result = applyFiltersToVisibleIEDs(
+		iedInfos,
+		visibleIEDs,
+		resolvedFilters
+	)
 
 	if (shouldRemoveDetachedIEDs(connectionFilters, resolvedFilters)) {
 		result = removeDetachedIEDs(result)
