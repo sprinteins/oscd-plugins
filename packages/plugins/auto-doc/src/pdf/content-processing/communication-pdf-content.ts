@@ -32,6 +32,25 @@ const MESSAGE_TYPES: MessageType[] = [
 	{ name: 'Unknown', color: { r: 1, g: 27, b: 34 } }
 ]
 
+function sanitizeText(text: string): string {
+	// biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
+	const unsupportedChars = text.match(/[^\x00-\x7F]/g)
+	
+	if (unsupportedChars) {
+		const uniqueChars = [...new Set(unsupportedChars)]
+		console.warn(
+			'PDF rendering: Removing unsupported characters:',
+			uniqueChars.join(', '),
+			'from text:',
+			text
+		)
+	}
+	
+	// Removes all non-ASCII characters
+	// biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
+	return text.replace(/[^\x00-\x7F]/g, '?')
+}
+
 function createTextRenderer(context: RenderContext) {
 	const { doc, pageManager, pageWidth } = context
 	return {
@@ -197,8 +216,9 @@ function renderIEDDetails(
 				LIST_INDENT
 			)
 			for (const item of section.items) {
+				const sanitizedItem = sanitizeText(item)
 				renderer.renderText(
-					`- ${item}`,
+					`- ${sanitizedItem}`,
 					9,
 					FONT_STYLES.NORMAL,
 					NESTED_LIST_INDENT
