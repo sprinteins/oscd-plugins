@@ -1,13 +1,14 @@
 import type { BayType } from '@/headless/types'
 
-export function parseBayTypes(doc?: XMLDocument | null): BayType[] {
-	if (!doc) return []
-
+export function parseBayTypes(doc: XMLDocument): BayType[] {
 	const voltageLevel = doc.querySelector(
 		'Substation[name="TEMPLATE"] > VoltageLevel[name="TEMPLATE"]'
 	)
 
-	if (!voltageLevel) return []
+	if (!voltageLevel) {
+		console.warn('No TEMPLATE VoltageLevel found in SSD document')
+		return []
+	}
 
 	return Array.from(
 		voltageLevel.querySelectorAll('Bay:not([name="TEMPLATE"])')
@@ -19,7 +20,8 @@ export function parseBayTypes(doc?: XMLDocument | null): BayType[] {
 			bay.querySelectorAll('ConductingEquipment')
 		).map((ce) => ({
 			uuid: ce.getAttribute('uuid') || '',
-			templateUuid: ce.getAttribute('templateUuid') || ''
+			templateUuid: ce.getAttribute('templateUuid') || '',
+			virtual: ce.getAttribute('virtual') === 'true'
 		})),
 		functions: Array.from(bay.querySelectorAll('Function')).map((func) => ({
 			uuid: func.getAttribute('uuid') || '',

@@ -1,7 +1,7 @@
 import type {
 	FunctionTemplate,
 	ConductingEquipmentTemplate,
-	LNodeRef
+	LNodeTemplate
 } from '@/headless/types'
 
 export function parseFunctionTemplate(element: Element): FunctionTemplate {
@@ -13,8 +13,8 @@ export function parseFunctionTemplate(element: Element): FunctionTemplate {
 			lnClass: ln.getAttribute('lnClass') || '',
 			lnInst: ln.getAttribute('lnInst') || '',
 			lnType: ln.getAttribute('lnType') || '',
+			uuid: ln.getAttribute('uuid') || '',
 			iedName: ln.getAttribute('iedName') || undefined,
-			uuid: ln.getAttribute('uuid') || undefined
 		}))
 	}
 }
@@ -41,7 +41,7 @@ export function parseConductingEquipmentTemplate(
 				const templateUuid = eqFunc.getAttribute('templateUuid')
 				let name = eqFunc.getAttribute('name') || 'Unnamed EqFunction'
 				let desc = eqFunc.getAttribute('desc') || undefined
-				let templateLnodes: LNodeRef[] = []
+				let templateLnodes: LNodeTemplate[] = []
 
 				if (templateUuid) {
 					const template = functionTemplates.find(
@@ -65,13 +65,7 @@ export function parseConductingEquipmentTemplate(
 	}
 }
 
-export function parseTemplates(doc?: XMLDocument | null) {
-	if (!doc)
-		return {
-			functionTemplates: [],
-			conductingEquipmentTemplates: []
-		}
-
+export function parseTemplates(doc: XMLDocument) {
 	const templateBay = doc.querySelector(
 		'Substation[name="TEMPLATE"] > VoltageLevel[name="TEMPLATE"] > Bay[name="TEMPLATE"]'
 	)

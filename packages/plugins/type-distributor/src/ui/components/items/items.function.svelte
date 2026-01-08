@@ -4,11 +4,11 @@ import { ChevronRight } from '@lucide/svelte'
 import type { FunctionTemplate } from '@/headless/types'
 import LnodeCard from './lnode-card.svelte'
 
-const {
-	func
-}: {
+interface Props {
 	func: FunctionTemplate
-} = $props()
+}
+
+const { func }: Props = $props()
 
 let isOpen = $state(false)
 </script>

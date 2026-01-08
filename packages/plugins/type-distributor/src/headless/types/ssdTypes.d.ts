@@ -1,48 +1,58 @@
-// Custom domain types for SSD parsing
-export type LNodeRef = {
-	lnClass: string
-	lnInst: string
-	lnType: string
-	iedName?: string
-	uuid?: string
-}
-
-export type FunctionTemplate = {
+// Custom types for SSD parsing
+export type BayType = {
 	uuid: string
 	name: string
 	desc?: string
-	lnodes: LNodeRef[]
+	conductingEquipments: Array<{ uuid: string; templateUuid: string, virtual: boolean }>
+	functions: Array<{ uuid: string; templateUuid: string }>
 }
 
-export type EqFunctionTemplate = {
+// TEMPLATE section
+export type ConductingEquipmentTemplate = {
 	uuid: string
 	name: string
+	type: string
 	desc?: string
-	lnodes: LNodeRef[]
+	terminals: TerminalTemplate[]
+	eqFunctions: EqFunctionTemplate[]
 }
 
-export type TerminalRef = {
+export type TerminalTemplate = {
 	uuid: string
 	name: string
 	connectivityNode: string
 	cNodeName: string
 }
 
-export type ConductingEquipmentTemplate = {
+export type EqFunctionTemplate = {
 	uuid: string
 	name: string
-	type: string
 	desc?: string
-	terminals: TerminalRef[]
-	eqFunctions: EqFunctionTemplate[]
+	lnodes: LNodeTemplate[]
 }
 
-export type BayType = {
+export type FunctionTemplate = {
 	uuid: string
 	name: string
 	desc?: string
-	conductingEquipments: Array<{ uuid: string; templateUuid: string }>
-	functions: Array<{ uuid: string; templateUuid: string }>
+	lnodes: LNodeTemplate[]
+}
+
+export type LNodeTemplate = {
+	uuid: string
+	lnClass: string
+	lnType: string
+	lnInst: string
+	iedName?: string
+}
+
+// Data Type Templates
+export type LNodeType = {
+	id: string
+	lnClass: string
+	iedType?: string
+	desc?: string
+	dataObjects: DataObject[]
 }
 
 export type DataObject = {
@@ -53,12 +63,12 @@ export type DataObject = {
 	desc?: string
 }
 
-export type LNodeType = {
+export type DOType = {
 	id: string
-	lnClass: string
+	cdc: string
 	iedType?: string
 	desc?: string
-	dataObjects: DataObject[]
+	dataAttributes: DataAttribute[]
 }
 
 export type DataAttribute = {
@@ -76,40 +86,8 @@ export type DataAttribute = {
 	desc?: string
 }
 
-export type SubDataObject = {
-	name: string
-	type: string
-	count?: string
-	desc?: string
-}
-
-export type DOType = {
-	id: string
-	cdc: string
-	iedType?: string
-	desc?: string
-	dataAttributes: DataAttribute[]
-}
-
-export type BasicDataAttribute = {
-	name: string
-	bType: string
-	type?: string
-	valKind?: string
-	valImport?: boolean
-	sAddr?: string
-	count?: string
-	desc?: string
-}
-
 export type DAType = {
 	id: string
-}
-
-export type EnumValue = {
-	ord: string
-	desc?: string
-	value?: string
 }
 
 export type EnumType = {

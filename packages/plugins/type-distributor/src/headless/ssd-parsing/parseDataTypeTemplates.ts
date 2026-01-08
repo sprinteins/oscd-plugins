@@ -1,14 +1,6 @@
 import type { LNodeType, DOType, DAType, EnumType } from '@/headless/types'
 
-export function parseDataTypeTemplates(doc?: XMLDocument | null) {
-	if (!doc)
-		return {
-			lnodeTypes: [],
-			doTypes: [],
-			daTypes: [],
-			enumTypes: []
-		}
-
+export function parseDataTypeTemplates(doc: XMLDocument) {
 	const dataTypeTemplates = doc.querySelector('SCL > DataTypeTemplates')
 
 	if (!dataTypeTemplates) {

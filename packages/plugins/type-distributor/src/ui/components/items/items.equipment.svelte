@@ -4,13 +4,12 @@ import { ChevronRight } from '@lucide/svelte'
 import type { EqFunctionTemplate } from '@/headless/types'
 import LnodeCard from './lnode-card.svelte'
 
-const {
-	eqFunction,
-	equipmentName
-}: {
+interface Props {
 	eqFunction: EqFunctionTemplate
 	equipmentName: string
-} = $props()
+}
+
+const { eqFunction, equipmentName }: Props = $props()
 
 let isOpen = $state(false)
 </script>
