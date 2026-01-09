@@ -70,7 +70,6 @@ $effect(() => {
       {/if}
     </auto-doc>
   </MaterialTheme>
-
 </main>
 
 <style lang="scss">
