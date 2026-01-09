@@ -20,18 +20,29 @@ import {
 	INITIAL_PAGE_MARGIN,
 	MAX_IMAGE_WIDTH,
 	NESTED_LIST_INDENT,
-	TEXT_MARGIN_OFFSET
+	TEXT_MARGIN_OFFSET,
+	DEFAULT_FONT
 } from './core'
 import { loadImage, extractImageFormat, getImageScaleFactor } from './core'
 import { PdfPageManager } from './core'
 import type { TextSize } from './core'
-
+import { robotoBold } from './fonts'
+import { robotoItalic } from './fonts'
+import { robotoRegular } from './fonts'
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
 
 async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	const doc = new jsPDF()
+	
+	doc.addFileToVFS('Roboto-Regular.ttf', robotoRegular)
+	doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal')
+	doc.addFileToVFS('Roboto-Bold.ttf', robotoBold)
+	doc.addFont('Roboto-Bold.ttf', 'Roboto', 'bold')
+	doc.addFileToVFS('Roboto-Italic.ttf', robotoItalic)
+	doc.addFont('Roboto-Italic.ttf', 'Roboto', 'italic')
+	doc.setFont(DEFAULT_FONT, FONT_STYLES.NORMAL);
 	doc.setFontSize(DEFAULT_FONT_SIZE)
 
 	const pageHeight = doc.internal.pageSize.height
@@ -125,7 +136,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	) {
 		const textWithPlaceholder = placeholderStore.fillPlaceholder(text)
 		doc.setFontSize(fontSize)
-		doc.setFont('helvetica', fontStyle)
+		doc.setFont(DEFAULT_FONT, fontStyle)
 
 		const wrappedText: string[] = doc.splitTextToSize(
 			textWithPlaceholder ?? '',
