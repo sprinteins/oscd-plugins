@@ -9,9 +9,9 @@ import {
 	Background,
 	BackgroundVariant,
 	Controls,
-	type Connection,
+	type Connection
 } from '@xyflow/svelte'
-import { useSvelteFlow } from '@xyflow/svelte';
+import { useSvelteFlow } from '@xyflow/svelte'
 import '@xyflow/svelte/dist/style.css'
 import type { Networking } from '@oscd-plugins/core'
 import IEDNode from './ied-node.svelte'
@@ -38,18 +38,29 @@ let {
 	onDelete
 }: Props = $props()
 
-
 const nodeTypes = {
 	ied: IEDNode,
 	bay: BayNode
 }
 
-const { fitView } = useSvelteFlow();
+const { fitView } = useSvelteFlow()
 $effect(() => {
-  if (isOutsidePluginContext) {
-    fitView();
-  }
-});
+	if (isOutsidePluginContext) {
+		fitView()
+	}
+})
+
+$effect(() => {
+	if (!isOutsidePluginContext) return
+
+	function handleResize() {
+		fitView()
+	}
+	window.addEventListener('resize', handleResize)
+	return () => {
+		window.removeEventListener('resize', handleResize)
+	}
+})
 
 function ondelete(deleteEvent: { nodes: Node[]; edges: Edge[] }): void {
 	const { edges } = deleteEvent
