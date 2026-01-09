@@ -17,6 +17,7 @@ export const IMAGE_SCALE_FACTORS = {
 	large: 1
 } as const
 
+export const DEFAULT_FONT = 'Noto'
 export const DEFAULT_FONT_SIZE = TEXT_SIZES.NORMAL
 export const INITIAL_PAGE_MARGIN = 10
 export const DEFAULT_LINE_HEIGHT = 7

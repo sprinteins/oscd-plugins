@@ -2,6 +2,7 @@ import type { IEDService } from '@oscd-plugins/core'
 import type jsPDF from 'jspdf'
 import type { PdfPageManager } from '../core'
 import {
+	DEFAULT_FONT,
 	DEFAULT_FONT_SIZE,
 	DEFAULT_LINE_HEIGHT,
 	FONT_STYLES,
@@ -32,25 +33,6 @@ const MESSAGE_TYPES: MessageType[] = [
 	{ name: 'Unknown', color: { r: 1, g: 27, b: 34 } }
 ]
 
-function sanitizeText(text: string): string {
-	// biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
-	const unsupportedChars = text.match(/[^\x00-\x7F]/g)
-	
-	if (unsupportedChars) {
-		const uniqueChars = [...new Set(unsupportedChars)]
-		console.warn(
-			'PDF rendering: Removing unsupported characters:',
-			uniqueChars.join(', '),
-			'from text:',
-			text
-		)
-	}
-	
-	// Removes all non-ASCII characters
-	// biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
-	return text.replace(/[^\x00-\x7F]/g, '?')
-}
-
 function createTextRenderer(context: RenderContext) {
 	const { doc, pageManager, pageWidth } = context
 	return {
@@ -61,7 +43,7 @@ function createTextRenderer(context: RenderContext) {
 			indent = 0
 		) {
 			doc.setFontSize(fontSize)
-			doc.setFont('helvetica', fontStyle)
+			doc.setFont(DEFAULT_FONT, fontStyle)
 
 			const wrappedText: string[] = doc.splitTextToSize(
 				text,
@@ -216,9 +198,8 @@ function renderIEDDetails(
 				LIST_INDENT
 			)
 			for (const item of section.items) {
-				const sanitizedItem = sanitizeText(item)
 				renderer.renderText(
-					`- ${sanitizedItem}`,
+					`- ${item}`,
 					9,
 					FONT_STYLES.NORMAL,
 					NESTED_LIST_INDENT

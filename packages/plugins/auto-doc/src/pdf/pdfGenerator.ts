@@ -20,18 +20,25 @@ import {
 	INITIAL_PAGE_MARGIN,
 	MAX_IMAGE_WIDTH,
 	NESTED_LIST_INDENT,
-	TEXT_MARGIN_OFFSET
+	TEXT_MARGIN_OFFSET,
+	DEFAULT_FONT
 } from './core'
 import { loadImage, extractImageFormat, getImageScaleFactor } from './core'
 import { PdfPageManager } from './core'
 import type { TextSize } from './core'
-
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
 
 async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	const doc = new jsPDF()
+	
+	doc.addFont('https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSans/hinted/ttf/NotoSans-Regular.ttf', "Noto", "normal");
+	doc.addFont('https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSans/hinted/ttf/NotoSans-Bold.ttf', "Noto", "bold");
+	doc.addFont('https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSans/hinted/ttf/NotoSans-Italic.ttf', "Noto", "italic");
+	doc.addFont('https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSans/hinted/ttf/NotoSans-BoldItalic.ttf', "Noto", "bolditalic");
+
+	doc.setFont(DEFAULT_FONT, FONT_STYLES.NORMAL);
 	doc.setFontSize(DEFAULT_FONT_SIZE)
 
 	const pageHeight = doc.internal.pageSize.height
@@ -125,7 +132,7 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	) {
 		const textWithPlaceholder = placeholderStore.fillPlaceholder(text)
 		doc.setFontSize(fontSize)
-		doc.setFont('helvetica', fontStyle)
+		doc.setFont(DEFAULT_FONT, fontStyle)
 
 		const wrappedText: string[] = doc.splitTextToSize(
 			textWithPlaceholder ?? '',
