@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Layout break in CE doc for IEDS, using Roboto to handle utf chars
 
-## [1.18.2] - 2025-12-17
+## [1.18.2] - 2026-01-09
 ### Added
 - Source and Target filtering for each message type CE preview
 - Helper instructions for Source and Target filtering
+
+### Fixed
+- CE preview excess container height, fit preview element
 
 ## [1.18.1] - 2025-12-15
 ### Fixed
