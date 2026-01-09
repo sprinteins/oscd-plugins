@@ -16,6 +16,8 @@ import {
 
 class UseImportSSDStore {
 	fileInput = $state<HTMLInputElement>()
+	currentFilename = $state<string | null>(null)
+	loadedSSDDocument = $state<XMLDocument | null>(null)
 
 	// Templates
 	bayTypes = $state<BayType[]>([])
@@ -31,7 +33,7 @@ class UseImportSSDStore {
 	// Selection state
 	selectedBayType = $state<string | null>(null)
 
-	loadFromSSD(xmlDocument: XMLDocument) {
+	loadFromSSD(xmlDocument: XMLDocument, filename: string) {
 		this.bayTypes = parseBayTypes(xmlDocument)
 
 		const templates = parseTemplates(xmlDocument)
@@ -44,6 +46,9 @@ class UseImportSSDStore {
 		this.doTypes = dts.doTypes
 		this.daTypes = dts.daTypes
 		this.enumTypes = dts.enumTypes
+
+		this.loadedSSDDocument = xmlDocument
+		this.currentFilename = filename
 	}
 
 	// Utility methods for matching templates
