@@ -14,6 +14,8 @@
 		"integrated": "concurrently 'npm:build:watch' 'npm:preview'",
 		"//====== TEST ======//": "",
 		"test": "vitest",
+		"test:ui": "vitest --ui",
+		"test:ui:open": "vitest --ui --open",
 		"//====== SVELTE ======//": "",
 		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json --noEmit"
 	},
@@ -33,7 +35,8 @@
 		"@oscd-plugins/core-ui-svelte": "workspace:^",
 		"@sveltejs/vite-plugin-svelte": "^5.1.1",
 		"@tsconfig/svelte": "^5.0.6",
-		"@vitest/ui": "^0.30.1",
+		"@vitest/coverage-v8": "^4.0.16",
+		"@vitest/ui": "^4.0.16",
 		"autoprefixer": "^10.4.23",
 		"concurrently": "^7.6.0",
 		"jsdom": "^21.1.1",
