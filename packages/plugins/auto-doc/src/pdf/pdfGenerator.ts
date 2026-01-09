@@ -26,6 +26,9 @@ import {
 import { loadImage, extractImageFormat, getImageScaleFactor } from './core'
 import { PdfPageManager } from './core'
 import type { TextSize } from './core'
+import { robotoBold } from './fonts'
+import { robotoItalic } from './fonts'
+import { robotoRegular } from './fonts'
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
@@ -33,11 +36,12 @@ import type { TextSize } from './core'
 async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	const doc = new jsPDF()
 	
-	doc.addFont('https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSans/hinted/ttf/NotoSans-Regular.ttf', "Noto", "normal");
-	doc.addFont('https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSans/hinted/ttf/NotoSans-Bold.ttf', "Noto", "bold");
-	doc.addFont('https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSans/hinted/ttf/NotoSans-Italic.ttf', "Noto", "italic");
-	doc.addFont('https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSans/hinted/ttf/NotoSans-BoldItalic.ttf', "Noto", "bolditalic");
-
+	doc.addFileToVFS('Roboto-Regular.ttf', robotoRegular)
+	doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal')
+	doc.addFileToVFS('Roboto-Bold.ttf', robotoBold)
+	doc.addFont('Roboto-Bold.ttf', 'Roboto', 'bold')
+	doc.addFileToVFS('Roboto-Italic.ttf', robotoItalic)
+	doc.addFont('Roboto-Italic.ttf', 'Roboto', 'italic')
 	doc.setFont(DEFAULT_FONT, FONT_STYLES.NORMAL);
 	doc.setFontSize(DEFAULT_FONT_SIZE)
 
