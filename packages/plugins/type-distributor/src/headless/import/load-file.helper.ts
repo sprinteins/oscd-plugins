@@ -9,8 +9,6 @@ export async function loadFromLocal() {
 		'application/xml'
 	)
 
-	ssdImportStore.currentFilename = file.name
-	ssdImportStore.loadedSSDDocument = xmlDocument
 	if (ssdImportStore.fileInput) ssdImportStore.fileInput.value = ''
-	ssdImportStore.loadFromSSD()
+	ssdImportStore.loadFromSSD(xmlDocument)
 }
