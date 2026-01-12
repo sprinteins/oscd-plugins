@@ -1,7 +1,7 @@
 {
 	"name": "@oscd-plugins/type-distributor",
 	"private": true,
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
 		"//====== DEV ======//": "",
@@ -27,6 +27,7 @@
 		}
 	},
 	"devDependencies": {
+		"@lucide/svelte": "^0.562.0",
 		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/core-standard": "workspace:^",
 		"@oscd-plugins/core-ui-svelte": "workspace:^",
