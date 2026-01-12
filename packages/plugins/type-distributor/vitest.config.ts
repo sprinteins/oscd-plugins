@@ -20,7 +20,7 @@ export default defineConfig({
 			enabled: true,
 			reportsDirectory: 'coverage',
 			include: ['src/headless/**/*.{ts,svelte}'],
-			exclude: ['src/**/*.spec.ts'],
+			exclude: ['src/**/*.spec.ts', 'src/headless/tests/**'],
 		}
 	}
 })
