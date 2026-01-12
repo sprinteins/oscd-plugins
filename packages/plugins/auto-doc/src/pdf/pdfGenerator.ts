@@ -415,7 +415,8 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 					pageManager,
 					pageWidth,
 					iedService,
-					parameters
+					parameters,
+					xmlDocument
 				)
 			}
 		} catch (error) {

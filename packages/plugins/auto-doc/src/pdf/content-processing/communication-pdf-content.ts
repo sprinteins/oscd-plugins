@@ -14,6 +14,11 @@ import {
 } from '../core'
 import type { CommunicationElementParameters } from '@/ui/components/elements/communication-element'
 import type { FontStyle } from 'jspdf-autotable'
+import {
+	filterIEDsByBays,
+	applyConnectionFilters,
+	type ConnectionFilter
+} from '@oscd-plugins/communication-explorer/lib'
 
 interface MessageType {
 	name: string
@@ -70,32 +75,38 @@ function createTextRenderer(context: RenderContext) {
 	}
 }
 
-function filterRelevantBays(
+function applyFiltering(
+	iedService: IEDService,
+	selectedBays: string[],
+	connectionFilters: ConnectionFilter[],
+	xmlDocument: XMLDocument | null
+): ReturnType<IEDService['IEDCommunicationInfos']> {
+	let filteredInfos = iedService.IEDCommunicationInfos()
+
+	if (selectedBays && selectedBays.length > 0) {
+		const selectedBaysSet = new Set(selectedBays)
+		filteredInfos = filterIEDsByBays(filteredInfos, selectedBaysSet)
+	}
+
+	if (connectionFilters && connectionFilters.length > 0 && xmlDocument) {
+		filteredInfos = applyConnectionFilters(
+			filteredInfos,
+			connectionFilters,
+			xmlDocument
+		)
+	}
+
+	return filteredInfos
+}
+
+function getRelevantBays(
 	iedService: IEDService,
 	selectedBays: string[]
 ): string[] {
-	const selectedBaysSet = new Set(selectedBays)
 	const allBays = Array.from(iedService.Bays()).sort()
-	return selectedBaysSet.size > 0
-		? Array.from(selectedBaysSet).sort()
+	return selectedBays.length > 0
+		? Array.from(new Set(selectedBays)).sort()
 		: allBays
-}
-
-function filterRelevantIEDs(
-	iedService: IEDService,
-	selectedBays: string[]
-): ReturnType<IEDService['IEDCommunicationInfos']> {
-	const selectedBaysSet = new Set(selectedBays)
-	const allIEDs = iedService.IEDCommunicationInfos()
-
-	if (selectedBaysSet.size === 0) {
-		return allIEDs
-	}
-
-	return allIEDs.filter((ied) => {
-		if (!ied.bays || ied.bays.size === 0) return false
-		return Array.from(ied.bays).some((bay) => selectedBaysSet.has(bay))
-	})
 }
 
 function renderLegendIcon(
@@ -251,13 +262,28 @@ export function writeCommunicationContentToPdf(
 	pageManager: PdfPageManager,
 	pageWidth: number,
 	iedService: IEDService,
-	parameters: CommunicationElementParameters
+	parameters: CommunicationElementParameters,
+	xmlDocument: XMLDocument | null
 ): void {
 	const context: RenderContext = { doc, pageManager, pageWidth }
 	const renderer = createTextRenderer(context)
 
-	const relevantBays = filterRelevantBays(iedService, parameters.selectedBays)
-	const relevantIEDs = filterRelevantIEDs(iedService, parameters.selectedBays)
+	const connectionFilters: ConnectionFilter[] = parameters.messageTypeRows
+		.filter((row) => row.enabled)
+		.map((row) => ({
+			sourceIEDPattern: row.sourceIEDPattern,
+			targetIEDPattern: row.targetIEDPattern,
+			messageType: row.messageType
+		}))
+
+	const filteredIEDs = applyFiltering(
+		iedService,
+		parameters.selectedBays,
+		connectionFilters,
+		xmlDocument
+	)
+
+	const relevantBays = getRelevantBays(iedService, parameters.selectedBays)
 
 	if (parameters.showLegend) {
 		renderMessageTypeLegend(context, renderer)
@@ -268,6 +294,6 @@ export function writeCommunicationContentToPdf(
 	}
 
 	if (parameters.showIEDList) {
-		renderIEDsList(relevantIEDs, renderer, pageManager)
+		renderIEDsList(filteredIEDs, renderer, pageManager)
 	}
 }
