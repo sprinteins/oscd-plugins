@@ -2,6 +2,7 @@ import type { IEDService } from '@oscd-plugins/core'
 import type jsPDF from 'jspdf'
 import type { PdfPageManager } from '../core'
 import {
+	DEFAULT_FONT,
 	DEFAULT_FONT_SIZE,
 	DEFAULT_LINE_HEIGHT,
 	FONT_STYLES,
@@ -47,7 +48,7 @@ function createTextRenderer(context: RenderContext) {
 			indent = 0
 		) {
 			doc.setFontSize(fontSize)
-			doc.setFont('helvetica', fontStyle)
+			doc.setFont(DEFAULT_FONT, fontStyle)
 
 			const wrappedText: string[] = doc.splitTextToSize(
 				text,
