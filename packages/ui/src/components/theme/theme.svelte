@@ -103,7 +103,6 @@ let cssDynamicStyles = $derived(setInlineStyles(cssFixedStyles))
 <style>
 	tscd-theme {
 		font-family: "Roboto", sans-serif;
-		min-height: var(--global-height);
 		display: block;
 		position: relative;
 		background-color: var(--global-background-color);

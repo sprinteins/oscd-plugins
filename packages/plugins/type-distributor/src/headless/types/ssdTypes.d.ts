@@ -3,8 +3,19 @@ export type BayType = {
 	uuid: string
 	name: string
 	desc?: string
-	conductingEquipments: Array<{ uuid: string; templateUuid: string, virtual: boolean }>
-	functions: Array<{ uuid: string; templateUuid: string }>
+	conductingEquipments: ConductingEquipmentType[]
+	functions: FunctionType[]
+}
+
+export type ConductingEquipmentType = {
+	uuid: string
+	templateUuid: string
+	virtual: boolean
+}
+
+export type FunctionType = {
+	uuid: string
+	templateUuid: string
 }
 
 // TEMPLATE section

@@ -217,6 +217,7 @@ function handleContentChange(elementId: string, newContent: string) {
     padding: 1.5rem;
     margin-bottom: 2rem;
   }
+
   .elements-list {
     display: flex;
     flex-direction: column;
