@@ -31,10 +31,14 @@ describe('parseBayTypes', () => {
 		const bayTypes = parseBayTypes(doc)
 
 		expect(bayTypes[0].functions).toHaveLength(1)
-		expect(bayTypes[0].functions[0].templateUuid).toBe('af05ef82-fac1-42ed-8c47-57d117e7083e')
+		expect(bayTypes[0].functions[0].templateUuid).toBe(
+			'af05ef82-fac1-42ed-8c47-57d117e7083e'
+		)
 
 		expect(bayTypes[1].functions).toHaveLength(1)
-		expect(bayTypes[1].functions[0].templateUuid).toBe('af05ef82-fac1-42ed-8c47-57d117e7083e')
+		expect(bayTypes[1].functions[0].templateUuid).toBe(
+			'af05ef82-fac1-42ed-8c47-57d117e7083e'
+		)
 	})
 
 	it('should handle bays with no functions', () => {
@@ -47,7 +51,7 @@ describe('parseBayTypes', () => {
 	it('should not include TEMPLATE bay in results', () => {
 		const bayTypes = parseBayTypes(doc)
 
-		const templateBay = bayTypes.find(bay => bay.name === 'TEMPLATE')
+		const templateBay = bayTypes.find((bay) => bay.name === 'TEMPLATE')
 		expect(templateBay).toBeUndefined()
 	})
 
@@ -69,7 +73,7 @@ describe('parseBayTypes', () => {
 			<SCL>
 				<Substation name="TEMPLATE">
 					<VoltageLevel name="TEMPLATE">
-						<Bay name="TestBay">
+						<Bay>
 							<Function templateUuid="test-uuid" />
 						</Bay>
 					</VoltageLevel>
@@ -81,7 +85,8 @@ describe('parseBayTypes', () => {
 		const bayTypes = parseBayTypes(docWithoutUuid)
 		expect(bayTypes).toHaveLength(1)
 		expect(bayTypes[0].uuid).toBe('')
-		expect(bayTypes[0].name).toBe('TestBay')
+		expect(bayTypes[0].name).toBe('Unnamed Bay')
+		expect(bayTypes[0].desc).toBeUndefined()
 	})
 
 	it('should extract bay description if present', () => {
@@ -102,5 +107,60 @@ describe('parseBayTypes', () => {
 
 		const bayTypes = parseBayTypes(docWithDesc)
 		expect(bayTypes[0].desc).toBe('Test Description')
+	})
+
+	it('should correctly parse conducting equipment and function attributes', () => {
+		const parser = new DOMParser()
+		const docWithConductingEquipmentsAndFunctions = parser.parseFromString(
+			`<?xml version="1.0"?>
+			<SCL>
+				<Substation name="TEMPLATE">
+					<VoltageLevel name="TEMPLATE">
+						<Bay name="Bay_1" uuid="c2b220a2-64ae-439b-bfc4-04c5307f46f1">
+							<ConductingEquipment uuid="ce-uuid-1" templateUuid="ce-template-uuid-1" virtual="true" />
+							<ConductingEquipment virtual="false" />
+							<Function uuid="func-uuid-1" templateUuid="af05ef82-fac1-42ed-8c47-57d117e7083e" />
+							<Function />
+						</Bay>
+					</VoltageLevel>
+				</Substation>
+			</SCL>`,
+			'application/xml'
+		)
+
+		const bayTypes = parseBayTypes(docWithConductingEquipmentsAndFunctions)
+
+		const bay = bayTypes.find(
+			(bay) => bay.uuid === 'c2b220a2-64ae-439b-bfc4-04c5307f46f1'
+		)
+
+		if (!bay) {
+			throw new Error('Bay not found in parsed results')
+		}
+
+		const conductingEquipments = bay.conductingEquipments
+		const functions = bay.functions
+
+		expect(conductingEquipments).toHaveLength(2)
+		expect(functions).toHaveLength(2)
+
+		expect(conductingEquipments[0]).toEqual({
+			uuid: 'ce-uuid-1',
+			templateUuid: 'ce-template-uuid-1',
+			virtual: true
+		})
+		expect(conductingEquipments[1]).toEqual({
+			uuid: '',
+			templateUuid: '',
+			virtual: false
+		})
+		expect(functions[0]).toEqual({
+			uuid: 'func-uuid-1',
+			templateUuid: 'af05ef82-fac1-42ed-8c47-57d117e7083e'
+		})
+		expect(functions[1]).toEqual({
+			uuid: '',
+			templateUuid: ''
+		})
 	})
 })
