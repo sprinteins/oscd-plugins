@@ -1,3 +1,9 @@
+import type {
+	ConductingEquipmentTemplate,
+	ConductingEquipmentType,
+	FunctionTemplate,
+	FunctionType
+} from '../types'
 import { ssdImportStore } from './ssd-import.store.svelte'
 
 class UseBayTypesStore {
@@ -13,6 +19,29 @@ class UseBayTypesStore {
 		ssdImportStore.selectedBayType = value
 	}
 
+	private getConductingEquipmentTemplates(
+		conductingEquipments: ConductingEquipmentType[]
+	): ConductingEquipmentTemplate[] {
+		return conductingEquipments
+			.map((ce) =>
+				ssdImportStore.getConductingEquipmentTemplate(ce.templateUuid)
+			)
+			.filter(
+				(template): template is ConductingEquipmentTemplate =>
+					template != null
+			)
+	}
+
+	private getFunctionTemplates(
+		functions: FunctionType[]
+	): FunctionTemplate[] {
+		return functions
+			.map((f) => ssdImportStore.getFunctionTemplate(f.templateUuid))
+			.filter(
+				(template): template is FunctionTemplate => template != null
+			)
+	}
+
 	// Get full bay type details with resolved templates
 	getBayTypeWithTemplates(bayUuid: string) {
 		const bayType = this.bayTypes.find((b) => b.uuid === bayUuid)
@@ -20,16 +49,10 @@ class UseBayTypesStore {
 
 		return {
 			...bayType,
-			conductingEquipmentTemplates: bayType.conductingEquipments
-				.map((ce) =>
-					ssdImportStore.getConductingEquipmentTemplate(
-						ce.templateUuid
-					)
-				)
-				.filter(Boolean),
-			functionTemplates: bayType.functions
-				.map((f) => ssdImportStore.getFunctionTemplate(f.templateUuid))
-				.filter(Boolean)
+			conductingEquipmentTemplates: this.getConductingEquipmentTemplates(
+				bayType.conductingEquipments
+			),
+			functionTemplates: this.getFunctionTemplates(bayType.functions)
 		}
 	}
 }
