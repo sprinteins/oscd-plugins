@@ -44,10 +44,10 @@ function handleCreateIED() {
 
 	try {
 		isCreatingIED = true
-		createSIED({
-			name: iedName.trim(),
-			description: iedDesc.trim() || undefined
-        })
+		createSIED(
+			iedName.trim(),
+			iedDesc.trim() || undefined
+        )
 		
 		// Reset form on success
 		iedName = ''

@@ -1,4 +1,3 @@
-// CORE
 import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
@@ -11,15 +10,13 @@ const DEFAULT_SIED_ATTRIBUTES = {
 	type: 'none'
 } as const
 
-export function createSIED(params: { name: string, description?: string}) {
+export function createSIED(name: string, description?: string) {
 	if (!pluginGlobalStore.xmlDocument) {
 		throw new Error('No XML document found')
 	}
 	if (!pluginGlobalStore.host) {
 		throw new Error('No host element found')
 	}
-
-	const { name, description } = params
 
 	const xmlDocument = pluginGlobalStore.xmlDocument
 
