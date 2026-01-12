@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 - Coherent List of IEDs to visual output of CE preview
 
+## [1.18.4] - 2026-01-12
+### Fixed
+- Autodoc initial page height
+
 ## [1.18.3] - 2026-01-09
 ### Fixed
 - Layout break in CE doc for IEDS, using Roboto to handle utf chars
