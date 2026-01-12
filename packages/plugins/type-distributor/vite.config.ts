@@ -23,16 +23,16 @@ export default defineConfig({
         lib: {
             entry: resolve(__dirname, 'src/plugin.ts'),
             formats: ['es'],
-            fileName: 'plugin'
+            fileName: 'index'
         },
         sourcemap: isDevelopment ? 'inline' : false
     },
     server: {
-        port: 4178,
+        port: 4127,
         cors: true
     },
     preview: {
-        port: 41768,
+        port: 41127,
         cors: true
     }
 })
