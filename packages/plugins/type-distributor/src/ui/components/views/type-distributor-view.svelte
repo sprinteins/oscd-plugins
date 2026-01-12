@@ -18,14 +18,10 @@ const bayTypeWithTemplates = $derived(
 )
 
 const functionTemplates = $derived(
-	(bayTypeWithTemplates?.functionTemplates ?? []).filter(
-		(t): t is NonNullable<typeof t> => t != null
-	)
+	bayTypeWithTemplates?.functionTemplates ?? []
 )
 const conductingEquipmentTemplates = $derived(
-	(bayTypeWithTemplates?.conductingEquipmentTemplates ?? []).filter(
-		(t): t is NonNullable<typeof t> => t != null
-	)
+	bayTypeWithTemplates?.conductingEquipmentTemplates ?? []
 )
 </script>
 
