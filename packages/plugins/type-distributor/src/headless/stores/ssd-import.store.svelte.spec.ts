@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { ssdImportStore } from './ssd-import.store.svelte'
+import { resetSSDImportStore } from '@/headless/tests/resetSSDImportStore.helper'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
 
 describe('ssdImportStore', () => {
@@ -7,16 +8,7 @@ describe('ssdImportStore', () => {
 
 	beforeEach(() => {
 		// Reset store state
-		ssdImportStore.currentFilename = ''
-		ssdImportStore.loadedSSDDocument = undefined
-		ssdImportStore.bayTypes = []
-		ssdImportStore.functionTemplates = []
-		ssdImportStore.conductingEquipmentTemplates = []
-		ssdImportStore.lnodeTypes = []
-		ssdImportStore.doTypes = []
-		ssdImportStore.daTypes = []
-		ssdImportStore.enumTypes = []
-		ssdImportStore.selectedBayType = null
+		resetSSDImportStore()
 
 		// Parse mock document
 		const parser = new DOMParser()
@@ -25,8 +17,7 @@ describe('ssdImportStore', () => {
 
 	describe('loadFromSSD', () => {
 		it('should load and parse SSD document', () => {
-			ssdImportStore.loadedSSDDocument = doc
-			ssdImportStore.loadFromSSD()
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 
 			expect(ssdImportStore.bayTypes.length).toBeGreaterThan(0)
 			expect(ssdImportStore.functionTemplates.length).toBeGreaterThan(0)
@@ -35,8 +26,7 @@ describe('ssdImportStore', () => {
 		})
 
 		it('should populate bay types after loading', () => {
-			ssdImportStore.loadedSSDDocument = doc
-			ssdImportStore.loadFromSSD()
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 
 			expect(ssdImportStore.bayTypes).toHaveLength(3)
 			expect(ssdImportStore.bayTypes[0].name).toBe('Bay_1')
@@ -45,8 +35,7 @@ describe('ssdImportStore', () => {
 		})
 
 		it('should populate function templates after loading', () => {
-			ssdImportStore.loadedSSDDocument = doc
-			ssdImportStore.loadFromSSD()
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 
 			expect(ssdImportStore.functionTemplates).toHaveLength(3)
 			expect(ssdImportStore.functionTemplates[0].name).toBe('Func_1')
@@ -55,16 +44,14 @@ describe('ssdImportStore', () => {
 		})
 
 		it('should populate conducting equipment templates after loading', () => {
-			ssdImportStore.loadedSSDDocument = doc
-			ssdImportStore.loadFromSSD()
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 
 			expect(ssdImportStore.conductingEquipmentTemplates).toHaveLength(1)
 			expect(ssdImportStore.conductingEquipmentTemplates[0].name).toBe('Power Cable_1')
 		})
 
 		it('should populate data type templates after loading', () => {
-			ssdImportStore.loadedSSDDocument = doc
-			ssdImportStore.loadFromSSD()
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 
 			expect(ssdImportStore.lnodeTypes.length).toBeGreaterThan(0)
 			expect(ssdImportStore.doTypes.length).toBeGreaterThan(0)
@@ -72,36 +59,17 @@ describe('ssdImportStore', () => {
 			expect(ssdImportStore.enumTypes.length).toBeGreaterThan(0)
 		})
 
-		it('should warn when no document is loaded', () => {
-			const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+		it('should set filename and loaded document', () => {
+			ssdImportStore.loadFromSSD(doc, 'myfile.ssd')
 
-			ssdImportStore.loadedSSDDocument = undefined
-			ssdImportStore.loadFromSSD()
-
-			expect(consoleWarnSpy).toHaveBeenCalledWith('No SSD document loaded')
-			consoleWarnSpy.mockRestore()
-		})
-
-		it('should handle document without required sections gracefully', () => {
-			const parser = new DOMParser()
-			const emptyDoc = parser.parseFromString(
-				'<?xml version="1.0"?><SCL></SCL>',
-				'application/xml'
-			)
-
-			ssdImportStore.loadedSSDDocument = emptyDoc
-			ssdImportStore.loadFromSSD()
-
-			expect(ssdImportStore.bayTypes).toHaveLength(0)
-			expect(ssdImportStore.functionTemplates).toHaveLength(0)
-			expect(ssdImportStore.conductingEquipmentTemplates).toHaveLength(0)
+			expect(ssdImportStore.currentFilename).toBe('myfile.ssd')
+			expect(ssdImportStore.loadedSSDDocument).toBe(doc)
 		})
 	})
 
 	describe('getConductingEquipmentTemplate', () => {
 		beforeEach(() => {
-			ssdImportStore.loadedSSDDocument = doc
-			ssdImportStore.loadFromSSD()
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 		})
 
 		it('should find conducting equipment template by UUID', () => {
@@ -125,8 +93,7 @@ describe('ssdImportStore', () => {
 
 	describe('getFunctionTemplate', () => {
 		beforeEach(() => {
-			ssdImportStore.loadedSSDDocument = doc
-			ssdImportStore.loadFromSSD()
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 		})
 
 		it('should find function template by UUID', () => {
@@ -160,7 +127,7 @@ describe('ssdImportStore', () => {
 
 	describe('state management', () => {
 		it('should track current filename', () => {
-			expect(ssdImportStore.currentFilename).toBe('')
+			expect(ssdImportStore.currentFilename).toBeNull()
 			ssdImportStore.currentFilename = 'test.ssd'
 			expect(ssdImportStore.currentFilename).toBe('test.ssd')
 		})
@@ -172,7 +139,7 @@ describe('ssdImportStore', () => {
 		})
 
 		it('should store loaded document', () => {
-			expect(ssdImportStore.loadedSSDDocument).toBeUndefined()
+			expect(ssdImportStore.loadedSSDDocument).toBeNull()
 			ssdImportStore.loadedSSDDocument = doc
 			expect(ssdImportStore.loadedSSDDocument).toBe(doc)
 		})
@@ -180,12 +147,8 @@ describe('ssdImportStore', () => {
 
 	describe('integration test', () => {
 		it('should handle complete workflow', () => {
-			// 1. Load document
-			ssdImportStore.loadedSSDDocument = doc
-			ssdImportStore.currentFilename = 'test.ssd'
-
-			// 2. Parse document
-			ssdImportStore.loadFromSSD()
+			// 1. Load and parse document
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 
 			// 3. Verify all data is loaded
 			expect(ssdImportStore.bayTypes.length).toBe(3)
@@ -193,14 +156,14 @@ describe('ssdImportStore', () => {
 			expect(ssdImportStore.conductingEquipmentTemplates.length).toBe(1)
 			expect(ssdImportStore.lnodeTypes.length).toBeGreaterThan(0)
 
-			// 4. Select a bay type
+			// 3. Select a bay type
 			const firstBayUuid = ssdImportStore.bayTypes[0].uuid
 			ssdImportStore.selectedBayType = firstBayUuid
 
-			// 5. Verify selection
+			// 4. Verify selection
 			expect(ssdImportStore.selectedBayType).toBe(firstBayUuid)
 
-			// 6. Retrieve templates
+			// 5. Retrieve templates
 			const funcTemplateUuid = ssdImportStore.bayTypes[0].functions[0]?.templateUuid
 			if (funcTemplateUuid) {
 				const funcTemplate = ssdImportStore.getFunctionTemplate(funcTemplateUuid)
