@@ -1,1 +1,1 @@
-export { createSIED } from './create-s-ied.helper'
+export { createSIED } from './create-s-ied'
