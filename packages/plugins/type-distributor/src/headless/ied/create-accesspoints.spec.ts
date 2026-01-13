@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createBasicIEDElement } from './create-s-ied'
+import { createBasicIEDElement } from './create-basic-ied-element.helper'
 import { createAccessPoints } from './create-accesspoints'
 
 describe('createAccessPoints', () => {
