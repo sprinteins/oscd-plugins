@@ -1,9 +1,23 @@
+import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+
 export function createAccessPoints(
-	iedElement: Element,
+	iedName: string,
 	accessPoints: { name: string; description?: string }[]
-): Element {
-	const doc = iedElement.ownerDocument
-	if (!doc) return iedElement
+): void {
+	if (!pluginGlobalStore.xmlDocument) {
+		throw new Error('No XML document found')
+	}
+	if (!pluginGlobalStore.host) {
+		throw new Error('No host element found')
+	}
+
+	const doc = pluginGlobalStore.xmlDocument
+
+	const iedElement = doc.querySelector(`IED[name="${iedName}"]`)
+	if (!iedElement) {
+		throw new Error(`IED with name "${iedName}" not found`)
+	}
 
 	for (const ap of accessPoints) {
 		const apElement = doc.createElement('AccessPoint')
@@ -17,8 +31,14 @@ export function createAccessPoints(
 
 		serverElement.appendChild(authElement)
 		apElement.appendChild(serverElement)
-		iedElement.appendChild(apElement)
-	}
 
-	return iedElement
+		createAndDispatchEditEvent({
+			host: pluginGlobalStore.host,
+			edit: {
+				node: apElement,
+				parent: iedElement,
+				reference: null
+			}
+		})
+	}
 }
