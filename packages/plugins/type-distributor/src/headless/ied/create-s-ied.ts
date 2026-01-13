@@ -18,11 +18,7 @@ export function createSIED(
 
 	const xmlDocument = pluginGlobalStore.xmlDocument
 
-	let iedElement = createBasicIEDElement(name, xmlDocument, description)
-
-	if (accessPoints && accessPoints.length > 0) {
-		iedElement = createAccessPoints(iedElement, accessPoints)
-	}
+	const iedElement = createBasicIEDElement(name, xmlDocument, description)
 	const sclRoot = xmlDocument.documentElement
 
 	const reference = findSclInsertionReference(sclRoot)
@@ -35,4 +31,7 @@ export function createSIED(
 			reference: reference
 		}
 	})
+	if (accessPoints && accessPoints.length > 0) {
+		createAccessPoints(name, accessPoints)
+	}
 }
