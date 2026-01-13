@@ -10,7 +10,11 @@ const DEFAULT_SIED_ATTRIBUTES = {
 	type: 'none'
 } as const
 
-export function createSIED(name: string, description?: string) {
+export function createSIED(
+	name: string,
+	description?: string,
+	accessPoints?: { name: string; description?: string }[]
+): void {
 	if (!pluginGlobalStore.xmlDocument) {
 		throw new Error('No XML document found')
 	}
@@ -20,6 +24,27 @@ export function createSIED(name: string, description?: string) {
 
 	const xmlDocument = pluginGlobalStore.xmlDocument
 
+	const iedElement = createBasicIEDElement(name, xmlDocument, description)
+
+	const sclRoot = xmlDocument.documentElement
+
+	const reference = findSclInsertionReference(sclRoot)
+
+	createAndDispatchEditEvent({
+		host: pluginGlobalStore.host,
+		edit: {
+			node: iedElement,
+			parent: sclRoot,
+			reference: reference
+		}
+	})
+}
+
+export function createBasicIEDElement(
+	name: string,
+	xmlDocument: XMLDocument,
+	description?: string
+): Element {
 	const iedElement = xmlDocument.createElement('IED')
 
 	for (const [key, value] of Object.entries(DEFAULT_SIED_ATTRIBUTES)) {
@@ -35,18 +60,7 @@ export function createSIED(name: string, description?: string) {
 	servicesElement.setAttribute('nameLength', '64')
 	iedElement.appendChild(servicesElement)
 
-	const sclRoot = xmlDocument.documentElement
-
-	const reference = findSclInsertionReference(sclRoot)
-
-	createAndDispatchEditEvent({
-		host: pluginGlobalStore.host,
-		edit: {
-			node: iedElement,
-			parent: sclRoot,
-			reference: reference
-		}
-	})
+	return iedElement
 }
 
 function findSclInsertionReference(root: Element): Element | null {
