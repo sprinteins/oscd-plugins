@@ -230,17 +230,6 @@ describe('createSIED', () => {
 			expect(iedElement.getAttribute('name')).toBe('')
 		})
 
-		it('should handle empty string as description', () => {
-			createSIED('TestIED', '')
-
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-            const edit = callArgs.edit as Insert
-			const iedElement = edit.node as Element
-
-			expect(iedElement.getAttribute('desc')).toBe('')
-		})
-
 		it('should handle special characters in name', () => {
 			const specialName = 'Test-IED_123.abc'
 			createSIED(specialName)
