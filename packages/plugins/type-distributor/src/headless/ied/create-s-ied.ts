@@ -2,6 +2,7 @@ import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { createBasicIEDElement } from './create-basic-ied-element.helper'
 import { createAccessPoints } from './create-accesspoints'
+import { findSclInsertionReference } from './find-scl-insertion-ref.helper'
 
 export function createSIED(
 	name: string,
@@ -34,16 +35,4 @@ export function createSIED(
 			reference: reference
 		}
 	})
-}
-
-function findSclInsertionReference(root: Element): Element | null {
-	const existingIEDs = root.querySelectorAll(':scope > IED')
-	const dataTypeTemplates = root.querySelector(':scope > DataTypeTemplates')
-
-	if (dataTypeTemplates) return dataTypeTemplates
-	if (existingIEDs.length > 0) {
-		const lastIED = existingIEDs[existingIEDs.length - 1]
-		return lastIED.nextElementSibling
-	}
-	return null
 }
