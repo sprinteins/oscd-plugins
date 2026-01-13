@@ -736,6 +736,9 @@ importers:
       '@openenergytools/open-scd-core':
         specifier: ^0.0.5
         version: 0.0.5
+      '@oscd-plugins/core':
+        specifier: workspace:^
+        version: link:../../core/legacy
       '@oscd-plugins/core-api':
         specifier: workspace:^
         version: link:../../core/api
