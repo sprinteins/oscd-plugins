@@ -7,10 +7,8 @@ describe('ssdImportStore', () => {
 	let doc: XMLDocument
 
 	beforeEach(() => {
-		// Reset store state
 		resetSSDImportStore()
 
-		// Parse mock document
 		const parser = new DOMParser()
 		doc = parser.parseFromString(ssdMockA, 'application/xml')
 	})
