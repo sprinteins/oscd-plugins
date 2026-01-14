@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { parseBayTypes } from './parseBayTypes'
+import { parseBayTypes } from './parse-bay-types'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
 
 describe('parseBayTypes', () => {
