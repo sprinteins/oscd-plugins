@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { loadFromLocal } from './load-file.helper'
 import { ssdImportStore } from '@/headless/stores'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
-import { resetSSDImportStore } from '@/headless/tests/resetSSDImportStore.helper'
+import { resetSSDImportStore } from '@/headless/test-helpers'
 
 function createMockFile(
 	content: string,

@@ -1,16 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { ssdImportStore } from './ssd-import.store.svelte'
-import { resetSSDImportStore } from '@/headless/tests/resetSSDImportStore.helper'
+import { resetSSDImportStore } from '@/headless/test-helpers'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
 
 describe('ssdImportStore', () => {
 	let doc: XMLDocument
 
 	beforeEach(() => {
-		// Reset store state
 		resetSSDImportStore()
 
-		// Parse mock document
 		const parser = new DOMParser()
 		doc = parser.parseFromString(ssdMockA, 'application/xml')
 	})

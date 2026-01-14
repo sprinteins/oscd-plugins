@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { parseDataTypeTemplates } from './parseDataTypeTemplates'
+import { parseDataTypeTemplates } from './parse-data-type-templates'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
 
 describe('parseDataTypeTemplates', () => {

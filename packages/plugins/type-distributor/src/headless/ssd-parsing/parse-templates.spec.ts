@@ -3,7 +3,7 @@ import {
 	parseTemplates,
 	parseFunctionTemplate,
 	parseConductingEquipmentTemplate
-} from './parseTemplates'
+} from './parse-templates'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
 
 describe('parseTemplates', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { parseBayTypes } from './parseBayTypes'
+import { parseBayTypes } from './parse-bay-types'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
 
 describe('parseBayTypes', () => {
@@ -49,10 +49,9 @@ describe('parseBayTypes', () => {
 	})
 
 	it('should not include TEMPLATE bay in results', () => {
-		const bayTypes = parseBayTypes(doc)
-
-		const templateBay = bayTypes.find((bay) => bay.name === 'TEMPLATE')
-		expect(templateBay).toBeUndefined()
+		const bayNames = parseBayTypes(doc).map((b) => b.name)
+		
+		expect(bayNames).not.toContain('TEMPLATE')
 	})
 
 	it('should return empty array if TEMPLATE VoltageLevel not found', () => {
