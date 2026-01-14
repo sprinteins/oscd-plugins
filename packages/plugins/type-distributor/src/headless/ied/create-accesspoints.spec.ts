@@ -3,7 +3,6 @@ import { createAccessPoints } from './create-accesspoints'
 import * as pluginApi from '@oscd-plugins/core-api/plugin/v1'
 import type { Insert } from '@openenergytools/open-scd-core'
 
-// Mock the pluginGlobalStore module
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
 		xmlDocument: null,

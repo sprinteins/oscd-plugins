@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { getSIEDs } from './get-s-ieds'
 
-// Mock the pluginGlobalStore module
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
 		xmlDocument: null,
