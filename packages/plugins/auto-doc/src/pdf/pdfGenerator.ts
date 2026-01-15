@@ -25,7 +25,7 @@ import {
 } from './core'
 import { loadImage, extractImageFormat, getImageScaleFactor } from './core'
 import { PdfPageManager } from './core'
-import type { TextSize } from './core'
+import type { TextSegment, TextSize } from './core'
 import { robotoBold, robotoBoldItalic, robotoItalic, robotoRegular } from './fonts'
 
 /*
@@ -56,11 +56,6 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		INITIAL_PAGE_MARGIN,
 		INITIAL_PAGE_MARGIN
 	)
-
-	interface TextSegment {
-		text: string
-		fontStyle: FontStyle
-	}
 
 	function extractTextSegments(
 		node: Node,
