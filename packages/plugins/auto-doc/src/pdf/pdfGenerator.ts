@@ -26,9 +26,8 @@ import {
 import { loadImage, extractImageFormat, getImageScaleFactor } from './core'
 import { PdfPageManager } from './core'
 import type { TextSize } from './core'
-import { robotoBold } from './fonts'
-import { robotoItalic } from './fonts'
-import { robotoRegular } from './fonts'
+import { robotoBold, robotoBoldItalic, robotoItalic, robotoRegular } from './fonts'
+
 /*
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
@@ -42,6 +41,8 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	doc.addFont('Roboto-Bold.ttf', 'Roboto', 'bold')
 	doc.addFileToVFS('Roboto-Italic.ttf', robotoItalic)
 	doc.addFont('Roboto-Italic.ttf', 'Roboto', 'italic')
+	doc.addFileToVFS('Roboto-BoldItalic.ttf', robotoBoldItalic)
+	doc.addFont('Roboto-BoldItalic.ttf', 'Roboto', 'bolditalic')
 	doc.setFont(DEFAULT_FONT, FONT_STYLES.NORMAL);
 	doc.setFontSize(DEFAULT_FONT_SIZE)
 
@@ -55,6 +56,46 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		INITIAL_PAGE_MARGIN,
 		INITIAL_PAGE_MARGIN
 	)
+
+	interface TextSegment {
+		text: string
+		fontStyle: FontStyle
+	}
+
+	function extractTextSegments(
+		node: Node,
+		inheritedBold = false,
+		inheritedItalic = false
+	): TextSegment[] {
+		const segments: TextSegment[] = []
+
+		if (node.nodeType === Node.TEXT_NODE) {
+			const text = node.textContent ?? ''
+			if (text) {
+				let fontStyle: FontStyle = FONT_STYLES.NORMAL
+				if (inheritedBold && inheritedItalic) {
+					fontStyle = FONT_STYLES.BOLD_ITALIC
+				} else if (inheritedBold) {
+					fontStyle = FONT_STYLES.BOLD
+				} else if (inheritedItalic) {
+					fontStyle = FONT_STYLES.ITALIC
+				}
+				segments.push({ text, fontStyle })
+			}
+		} else if (node.nodeType === Node.ELEMENT_NODE) {
+			const element = node as Element
+			const tagName = element.tagName.toLowerCase()
+
+			const isBold = inheritedBold || tagName === 'strong'
+			const isItalic = inheritedItalic || tagName === 'em'
+
+			for (const child of element.childNodes) {
+				segments.push(...extractTextSegments(child, isBold, isItalic))
+			}
+		}
+
+		return segments
+	}
 
 	const blockHandler: Record<
 		ElementType,
@@ -77,45 +118,36 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		const HTMLElements: HTMLCollection = parsedBlockContent.body.children
 
 		for (const element of HTMLElements) {
+			console.log('Processing element:', element.tagName ,element.innerHTML)
 			switch (element.tagName.toLowerCase()) {
-				case 'h1':
-					renderText(
-						element.textContent ?? '',
-						TEXT_SIZES.H1,
-						FONT_STYLES.BOLD
-					)
+				case 'h1': {
+					const segments = extractTextSegments(element)
+					renderTextSegments(segments, TEXT_SIZES.H1)
 					break
-				case 'h2':
-					renderText(
-						element.textContent ?? '',
-						TEXT_SIZES.H2,
-						FONT_STYLES.BOLD
-					)
+				}
+				case 'h2': {
+					const segments = extractTextSegments(element)
+					renderTextSegments(segments, TEXT_SIZES.H2)
 					break
-				case 'h3':
-					renderText(
-						element.textContent ?? '',
-						TEXT_SIZES.H3,
-						FONT_STYLES.BOLD
-					)
+				}
+				case 'h3': {
+					const segments = extractTextSegments(element)
+					renderTextSegments(segments, TEXT_SIZES.H3)
 					break
+				}
 				case 'p':
 					processParagraph(element)
 					break
-				case 'strong':
-					renderText(
-						element.textContent ?? '',
-						DEFAULT_FONT_SIZE,
-						FONT_STYLES.BOLD
-					)
+				case 'strong': {
+					const segments = extractTextSegments(element, true, false)
+					renderTextSegments(segments, DEFAULT_FONT_SIZE)
 					break
-				case 'em':
-					renderText(
-						element.textContent ?? '',
-						DEFAULT_FONT_SIZE,
-						FONT_STYLES.ITALIC
-					)
+				}
+				case 'em': {
+					const segments = extractTextSegments(element, false, true)
+					renderTextSegments(segments, DEFAULT_FONT_SIZE)
 					break
+				}
 				case 'ul':
 				case 'ol':
 					processList(element, 0)
@@ -151,27 +183,60 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	}
 
 	function processParagraph(paragraph: Element) {
-		for (const node of paragraph.childNodes) {
-			if (node.nodeType === Node.TEXT_NODE) {
-				renderText(
-					node.textContent ?? '',
-					DEFAULT_FONT_SIZE,
-					FONT_STYLES.NORMAL
-				)
-			} else if (node.nodeType === Node.ELEMENT_NODE) {
-				const element = node as Element
-				let fontStyle: FontStyle = FONT_STYLES.NORMAL
-				if (element.tagName.toLowerCase() === 'strong') {
-					fontStyle = FONT_STYLES.BOLD
-				} else if (element.tagName.toLowerCase() === 'em') {
-					fontStyle = FONT_STYLES.ITALIC
+		const segments = extractTextSegments(paragraph)
+		renderTextSegments(segments, DEFAULT_FONT_SIZE)
+	}
+
+	function renderTextSegments(
+		segments: TextSegment[],
+		fontSize: TextSize,
+		indent = 0
+	) {
+		if (segments.length === 0) return
+
+		const maxWidth = pageWidth - (TEXT_MARGIN_OFFSET - indent)
+		let currentX = HORIZONTAL_SPACING
+		let currentLineSegments: { text: string; fontStyle: FontStyle; x: number }[] = []
+
+		for (const segment of segments) {
+			const textWithPlaceholder = placeholderStore.fillPlaceholder(segment.text) ?? ''
+			doc.setFontSize(fontSize)
+			doc.setFont(DEFAULT_FONT, segment.fontStyle)
+
+			const words = textWithPlaceholder.split(/(\s+)/)
+
+			for (const word of words) {
+				if (!word) continue
+
+				const wordWidth = doc.getTextWidth(word)
+
+				if (currentX + wordWidth > HORIZONTAL_SPACING + maxWidth && currentLineSegments.length > 0) {
+					pageManager.ensureSpace()
+					for (const seg of currentLineSegments) {
+						doc.setFont(DEFAULT_FONT, seg.fontStyle)
+						doc.text(seg.text, seg.x, pageManager.getCurrentPosition())
+					}
+					pageManager.incrementPosition()
+					currentLineSegments = []
+					currentX = HORIZONTAL_SPACING
 				}
-				renderText(
-					element.textContent ?? '',
-					DEFAULT_FONT_SIZE,
-					fontStyle
-				)
+
+				currentLineSegments.push({
+					text: word,
+					fontStyle: segment.fontStyle,
+					x: currentX
+				})
+				currentX += wordWidth
 			}
+		}
+
+		if (currentLineSegments.length > 0) {
+			pageManager.ensureSpace()
+			for (const seg of currentLineSegments) {
+				doc.setFont(DEFAULT_FONT, seg.fontStyle)
+				doc.text(seg.text, seg.x, pageManager.getCurrentPosition())
+			}
+			pageManager.incrementPosition()
 		}
 	}
 
