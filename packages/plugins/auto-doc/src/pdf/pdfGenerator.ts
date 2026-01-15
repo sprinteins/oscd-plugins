@@ -135,9 +135,11 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 					renderTextSegments(segments, TEXT_SIZES.H3)
 					break
 				}
-				case 'p':
-					processParagraph(element)
+				case 'p': {
+					const segments = extractTextSegments(element)
+					renderTextSegments(segments, DEFAULT_FONT_SIZE)
 					break
+				}
 				case 'strong': {
 					const segments = extractTextSegments(element, true, false)
 					renderTextSegments(segments, DEFAULT_FONT_SIZE)
@@ -180,11 +182,6 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			doc.text(line, HORIZONTAL_SPACING, pageManager.getCurrentPosition())
 			pageManager.incrementPosition()
 		}
-	}
-
-	function processParagraph(paragraph: Element) {
-		const segments = extractTextSegments(paragraph)
-		renderTextSegments(segments, DEFAULT_FONT_SIZE)
 	}
 
 	function renderTextSegments(
