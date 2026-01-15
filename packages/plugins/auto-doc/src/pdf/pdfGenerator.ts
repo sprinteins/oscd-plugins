@@ -185,57 +185,14 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	}
 
 	function renderTextSegments(
-		segments: TextSegment[],
-		fontSize: TextSize,
-		indent = 0
-	) {
-		if (segments.length === 0) return
-
-		const maxWidth = pageWidth - (TEXT_MARGIN_OFFSET - indent)
-		let currentX = HORIZONTAL_SPACING
-		let currentLineSegments: { text: string; fontStyle: FontStyle; x: number }[] = []
-
-		for (const segment of segments) {
-			const textWithPlaceholder = placeholderStore.fillPlaceholder(segment.text) ?? ''
-			doc.setFontSize(fontSize)
-			doc.setFont(DEFAULT_FONT, segment.fontStyle)
-
-			const words = textWithPlaceholder.split(/(\s+)/)
-
-			for (const word of words) {
-				if (!word) continue
-
-				const wordWidth = doc.getTextWidth(word)
-
-				if (currentX + wordWidth > HORIZONTAL_SPACING + maxWidth && currentLineSegments.length > 0) {
-					pageManager.ensureSpace()
-					for (const seg of currentLineSegments) {
-						doc.setFont(DEFAULT_FONT, seg.fontStyle)
-						doc.text(seg.text, seg.x, pageManager.getCurrentPosition())
-					}
-					pageManager.incrementPosition()
-					currentLineSegments = []
-					currentX = HORIZONTAL_SPACING
-				}
-
-				currentLineSegments.push({
-					text: word,
-					fontStyle: segment.fontStyle,
-					x: currentX
-				})
-				currentX += wordWidth
-			}
-		}
-
-		if (currentLineSegments.length > 0) {
-			pageManager.ensureSpace()
-			for (const seg of currentLineSegments) {
-				doc.setFont(DEFAULT_FONT, seg.fontStyle)
-				doc.text(seg.text, seg.x, pageManager.getCurrentPosition())
-			}
-			pageManager.incrementPosition()
-		}
-	}
+    segments: TextSegment[],
+    fontSize: TextSize,
+    indent = 0
+) {
+    for (const segment of segments) {
+        renderText(segment.text, fontSize, segment.fontStyle, indent)
+    }
+}
 
 	function processList(list: Element, indent = 0) {
 		const isOrdered = list.tagName.toLowerCase() === 'ol'
