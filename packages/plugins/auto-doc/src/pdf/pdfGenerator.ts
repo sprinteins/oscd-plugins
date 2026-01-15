@@ -64,20 +64,23 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 
 	function extractTextSegments(
 		node: Node,
-		inheritedBold = false,
-		inheritedItalic = false
+		options: {
+		inheritBold?: boolean
+		inheritItalic?: boolean
+	} = {}
 	): TextSegment[] {
+		const { inheritBold = false, inheritItalic = false } = options
 		const segments: TextSegment[] = []
 
 		if (node.nodeType === Node.TEXT_NODE) {
 			const text = node.textContent ?? ''
 			if (text) {
 				let fontStyle: FontStyle = FONT_STYLES.NORMAL
-				if (inheritedBold && inheritedItalic) {
+				if (inheritBold && inheritItalic) {
 					fontStyle = FONT_STYLES.BOLD_ITALIC
-				} else if (inheritedBold) {
+				} else if (inheritBold) {
 					fontStyle = FONT_STYLES.BOLD
-				} else if (inheritedItalic) {
+				} else if (inheritItalic) {
 					fontStyle = FONT_STYLES.ITALIC
 				}
 				segments.push({ text, fontStyle })
@@ -86,11 +89,16 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 			const element = node as Element
 			const tagName = element.tagName.toLowerCase()
 
-			const isBold = inheritedBold || tagName === 'strong'
-			const isItalic = inheritedItalic || tagName === 'em'
+			const isBold = inheritBold || tagName === 'strong'
+			const isItalic = inheritItalic || tagName === 'em'
 
 			for (const child of element.childNodes) {
-				segments.push(...extractTextSegments(child, isBold, isItalic))
+				segments.push(
+					...extractTextSegments(child, {
+						inheritBold: isBold,
+						inheritItalic: isItalic
+					})
+				)
 			}
 		}
 
@@ -118,11 +126,6 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 		const HTMLElements: HTMLCollection = parsedBlockContent.body.children
 
 		for (const element of HTMLElements) {
-			console.log(
-				'Processing element:',
-				element.tagName,
-				element.innerHTML
-			)
 			switch (element.tagName.toLowerCase()) {
 				case 'h1': {
 					const segments = extractTextSegments(element)
@@ -145,12 +148,12 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 					break
 				}
 				case 'strong': {
-					const segments = extractTextSegments(element, true, false)
+					const segments = extractTextSegments(element, { inheritBold: true })
 					renderTextSegments(segments, DEFAULT_FONT_SIZE)
 					break
 				}
 				case 'em': {
-					const segments = extractTextSegments(element, false, true)
+					const segments = extractTextSegments(element, { inheritItalic: true })
 					renderTextSegments(segments, DEFAULT_FONT_SIZE)
 					break
 				}
