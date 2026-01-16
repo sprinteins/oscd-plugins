@@ -15,6 +15,7 @@ import { setInlineStylesVariables } from '$lib/utils/style.js'
 import { pluginGlobalStore } from '$lib/headless/stores/index.js'
 // TYPES
 import type { IEC61850 } from '@oscd-plugins/core-standard'
+import type { XMLEditor } from '@openscd/oscd-editor';
 
 export function initPlugin(
 	node: HTMLElement,
@@ -23,6 +24,7 @@ export function initPlugin(
 		getDoc: () => XMLDocument
 		getDocName: () => string
 		getEditCount: () => number
+		getEditor: () => XMLEditor
 		getIsCustomInstance: () => boolean
 		definition: {
 			edition: IEC61850.AvailableEdition
@@ -45,6 +47,7 @@ export function initPlugin(
 	const doc = $derived(params.getDoc())
 	const docName = $derived(params.getDocName())
 	const editCount = $derived(params.getEditCount())
+	const editor = $derived(params.getEditor())
 	const isCustomInstance = $derived(params.getIsCustomInstance())
 	const host = $derived(params.getHost())
 	const rootElement = $derived(doc?.documentElement)
@@ -204,6 +207,7 @@ export function initPlugin(
 			pluginGlobalStore.xmlDocument = currentXmlDocument
 			pluginGlobalStore.xmlDocumentName = currentXmlDocumentName
 			pluginGlobalStore.editCount = currentEditCount
+			pluginGlobalStore.editor = editor
 			pluginGlobalStore.host = host
 		}
 	}

@@ -1,6 +1,6 @@
 {
 	"name": "@oscd-plugins/core-ui-svelte",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"type": "module",
 	"source": "src/lib/index.ts",
 	"svelte": "./dist/index.js",
@@ -43,6 +43,7 @@
 	"devDependencies": {
 		"@chromatic-com/storybook": "^3.2.2",
 		"@internationalized/date": "^3.6.0",
+		"@openscd/oscd-editor": "^1.8.0",
 		"@oscd-plugins/core": "workspace:^",
 		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/core-standard": "workspace:^",
