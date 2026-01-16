@@ -2,26 +2,38 @@
 import { SIedItem } from '@/ui/components/items'
 
 const {
-  sIedItems
+	sIedItems
 }: {
-  sIedItems: Element[]
+	sIedItems: Element[]
 } = $props()
 
-let accessPoints = $derived(sIedItems.flatMap((sIedItem) =>
-  Array.from(sIedItem?.children ?? []).filter(
-    (child) => child.localName === 'AccessPoint'
-  )
-))
+let accessPoints = $derived(
+	sIedItems.flatMap((sIedItem) =>
+		Array.from(sIedItem?.children ?? []).filter(
+			(child) => child.localName === 'AccessPoint'
+		)
+	)
+)
 
 function retrieveLNodesFromAccessPoint(accessPoint: Element): Element[] {
-  return Array.from(accessPoint.children).filter(
-    (child) => child.localName === 'LNode'
-  )
+	return Array.from(accessPoint.children).filter(
+		(child) => child.localName === 'LNode'
+	)
+}
+
+function retrieveSIedName(sIedItem: Element): string {
+	return sIedItem.getAttribute('name') ?? 'Unnamed SIed'
+}
+
+//TODO: Lets write a test for this function
+function sIedNameForAccessPoint(accessPoint: Element): string {
+	const sIedItem = accessPoint.parentElement
+	return sIedItem ? retrieveSIedName(sIedItem) : 'Unnamed SIed'
 }
 
 $effect(() => {
-  console.log('AccessPoints in SIedDetails:', accessPoints);
-});
+	console.log('AccessPoints in SIedDetails:', accessPoints)
+})
 </script>
 
 {#if sIedItems && sIedItems.length > 0}
@@ -32,7 +44,11 @@ $effect(() => {
       </div>
     {/if}
     {#each accessPoints as accessPoint}
-      <SIedItem {accessPoint} lNodes={retrieveLNodesFromAccessPoint(accessPoint)} />
+      <SIedItem
+        {accessPoint}
+        lNodes={retrieveLNodesFromAccessPoint(accessPoint)}
+        sIedName={sIedNameForAccessPoint(accessPoint)}
+      />
     {/each}
   </div>
 {/if}

@@ -6,11 +6,11 @@ import LnodeCard from './lnode-card.svelte'
 
 interface Props {
 	accessPoint: Element
-	lNodes: LNodeTemplate[]
+  sIedName: string
+	lNodes: Element[]
 }
 
-const { accessPoint, lNodes }: Props = $props()
-
+const { accessPoint, sIedName, lNodes }: Props = $props()
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0);
 $effect(() => {
@@ -32,8 +32,10 @@ $effect(() => {
             />
             {/if}
             <span class="text-sm font-medium"
-              >{accessPoint.getAttribute("name") ?? "(unnamed AccessPoint)"}
-              {accessPoint.getAttribute("desc") ?? "(no description)"}</span
+              >Access Point {accessPoint.getAttribute("name") ?? "(unnamed)"}
+              {" "}
+              ({sIedName})
+              </span
             >
           </div>
         </div>
