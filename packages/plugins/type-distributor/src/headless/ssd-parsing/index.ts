@@ -1,3 +1,3 @@
-export { parseBayTypes } from './parseBayTypes'
-export { parseDataTypeTemplates } from './parseDataTypeTemplates'
-export { parseTemplates } from './parseTemplates'
+export { parseBayTypes } from './parse-bay-types'
+export { parseDataTypeTemplates } from './parse-data-type-templates'
+export { parseTemplates } from './parse-templates'
