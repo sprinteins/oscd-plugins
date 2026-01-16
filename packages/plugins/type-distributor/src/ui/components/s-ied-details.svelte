@@ -15,17 +15,34 @@ let accessPoints = $derived(
 	)
 )
 
+//TODO: Tests
 function retrieveLNodesFromAccessPoint(accessPoint: Element): Element[] {
-	return Array.from(accessPoint.children).filter(
-		(child) => child.localName === 'LNode'
+	const lNodes: Element[] = []
+	const servers = Array.from(accessPoint.children).filter(
+		(child) => child.localName === 'Server'
 	)
+	
+	for (const server of servers) {
+		const lDevices = Array.from(server.children).filter(
+			(child) => child.localName === 'LDevice'
+		)
+		
+		for (const lDevice of lDevices) {
+			const lnElements = Array.from(lDevice.children).filter(
+				(child) => child.localName === 'LN0' || child.localName === 'LN'
+			)
+			lNodes.push(...lnElements)
+		}
+	}
+	
+	return lNodes
 }
 
 function retrieveSIedName(sIedItem: Element): string {
 	return sIedItem.getAttribute('name') ?? 'Unnamed SIed'
 }
 
-//TODO: Lets write a test for this function
+//TODO: Tests
 function sIedNameForAccessPoint(accessPoint: Element): string {
 	const sIedItem = accessPoint.parentElement
 	return sIedItem ? retrieveSIedName(sIedItem) : 'Unnamed SIed'
