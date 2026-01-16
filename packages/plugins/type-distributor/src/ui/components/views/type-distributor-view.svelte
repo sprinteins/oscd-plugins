@@ -6,12 +6,11 @@ import {
 	Input,
 	Label
 } from '@oscd-plugins/core-ui-svelte'
-import { bayTypesStore } from '@/headless/stores'
+import { bayTypesStore, bayStore } from '@/headless/stores'
 import type { BayType } from '@/headless/types'
 import { BayTypeDetails } from '@/ui/components'
 import { createSIED, getSIEDs } from '@/headless/ied'
 import SIedDetails from '../s-ied-details.svelte'
-import type { sIedItem } from '../s-ied-details.svelte'
 
 const bayTypeOptions = $derived(
 	bayTypesStore.bayTypes.map((bt: BayType) => ({
@@ -40,14 +39,6 @@ let iedDesc = $state('')
 let isCreatingIED = $state(false)
 let iedCreationError = $state<string | null>(null)
 
-const selectedBayName = $derived(() => {
-	if (!bayTypesStore.selectedBayType) return null
-	const bay = bayTypesStore.bayTypes.find(
-		(b: BayType) => b.uuid === bayTypesStore.selectedBayType
-	)
-	return bay?.name ?? null
-})
-
 function handleCreateIED() {
 	// Reset error
 	iedCreationError = null
@@ -72,6 +63,10 @@ function handleCreateIED() {
 		isCreatingIED = false
 	}
 }
+
+$effect(() => {
+  console.log('Selected Bay Type:', bayTypesStore.selectedBayType)
+})
 </script>
 
 <div class="grid grid-cols-3 gap-4 w-full h-full p-4 overflow-hidden">
@@ -86,7 +81,7 @@ function handleCreateIED() {
     </Card.Header>
     <Card.Content class="flex-1 overflow-y-auto">
       <div class="flex flex-col gap-y-4 justify-between">
-        <SIedDetails sIedItems={getSIEDs(selectedBayName() ?? "")} />
+        <SIedDetails sIedItems={getSIEDs(bayStore.selectedBay ?? "")} />
         <div class="space-y-4">
           <div class="space-y-3">
             <div class="space-y-2">

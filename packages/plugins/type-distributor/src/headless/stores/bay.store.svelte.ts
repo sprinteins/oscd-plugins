@@ -1,6 +1,6 @@
 class UseBayStore {
-    selectedBay: string | null = null
-    selectedBayUuid: string | null = null
+	selectedBay = $state<string | null>(null)
+	selectedBayUuid = $state<string | null>(null)
 }
 
 export const bayStore = new UseBayStore()
