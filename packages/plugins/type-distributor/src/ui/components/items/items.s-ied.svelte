@@ -12,19 +12,25 @@ interface Props {
 const { accessPoint, lNodes }: Props = $props()
 
 let isOpen = $state(false)
+let hasLNodes = $derived(lNodes.length > 0);
+$effect(() => {
+  console.log('open state', isOpen, 'hasLNodes', hasLNodes);
+});
 </script>
 
 <div class="space-y-1">
-  <button class="w-full" onclick={() => (isOpen = !isOpen)}>
-    <Card.Root class="hover:bg-gray-50 cursor-pointer">
+  <button class="w-full" onclick={() => (isOpen = !isOpen && hasLNodes)}>
+    <Card.Root class="hover:bg-gray-50 cursor-pointer {hasLNodes ? '' : 'border border-dashed'}">
       <Card.Content class="p-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
+            {#if hasLNodes}
             <ChevronRight
               class="size-4 transition-transform duration-200 {isOpen
                 ? 'rotate-90'
                 : ''}"
             />
+            {/if}
             <span class="text-sm font-medium"
               >{accessPoint.getAttribute("name") ?? "(unnamed AccessPoint)"}
               {accessPoint.getAttribute("desc") ?? "(no description)"}</span
@@ -34,7 +40,7 @@ let isOpen = $state(false)
       </Card.Content>
     </Card.Root>
   </button>
-  {#if isOpen}
+  {#if isOpen && hasLNodes}
     <div class="ml-4 space-y-1">
       {#each lNodes as lnode}
         <LnodeCard {lnode} />
