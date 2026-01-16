@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Card } from '@oscd-plugins/core-ui-svelte'
 	import { ChevronRight } from '@lucide/svelte'
+  import LnodeCard from './lnode-card.svelte';
 
 	interface Props {
 		accessPoint: Element
@@ -46,11 +47,12 @@
 	{#if isOpen && hasLNodes}
 		<div class="ml-4 space-y-1">
 			{#each lNodes as lnode}
-				<Card.Root>
-					<Card.Content class="p-2">
-            <span class="text-sm">{lnode.getAttribute("lnType")}</span>
-					</Card.Content>
-				</Card.Root>
+      <LnodeCard lnode={{
+				lnClass: lnode.getAttribute('lnClass') ?? '',
+				lnType: lnode.getAttribute('lnType') ?? '',
+				lnInst: lnode.getAttribute('lnInst') ?? '',
+				iedName: lnode.getAttribute('iedName') ?? undefined
+			}} />
 			{/each}
 		</div>
 	{/if}
