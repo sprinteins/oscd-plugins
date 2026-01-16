@@ -1,7 +1,9 @@
+import type { LNodeTemplate } from "../types"
+
 export function getLNodesFromAccessPoint(
 	accessPoint: Element
-): Element[] {
-	const lNodes: Element[] = []
+): LNodeTemplate[] {
+	const lNodes: LNodeTemplate[] = []
 
 	const servers = Array.from(accessPoint.children).filter(
 		(child) => child.localName === 'Server'
@@ -16,7 +18,15 @@ export function getLNodesFromAccessPoint(
 			const lnElements = Array.from(lDevice.children).filter(
 				(child) => child.localName === 'LN0' || child.localName === 'LN'
 			)
-			lNodes.push(...lnElements)
+			
+			for (const lnode of lnElements) {
+				lNodes.push({
+					lnClass: lnode.getAttribute('lnClass') ?? '',
+					lnType: lnode.getAttribute('lnType') ?? '',
+					lnInst: lnode.getAttribute('lnInst') ?? '',
+					iedName: lnode.getAttribute('iedName') ?? undefined
+				})
+			}
 		}
 	}
 

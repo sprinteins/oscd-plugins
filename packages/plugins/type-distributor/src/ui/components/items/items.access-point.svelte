@@ -2,11 +2,12 @@
 	import { Card } from '@oscd-plugins/core-ui-svelte'
 	import { ChevronRight } from '@lucide/svelte'
   import LnodeCard from './lnode-card.svelte';
+  import type { LNodeTemplate } from '@/headless/types';
 
 	interface Props {
 		accessPoint: Element
 		sIedName: string
-		lNodes: Element[]
+		lNodes: LNodeTemplate[]
 	}
 
 	const { accessPoint, sIedName, lNodes }: Props = $props()
@@ -47,12 +48,7 @@
 	{#if isOpen && hasLNodes}
 		<div class="ml-4 space-y-1">
 			{#each lNodes as lnode}
-      <LnodeCard lnode={{
-				lnClass: lnode.getAttribute('lnClass') ?? '',
-				lnType: lnode.getAttribute('lnType') ?? '',
-				lnInst: lnode.getAttribute('lnInst') ?? '',
-				iedName: lnode.getAttribute('iedName') ?? undefined
-			}} />
+      <LnodeCard lnode={lnode} />
 			{/each}
 		</div>
 	{/if}
