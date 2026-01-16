@@ -22,8 +22,9 @@ export function createAccessPoints(
 	for (const ap of accessPoints) {
 		const apElement = doc.createElement('AccessPoint')
 		apElement.setAttribute('name', ap.name)
-		if (ap.description !== undefined)
+		if (ap.description !== undefined) {
 			apElement.setAttribute('desc', ap.description)
+		}
 
 		const serverElement = doc.createElement('Server')
 		const authElement = doc.createElement('Authentication')
