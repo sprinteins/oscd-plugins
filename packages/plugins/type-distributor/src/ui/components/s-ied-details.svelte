@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AccessPointCard } from '@/ui/components/items'
+import { AccessPointItem } from '@/ui/components/items'
 import {
 	getLNodesFromAccessPoint,
 } from '@/headless/ied'
@@ -25,7 +25,7 @@ const {
 				</div>
 			{:else}
 				{#each accessPoints as accessPoint}
-					<AccessPointCard
+					<AccessPointItem
 						{accessPoint}
 						lNodes={getLNodesFromAccessPoint(accessPoint)}
 						sIedName={sIedName}
