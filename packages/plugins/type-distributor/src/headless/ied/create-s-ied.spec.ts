@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { createSIED } from './create-s-ied'
 import * as pluginApi from '@oscd-plugins/core-api/plugin/v1'
 import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
-import type { Insert } from '@openenergytools/open-scd-core'
+import type { Insert } from '@openscd/oscd-api'
 
 // Mock the pluginGlobalStore module
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({

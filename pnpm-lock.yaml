@@ -733,9 +733,9 @@ importers:
       '@lucide/svelte':
         specifier: ^0.562.0
         version: 0.562.0(svelte@5.46.0)
-      '@openenergytools/open-scd-core':
-        specifier: ^0.0.5
-        version: 0.0.5
+      '@openscd/oscd-api':
+        specifier: ^0.1.6
+        version: 0.1.6
       '@oscd-plugins/core':
         specifier: workspace:^
         version: link:../../core/legacy
@@ -2429,6 +2429,9 @@ packages:
 
   '@openenergytools/xml-lib@1.2.2':
     resolution: {integrity: sha512-ZaxaEM8/xDojPQVbz1pJSDjEQO+V4m29DT1plAmYW/HDCTnnjKjF1bZvwTlfSaqxlLsswPkUdngOxX0iNis04Q==}
+
+  '@openscd/oscd-api@0.1.6':
+    resolution: {integrity: sha512-AqoHwQPsyiKxR8OVV3nOGgMMeiXgt2WAODZVcW0zLy7pLcZAROVzbvindiX3s09FuEOFY7UMyozmDmk1UXZJHg==}
 
   '@parcel/watcher-android-arm64@2.5.0':
     resolution: {integrity: sha512-qlX4eS28bUcQCdribHkg/herLe+0A9RyYC+mm2PXpncit8z5b3nSqGVzMNR3CmtAOgRutiZ02eIJJgP/b1iEFQ==}
@@ -9586,6 +9589,10 @@ snapshots:
     dependencies:
       fast-check: 3.23.2
       lit: 2.4.0
+
+  '@openscd/oscd-api@0.1.6':
+    dependencies:
+      tslib: 2.8.1
 
   '@parcel/watcher-android-arm64@2.5.0':
     optional: true

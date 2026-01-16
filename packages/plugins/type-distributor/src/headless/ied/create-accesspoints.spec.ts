@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { createAccessPoints } from './create-accesspoints'
 import * as pluginApi from '@oscd-plugins/core-api/plugin/v1'
-import type { Insert } from '@openenergytools/open-scd-core'
+import type { Insert } from '@openscd/oscd-api'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
