@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { Card } from '@oscd-plugins/core-ui-svelte'
-	import { ChevronRight } from '@lucide/svelte'
-  import LnodeCard from './lnode-card.svelte';
-  import type { LNodeTemplate } from '@/headless/types';
+import { Card } from '@oscd-plugins/core-ui-svelte'
+import { ChevronRight } from '@lucide/svelte'
+import LnodeCard from './lnode-card.svelte'
+import type { LNodeTemplate } from '@/headless/types'
 
-	interface Props {
-		accessPoint: Element
-		sIedName: string
-		lNodes: LNodeTemplate[]
-	}
+interface Props {
+	accessPoint: Element
+	sIedName: string
+	lNodes: LNodeTemplate[]
+}
 
-	const { accessPoint, sIedName, lNodes }: Props = $props()
-	let isOpen = $state(false)
-	let hasLNodes = $derived(lNodes.length > 0)
+const { accessPoint, sIedName, lNodes }: Props = $props()
+let isOpen = $state(false)
+let hasLNodes = $derived(lNodes.length > 0)
 </script>
 
 <div class="space-y-1">
@@ -37,7 +37,8 @@
 							/>
 						{/if}
 						<span class="text-sm font-medium">
-							Access Point {accessPoint.getAttribute('name') ?? '(unnamed)'}
+							Access Point {accessPoint.getAttribute("name") ??
+								"(unnamed)"}
 							({sIedName})
 						</span>
 					</div>
@@ -48,7 +49,7 @@
 	{#if isOpen && hasLNodes}
 		<div class="ml-4 space-y-1">
 			{#each lNodes as lnode}
-      <LnodeCard lnode={lnode} />
+				<LnodeCard {lnode} />
 			{/each}
 		</div>
 	{/if}
