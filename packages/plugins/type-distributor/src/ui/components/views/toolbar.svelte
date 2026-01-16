@@ -13,7 +13,6 @@ const bays = $derived(
 	)
 )
 const bayOptions = $derived([
-	{ value: '', label: 'All bays' },
 	...Array.from(bays ?? []).map((bay) => ({
 		value: bay.getAttribute('name') ?? '',
 		label: bay.getAttribute('name') ?? ''
