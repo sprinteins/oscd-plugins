@@ -63,10 +63,6 @@ function handleCreateIED() {
 		isCreatingIED = false
 	}
 }
-
-$effect(() => {
-  console.log('Selected Bay Type:', bayTypesStore.selectedBayType)
-})
 </script>
 
 <div class="grid grid-cols-3 gap-4 w-full h-full p-4 overflow-hidden">
