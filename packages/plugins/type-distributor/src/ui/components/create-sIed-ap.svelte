@@ -22,11 +22,9 @@ function handleCreateIED() {
 	try {
 		isCreatingIED = true
 		createSIED(iedName.trim(), iedDesc.trim() || undefined)
-
-		// Reset form on success
 		iedName = ''
 		iedDesc = ''
-		isFormOpen = false // Close form on success
+		isFormOpen = false 
 	} catch (error) {
 		iedCreationError =
 			error instanceof Error ? error.message : 'Failed to create IED'
