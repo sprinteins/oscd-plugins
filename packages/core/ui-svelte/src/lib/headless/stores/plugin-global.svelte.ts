@@ -1,6 +1,7 @@
 import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
 // STORES
 import { ed2Rev1Store, IEC61850_90_30Store } from './index.js'
+import type { XMLEditor } from '@openscd/oscd-editor/dist/XMLEditor.js'
 
 class UsePluginGlobalStore {
 	//====== STATES ======//
@@ -8,6 +9,7 @@ class UsePluginGlobalStore {
 	xmlDocument: XMLDocument | undefined = $state.raw()
 	xmlDocumentName: string | undefined = $state()
 	editCount: number | undefined = $state()
+	editor: XMLEditor | undefined = $state()
 	host: HTMLElement | undefined = $state()
 
 	//====== DERIVED STATES ======//
