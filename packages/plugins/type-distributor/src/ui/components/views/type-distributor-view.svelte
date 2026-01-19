@@ -1,16 +1,15 @@
 <script lang="ts">
 import {
 	Card,
+	Popover,
 	SelectWorkaround,
-	Button,
-	Input,
-	Label
 } from '@oscd-plugins/core-ui-svelte'
 import { bayTypesStore, bayStore } from '@/headless/stores'
 import type { BayType } from '@/headless/types'
 import { BayTypeDetails } from '@/ui/components'
 import { createSIED, getSIEDs } from '@/headless/ied'
 import SIedDetails from '../s-ied-details.svelte'
+  import CreateSIedAp from '../create-sIed-ap.svelte';
 
 const bayTypeOptions = $derived(
 	bayTypesStore.bayTypes.map((bt: BayType) => ({
@@ -31,38 +30,6 @@ const functionTemplates = $derived(
 const conductingEquipmentTemplates = $derived(
 	bayTypeWithTemplates?.conductingEquipmentTemplates ?? []
 )
-
-// Placeholder for IED creation form
-// IED creation state
-let iedName = $state('')
-let iedDesc = $state('')
-let isCreatingIED = $state(false)
-let iedCreationError = $state<string | null>(null)
-
-function handleCreateIED() {
-	// Reset error
-	iedCreationError = null
-
-	// Validate name
-	if (!iedName.trim()) {
-		iedCreationError = 'IED name is required'
-		return
-	}
-
-	try {
-		isCreatingIED = true
-		createSIED(iedName.trim(), iedDesc.trim() || undefined)
-
-		// Reset form on success
-		iedName = ''
-		iedDesc = ''
-	} catch (error) {
-		iedCreationError =
-			error instanceof Error ? error.message : 'Failed to create IED'
-	} finally {
-		isCreatingIED = false
-	}
-}
 </script>
 
 <div class="grid grid-cols-3 gap-4 w-full h-full p-4 overflow-hidden">
@@ -78,38 +45,7 @@ function handleCreateIED() {
     <Card.Content class="flex-1 overflow-y-auto">
       <div class="flex flex-col gap-y-4 justify-between">
         <SIedDetails sIedItems={getSIEDs(bayStore.selectedBay ?? "")} />
-        <div class="space-y-4">
-          <div class="space-y-3">
-            <div class="space-y-2">
-              <Label.Root for="ied-name">Name *</Label.Root>
-              <Input.Root
-                id="ied-name"
-                bind:value={iedName}
-                placeholder="Enter IED name"
-                disabled={isCreatingIED}
-              />
-            </div>
-            <div class="space-y-2">
-              <Label.Root for="ied-desc">Description</Label.Root>
-              <Input.Root
-                id="ied-desc"
-                bind:value={iedDesc}
-                placeholder="Enter IED description (optional)"
-                disabled={isCreatingIED}
-              />
-            </div>
-            {#if iedCreationError}
-              <p class="text-sm text-red-600">{iedCreationError}</p>
-            {/if}
-            <Button.Root
-              onclick={handleCreateIED}
-              disabled={isCreatingIED || !iedName.trim()}
-              class="w-full"
-            >
-              {isCreatingIED ? "Creating..." : "Create IED"}
-            </Button.Root>
-          </div>
-        </div>
+        <CreateSIedAp />
       </div>
     </Card.Content>
   </Card.Root>
