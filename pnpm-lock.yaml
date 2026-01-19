@@ -754,6 +754,9 @@ importers:
       '@tsconfig/svelte':
         specifier: ^5.0.6
         version: 5.0.6
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
       '@vitest/coverage-v8':
         specifier: ^4.0.17
         version: 4.0.17(vitest@4.0.17(@types/node@22.19.3)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.97.0))
@@ -790,6 +793,9 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+      uuid:
+        specifier: ^10.0.0
+        version: 10.0.0
       vite:
         specifier: ^6.4.1
         version: 6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.97.0)
