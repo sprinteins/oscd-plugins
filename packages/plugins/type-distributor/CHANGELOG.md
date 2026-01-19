@@ -9,9 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - S-IED AccessPoints view
 
-## [0.1.2] 2026-01-12
+## [0.1.3] - 2026-01-19
 ### Added
-- Create S-IED code and tests
+- Add IED utilities: functions to create SIEDs and AccessPoints, plus a getSIEDs accessor for retrieval
+- Add unit tests validating creation, AccessPoint handling, and retrieval behavior
+
+## [0.1.2] - 2026-01-16
+### Changed
+- Receive `editor` property from Plugin API
 
 ## [0.1.1] 2026-01-12
 ### Added

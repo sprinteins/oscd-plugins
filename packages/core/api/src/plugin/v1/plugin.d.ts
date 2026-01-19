@@ -5,6 +5,7 @@ export namespace Plugin {
 		doc: XMLDocument
 		docName: string
 		editCount: number
+		editor: XMLEditor
 		locale: string
 		isCustomInstance: boolean
 	}
