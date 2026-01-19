@@ -12,7 +12,9 @@ const bays = $derived(
 		'Substation > VoltageLevel > Bay'
 	)
 )
-const bayOptions = $derived(Array.from(bays ?? []).map((bay) => ({
+
+const bayOptions = $derived(
+    Array.from(bays ?? []).map((bay) => ({
 		value: bay.getAttribute('name') ?? '',
 		label: bay.getAttribute('name') ?? ''
 	}))
