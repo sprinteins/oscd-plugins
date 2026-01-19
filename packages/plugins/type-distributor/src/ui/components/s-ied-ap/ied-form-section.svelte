@@ -1,0 +1,31 @@
+<script lang="ts">
+import { Label, Input } from '@oscd-plugins/core-ui-svelte'
+
+let { name = $bindable(''), description = $bindable(''), disabled = false }: { name: string; description: string; disabled?: boolean } = $props()
+</script>
+
+<section>
+	<header class="pb-4">
+		<h1 class="text-xl font-bold">Create New IED</h1>
+	</header>
+	<div class="space-y-3">
+		<div class="space-y-2">
+			<Label.Root for="ied-name">Name *</Label.Root>
+			<Input.Root
+				id="ied-name"
+				bind:value={name}
+				placeholder="Enter IED name"
+				{disabled}
+			/>
+		</div>
+		<div class="space-y-2">
+			<Label.Root for="ied-desc">Description</Label.Root>
+			<Input.Root
+				id="ied-desc"
+				bind:value={description}
+				placeholder="Enter IED description (optional)"
+				{disabled}
+			/>
+		</div>
+	</div>
+</section>

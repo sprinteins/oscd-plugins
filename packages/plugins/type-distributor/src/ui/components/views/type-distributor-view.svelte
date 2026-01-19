@@ -1,7 +1,6 @@
 <script lang="ts">
 import {
 	Card,
-	Popover,
 	SelectWorkaround,
 } from '@oscd-plugins/core-ui-svelte'
 import { bayTypesStore, bayStore } from '@/headless/stores'
@@ -9,7 +8,7 @@ import type { BayType } from '@/headless/types'
 import { BayTypeDetails } from '@/ui/components'
 import { getSIEDs } from '@/headless/ied'
 import SIedDetails from '../s-ied-details.svelte'
-  import { AddIedApDialogTrigger } from '../sied-ap';
+  import { AddIedApDialogTrigger } from '../s-ied-ap';
 
 const bayTypeOptions = $derived(
 	bayTypesStore.bayTypes.map((bt: BayType) => ({

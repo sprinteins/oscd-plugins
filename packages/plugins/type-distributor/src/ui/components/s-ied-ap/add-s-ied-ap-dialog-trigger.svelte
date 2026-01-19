@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Button, dialogStore } from '@oscd-plugins/core-ui-svelte'
-import CreateIedForm from './add-ied-ap-dialog-form.svelte'
+import CreateIedForm from './add-s-ied-ap-dialog-form.svelte'
 
 async function handleOpenDialog() {
 	dialogStore.mountInnerComponent({
