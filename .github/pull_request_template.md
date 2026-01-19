@@ -25,5 +25,4 @@ You can add specific commits which are worth taking a look into
 
 ## ❌ Link issue(s) to close - [hint](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)
 
-You can add specific commits which are worth taking a look into
-
+closes #ISSUE_NUMBER

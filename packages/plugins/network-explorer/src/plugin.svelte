@@ -16,6 +16,7 @@
 		getDoc: () => doc,
 		getDocName: () => docName,
 		getEditCount: () => editCount,
+		getEditor: () => editor,
 		getIsCustomInstance: () => isCustomInstance,
 		getHost: () => $host() || window,
 		theme: 'legacy-oscd-instance',
@@ -39,7 +40,7 @@ import jsonPackage from '../package.json'
 import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
 import { LegacyTheme } from '@oscd-plugins/ui'
 // TYPES
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 import NetworkExplorer from './network-explorer.svelte';
 
 // props
@@ -47,6 +48,7 @@ const {
 	doc,
 	docName,
 	editCount,
+	editor,
 	isCustomInstance
-}: Utils.PluginCustomComponentsProps = $props()
+}: Plugin.CustomComponentsProps = $props()
 </script>

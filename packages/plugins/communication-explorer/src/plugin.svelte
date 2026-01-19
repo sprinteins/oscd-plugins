@@ -4,6 +4,7 @@
 			doc: { reflect: true, type: 'Object'},
 			docName: { reflect: true, type: 'String'},
 			editCount: { reflect: true, type: 'Number'},
+			editor: { reflect: true, type: 'Object'},
 			locale: { reflect: true, type: 'String'},
 			pluginType: { reflect: true, type: 'String'},
 			isCustomInstance: { reflect: true, type: 'Boolean'},
@@ -16,6 +17,7 @@ use:initPlugin={{
 	getDoc: () => doc,
 	getDocName: () => docName,
 	getEditCount: () => editCount,
+	getEditor: () => editor,
 	getIsCustomInstance: () => isCustomInstance,
 	getHost: () => $host() || window,
 	theme: 'legacy-oscd-instance',
@@ -39,6 +41,7 @@ use:initPlugin={{
 <script lang="ts">
 // TYPES
 import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import type { XMLEditor } from '@openscd/oscd-editor';
 
 import { clearSelection } from "../src/stores/_store-view-filter"
 // CORE
@@ -50,10 +53,11 @@ import jsonPackage from '../package.json'
 import TelemetryView from "./ui/components/telemetry-view/telemetry-view.svelte"
 
 // Svelte 5 props syntax
-const { doc, docName, editCount, locale, pluginType, isCustomInstance }: { 
+const { doc, docName, editCount, editor, locale, pluginType, isCustomInstance }: { 
 	doc: XMLDocument;
 	docName: string;
 	editCount: number;
+	editor: XMLEditor;
 	locale: string;
 	pluginType: string;
 	isCustomInstance: boolean;

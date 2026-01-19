@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { createSIED } from './create-s-ied'
-import * as pluginApi from '@oscd-plugins/core-api/plugin/v1'
+import type { XMLEditor } from '@openscd/oscd-editor'
 import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
 import type { Insert } from '@openscd/oscd-api'
 
@@ -8,13 +8,13 @@ import type { Insert } from '@openscd/oscd-api'
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
 		xmlDocument: null,
-		host: null
+		editor: null
 	}
 }))
 const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
 describe('createSIED', () => {
-	let mockHost: HTMLElement
+	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document
 
 	beforeEach(() => {
@@ -22,14 +22,12 @@ describe('createSIED', () => {
 			sclMockA,
 			'application/xml'
 		)
-		mockHost = document.createElement('div')
+		mockEditor = {
+			commit: vi.fn()
+		}
 
 		pluginGlobalStore.xmlDocument = mockDocument
-		pluginGlobalStore.host = mockHost
-
-		vi.spyOn(pluginApi, 'createAndDispatchEditEvent').mockImplementation(
-			() => {}
-		)
+		pluginGlobalStore.editor = mockEditor as unknown as XMLEditor
 	})
 
 	afterEach(() => {
@@ -40,12 +38,8 @@ describe('createSIED', () => {
 		it('should create an IED element with the given name', () => {
 			createSIED('TestIED')
 
-			expect(pluginApi.createAndDispatchEditEvent).toHaveBeenCalledTimes(
-				1
-			)
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-			const edit = callArgs.edit as Insert
+			expect(mockEditor.commit).toHaveBeenCalledTimes(1)
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 
 			expect(edit.node).toBeInstanceOf(Element)
 			const iedElement = edit.node as Element
@@ -56,9 +50,7 @@ describe('createSIED', () => {
 		it('should create an IED element with name and description', () => {
 			createSIED('TestIED', 'Test Description')
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-			const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('name')).toBe('TestIED')
@@ -68,9 +60,7 @@ describe('createSIED', () => {
 		it('should not set desc attribute when description is not provided', () => {
 			createSIED('TestIED')
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-			const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const iedElement = edit.node as Element
 
 			expect(iedElement.hasAttribute('desc')).toBe(false)
@@ -81,9 +71,7 @@ describe('createSIED', () => {
 		it('should set all default SIED attributes', () => {
 			createSIED('TestIED')
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-			const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('configVersion')).toBe('1.0')
@@ -99,9 +87,7 @@ describe('createSIED', () => {
 		it('should create a Services child element with nameLength attribute', () => {
 			createSIED('TestIED')
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-			const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const iedElement = edit.node as Element
 
 			const servicesElement = iedElement.querySelector('Services')
@@ -112,9 +98,7 @@ describe('createSIED', () => {
 		it('should have Services as direct child of IED', () => {
 			createSIED('TestIED')
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-			const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const iedElement = edit.node as Element
 
 			const children = Array.from(iedElement.children)
@@ -127,9 +111,7 @@ describe('createSIED', () => {
 		it('should insert before DataTypeTemplates if it exists', () => {
 			createSIED('TestIED')
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-			const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 
 			expect(edit.parent).toBe(mockDocument.documentElement)
 			expect(edit.reference?.nodeName).toBe('DataTypeTemplates')
@@ -155,9 +137,7 @@ describe('createSIED', () => {
 
 			createSIED('TestIED')
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-			const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 
 			expect(edit.parent).toBe(customDoc.documentElement)
 			expect(edit.reference).toBe(someOtherElement)
@@ -172,9 +152,7 @@ describe('createSIED', () => {
 
 			createSIED('TestIED')
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-			const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 
 			expect(edit.parent).toBe(customDoc.documentElement)
 			expect(edit.reference).toBeNull()
@@ -197,9 +175,7 @@ describe('createSIED', () => {
 
 			createSIED('TestIED')
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-			const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 
 			expect(edit.reference).toBe(dataTypeTemplates)
 		})
@@ -211,10 +187,10 @@ describe('createSIED', () => {
 
 			expect(() => createSIED('TestIED')).toThrow('No XML document found')
 		})
-		it('should throw error when host is not available', () => {
-			pluginGlobalStore.host = undefined
+		it('should throw error when editor is not available', () => {
+			pluginGlobalStore.editor = undefined
 
-			expect(() => createSIED('TestIED')).toThrow('No host element found')
+			expect(() => createSIED('TestIED')).toThrow('No editor found')
 		})
 	})
 
@@ -222,9 +198,7 @@ describe('createSIED', () => {
 		it('should handle empty string as name', () => {
 			createSIED('')
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-            const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('name')).toBe('')
@@ -234,9 +208,7 @@ describe('createSIED', () => {
 			const specialName = 'Test-IED_123.abc'
 			createSIED(specialName)
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-            const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('name')).toBe(specialName)
@@ -246,9 +218,7 @@ describe('createSIED', () => {
 			const specialDesc = 'Test <>&" description'
 			createSIED('TestIED', specialDesc)
 
-			const callArgs = vi.mocked(pluginApi.createAndDispatchEditEvent)
-				.mock.calls[0][0]
-            const edit = callArgs.edit as Insert
+			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('desc')).toBe(specialDesc)
