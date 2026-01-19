@@ -1,6 +1,6 @@
 {
 	"name": "@oscd-plugins/core-ui-svelte",
-	"version": "0.0.2",
+	"version": "0.0.1",
 	"type": "module",
 	"source": "src/lib/index.ts",
 	"svelte": "./dist/index.js",
