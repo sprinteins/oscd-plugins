@@ -7,9 +7,9 @@ import {
 import { bayTypesStore, bayStore } from '@/headless/stores'
 import type { BayType } from '@/headless/types'
 import { BayTypeDetails } from '@/ui/components'
-import { createSIED, getSIEDs } from '@/headless/ied'
+import { getSIEDs } from '@/headless/ied'
 import SIedDetails from '../s-ied-details.svelte'
-  import CreateSIedAp from '../create-sIed-ap.svelte';
+  import { AddIedApDialogTrigger } from '../sied-ap';
 
 const bayTypeOptions = $derived(
 	bayTypesStore.bayTypes.map((bt: BayType) => ({
@@ -45,7 +45,7 @@ const conductingEquipmentTemplates = $derived(
     <Card.Content class="flex-1 overflow-y-auto">
       <div class="flex flex-col gap-y-4 justify-between">
         <SIedDetails sIedItems={getSIEDs(bayStore.selectedBay ?? "")} />
-        <CreateSIedAp />
+        <AddIedApDialogTrigger />
       </div>
     </Card.Content>
   </Card.Root>

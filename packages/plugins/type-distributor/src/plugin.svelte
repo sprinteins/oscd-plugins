@@ -15,7 +15,7 @@
 // PACKAGE
 import jsonPackage from '../package.json'
 // CORE
-import { initPlugin } from '@oscd-plugins/core-ui-svelte'
+import { initPlugin, DialogWorkaround } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 // COMPONENTS
@@ -50,4 +50,6 @@ const {
 		<Toolbar />
 		<TypeDistributorView />
 	</div>
+	
+	<DialogWorkaround />
 </main>
