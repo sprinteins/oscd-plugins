@@ -1,7 +1,7 @@
 {
 	"name": "@oscd-plugins/communication-explorer",
 	"private": true,
-	"version": "0.0.40",
+	"version": "0.0.41",
 	"type": "module",
 	"scripts": {
 		"//====== DEV ======//": "",
@@ -43,6 +43,7 @@
 		"elkjs": "^0.8.2"
 	},
 	"devDependencies": {
+		"@openscd/oscd-editor": "^1.8.0",
 		"@oscd-plugins/core": "workspace:^",
 		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/core-standard": "workspace:^",

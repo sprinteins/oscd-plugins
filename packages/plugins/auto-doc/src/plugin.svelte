@@ -13,7 +13,7 @@
 
 <script lang="ts">
 // TYPES
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 // CORE
 import { initPlugin } from '@oscd-plugins/core-ui-svelte'
 import { MaterialTheme } from '@oscd-plugins/ui'
@@ -31,8 +31,9 @@ const {
 	doc,
 	docName,
 	editCount,
+  editor,
 	isCustomInstance
-}: Utils.PluginCustomComponentsProps = $props()
+}: Plugin.CustomComponentsProps = $props()
 
 let hasRunInit = $state(false)
 
@@ -49,6 +50,7 @@ $effect(() => {
     getDoc: () => doc,
     getDocName: () => docName,
     getEditCount: () => editCount,
+    getEditor: () => editor,
     getIsCustomInstance: () => isCustomInstance,
     getHost: () => $host() || window,
     theme: "legacy-oscd-instance",
