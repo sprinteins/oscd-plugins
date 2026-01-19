@@ -742,6 +742,9 @@ importers:
       '@openscd/oscd-api':
         specifier: ^0.1.6
         version: 0.1.6
+      '@openscd/oscd-editor':
+        specifier: ^1.8.0
+        version: 1.8.0
       '@oscd-plugins/core':
         specifier: workspace:^
         version: link:../../core/legacy
@@ -2027,10 +2030,12 @@ packages:
   '@humanwhocodes/config-array@0.13.0':
     resolution: {integrity: sha512-DZLEEqFWQFiyK6h5YIeynKx7JlvCYWL0cImfSRXZ9l4Sg2efkFGTuFf6vzXjK1cq6IYkU+Eg/JizXw+TD2vRNw==}
     engines: {node: '>=10.10.0'}
+    deprecated: Use @eslint/config-array instead
 
   '@humanwhocodes/config-array@0.9.5':
     resolution: {integrity: sha512-ObyMyWxZiCu/yTisA7uzx81s40xR2fD5Cg/2Kq7G02ajkNubJf6BopgDTmDyc3U7sXpNKM8cYOw7s7Tyr+DnCw==}
     engines: {node: '>=10.10.0'}
+    deprecated: Use @eslint/config-array instead
 
   '@humanwhocodes/module-importer@1.0.1':
     resolution: {integrity: sha512-bxveV4V8v5Yb4ncFTT3rPSgZBOpCkjfK0y4oVVVJwIuDVBRMDXrPyXRL988i5ap9m9bnyEEjWfm5WkBmtffLfA==}
@@ -2038,9 +2043,11 @@ packages:
 
   '@humanwhocodes/object-schema@1.2.1':
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
+    deprecated: Use @eslint/object-schema instead
 
   '@humanwhocodes/object-schema@2.0.3':
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
+    deprecated: Use @eslint/object-schema instead
 
   '@internationalized/date@3.10.0':
     resolution: {integrity: sha512-oxDR/NTEJ1k+UFVQElaNIk65E/Z83HK1z1WI3lQyhTtnNg4R5oVXaPzK3jcpKG8UHKDVuDQHzn+wsxSz8RP3aw==}
@@ -2228,51 +2235,67 @@ packages:
 
   '@material/mwc-base@0.27.0':
     resolution: {integrity: sha512-oCWWtjbyQ52AaUbzINLGBKScIPyqhps2Y7c8t6Gu6fcFeDxhKXMV1Cqvtj/OMhtAt53XjHfD2XruWwYv3cYYUA==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-button@0.27.0':
     resolution: {integrity: sha512-t5m2zfE93RNKHMjdsU67X6csFzuSG08VJKKvXVQ+BriGE3xBgzY5nZdmZXomFpaWjDENPAlyS4ppCFm6o+DILw==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-checkbox@0.27.0':
     resolution: {integrity: sha512-EY0iYZLwo8qaqMwR5da4fdn0xI0BZNAvKTcwoubYWpDDHlGxDcqwvjp/40ChGo3Q/zv8/4/A0Qp7cwapI82EkA==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-dialog@0.27.0':
     resolution: {integrity: sha512-rkOEmCroVs0wBQbj87vH79SvSHHZ61QRCTUYsU2rHGZCvdzlmvHjWdoyKjJER6WwwM3rrT8xthfecmjICI28CA==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-drawer@0.27.0':
     resolution: {integrity: sha512-dy/uwt+aI5aiUDqFcT6Z4GhGmLZR7fu3HMkfqtQDwoJShxnf5hHwk18fiD1VHHCDf9CZ5wjl7ug4fjpcs9r18A==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-icon-button@0.27.0':
     resolution: {integrity: sha512-wReiPa1UkLaCSPtpkAs1OGKEBtvqPnz9kzuY+RvN5ZQnpo3Uh7n3plHV4y/stsUBfrWtBCcOgYnCdNRaR/r2nQ==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-icon@0.27.0':
     resolution: {integrity: sha512-Sul44I37M9Ewynn0A9DjkEBrmll2VtNbth6Pxj7I1A/EAwEfaCrPvryyGqfIu1T2hTsRcaojzQx6QjF+B5QW9A==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-list@0.27.0':
     resolution: {integrity: sha512-oAhNQsBuAOgF3ENOIY8PeWjXsl35HoYaUkl0ixBQk8jJP2HIEf+MdbS5688y/UXxFbSjr0m//LfwR5gauEashg==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-radio@0.27.0':
     resolution: {integrity: sha512-+rSO9a373BgyMgQOM0Z8vVkuieobBylPJ8qpltytM+yGPj8+n+MtwRZyg+ry3WwEjYYDMP6GxZPHwLgWs6lMpQ==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-ripple@0.27.0':
     resolution: {integrity: sha512-by0O8d8g3Rd96/sUB8hxy6MrDx1QTstqOsA64vqypWd526hMTBGRik08jTNap5sVIyrN9Vq17jb4NJLWQLnNHQ==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-tab-bar@0.27.0':
     resolution: {integrity: sha512-CqRZ38m8kOfSJo87Ek61eubO8AGR10Dp12c3pCyyy6mtK/0FSY+rfcmnMPxEzkxREqUnQPgw9lhqmGZXBSqzZQ==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-tab-indicator@0.27.0':
     resolution: {integrity: sha512-bdE5mYP2ze/8d8cGTTJUS0+ByzEK5tmWsXfphFr/Dyy9b+gOnIOt1iX8tmKTOpbYKsV43LxtSkumhTTPDXEJLg==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-tab-scroller@0.27.0':
     resolution: {integrity: sha512-WL/CYVx1cHjC1a/STIB/BaBfxGz3Rz4szNNX35FkYzm6GSGxUNkXZfKOAK7R8RdZOAETa8Gy5tTEhKZKKJ/aUA==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-tab@0.27.0':
     resolution: {integrity: sha512-BhX6hZYjPL+d3Gcl6rVHNPiEAudgMHA+7mHo2keqbIiFRLKa2CU+omHZO/82+EBan/TPL6ZK39Oki8aIaAJcRQ==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-top-app-bar-fixed@0.27.0':
     resolution: {integrity: sha512-kU1RKmx8U7YCbsBuAXfNLtu+V/Jwos+o2mSY94tZpv36dIsvcsGQ4pB2zW0EaU8g9bQVdwLMVxj4oooxSmbZXw==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-top-app-bar@0.27.0':
     resolution: {integrity: sha512-vHn10exeDhUVFpo4TgBsS8pta4AxZtjuuxrYFHMYxceGifEATvGbYoPyw1x7cCMcXMMIITElgfCURAbCmn3BgA==}
+    deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/notched-outline@14.0.0':
     resolution: {integrity: sha512-6S58DlWmhCDr4RQF2RuwqANxlmLdHtWy2mF4JQLD9WOiCg4qY9eCQnMXu3Tbhr7f/nOZ0vzc7AtA3vfJoZmCSw==}
@@ -3530,6 +3553,7 @@ packages:
 
   '@types/sass@1.45.0':
     resolution: {integrity: sha512-jn7qwGFmJHwUSphV8zZneO3GmtlgLsmhs/LQyVvQbIIa+fzGMUiHI4HXJZL3FT8MJmgXWbLGiVVY7ElvHq6vDA==}
+    deprecated: This is a stub types definition. sass provides its own type definitions, so you do not need this installed.
 
   '@types/semver@7.7.1':
     resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
@@ -3652,6 +3676,7 @@ packages:
 
   '@vitest/coverage-c8@0.30.1':
     resolution: {integrity: sha512-/Wa3dtSuckpdngAmiCwowaEXXgJkqPrtfvrs9HTB9QoEfNbZWPu4E4cjEn4lJZb4qcGf4fxFtUA2f9DnDNAzBA==}
+    deprecated: v8 coverage is moved to @vitest/coverage-v8 package
     peerDependencies:
       vitest: '>=0.30.0 <1'
 
@@ -3858,6 +3883,7 @@ packages:
 
   abab@2.0.6:
     resolution: {integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==}
+    deprecated: Use your platform's native atob() and btoa() methods instead
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -4685,6 +4711,7 @@ packages:
   domexception@4.0.0:
     resolution: {integrity: sha512-A2is4PLG+eeSfoTMA95/s4pvAoSo2mKtiM5jlHkAVewmiO8ISFTFKZjH7UAM1Atli/OT/7JHOrJRJiMKUZKYBw==}
     engines: {node: '>=12'}
+    deprecated: Use your platform's native DOMException instead
 
   domhandler@3.3.0:
     resolution: {integrity: sha512-J1C5rIANUbuYK+FuFL98650rihynUOEzRLxW+90bKZRWB6A1X1Tf82GxR1qAWLyfNPRvjqfip3Q5tdYlmAa9lA==}
@@ -4990,11 +5017,13 @@ packages:
   eslint@8.4.1:
     resolution: {integrity: sha512-TxU/p7LB1KxQ6+7aztTnO7K0i+h0tDi81YRY9VzB6Id71kNz+fFYnf5HD5UOQmxkzcoa0TlVZf9dpMtUv0GpWg==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   eslint@8.57.1:
     resolution: {integrity: sha512-ypowyDxpVSYpkXr9WPv2PAZCtNip1Mv5KTW0SCurXv/9iOpcrH9PaqUElksqEB6pChqHGDRCFTyrZlGhnLNGiA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   esm-env@1.2.2:
@@ -5215,6 +5244,7 @@ packages:
   fstream@1.0.12:
     resolution: {integrity: sha512-WvJ193OHa0GHPEL+AycEJgxvBEwyfRkN1vhjca23OaPVMCaLCXTd5qAu82AjTcgP1UJmytkOKb63Ypde7raDIg==}
     engines: {node: '>=0.6'}
+    deprecated: This package is no longer supported.
 
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
@@ -5288,10 +5318,12 @@ packages:
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
+    deprecated: Glob versions prior to v9 are no longer supported
 
   glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
     engines: {node: '>=12'}
+    deprecated: Glob versions prior to v9 are no longer supported
 
   globals@11.12.0:
     resolution: {integrity: sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==}
@@ -5458,6 +5490,7 @@ packages:
 
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
+    deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
@@ -6052,6 +6085,7 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
 
   node-fetch@2.7.0:
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
@@ -6586,14 +6620,17 @@ packages:
 
   rimraf@2.7.1:
     resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
   rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
   rollup-plugin-inject@3.0.2:
     resolution: {integrity: sha512-ptg9PQwzs3orn4jkgXJ74bfs5vYz1NCZlSQMBUA0wKcGp5i5pA1AO3fOUEte8enhGUC+iapTCzEWw2jEFFUO/w==}
+    deprecated: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-inject.
 
   rollup-plugin-node-polyfills@0.2.1:
     resolution: {integrity: sha512-4kCrKPTJ6sK4/gLL/U5QzVT8cxJcofO0OU74tnB19F40cmuAKSzH5/siithxlofFEjwvw1YAhPmbvGNA6jEroA==}
@@ -6794,6 +6831,7 @@ packages:
 
   sourcemap-codec@1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
+    deprecated: Please use @jridgewell/sourcemap-codec instead
 
   spacetrim@0.11.59:
     resolution: {integrity: sha512-lLYsktklSRKprreOm7NXReW8YiX2VBjbgmXYEziOoGf/qsJqAEACaDvoTtUOycwjpaSh+bT8eu0KrJn7UNxiCg==}
@@ -7124,6 +7162,7 @@ packages:
 
   text-encoding@0.6.4:
     resolution: {integrity: sha512-hJnc6Qg3dWoOMkqP53F0dzRIgtmsAge09kxUIqGrEUS4qr5rWLckGYaQAVr+opBrIMRErGgy6f5aPnyPpyGRfg==}
+    deprecated: no longer maintained
 
   text-segmentation@1.0.3:
     resolution: {integrity: sha512-iOiPUo/BGnZ6+54OsWxZidGCsdU8YbE4PSpdPinp7DeMtUJNJBoJ/ouUSTJjHkh1KntHaltHl/gDs2FC4i5+Nw==}
@@ -7781,6 +7820,7 @@ packages:
   whatwg-encoding@2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}
     engines: {node: '>=12'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@3.0.0:
     resolution: {integrity: sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q==}
