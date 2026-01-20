@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { assignLNodeToAccessPoint } from './assign-lnode-to-accespoint'
+import { assignLNodeToAccessPoint } from './assign-lnode-to-accesspoint'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import type {
 	FunctionTemplate,
 	ConductingEquipmentTemplate,
 	LNodeTemplate
-} from '../types'
+} from '@/headless/types'
 import type { Insert } from '@openscd/oscd-api'
 
 // Mock modules
@@ -16,7 +16,7 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-vi.mock('../stores', () => ({
+vi.mock('../../stores', () => ({
 	bayTypesStore: {
 		selectedBayType: 'TestBay'
 	},
@@ -27,7 +27,7 @@ vi.mock('../stores', () => ({
 	}
 }))
 
-vi.mock('./copy-relevant-data-type-templates', () => ({
+vi.mock('../data-types/copy-data-type-templates', () => ({
 	copyRelevantDataTypeTemplates: vi.fn()
 }))
 
@@ -36,9 +36,9 @@ vi.mock('./add-function-to-bay', () => ({
 }))
 
 const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
-const { ssdImportStore } = await import('../stores')
+const { ssdImportStore } = await import('../../stores')
 const { copyRelevantDataTypeTemplates } = await import(
-	'./copy-relevant-data-type-templates'
+	'../data-types/copy-data-type-templates'
 )
 const { addFunctionToBay } = await import('./add-function-to-bay')
 

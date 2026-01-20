@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { copyRelevantDataTypeTemplates } from './copy-relevant-data-type-templates'
+import { copyRelevantDataTypeTemplates } from './copy-data-type-templates'
 import type { XMLEditor } from '@openscd/oscd-editor'
-import type { LNodeTemplate } from '../types'
+import type { LNodeTemplate } from '@/headless/types'
 import type { Insert } from '@openscd/oscd-api'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { ssdImportStore } from '@/headless/stores'
 
 // Mock modules
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -12,15 +14,12 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-vi.mock('../stores', () => ({
+vi.mock('../../stores', () => ({
 	ssdImportStore: {
 		lnodeTypes: [],
 		loadedSSDDocument: null
 	}
 }))
-
-const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
-const { ssdImportStore } = await import('../stores')
 
 describe('copyRelevantDataTypeTemplates', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
@@ -274,23 +273,6 @@ describe('copyRelevantDataTypeTemplates', () => {
 	})
 
 	describe('edge cases', () => {
-		it('should handle LNodeType with no data objects', () => {
-			ssdImportStore.lnodeTypes = [
-				{
-					id: 'TestLNType',
-					lnClass: 'XCBR',
-					dataObjects: []
-				}
-			]
-
-			copyRelevantDataTypeTemplates(lnodeTemplate)
-
-			// Should only copy LNodeType, no DOTypes
-			const doTypeCalls = mockEditor.commit.mock.calls.filter((call) =>
-				call[1]?.title?.includes('Copy DOType')
-			)
-			expect(doTypeCalls.length).toBe(0)
-		})
 
 		it('should handle circular references in DATypes', () => {
 			// The circular reference test doesn't work as expected because

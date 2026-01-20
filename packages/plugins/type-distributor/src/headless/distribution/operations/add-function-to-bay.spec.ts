@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { addFunctionToBay } from './add-function-to-bay'
 import type { XMLEditor } from '@openscd/oscd-editor'
-import type { Insert } from '@openscd/oscd-api'
-import type { FunctionTemplate } from '../types'
+import type { FunctionTemplate } from '@/headless/types'
 
 // Mock the stores and pluginGlobalStore
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -12,7 +11,7 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-vi.mock('../stores', () => ({
+vi.mock('../../stores', () => ({
 	bayTypesStore: {
 		selectedBayType: 'TestBayType'
 	},
@@ -22,7 +21,7 @@ vi.mock('../stores', () => ({
 }))
 
 const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
-const { bayTypesStore, ssdImportStore } = await import('../stores')
+const { bayTypesStore, ssdImportStore } = await import('../../stores')
 
 describe('addFunctionToBay', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }

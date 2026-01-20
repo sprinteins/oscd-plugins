@@ -1,11 +1,8 @@
-import type { FunctionTemplate } from '../types'
-import { bayTypesStore, ssdImportStore } from '../stores'
 import { v4 as uuidv4 } from 'uuid'
 import type { Insert } from '@openscd/oscd-api'
-import {
-	getDocumentAndEditor,
-	getBayElement
-} from './common-helpers'
+import type { FunctionTemplate } from '../../types'
+import { bayTypesStore, ssdImportStore } from '../../stores'
+import { getBayElement } from '../utils/document-helpers'
 
 /**
  * Creates a Function element with all required attributes
@@ -14,7 +11,7 @@ import {
  * @param templateUuid The UUID from the bay type
  * @returns The created Function element
  */
-function createFunctionElement(
+export function createFunctionElement(
 	doc: Document,
 	functionTemplate: FunctionTemplate,
 	templateUuid: string
@@ -39,7 +36,7 @@ function createFunctionElement(
  * @throws Error if function not found in bay type
  * @returns The UUID of the function in the bay type
  */
-function getFunctionTemplateUuidFromBayType(
+export function getFunctionTemplateUuidFromBayType(
 	functionTemplate: FunctionTemplate
 ): string {
 	const bayType = ssdImportStore.bayTypes.find(
@@ -69,34 +66,46 @@ function getFunctionTemplateUuidFromBayType(
  * @param bayElement The bay element
  * @returns The reference element or null
  */
-function getFunctionInsertionReference(bayElement: Element): Node | null {
+export function getFunctionInsertionReference(bayElement: Element): Node | null {
 	return bayElement.querySelector('ConnectivityNode')
 }
 
-// TODO: This would also have to handle the LNodes within the Function and we need the case when its used as an EqFunction and we drag that one
 /**
- * Adds a Function element to a Bay in the SCD document
+ * Checks if a function already exists in the bay
+ * @param doc The XML document
+ * @param functionTemplate The function template
+ * @param bayName The bay name
+ * @returns True if function exists, false otherwise
+ */
+export function functionExistsInBay(
+	doc: Document,
+	functionTemplate: FunctionTemplate,
+	bayName: string
+): boolean {
+	const bayElement = getBayElement(doc, bayName)
+	const existingFunction = bayElement.querySelector(
+		`Function[name="${functionTemplate.name}"]`
+	)
+	return existingFunction !== null
+}
+
+/**
+ * Creates an Insert edit for adding a Function to a Bay
  * @param doc The XML document
  * @param functionTemplate The function template from SSD
  * @param bayName The name of the bay to add the function to
  * @returns The Insert edit for adding the function, or null if function already exists
- * @throws Error if bay not found or function template not in bay type
  */
-export function addFunctionToBay(
+export function createFunctionInsertEdit(
 	doc: Document,
 	functionTemplate: FunctionTemplate,
 	bayName: string
 ): Insert | null {
-	const bayElement = getBayElement(doc, bayName)
-
-	// Check if function already exists
-	const existingFunction = bayElement.querySelector(
-		`Function[name="${functionTemplate.name}"]`
-	)
-	if (existingFunction) {
+	if (functionExistsInBay(doc, functionTemplate, bayName)) {
 		return null
 	}
 
+	const bayElement = getBayElement(doc, bayName)
 	const templateUuid = getFunctionTemplateUuidFromBayType(functionTemplate)
 	const functionElement = createFunctionElement(doc, functionTemplate, templateUuid)
 	const reference = getFunctionInsertionReference(bayElement)
