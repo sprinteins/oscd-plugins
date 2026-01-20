@@ -46,8 +46,8 @@ function validateForm(): string | null {
 		return 'Please select an existing IED or create a new one'
 	}
 
-	if (!hasAccessPoint && isCreatingNewIed) {
-		return 'Access Point name is required'
+	if (!isCreatingNewIed && !hasAccessPoint) {
+		return 'Access Point name is required when adding to existing IED'
 	}
 
 	return null
