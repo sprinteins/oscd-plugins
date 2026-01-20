@@ -1,14 +1,11 @@
 <script lang="ts">
-import {
-	Card,
-	SelectWorkaround,
-} from '@oscd-plugins/core-ui-svelte'
+import { Card, pluginGlobalStore, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { bayTypesStore, bayStore } from '@/headless/stores'
 import type { BayType } from '@/headless/types'
 import { BayTypeDetails } from '@/ui/components'
 import { getSIEDs } from '@/headless/ied'
 import SIedDetails from '../s-ied-details.svelte'
-import { AddSIedApDialogTrigger } from '../s-ied-ap';
+import { AddSIedApDialogTrigger } from '../s-ied-ap'
 
 const bayTypeOptions = $derived(
 	bayTypesStore.bayTypes.map((bt: BayType) => ({
@@ -29,6 +26,11 @@ const functionTemplates = $derived(
 const conductingEquipmentTemplates = $derived(
 	bayTypeWithTemplates?.conductingEquipmentTemplates ?? []
 )
+
+const sIedItems = $derived.by(() => {
+  pluginGlobalStore.editCount
+  return getSIEDs(bayStore.selectedBay ?? "")
+})
 </script>
 
 <div class="grid grid-cols-3 gap-4 w-full h-full p-4 overflow-hidden">
@@ -43,7 +45,7 @@ const conductingEquipmentTemplates = $derived(
     </Card.Header>
     <Card.Content class="flex-1 overflow-y-auto">
       <div class="flex flex-col gap-y-4 justify-between">
-        <SIedDetails sIedItems={getSIEDs(bayStore.selectedBay ?? "")} />
+        <SIedDetails sIedItems={sIedItems} />
         <AddSIedApDialogTrigger />
       </div>
     </Card.Content>
