@@ -1,374 +1,312 @@
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import type { DOType, LNodeTemplate } from '../types'
+import type { LNodeTemplate } from '../types'
 import { ssdImportStore } from '../stores'
 import type { Insert } from '@openscd/oscd-api'
-import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
+import {
+	getDocumentAndEditor,
+	elementExists,
+	getOrCreateDataTypeTemplates
+} from './common-helpers'
 
-export function copyRelevantDataTypeTemplates(
-	lnodeFromSSD: LNodeTemplate
-): void {
-	const scd = pluginGlobalStore.xmlDocument
-	if (!scd) {
-		throw new Error('No XML document loaded')
+/**
+ * Collects type references from DO/DA elements
+ * @param elements Elements to scan for type references
+ * @returns Object with daType and enumType IDs
+ */
+function collectTypeReferences(
+	elements: NodeListOf<Element>
+): { daTypeIds: Set<string>; enumTypeIds: Set<string> } {
+	const daTypeIds = new Set<string>()
+	const enumTypeIds = new Set<string>()
+
+	for (const element of elements) {
+		const type = element.getAttribute('type')
+		const bType = element.getAttribute('bType')
+
+		if (!type) continue
+
+		if (bType === 'Struct') {
+			daTypeIds.add(type)
+		} else if (bType === 'Enum') {
+			enumTypeIds.add(type)
+		}
 	}
 
-	const dataTypeTemplates = getOrCreateDataTypeTemplate()
-
-	// Step 1: Copy LNodeType if it doesn't exist
-	copyLNodeType(lnodeFromSSD, scd, dataTypeTemplates)
-
-	// Step 2: Copy all referenced DOTypes and their dependencies
-	const lnodeTypeInSSD = ssdImportStore.lnodeTypes.find(
-		(lnt) =>
-			lnt.id === lnodeFromSSD.lnType
-	)
-
-	if (lnodeTypeInSSD) {
-		const referencedDoTypeIds = Array.from(
-			new Set(lnodeTypeInSSD.dataObjects.map((d) => d.type))
-		)
-		copyDoTypes(referencedDoTypeIds, scd, dataTypeTemplates)
-	}
-}
-
-
-function copyLNodeType(
-	lnodeFromSSD: LNodeTemplate,
-	scd: XMLDocument,
-	dataTypeTemplates: Element
-): void {
-	const existingLNodeType = scd.querySelector(
-		`LNodeType[lnClass="${lnodeFromSSD.lnClass}"][id="${lnodeFromSSD.lnType}"]`
-	)
-	if (existingLNodeType) {
-		return
-	}
-
-	// Find LNodeType in SSD store
-	const lnodeTypeInSSD = ssdImportStore.lnodeTypes.find(
-		(lnt) =>
-			lnt.id === lnodeFromSSD.lnType
-	)
-	if (!lnodeTypeInSSD) {
-		throw new Error(
-			`LNodeType with lnClass ${lnodeFromSSD.lnClass} and id ${lnodeFromSSD.lnType} not found in SSD`
-		)
-	}
-
-    // Clone LNodeType element
-    const lnodeTypeElement = ssdImportStore.loadedSSDDocument?.querySelector(
-        `LNodeType[[id="${lnodeFromSSD.lnType}"]`
-    )?.cloneNode(true) as Element;
-    if (!lnodeTypeElement) {
-        throw new Error(
-            `LNodeType element with lnClass ${lnodeFromSSD.lnClass} and id ${lnodeFromSSD.lnType} not found in SSD document`
-        );
-    }
-
-	// Insert at appropriate position
-	const lNodeReference = getReferenceForLNodeType(dataTypeTemplates)
-	const edit: Insert = {
-		parent: dataTypeTemplates,
-		reference: lNodeReference,
-		node: lnodeTypeElement
-	}
-
-	createAndDispatchEditEvent({
-		host: pluginGlobalStore.host,
-		edit: edit
-	})
+	return { daTypeIds, enumTypeIds }
 }
 
 /**
- * Recursively copies DOTypes and their dependent DATypes and EnumTypes.
+ * Clones and inserts an element from SSD to SCD
+ * @param elementId The ID of the element to copy
+ * @param elementType The type of element (LNodeType, DOType, etc.)
+ * @param doc The target document
+ * @param editor The editor instance
+ * @param dataTypeTemplates The DataTypeTemplates container
+ * @param getReferenceFunc Function to get the insertion reference
+ * @returns The cloned element or null if not found/already exists
+ */
+function cloneAndInsertElement(
+	elementId: string,
+	elementType: string,
+	doc: Document,
+	editor: ReturnType<typeof getDocumentAndEditor>['editor'],
+	dataTypeTemplates: Element,
+	getReferenceFunc: (container: Element) => Node | null
+): Element | null {
+	// Skip if already exists
+	if (elementExists(doc, `${elementType}[id="${elementId}"]`)) {
+		return null
+	}
+
+	// Find element in SSD
+	const sourceElement = ssdImportStore.loadedSSDDocument?.querySelector(
+		`${elementType}[id="${elementId}"]`
+	)
+	if (!sourceElement) {
+		console.warn(`${elementType} with id="${elementId}" not found in SSD`)
+		return null
+	}
+
+	// Clone and insert
+	const clonedElement = sourceElement.cloneNode(true) as Element
+	const reference = getReferenceFunc(dataTypeTemplates)
+
+	const edit: Insert = {
+		parent: dataTypeTemplates,
+		reference: reference,
+		node: clonedElement
+	}
+
+	editor.commit(edit, {
+		title: `Copy ${elementType} ${elementId} from SSD`
+	})
+
+	return clonedElement
+}
+
+/**
+ * Gets the insertion reference for LNodeType elements
+ */
+function getLNodeTypeReference(dataTypeTemplates: Element): Node | null {
+	const lnodeTypes = Array.from(
+		dataTypeTemplates.querySelectorAll('LNodeType')
+	)
+	return lnodeTypes.length > 0
+		? lnodeTypes[lnodeTypes.length - 1].nextSibling
+		: dataTypeTemplates.firstChild
+}
+
+/**
+ * Gets the insertion reference for DOType elements
+ */
+function getDoTypeReference(dataTypeTemplates: Element): Node | null {
+	const doTypes = Array.from(dataTypeTemplates.querySelectorAll('DOType'))
+	if (doTypes.length > 0) {
+		return doTypes[doTypes.length - 1].nextSibling
+	}
+
+	const lnodeTypes = Array.from(
+		dataTypeTemplates.querySelectorAll('LNodeType')
+	)
+	return lnodeTypes.length > 0
+		? lnodeTypes[lnodeTypes.length - 1].nextSibling
+		: dataTypeTemplates.firstChild
+}
+
+/**
+ * Gets the insertion reference for DAType elements
+ */
+function getDaTypeReference(dataTypeTemplates: Element): Node | null {
+	const daTypes = Array.from(dataTypeTemplates.querySelectorAll('DAType'))
+	if (daTypes.length > 0) {
+		return daTypes[daTypes.length - 1].nextSibling
+	}
+
+	const doTypes = Array.from(dataTypeTemplates.querySelectorAll('DOType'))
+	if (doTypes.length > 0) {
+		return doTypes[doTypes.length - 1].nextSibling
+	}
+
+	const lnodeTypes = Array.from(
+		dataTypeTemplates.querySelectorAll('LNodeType')
+	)
+	return lnodeTypes.length > 0
+		? lnodeTypes[lnodeTypes.length - 1].nextSibling
+		: dataTypeTemplates.firstChild
+}
+
+/**
+ * Gets the insertion reference for EnumType elements
+ */
+function getEnumTypeReference(dataTypeTemplates: Element): Node | null {
+	const enumTypes = Array.from(dataTypeTemplates.querySelectorAll('EnumType'))
+	if (enumTypes.length > 0) {
+		return enumTypes[enumTypes.length - 1].nextSibling
+	}
+
+	const daTypes = Array.from(dataTypeTemplates.querySelectorAll('DAType'))
+	if (daTypes.length > 0) {
+		return daTypes[daTypes.length - 1].nextSibling
+	}
+
+	const doTypes = Array.from(dataTypeTemplates.querySelectorAll('DOType'))
+	if (doTypes.length > 0) {
+		return doTypes[doTypes.length - 1].nextSibling
+	}
+
+	const lnodeTypes = Array.from(
+		dataTypeTemplates.querySelectorAll('LNodeType')
+	)
+	return lnodeTypes.length > 0
+		? lnodeTypes[lnodeTypes.length - 1].nextSibling
+		: dataTypeTemplates.firstChild
+}
+
+/**
+ * Copies an LNodeType from SSD to SCD
+ */
+function copyLNodeType(
+	lnodeTemplate: LNodeTemplate,
+	doc: Document,
+	editor: ReturnType<typeof getDocumentAndEditor>['editor'],
+	dataTypeTemplates: Element
+): void {
+	cloneAndInsertElement(
+		lnodeTemplate.lnType,
+		'LNodeType',
+		doc,
+		editor,
+		dataTypeTemplates,
+		getLNodeTypeReference
+	)
+}
+
+/**
+ * Recursively copies DOTypes and their dependencies
  */
 function copyDoTypes(
 	doTypeIds: string[],
-	scd: XMLDocument,
+	doc: Document,
+	editor: ReturnType<typeof getDocumentAndEditor>['editor'],
 	dataTypeTemplates: Element
 ): void {
 	const daTypeIdsToCopy = new Set<string>()
 	const enumTypeIdsToCopy = new Set<string>()
 
 	for (const doTypeId of doTypeIds) {
-		// Skip if DOType already exists
-		if (scd.querySelector(`DOType[id="${doTypeId}"]`)) {
-			continue
-		}
-
-		// Find DOType in SSD
-		const doTypeNode = ssdImportStore.loadedSSDDocument?.querySelector(
-			`DOType[id="${doTypeId}"]`
+		const clonedElement = cloneAndInsertElement(
+			doTypeId,
+			'DOType',
+			doc,
+			editor,
+			dataTypeTemplates,
+			getDoTypeReference
 		)
-		if (!doTypeNode) {
-			console.warn(`DOType with id="${doTypeId}" not found in SSD`)
-			continue
-		}
 
-		// Clone and insert DOType
-        const clonedDoType = doTypeNode.cloneNode(true) as Element;
-		const doTypeReference = getReferenceForDoType(dataTypeTemplates)
-		const edit: Insert = {
-			parent: dataTypeTemplates,
-			reference: doTypeReference,
-			node: clonedDoType
-		}
-		createAndDispatchEditEvent({
-			host: pluginGlobalStore.host,
-			edit: edit
-		})
-
-		// Collect referenced DAType and EnumType IDs
-		const dataAttributes = doTypeNode.querySelectorAll('DA, BDA')
-		for (const da of dataAttributes) {
-			const type = da.getAttribute('type')
-			const bType = da.getAttribute('bType')
-
-			// If type is specified and bType is 'Struct', it references a DAType
-			if (type && bType === 'Struct') {
-				daTypeIdsToCopy.add(type)
+		if (clonedElement) {
+			// Collect referenced types
+			const dataAttributes = clonedElement.querySelectorAll('DA, BDA')
+			const refs = collectTypeReferences(dataAttributes)
+			for (const id of refs.daTypeIds) {
+				daTypeIdsToCopy.add(id)
 			}
-			// If bType is 'Enum', type references an EnumType
-			else if (type && bType === 'Enum') {
-				enumTypeIdsToCopy.add(type)
+			for (const id of refs.enumTypeIds) {
+				enumTypeIdsToCopy.add(id)
 			}
 		}
 	}
 
-	// Copy DATypes and their nested dependencies
-	copyDaTypes(Array.from(daTypeIdsToCopy), scd, dataTypeTemplates)
-
-	// Copy EnumTypes
-	copyEnumTypes(Array.from(enumTypeIdsToCopy), scd, dataTypeTemplates)
+	// Recursively copy dependencies
+	copyDaTypes(Array.from(daTypeIdsToCopy), doc, editor, dataTypeTemplates)
+	copyEnumTypes(Array.from(enumTypeIdsToCopy), doc, editor, dataTypeTemplates)
 }
 
 /**
- * Recursively copies DATypes and their dependent DATypes and EnumTypes.
+ * Recursively copies DATypes and their dependencies
  */
 function copyDaTypes(
 	daTypeIds: string[],
-	scd: XMLDocument,
+	doc: Document,
+	editor: ReturnType<typeof getDocumentAndEditor>['editor'],
 	dataTypeTemplates: Element
 ): void {
 	const nestedDaTypeIds = new Set<string>()
 	const enumTypeIdsToCopy = new Set<string>()
 
 	for (const daTypeId of daTypeIds) {
-		// Skip if DAType already exists
-		if (scd.querySelector(`DAType[id="${daTypeId}"]`)) {
-			continue
-		}
-
-		// Find DAType in SSD
-		const daTypeNode = ssdImportStore.loadedSSDDocument?.querySelector(
-			`DAType[id="${daTypeId}"]`
+		const clonedElement = cloneAndInsertElement(
+			daTypeId,
+			'DAType',
+			doc,
+			editor,
+			dataTypeTemplates,
+			getDaTypeReference
 		)
-		if (!daTypeNode) {
-			console.warn(`DAType with id="${daTypeId}" not found in SSD`)
-			continue
-		}
 
-		// Clone and insert DAType
-		const clonedDaType = daTypeNode.cloneNode(true) as Element
-		const daTypeReference = getReferenceForDaType(dataTypeTemplates)
-		const edit: Insert = {
-			parent: dataTypeTemplates,
-			reference: daTypeReference,
-			node: clonedDaType
-		}
-		createAndDispatchEditEvent({
-			host: pluginGlobalStore.host,
-			edit: edit
-		})
-
-		// Collect nested DAType and EnumType references
-		const dataAttributes = daTypeNode.querySelectorAll('BDA')
-		for (const bda of dataAttributes) {
-			const type = bda.getAttribute('type')
-			const bType = bda.getAttribute('bType')
-
-			if (type && bType === 'Struct') {
-				nestedDaTypeIds.add(type)
-			} else if (type && bType === 'Enum') {
-				enumTypeIdsToCopy.add(type)
+		if (clonedElement) {
+			// Collect nested references
+			const dataAttributes = clonedElement.querySelectorAll('BDA')
+			const refs = collectTypeReferences(dataAttributes)
+			for (const id of refs.daTypeIds) {
+				nestedDaTypeIds.add(id)
+			}
+			for (const id of refs.enumTypeIds) {
+				enumTypeIdsToCopy.add(id)
 			}
 		}
 	}
 
-	// Recursively copy nested DATypes
+	// Recursively copy dependencies
 	if (nestedDaTypeIds.size > 0) {
-		copyDaTypes(Array.from(nestedDaTypeIds), scd, dataTypeTemplates)
+		copyDaTypes(Array.from(nestedDaTypeIds), doc, editor, dataTypeTemplates)
 	}
-
-	// Copy EnumTypes
-	copyEnumTypes(Array.from(enumTypeIdsToCopy), scd, dataTypeTemplates)
+	copyEnumTypes(Array.from(enumTypeIdsToCopy), doc, editor, dataTypeTemplates)
 }
 
 /**
- * Copies EnumTypes from SSD to SCD.
+ * Copies EnumTypes from SSD to SCD
  */
 function copyEnumTypes(
 	enumTypeIds: string[],
-	scd: XMLDocument,
+	doc: Document,
+	editor: ReturnType<typeof getDocumentAndEditor>['editor'],
 	dataTypeTemplates: Element
 ): void {
 	for (const enumTypeId of enumTypeIds) {
-		// Skip if EnumType already exists
-		if (scd.querySelector(`EnumType[id="${enumTypeId}"]`)) {
-			continue
-		}
-
-		// Find EnumType in SSD
-		const enumTypeNode = ssdImportStore.loadedSSDDocument?.querySelector(
-			`EnumType[id="${enumTypeId}"]`
-		)
-		if (!enumTypeNode) {
-			console.warn(`EnumType with id="${enumTypeId}" not found in SSD`)
-			continue
-		}
-
-		// Clone and insert EnumType
-		const clonedEnumType = enumTypeNode.cloneNode(true) as Element
-		const enumTypeReference = getReferenceForEnumType(dataTypeTemplates)
-		const edit: Insert = {
-			parent: dataTypeTemplates,
-			reference: enumTypeReference,
-			node: clonedEnumType
-		}
-		createAndDispatchEditEvent({
-			host: pluginGlobalStore.host,
-			edit: edit
-		})
-	}
-}
-
-/**
- * Gets or creates the DataTypeTemplates element in the SCD document.
- */
-function getOrCreateDataTypeTemplate(): Element {
-	const doc = pluginGlobalStore.xmlDocument
-	if (!doc) {
-		throw new Error('No XML document loaded')
-	}
-
-	// Check if DataTypeTemplates exists
-	let dataTypeTemplates = doc.querySelector('DataTypeTemplates')
-	if (!dataTypeTemplates) {
-		// Create DataTypeTemplates element
-		dataTypeTemplates = doc.createElement('DataTypeTemplates')
-		doc.documentElement.insertBefore(
+		cloneAndInsertElement(
+			enumTypeId,
+			'EnumType',
+			doc,
+			editor,
 			dataTypeTemplates,
-			doc.documentElement.firstChild
+			getEnumTypeReference
 		)
 	}
-
-	return dataTypeTemplates
 }
 
 /**
- * Determines the reference node for inserting a new LNodeType.
- * Returns the node after which the new LNodeType should be inserted.
- * If no LNodeTypes exist, returns the first child to insert before it.
+ * Copies all relevant DataType templates from SSD to SCD for a given LNode
+ * This includes LNodeType, DOTypes, DATypes, and EnumTypes
+ * 
+ * @param lnodeTemplate The LNode template from SSD
  */
-function getReferenceForLNodeType(dataTypeTemplates: Element): Node | null {
-	const lnodeTypes = Array.from(
-		dataTypeTemplates.querySelectorAll('LNodeType')
+export function copyRelevantDataTypeTemplates(
+	lnodeTemplate: LNodeTemplate
+): void {
+	const { doc, editor } = getDocumentAndEditor()
+	const dataTypeTemplates = getOrCreateDataTypeTemplates(doc, editor)
+
+	// Step 1: Copy LNodeType
+	copyLNodeType(lnodeTemplate, doc, editor, dataTypeTemplates)
+
+	// Step 2: Copy all referenced DOTypes and their dependencies
+	const lnodeTypeInSSD = ssdImportStore.lnodeTypes.find(
+		(lnt) => lnt.id === lnodeTemplate.lnType
 	)
-	if (lnodeTypes.length > 0) {
-		// Place after the last existing LNodeType
-		return lnodeTypes[lnodeTypes.length - 1].nextSibling
+
+	if (lnodeTypeInSSD) {
+		const referencedDoTypeIds = Array.from(
+			new Set(lnodeTypeInSSD.dataObjects.map((d) => d.type))
+		)
+		copyDoTypes(referencedDoTypeIds, doc, editor, dataTypeTemplates)
 	}
-
-	// No LNodeType present: place before the first child
-	return dataTypeTemplates.firstChild
-}
-
-/**
- * Determines the reference node for inserting a new DOType.
- * Returns the node after which the new DOType should be inserted.
- * If no DOTypes exist, places after the last LNodeType or at the appropriate position.
- */
-function getReferenceForDoType(dataTypeTemplates: Element): Node | null {
-	const doTypes = Array.from(dataTypeTemplates.querySelectorAll('DOType'))
-	if (doTypes.length > 0) {
-		// Place after the last existing DOType
-		return doTypes[doTypes.length - 1].nextSibling
-	}
-
-	// No DOType present: place after last LNodeType if exists
-	const lnodeTypes = Array.from(
-		dataTypeTemplates.querySelectorAll('LNodeType')
-	)
-	if (lnodeTypes.length > 0) {
-		return lnodeTypes[lnodeTypes.length - 1].nextSibling
-	}
-
-	// Place before first child
-	return dataTypeTemplates.firstChild
-}
-
-/**
- * Determines the reference node for inserting a new DAType.
- * Returns the node after which the new DAType should be inserted.
- * If no DATypes exist, places after the last DOType or at the appropriate position.
- */
-function getReferenceForDaType(dataTypeTemplates: Element): Node | null {
-	const daTypes = Array.from(dataTypeTemplates.querySelectorAll('DAType'))
-	if (daTypes.length > 0) {
-		// Place after the last existing DAType
-		return daTypes[daTypes.length - 1].nextSibling
-	}
-
-	// No DAType present: place after last DOType if exists
-	const doTypes = Array.from(dataTypeTemplates.querySelectorAll('DOType'))
-	if (doTypes.length > 0) {
-		return doTypes[doTypes.length - 1].nextSibling
-	}
-
-	// Place after last LNodeType if exists
-	const lnodeTypes = Array.from(
-		dataTypeTemplates.querySelectorAll('LNodeType')
-	)
-	if (lnodeTypes.length > 0) {
-		return lnodeTypes[lnodeTypes.length - 1].nextSibling
-	}
-
-	// Place before first child
-	return dataTypeTemplates.firstChild
-}
-
-/**
- * Determines the reference node for inserting a new EnumType.
- * Returns the node after which the new EnumType should be inserted.
- * If no EnumTypes exist, places after the last DAType or at the appropriate position.
- */
-function getReferenceForEnumType(dataTypeTemplates: Element): Node | null {
-	const enumTypes = Array.from(dataTypeTemplates.querySelectorAll('EnumType'))
-	if (enumTypes.length > 0) {
-		// Place after the last existing EnumType
-		return enumTypes[enumTypes.length - 1].nextSibling
-	}
-
-	// No EnumType present: place after last DAType if exists
-	const daTypes = Array.from(dataTypeTemplates.querySelectorAll('DAType'))
-	if (daTypes.length > 0) {
-		return daTypes[daTypes.length - 1].nextSibling
-	}
-
-	// Place after last DOType if exists
-	const doTypes = Array.from(dataTypeTemplates.querySelectorAll('DOType'))
-	if (doTypes.length > 0) {
-		return doTypes[doTypes.length - 1].nextSibling
-	}
-
-	// Place after last LNodeType if exists
-	const lnodeTypes = Array.from(
-		dataTypeTemplates.querySelectorAll('LNodeType')
-	)
-	if (lnodeTypes.length > 0) {
-		return lnodeTypes[lnodeTypes.length - 1].nextSibling
-	}
-
-	// Place before first child
-	return dataTypeTemplates.firstChild
 }

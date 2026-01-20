@@ -21,5 +21,3 @@ export function getTemplateUuidFromBayTypeForEqFunction(
 	}
     throw new Error(`Template UUID for EqFunction with origin UUID ${originUuid} not found in any BayType`)
 }
-
-export function getConductingEquipmentTemplateFromSCD(): Element | null {
