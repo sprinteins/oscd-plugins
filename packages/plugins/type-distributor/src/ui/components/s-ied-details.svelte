@@ -26,8 +26,7 @@
       {#if accessPoints.length === 0}
         <Card.Root class="border border-dashed text-gray-500">
           <Card.Content class="p-2">
-            
-              <span class="text-sm">{sIedName}: no Access Points found</span>
+              <span class="text-sm">{sIedName} - no Access Points found</span>
           </Card.Content>
         </Card.Root>
       {:else}

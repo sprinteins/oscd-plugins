@@ -37,8 +37,7 @@ let hasLNodes = $derived(lNodes.length > 0)
               />
             {/if}
             <span class="text-sm font-medium">
-              Access Point {accessPoint.getAttribute("name") ?? "(unnamed)"}
-              ({sIedName})
+              {sIedName} - Access Point {accessPoint.getAttribute("name") ?? "(unnamed)"}
             </span>
           </div>
         </div>
