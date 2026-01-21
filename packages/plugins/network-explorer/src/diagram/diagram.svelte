@@ -48,7 +48,7 @@ const { fitView } = useSvelteFlow()
 $effect(() => {
 	if (!isOutsidePluginContext) return
 
-  function handleResize() {
+	function handleResize() {
 		fitView()
 	}
 	window.addEventListener('resize', handleResize)

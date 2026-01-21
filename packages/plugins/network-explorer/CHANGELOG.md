@@ -5,6 +5,11 @@ All notable changes to the network explorer plugin will be documented here
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.21] - 2026-01-21
+### Fixed
+- NE preview infinite loop
+
+
 ## [0.0.20] - 2026-01-16
 ### Changed
 - Receive `editor` property from Plugin API
