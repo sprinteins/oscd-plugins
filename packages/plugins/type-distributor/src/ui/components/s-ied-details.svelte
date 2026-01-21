@@ -8,16 +8,21 @@
   }: {
     sIedItems: Element[];
   } = $props();
+
+  const sIedData = $derived(
+    sIedItems.map((sIedItem) => ({
+      name: sIedItem.getAttribute("name") ?? "Unnamed SIed",
+      accessPoints: Array.from(sIedItem.children).filter(
+        (child) => child.localName === "AccessPoint"
+      ),
+      element: sIedItem
+    }))
+  );
 </script>
 
-{#if sIedItems && sIedItems.length > 0}
+{#if sIedData && sIedData.length > 0}
   <div class="space-y-2 mb-2">
-    {#each sIedItems as sIedItem}
-      {@const accessPoints = Array.from(sIedItem.children).filter(
-        (child) => child.localName === "AccessPoint",
-      )}
-      {@const sIedName = sIedItem.getAttribute("name") ?? "Unnamed SIed"}
-
+    {#each sIedData as { name: sIedName, accessPoints }}
       {#if accessPoints.length === 0}
         <Card.Root class="border border-dashed text-gray-500">
           <Card.Content class="p-2">
