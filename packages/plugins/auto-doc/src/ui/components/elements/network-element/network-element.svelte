@@ -30,7 +30,7 @@ let selectedBays: Set<string> = $state(
 )
 
 async function communicateResizeOnBayChange() {
-	await new Promise((resolve) => setTimeout(resolve, 100))
+	await new Promise((resolve) => setTimeout(resolve, 200))
 	window.dispatchEvent(new Event('resize-diagram'))
 }
 
