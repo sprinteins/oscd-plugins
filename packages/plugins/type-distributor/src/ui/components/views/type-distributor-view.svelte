@@ -1,9 +1,10 @@
 <script lang="ts">
 import { Card, SelectWorkaround, Button, Input, Label } from '@oscd-plugins/core-ui-svelte'
-import { bayTypesStore } from '@/headless/stores'
+import { bayStore, bayTypesStore } from '@/headless/stores'
 import type { BayType } from '@/headless/types'
 import { BayTypeDetails } from '@/ui/components'
 import { createSIED } from '@/headless/ied'
+import { onSelectBayType } from '@/headless/matching';
 
 const bayTypeOptions = $derived(
 	bayTypesStore.bayTypes.map((bt: BayType) => ({
@@ -110,6 +111,9 @@ function handleCreateIED() {
         <Card.Header>
             <SelectWorkaround
                 bind:value={bayTypesStore.selectedBayType}
+                handleChange={() => {
+                    if (bayStore.selectedBay)
+                    onSelectBayType(bayStore.selectedBay)}}
                 options={bayTypeOptions}
                 placeholder="Select Bay Type"
                 class="w-full"

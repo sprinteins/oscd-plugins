@@ -2,7 +2,11 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { onSelectBayType } from './onSelectBayType'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
-import type { BayType, ConductingEquipmentTemplate, FunctionTemplate } from '@/headless/types'
+import type {
+	BayType,
+	ConductingEquipmentTemplate,
+	FunctionTemplate
+} from '@/headless/types'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
 
 // Mock the stores and pluginGlobalStore
@@ -71,7 +75,10 @@ describe('onSelectBayType', () => {
 		)
 
 		// Create SSD mock document
-		mockSSDDocument = new DOMParser().parseFromString(ssdMockA, 'application/xml')
+		mockSSDDocument = new DOMParser().parseFromString(
+			ssdMockA,
+			'application/xml'
+		)
 
 		mockEditor = {
 			commit: vi.fn()
@@ -171,7 +178,7 @@ describe('onSelectBayType', () => {
 		}
 
 		// Setup mocks
-		bayTypesStore.selectedBayType = 'TestBayType'
+		bayTypesStore.selectedBayType = 'baytype-uuid' // Use UUID, not name
 		ssdImportStore.bayTypes = [
 			bayType,
 			{
@@ -185,13 +192,13 @@ describe('onSelectBayType', () => {
 		ssdImportStore.loadedSSDDocument = mockSSDDocument
 
 		// Mock getConductingEquipmentTemplate
-		vi.mocked(ssdImportStore.getConductingEquipmentTemplate).mockImplementation(
-			(uuid: string) => {
-				if (uuid === 'ce-template-cbr-uuid') return ceTemplate1
-				if (uuid === 'ce-template-dis-uuid') return ceTemplate2
-				return undefined
-			}
-		)
+		vi.mocked(
+			ssdImportStore.getConductingEquipmentTemplate
+		).mockImplementation((uuid: string) => {
+			if (uuid === 'ce-template-cbr-uuid') return ceTemplate1
+			if (uuid === 'ce-template-dis-uuid') return ceTemplate2
+			return undefined
+		})
 
 		// Mock getFunctionTemplate
 		vi.mocked(ssdImportStore.getFunctionTemplate).mockImplementation(
@@ -210,7 +217,9 @@ describe('onSelectBayType', () => {
 		it('should throw error if no BayType selected', () => {
 			bayTypesStore.selectedBayType = null
 
-			expect(() => onSelectBayType('TestBay')).toThrow('No BayType selected')
+			expect(() => onSelectBayType('TestBay')).toThrow(
+				'No BayType selected'
+			)
 		})
 
 		it('should throw error if selected BayType not found', () => {
@@ -231,7 +240,9 @@ describe('onSelectBayType', () => {
 			// Modify SCD to have different count
 			const bay = mockSCDDocument.querySelector('Bay[name="TestBay"]')
 			if (!bay) throw new Error('Bay not found')
-			const lastDIS = bay.querySelector('ConductingEquipment[type="DIS"]:last-of-type')
+			const lastDIS = bay.querySelector(
+				'ConductingEquipment[type="DIS"]:last-of-type'
+			)
 			lastDIS?.parentNode?.removeChild(lastDIS)
 
 			expect(() => onSelectBayType('TestBay')).toThrow(
@@ -258,19 +269,21 @@ describe('onSelectBayType', () => {
 				eqFunctions: []
 			}
 
-			vi.mocked(ssdImportStore.getConductingEquipmentTemplate).mockImplementation(
-				(uuid: string) => {
-					if (uuid === 'ce-template-cbr-uuid') return ceTemplate1
-					if (uuid === 'ce-template-dis-uuid') return ceTemplate2
-					if (uuid === 'ce-template-ctr-uuid') return ctrTemplate
-					return undefined
-				}
-			)
+			vi.mocked(
+				ssdImportStore.getConductingEquipmentTemplate
+			).mockImplementation((uuid: string) => {
+				if (uuid === 'ce-template-cbr-uuid') return ceTemplate1
+				if (uuid === 'ce-template-dis-uuid') return ceTemplate2
+				if (uuid === 'ce-template-ctr-uuid') return ctrTemplate
+				return undefined
+			})
 
 			expect(() => onSelectBayType('TestBay')).toThrow(
 				/Equipment validation failed/
 			)
-			expect(() => onSelectBayType('TestBay')).toThrow(/CTR.*Missing in SCD/)
+			expect(() => onSelectBayType('TestBay')).toThrow(
+				/CTR.*Missing in SCD/
+			)
 		})
 	})
 
@@ -284,26 +297,37 @@ describe('onSelectBayType', () => {
 			// Find SetAttributes edits for ConductingEquipment
 			const ceUpdates = edits.filter(
 				(edit: SetAttributes | Insert): edit is SetAttributes =>
-					'attributes' in edit && (edit.element as Element).tagName === 'ConductingEquipment'
+					'attributes' in edit &&
+					(edit.element as Element).tagName === 'ConductingEquipment'
 			)
 
 			expect(ceUpdates).toHaveLength(3)
 
 			// First should be CBR
 			const cbrUpdate = ceUpdates.find(
-				(e: SetAttributes) => (e.element as Element).getAttribute('type') === 'CBR'
+				(e: SetAttributes) =>
+					(e.element as Element).getAttribute('type') === 'CBR'
 			)
 			if (!cbrUpdate) throw new Error('CBR update not found')
-			expect(cbrUpdate.attributes?.templateUuid).toBe('baytype-ce-cbr-uuid')
-			expect(cbrUpdate.attributes?.originUuid).toBe('ce-template-cbr-uuid')
+			expect(cbrUpdate.attributes?.templateUuid).toBe(
+				'baytype-ce-cbr-uuid'
+			)
+			expect(cbrUpdate.attributes?.originUuid).toBe(
+				'ce-template-cbr-uuid'
+			)
 
 			// Second and third should be DIS in order
 			const disUpdates = ceUpdates.filter(
-				(e: SetAttributes) => (e.element as Element).getAttribute('type') === 'DIS'
+				(e: SetAttributes) =>
+					(e.element as Element).getAttribute('type') === 'DIS'
 			)
 			expect(disUpdates).toHaveLength(2)
-			expect(disUpdates[0].attributes.templateUuid).toBe('baytype-ce-dis1-uuid')
-			expect(disUpdates[1].attributes.templateUuid).toBe('baytype-ce-dis2-uuid')
+			expect(disUpdates[0].attributes.templateUuid).toBe(
+				'baytype-ce-dis1-uuid'
+			)
+			expect(disUpdates[1].attributes.templateUuid).toBe(
+				'baytype-ce-dis2-uuid'
+			)
 		})
 	})
 
@@ -314,7 +338,8 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const ceUpdates = edits.filter(
 				(edit: SetAttributes | Insert): edit is SetAttributes =>
-					'attributes' in edit && (edit.element as Element).tagName === 'ConductingEquipment'
+					'attributes' in edit &&
+					(edit.element as Element).tagName === 'ConductingEquipment'
 			)
 
 			for (const update of ceUpdates) {
@@ -324,6 +349,7 @@ describe('onSelectBayType', () => {
 				)
 				expect(update.attributes.templateUuid).toBeTruthy()
 				expect(update.attributes.originUuid).toBeTruthy()
+				expect(update.attributesNS).toBeDefined()
 			}
 		})
 
@@ -333,13 +359,14 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const bayUpdate = edits.find(
 				(edit: SetAttributes | Insert): edit is SetAttributes =>
-					'attributes' in edit && (edit.element as Element).tagName === 'Bay'
+					'attributes' in edit &&
+					(edit.element as Element).tagName === 'Bay'
 			)
 
 			expect(bayUpdate).toBeDefined()
 			expect(bayUpdate.attributes.uuid).toBeTruthy()
 			expect(bayUpdate.attributes.templateUuid).toBe('baytype-uuid')
-			expect(bayUpdate.attributes.originUuid).toBe('template-bay-uuid')
+			expect(bayUpdate.attributesNS).toBeDefined()
 		})
 
 		it('should preserve existing Bay uuid if present', () => {
@@ -352,7 +379,8 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const bayUpdate = edits.find(
 				(edit: SetAttributes | Insert): edit is SetAttributes =>
-					'attributes' in edit && (edit.element as Element).tagName === 'Bay'
+					'attributes' in edit &&
+					(edit.element as Element).tagName === 'Bay'
 			)
 
 			expect(bayUpdate.attributes.uuid).toBe('existing-bay-uuid')
@@ -366,7 +394,8 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const eqFunctionInserts = edits.filter(
 				(edit: SetAttributes | Insert): edit is Insert =>
-					'node' in edit && (edit.node as Element).tagName === 'EqFunction'
+					'node' in edit &&
+					(edit.node as Element).tagName === 'EqFunction'
 			)
 
 			// 3 equipment * 1 EqFunction each = 3 EqFunctions
@@ -379,7 +408,8 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const eqFunctionInsert = edits.find(
 				(edit: SetAttributes | Insert): edit is Insert =>
-					'node' in edit && (edit.node as Element).tagName === 'EqFunction'
+					'node' in edit &&
+					(edit.node as Element).tagName === 'EqFunction'
 			)
 
 			const eqFunctionElement = eqFunctionInsert.node as Element
@@ -397,7 +427,8 @@ describe('onSelectBayType', () => {
 				(edit: SetAttributes | Insert): edit is Insert =>
 					'node' in edit &&
 					(edit.node as Element).tagName === 'EqFunction' &&
-					(edit.node as Element).getAttribute('name') === 'CBR_Function'
+					(edit.node as Element).getAttribute('name') ===
+						'CBR_Function'
 			)
 
 			const eqFunctionElement = eqFunctionInsert.node as Element
@@ -405,37 +436,45 @@ describe('onSelectBayType', () => {
 
 			expect(lnodes).toHaveLength(1)
 			expect(lnodes[0].getAttribute('lnClass')).toBe('XCBR')
+			expect(lnodes[0].getAttribute('lnType')).toBe('XCBR$184311')
 			expect(lnodes[0].getAttribute('uuid')).toBeTruthy()
 			expect(lnodes[0].getAttribute('uuid')).not.toBe('lnode-cbr-uuid') // New UUID
 		})
 
-		it('should insert EqFunction before Terminal elements', () => {
+		it('should insert EqFunction after Terminal elements', () => {
 			onSelectBayType('TestBay')
 
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const eqFunctionInserts = edits.filter(
 				(edit: SetAttributes | Insert): edit is Insert =>
-					'node' in edit && (edit.node as Element).tagName === 'EqFunction'
+					'node' in edit &&
+					(edit.node as Element).tagName === 'EqFunction'
 			)
 
+			// reference should be the node AFTER the last terminal (or null if at end)
 			for (const insert of eqFunctionInserts) {
-				expect(insert.reference?.tagName).toBe('Terminal')
+				// If reference exists, it should NOT be a Terminal
+				// If reference is null, that's fine (inserting at end)
+				if (insert.reference) {
+					expect(insert.reference.tagName).not.toBe('Terminal')
+				}
 			}
 		})
 
-		it('should handle EqFunction with description', () => {
+		it('should not include desc attribute on EqFunction', () => {
 			onSelectBayType('TestBay')
 
 			const edits = mockEditor.commit.mock.calls[0][0]
-			const eqFunctionInsert = edits.find(
+			const eqFunctionInserts = edits.filter(
 				(edit: SetAttributes | Insert): edit is Insert =>
 					'node' in edit &&
-					(edit.node as Element).tagName === 'EqFunction' &&
-					(edit.node as Element).getAttribute('name') === 'CBR_Function'
+					(edit.node as Element).tagName === 'EqFunction'
 			)
 
-			const eqFunctionElement = eqFunctionInsert.node as Element
-			expect(eqFunctionElement.getAttribute('desc')).toBe('CBR Function')
+			for (const insert of eqFunctionInserts) {
+				const eqFunctionElement = insert.node as Element
+				expect(eqFunctionElement.hasAttribute('desc')).toBe(false)
+			}
 		})
 	})
 
@@ -446,7 +485,8 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const functionInserts = edits.filter(
 				(edit: SetAttributes | Insert): edit is Insert =>
-					'node' in edit && (edit.node as Element).tagName === 'Function'
+					'node' in edit &&
+					(edit.node as Element).tagName === 'Function'
 			)
 
 			expect(functionInserts).toHaveLength(1)
@@ -458,7 +498,8 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const functionInsert = edits.find(
 				(edit: SetAttributes | Insert): edit is Insert =>
-					'node' in edit && (edit.node as Element).tagName === 'Function'
+					'node' in edit &&
+					(edit.node as Element).tagName === 'Function'
 			)
 
 			const functionElement = functionInsert.node as Element
@@ -478,7 +519,8 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const functionInsert = edits.find(
 				(edit: SetAttributes | Insert): edit is Insert =>
-					'node' in edit && (edit.node as Element).tagName === 'Function'
+					'node' in edit &&
+					(edit.node as Element).tagName === 'Function'
 			)
 
 			const functionElement = functionInsert.node as Element
@@ -486,6 +528,7 @@ describe('onSelectBayType', () => {
 
 			expect(lnodes).toHaveLength(1)
 			expect(lnodes[0].getAttribute('lnClass')).toBe('PTOC')
+			expect(lnodes[0].getAttribute('lnType')).toBe('PTOC$26842')
 			expect(lnodes[0].getAttribute('uuid')).toBeTruthy()
 		})
 
@@ -495,7 +538,8 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const functionInsert = edits.find(
 				(edit: SetAttributes | Insert): edit is Insert =>
-					'node' in edit && (edit.node as Element).tagName === 'Function'
+					'node' in edit &&
+					(edit.node as Element).tagName === 'Function'
 			)
 
 			expect(functionInsert.reference?.tagName).toBe('ConnectivityNode')
@@ -530,8 +574,13 @@ describe('onSelectBayType', () => {
 
 			const edits = mockEditor.commit.mock.calls[0][0]
 
-			const setAttributesEdits = edits.filter((edit: SetAttributes | Insert): edit is SetAttributes => 'attributes' in edit)
-			const insertEdits = edits.filter((edit: SetAttributes | Insert): edit is Insert => 'node' in edit)
+			const setAttributesEdits = edits.filter(
+				(edit: SetAttributes | Insert): edit is SetAttributes =>
+					'attributes' in edit
+			)
+			const insertEdits = edits.filter(
+				(edit: SetAttributes | Insert): edit is Insert => 'node' in edit
+			)
 
 			// Should have both types of edits
 			expect(setAttributesEdits.length).toBeGreaterThan(0)
@@ -575,7 +624,8 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const functionInserts = edits.filter(
 				(edit: SetAttributes | Insert): edit is Insert =>
-					'node' in edit && (edit.node as Element).tagName === 'Function'
+					'node' in edit &&
+					(edit.node as Element).tagName === 'Function'
 			)
 
 			expect(functionInserts).toHaveLength(0)
@@ -590,7 +640,8 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const eqFunctionInserts = edits.filter(
 				(edit: SetAttributes | Insert): edit is Insert =>
-					'node' in edit && (edit.node as Element).tagName === 'EqFunction'
+					'node' in edit &&
+					(edit.node as Element).tagName === 'EqFunction'
 			)
 
 			expect(eqFunctionInserts).toHaveLength(0)
@@ -604,11 +655,15 @@ describe('onSelectBayType', () => {
 			const edits = mockEditor.commit.mock.calls[0][0]
 			const bayUpdate = edits.find(
 				(edit: SetAttributes | Insert): edit is SetAttributes =>
-					'attributes' in edit && (edit.element as Element).tagName === 'Bay'
+					'attributes' in edit &&
+					(edit.element as Element).tagName === 'Bay'
 			)
 
-			// Should fallback to bayType uuid
-			expect(bayUpdate.attributes.originUuid).toBe('baytype-uuid')
+			// Should only have uuid and templateUuid (no originUuid)
+			expect(bayUpdate.attributes.uuid).toBeTruthy()
+			expect(bayUpdate.attributes.templateUuid).toBe('baytype-uuid')
+			expect(bayUpdate.attributes.originUuid).toBeUndefined()
+			expect(bayUpdate.attributesNS).toBeDefined()
 		})
 	})
 })
