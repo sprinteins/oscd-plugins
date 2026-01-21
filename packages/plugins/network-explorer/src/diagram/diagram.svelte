@@ -19,6 +19,7 @@ import BayNode from './bay-node.svelte'
 import type { Writable } from 'svelte/store'
 import { getPhysConnectionsFromEdge } from './edge-helper'
 import type { IED } from './networking'
+  import { untrack } from 'svelte';
 
 interface Props {
 	nodes: Node[]
@@ -35,7 +36,7 @@ let {
 	ieds,
 	isOutsidePluginContext = false,
 	connect,
-	onDelete
+	onDelete,
 }: Props = $props()
 
 const nodeTypes = {
@@ -48,12 +49,14 @@ const { fitView } = useSvelteFlow()
 $effect(() => {
 	if (!isOutsidePluginContext) return
 
-	function handleResize() {
+	async function handleResize() {
 		fitView()
 	}
 	window.addEventListener('resize', handleResize)
+  window.addEventListener('resize-diagram', handleResize)
 	return () => {
 		window.removeEventListener('resize', handleResize)
+    window.removeEventListener('resize-diagram', handleResize)
 	}
 })
 

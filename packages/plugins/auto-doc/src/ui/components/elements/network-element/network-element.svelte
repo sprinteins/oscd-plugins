@@ -29,11 +29,17 @@ let selectedBays: Set<string> = $state(
 	initialParams ? new Set(initialParams.selectedBays) : new Set<string>()
 )
 
+async function communicateResizeOnBayChange() {
+	await new Promise((resolve) => setTimeout(resolve, 100))
+	window.dispatchEvent(new Event('resize-diagram'))
+}
+
 function saveParameters(): void {
 	const params: NetworkElementParameters = {
 		selectedBays: Array.from(selectedBays)
 	}
 	onContentChange(JSON.stringify(params))
+	communicateResizeOnBayChange()
 }
 
 $effect(() => {
