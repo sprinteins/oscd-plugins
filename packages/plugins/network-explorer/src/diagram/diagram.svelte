@@ -19,7 +19,6 @@ import BayNode from './bay-node.svelte'
 import type { Writable } from 'svelte/store'
 import { getPhysConnectionsFromEdge } from './edge-helper'
 import type { IED } from './networking'
-  import { untrack } from 'svelte';
 
 interface Props {
 	nodes: Node[]
