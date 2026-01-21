@@ -35,7 +35,9 @@ const submitLabel = $derived(
 	isCreatingNewIed ? 'Create IED & Access Point' : 'Add Access Point'
 )
 
-const isSubmitDisabled = $derived(!isCreatingNewIed && !hasAccessPoint)
+const isSubmitDisabled = $derived(
+	(isCreatingNewIed && !iedName.trim()) || (!isCreatingNewIed && !hasAccessPoint)
+)
 
 function validateForm(): string | null {
 	if (isCreatingNewIed && !iedName.trim()) {
@@ -122,6 +124,7 @@ async function handleCancel() {
 	{/if}
 
 	<AccessPointFormSection
+		isRequired={!isCreatingNewIed && !hasAccessPoint}
 		bind:name={accessPointName}
 		bind:description={accessPointDesc}
 		disabled={isCreatingIED}

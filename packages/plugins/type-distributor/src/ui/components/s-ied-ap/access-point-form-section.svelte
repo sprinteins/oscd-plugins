@@ -4,11 +4,13 @@ import { Label, Input } from '@oscd-plugins/core-ui-svelte'
 let {
 	name = $bindable(''),
 	description = $bindable(''),
-	disabled = false
+	disabled = false,
+	isRequired = false
 }: {
 	name: string
 	description: string
 	disabled?: boolean
+	isRequired?: boolean
 } = $props()
 </script>
 
@@ -18,7 +20,7 @@ let {
 	</header>
 	<div class="space-y-3">
 		<div class="space-y-2">
-			<Label.Root for="ap-name">Name *</Label.Root>
+			<Label.Root for="ap-name">Name{isRequired ? ' *' : ''}</Label.Root>
 			<Input.Root
 				id="ap-name"
 				bind:value={name}
