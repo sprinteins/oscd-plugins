@@ -2,6 +2,7 @@
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
 import type { EqFunctionTemplate } from '@/headless/types'
+import { dndStore } from '@/headless/stores'
 import LnodeCard from './lnode-card.svelte'
 
 interface Props {
@@ -12,11 +13,35 @@ interface Props {
 const { eqFunction, equipmentName }: Props = $props()
 
 let isOpen = $state(false)
+let isDragging = $derived(
+	dndStore.isDragging &&
+	dndStore.currentDraggedItem?.type === 'equipmentFunction' &&
+	dndStore.currentDraggedItem?.data.uuid === eqFunction.uuid
+)
+
+function handleDragStart(event: DragEvent) {
+	dndStore.handleDragStart({
+		type: 'equipmentFunction',
+		data: eqFunction,
+		equipmentName
+	})
+}
+
+function handleDragEnd() {
+	dndStore.handleDragEnd()
+}
 </script>
 
 <div class="space-y-1">
-    <button class="w-full" onclick={() => (isOpen = !isOpen)}>
-        <Card.Root class="hover:bg-gray-50 cursor-pointer">
+    <button
+		class="w-full"
+		onclick={() => (isOpen = !isOpen)}
+		draggable={true}
+		ondragstart={handleDragStart}
+		ondragend={handleDragEnd}
+		style:cursor={isDragging ? 'grabbing' : 'grab'}
+	>
+        <Card.Root class="hover:bg-gray-50 cursor-pointer transition-opacity {isDragging ? 'opacity-50' : ''}">
             <Card.Content class="p-2">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
