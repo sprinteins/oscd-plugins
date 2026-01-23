@@ -56,6 +56,16 @@ function validateForm(): string | null {
 		return 'IED name is required when creating a new IED'
 	}
 
+	if (isCreatingNewIed && iedName.trim()) {
+		const xmlDocument = pluginGlobalStore.xmlDocument
+		if (xmlDocument) {
+			const existingIed = xmlDocument.querySelector(`IED[name="${iedName.trim()}"]`)
+			if (existingIed) {
+				return `IED "${iedName.trim()}" already exists`
+			}
+		}
+	}
+
 	if (!isCreatingNewIed && !existingSIedName) {
 		return 'Please select an existing IED or create a new one'
 	}
