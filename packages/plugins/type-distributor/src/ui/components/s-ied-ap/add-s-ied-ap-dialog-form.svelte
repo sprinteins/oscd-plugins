@@ -1,7 +1,7 @@
 <script lang="ts">
 import { createSIED, getSIEDs, createAccessPoints } from '@/headless/ied'
 import { bayStore } from '@/headless/stores'
-import { dialogStore } from '@oscd-plugins/core-ui-svelte'
+import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import IedSelectorSection from './ied-selector-section.svelte'
 import IedFormSection from './ied-form-section.svelte'
 import AccessPointFormSection from './access-point-form-section.svelte'
@@ -38,6 +38,19 @@ const isSubmitDisabled = $derived(
 	(isCreatingNewIed && !iedName.trim()) || (!isCreatingNewIed && !hasAccessPoint)
 )
 
+function getAccessPointsFromIED(iedName: string): string[] {
+	const xmlDocument = pluginGlobalStore.xmlDocument
+	if (!xmlDocument) return []
+
+	const ied = xmlDocument.querySelector(`IED[name="${iedName}"]`)
+	if (!ied) return []
+
+	const accessPoints = Array.from(ied.querySelectorAll('AccessPoint'))
+	return accessPoints
+		.map((ap) => ap.getAttribute('name'))
+		.filter((name): name is string => name !== null)
+}
+
 function validateForm(): string | null {
 	if (isCreatingNewIed && !iedName.trim()) {
 		return 'IED name is required when creating a new IED'
@@ -49,6 +62,13 @@ function validateForm(): string | null {
 
 	if (!isCreatingNewIed && !hasAccessPoint) {
 		return 'Access Point name is required when adding to existing IED'
+	}
+
+	if (hasAccessPoint && !isCreatingNewIed && existingSIedName) {
+		const existingApNames = getAccessPointsFromIED(existingSIedName)
+		if (existingApNames.includes(accessPointName.trim())) {
+			return `Access Point "${accessPointName.trim()}" already exists in IED "${existingSIedName}"`
+		}
 	}
 
 	return null
