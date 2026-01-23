@@ -312,7 +312,7 @@ async function generatePdf(
 		pageManager.incrementPosition()
 	}
 
-	async function processImage(dataUrl: string, scale = 'small') {
+	async function processImage(dataUrl: string, scale = 'small', isLandscape = false) {
 		if (!dataUrl) {
 			return
 		}
@@ -326,7 +326,8 @@ async function generatePdf(
 
 		const scaleFactor = getImageScaleFactor(scale)
 		const aspectRatio = image.height / image.width
-		const width = scaleFactor * MAX_IMAGE_WIDTH
+		const maxWidth = isLandscape ? pageWidth - TEXT_MARGIN_OFFSET : scaleFactor * MAX_IMAGE_WIDTH
+		const width = maxWidth
 		const height = width * aspectRatio
 
 		pageManager.ensureSpace(height)
@@ -356,7 +357,7 @@ async function generatePdf(
 			return
 		}
 
-		await processImage(imageSource, parsedContent.scale)
+		await processImage(imageSource, parsedContent.scale, false)
 	}
 
 	function processSignalListBlock(block: Element) {
@@ -480,9 +481,11 @@ async function generatePdf(
 	}
 
 	async function processCommunicationBlock(block: Element) {
+		const isLandscape = orientation === 'l'
 		await processVisualizationElementForPdfGeneration(
 			block,
-			CommunicationElement
+			CommunicationElement,
+			isLandscape
 		)
 
 		const content = block.textContent || ''
@@ -518,12 +521,14 @@ async function generatePdf(
 	}
 
 	async function processNetworkBlock(block: Element) {
-		await processVisualizationElementForPdfGeneration(block, NetworkElement)
+		const isLandscape = orientation === 'l'
+		await processVisualizationElementForPdfGeneration(block, NetworkElement, isLandscape)
 	}
 
 	async function processVisualizationElementForPdfGeneration(
 		block: Element,
-		Component: typeof CommunicationElement | typeof NetworkElement
+		Component: typeof CommunicationElement | typeof NetworkElement,
+		isLandscape = false
 	) {
 		const content = block.textContent || ''
 		try {
@@ -531,7 +536,7 @@ async function generatePdf(
 				content
 			})
 
-			await processImage(dataUrl, 'large')
+			await processImage(dataUrl, 'large', isLandscape)
 		} catch (error) {
 			console.error('[pdfGenerator] Error processing element:', error)
 			// Don't fail the entire PDF generation, just skip this element
