@@ -34,7 +34,7 @@ let {
 				id="ap-desc"
 				bind:value={description}
 				placeholder="Enter Access Point description (optional)"
-				{disabled}
+				disabled={disabled || !name}
 			/>
 		</div>
 	</div>
