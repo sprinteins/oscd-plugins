@@ -128,19 +128,19 @@ function downloadTemplateContent() {
         >
       </div>
       <div>
-      <Button
-        variant="raised"
-        onclick={downloadTemplateContent}
-        disabled={isGenerating}
-      >
-        {isGenerating ? "Generating..." : "Generate Document"}
-      </Button>
-      <Button
-        variant="outlined"
-        onclick={() => isHorizontalLayout = !isHorizontalLayout}
-      >
-        <Label>{isHorizontalLayout ? "Landscape" : "Portrait"}</Label>
-      </Button>
+        <Button
+          variant="outlined"
+          onclick={() => (isHorizontalLayout = !isHorizontalLayout)}
+        >
+          <Label>{isHorizontalLayout ? "Landscape" : "Portrait"}</Label>
+        </Button>
+        <Button
+          variant="raised"
+          onclick={downloadTemplateContent}
+          disabled={isGenerating}
+        >
+          {isGenerating ? "Generating..." : "Generate Document"}
+        </Button>
       </div>
     </div>
   </header>
