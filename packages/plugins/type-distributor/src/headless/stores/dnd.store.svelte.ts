@@ -1,9 +1,10 @@
-import type { EqFunctionTemplate, FunctionTemplate } from '../types'
+import type { EqFunctionTemplate, FunctionTemplate, LNodeTemplate } from '../types'
+import { createLNodesInAccessPoint } from '../ied/create-lNode-in-access-point'
 
 type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate'
 	data: EqFunctionTemplate | FunctionTemplate
-	equipmentName?: string // Only for equipment functions
+	equipmentName?: string
 }
 
 class UseDndStore {
@@ -21,20 +22,31 @@ class UseDndStore {
 	}
 
 	handleDrop(targetAccessPoint: Element, targetSIedName: string) {
+
 		if (!this.draggedItem) {
 			console.warn('[DnD] No dragged item to drop')
 			return
 		}
 
-		console.log('[DnD] Dropping item:', {
-			draggedItem: this.draggedItem,
-			targetAccessPoint: targetAccessPoint.getAttribute('name'),
-			targetSIed: targetSIedName
-		})
+		const lNodes: LNodeTemplate[] = this.draggedItem.data.lnodes || []
+		if (lNodes.length === 0) {
+			console.warn('[DnD] Dragged item contains no LNodes')
+			this.handleDragEnd()
+			return
+		}
 
-		// TODO: Implement the actual drop logic
-		// This will involve creating LNode references in the target AccessPoint
-		// For now, just log the action
+		const ldInst = this.draggedItem.equipmentName ?? this.draggedItem.data.name ?? 'LD1'
+
+		try {
+			createLNodesInAccessPoint({
+				accessPoint: targetAccessPoint,
+				lNodes,
+				iedName: targetSIedName,
+				ldInst
+			})
+		} catch (error) {
+			console.error('[DnD] Error creating LNodes:', error)
+		}
 
 		this.handleDragEnd()
 	}

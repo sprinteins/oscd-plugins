@@ -1,6 +1,5 @@
 <script lang="ts">
 import { AccessPointItem } from '@/ui/components/items'
-import { getLNodesFromAccessPoint } from '@/headless/ied'
 import { Card } from '@oscd-plugins/core-ui-svelte'
 
 const {
@@ -18,6 +17,12 @@ const sIedData = $derived(
 		element: sIedItem
 	}))
 )
+
+$effect(() => {
+  console.log('sIedData changed:', sIedData)
+})
+
+// TODO: WATCH STATE CHANGE INSIDE ACCESSPOINTS TO REACTIVLY DISPLAY CHANGES IN LNODES
 </script>
 
 {#if sIedData && sIedData.length > 0}
@@ -33,7 +38,6 @@ const sIedData = $derived(
         {#each accessPoints as accessPoint}
           <AccessPointItem
             {accessPoint}
-            lNodes={getLNodesFromAccessPoint(accessPoint)}
             {sIedName}
           />
         {/each}

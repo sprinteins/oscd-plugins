@@ -2,16 +2,21 @@
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
 import { dndStore } from '@/headless/stores'
+import { getLNodesFromAccessPoint } from '@/headless/ied'
 import LnodeCard from './lnode-card.svelte'
 import type { LNodeTemplate } from '@/headless/types'
 
 interface Props {
 	accessPoint: Element
 	sIedName: string
-	lNodes: LNodeTemplate[]
 }
 
-const { accessPoint, sIedName, lNodes }: Props = $props()
+const { accessPoint, sIedName }: Props = $props()
+
+const lNodes = $derived.by(() => {
+	return getLNodesFromAccessPoint(accessPoint)
+})
+
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
 let isDropTarget = $state(false)
@@ -23,6 +28,7 @@ function handleDragOver(event: DragEvent) {
 }
 
 function handleDragLeave(event: DragEvent) {
+	console.log('[AccessPoint] DragLeave event')
 	const relatedTarget = event.relatedTarget as HTMLElement
 	const currentTarget = event.currentTarget as HTMLElement
 	if (!currentTarget?.contains(relatedTarget)) {
@@ -34,10 +40,14 @@ function handleDrop(event: DragEvent) {
 	event.preventDefault()
 	isDropTarget = false
 	
-	if (!dndStore.currentDraggedItem) return
+	if (!dndStore.currentDraggedItem) {
+		console.warn('[AccessPoint] No dragged item in store')
+		return
+	}
 	
 	dndStore.handleDrop(accessPoint, sIedName)
 }
+
 </script>
 
 <div class="space-y-1">
@@ -45,9 +55,9 @@ function handleDrop(event: DragEvent) {
     class="w-full"
     onclick={() => hasLNodes && (isOpen = !isOpen)}
     disabled={!hasLNodes && !dndStore.isDragging}
-	ondragover={handleDragOver}
-	ondragleave={handleDragLeave}
-	ondrop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
   >
     <Card.Root
       class="{hasLNodes
