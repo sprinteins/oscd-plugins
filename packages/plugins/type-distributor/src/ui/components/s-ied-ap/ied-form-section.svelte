@@ -1,7 +1,11 @@
 <script lang="ts">
 import { Label, Input } from '@oscd-plugins/core-ui-svelte'
 
-let { name = $bindable(''), description = $bindable(''), disabled = false }: { name: string; description: string; disabled?: boolean } = $props()
+let {
+	name = $bindable(''),
+	description = $bindable(''),
+	disabled = false
+}: { name: string; description: string; disabled?: boolean } = $props()
 </script>
 
 <section>

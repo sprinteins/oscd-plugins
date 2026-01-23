@@ -12,7 +12,6 @@ let iedDesc = $state('')
 let existingSIedName = $state('')
 let accessPointName = $state('')
 let accessPointDesc = $state('')
-let isCreatingIED = $state(false)
 let iedCreationError = $state<string | null>(null)
 
 const existingSIeds = $derived.by(() => {
@@ -74,7 +73,7 @@ function resetForm() {
 	accessPointDesc = ''
 }
 
-async function handleSubmit() {
+function handleSubmit() {
 	iedCreationError = null
 
 	const validationError = validateForm()
@@ -84,9 +83,7 @@ async function handleSubmit() {
 	}
 
 	try {
-		isCreatingIED = true
 		const accessPoint = buildAccessPoint()
-
 		if (isCreatingNewIed) {
 			createSIED(iedName.trim(), iedDesc.trim() || undefined, accessPoint)
 		} else if (hasAccessPoint && existingSIedName && accessPoint) {
@@ -94,13 +91,11 @@ async function handleSubmit() {
 		}
 
 		resetForm()
-		await dialogStore.closeDialog('success')
+		dialogStore.closeDialog('success')
 	} catch (error) {
 		iedCreationError =
 			error instanceof Error ? error.message : 'Failed to create IED'
-	} finally {
-		isCreatingIED = false
-	}
+	} 
 }
 
 async function handleCancel() {
@@ -112,14 +107,12 @@ async function handleCancel() {
 	<IedSelectorSection
 		bind:selectedIedName={existingSIedName}
 		options={sIedOptions}
-		disabled={isCreatingIED}
 	/>
 
 	{#if isCreatingNewIed}
 		<IedFormSection
 			bind:name={iedName}
 			bind:description={iedDesc}
-			disabled={isCreatingIED}
 		/>
 	{/if}
 
@@ -127,7 +120,6 @@ async function handleCancel() {
 		isRequired={!isCreatingNewIed && !hasAccessPoint}
 		bind:name={accessPointName}
 		bind:description={accessPointDesc}
-		disabled={isCreatingIED}
 	/>
 
 	{#if iedCreationError}
@@ -139,6 +131,5 @@ async function handleCancel() {
 		onSubmit={handleSubmit}
 		{submitLabel}
 		disabled={isSubmitDisabled}
-		isLoading={isCreatingIED}
 	/>
 </div>

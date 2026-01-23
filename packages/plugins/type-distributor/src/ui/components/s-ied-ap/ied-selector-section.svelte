@@ -13,16 +13,16 @@ let {
 </script>
 
 <section>
-	<header class="pb-4">
-		<h1 class="text-xl font-bold">Select existing S-IED</h1>
-	</header>
-	<div class="space-y-2">
-		<SelectWorkaround
-			bind:value={selectedIedName}
-			{options}
-			placeholder="Search S-IEDs"
-			class="w-full"
-			{disabled}
-		/>
-	</div>
+  <header class="pb-4">
+    <h1 class="text-xl font-bold">Select existing S-IED</h1>
+  </header>
+  <div class="space-y-2">
+    <SelectWorkaround
+      bind:value={selectedIedName}
+      {options}
+      placeholder="Search S-IEDs"
+      class="w-full"
+      {disabled}
+    />
+  </div>
 </section>
