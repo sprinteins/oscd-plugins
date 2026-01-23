@@ -1,12 +1,11 @@
 <script lang="ts">
 import { type NavigateProps, View } from '../view-navigator/view'
-
 import { clickOutside } from '@/actions'
 import { docTemplatesStore } from '@/stores'
 import { TemplateBuilder, Tooltip } from '@/ui/components'
 import { pdfGenerator } from '@/pdf'
 import { CustomIconButton } from '@oscd-plugins/ui/src/components'
-import Button from '@smui/button'
+import Button, { Label } from '@smui/button'
 import Textfield from '@smui/textfield'
 import { onMount } from 'svelte'
 
@@ -22,6 +21,7 @@ let isMetadataVisible = $state(false)
 let isGenerating = $state(false)
 let templateId: string | undefined = undefined
 let template: Element | null = $state(null)
+let isHorizontalLayout = $state(false)
 
 const NO_TITLE_TEXT = 'Untitled Document'
 
@@ -95,8 +95,9 @@ function downloadTemplateContent() {
 	if (!templateId || isGenerating) return
 
 	isGenerating = true
+	const orientation = isHorizontalLayout ? 'landscape' : 'portrait'
 	pdfGenerator
-		.downloadAsPdf(templateId)
+		.downloadAsPdf(templateId, orientation)
 		.catch((error) => console.error('Error generating PDF:', error))
 		.finally(() => {
 			isGenerating = false
@@ -126,10 +127,7 @@ function downloadTemplateContent() {
           </div></Tooltip
         >
       </div>
-      <!-- <div class="template-options">
-                <Button>open template</Button>
-                <Button>save template</Button>
-            </div> -->
+      <div>
       <Button
         variant="raised"
         onclick={downloadTemplateContent}
@@ -137,6 +135,13 @@ function downloadTemplateContent() {
       >
         {isGenerating ? "Generating..." : "Generate Document"}
       </Button>
+      <Button
+        variant="outlined"
+        onclick={() => isHorizontalLayout = !isHorizontalLayout}
+      >
+        <Label>{isHorizontalLayout ? "Landscape" : "Portrait"}</Label>
+      </Button>
+      </div>
     </div>
   </header>
 
@@ -146,6 +151,7 @@ function downloadTemplateContent() {
       class="template-metadata"
       use:clickOutside={closeTitleAndDescription}
       role="dialog"
+      tabindex="0"
       onkeydown={(e) => e.key === "Escape" && closeTitleAndDescription()}
       onclick={(e) => e.stopPropagation()}
     >

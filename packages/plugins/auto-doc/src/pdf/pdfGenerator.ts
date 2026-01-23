@@ -37,8 +37,17 @@ import {
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
 
-async function generatePdf(templateTitle: string, allBlocks: Element[]) {
-	const doc = new jsPDF()
+async function generatePdf(
+	templateTitle: string,
+	allBlocks: Element[],
+	orientation: 'p' | 'l' = 'p'
+) {
+	const doc = new jsPDF({
+		orientation,
+		unit: 'mm',
+		format: 'a4',
+		putOnlyUsedFonts: true
+	})
 
 	doc.addFileToVFS('Roboto-Regular.ttf', robotoRegular)
 	doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal')
@@ -541,7 +550,10 @@ async function generatePdf(templateTitle: string, allBlocks: Element[]) {
 	doc.save(`${templateTitle}.pdf`)
 }
 
-async function downloadAsPdf(templateId: string) {
+async function downloadAsPdf(
+	templateId: string,
+	orientation: 'portrait' | 'landscape' = 'portrait'
+) {
 	const template = docTemplatesStore.getDocumentTemplate(templateId)
 	if (!template) {
 		console.error('Template not found')
@@ -551,7 +563,8 @@ async function downloadAsPdf(templateId: string) {
 	const allBlocks: NodeList = template.querySelectorAll('Block')
 	const blockConvertedToArray: Element[] =
 		Array.prototype.slice.call(allBlocks)
-	await generatePdf(templateTitle, blockConvertedToArray)
+	const orientationShort: 'p' | 'l' = orientation === 'landscape' ? 'l' : 'p'
+	await generatePdf(templateTitle, blockConvertedToArray, orientationShort)
 }
 
 export const pdfGenerator = {
