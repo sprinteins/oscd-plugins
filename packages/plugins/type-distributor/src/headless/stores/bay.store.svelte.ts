@@ -1,5 +1,5 @@
 class UseBayStore {
-    selectedBay: string | null = null
+    selectedBay: string | null = $state<string | null>(null)
     selectedBayUuid: string | null = null
     assigendBayType: string | null = null // As soon as any lnode is assigned
 }

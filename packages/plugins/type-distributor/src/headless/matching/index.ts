@@ -18,6 +18,6 @@
 
 export { onSelectBayType } from './onSelectBayType'
 export { validateEquipmentMatch } from './validation'
-export { matchEquipmentSequentially } from './matching'
+export { matchEquipmentSequentially, matchEquipmentManually } from './matching'
 export type { EquipmentMatch } from './matching'
 export type { ValidationResult } from './validation'

@@ -1,4 +1,4 @@
-import type { BayType, ConductingEquipmentTemplate } from '../types'
+import type { BayType, ConductingEquipmentTemplate, ConductingEquipmentType } from '../types'
 import { ssdImportStore } from '../stores'
 
 export type ValidationResult = {
@@ -6,11 +6,28 @@ export type ValidationResult = {
 	errors: string[]
 	requiresManualMatching?: boolean
 	ambiguousTypes?: string[]
+	canAutoMatch?: boolean
+}
+
+export type EquipmentMatchingInfo = {
+	scdEquipment: Element[]
+	templateEquipment: {
+		bayTypeEquipment: ConductingEquipmentType
+		template: ConductingEquipmentTemplate
+	}[]
+	type: string
 }
 
 /**
  * Validates that SCD Bay and BayType have matching equipment counts and types.
  * Detects cases where manual matching is required (e.g., multiple templates with same type).
+ * 
+ * Auto-matching rules:
+ * 1. If there's only one equipment of each type (e.g., one "CTR")
+ * 2. If there's only one template variant for a type with multiple equipments (e.g., one "DIS" template type with 3 "DIS" equipments)
+ * 
+ * Manual matching required when:
+ * - Multiple templates with same type but different names (e.g., "Disconnector" and "Earth Switch" both with type="DIS")
  */
 export function validateEquipmentMatch(
 	scdBay: Element,
@@ -26,12 +43,15 @@ export function validateEquipmentMatch(
 	// Group SCD equipment by type
 	const scdCEByType = groupByType(scdConductingEquipment)
 
-	// Get BayType equipment templates
-	const bayTypeCETemplates = bayType.conductingEquipments
-		.map((ce) =>
-			ssdImportStore.getConductingEquipmentTemplate(ce.templateUuid)
-		)
-		.filter((t): t is ConductingEquipmentTemplate => t != null)
+	// Get BayType equipment templates with their bayType references
+	const bayTypeCEWithTemplates = bayType.conductingEquipments
+		.map((ce) => {
+			const template = ssdImportStore.getConductingEquipmentTemplate(ce.templateUuid)
+			return template ? { bayTypeEquipment: ce, template } : null
+		})
+		.filter((item): item is { bayTypeEquipment: ConductingEquipmentType, template: ConductingEquipmentTemplate } => item !== null)
+
+	const bayTypeCETemplates = bayTypeCEWithTemplates.map(item => item.template)
 
 	// Group BayType equipment by type
 	const bayTypeCEByType = groupTemplatesByType(bayTypeCETemplates)
@@ -39,17 +59,42 @@ export function validateEquipmentMatch(
 	// Detect ambiguous types (multiple templates with same type but different names/purposes)
 	const ambiguousTypes = detectAmbiguousTypes(bayTypeCETemplates)
 	if (ambiguousTypes.length > 0) {
-		errors.push(
-			`Manual matching required: Multiple equipment templates with same type found: ${ambiguousTypes.join(', ')}`
-		)
-		errors.push(
-			`For example, type "DIS" could be "Disconnector", "Earth Switch", or other variants.`
-		)
+		// Count mismatches - still validate counts
+		for (const [type, scdElements] of Object.entries(scdCEByType)) {
+			const bayTypeElements = bayTypeCEByType[type] || []
+			if (scdElements.length !== bayTypeElements.length) {
+				errors.push(
+					`ConductingEquipment type "${type}": SCD has ${scdElements.length}, BayType has ${bayTypeElements.length}`
+				)
+			}
+		}
+
+		// Check for missing types in SCD
+		for (const [type, bayTypeElements] of Object.entries(bayTypeCEByType)) {
+			if (!scdCEByType[type]) {
+				errors.push(
+					`ConductingEquipment type "${type}": Missing in SCD (BayType has ${bayTypeElements.length})`
+				)
+			}
+		}
+
+		if (errors.length > 0) {
+			return {
+				isValid: false,
+				errors,
+				requiresManualMatching: true,
+				ambiguousTypes,
+				canAutoMatch: false
+			}
+		}
+
+		// Counts match, but manual matching required due to ambiguity
 		return {
-			isValid: false,
-			errors,
+			isValid: true,
+			errors: [],
 			requiresManualMatching: true,
-			ambiguousTypes
+			ambiguousTypes,
+			canAutoMatch: false
 		}
 	}
 
@@ -74,7 +119,8 @@ export function validateEquipmentMatch(
 
 	return {
 		isValid: errors.length === 0,
-		errors
+		errors,
+		canAutoMatch: errors.length === 0
 	}
 }
 

@@ -103,3 +103,174 @@ function groupByType(elements: Element[]): Record<string, Element[]> {
 	}
 	return grouped
 }
+
+/**
+ * Matches SCD equipment to BayType equipment based on manual user selection.
+ * Uses the manualMatches map which maps scdEquipmentName -> templateEquipmentUuid
+ */
+export function matchEquipmentManually(
+	scdBay: Element,
+	bayType: BayType,
+	manualMatches: Map<string, string>
+): EquipmentMatch[] {
+	const matches: EquipmentMatch[] = []
+
+	// Get SCD equipment
+	const scdConductingEquipment = Array.from(
+		scdBay.querySelectorAll('ConductingEquipment')
+	)
+
+	// Build mapping of template UUIDs to BayType equipment and templates
+	const templateMap = new Map<
+		string,
+		{
+			bayTypeEquipment: ConductingEquipmentType
+			template: ConductingEquipmentTemplate
+		}
+	>()
+
+	for (const bayTypeEquipment of bayType.conductingEquipments) {
+		const template = ssdImportStore.getConductingEquipmentTemplate(
+			bayTypeEquipment.templateUuid
+		)
+		if (template) {
+			// Store by template UUID (originUuid) not bayType equipment UUID
+			templateMap.set(template.uuid, {
+				bayTypeEquipment,
+				template
+			})
+		}
+	}
+
+	// Match based on manual selections
+	for (const scdElement of scdConductingEquipment) {
+		const scdName = scdElement.getAttribute('name')
+		if (!scdName) continue
+
+		const selectedTemplateUuid = manualMatches.get(scdName)
+		if (!selectedTemplateUuid) {
+			throw new Error(`No manual match found for equipment "${scdName}"`)
+		}
+
+		const mapping = templateMap.get(selectedTemplateUuid)
+		if (!mapping) {
+			throw new Error(`Template not found for UUID "${selectedTemplateUuid}"`)
+		}
+
+		matches.push({
+			scdElement,
+			bayTypeEquipment: mapping.bayTypeEquipment,
+			templateEquipment: mapping.template
+		})
+	}
+
+	return matches
+}
+
+/**
+ * Hybrid matching: Uses manual matches for ambiguous types, automatic sequential for the rest
+ * @param scdBay The SCD Bay element
+ * @param bayType The BayType to match against
+ * @param manualMatches Map of equipment name to template UUID for ambiguous equipment
+ * @param ambiguousTypes Array of ambiguous type strings (e.g., ["DIS (Disconnector, Earth Switch)"])
+ */
+export function matchEquipmentHybrid(
+	scdBay: Element,
+	bayType: BayType,
+	manualMatches: Map<string, string>,
+	ambiguousTypes: string[]
+): EquipmentMatch[] {
+	const matches: EquipmentMatch[] = []
+
+	// Get SCD equipment
+	const scdConductingEquipment = Array.from(
+		scdBay.querySelectorAll('ConductingEquipment')
+	)
+
+	// Parse ambiguous type codes (extract "DIS" from "DIS (Disconnector, Earth Switch)")
+	const ambiguousTypeCodes = ambiguousTypes.map(typeStr => {
+		const match = typeStr.match(/^([^\s(]+)/)
+		return match ? match[1] : typeStr
+	})
+
+	// Build mapping of BayType equipment to templates
+	const templateMap = new Map<
+		string,
+		{
+			bayTypeEquipment: ConductingEquipmentType
+			template: ConductingEquipmentTemplate
+		}
+	>()
+
+	for (const bayTypeEquipment of bayType.conductingEquipments) {
+		const template = ssdImportStore.getConductingEquipmentTemplate(
+			bayTypeEquipment.templateUuid
+		)
+		if (template) {
+			templateMap.set(template.uuid, {
+				bayTypeEquipment,
+				template
+			})
+		}
+	}
+
+	// Group non-ambiguous SCD and BayType equipment by type for sequential matching
+	const scdByType = groupByType(scdConductingEquipment)
+	const bayTypeByType: Record<string, ConductingEquipmentType[]> = {}
+
+	for (const [uuid, { bayTypeEquipment, template }] of templateMap) {
+		const type = template.type
+		if (!bayTypeByType[type]) {
+			bayTypeByType[type] = []
+		}
+		bayTypeByType[type].push(bayTypeEquipment)
+	}
+
+	// Process each equipment
+	for (const scdElement of scdConductingEquipment) {
+		const scdName = scdElement.getAttribute('name')
+		const scdType = scdElement.getAttribute('type')
+		
+		if (!scdName || !scdType) continue
+
+		// Check if this type is ambiguous
+		if (ambiguousTypeCodes.includes(scdType)) {
+			// Use manual match
+			const selectedTemplateUuid = manualMatches.get(scdName)
+			if (!selectedTemplateUuid) {
+				throw new Error(`No manual match found for ambiguous equipment "${scdName}" (type: ${scdType})`)
+			}
+
+			const mapping = templateMap.get(selectedTemplateUuid)
+			if (!mapping) {
+				throw new Error(`Template not found for UUID "${selectedTemplateUuid}"`)
+			}
+
+			matches.push({
+				scdElement,
+				bayTypeEquipment: mapping.bayTypeEquipment,
+				templateEquipment: mapping.template
+			})
+		} else {
+			// Use automatic sequential matching for non-ambiguous types
+			// Find the next unmatched bayType equipment of this type
+			const bayTypeElements = bayTypeByType[scdType] || []
+			const usedBayTypeUuids = new Set(matches.map(m => m.bayTypeEquipment.uuid))
+			
+			const availableBayTypeEquipment = bayTypeElements.find(bte => !usedBayTypeUuids.has(bte.uuid))
+			
+			if (availableBayTypeEquipment) {
+				const template = ssdImportStore.getConductingEquipmentTemplate(availableBayTypeEquipment.templateUuid)
+				if (template) {
+					matches.push({
+						scdElement,
+						bayTypeEquipment: availableBayTypeEquipment,
+						templateEquipment: template
+					})
+				}
+			}
+		}
+	}
+
+	return matches
+}
