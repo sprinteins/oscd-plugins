@@ -37,17 +37,8 @@ import {
     For jsPDF API documentation refer to: http://raw.githack.com/MrRio/jsPDF/master/docs/jsPDF.html
 */
 
-async function generatePdf(
-	templateTitle: string,
-	allBlocks: Element[],
-	orientation: 'portrait' | 'landscape' = 'portrait'
-) {
-	const doc = new jsPDF({
-		orientation,
-		unit: 'mm',
-		format: 'a4',
-		putOnlyUsedFonts: true
-	})
+async function generatePdf(templateTitle: string, allBlocks: Element[]) {
+	const doc = new jsPDF()
 
 	doc.addFileToVFS('Roboto-Regular.ttf', robotoRegular)
 	doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal')
@@ -312,7 +303,7 @@ async function generatePdf(
 		pageManager.incrementPosition()
 	}
 
-	async function processImage(dataUrl: string, scale = 'small', isLandscape = false) {
+	async function processImage(dataUrl: string, scale = 'small') {
 		if (!dataUrl) {
 			return
 		}
@@ -326,8 +317,7 @@ async function generatePdf(
 
 		const scaleFactor = getImageScaleFactor(scale)
 		const aspectRatio = image.height / image.width
-		const maxWidth = isLandscape ? pageWidth - TEXT_MARGIN_OFFSET : scaleFactor * MAX_IMAGE_WIDTH
-		const width = maxWidth
+		const width = scaleFactor * MAX_IMAGE_WIDTH
 		const height = width * aspectRatio
 
 		pageManager.ensureSpace(height)
@@ -481,11 +471,9 @@ async function generatePdf(
 	}
 
 	async function processCommunicationBlock(block: Element) {
-		const isLandscape = orientation === 'landscape'
 		await processVisualizationElementForPdfGeneration(
 			block,
-			CommunicationElement,
-			isLandscape
+			CommunicationElement
 		)
 
 		const content = block.textContent || ''
@@ -521,14 +509,12 @@ async function generatePdf(
 	}
 
 	async function processNetworkBlock(block: Element) {
-		const isLandscape = orientation === 'landscape'
-		await processVisualizationElementForPdfGeneration(block, NetworkElement, isLandscape)
+		await processVisualizationElementForPdfGeneration(block, NetworkElement)
 	}
 
 	async function processVisualizationElementForPdfGeneration(
 		block: Element,
-		Component: typeof CommunicationElement | typeof NetworkElement,
-		isLandscape = false
+		Component: typeof CommunicationElement | typeof NetworkElement
 	) {
 		const content = block.textContent || ''
 		try {
@@ -536,7 +522,7 @@ async function generatePdf(
 				content
 			})
 
-			await processImage(dataUrl, 'large', isLandscape)
+			await processImage(dataUrl, 'large')
 		} catch (error) {
 			console.error('[pdfGenerator] Error processing element:', error)
 			// Don't fail the entire PDF generation, just skip this element
@@ -555,10 +541,7 @@ async function generatePdf(
 	doc.save(`${templateTitle}.pdf`)
 }
 
-async function downloadAsPdf(
-	templateId: string,
-	orientation: 'portrait' | 'landscape' = 'portrait'
-) {
+async function downloadAsPdf(templateId: string) {
 	const template = docTemplatesStore.getDocumentTemplate(templateId)
 	if (!template) {
 		console.error('Template not found')
@@ -568,7 +551,7 @@ async function downloadAsPdf(
 	const allBlocks: NodeList = template.querySelectorAll('Block')
 	const blockConvertedToArray: Element[] =
 		Array.prototype.slice.call(allBlocks)
-	await generatePdf(templateTitle, blockConvertedToArray, orientation)
+	await generatePdf(templateTitle, blockConvertedToArray)
 }
 
 export const pdfGenerator = {
