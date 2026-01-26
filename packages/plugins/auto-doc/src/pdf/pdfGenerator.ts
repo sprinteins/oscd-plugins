@@ -40,7 +40,7 @@ import {
 async function generatePdf(
 	templateTitle: string,
 	allBlocks: Element[],
-	orientation: 'p' | 'l' = 'p'
+	orientation: 'portrait' | 'landscape' = 'portrait'
 ) {
 	const doc = new jsPDF({
 		orientation,
@@ -481,7 +481,7 @@ async function generatePdf(
 	}
 
 	async function processCommunicationBlock(block: Element) {
-		const isLandscape = orientation === 'l'
+		const isLandscape = orientation === 'landscape'
 		await processVisualizationElementForPdfGeneration(
 			block,
 			CommunicationElement,
@@ -521,7 +521,7 @@ async function generatePdf(
 	}
 
 	async function processNetworkBlock(block: Element) {
-		const isLandscape = orientation === 'l'
+		const isLandscape = orientation === 'landscape'
 		await processVisualizationElementForPdfGeneration(block, NetworkElement, isLandscape)
 	}
 
@@ -568,8 +568,7 @@ async function downloadAsPdf(
 	const allBlocks: NodeList = template.querySelectorAll('Block')
 	const blockConvertedToArray: Element[] =
 		Array.prototype.slice.call(allBlocks)
-	const orientationShort: 'p' | 'l' = orientation === 'landscape' ? 'l' : 'p'
-	await generatePdf(templateTitle, blockConvertedToArray, orientationShort)
+	await generatePdf(templateTitle, blockConvertedToArray, orientation)
 }
 
 export const pdfGenerator = {
