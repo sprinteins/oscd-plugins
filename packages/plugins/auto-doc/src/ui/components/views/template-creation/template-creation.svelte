@@ -1,108 +1,109 @@
 <script lang="ts">
-import { type NavigateProps, View } from '../view-navigator/view'
-import { clickOutside } from '@/actions'
-import { docTemplatesStore } from '@/stores'
-import { TemplateBuilder, Tooltip } from '@/ui/components'
-import { pdfGenerator } from '@/pdf'
-import { CustomIconButton } from '@oscd-plugins/ui/src/components'
-import Button, { Label } from '@smui/button'
-import Textfield from '@smui/textfield'
-import { onMount } from 'svelte'
+  import { type NavigateProps, View } from "../view-navigator/view";
+  import { clickOutside } from "@/actions";
+  import { docTemplatesStore } from "@/stores";
+  import { TemplateBuilder, Tooltip } from "@/ui/components";
+  import { pdfGenerator } from "@/pdf";
+  import { CustomIconButton } from "@oscd-plugins/ui/src/components";
+  import Button, { Label } from "@smui/button";
+  import Textfield from "@smui/textfield";
+  import { onMount } from "svelte";
+  import Menu from "@smui/menu";
+  import List, { Item } from "@smui/list";
 
-interface Props extends NavigateProps {
-	id: string | null
-}
+  interface Props extends NavigateProps {
+    id: string | null;
+  }
 
-let { id, navigate }: Props = $props()
+  let { id, navigate }: Props = $props();
 
-let title = $state('')
-let description = $state('')
-let isMetadataVisible = $state(false)
-let isGenerating = $state(false)
-let templateId: string | undefined = undefined
-let template: Element | null = $state(null)
-let isHorizontalLayout = $state(false)
+  let title = $state("");
+  let description = $state("");
+  let isMetadataVisible = $state(false);
+  let isGenerating = $state(false);
+  let templateId: string | undefined = undefined;
+  let template: Element | null = $state(null);
+  let menu: Menu;
 
-const NO_TITLE_TEXT = 'Untitled Document'
+  const NO_TITLE_TEXT = "Untitled Document";
 
-onMount(() => {
-	templateId = id ?? createNewTemplate()
+  onMount(() => {
+    templateId = id ?? createNewTemplate();
 
-	template = docTemplatesStore.getDocumentTemplate(templateId)
+    template = docTemplatesStore.getDocumentTemplate(templateId);
 
-	if (!template) {
-		navigateToOverviewPage()
-		return
-	}
+    if (!template) {
+      navigateToOverviewPage();
+      return;
+    }
 
-	setInitialTitleAndDescription(template)
-})
+    setInitialTitleAndDescription(template);
+  });
 
-function setInitialTitleAndDescription(template: Element) {
-	title = (template.getAttribute('title') as string) || ''
-	description = (template.getAttribute('description') as string) || ''
-}
+  function setInitialTitleAndDescription(template: Element) {
+    title = (template.getAttribute("title") as string) || "";
+    description = (template.getAttribute("description") as string) || "";
+  }
 
-function createNewTemplate(): string {
-	return docTemplatesStore.addDocumentTemplate() as string
-}
+  function createNewTemplate(): string {
+    return docTemplatesStore.addDocumentTemplate() as string;
+  }
 
-function askForEmptyTitleConfirmation() {
-	if (!title) {
-		const confirmNavigation = confirm(
-			'No title has been provided. Do you want to proceed?'
-		)
-		if (!confirmNavigation) {
-			return
-		}
-	}
-	navigateToOverviewPage()
-}
+  function askForEmptyTitleConfirmation() {
+    if (!title) {
+      const confirmNavigation = confirm(
+        "No title has been provided. Do you want to proceed?",
+      );
+      if (!confirmNavigation) {
+        return;
+      }
+    }
+    navigateToOverviewPage();
+  }
 
-function navigateToOverviewPage() {
-	navigate({ view: View.Home })
-}
+  function navigateToOverviewPage() {
+    navigate({ view: View.Home });
+  }
 
-function displayTitleAndDescription(
-	e:
-		| (MouseEvent & { currentTarget: EventTarget & HTMLDivElement })
-		| (KeyboardEvent & { currentTarget: EventTarget & HTMLDivElement })
-) {
-	e.stopPropagation()
-	isMetadataVisible = true
-}
-function closeTitleAndDescription() {
-	isMetadataVisible = false
-	if (templateId) {
-		updateTitleAndDescription()
-	} else {
-		console.error(
-			'Template ID is null. Cannot update title and description.'
-		)
-	}
-}
-let templateTitle = $derived(title.length === 0 ? NO_TITLE_TEXT : title)
+  function displayTitleAndDescription(
+    e:
+      | (MouseEvent & { currentTarget: EventTarget & HTMLDivElement })
+      | (KeyboardEvent & { currentTarget: EventTarget & HTMLDivElement }),
+  ) {
+    e.stopPropagation();
+    isMetadataVisible = true;
+  }
+  function closeTitleAndDescription() {
+    isMetadataVisible = false;
+    if (templateId) {
+      updateTitleAndDescription();
+    } else {
+      console.error(
+        "Template ID is null. Cannot update title and description.",
+      );
+    }
+  }
+  let templateTitle = $derived(title.length === 0 ? NO_TITLE_TEXT : title);
 
-function updateTitleAndDescription() {
-	docTemplatesStore.editDocumentTemplateTitleAndDescription(
-		templateId as string,
-		title,
-		description
-	)
-}
+  function updateTitleAndDescription() {
+    docTemplatesStore.editDocumentTemplateTitleAndDescription(
+      templateId as string,
+      title,
+      description,
+    );
+  }
 
-function downloadTemplateContent() {
-	if (!templateId || isGenerating) return
+  function downloadTemplateContent(orientation: "landscape" | "portrait" = "portrait") {
+    if (!templateId || isGenerating) return;
 
-	isGenerating = true
-	const orientation = isHorizontalLayout ? 'landscape' : 'portrait'
-	pdfGenerator
-		.downloadAsPdf(templateId, orientation)
-		.catch((error) => console.error('Error generating PDF:', error))
-		.finally(() => {
-			isGenerating = false
-		})
-}
+    isGenerating = true;
+    pdfGenerator
+      .downloadAsPdf(templateId, orientation)
+      .catch((error) => console.error("Error generating PDF:", error))
+      .finally(() => {
+        isGenerating = false;
+      });
+  }
 </script>
 
 <div class="template-creation-container">
@@ -128,19 +129,21 @@ function downloadTemplateContent() {
         >
       </div>
       <div>
-        <Button
-          variant="outlined"
-          onclick={() => (isHorizontalLayout = !isHorizontalLayout)}
-        >
-          <Label>{isHorizontalLayout ? "Landscape" : "Portrait"}</Label>
-        </Button>
-        <Button
-          variant="raised"
-          onclick={downloadTemplateContent}
-          disabled={isGenerating}
-        >
-          {isGenerating ? "Generating..." : "Generate Document"}
-        </Button>
+        <div>
+          <Button onclick={() => menu.setOpen(true)} disabled={isGenerating}>
+            <Label> {isGenerating ? "Generating..." : "Generate Document"}</Label>
+          </Button>
+          <Menu bind:this={menu} anchorCorner="BOTTOM_LEFT">
+            <List>
+               <Item onSMUIAction={() => {downloadTemplateContent("portrait")}}>
+                <span>Portrait PDF</span>
+              </Item>
+              <Item onSMUIAction={() => {downloadTemplateContent("landscape")}}>
+                <span>Landscape PDF</span>
+              </Item>   
+            </List>
+          </Menu>
+        </div>
       </div>
     </div>
   </header>
