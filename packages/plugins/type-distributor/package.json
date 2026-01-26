@@ -1,7 +1,7 @@
 {
 	"name": "@oscd-plugins/type-distributor",
 	"private": true,
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"type": "module",
 	"scripts": {
 		"//====== DEV ======//": "",
@@ -30,7 +30,8 @@
 	},
 	"devDependencies": {
 		"@lucide/svelte": "^0.562.0",
-		"@openenergytools/open-scd-core": "^0.0.5",
+		"@openscd/oscd-api": "^0.1.6",
+		"@openscd/oscd-editor": "^1.8.0",
 		"@oscd-plugins/core": "workspace:^",
 		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/core-standard": "workspace:^",

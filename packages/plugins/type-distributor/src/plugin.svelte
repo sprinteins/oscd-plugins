@@ -26,6 +26,7 @@ const {
 	doc,
 	docName,
 	editCount,
+	editor,
 	isCustomInstance
 }: Plugin.CustomComponentsProps = $props()
 </script>
@@ -35,6 +36,7 @@ const {
 		getDoc: () => doc,
 		getDocName: () => docName,
 		getEditCount: () => editCount,
+		getEditor: () => editor,
 		getIsCustomInstance: () => isCustomInstance,
 		getHost: () => $host() || window,
 		theme: "legacy-oscd-instance",
