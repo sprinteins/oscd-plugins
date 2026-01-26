@@ -14,7 +14,7 @@ const bays = $derived(
 )
 
 const bayOptions = $derived(
-    Array.from(bays ?? []).map((bay) => ({
+	Array.from(bays ?? []).map((bay) => ({
 		value: bay.getAttribute('name') ?? '',
 		label: bay.getAttribute('name') ?? ''
 	}))
