@@ -35,6 +35,6 @@ export function createSIED(
 	})
 	
 	if (accessPoints && accessPoints.length > 0) {
-		createAccessPoints(name, accessPoints)
+		createAccessPoints(name, accessPoints, true)
 	}
 }
