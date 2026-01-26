@@ -1,5 +1,9 @@
 <script lang="ts">
-import { Card, pluginGlobalStore, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
+import {
+	Card,
+	pluginGlobalStore,
+	SelectWorkaround
+} from '@oscd-plugins/core-ui-svelte'
 import { bayTypesStore, bayStore } from '@/headless/stores'
 import type { BayType } from '@/headless/types'
 import { BayTypeDetails } from '@/ui/components'
@@ -28,8 +32,8 @@ const conductingEquipmentTemplates = $derived(
 )
 
 const sIedItems = $derived.by(() => {
-  pluginGlobalStore.editCount
-  return getSIEDs(bayStore.selectedBay ?? "")
+	pluginGlobalStore.editCount
+	return getSIEDs(bayStore.selectedBay ?? '')
 })
 </script>
 
@@ -45,7 +49,7 @@ const sIedItems = $derived.by(() => {
     </Card.Header>
     <Card.Content class="flex-1 overflow-y-auto">
       <div class="flex flex-col gap-y-4 justify-between">
-        <SIedDetails sIedItems={sIedItems} />
+        <SIedDetails {sIedItems} />
         <AddSIedApDialogTrigger />
       </div>
     </Card.Content>

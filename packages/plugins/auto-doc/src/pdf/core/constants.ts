@@ -8,7 +8,8 @@ export const TEXT_SIZES = {
 export const FONT_STYLES = {
 	NORMAL: 'normal',
 	BOLD: 'bold',
-	ITALIC: 'italic'
+	ITALIC: 'italic',
+	BOLD_ITALIC: 'bolditalic'
 } as const
 
 export const IMAGE_SCALE_FACTORS = {

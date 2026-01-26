@@ -16,8 +16,9 @@
 		getDoc: () => doc,
 		getDocName: () => docName,
 		getEditCount: () => editCount,
+		getEditor: () => editor,
 		getIsCustomInstance: () => isCustomInstance,
-		host: $host(),
+		getHost: () => $host() || window,
 		theme: 'legacy-oscd-instance'
 	}}
 	data-plugin-name={jsonPackage.name}
@@ -36,13 +37,14 @@ import jsonPackage from '../package.json'
 // CORE
 import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
 // TYPES
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 
 // props
 const {
 	doc,
 	docName,
 	editCount,
+	editor,
 	isCustomInstance
-}: Utils.PluginCustomComponentsProps = $props()
+}: Plugin.CustomComponentsProps = $props()
 </script>

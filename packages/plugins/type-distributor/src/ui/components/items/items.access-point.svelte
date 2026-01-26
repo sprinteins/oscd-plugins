@@ -4,7 +4,6 @@ import { ChevronRight, CirclePlus } from '@lucide/svelte'
 import { dndStore } from '@/headless/stores'
 import { getLNodesFromAccessPoint } from '@/headless/ied'
 import LnodeCard from './lnode-card.svelte'
-import type { LNodeTemplate } from '@/headless/types'
 
 interface Props {
 	accessPoint: Element
@@ -39,15 +38,14 @@ function handleDragLeave(event: DragEvent) {
 function handleDrop(event: DragEvent) {
 	event.preventDefault()
 	isDropTarget = false
-	
+
 	if (!dndStore.currentDraggedItem) {
 		console.warn('[AccessPoint] No dragged item in store')
 		return
 	}
-	
+
 	dndStore.handleDrop(accessPoint, sIedName)
 }
-
 </script>
 
 <div class="space-y-1">
@@ -77,12 +75,13 @@ function handleDrop(event: DragEvent) {
               />
             {/if}
             <span class="text-sm font-medium">
-              {sIedName} - Access Point {accessPoint.getAttribute("name") ?? "(unnamed)"}
+              {sIedName} - Access Point {accessPoint.getAttribute("name") ??
+                "(unnamed)"}
             </span>
           </div>
-		  {#if isDropTarget}
-			<CirclePlus class="size-5 text-primary animate-pulse" />
-		  {/if}
+          {#if isDropTarget}
+            <CirclePlus class="size-5 text-primary animate-pulse" />
+          {/if}
         </div>
       </Card.Content>
     </Card.Root>
@@ -90,6 +89,7 @@ function handleDrop(event: DragEvent) {
   {#if isOpen && hasLNodes}
     <div class="ml-4 space-y-1">
       {#each lNodes as lnode}
+        <!--We are going to need to update the lNode object and its type eventually. It does also need to know of what is being dragged into this Element -->
         <LnodeCard {lnode} />
       {/each}
     </div>

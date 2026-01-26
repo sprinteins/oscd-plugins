@@ -29,6 +29,5 @@ export function getLNodesFromAccessPoint(
 			}
 		}
 	}
-	// console.log('getLNodesFromAccessPoint found lNodes:', lNodes)
 	return lNodes
 }
