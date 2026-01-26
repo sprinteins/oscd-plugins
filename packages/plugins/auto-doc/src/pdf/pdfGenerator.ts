@@ -357,7 +357,7 @@ async function generatePdf(
 			return
 		}
 
-		await processImage(imageSource, parsedContent.scale, false)
+		await processImage(imageSource, parsedContent.scale)
 	}
 
 	function processSignalListBlock(block: Element) {
