@@ -133,7 +133,6 @@ function downloadTemplateContent(
       <div>
         <div>
           <Button
-            class="export-button"
             variant="raised"
             onclick={() => menu.setOpen(true)}
             disabled={isGenerating}
