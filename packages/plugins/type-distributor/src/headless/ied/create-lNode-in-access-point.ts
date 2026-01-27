@@ -107,8 +107,7 @@ export function createLNodesInAccessPoint({
 			lnInst: lnode.lnInst
 		})
 
-		// use LN elements for user-dragged functions; keep lnClass/lnType/lnInst from template
-		const lnElement = doc.createElement('LN')
+		const lnElement = doc.createElement(lnode.lnClass === 'lln0' ? 'LN0' : 'LN')
 		lnElement.setAttribute('lnClass', lnode.lnClass)
 		lnElement.setAttribute('lnType', lnode.lnType)
 		lnElement.setAttribute('lnInst', lnode.lnInst)
