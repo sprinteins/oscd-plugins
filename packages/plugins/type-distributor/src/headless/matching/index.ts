@@ -16,7 +16,8 @@
  * should present a manual matching dialog to the user.
  */
 
-export { onSelectBayType } from './onSelectBayType'
+export { validateBayTypeSelection } from './validateBayTypeSelection'
+export { applyBayTypeSelection } from './applyBayTypeSelection'
 export { validateEquipmentMatch } from './validation'
 export { matchEquipmentSequentially, matchEquipmentManually } from './matching'
 export type { EquipmentMatch } from './matching'

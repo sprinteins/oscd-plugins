@@ -1,33 +1,34 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import { ssdImportStore, bayTypesStore, equipmentMatchingStore } from '../stores'
-import {
-	getDocumentAndEditor,
-	getBayElement
-} from '../distribution/utils/document-helpers'
+import { getDocumentAndEditor, getBayElement } from '../distribution/utils/document-helpers'
 import { copyRelevantDataTypeTemplates } from '../distribution/data-types/copy-data-type-templates'
 import { validateEquipmentMatch } from './validation'
-import { matchEquipmentSequentially, matchEquipmentHybrid } from './matching'
+import { matchEquipmentSequentially, matchEquipmentHybrid, type EquipmentMatch } from './matching'
 import { createEquipmentUpdateEdits } from './equipment-updates'
 import { createEqFunctionInsertEdits } from './eqfunction-creation'
 import { createFunctionInsertEdits } from './function-creation'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 /**
- * Main function: Assigns a BayType to an SCD Bay
- * Validates equipment match, creates UUID relationships, copies EqFunctions and Functions
- * All changes are committed as a single atomic operation
- *
+ * Applies a BayType to an SCD Bay
+ * 
+ * This function:
+ * - Validates equipment match (re-validates to ensure consistency)
+ * - Matches equipment (automatic or hybrid with manual matches)
+ * - Creates UUID relationships for equipment and Bay
+ * - Copies EqFunctions and Functions from templates
+ * - Copies DataTypeTemplates for all LNodes
+ * - Commits all changes as a single atomic operation
+ * 
  * @param bayName The name of the Bay in the SCD to update
- * @param applyChanges If false, only validates and stores result (for UI preview). If true, commits changes.
  * @throws Error if validation fails or required data is missing
  */
-export function onSelectBayType(bayName: string, applyChanges = false): void {
-	console.log('[onSelectBayType] Called', { bayName, applyChanges })
+export function applyBayTypeSelection(bayName: string): void {
+	console.log('[applyBayTypeSelection] Called', { bayName })
 	const { doc, editor } = getDocumentAndEditor()
 
 	// Get selected BayType
 	const selectedBayTypeName = bayTypesStore.selectedBayType
-	console.log('[onSelectBayType] Selected bay type:', selectedBayTypeName)
+	console.log('[applyBayTypeSelection] Selected bay type:', selectedBayTypeName)
 	if (!selectedBayTypeName) {
 		throw new Error('No BayType selected')
 	}
@@ -35,7 +36,7 @@ export function onSelectBayType(bayName: string, applyChanges = false): void {
 	const bayType = ssdImportStore.bayTypes.find(
 		(bay) => bay.uuid === selectedBayTypeName
 	)
-	console.log('[onSelectBayType] Found bay type:', bayType)
+	console.log('[applyBayTypeSelection] Found bay type:', bayType)
 
 	if (!bayType) {
 		throw new Error(`BayType "${selectedBayTypeName}" not found`)
@@ -43,31 +44,24 @@ export function onSelectBayType(bayName: string, applyChanges = false): void {
 
 	// Get SCD Bay element
 	const scdBay = getBayElement(doc, bayName)
-	console.log('[onSelectBayType] SCD Bay element:', scdBay)
+	console.log('[applyBayTypeSelection] SCD Bay element:', scdBay)
 
-	// Step 1: Validate equipment match
+	// Re-validate equipment match
 	const validation = validateEquipmentMatch(scdBay, bayType)
-	console.log('[onSelectBayType] Validation result:', validation)
+	console.log('[applyBayTypeSelection] Validation result:', validation)
 	
-	// Store validation result for UI
-	// When applyChanges=true, don't clear manual matches as we need them
-	equipmentMatchingStore.setValidationResult(validation, !applyChanges)
+	// Store validation result for UI (preserve manual matches)
+	equipmentMatchingStore.setValidationResult(validation, false)
 	
-	// If validation indicates manual matching required, stop here and wait for user input
-	if (validation.requiresManualMatching && !applyChanges) {
-		console.log('[onSelectBayType] Manual matching required, waiting for user input')
-		return
-	}
-
-	// When applying, check if validation allows proceeding
-	if (applyChanges && !validation.isValid && !validation.requiresManualMatching) {
+	// Check if validation allows proceeding
+	if (!validation.isValid && !validation.requiresManualMatching) {
 		// Hard validation failure (not just requiring manual matching)
 		throw new Error(
 			`Equipment validation failed:\n${validation.errors.join('\n')}`
 		)
 	}
 
-	// Step 2: Match equipment (automatic or manual)
+	// Match equipment (automatic or manual)
 	let matches: EquipmentMatch[]
 	if (validation.requiresManualMatching) {
 		// Use hybrid matching: manual for ambiguous types, automatic for the rest
@@ -80,15 +74,15 @@ export function onSelectBayType(bayName: string, applyChanges = false): void {
 	// Collect all edits
 	const edits: (Insert | SetAttributes)[] = []
 
-	// Step 3: Create UUID update edits for equipment and Bay
+	// Create UUID update edits for equipment and Bay
 	const updateEdits = createEquipmentUpdateEdits(matches, scdBay, bayType)
 	edits.push(...updateEdits)
 
-	// Step 4: Create EqFunction insert edits
+	// Create EqFunction insert edits
 	const eqFunctionEdits = createEqFunctionInsertEdits(doc, matches)
 	edits.push(...eqFunctionEdits)
 
-	// Step 5: Create Function insert edits and copy DataTypeTemplates
+	// Create Function insert edits and copy DataTypeTemplates
 	const functionEdits = createFunctionInsertEdits(doc, bayType, scdBay)
 	edits.push(...functionEdits)
 
@@ -102,9 +96,9 @@ export function onSelectBayType(bayName: string, applyChanges = false): void {
 	}
 
 	// Commit all edits as a single atomic operation
-	console.log('[onSelectBayType] Committing edits, total:', edits.length)
+	console.log('[applyBayTypeSelection] Committing edits, total:', edits.length)
 	editor.commit(edits, {
 		title: `Assign BayType "${bayType.name}" to Bay "${bayName}"`
 	})
-	console.log('[onSelectBayType] Edits committed successfully')
+	console.log('[applyBayTypeSelection] Edits committed successfully')
 }

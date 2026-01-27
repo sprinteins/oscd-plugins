@@ -14,7 +14,7 @@ import { BayTypeDetails, BayTypeValidation } from '@/ui/components'
 import { getSIEDs } from '@/headless/ied'
 import SIedDetails from '../s-ied-details.svelte'
 import { AddSIedApDialogTrigger } from '../s-ied-ap'
-import { onSelectBayType } from '@/headless/matching'
+import { validateBayTypeSelection, applyBayTypeSelection } from '@/headless/matching'
 
 const bayTypeOptions = $derived(
 	bayTypesStore.bayTypes.map((bt: BayType) => ({
@@ -50,8 +50,7 @@ function handleBayTypeChange() {
 	}
 
 	try {
-		// TODO: Here we just want to validate
-		onSelectBayType(bayStore.selectedBay, false)
+		validateBayTypeSelection(bayStore.selectedBay)
 	} catch (error) {
 		console.error('[handleBayTypeChange] Error:', error)
 	}
@@ -66,8 +65,7 @@ function handleApplyBayType() {
 	}
 
 	try {
-		// TODO: I do not like the check for if apply or not
-		onSelectBayType(bayStore.selectedBay, true)
+		applyBayTypeSelection(bayStore.selectedBay)
 		equipmentMatchingStore.clearValidationResult()
 	} catch (error) {
 		console.error('[handleApplyBayType] Error:', error)
