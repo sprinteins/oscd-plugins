@@ -4,15 +4,15 @@ import {
 	pluginGlobalStore,
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
-import { ssdImportStore } from '@/headless/stores'
+import { bayStore, ssdImportStore } from '@/headless/stores'
 import { loadFromLocal } from '@/headless/import'
-import { bayStore } from '@/headless/stores/bay.store.svelte'
 
 const bays = $derived(
 	pluginGlobalStore.xmlDocument?.querySelectorAll(
 		'Substation > VoltageLevel > Bay'
 	)
 )
+
 const bayOptions = $derived(
 	Array.from(bays ?? []).map((bay) => ({
 		value: bay.getAttribute('name') ?? '',

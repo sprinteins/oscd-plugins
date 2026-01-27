@@ -3,8 +3,9 @@ import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 export function createAccessPoints(
 	iedName: string,
-	accessPoints: { name: string; description?: string }[]
-): void {
+	accessPoints: { name: string; description?: string }[],
+	squash = false
+) {
 	if (!pluginGlobalStore.xmlDocument) {
 		throw new Error('No XML document found')
 	}

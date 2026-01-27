@@ -50,7 +50,7 @@ export type FunctionTemplate = {
 }
 
 export type LNodeTemplate = {
-	uuid: string
+	uuid?: string
 	lnClass: string
 	lnType: string
 	lnInst: string
