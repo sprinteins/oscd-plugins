@@ -2,8 +2,8 @@ import type { EqFunctionTemplate, FunctionTemplate, LNodeTemplate } from '../typ
 import { createLNodesInAccessPoint } from '../ied/create-lNode-in-access-point'
 
 type DraggedItem = {
-	type: 'equipmentFunction' | 'functionTemplate'
-	data: EqFunctionTemplate | FunctionTemplate
+	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'
+	data: EqFunctionTemplate | FunctionTemplate | LNodeTemplate
 	equipmentName?: string
 }
 
@@ -28,14 +28,26 @@ class UseDndStore {
 			return
 		}
 
-		const lNodes: LNodeTemplate[] = this.draggedItem.data.lnodes || []
+		let lNodes: LNodeTemplate[]
+		let ldInst = this.draggedItem.equipmentName ?? 'LD1'
+
+		switch (this.draggedItem.type) {
+			case 'lNode':
+				lNodes = [this.draggedItem.data as LNodeTemplate]
+				break
+			default: {
+				const data = this.draggedItem.data as EqFunctionTemplate | FunctionTemplate
+				lNodes = data.lnodes || []
+				ldInst = this.draggedItem.equipmentName ?? data.name ?? 'LD1'
+				break
+			}
+		}
+
 		if (lNodes.length === 0) {
 			console.warn('[DnD] Dragged item contains no LNodes')
 			this.handleDragEnd()
 			return
 		}
-
-		const ldInst = this.draggedItem.equipmentName ?? this.draggedItem.data.name ?? 'LD1'
 
 		try {
 			createLNodesInAccessPoint({

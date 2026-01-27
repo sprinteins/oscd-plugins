@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
-import type { EqFunctionTemplate } from '@/headless/types'
+import type { EqFunctionTemplate, LNodeTemplate } from '@/headless/types'
 import { dndStore } from '@/headless/stores'
 import LnodeCard from './lnode-card.svelte'
 
@@ -29,6 +29,18 @@ function handleDragStart(event: DragEvent) {
 
 function handleDragEnd() {
 	dndStore.handleDragEnd()
+}
+
+function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
+    dndStore.handleDragStart({
+        type: 'lNode',
+        data: lnode,
+        equipmentName
+    })
+}
+
+function handleLNodeDragEnd() {
+    dndStore.handleDragEnd()
 }
 </script>
 
@@ -61,7 +73,12 @@ function handleDragEnd() {
     {#if isOpen}
         <div class="ml-4 space-y-1">
             {#each eqFunction.lnodes as lnode}
-                <LnodeCard {lnode} />
+                <LnodeCard
+				{lnode}
+				draggable={true}
+				onDragStart={handleLNodeDragStart}
+				onDragEnd={handleLNodeDragEnd}
+			/>
             {/each}
         </div>
     {/if}

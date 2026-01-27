@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eIEC61850-6-100="http://www.iec.ch/61850/2019/SCL/6-100" version="2007" revision="C" release="5">
+	<Header id="SSD Output Type Designer" toolID="OpenSCD" nameStructure="IEC 61850"/>
+	<Substation name="TEMPLATE" desc="Template Container">
+		<VoltageLevel name="TEMPLATE" desc="Template Container">
+			<Bay name="Reactor_Bay" uuid="0f77531c-cd29-4dfe-b070-dfc1803af9ed" desc="Example Reactor Bay">
+				<ConductingEquipment virtual="false" templateUuid="ca722fc1-0403-4707-bfac-f10dc4459c3d" uuid="a4bde443-622d-4b68-9cd2-f20707d3e395"/>
+				<ConductingEquipment virtual="false" templateUuid="9e122308-39a6-46f1-a455-b816f4dc708d" uuid="938b7869-a879-4d18-b4e3-56844ce02de9"/>
+				<ConductingEquipment virtual="false" templateUuid="9e122308-39a6-46f1-a455-b816f4dc708d" uuid="615085c8-5db2-46cf-9beb-88d90262a643"/>
+				<ConductingEquipment virtual="false" templateUuid="0aece9bd-0d45-4566-b258-6df5e955aade" uuid="1ecc0aa5-d5f4-4451-8ec3-b5e24763aa79"/>
+				<ConductingEquipment virtual="false" templateUuid="0aece9bd-0d45-4566-b258-6df5e955aade" uuid="616e3e5c-235a-4ba2-a129-c6b7aaf4eeb0"/>
+				<ConductingEquipment virtual="false" templateUuid="0aece9bd-0d45-4566-b258-6df5e955aade" uuid="695266b7-9361-4cfc-a627-daeea648460c"/>
+				<ConductingEquipment virtual="false" templateUuid="eb3fa376-0f71-432f-afeb-a0ca4adbdc3a" uuid="29bc7c85-97fe-49b9-afcd-424725ae92ad"/>
+				<ConductingEquipment virtual="false" templateUuid="99551389-48ce-4c15-bc6b-5f7550d85e6d" uuid="8a91441a-0806-4634-b7b1-1601160c834a"/>
+				<ConductingEquipment virtual="false" templateUuid="eecbe258-1560-4556-9185-6c748d786e0a" uuid="10b528d6-4813-4fb2-9281-b82a2225a4f1"/>
+				<ConductingEquipment virtual="false" templateUuid="0aece9bd-0d45-4566-b258-6df5e955aade" uuid="f293fa05-3a50-4c7c-924c-c7642976bf20"/>
+				<Function templateUuid="7cfebc52-ea35-42ae-88b3-02693d713fe8" uuid="40857743-fb3b-4424-a003-87fff58791ea"/>
+				<Function templateUuid="9e3b2d18-8ca4-48be-ad78-17c5bef7d1b2" uuid="8853704d-ee52-4c65-8012-b5327eab4607"/>
+				<Function templateUuid="584b3320-cf36-45e1-9371-be7a6e314e45" uuid="c7146524-3070-44ad-af1d-e4597ebfc065"/>
+			</Bay>
+			<Bay name="TEMPLATE" desc="Template Container"> <!-- alle types die ein Bay haben kann -->
+				<ConductingEquipment name="Circuit Breaker" virtual="false" uuid="ca722fc1-0403-4707-bfac-f10dc4459c3d" type="CBR" desc="Example Circuit Breaker Equipment">
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="068ead53-2dd0-4cf6-ad4d-e8e52cf6dce9"/>
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="4a4772ed-7050-49f8-a4ff-656b8f81a55e"/>
+					<EqFunction templateUuid="f354d0e2-ba6b-49ae-9cda-b7f375071519" uuid="30321b03-844e-4acd-984b-ea806edf0bbb"/>
+				</ConductingEquipment>
+				<ConductingEquipment name="Disconnector" virtual="false" uuid="9e122308-39a6-46f1-a455-b816f4dc708d" type="DIS" desc="Example Disconnector Equipment">
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="f97c08a5-c937-4431-8306-dc6b01e7345b"/>
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="0a61b71a-5431-4329-9375-2668702141ca"/>
+					<EqFunction templateUuid="13346776-65c5-4f6a-97a2-1d789e9bb117" uuid="17d263bf-b35e-4f52-a1f6-d39649d4e82e"/>
+				</ConductingEquipment>
+				<ConductingEquipment name="Earth Switch" virtual="false" uuid="0aece9bd-0d45-4566-b258-6df5e955aade" type="DIS" desc="Example Earth Switch Equipment">
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="df9be53d-08d8-44aa-9a32-8135cbd688c5"/>
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="09d7d893-1c5a-4ebf-965e-6572ae141147"/>
+					<EqFunction templateUuid="13346776-65c5-4f6a-97a2-1d789e9bb117" uuid="9570da2d-7e4b-4a35-a60f-a7df9eb3648b"/>
+				</ConductingEquipment>
+				<ConductingEquipment name="Current Transformer" virtual="false" uuid="eb3fa376-0f71-432f-afeb-a0ca4adbdc3a" type="CTR" desc="Example Current Transformer Equipment">
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="73ffb320-adec-4741-9b71-cff258d33f7e"/>
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="ba40489c-13fb-4a71-945b-b158546f55ec"/>
+					<EqFunction templateUuid="64fd59c9-ca2c-4b5f-8e40-3cebb4498148" uuid="44d9614f-68a2-4835-a652-257ec378f07c"/>
+				</ConductingEquipment>
+				<ConductingEquipment name="Voltage Transformer" virtual="false" uuid="99551389-48ce-4c15-bc6b-5f7550d85e6d" type="VTR" desc="Example Voltage Transformer Equipment">
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="ab6392fe-ac37-4f86-8731-e552895f6f08"/>
+					<EqFunction templateUuid="1710f119-bc4d-48ab-9d35-32c0d2aee59e" uuid="a31ffc3b-b2b0-4bf2-a6f8-8047526256e1"/>
+				</ConductingEquipment>
+				<ConductingEquipment name="Reactor" virtual="false" uuid="eecbe258-1560-4556-9185-6c748d786e0a" type="REA" desc="Example Reactor Equipment">
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="1cdb133a-1e1b-4920-bb68-9a8fa2c91ac0"/>
+					<Terminal name="None" connectivityNode="None" cNodeName="None" uuid="0085dee4-54b0-4701-983e-5cc9e89fcafd"/>
+					<EqFunction templateUuid="d6cfc318-df37-45f8-ab5c-9b06a69bfd68" uuid="da84a874-4021-469e-a44a-f1a5c7fe9efc"/>
+				</ConductingEquipment>
+				<Function name="CircuitBreakerFunction" uuid="f354d0e2-ba6b-49ae-9cda-b7f375071519" desc="Example EQ-Function for Circut Breaker">
+					<LNode lnClass="XCBR" lnInst="1" iedName="None" lnType="XCBR$184311" uuid="4c13d6f3-1c1c-44c4-9b85-7fd278a64b47"/>
+				</Function>
+				<Function name="DisconnectorFunction" uuid="13346776-65c5-4f6a-97a2-1d789e9bb117" desc="Example EQ-Function for Disconnector">
+					<LNode lnClass="XSWI" lnInst="1" iedName="None" lnType="XSWI$oscd$_5114e81752706b92" uuid="c6b43634-b099-443e-a2f4-5be17d8e9107"/>
+				</Function>
+				<Function name="VoltageTransformerFunction" uuid="1710f119-bc4d-48ab-9d35-32c0d2aee59e" desc="Example EQ-Function for Voltage Transformer">
+					<LNode lnClass="TVTR" lnInst="1" iedName="None" lnType="TVTR$oscd$_822fbc3ef43bbdb4" uuid="8eedd081-d96a-41b6-940f-a231a5d20946"/>
+				</Function>
+				<Function name="CurrentTransformerFunction" uuid="64fd59c9-ca2c-4b5f-8e40-3cebb4498148" desc="Example EQ-Function for Current Transformer">
+					<LNode lnClass="TCTR" lnInst="1" iedName="None" lnType="TCTR$oscd$_05f26e37d70a194a" uuid="998ba277-2053-462d-a397-0cf85c249401"/>
+				</Function>
+				<Function name="ReactorFunction" uuid="d6cfc318-df37-45f8-ab5c-9b06a69bfd68" desc="Example EQ-Function for Reactor">
+					<LNode lnClass="ZREA" lnInst="1" iedName="None" lnType="ZREA$oscd$_5d0dfeafc8abf016" uuid="858f36e1-cc7d-4f45-8e14-3e5bbc71678d"/>
+					<LNode lnClass="YLTC" lnInst="1" iedName="None" lnType="YLTC$oscd$_cfafbcdc32609774" uuid="df81d7f9-ee5e-4573-90b0-1543855086bd"/>
+				</Function>
+				<Function name="Protection" uuid="7cfebc52-ea35-42ae-88b3-02693d713fe8" desc="Example Function for  Protection">
+					<LNode lnClass="PDIF" lnInst="1" iedName="None" lnType="PDIF$12345" uuid="50c8caf1-8222-4f15-afb4-b4405f944022"/>
+					<LNode lnClass="PTOC" lnInst="1" iedName="None" lnType="PTOC$26842" uuid="b55871e2-12d6-4189-9e1a-78e35c0be602"/>
+				</Function>
+				<Function name="Measuring" uuid="9e3b2d18-8ca4-48be-ad78-17c5bef7d1b2" desc="Example Function for  Measuring">
+					<LNode lnClass="MMXU" lnInst="1" iedName="None" lnType="MMXU$58943" uuid="0d1f2c2f-7a79-4f0f-a6c6-64ea3036e480"/>
+				</Function>
+				<Function name="Controlling" uuid="584b3320-cf36-45e1-9371-be7a6e314e45" desc="Example Function for  Control">
+					<LNode lnClass="CILO" lnInst="1" iedName="None" lnType="CILO$oscd$_117e876e8a192ec7" uuid="cc867a20-db32-4280-bd48-bc2f573a16d3"/>
+					<LNode lnClass="ATCC" lnInst="1" iedName="None" lnType="ATCC$oscd$_3aa8183ff4d049c1" uuid="77ee7626-059d-4952-bd76-785a4d846efa"/>
+				</Function>
+			</Bay>
+		</VoltageLevel>
+	</Substation>
+	<DataTypeTemplates>
+		<!-- Logical Node Class Definitions -->
+		<LNodeType lnClass="ATCC" id="ATCC$oscd$_3aa8183ff4d049c1">
+			<DO name="Beh" type="Beh$oscd$_27e9f363eb9812fc"/>
+		</LNodeType>
+		<LNodeType lnClass="YLTC" id="YLTC$oscd$_cfafbcdc32609774">
+			<DO name="Beh" type="Beh$oscd$_27e9f363eb9812fc"/>
+			<DO name="EndPosL" type="EndPosL$oscd$_d915d66d9e42a575"/>
+			<DO name="EndPosR" type="EndPosR$oscd$_d915d66d9e42a575"/>
+		</LNodeType>
+		<LNodeType lnClass="ZREA" id="ZREA$oscd$_5d0dfeafc8abf016">
+			<DO name="Beh" type="Beh$oscd$_27e9f363eb9812fc"/>
+		</LNodeType>
+		<LNodeType lnClass="TCTR" id="TCTR$oscd$_05f26e37d70a194a">
+			<DO name="ARtg" type="ARtg$oscd$_4ca2fb9e1213cb81"/>
+			<DO name="Beh" type="Beh$oscd$_27e9f363eb9812fc"/>
+			<DO name="HzRtg" type="HzRtg$oscd$_4ca2fb9e1213cb81"/>
+		</LNodeType>
+		<LNodeType lnClass="TVTR" id="TVTR$oscd$_822fbc3ef43bbdb4">
+			<DO name="Beh" type="Beh$oscd$_27e9f363eb9812fc"/>
+			<DO name="HzRtg" type="HzRtg$oscd$_4ca2fb9e1213cb81"/>
+			<DO name="VRtg" type="VRtg$oscd$_4ca2fb9e1213cb81"/>
+		</LNodeType>
+		<LNodeType lnClass="XSWI" id="XSWI$oscd$_5114e81752706b92">
+			<DO name="Beh" type="Beh$oscd$_27e9f363eb9812fc"/>
+			<DO name="BlkCls" type="BlkCls$oscd$_53c7a68f14acf795"/>
+			<DO name="BlkOpn" type="BlkOpn$oscd$_53c7a68f14acf795"/>
+			<DO name="Loc" type="Loc$oscd$_d915d66d9e42a575"/>
+			<DO name="OpCnt" type="OpCnt$oscd$_bbaa9369107884bc"/>
+			<DO name="Pos" type="Pos$oscd$_98368a53c8d4eb20"/>
+			<DO name="SwTyp" type="SwTyp$oscd$_27e9f363eb9812fc"/>
+		</LNodeType>
+		<LNodeType lnClass="LPHD" id="LPHD$oscd$_828d2d9919a24175">
+			<DO name="PhyHealth" type="PhyHealth$oscd$_27e9f363eb9812fc"/>
+			<DO name="PhyNam" type="PhyNam$oscd$_1b7440bbb0dea6d1"/>
+			<DO name="Proxy" type="Proxy$oscd$_d915d66d9e42a575"/>
+		</LNodeType>
+		<LNodeType lnClass="LLN0" id="LLN0$oscd$_2568ebb807493c61">
+			<DO name="Beh" type="Beh$oscd$_27e9f363eb9812fc"/>
+		</LNodeType>
+		<LNodeType lnClass="CILO" id="CILO$oscd$_117e876e8a192ec7">
+			<DO name="Beh" type="Beh$oscd$_27e9f363eb9812fc"/>
+			<DO name="EnaCls" type="EnaCls$oscd$_d915d66d9e42a575"/>
+			<DO name="EnaOpn" type="EnaOpn$oscd$_d915d66d9e42a575"/>
+		</LNodeType>
+		<LNodeType id="CSWI$154218" lnClass="CSWI" desc="Switchcontrol">
+			<DO name="Pos" type="DPC"/>
+		</LNodeType>
+		<LNodeType id="XCBR$184311" lnClass="XCBR" desc="Model of Circuitbreaker">
+			<DO name="OpCnt" type="INS"/>
+		</LNodeType>
+		<LNodeType id="PTOC$26842" lnClass="PTOC" desc="Overcurrent Protection">
+			<DO name="Str" type="BOOLEAN"/>
+		</LNodeType>
+		<LNodeType id="PDIF$12345" lnClass="PDIF" desc="Differential Protection">
+			<DO name="Diff" type="FLOAT32"/>
+		</LNodeType>
+		<LNodeType id="MMXU$58943" lnClass="MMXU" desc="Metering">
+			<DO name="TotW" type="FLOAT32"/>
+		</LNodeType>
+		<!-- Data Object Type Definitions -->
+		<DOType cdc="SPS" id="EndPosR$oscd$_d915d66d9e42a575">
+			<DA name="stVal" fc="ST" dchg="true" bType="BOOLEAN"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+		</DOType>
+		<DOType cdc="SPS" id="EndPosL$oscd$_d915d66d9e42a575">
+			<DA name="stVal" fc="ST" dchg="true" bType="BOOLEAN"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+		</DOType>
+		<DOType cdc="ASG" id="ARtg$oscd$_4ca2fb9e1213cb81">
+			<DA name="setMag" fc="SE" bType="Struct" type="setMag$oscd$_fa38fd5c52d1b4a0"/>
+		</DOType>
+		<DOType cdc="ASG" id="VRtg$oscd$_4ca2fb9e1213cb81">
+			<DA name="setMag" fc="SE" bType="Struct" type="setMag$oscd$_fa38fd5c52d1b4a0"/>
+		</DOType>
+		<DOType cdc="ASG" id="HzRtg$oscd$_4ca2fb9e1213cb81">
+			<DA name="setMag" fc="SE" bType="Struct" type="setMag$oscd$_fa38fd5c52d1b4a0"/>
+		</DOType>
+		<DOType cdc="ENS" id="SwTyp$oscd$_27e9f363eb9812fc">
+			<DA name="stVal" fc="ST" dchg="true" dupd="true" bType="Enum" type="stVal$oscd$_3effb084713fc1fd"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+		</DOType>
+		<DOType cdc="DPC" id="Pos$oscd$_98368a53c8d4eb20">
+			<DA name="stVal" fc="ST" dchg="true" bType="Dbpos"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+			<DA name="ctlModel" fc="CF" dchg="true" bType="Enum" type="ctlModel$oscd$_3effb084713fc1fd"/>
+		</DOType>
+		<DOType cdc="INS" id="OpCnt$oscd$_bbaa9369107884bc">
+			<DA name="stVal" fc="ST" dchg="true" dupd="true" bType="INT32"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+		</DOType>
+		<DOType cdc="SPS" id="Loc$oscd$_d915d66d9e42a575">
+			<DA name="stVal" fc="ST" dchg="true" bType="BOOLEAN"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+		</DOType>
+		<DOType cdc="SPC" id="BlkOpn$oscd$_53c7a68f14acf795">
+			<DA name="ctlModel" fc="CF" dchg="true" bType="Enum" type="ctlModel$oscd$_3effb084713fc1fd"/>
+		</DOType>
+		<DOType cdc="SPC" id="BlkCls$oscd$_53c7a68f14acf795">
+			<DA name="ctlModel" fc="CF" dchg="true" bType="Enum" type="ctlModel$oscd$_3effb084713fc1fd"/>
+		</DOType>
+		<DOType cdc="SPS" id="Proxy$oscd$_d915d66d9e42a575">
+			<DA name="stVal" fc="ST" dchg="true" bType="BOOLEAN"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+		</DOType>
+		<DOType cdc="DPL" id="PhyNam$oscd$_1b7440bbb0dea6d1">
+			<DA name="vendor" fc="DC" bType="VisString255"/>
+		</DOType>
+		<DOType cdc="ENS" id="PhyHealth$oscd$_27e9f363eb9812fc">
+			<DA name="stVal" fc="ST" dchg="true" dupd="true" bType="Enum" type="stVal$oscd$_3effb084713fc1fd"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+		</DOType>
+		<DOType cdc="SPS" id="EnaOpn$oscd$_d915d66d9e42a575">
+			<DA name="stVal" fc="ST" dchg="true" bType="BOOLEAN"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+		</DOType>
+		<DOType cdc="SPS" id="EnaCls$oscd$_d915d66d9e42a575">
+			<DA name="stVal" fc="ST" dchg="true" bType="BOOLEAN"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+		</DOType>
+		<DOType cdc="ENS" id="Beh$oscd$_27e9f363eb9812fc">
+			<DA name="stVal" fc="ST" dchg="true" dupd="true" bType="Enum" type="stVal$oscd$_3effb084713fc1fd"/>
+			<DA name="q" fc="ST" qchg="true" bType="Quality"/>
+			<DA name="t" fc="ST" bType="Timestamp"/>
+		</DOType>
+		<DOType id="DPC" cdc="DPC">
+			<DA name="stVal" bType="Enum" valKind="RO" valImport="true"/>
+			<DA name="ctlVal" bType="Enum" valKind="Set"/>
+		</DOType>
+		<DOType id="INS" cdc="INS">
+			<DA name="stVal" bType="INT32" valKind="RO"/>
+		</DOType>
+		<DOType id="BOOLEAN" cdc="SPC">
+			<DA name="stVal" bType="BOOLEAN" valKind="RO"/>
+		</DOType>
+		<DOType id="FLOAT32" cdc="MV">
+			<DA name="mag" bType="FLOAT32" valKind="RO"/>
+		</DOType>
+		<DAType id="setMag$oscd$_fa38fd5c52d1b4a0"/>
+		<EnumType id="ctlModel$oscd$_3effb084713fc1fd"/>
+		<EnumType id="stVal$oscd$_3effb084713fc1fd"/>
+	</DataTypeTemplates>
+</SCL>
