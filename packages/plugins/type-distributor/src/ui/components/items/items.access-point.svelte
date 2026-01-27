@@ -2,19 +2,16 @@
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
 import { dndStore } from '@/headless/stores'
-import { getLNodesFromAccessPoint } from '@/headless/ied'
 import LnodeCard from './lnode-card.svelte'
+  import type { LNodeTemplate } from '@/headless/types';
 
 interface Props {
 	accessPoint: Element
+  lNodes: LNodeTemplate[]
 	sIedName: string
 }
 
-const { accessPoint, sIedName }: Props = $props()
-
-const lNodes = $derived.by(() => {
-	return getLNodesFromAccessPoint(accessPoint)
-})
+const { accessPoint, lNodes, sIedName }: Props = $props()
 
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
