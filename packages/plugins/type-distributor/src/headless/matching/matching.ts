@@ -12,6 +12,28 @@ export type EquipmentMatch = {
 }
 
 /**
+ * Main matching function: Matches SCD equipment to BayType equipment
+ * 
+ * If manual matches are provided, uses hybrid matching (manual + automatic).
+ * If no manual matches, uses automatic sequential matching for all equipment.
+ * 
+ * @param scdBay The SCD Bay element
+ * @param bayType The BayType to match against
+ * @param manualMatches Optional map of equipment name to template UUID
+ * @returns Array of equipment matches
+ */
+export function matchEquipment(
+	scdBay: Element,
+	bayType: BayType,
+	manualMatches?: Map<string, string>
+): EquipmentMatch[] {
+	if (!manualMatches || manualMatches.size === 0) {
+		return matchEquipmentSequentially(scdBay, bayType)
+	}
+	return matchEquipmentHybrid(scdBay, bayType, manualMatches)
+}
+
+/**
  * Matches SCD equipment to BayType equipment sequentially by type.
  * For duplicate types (e.g., multiple "DIS"), matches in order: 1st->1st, 2nd->2nd, etc.
  *
@@ -167,20 +189,16 @@ export function matchEquipmentManually(
 	return matches
 }
 
-import type { AmbiguousTypeInfo } from './validation'
-
 /**
- * Hybrid matching: Uses manual matches for ambiguous types, automatic sequential for the rest
+ * Hybrid matching: Uses manual matches for specified equipment, automatic sequential for the rest
  * @param scdBay The SCD Bay element
  * @param bayType The BayType to match against
- * @param manualMatches Map of equipment name to template UUID for ambiguous equipment
- * @param ambiguousTypes Array of ambiguous type information
+ * @param manualMatches Map of equipment name to template UUID
  */
-export function matchEquipmentHybrid(
+function matchEquipmentHybrid(
 	scdBay: Element,
 	bayType: BayType,
-	manualMatches: Map<string, string>,
-	ambiguousTypes: AmbiguousTypeInfo[]
+	manualMatches: Map<string, string>
 ): EquipmentMatch[] {
 	const matches: EquipmentMatch[] = []
 
@@ -188,9 +206,6 @@ export function matchEquipmentHybrid(
 	const scdConductingEquipment = Array.from(
 		scdBay.querySelectorAll('ConductingEquipment')
 	)
-
-	// Extract type codes from ambiguous types
-	const ambiguousTypeCodes = ambiguousTypes.map(info => info.typeCode)
 
 	// Build list of all bayType equipment with their templates
 	const bayTypeEquipmentList: {
@@ -220,22 +235,18 @@ export function matchEquipmentHybrid(
 		
 		if (!scdName || !scdType) continue
 
-		// Check if this type is ambiguous
-		if (ambiguousTypeCodes.includes(scdType)) {
+		// Check if there's a manual match for this equipment
+		const manualTemplateUuid = manualMatches.get(scdName)
+		
+		if (manualTemplateUuid) {
 			// Use manual match
-			const selectedTemplateUuid = manualMatches.get(scdName)
-			if (!selectedTemplateUuid) {
-				throw new Error(`No manual match found for ambiguous equipment "${scdName}" (type: ${scdType})`)
-			}
-
-			// Find an unused bayType equipment with the selected template
 			const availableMatch = bayTypeEquipmentList.find(
-				item => item.template.uuid === selectedTemplateUuid && 
+				item => item.template.uuid === manualTemplateUuid && 
 				        !usedBayTypeUuids.has(item.bayTypeEquipment.uuid)
 			)
 
 			if (!availableMatch) {
-				throw new Error(`No available BayType equipment found for template "${selectedTemplateUuid}"`)
+				throw new Error(`No available BayType equipment found for manual match "${manualTemplateUuid}"`)
 			}
 
 			usedBayTypeUuids.add(availableMatch.bayTypeEquipment.uuid)
@@ -245,8 +256,7 @@ export function matchEquipmentHybrid(
 				templateEquipment: availableMatch.template
 			})
 		} else {
-			// Use automatic sequential matching for non-ambiguous types
-			// Find the next unused bayType equipment of this type
+			// Use automatic sequential matching
 			const availableMatch = bayTypeEquipmentList.find(
 				item => item.template.type === scdType && 
 				        !usedBayTypeUuids.has(item.bayTypeEquipment.uuid)
