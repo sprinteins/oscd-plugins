@@ -109,9 +109,9 @@ describe('validation - ambiguous type detection', () => {
 		expect(result.requiresManualMatching).toBe(true)
 		expect(result.ambiguousTypes).toBeDefined()
 		expect(result.ambiguousTypes?.length).toBeGreaterThan(0)
-		expect(result.ambiguousTypes?.[0]).toContain('DIS')
-		expect(result.ambiguousTypes?.[0]).toContain('Disconnector')
-		expect(result.ambiguousTypes?.[0]).toContain('Earth Switch')
+		expect(result.ambiguousTypes?.[0].typeCode).toBe('DIS')
+		expect(result.ambiguousTypes?.[0].templateNames).toContain('Disconnector')
+		expect(result.ambiguousTypes?.[0].templateNames).toContain('Earth Switch')
 		expect(result.errors[0]).toContain('Manual matching required')
 	})
 

@@ -1,11 +1,16 @@
 import type { BayType, ConductingEquipmentTemplate, ConductingEquipmentType } from '../types'
 import { ssdImportStore } from '../stores'
 
+export type AmbiguousTypeInfo = {
+	typeCode: string
+	templateNames: string[]
+}
+
 export type ValidationResult = {
 	isValid: boolean
 	errors: string[]
 	requiresManualMatching?: boolean
-	ambiguousTypes?: string[]
+	ambiguousTypes?: AmbiguousTypeInfo[]
 	canAutoMatch?: boolean
 }
 
@@ -59,6 +64,11 @@ export function validateEquipmentMatch(
 	// Detect ambiguous types (multiple templates with same type but different names/purposes)
 	const ambiguousTypes = detectAmbiguousTypes(bayTypeCETemplates)
 	if (ambiguousTypes.length > 0) {
+		// Add manual matching message first
+		errors.push(
+			'Manual matching required: Multiple equipment templates with the same type but different names found.'
+		)
+		
 		// Count mismatches - still validate counts
 		for (const [type, scdElements] of Object.entries(scdCEByType)) {
 			const bayTypeElements = bayTypeCEByType[type] || []
@@ -78,20 +88,9 @@ export function validateEquipmentMatch(
 			}
 		}
 
-		if (errors.length > 0) {
-			return {
-				isValid: false,
-				errors,
-				requiresManualMatching: true,
-				ambiguousTypes,
-				canAutoMatch: false
-			}
-		}
-
-		// Counts match, but manual matching required due to ambiguity
 		return {
-			isValid: true,
-			errors: [],
+			isValid: false,
+			errors,
 			requiresManualMatching: true,
 			ambiguousTypes,
 			canAutoMatch: false
@@ -136,7 +135,7 @@ export function validateEquipmentMatch(
  */
 function detectAmbiguousTypes(
 	templates: ConductingEquipmentTemplate[]
-): string[] {
+): AmbiguousTypeInfo[] {
 	const typeGroups = new Map<string, ConductingEquipmentTemplate[]>()
 
 	// Group templates by type
@@ -147,15 +146,16 @@ function detectAmbiguousTypes(
 	}
 
 	// Find types with multiple templates
-	const ambiguous: string[] = []
+	const ambiguous: AmbiguousTypeInfo[] = []
 	for (const [type, group] of typeGroups.entries()) {
 		if (group.length > 1) {
 			// Check if they have different names (not just duplicates)
 			const uniqueNames = new Set(group.map((t) => t.name))
 			if (uniqueNames.size > 1) {
-				ambiguous.push(
-					`${type} (${Array.from(uniqueNames).join(', ')})`
-				)
+				ambiguous.push({
+					typeCode: type,
+					templateNames: Array.from(uniqueNames)
+				})
 			}
 		}
 	}

@@ -59,7 +59,9 @@ export function onSelectBayType(bayName: string, applyChanges = false): void {
 		return
 	}
 
-	if (!validation.isValid) {
+	// When applying, check if validation allows proceeding
+	if (applyChanges && !validation.isValid && !validation.requiresManualMatching) {
+		// Hard validation failure (not just requiring manual matching)
 		throw new Error(
 			`Equipment validation failed:\n${validation.errors.join('\n')}`
 		)
