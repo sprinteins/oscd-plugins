@@ -19,6 +19,6 @@
 export { validateBayTypeSelection } from './validateBayTypeSelection'
 export { applyBayTypeSelection } from './applyBayTypeSelection'
 export { validateEquipmentMatch } from './validation'
-export { matchEquipment, matchEquipmentSequentially, matchEquipmentManually } from './matching'
+export { matchEquipment } from './matching'
 export type { EquipmentMatch } from './matching'
 export type { ValidationResult, AmbiguousTypeInfo } from './validation'
