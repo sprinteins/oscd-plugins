@@ -1,11 +1,16 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
-import { ssdImportStore, bayTypesStore, equipmentMatchingStore } from '../stores'
-import { getDocumentAndEditor, getBayElement } from '../distribution/utils/document-helpers'
+import {
+	ssdImportStore,
+	bayTypesStore,
+	equipmentMatchingStore
+} from '../stores'
 import { copyRelevantDataTypeTemplates } from '../distribution/data-types/copy-data-type-templates'
-import { matchEquipment, type EquipmentMatch } from './matching'
+import { matchEquipment } from './matching'
 import { createEquipmentUpdateEdits } from './equipment-updates'
 import { createEqFunctionInsertEdits } from './eqfunction-creation'
 import { createFunctionInsertEdits } from './function-creation'
+import { updateBay } from './bay-update'
+import { getBayElement, getDocumentAndEditor } from '../distribution'
 
 export function applyBayTypeSelection(bayName: string): void {
 	const { doc, editor } = getDocumentAndEditor()
@@ -26,15 +31,19 @@ export function applyBayTypeSelection(bayName: string): void {
 	const scdBay = getBayElement(doc, bayName)
 
 	const matches = matchEquipment(
-		scdBay, 
-		bayType, 
+		scdBay,
+		bayType,
 		equipmentMatchingStore.manualMatches
 	)
 
 	const edits: (Insert | SetAttributes)[] = []
 
-	const updateEdits = createEquipmentUpdateEdits(matches, scdBay, bayType) // here also the Bay Update currently happens
-	edits.push(...updateEdits)
+    //TODO: This should only happen once the LNode is assigned later.
+	const bayEdits = updateBay(scdBay, bayType)
+	edits.push(bayEdits)
+
+	const equipmentEdits = createEquipmentUpdateEdits(matches)
+	edits.push(...equipmentEdits)
 
 	const eqFunctionEdits = createEqFunctionInsertEdits(doc, matches)
 	edits.push(...eqFunctionEdits)
