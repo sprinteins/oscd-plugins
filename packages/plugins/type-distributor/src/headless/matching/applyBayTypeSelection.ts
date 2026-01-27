@@ -8,27 +8,10 @@ import { createEquipmentUpdateEdits } from './equipment-updates'
 import { createEqFunctionInsertEdits } from './eqfunction-creation'
 import { createFunctionInsertEdits } from './function-creation'
 
-/**
- * Applies a BayType to an SCD Bay
- * 
- * This function:
- * - Validates equipment match (re-validates to ensure consistency)
- * - Matches equipment (automatic or hybrid with manual matches)
- * - Creates UUID relationships for equipment and Bay
- * - Copies EqFunctions and Functions from templates
- * - Copies DataTypeTemplates for all LNodes
- * - Commits all changes as a single atomic operation
- * 
- * @param bayName The name of the Bay in the SCD to update
- * @throws Error if validation fails or required data is missing
- */
 export function applyBayTypeSelection(bayName: string): void {
-	console.log('[applyBayTypeSelection] Called', { bayName })
 	const { doc, editor } = getDocumentAndEditor()
 
-	// Get selected BayType
 	const selectedBayTypeName = bayTypesStore.selectedBayType
-	console.log('[applyBayTypeSelection] Selected bay type:', selectedBayTypeName)
 	if (!selectedBayTypeName) {
 		throw new Error('No BayType selected')
 	}
@@ -36,19 +19,14 @@ export function applyBayTypeSelection(bayName: string): void {
 	const bayType = ssdImportStore.bayTypes.find(
 		(bay) => bay.uuid === selectedBayTypeName
 	)
-	console.log('[applyBayTypeSelection] Found bay type:', bayType)
 
 	if (!bayType) {
 		throw new Error(`BayType "${selectedBayTypeName}" not found`)
 	}
 
-	// Get SCD Bay element
 	const scdBay = getBayElement(doc, bayName)
-	console.log('[applyBayTypeSelection] SCD Bay element:', scdBay)
 
-	// Re-validate equipment match
 	const validation = validateEquipmentMatch(scdBay, bayType)
-	console.log('[applyBayTypeSelection] Validation result:', validation)
 	
 	// Store validation result for UI (preserve manual matches)
 	equipmentMatchingStore.setValidationResult(validation, false)

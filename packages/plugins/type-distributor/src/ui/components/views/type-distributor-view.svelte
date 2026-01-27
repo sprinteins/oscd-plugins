@@ -14,7 +14,7 @@ import { BayTypeDetails, BayTypeValidation } from '@/ui/components'
 import { getSIEDs } from '@/headless/ied'
 import SIedDetails from '../s-ied-details.svelte'
 import { AddSIedApDialogTrigger } from '../s-ied-ap'
-import { validateBayTypeSelection, applyBayTypeSelection } from '@/headless/matching'
+import { validateBayTypeSelection } from '@/headless/matching'
 
 const bayTypeOptions = $derived(
 	bayTypesStore.bayTypes.map((bt: BayType) => ({
@@ -55,22 +55,6 @@ function handleBayTypeChange() {
 		console.error('[handleBayTypeChange] Error:', error)
 	}
 }
-
-function handleApplyBayType() {
-	bayTypeError = null
-
-	if (!bayStore.selectedBay) {
-		bayTypeError = 'No Bay selected'
-		return
-	}
-
-	try {
-		applyBayTypeSelection(bayStore.selectedBay)
-		equipmentMatchingStore.clearValidationResult()
-	} catch (error) {
-		console.error('[handleApplyBayType] Error:', error)
-	}
-}
 </script>
 
 <div class="grid grid-cols-3 gap-4 w-full h-full p-4 overflow-hidden">
@@ -101,7 +85,7 @@ function handleApplyBayType() {
 			/>
 		</Card.Header>
 		<Card.Content class="overflow-y-auto space-y-4">
-			<BayTypeValidation {bayTypeError} onApply={handleApplyBayType} />
+			<BayTypeValidation {bayTypeError} />
 
 			{#if bayTypeWithTemplates}
 				<BayTypeDetails

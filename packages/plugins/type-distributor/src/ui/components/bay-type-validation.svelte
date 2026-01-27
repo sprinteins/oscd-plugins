@@ -6,14 +6,26 @@ import {
 } from '@/headless/stores'
 import { Button } from '@oscd-plugins/core-ui-svelte'
 import EquipmentMatching from '@/ui/components/equipment-matching.svelte'
+import { applyBayTypeSelection } from '@/headless/matching'
 
 const {
-	bayTypeError,
-	onApply
+	bayTypeError
 }: {
 	bayTypeError: string | null
-	onApply: () => void
 } = $props()
+
+function handleApplyBayType() {
+	if (!bayStore.selectedBay) {
+		return
+	}
+
+	try {
+		applyBayTypeSelection(bayStore.selectedBay)
+		equipmentMatchingStore.clearValidationResult()
+	} catch (error) {
+		console.error('[handleApplyBayType] Error:', error)
+	}
+}
 
 const hasValidSelection = $derived(
 	!!bayTypesStore.selectedBayType &&
@@ -105,7 +117,7 @@ const canApply = $derived.by(() => {
 {/if}
 
 {#if bayTypesStore.selectedBayType && equipmentMatchingStore.validationResult && (equipmentMatchingStore.validationResult.isValid || equipmentMatchingStore.validationResult.requiresManualMatching)}
-    <Button.Root onclick={onApply} disabled={!canApply} class="w-full">
+    <Button.Root onclick={handleApplyBayType} disabled={!canApply} class="w-full">
         Apply Bay Type
     </Button.Root>
 {/if}
