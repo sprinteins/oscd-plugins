@@ -127,12 +127,17 @@ function downloadTemplateContent(
               e.key === "Enter" && displayTitleAndDescription(e)}
           >
             {templateTitle}
-          </div></Tooltip
-        >
+          </div>
+        </Tooltip>
       </div>
       <div>
         <div>
-          <Button onclick={() => menu.setOpen(true)} disabled={isGenerating}>
+          <Button
+            class="export-button"
+            variant="raised"
+            onclick={() => menu.setOpen(true)}
+            disabled={isGenerating}
+          >
             <Label>
               {isGenerating ? "Generating..." : "Generate Document"}</Label
             >
