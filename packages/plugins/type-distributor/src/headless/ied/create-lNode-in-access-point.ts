@@ -107,7 +107,7 @@ export function createLNodesInAccessPoint({
 			lnInst: lnode.lnInst
 		})
 
-		const lnElement = doc.createElement(lnode.lnClass === 'lln0' ? 'LN0' : 'LN')
+		const lnElement = doc.createElement(lnode.lnClass === 'lln0' ? 'LLN0' : 'LN')
 		lnElement.setAttribute('lnClass', lnode.lnClass)
 		lnElement.setAttribute('lnType', lnode.lnType)
 		lnElement.setAttribute('lnInst', lnode.lnInst)
