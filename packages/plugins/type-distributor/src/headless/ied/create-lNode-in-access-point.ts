@@ -9,7 +9,8 @@ import type { XMLEditor } from '@openscd/oscd-editor'
 import {
 	createLNodeElement,
 	getOrCreateLDeviceElement,
-	getOrCreateServerElement
+	getOrCreateServerElement,
+	hasLNode
 } from '../elements'
 
 type CreateLNodesParams = {
@@ -75,6 +76,13 @@ function createLNodeInAccessPoint({
 	doc,
 	editor
 }: CreateLNodeParams): void {
+	if (hasLNode(lDevice, lNode)) {
+		console.warn(
+			`[createLNodesInAccessPoint] LN ${lNode.lnClass}:${lNode.lnType}:${lNode.lnInst} already exists in LDevice`
+		)
+		return
+	}
+
 	const lNodeElement = createLNodeElement(lNode, iedName, doc)
 
 	try {
