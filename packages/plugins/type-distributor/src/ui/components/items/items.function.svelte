@@ -34,6 +34,7 @@ function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
     dndStore.handleDragStart({
         type: 'lNode',
         data: lnode,
+        parentFunction: func
     })
 }
 
@@ -71,6 +72,7 @@ function handleLNodeDragEnd() {
             {#each func.lnodes as lnode}
                  <LnodeCard
 				{lnode}
+				parentFunction={func}
 				draggable={true}
 				onDragStart={handleLNodeDragStart}
 				onDragEnd={handleLNodeDragEnd}

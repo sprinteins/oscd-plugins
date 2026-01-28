@@ -5,6 +5,7 @@ type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'
 	data: EqFunctionTemplate | FunctionTemplate | LNodeTemplate
 	equipmentName?: string
+	parentFunction?: EqFunctionTemplate | FunctionTemplate
 }
 
 class UseDndStore {
@@ -29,23 +30,24 @@ class UseDndStore {
 		}
 
 		let lNodes: LNodeTemplate[]
-		let lDeviceInst = this.draggedItem.equipmentName ?? 'LD1'
+		let functionFromSSD: EqFunctionTemplate | FunctionTemplate | undefined
 
 		switch (this.draggedItem.type) {
 			case 'lNode': {
 				lNodes = [this.draggedItem.data as LNodeTemplate]
+				functionFromSSD = this.draggedItem.parentFunction
 				break
 			}
 			case 'equipmentFunction': {
 				const data = this.draggedItem.data as EqFunctionTemplate
 				lNodes = data.lnodes || []
-				lDeviceInst = this.draggedItem.equipmentName ?? 'LD1'
+				functionFromSSD = data
 				break
 			}
 			case 'functionTemplate': {
 				const data = this.draggedItem.data as FunctionTemplate
 				lNodes = data.lnodes || []
-				lDeviceInst = data.name ?? 'LD1'
+				functionFromSSD = data
 				break
 			}
 		}
@@ -56,13 +58,19 @@ class UseDndStore {
 			return
 		}
 
+		if (!functionFromSSD) {
+			console.error('[DnD] No function data found for dropped item')
+			this.handleDragEnd()
+			return
+		}
+
 		try {
-			createLNodesInAccessPoint({
-				accessPoint: targetAccessPoint,
+			createLNodesInAccessPoint(
+				functionFromSSD,
 				lNodes,
-				iedName: targetSIedName,
-				lDeviceInst
-			})
+				targetSIedName,
+				targetAccessPoint
+			)
 		} catch (error) {
 			console.error('[DnD] Error creating LNodes:', error)
 		}

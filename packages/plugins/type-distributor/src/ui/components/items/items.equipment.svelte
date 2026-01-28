@@ -35,7 +35,7 @@ function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
     dndStore.handleDragStart({
         type: 'lNode',
         data: lnode,
-        equipmentName
+        parentFunction: eqFunction
     })
 }
 
@@ -75,6 +75,7 @@ function handleLNodeDragEnd() {
             {#each eqFunction.lnodes as lnode}
                 <LnodeCard
 				{lnode}
+				parentFunction={eqFunction}
 				draggable={true}
 				onDragStart={handleLNodeDragStart}
 				onDragEnd={handleLNodeDragEnd}

@@ -1,13 +1,12 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type { Insert } from '@openscd/oscd-api'
-import type { LNodeTemplate } from '../types'
+import type { ConductingEquipmentTemplate, FunctionTemplate, LNodeTemplate } from '../types'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import {
-	createLDeviceElement,
 	createLNodeElement,
 	createServerElementWithAuth,
 	getExistingServer,
-	getLDevice
+	getOrCreateLDeviceElement
 } from '../elements'
 
 type CreateLNodesParams = {
@@ -53,14 +52,10 @@ function ensureServer(
 function ensureLDevice(
 	server: Element,
 	doc: XMLDocument,
-	ldInst: string,
+	functionFromSSD: ConductingEquipmentTemplate | FunctionTemplate,
 	editor: XMLEditor
 ): Element {
-	const existingLDevice = getLDevice(server, ldInst)
-	if (existingLDevice) {
-		return existingLDevice
-	}
-	const lDevice = createLDeviceElement(ldInst, doc)
+	const lDevice = getOrCreateLDeviceElement(doc, functionFromSSD, server)
 
 	const edit: Insert = {
 		node: lDevice,
@@ -69,7 +64,7 @@ function ensureLDevice(
 	}
 
 	editor.commit(edit, {
-		title: `Add LDevice ${ldInst}`
+		title: `Add LDevice ${lDevice.getAttribute('inst')} to Server`
 	})
 
 	return lDevice
@@ -103,12 +98,12 @@ function createLNodeInAccessPoint({
 	}
 }
 
-export function createLNodesInAccessPoint({
-	accessPoint,
-	lNodes,
-	iedName,
- 	lDeviceInst = 'LD1'
-}: CreateLNodesParams): void {
+export function createLNodesInAccessPoint(
+	functionFromSSD: ConductingEquipmentTemplate | FunctionTemplate,
+	lNodes: LNodeTemplate[],
+	iedName: string,
+	accessPoint: Element
+): void {
 	const editor = pluginGlobalStore.editor
 	if (!editor) {
 		throw new Error('No editor found')
@@ -120,7 +115,7 @@ export function createLNodesInAccessPoint({
 
 	const doc = pluginGlobalStore.xmlDocument
 	const server = ensureServer(accessPoint, doc, editor)
-	const lDevice = ensureLDevice(server, doc, lDeviceInst, editor)
+	const lDevice = ensureLDevice(server, doc, functionFromSSD, editor)
 
 	for (const lNode of lNodes) {
 		createLNodeInAccessPoint({ lNode, lDevice, iedName, doc, editor })
