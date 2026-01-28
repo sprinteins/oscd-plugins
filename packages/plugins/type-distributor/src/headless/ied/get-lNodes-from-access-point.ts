@@ -29,6 +29,5 @@ export function getLNodesFromAccessPoint(
 			}
 		}
 	}
-
 	return lNodes
 }

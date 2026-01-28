@@ -1,7 +1,8 @@
 <script lang="ts">
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
-import type { EqFunctionTemplate } from '@/headless/types'
+import type { EqFunctionTemplate, LNodeTemplate } from '@/headless/types'
+import { dndStore } from '@/headless/stores'
 import LnodeCard from './lnode-card.svelte'
 
 interface Props {
@@ -12,11 +13,49 @@ interface Props {
 const { eqFunction, equipmentName }: Props = $props()
 
 let isOpen = $state(false)
+let isDragging = $derived(
+	dndStore.isDragging &&
+	dndStore.currentDraggedItem?.type === 'equipmentFunction' &&
+	dndStore.currentDraggedItem?.sourceFunction.uuid === eqFunction.uuid
+)
+
+function handleDragStart(event: DragEvent) {
+	dndStore.handleDragStart({
+		type: 'equipmentFunction',
+		sourceFunction: eqFunction,
+		lNodes: eqFunction.lnodes || [],
+		equipmentName
+	})
+}
+
+function handleDragEnd() {
+	dndStore.handleDragEnd()
+}
+
+function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
+	dndStore.handleDragStart({
+		type: 'lNode',
+		sourceFunction: eqFunction,
+        lNodes: [lnode],
+        equipmentName
+	})
+}
+
+function handleLNodeDragEnd() {
+    dndStore.handleDragEnd()
+}
 </script>
 
 <div class="space-y-1">
-    <button class="w-full" onclick={() => (isOpen = !isOpen)}>
-        <Card.Root class="hover:bg-gray-50 cursor-pointer">
+    <button
+		class="w-full"
+		onclick={() => (isOpen = !isOpen)}
+		draggable={true}
+		ondragstart={handleDragStart}
+		ondragend={handleDragEnd}
+		style:cursor={isDragging ? 'grabbing' : 'grab'}
+	>
+        <Card.Root class="hover:bg-gray-50 cursor-pointer transition-opacity {isDragging ? 'opacity-50' : ''}">
             <Card.Content class="p-2">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
@@ -36,7 +75,12 @@ let isOpen = $state(false)
     {#if isOpen}
         <div class="ml-4 space-y-1">
             {#each eqFunction.lnodes as lnode}
-                <LnodeCard {lnode} />
+                <LnodeCard
+				{lnode}
+				draggable={true}
+				onDragStart={handleLNodeDragStart}
+				onDragEnd={handleLNodeDragEnd}
+			/>
             {/each}
         </div>
     {/if}

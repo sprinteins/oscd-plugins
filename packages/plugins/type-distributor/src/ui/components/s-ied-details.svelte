@@ -12,14 +12,17 @@ const {
 const sIedData = $derived(
 	sIedItems.map((sIedItem) => ({
 		name: sIedItem.getAttribute('name') ?? 'Unnamed SIed',
-		accessPoints: Array.from(sIedItem.children).filter(
-			(child) => child.localName === 'AccessPoint'
-		),
+    accessPoints: Array.from(sIedItem.children)
+      .filter((child) => child.localName === 'AccessPoint')
+      .map((ap) => ({
+        element: ap,
+        lNodes: getLNodesFromAccessPoint(ap)
+      })),
 		element: sIedItem
 	}))
 )
+$inspect(sIedData, 'CHANGE SIED DATA')
 </script>
-
 {#if sIedData && sIedData.length > 0}
   <div class="space-y-2 mb-2">
     {#each sIedData as { name: sIedName, accessPoints }}
@@ -30,10 +33,10 @@ const sIedData = $derived(
           </Card.Content>
         </Card.Root>
       {:else}
-        {#each accessPoints as accessPoint}
+        {#each accessPoints as { element: accessPoint, lNodes }}
           <AccessPointItem
             {accessPoint}
-            lNodes={getLNodesFromAccessPoint(accessPoint)}
+            {lNodes}
             {sIedName}
           />
         {/each}
