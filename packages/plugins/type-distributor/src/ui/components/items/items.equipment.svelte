@@ -16,13 +16,14 @@ let isOpen = $state(false)
 let isDragging = $derived(
 	dndStore.isDragging &&
 	dndStore.currentDraggedItem?.type === 'equipmentFunction' &&
-	dndStore.currentDraggedItem?.data.uuid === eqFunction.uuid
+	dndStore.currentDraggedItem?.function.uuid === eqFunction.uuid
 )
 
 function handleDragStart(event: DragEvent) {
 	dndStore.handleDragStart({
 		type: 'equipmentFunction',
-		data: eqFunction,
+		function: eqFunction,
+		lNodes: eqFunction.lnodes || [],
 		equipmentName
 	})
 }
@@ -34,8 +35,9 @@ function handleDragEnd() {
 function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
     dndStore.handleDragStart({
         type: 'lNode',
-        data: lnode,
-        parentFunction: eqFunction
+        function: eqFunction,
+        lNodes: [lnode],
+        equipmentName
     })
 }
 
@@ -75,7 +77,6 @@ function handleLNodeDragEnd() {
             {#each eqFunction.lnodes as lnode}
                 <LnodeCard
 				{lnode}
-				parentFunction={eqFunction}
 				draggable={true}
 				onDragStart={handleLNodeDragStart}
 				onDragEnd={handleLNodeDragEnd}

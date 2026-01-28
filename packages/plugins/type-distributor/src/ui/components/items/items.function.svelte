@@ -15,13 +15,14 @@ let isOpen = $state(false)
 let isDragging = $derived(
 	dndStore.isDragging &&
 	dndStore.currentDraggedItem?.type === 'functionTemplate' &&
-	dndStore.currentDraggedItem?.data.uuid === func.uuid
+	dndStore.currentDraggedItem?.function.uuid === func.uuid
 )
 
 function handleDragStart(event: DragEvent) {
 	dndStore.handleDragStart({
 		type: 'functionTemplate',
-		data: func
+		function: func,
+		lNodes: func.lnodes || []
 	})
 }
 
@@ -33,8 +34,8 @@ function handleDragEnd() {
 function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
     dndStore.handleDragStart({
         type: 'lNode',
-        data: lnode,
-        parentFunction: func
+        function: func,
+        lNodes: [lnode]
     })
 }
 
@@ -72,7 +73,6 @@ function handleLNodeDragEnd() {
             {#each func.lnodes as lnode}
                  <LnodeCard
 				{lnode}
-				parentFunction={func}
 				draggable={true}
 				onDragStart={handleLNodeDragStart}
 				onDragEnd={handleLNodeDragEnd}
