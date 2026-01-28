@@ -5,7 +5,7 @@ export function createAccessPoints(
 	iedName: string,
 	accessPoints: { name: string; description?: string }[],
 	squash = false
-) {
+): void {
 	if (!pluginGlobalStore.xmlDocument) {
 		throw new Error('No XML document found')
 	}
@@ -41,7 +41,7 @@ export function createAccessPoints(
 		}
 
 		editor.commit(edit, {
-			squash: true
+			squash
 		})
 	}
 }
