@@ -1,6 +1,14 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type { Insert } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '../types'
+import type { XMLEditor } from '@openscd/oscd-editor'
+import {
+	createLDeviceElement,
+	createLNodeElement,
+	createServerElementWithAuth,
+	getExistingServer,
+	getLDevice
+} from '../elements'
 
 type CreateLNodesParams = {
 	accessPoint: Element
@@ -9,21 +17,25 @@ type CreateLNodesParams = {
 	ldInst?: string
 }
 
-function ensureServer(accessPoint: Element, doc: XMLDocument): Element {
-	const existingServer = Array.from(accessPoint.children).find(
-		(child) => child.localName === 'Server'
-	)
-	if (existingServer) return existingServer
+type CreateLNodeParams = {
+	lNode: LNodeTemplate
+	lDevice: Element
+	iedName: string
+	doc: XMLDocument
+	editor: XMLEditor
+}
 
-	const editor = pluginGlobalStore.editor
-	if (!editor) {
-		throw new Error('No editor found')
+function ensureServer(
+	accessPoint: Element,
+	doc: XMLDocument,
+	editor: XMLEditor
+): Element {
+	const existingServer = getExistingServer(doc, accessPoint)
+	if (existingServer) {
+		return existingServer
 	}
 
-	const serverElement = doc.createElement('Server')
-	const authElement = doc.createElement('Authentication')
-	authElement.setAttribute('none', 'true')
-	serverElement.appendChild(authElement)
+	const serverElement = createServerElementWithAuth(doc)
 
 	const edit: Insert = {
 		node: serverElement,
@@ -41,20 +53,14 @@ function ensureServer(accessPoint: Element, doc: XMLDocument): Element {
 function ensureLDevice(
 	server: Element,
 	doc: XMLDocument,
-	ldInst: string
+	ldInst: string,
+	editor: XMLEditor
 ): Element {
-	const existing = Array.from(server.children).find(
-		(child) => child.localName === 'LDevice' && child.getAttribute('inst') === ldInst
-	)
-	if (existing) return existing
-
-	const editor = pluginGlobalStore.editor
-	if (!editor) {
-		throw new Error('No editor found')
+	const existingLDevice = getLDevice(server, ldInst)
+	if (existingLDevice) {
+		return existingLDevice
 	}
-
-	const lDevice = doc.createElement('LDevice')
-	lDevice.setAttribute('inst', ldInst)
+	const lDevice = createLDeviceElement(ldInst, doc)
 
 	const edit: Insert = {
 		node: lDevice,
@@ -69,19 +75,40 @@ function ensureLDevice(
 	return lDevice
 }
 
+function createLNodeInAccessPoint({
+	lNode,
+	lDevice,
+	iedName,
+	doc,
+	editor
+}: CreateLNodeParams): void {
+	const lNodeElement = createLNodeElement(lNode, iedName, doc)
+
+	try {
+		const edit: Insert = {
+			node: lNodeElement,
+			parent: lDevice,
+			reference: null
+		}
+
+		editor.commit(edit, {
+			title: `Add LN ${lNode.lnClass} to ${iedName}`
+		})
+	} catch (error) {
+		console.error(
+			'[createLNodesInAccessPoint] Error dispatching edit event:',
+			error
+		)
+		throw error
+	}
+}
+
 export function createLNodesInAccessPoint({
 	accessPoint,
 	lNodes,
 	iedName,
 	ldInst = 'LD1'
 }: CreateLNodesParams): void {
-	console.log('[createLNodesInAccessPoint] Started', { 
-		ldInst, 
-		iedName, 
-		lNodesCount: lNodes.length,
-		apName: accessPoint.getAttribute('name')
-	})
-
 	const editor = pluginGlobalStore.editor
 	if (!editor) {
 		throw new Error('No editor found')
@@ -92,44 +119,10 @@ export function createLNodesInAccessPoint({
 	}
 
 	const doc = pluginGlobalStore.xmlDocument
-	console.log('[createLNodesInAccessPoint] Ensuring server...')
-	const server = ensureServer(accessPoint, doc)
-	console.log('[createLNodesInAccessPoint] Server ready:', server.tagName)
+	const server = ensureServer(accessPoint, doc, editor)
+	const lDevice = ensureLDevice(server, doc, ldInst, editor)
 
-	console.log('[createLNodesInAccessPoint] Ensuring LDevice with inst:', ldInst)
-	const lDevice = ensureLDevice(server, doc, ldInst)
-	console.log('[createLNodesInAccessPoint] LDevice ready:', lDevice.getAttribute('inst'))
-
-	for (const lnode of lNodes) {
-		console.log('[createLNodesInAccessPoint] Creating LN:', {
-			lnClass: lnode.lnClass,
-			lnType: lnode.lnType,
-			lnInst: lnode.lnInst
-		})
-
-		const lnElement = doc.createElement(lnode.lnClass === 'lln0' ? 'LLN0' : 'LN')
-		lnElement.setAttribute('lnClass', lnode.lnClass)
-		lnElement.setAttribute('lnType', lnode.lnType)
-		lnElement.setAttribute('lnInst', lnode.lnInst)
-		lnElement.setAttribute('iedName', iedName)
-
-		console.log('[createLNodesInAccessPoint] Dispatching edit event for LN')
-		try {
-			const edit: Insert = {
-				node: lnElement,
-				parent: lDevice,
-				reference: null
-			}
-
-			editor.commit(edit, {
-				title: `Add LN ${lnode.lnClass} to ${iedName}`
-			})
-			console.log('[createLNodesInAccessPoint] Edit event dispatched successfully')
-		} catch (error) {
-			console.error('[createLNodesInAccessPoint] Error dispatching edit event:', error)
-			throw error
-		}
+	for (const lNode of lNodes) {
+		createLNodeInAccessPoint({ lNode, lDevice, iedName, doc, editor })
 	}
-
-	console.log('[createLNodesInAccessPoint] Complete')
 }
