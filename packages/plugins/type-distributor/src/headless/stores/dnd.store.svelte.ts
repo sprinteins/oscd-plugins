@@ -29,16 +29,23 @@ class UseDndStore {
 		}
 
 		let lNodes: LNodeTemplate[]
-		let ldInst = this.draggedItem.equipmentName ?? 'LD1'
+		let lDeviceInst = this.draggedItem.equipmentName ?? 'LD1'
 
 		switch (this.draggedItem.type) {
-			case 'lNode':
+			case 'lNode': {
 				lNodes = [this.draggedItem.data as LNodeTemplate]
 				break
-			default: {
-				const data = this.draggedItem.data as EqFunctionTemplate | FunctionTemplate
+			}
+			case 'equipmentFunction': {
+				const data = this.draggedItem.data as EqFunctionTemplate
 				lNodes = data.lnodes || []
-				ldInst = this.draggedItem.equipmentName ?? data.name ?? 'LD1'
+				lDeviceInst = this.draggedItem.equipmentName ?? 'LD1'
+				break
+			}
+			case 'functionTemplate': {
+				const data = this.draggedItem.data as FunctionTemplate
+				lNodes = data.lnodes || []
+				lDeviceInst = data.name ?? 'LD1'
 				break
 			}
 		}
@@ -54,7 +61,7 @@ class UseDndStore {
 				accessPoint: targetAccessPoint,
 				lNodes,
 				iedName: targetSIedName,
-				ldInst
+				lDeviceInst
 			})
 		} catch (error) {
 			console.error('[DnD] Error creating LNodes:', error)

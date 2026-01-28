@@ -6,7 +6,7 @@ export function createServerElementWithAuth(doc: XMLDocument): Element {
   return serverElement;
 }
 
-export function getExistingServer(doc: XMLDocument, accessPoint: Element): Element | undefined {
+export function getExistingServer(accessPoint: Element): Element | undefined {
   return Array.from(accessPoint.children).find(
 		(child) => child.localName === 'Server'
 	)

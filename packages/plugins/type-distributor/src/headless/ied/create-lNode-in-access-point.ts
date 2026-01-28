@@ -14,7 +14,7 @@ type CreateLNodesParams = {
 	accessPoint: Element
 	lNodes: LNodeTemplate[]
 	iedName: string
-	ldInst?: string
+	lDeviceInst?: string
 }
 
 type CreateLNodeParams = {
@@ -30,7 +30,7 @@ function ensureServer(
 	doc: XMLDocument,
 	editor: XMLEditor
 ): Element {
-	const existingServer = getExistingServer(doc, accessPoint)
+	const existingServer = getExistingServer(accessPoint)
 	if (existingServer) {
 		return existingServer
 	}
@@ -107,7 +107,7 @@ export function createLNodesInAccessPoint({
 	accessPoint,
 	lNodes,
 	iedName,
-	ldInst = 'LD1'
+ 	lDeviceInst = 'LD1'
 }: CreateLNodesParams): void {
 	const editor = pluginGlobalStore.editor
 	if (!editor) {
@@ -120,7 +120,7 @@ export function createLNodesInAccessPoint({
 
 	const doc = pluginGlobalStore.xmlDocument
 	const server = ensureServer(accessPoint, doc, editor)
-	const lDevice = ensureLDevice(server, doc, ldInst, editor)
+	const lDevice = ensureLDevice(server, doc, lDeviceInst, editor)
 
 	for (const lNode of lNodes) {
 		createLNodeInAccessPoint({ lNode, lDevice, iedName, doc, editor })
