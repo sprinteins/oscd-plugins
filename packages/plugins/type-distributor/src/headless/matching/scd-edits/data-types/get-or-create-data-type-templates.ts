@@ -1,8 +1,9 @@
 import type { Insert } from '@openscd/oscd-api'
 
-export function getOrCreateDataTypeTemplates(
-	doc: XMLDocument
-): { element: Element; edit: Insert | null } {
+export function getOrCreateDataTypeTemplates(doc: XMLDocument): {
+	element: Element
+	edit: Insert | null
+} {
 	let dataTypeTemplates = doc.querySelector('DataTypeTemplates')
 	if (!dataTypeTemplates) {
 		dataTypeTemplates = doc.createElement('DataTypeTemplates')

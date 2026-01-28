@@ -46,7 +46,6 @@ export function applyBayTypeSelection(bayName: string): void {
 
 	const edits: (Insert | SetAttributes)[] = []
 
-	//TODO: This should only happen once the LNode is assigned later.
 	const bayEdits = updateBay(scdBay, bayType)
 	edits.push(bayEdits)
 
@@ -59,30 +58,25 @@ export function applyBayTypeSelection(bayName: string): void {
 	const functionEdits = createFunctionInsertEdits(doc, bayType, scdBay)
 	edits.push(...functionEdits)
 
-	// Get or create DataTypeTemplates once
-	const { element: dataTypeTemplates, edit: dtsCreationEdit } = getOrCreateDataTypeTemplates(doc)
+	const { element: dataTypeTemplates, edit: dtsCreationEdit } =
+		getOrCreateDataTypeTemplates(doc)
 
-	// If DTS was created, add its creation edit
 	if (dtsCreationEdit) {
 		edits.push(dtsCreationEdit)
 	}
 
-	// First commit: all main edits (Bay, Equipment, Functions, DTS creation if needed)
 	editor.commit(edits, {
 		title: `Assign BayType "${bayType.name}" to Bay "${bayName}"`
 	})
 
-	// Collect all LNode templates
 	const allLNodeTemplates: LNodeTemplate[] = []
 
-	// From Equipment Functions
 	for (const match of matches) {
 		for (const eqFunctionTemplate of match.templateEquipment.eqFunctions) {
 			allLNodeTemplates.push(...eqFunctionTemplate.lnodes)
 		}
 	}
 
-	// From Bay Functions
 	for (const functionType of bayType.functions) {
 		const functionTemplate = ssdImportStore.getFunctionTemplate(
 			functionType.templateUuid
@@ -92,6 +86,10 @@ export function applyBayTypeSelection(bayName: string): void {
 		}
 	}
 
-	// Insert data type templates in stages with squash
-	insertDataTypeTemplatesInStages(doc, dataTypeTemplates, allLNodeTemplates, editor)
+	insertDataTypeTemplatesInStages(
+		doc,
+		dataTypeTemplates,
+		allLNodeTemplates,
+		editor
+	)
 }

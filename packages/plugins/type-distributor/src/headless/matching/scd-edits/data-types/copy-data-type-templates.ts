@@ -1,19 +1,13 @@
-import type { Insert } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '@/headless/types'
+import type { XMLEditor } from '@openscd/oscd-editor'
 import { ssdImportStore } from '@/headless/stores'
-import { getDocumentAndEditor } from '@/headless/utils'
 import {
 	collectDOTypesFromLNodeType,
 	collectTypesFromDOType,
 	collectTypesFromDAType
 } from './type-collectors'
-import {
-	getLNodeTypeReference,
-	getDoTypeReference,
-	getDaTypeReference,
-	getEnumTypeReference
-} from './insertion-references'
-import type { XMLEditor } from '@openscd/oscd-editor'
+import { TYPE_ORDER, type TypeName } from './insertion-references'
+import { createTypeEdits } from './type-creation-helpers'
 
 interface TypeCollections {
 	lnodeTypeIds: Set<string>
@@ -23,6 +17,11 @@ interface TypeCollections {
 }
 
 function collectAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
+	const ssdDoc = ssdImportStore.loadedSSDDocument
+	if (!ssdDoc) {
+		throw new Error('No SSD document loaded in store')
+	}
+
 	const collections: TypeCollections = {
 		lnodeTypeIds: new Set([lnodeTemplate.lnType]),
 		doTypeIds: new Set(),
@@ -30,7 +29,7 @@ function collectAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
 		enumTypeIds: new Set()
 	}
 
-	const lnodeType = ssdImportStore.loadedSSDDocument?.querySelector(
+	const lnodeType = ssdDoc.querySelector(
 		`LNodeType[id="${lnodeTemplate.lnType}"]`
 	)
 
@@ -39,19 +38,16 @@ function collectAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
 		return collections
 	}
 
-	// Collect DOTypes
 	const doTypeIds = collectDOTypesFromLNodeType(lnodeType)
 	for (const id of doTypeIds) {
 		collections.doTypeIds.add(id)
 	}
 
-	// Collect DATypes and EnumTypes from DOTypes
 	for (const doTypeId of doTypeIds) {
-		const doTypeElement = ssdImportStore.loadedSSDDocument?.querySelector(
-			`DOType[id="${doTypeId}"]`
-		)
+		const doTypeElement = ssdDoc.querySelector(`DOType[id="${doTypeId}"]`)
 		if (doTypeElement) {
-			const { daTypeIds, enumTypeIds } = collectTypesFromDOType(doTypeElement)
+			const { daTypeIds, enumTypeIds } =
+				collectTypesFromDOType(doTypeElement)
 			for (const id of daTypeIds) {
 				collections.daTypeIds.add(id)
 			}
@@ -61,7 +57,6 @@ function collectAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
 		}
 	}
 
-	// Recursively collect nested DATypes and EnumTypes
 	const processedDaTypes = new Set<string>()
 	const daTypeQueue = Array.from(collections.daTypeIds)
 
@@ -70,11 +65,10 @@ function collectAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
 		if (!daTypeId || processedDaTypes.has(daTypeId)) continue
 		processedDaTypes.add(daTypeId)
 
-		const daTypeElement = ssdImportStore.loadedSSDDocument?.querySelector(
-			`DAType[id="${daTypeId}"]`
-		)
+		const daTypeElement = ssdDoc.querySelector(`DAType[id="${daTypeId}"]`)
 		if (daTypeElement) {
-			const { daTypeIds, enumTypeIds } = collectTypesFromDAType(daTypeElement)
+			const { daTypeIds, enumTypeIds } =
+				collectTypesFromDAType(daTypeElement)
 			for (const id of daTypeIds) {
 				collections.daTypeIds.add(id)
 				if (!processedDaTypes.has(id)) {
@@ -90,135 +84,34 @@ function collectAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
 	return collections
 }
 
-function filterExistingTypes(doc: Document, collections: TypeCollections): TypeCollections {
-	const filtered: TypeCollections = {
-		lnodeTypeIds: new Set(),
-		doTypeIds: new Set(),
-		daTypeIds: new Set(),
-		enumTypeIds: new Set()
-	}
-
-	for (const id of collections.lnodeTypeIds) {
-		if (!doc.querySelector(`LNodeType[id="${id}"]`)) {
-			filtered.lnodeTypeIds.add(id)
+function filterMissingIds(
+	doc: Document,
+	ids: Set<string>,
+	typeName: TypeName
+): Set<string> {
+	const missing = new Set<string>()
+	for (const id of ids) {
+		if (!doc.querySelector(`${typeName}[id="${id}"]`)) {
+			missing.add(id)
 		}
 	}
-
-	for (const id of collections.doTypeIds) {
-		if (!doc.querySelector(`DOType[id="${id}"]`)) {
-			filtered.doTypeIds.add(id)
-		}
-	}
-
-	for (const id of collections.daTypeIds) {
-		if (!doc.querySelector(`DAType[id="${id}"]`)) {
-			filtered.daTypeIds.add(id)
-		}
-	}
-
-	for (const id of collections.enumTypeIds) {
-		if (!doc.querySelector(`EnumType[id="${id}"]`)) {
-			filtered.enumTypeIds.add(id)
-		}
-	}
-
-	return filtered
+	return missing
 }
 
-function createLNodeTypeEdits(
-	dataTypeTemplates: Element,
-	lnodeTypeIds: Set<string>
-): Insert[] {
-	const edits: Insert[] = []
-	const reference = getLNodeTypeReference(dataTypeTemplates)
-
-	for (const id of lnodeTypeIds) {
-		const sourceElement = ssdImportStore.loadedSSDDocument?.querySelector(
-			`LNodeType[id="${id}"]`
-		)
-		if (sourceElement) {
-			const clonedElement = sourceElement.cloneNode(true) as Element
-			edits.push({
-				parent: dataTypeTemplates,
-				reference,
-				node: clonedElement
-			})
-		}
+function filterExistingTypes(
+	doc: Document,
+	collections: TypeCollections
+): TypeCollections {
+	return {
+		lnodeTypeIds: filterMissingIds(
+			doc,
+			collections.lnodeTypeIds,
+			'LNodeType'
+		),
+		doTypeIds: filterMissingIds(doc, collections.doTypeIds, 'DOType'),
+		daTypeIds: filterMissingIds(doc, collections.daTypeIds, 'DAType'),
+		enumTypeIds: filterMissingIds(doc, collections.enumTypeIds, 'EnumType')
 	}
-
-	return edits
-}
-
-function createDOTypeEdits(
-	dataTypeTemplates: Element,
-	doTypeIds: Set<string>
-): Insert[] {
-	const edits: Insert[] = []
-	const reference = getDoTypeReference(dataTypeTemplates)
-
-	for (const id of doTypeIds) {
-		const sourceElement = ssdImportStore.loadedSSDDocument?.querySelector(
-			`DOType[id="${id}"]`
-		)
-		if (sourceElement) {
-			const clonedElement = sourceElement.cloneNode(true) as Element
-			edits.push({
-				parent: dataTypeTemplates,
-				reference,
-				node: clonedElement
-			})
-		}
-	}
-
-	return edits
-}
-
-function createDATypeEdits(
-	dataTypeTemplates: Element,
-	daTypeIds: Set<string>
-): Insert[] {
-	const edits: Insert[] = []
-	const reference = getDaTypeReference(dataTypeTemplates)
-
-	for (const id of daTypeIds) {
-		const sourceElement = ssdImportStore.loadedSSDDocument?.querySelector(
-			`DAType[id="${id}"]`
-		)
-		if (sourceElement) {
-			const clonedElement = sourceElement.cloneNode(true) as Element
-			edits.push({
-				parent: dataTypeTemplates,
-				reference,
-				node: clonedElement
-			})
-		}
-	}
-
-	return edits
-}
-
-function createEnumTypeEdits(
-	dataTypeTemplates: Element,
-	enumTypeIds: Set<string>
-): Insert[] {
-	const edits: Insert[] = []
-	const reference = getEnumTypeReference(dataTypeTemplates)
-
-	for (const id of enumTypeIds) {
-		const sourceElement = ssdImportStore.loadedSSDDocument?.querySelector(
-			`EnumType[id="${id}"]`
-		)
-		if (sourceElement) {
-			const clonedElement = sourceElement.cloneNode(true) as Element
-			edits.push({
-				parent: dataTypeTemplates,
-				reference,
-				node: clonedElement
-			})
-		}
-	}
-
-	return edits
 }
 
 export function collectAllTypesFromLNodeTemplates(
@@ -233,7 +126,7 @@ export function collectAllTypesFromLNodeTemplates(
 
 	for (const lnodeTemplate of lnodeTemplates) {
 		const collections = collectAllTypeIds(lnodeTemplate)
-		
+
 		for (const id of collections.lnodeTypeIds) {
 			allCollections.lnodeTypeIds.add(id)
 		}
@@ -251,127 +144,29 @@ export function collectAllTypesFromLNodeTemplates(
 	return allCollections
 }
 
+const TYPE_TO_COLLECTION_KEY: Record<TypeName, keyof TypeCollections> = {
+	LNodeType: 'lnodeTypeIds',
+	DOType: 'doTypeIds',
+	DAType: 'daTypeIds',
+	EnumType: 'enumTypeIds'
+}
+
 export function insertDataTypeTemplatesInStages(
 	doc: Document,
 	dataTypeTemplates: Element,
 	lnodeTemplates: LNodeTemplate[],
 	editor: XMLEditor
 ): void {
-	// Collect all types from all LNode templates
 	const allCollections = collectAllTypesFromLNodeTemplates(lnodeTemplates)
-	
-	// Filter out existing types
 	const missingCollections = filterExistingTypes(doc, allCollections)
 
-	// Stage 1: Insert LNodeTypes (no squash for first stage)
-	const lnodeTypeEdits = createLNodeTypeEdits(dataTypeTemplates, missingCollections.lnodeTypeIds)
-	if (lnodeTypeEdits.length > 0) {
-		editor.commit(lnodeTypeEdits, { squash: true})
-	}
+	for (const typeName of TYPE_ORDER) {
+		const collectionKey = TYPE_TO_COLLECTION_KEY[typeName]
+		const typeIds = missingCollections[collectionKey]
 
-	// Stage 2: Insert DOTypes (squash, no title update)
-	const doTypeEdits = createDOTypeEdits(dataTypeTemplates, missingCollections.doTypeIds)
-	if (doTypeEdits.length > 0) {
-		editor.commit(doTypeEdits, { squash: true })
-	}
-
-	// Stage 3: Insert DATypes (squash, no title update)
-	const daTypeEdits = createDATypeEdits(dataTypeTemplates, missingCollections.daTypeIds)
-	if (daTypeEdits.length > 0) {
-		editor.commit(daTypeEdits, { squash: true })
-	}
-
-	// Stage 4: Insert EnumTypes (squash, no title update)
-	const enumTypeEdits = createEnumTypeEdits(dataTypeTemplates, missingCollections.enumTypeIds)
-	if (enumTypeEdits.length > 0) {
-		editor.commit(enumTypeEdits, { squash: true })
-	}
-}
-
-function createInsertEdits(
-	doc: Document,
-	dataTypeTemplates: Element,
-	collections: TypeCollections
-): Insert[] {
-	const edits: Insert[] = []
-
-	// Insert LNodeTypes
-	for (const id of collections.lnodeTypeIds) {
-		const sourceElement = ssdImportStore.loadedSSDDocument?.querySelector(
-			`LNodeType[id="${id}"]`
-		)
-		if (sourceElement) {
-			const clonedElement = sourceElement.cloneNode(true) as Element
-			edits.push({
-				parent: dataTypeTemplates,
-				reference: getLNodeTypeReference(dataTypeTemplates),
-				node: clonedElement
-			})
+		if (typeIds.size > 0) {
+			const edits = createTypeEdits(dataTypeTemplates, typeIds, typeName)
+			editor.commit(edits, { squash: true })
 		}
 	}
-
-	// Insert DOTypes
-	for (const id of collections.doTypeIds) {
-		const sourceElement = ssdImportStore.loadedSSDDocument?.querySelector(
-			`DOType[id="${id}"]`
-		)
-		if (sourceElement) {
-			const clonedElement = sourceElement.cloneNode(true) as Element
-			edits.push({
-				parent: dataTypeTemplates,
-				reference: getDoTypeReference(dataTypeTemplates),
-				node: clonedElement
-			})
-		}
-	}
-
-	// Insert DATypes
-	for (const id of collections.daTypeIds) {
-		const sourceElement = ssdImportStore.loadedSSDDocument?.querySelector(
-			`DAType[id="${id}"]`
-		)
-		if (sourceElement) {
-			const clonedElement = sourceElement.cloneNode(true) as Element
-			edits.push({
-				parent: dataTypeTemplates,
-				reference: getDaTypeReference(dataTypeTemplates),
-				node: clonedElement
-			})
-		}
-	}
-
-	// Insert EnumTypes
-	for (const id of collections.enumTypeIds) {
-		const sourceElement = ssdImportStore.loadedSSDDocument?.querySelector(
-			`EnumType[id="${id}"]`
-		)
-		if (sourceElement) {
-			const clonedElement = sourceElement.cloneNode(true) as Element
-			edits.push({
-				parent: dataTypeTemplates,
-				reference: getEnumTypeReference(dataTypeTemplates),
-				node: clonedElement
-			})
-		}
-	}
-
-	return edits
-}
-
-export function collectRelevantDataTypeTemplateEdits(
-	lnodeTemplate: LNodeTemplate,
-	dataTypeTemplates: Element
-): Insert[] {
-	const { doc } = getDocumentAndEditor()
-
-	// Phase 1: Collect all type IDs
-	const allCollections = collectAllTypeIds(lnodeTemplate)
-
-	// Phase 2: Filter out existing types
-	const missingCollections = filterExistingTypes(doc, allCollections)
-
-	// Phase 3: Create Insert edits in proper order
-	const edits = createInsertEdits(doc, dataTypeTemplates, missingCollections)
-
-	return edits
 }
