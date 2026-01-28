@@ -25,15 +25,15 @@ export function createSIED(
 	const reference = findSclInsertionReference(sclRoot)
 
 	const edit: Insert = {
-			node: iedElement,
-			parent: sclRoot,
-			reference: reference
-		}
-	
+		node: iedElement,
+		parent: sclRoot,
+		reference: reference
+	}
+
 	editor.commit(edit, {
-		title: `Add SIED ${name}`,
+		title: `Add SIED ${name}`
 	})
-	
+
 	if (accessPoints && accessPoints.length > 0) {
 		createAccessPoints(name, accessPoints, true)
 	}
