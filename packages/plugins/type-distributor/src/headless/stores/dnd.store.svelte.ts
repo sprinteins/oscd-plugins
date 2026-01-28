@@ -39,10 +39,12 @@ class UseDndStore {
 
 		try {
 			createLNodesInAccessPoint(
-				functionFromSSD,
-				lNodes,
-				targetSIedName,
-				targetAccessPoint
+				{
+					sourceFunction: functionFromSSD,
+					lNodes,
+					iedName: targetSIedName,
+					accessPoint: targetAccessPoint
+				}
 			)
 		} catch (error) {
 			console.error('[DnD] Error creating LNodes:', error)
