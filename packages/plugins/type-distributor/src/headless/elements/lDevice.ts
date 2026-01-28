@@ -18,13 +18,13 @@ function getLDevice(server: Element, functionName: string, conductingEquipmentNa
   );
 }
 
-export function getOrCreateLDeviceElement(doc: XMLDocument, 	functionFromSSD: ConductingEquipmentTemplate | FunctionTemplate, server: Element): Element {
-  let functionName = functionFromSSD.name
+export function getOrCreateLDeviceElement(doc: XMLDocument, 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate, server: Element): Element {
+  let functionName = sourceFunction.name
 	let conductingEquipmentName: string | undefined
 
-	if ('eqFunctions' in functionFromSSD) {
-		conductingEquipmentName = functionFromSSD.name
-		functionName = functionFromSSD.eqFunctions[0]?.name || functionName
+	if ('eqFunctions' in sourceFunction) {
+		conductingEquipmentName = sourceFunction.name
+		functionName = sourceFunction.eqFunctions[0]?.name || functionName
 	}
 
   const existingLDevice = getLDevice(server, functionName, conductingEquipmentName)

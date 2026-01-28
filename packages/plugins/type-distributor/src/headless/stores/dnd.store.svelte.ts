@@ -4,7 +4,7 @@ import { createLNodesInAccessPoint } from '../ied/create-lNode-in-access-point'
 type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'
 	lNodes: LNodeTemplate[]
-	function: EqFunctionTemplate | FunctionTemplate
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentName?: string
 }
 
@@ -29,7 +29,7 @@ class UseDndStore {
 			return
 		}
 
-		const { lNodes, function: functionFromSSD } = this.draggedItem
+		const { lNodes, sourceFunction: functionFromSSD } = this.draggedItem
 
 		if (lNodes.length === 0) {
 			console.warn('[DnD] Dragged item contains no LNodes')

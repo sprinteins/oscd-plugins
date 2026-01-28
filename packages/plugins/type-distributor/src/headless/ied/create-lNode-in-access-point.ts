@@ -1,19 +1,22 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type { Insert } from '@openscd/oscd-api'
-import type { ConductingEquipmentTemplate, FunctionTemplate, LNodeTemplate } from '../types'
+import type {
+	ConductingEquipmentTemplate,
+	FunctionTemplate,
+	LNodeTemplate
+} from '../types'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import {
 	createLNodeElement,
-	createServerElementWithAuth,
-	getExistingServer,
-	getOrCreateLDeviceElement
+	getOrCreateLDeviceElement,
+	getOrCreateServerElement
 } from '../elements'
 
 type CreateLNodesParams = {
-	accessPoint: Element
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	lNodes: LNodeTemplate[]
 	iedName: string
-	lDeviceInst?: string
+	accessPoint: Element
 }
 
 type CreateLNodeParams = {
@@ -29,12 +32,7 @@ function ensureServer(
 	doc: XMLDocument,
 	editor: XMLEditor
 ): Element {
-	const existingServer = getExistingServer(accessPoint)
-	if (existingServer) {
-		return existingServer
-	}
-
-	const serverElement = createServerElementWithAuth(doc)
+	const serverElement = getOrCreateServerElement(doc, accessPoint)
 
 	const edit: Insert = {
 		node: serverElement,
@@ -52,10 +50,10 @@ function ensureServer(
 function ensureLDevice(
 	server: Element,
 	doc: XMLDocument,
-	functionFromSSD: ConductingEquipmentTemplate | FunctionTemplate,
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	editor: XMLEditor
 ): Element {
-	const lDevice = getOrCreateLDeviceElement(doc, functionFromSSD, server)
+	const lDevice = getOrCreateLDeviceElement(doc, sourceFunction, server)
 
 	const edit: Insert = {
 		node: lDevice,
@@ -98,12 +96,12 @@ function createLNodeInAccessPoint({
 	}
 }
 
-export function createLNodesInAccessPoint(
-	functionFromSSD: ConductingEquipmentTemplate | FunctionTemplate,
-	lNodes: LNodeTemplate[],
-	iedName: string,
-	accessPoint: Element
-): void {
+export function createLNodesInAccessPoint({
+	sourceFunction,
+	lNodes,
+	iedName,
+	accessPoint
+}: CreateLNodesParams): void {
 	const editor = pluginGlobalStore.editor
 	if (!editor) {
 		throw new Error('No editor found')
@@ -115,7 +113,7 @@ export function createLNodesInAccessPoint(
 
 	const doc = pluginGlobalStore.xmlDocument
 	const server = ensureServer(accessPoint, doc, editor)
-	const lDevice = ensureLDevice(server, doc, functionFromSSD, editor)
+	const lDevice = ensureLDevice(server, doc, sourceFunction, editor)
 
 	for (const lNode of lNodes) {
 		createLNodeInAccessPoint({ lNode, lDevice, iedName, doc, editor })

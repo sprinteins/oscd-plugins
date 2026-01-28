@@ -15,13 +15,13 @@ let isOpen = $state(false)
 let isDragging = $derived(
 	dndStore.isDragging &&
 	dndStore.currentDraggedItem?.type === 'functionTemplate' &&
-	dndStore.currentDraggedItem?.function.uuid === func.uuid
+	dndStore.currentDraggedItem?.sourceFunction.uuid === func.uuid
 )
 
 function handleDragStart(event: DragEvent) {
 	dndStore.handleDragStart({
 		type: 'functionTemplate',
-		function: func,
+		sourceFunction: func,
 		lNodes: func.lnodes || []
 	})
 }
@@ -34,7 +34,7 @@ function handleDragEnd() {
 function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
     dndStore.handleDragStart({
         type: 'lNode',
-        function: func,
+        sourceFunction: func,
         lNodes: [lnode]
     })
 }
