@@ -1,8 +1,3 @@
-/**
- * Collects type references from DO/DA elements
- * @param elements Elements to scan for type references
- * @returns Object with daType and enumType IDs
- */
 export function collectTypeReferences(
 	elements: NodeListOf<Element>
 ): { daTypeIds: Set<string>; enumTypeIds: Set<string> } {
@@ -25,11 +20,6 @@ export function collectTypeReferences(
 	return { daTypeIds, enumTypeIds }
 }
 
-/**
- * Collects all type IDs referenced by a DOType
- * @param doTypeElement The DOType element to analyze
- * @returns Object with daType and enumType IDs
- */
 export function collectTypesFromDOType(
 	doTypeElement: Element
 ): { daTypeIds: Set<string>; enumTypeIds: Set<string> } {
@@ -37,11 +27,6 @@ export function collectTypesFromDOType(
 	return collectTypeReferences(daElements)
 }
 
-/**
- * Collects all type IDs referenced by a DAType
- * @param daTypeElement The DAType element to analyze
- * @returns Object with daType and enumType IDs
- */
 export function collectTypesFromDAType(
 	daTypeElement: Element
 ): { daTypeIds: Set<string>; enumTypeIds: Set<string> } {
@@ -49,11 +34,6 @@ export function collectTypesFromDAType(
 	return collectTypeReferences(bdaElements)
 }
 
-/**
- * Collects all DO type references from an LNodeType
- * @param lNodeType The LNodeType element
- * @returns Array of DOType IDs
- */
 export function collectDOTypesFromLNodeType(lNodeType: Element): string[] {
 	const doElements = lNodeType.querySelectorAll('DO')
 	const doTypeIds: string[] = []

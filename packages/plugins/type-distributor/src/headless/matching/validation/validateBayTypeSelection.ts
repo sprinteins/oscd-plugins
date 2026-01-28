@@ -1,6 +1,6 @@
-import { ssdImportStore, bayTypesStore, equipmentMatchingStore } from '../stores'
+import { ssdImportStore, bayTypesStore, equipmentMatchingStore } from '../../stores'
 import type { ValidationResult } from './validation'
-import { getDocumentAndEditor, getBayElement } from '../distribution/utils/document-helpers'
+import { getDocumentAndEditor, getBayElement } from '../../distribution/utils/document-helpers'
 import { validateEquipmentMatch } from './validation'
 
 export function validateBayTypeSelection(bayName: string): ValidationResult {

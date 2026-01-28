@@ -1,5 +1,5 @@
 import { SvelteMap } from 'svelte/reactivity'
-import type { ValidationResult } from '../matching/validation'
+import type { ValidationResult } from '@/headless/matching/validation'
 
 export type ManualEquipmentMatch = {
 	scdEquipmentName: string

@@ -1,7 +1,7 @@
 import type { XMLEditor } from '@openscd/oscd-editor'
-import type { LNodeTemplate } from '../../types'
-import { ssdImportStore } from '../../stores'
-import { getDocumentAndEditor, getOrCreateDataTypeTemplates } from '../utils/document-helpers'
+import type { LNodeTemplate } from '@/headless/types'
+import { ssdImportStore } from '@/headless/stores'
+import { getDocumentAndEditor } from '@/headless/utils'
 import { cloneAndInsertElement, copyElements } from './type-copier'
 import {
 	collectDOTypesFromLNodeType,
@@ -14,10 +14,8 @@ import {
 	getDaTypeReference,
 	getEnumTypeReference
 } from './insertion-references'
+import { getOrCreateDataTypeTemplates } from './get-or-create-data-type-templates'
 
-/**
- * Copies an LNodeType from SSD to SCD
- */
 function copyLNodeType(
 	lnodeTemplate: LNodeTemplate,
 	doc: Document,
@@ -34,9 +32,6 @@ function copyLNodeType(
 	)
 }
 
-/**
- * Recursively copies DOTypes and their dependencies
- */
 function copyDoTypes(
 	doTypeIds: string[],
 	doc: Document,
@@ -57,7 +52,8 @@ function copyDoTypes(
 		)
 
 		if (clonedDOType) {
-			const { daTypeIds, enumTypeIds } = collectTypesFromDOType(clonedDOType)
+			const { daTypeIds, enumTypeIds } =
+				collectTypesFromDOType(clonedDOType)
 			for (const id of daTypeIds) {
 				daTypeIdsToCopy.add(id)
 			}
@@ -71,9 +67,6 @@ function copyDoTypes(
 	copyEnumTypes(Array.from(enumTypeIdsToCopy), doc, editor, dataTypeTemplates)
 }
 
-/**
- * Recursively copies DATypes and their dependencies
- */
 function copyDaTypes(
 	daTypeIds: string[],
 	doc: Document,
@@ -94,7 +87,8 @@ function copyDaTypes(
 		)
 
 		if (clonedDAType) {
-			const { daTypeIds, enumTypeIds } = collectTypesFromDAType(clonedDAType)
+			const { daTypeIds, enumTypeIds } =
+				collectTypesFromDAType(clonedDAType)
 			for (const id of daTypeIds) {
 				nestedDaTypeIds.add(id)
 			}
@@ -112,9 +106,6 @@ function copyDaTypes(
 	copyEnumTypes(Array.from(enumTypeIdsToCopy), doc, editor, dataTypeTemplates)
 }
 
-/**
- * Copies EnumTypes from SSD to SCD
- */
 function copyEnumTypes(
 	enumTypeIds: string[],
 	doc: Document,
@@ -131,12 +122,6 @@ function copyEnumTypes(
 	)
 }
 
-/**
- * Copies all relevant DataType templates from SSD to SCD for a given LNode
- * This includes LNodeType, DOTypes, DATypes, and EnumTypes
- * 
- * @param lnodeTemplate The LNode template from SSD
- */
 export function copyRelevantDataTypeTemplates(
 	lnodeTemplate: LNodeTemplate
 ): void {

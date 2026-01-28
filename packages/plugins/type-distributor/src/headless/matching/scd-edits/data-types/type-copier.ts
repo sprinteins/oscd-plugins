@@ -1,18 +1,11 @@
 import type { Insert } from '@openscd/oscd-api'
 import type { XMLEditor } from '@openscd/oscd-editor'
-import { ssdImportStore } from '../../stores'
-import { elementExists } from '../utils/document-helpers'
+import { ssdImportStore } from '@/headless/stores'
 
-/**
- * Clones and inserts an element from SSD to SCD
- * @param elementId The ID of the element to copy
- * @param elementType The type of element (LNodeType, DOType, etc.)
- * @param doc The target document
- * @param editor The editor instance
- * @param dataTypeTemplates The DataTypeTemplates container
- * @param getReferenceFunc Function to get the insertion reference
- * @returns The cloned element or null if not found/already exists
- */
+function elementExists(doc: Document, selector: string): boolean {
+	return doc.querySelector(selector) !== null
+}
+
 export function cloneAndInsertElement(
 	elementId: string,
 	elementType: string,
@@ -21,12 +14,10 @@ export function cloneAndInsertElement(
 	dataTypeTemplates: Element,
 	getReferenceFunc: (container: Element) => Node | null
 ): Element | null {
-	// Skip if already exists
 	if (elementExists(doc, `${elementType}[id="${elementId}"]`)) {
 		return null
 	}
 
-	// Find element in SSD
 	const sourceElement = ssdImportStore.loadedSSDDocument?.querySelector(
 		`${elementType}[id="${elementId}"]`
 	)
@@ -35,7 +26,6 @@ export function cloneAndInsertElement(
 		return null
 	}
 
-	// Clone and insert
 	const clonedElement = sourceElement.cloneNode(true) as Element
 	const reference = getReferenceFunc(dataTypeTemplates)
 
@@ -52,15 +42,6 @@ export function cloneAndInsertElement(
 	return clonedElement
 }
 
-/**
- * Copies multiple elements of the same type from SSD to SCD
- * @param elementIds Array of element IDs to copy
- * @param elementType The type of elements to copy
- * @param doc The target document
- * @param editor The editor instance
- * @param dataTypeTemplates The DataTypeTemplates container
- * @param getReferenceFunc Function to get the insertion reference
- */
 export function copyElements(
 	elementIds: string[],
 	elementType: string,

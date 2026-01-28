@@ -1,13 +1,9 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { Insert } from '@openscd/oscd-api'
-import type { BayType } from '../types'
-import { ssdImportStore } from '../stores'
-import { copyRelevantDataTypeTemplates } from '../distribution/data-types/copy-data-type-templates'
-import { createLNodeElement } from './eqfunction-creation'
+import type { BayType } from '../../types'
+import { ssdImportStore } from '../../stores'
+import { createLNodeElement } from './lnode-creation'
 
-/**
- * Creates Function elements from BayType and inserts them into Bay
- */
 export function createFunctionInsertEdits(
 	doc: Document,
 	bayType: BayType,
@@ -16,7 +12,6 @@ export function createFunctionInsertEdits(
 	const inserts: Insert[] = []
 
 	for (const functionType of bayType.functions) {
-		// Get the function template from TEMPLATE section
 		const functionTemplate = ssdImportStore.getFunctionTemplate(
 			functionType.templateUuid
 		)
@@ -28,9 +23,7 @@ export function createFunctionInsertEdits(
 			continue
 		}
 
-		const functionElement = scdBay.namespaceURI
-			? doc.createElementNS(scdBay.namespaceURI, 'Function')
-			: doc.createElement('Function')
+		const functionElement = doc.createElement('Function')
 		functionElement.setAttribute('name', functionTemplate.name)
 		functionElement.setAttribute('uuid', uuidv4())
 		functionElement.setAttribute('templateUuid', functionType.uuid)
@@ -40,20 +33,14 @@ export function createFunctionInsertEdits(
 			functionElement.setAttribute('desc', functionTemplate.desc)
 		}
 
-		// Copy LNodes from the Function template
 		for (const lnodeTemplate of functionTemplate.lnodes) {
 			const lnodeElement = createLNodeElement(
 				doc,
-				lnodeTemplate,
-				scdBay.namespaceURI
+				lnodeTemplate
 			)
 			functionElement.appendChild(lnodeElement)
-
-			// Copy DataTypeTemplates for this LNode
-			copyRelevantDataTypeTemplates(lnodeTemplate)
 		}
 
-		// Insert Function before ConnectivityNode elements if they exist
 		const referenceNode = scdBay.querySelector('ConnectivityNode')
 
 		inserts.push({

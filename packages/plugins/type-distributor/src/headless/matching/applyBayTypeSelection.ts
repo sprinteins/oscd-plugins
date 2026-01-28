@@ -4,13 +4,15 @@ import {
 	bayTypesStore,
 	equipmentMatchingStore
 } from '../stores'
-import { copyRelevantDataTypeTemplates } from '../distribution/data-types/copy-data-type-templates'
+import { copyRelevantDataTypeTemplates } from './scd-edits/data-types'
 import { matchEquipment } from './matching'
-import { createEquipmentUpdateEdits } from './equipment-updates'
-import { createEqFunctionInsertEdits } from './eqfunction-creation'
-import { createFunctionInsertEdits } from './function-creation'
-import { updateBay } from './bay-update'
 import { getBayElement, getDocumentAndEditor } from '../distribution'
+import {
+	createEqFunctionInsertEdits,
+	createEquipmentUpdateEdits,
+	createFunctionInsertEdits,
+	updateBay
+} from './scd-edits'
 
 export function applyBayTypeSelection(bayName: string): void {
 	const { doc, editor } = getDocumentAndEditor()
@@ -38,7 +40,7 @@ export function applyBayTypeSelection(bayName: string): void {
 
 	const edits: (Insert | SetAttributes)[] = []
 
-    //TODO: This should only happen once the LNode is assigned later.
+	//TODO: This should only happen once the LNode is assigned later.
 	const bayEdits = updateBay(scdBay, bayType)
 	edits.push(bayEdits)
 
