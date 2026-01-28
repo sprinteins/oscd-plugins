@@ -57,6 +57,8 @@ export type LNodeTemplate = {
 	iedName?: string
 }
 
+export type AssignableTemplates = EqFunctionTemplate | FunctionTemplate | LNodeTemplate // GeneralEqupipment
+
 // Data Type Templates
 export type LNodeType = {
 	id: string
