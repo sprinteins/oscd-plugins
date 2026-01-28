@@ -1,1 +1,1 @@
-export { copyRelevantDataTypeTemplates } from './copy-data-type-templates'
+export { insertDataTypeTemplatesInStages } from './copy-data-type-templates'

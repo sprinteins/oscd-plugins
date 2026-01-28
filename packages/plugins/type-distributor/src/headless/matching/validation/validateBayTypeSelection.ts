@@ -1,11 +1,8 @@
-import { ssdImportStore, bayTypesStore, equipmentMatchingStore } from '../../stores'
+import { ssdImportStore, bayTypesStore, equipmentMatchingStore, bayStore } from '../../stores'
 import type { ValidationResult } from './validation'
-import { getDocumentAndEditor, getBayElement } from '../../distribution/utils/document-helpers'
 import { validateEquipmentMatch } from './validation'
 
 export function validateBayTypeSelection(bayName: string): ValidationResult {
-	const { doc } = getDocumentAndEditor()
-
 	const selectedBayTypeName = bayTypesStore.selectedBayType
 	if (!selectedBayTypeName) {
 		throw new Error('No BayType selected')
@@ -19,7 +16,10 @@ export function validateBayTypeSelection(bayName: string): ValidationResult {
 		throw new Error(`BayType "${selectedBayTypeName}" not found`)
 	}
 
-	const scdBay = getBayElement(doc, bayName)
+	const scdBay = bayStore.scdBay
+	if (!scdBay) {
+		throw new Error('No Bay selected in SCD')
+	}
 
 	const validation = validateEquipmentMatch(scdBay, bayType)
 	

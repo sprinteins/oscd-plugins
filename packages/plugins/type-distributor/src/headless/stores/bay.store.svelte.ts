@@ -1,4 +1,4 @@
-import { getDocumentAndEditor, getBayElement } from '../distribution'
+import { getDocumentAndEditor } from '@/headless/utils'
 
 class UseBayStore {
 	selectedBay: string | null = $state<string | null>(null)
@@ -20,3 +20,11 @@ class UseBayStore {
 }
 
 export const bayStore = new UseBayStore()
+
+function getBayElement(doc: Document, bayName: string): Element {
+	const bayElement = doc.querySelector(`Bay[name="${bayName}"]`)
+	if (!bayElement) {
+		throw new Error(`Bay with name ${bayName} not found`)
+	}
+	return bayElement
+}

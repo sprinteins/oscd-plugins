@@ -1,21 +1,19 @@
-import type { XMLEditor } from '@openscd/oscd-editor'
+import type { Insert } from '@openscd/oscd-api'
 
 export function getOrCreateDataTypeTemplates(
-	doc: XMLDocument,
-	editor: XMLEditor
-): Element {
+	doc: XMLDocument
+): { element: Element; edit: Insert | null } {
 	let dataTypeTemplates = doc.querySelector('DataTypeTemplates')
 	if (!dataTypeTemplates) {
 		dataTypeTemplates = doc.createElement('DataTypeTemplates')
 		const root = doc.documentElement
-		editor.commit(
-			{
-				node: dataTypeTemplates,
-				parent: root,
-				reference: null
-			},
-			{ title: 'Create DataTypeTemplates' }
-		)
+
+		const edit: Insert = {
+			node: dataTypeTemplates,
+			parent: root,
+			reference: null
+		}
+		return { element: dataTypeTemplates, edit }
 	}
-	return dataTypeTemplates
+	return { element: dataTypeTemplates, edit: null }
 }
