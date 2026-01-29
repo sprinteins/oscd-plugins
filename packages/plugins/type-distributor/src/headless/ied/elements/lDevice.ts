@@ -1,4 +1,4 @@
-import type { ConductingEquipmentTemplate, FunctionTemplate } from "../common-types"
+import type { ConductingEquipmentTemplate, FunctionTemplate } from "../../common-types"
 
 export function generateLDeviceInst(
 	functionName: string,

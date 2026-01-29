@@ -1,6 +1,6 @@
-import type { LNodeTemplate } from "../common-types";
+import type { LNodeTemplate } from "../../common-types";
 
-export function createLNodeElement(lNode: LNodeTemplate, doc: XMLDocument): Element {
+export function createLNodeElementInIED(lNode: LNodeTemplate, doc: XMLDocument): Element {
   const lnElement = doc.createElement(lNode.lnClass === "LLN0" ? "LLN0" : "LN");
   lnElement.setAttribute("lnClass", lNode.lnClass);
   lnElement.setAttribute("lnType", lNode.lnType);
@@ -9,6 +9,7 @@ export function createLNodeElement(lNode: LNodeTemplate, doc: XMLDocument): Elem
   return lnElement;
 }
 
+//TODO: We need to check that LNodes are checked IED globally
 export function hasLNode(lDevice: Element, lNode: LNodeTemplate): boolean {
 	return Array.from(lDevice.children).some(
 		(child) =>

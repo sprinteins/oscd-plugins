@@ -1,4 +1,8 @@
-import type { EqFunctionTemplate, FunctionTemplate, LNodeTemplate } from '../common-types'
+import type {
+	EqFunctionTemplate,
+	FunctionTemplate,
+	LNodeTemplate
+} from '../common-types'
 import { createLNodesInAccessPoint } from '../ied/create-lNode-in-access-point'
 
 type DraggedItem = {
@@ -23,7 +27,6 @@ class UseDndStore {
 	}
 
 	handleDrop(targetAccessPoint: Element, targetSIedName: string) {
-
 		if (!this.draggedItem) {
 			console.warn('[DnD] No dragged item to drop')
 			return
@@ -38,14 +41,12 @@ class UseDndStore {
 		}
 
 		try {
-			createLNodesInAccessPoint(
-				{
-					sourceFunction: functionFromSSD,
-					lNodes,
-					iedName: targetSIedName,
-					accessPoint: targetAccessPoint
-				}
-			)
+			createLNodesInAccessPoint({
+				sourceFunction: functionFromSSD,
+				lNodes,
+				iedName: targetSIedName,
+				accessPoint: targetAccessPoint
+			})
 		} catch (error) {
 			console.error('[DnD] Error creating LNodes:', error)
 		}

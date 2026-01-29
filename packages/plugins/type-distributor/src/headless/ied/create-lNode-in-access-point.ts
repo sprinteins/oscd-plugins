@@ -6,12 +6,12 @@ import type {
 	LNodeTemplate
 } from '../common-types'
 import {
-	createLNodeElement,
+	createLNodeElementInIED,
 	createServerElementWithAuth,
 	getExistingServer,
 	getOrCreateLDeviceElement,
 	hasLNode
-} from '../elements'
+} from './elements'
 
 type CreateLNodesParams = {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
@@ -75,7 +75,7 @@ function createLNodeInAccessPoint({
 		return
 	}
 
-	const lNodeElement = createLNodeElement(lNode, doc)
+	const lNodeElement = createLNodeElementInIED(lNode, doc)
 
 	try {
 		const edit: Insert = {
