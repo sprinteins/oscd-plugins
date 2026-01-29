@@ -23,7 +23,6 @@ type CreateLNodesParams = {
 type CreateLNodeParams = {
 	lNode: LNodeTemplate
 	lDevice: Element
-	iedName: string
 	doc: XMLDocument
 }
 
@@ -67,7 +66,6 @@ function ensureLDevice(
 function createLNodeInAccessPoint({
 	lNode,
 	lDevice,
-	iedName,
 	doc
 }: CreateLNodeParams): Insert | undefined {
 	if (hasLNode(lDevice, lNode)) {
@@ -77,7 +75,7 @@ function createLNodeInAccessPoint({
 		return
 	}
 
-	const lNodeElement = createLNodeElement(lNode, iedName, doc)
+	const lNodeElement = createLNodeElement(lNode, doc)
 
 	try {
 		const edit: Insert = {
@@ -126,7 +124,6 @@ export function createLNodesInAccessPoint({
 		const lNodeEdit = createLNodeInAccessPoint({
 			lNode,
 			lDevice,
-			iedName,
 			doc
 		})
 		if (lNodeEdit) {
