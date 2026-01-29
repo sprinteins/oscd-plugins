@@ -19,9 +19,7 @@
 		"//====== SVELTE ======//": "",
 		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json --noEmit"
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"exports": {
 		".": {
 			"types": "./dist/plugin.d.ts",
