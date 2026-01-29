@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { Insert } from '@openscd/oscd-api'
-import type { EquipmentMatch } from '../matching'
+import type { EquipmentMatch } from '../types'
 import { createLNodeElement } from './lnode-creation'
 
 export function createEqFunctionInsertEdits(

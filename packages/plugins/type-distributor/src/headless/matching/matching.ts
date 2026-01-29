@@ -1,20 +1,6 @@
-import type {
-	BayType,
-	ConductingEquipmentType,
-	ConductingEquipmentTemplate
-} from '../types'
+import type { BayType } from '../types'
 import { ssdImportStore } from '../stores'
-
-export type EquipmentMatch = {
-	scdElement: Element
-	bayTypeEquipment: ConductingEquipmentType
-	templateEquipment: ConductingEquipmentTemplate
-}
-
-type EquipmentLookupItem = {
-	bayTypeEquipment: ConductingEquipmentType
-	template: ConductingEquipmentTemplate
-}
+import type { EquipmentLookupItem, EquipmentMatch } from './types'
 
 export function matchEquipment(
 	scdBay: Element,
