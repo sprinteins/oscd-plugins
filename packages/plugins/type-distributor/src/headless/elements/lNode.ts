@@ -2,7 +2,7 @@ import type { B } from "node_modules/vitest/dist/chunks/config.d.Cy95HiCx";
 import type { LNodeTemplate } from "../types";
 
 export function createLNodeElement(lNode: LNodeTemplate, iedName: string, doc: XMLDocument): Element {
-  const lnElement = doc.createElement(lNode.lnClass === "lln0" ? "LLN0" : "LN");
+  const lnElement = doc.createElement(lNode.lnClass === "LLN0" ? "LLN0" : "LN");
   lnElement.setAttribute("lnClass", lNode.lnClass);
   lnElement.setAttribute("lnType", lNode.lnType);
   lnElement.setAttribute("lnInst", lNode.lnInst);
