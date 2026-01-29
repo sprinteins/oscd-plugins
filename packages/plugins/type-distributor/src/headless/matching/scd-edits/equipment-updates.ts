@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
-import type { EquipmentMatch } from '../matching'
+import type { EquipmentMatch } from '@/headless/matching/types'
 
 export function createEquipmentUpdateEdits(matches: EquipmentMatch[]) {
 	const updates: (SetAttributes | Insert)[] = []
