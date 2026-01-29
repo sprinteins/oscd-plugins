@@ -1,5 +1,5 @@
-import { ssdImportStore, bayTypesStore, equipmentMatchingStore, bayStore } from '../../stores'
-import type { ValidationResult } from './validation'
+import { ssdImportStore, bayTypesStore, equipmentMatchingStore, bayStore } from '@/headless/stores'
+import type { ValidationResult } from './types'
 import { validateEquipmentMatch } from './validation'
 
 export function validateBayTypeSelection(bayName: string): ValidationResult {
