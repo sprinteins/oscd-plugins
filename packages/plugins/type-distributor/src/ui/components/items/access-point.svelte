@@ -2,7 +2,7 @@
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
 import { dndStore } from '@/headless/stores'
-import LnodeCard from './lnode-card.svelte'
+import LNode from './lnode.svelte'
 import type { LNodeTemplate } from '@/headless/types'
 
 interface Props {
@@ -85,8 +85,7 @@ function handleDrop(event: DragEvent) {
   {#if isOpen && hasLNodes}
     <div class="ml-4 space-y-1">
       {#each lNodes as lnode}
-        <!--We are going to need to update the lNode object and its type eventually. It does also need to know of what is being dragged into this Element -->
-        <LnodeCard {lnode} />
+        <LNode {lnode} />
       {/each}
     </div>
   {/if}

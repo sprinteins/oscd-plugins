@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AccessPointItem } from '@/ui/components/items'
+import { AccessPoint } from '@/ui/components/items'
 import { getLNodesFromAccessPoint } from '@/headless/ied'
 import { Card } from '@oscd-plugins/core-ui-svelte'
 
@@ -33,7 +33,7 @@ const sIedData = $derived(
         </Card.Root>
       {:else}
         {#each accessPoints as { element: accessPoint, lNodes }}
-          <AccessPointItem
+          <AccessPoint
             {accessPoint}
             {lNodes}
             {sIedName}

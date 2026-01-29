@@ -3,7 +3,7 @@ import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
 import type { EqFunctionTemplate, LNodeTemplate } from '@/headless/types'
 import { dndStore } from '@/headless/stores'
-import LnodeCard from './lnode-card.svelte'
+import LNode from './lnode.svelte'
 
 interface Props {
 	eqFunction: EqFunctionTemplate
@@ -77,7 +77,7 @@ function handleLNodeDragEnd() {
     {#if isOpen}
         <div class="ml-4 space-y-1">
             {#each eqFunction.lnodes as lnode}
-                <LnodeCard
+                <LNode
                     {lnode}
                     draggable={true}
                     onDragStart={handleLNodeDragStart}

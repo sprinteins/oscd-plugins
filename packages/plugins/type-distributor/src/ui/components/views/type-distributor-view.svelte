@@ -4,15 +4,12 @@ import {
 	pluginGlobalStore,
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
-import {
-	bayStore,
-	bayTypesStore,
-} from '@/headless/stores'
+import { bayStore, bayTypesStore } from '@/headless/stores'
 import type { BayType } from '@/headless/types'
-import { BayTypeDetails, BayTypeValidation } from '@/ui/components'
+import { BayTypeDetails, BayTypeValidation } from '@/ui/components/columns/bay-type'
 import { getSIEDs } from '@/headless/ied'
-import SIedDetails from '../s-ied-details.svelte'
-import { AddSIedApDialogTrigger } from '../s-ied-ap'
+import SIedDetails from '@/ui/components/columns/s-ied/s-ied-details.svelte'
+import { AddSIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'
 
 const bayTypeOptions = $derived(

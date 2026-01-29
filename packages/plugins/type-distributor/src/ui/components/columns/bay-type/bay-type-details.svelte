@@ -3,7 +3,7 @@ import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate
 } from '@/headless/types'
-import { EquipmentItem, FunctionItem } from '@/ui/components/items'
+import { EqFunctionType, FunctionType } from '@/ui/components/items'
 
 const {
 	functionTemplates,
@@ -20,7 +20,7 @@ const {
     {#each conductingEquipmentTemplates as equipment}
       {#if equipment.eqFunctions && equipment.eqFunctions.length > 0}
         {#each equipment.eqFunctions as eqFunc}
-          <EquipmentItem eqFunction={eqFunc} equipmentName={equipment.name} />
+          <EqFunctionType eqFunction={eqFunc} equipmentName={equipment.name} />
         {/each}
       {/if}
     {/each}
@@ -31,7 +31,7 @@ const {
   <div class="space-y-2">
     <h3 class="text-sm font-semibold text-gray-700">Functions</h3>
     {#each functionTemplates as func}
-      <FunctionItem {func} />
+      <FunctionType {func} />
     {/each}
   </div>
 {/if}
