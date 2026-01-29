@@ -1,4 +1,4 @@
-import type { LNodeTemplate } from '../types'
+import type { LNodeTemplate } from '../common-types'
 
 export function getLNodesFromAccessPoint(
 	accessPoint: Element

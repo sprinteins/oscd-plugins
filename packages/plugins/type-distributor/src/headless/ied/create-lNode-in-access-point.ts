@@ -4,7 +4,7 @@ import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate,
 	LNodeTemplate
-} from '../types'
+} from '../common-types'
 import {
 	createLNodeElement,
 	createServerElementWithAuth,

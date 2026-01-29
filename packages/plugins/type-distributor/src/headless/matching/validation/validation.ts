@@ -2,7 +2,7 @@ import type {
 	BayType,
 	ConductingEquipmentTemplate,
 	ConductingEquipmentType
-} from '@/headless/types'
+} from '@/headless/common-types'
 import { ssdImportStore } from '@/headless/stores'
 import type { AmbiguousTypeInfo, ValidationResult } from './types'
 

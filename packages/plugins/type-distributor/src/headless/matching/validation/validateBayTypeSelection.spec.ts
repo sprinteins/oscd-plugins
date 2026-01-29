@@ -6,7 +6,7 @@ import {
 	equipmentMatchingStore,
 	bayStore
 } from '@/headless/stores'
-import type { BayType } from '@/headless/types'
+import type { BayType } from '@/headless/common-types'
 
 vi.mock('@/headless/stores', () => ({
 	ssdImportStore: {

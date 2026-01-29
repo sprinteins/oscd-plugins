@@ -1,4 +1,4 @@
-import type { BayType } from '@/headless/types'
+import type { BayType } from '@/headless/common-types'
 
 export function parseBayTypes(doc: XMLDocument): BayType[] {
 	const voltageLevel = doc.querySelector(

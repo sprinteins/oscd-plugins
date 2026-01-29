@@ -4,7 +4,7 @@ import type {
 	BayType,
 	FunctionTemplate,
 	LNodeTemplate
-} from '@/headless/types/ssd-types'
+} from '@/headless/common-types/ssd-types'
 import type { Insert } from '@openscd/oscd-api'
 import { ssdImportStore } from '../../stores'
 

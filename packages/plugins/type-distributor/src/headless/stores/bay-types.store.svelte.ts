@@ -3,7 +3,7 @@ import type {
 	ConductingEquipmentType,
 	FunctionTemplate,
 	FunctionType
-} from '../types'
+} from '../common-types'
 import { ssdImportStore } from './ssd-import.store.svelte'
 
 class UseBayTypesStore {

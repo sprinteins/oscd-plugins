@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { BayType } from "../../types"
+import type { BayType } from "../../common-types"
 import type { SetAttributes } from "@openscd/oscd-api"
 
 export function updateBay(

@@ -1,4 +1,4 @@
-import type { EqFunctionTemplate, FunctionTemplate, LNodeTemplate } from '../types'
+import type { EqFunctionTemplate, FunctionTemplate, LNodeTemplate } from '../common-types'
 import { createLNodesInAccessPoint } from '../ied/create-lNode-in-access-point'
 
 type DraggedItem = {

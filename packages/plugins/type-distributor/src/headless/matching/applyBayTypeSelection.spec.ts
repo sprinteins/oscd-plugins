@@ -7,7 +7,7 @@ import {
 	equipmentMatchingStore,
 	bayStore
 } from '@/headless/stores'
-import type { BayType, LNodeTemplate } from '@/headless/types'
+import type { BayType, LNodeTemplate } from '@/headless/common-types'
 import type { Insert } from '@openscd/oscd-api'
 import type { XMLEditor } from '@openscd/oscd-editor'
 

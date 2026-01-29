@@ -5,7 +5,7 @@ import {
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
 import { bayStore, bayTypesStore } from '@/headless/stores'
-import type { BayType } from '@/headless/types'
+import type { BayType } from '@/headless/common-types'
 import { BayTypeDetails, BayTypeValidation } from '@/ui/components/columns/bay-type'
 import { getSIEDs } from '@/headless/ied'
 import SIedDetails from '@/ui/components/columns/s-ied/s-ied-details.svelte'

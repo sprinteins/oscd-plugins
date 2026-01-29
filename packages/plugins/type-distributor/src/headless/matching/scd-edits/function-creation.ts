@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { Insert } from '@openscd/oscd-api'
-import type { BayType } from '../../types'
+import type { BayType } from '../../common-types'
 import { ssdImportStore } from '../../stores'
 import { createLNodeElement } from './lnode-creation'
 

@@ -3,7 +3,7 @@ import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
 import { dndStore } from '@/headless/stores'
 import LNode from './lnode.svelte'
-import type { LNodeTemplate } from '@/headless/types'
+import type { LNodeTemplate } from '@/headless/common-types'
 
 interface Props {
 	accessPoint: Element

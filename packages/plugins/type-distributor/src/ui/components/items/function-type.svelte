@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
-import type { FunctionTemplate, LNodeTemplate } from '@/headless/types'
+import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
 import { dndStore } from '@/headless/stores'
 import LNode from './lnode.svelte'
 

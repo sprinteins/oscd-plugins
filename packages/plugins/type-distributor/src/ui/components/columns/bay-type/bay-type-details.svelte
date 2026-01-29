@@ -2,7 +2,7 @@
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate
-} from '@/headless/types'
+} from '@/headless/common-types'
 import { EqFunctionType, FunctionType } from '@/ui/components/items'
 
 const {

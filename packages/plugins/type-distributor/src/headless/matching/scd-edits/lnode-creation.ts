@@ -1,4 +1,4 @@
-import type { LNodeTemplate } from '@/headless/types'
+import type { LNodeTemplate } from '@/headless/common-types'
 import { v4 as uuidv4 } from 'uuid'
 
 export function createLNodeElement(

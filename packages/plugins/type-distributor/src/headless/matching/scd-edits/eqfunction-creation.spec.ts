@@ -4,7 +4,7 @@ import type { EquipmentMatch } from '@/headless/matching/types'
 import type {
 	EqFunctionTemplate,
 	LNodeTemplate
-} from '@/headless/types/ssd-types'
+} from '@/headless/common-types/ssd-types'
 
 describe('createEqFunctionInsertEdits', () => {
 	let mockDocument: Document

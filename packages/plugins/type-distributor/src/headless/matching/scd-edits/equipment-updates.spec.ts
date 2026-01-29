@@ -4,7 +4,7 @@ import type { EquipmentMatch } from '../types'
 import type {
 	ConductingEquipmentType,
 	ConductingEquipmentTemplate
-} from '@/headless/types/ssd-types'
+} from '@/headless/common-types/ssd-types'
 import type { SetAttributes } from '@openscd/oscd-api'
 
 describe('createEquipmentUpdateEdits', () => {

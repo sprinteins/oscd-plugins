@@ -1,4 +1,4 @@
-import type { BayType } from '../types'
+import type { BayType } from '../common-types'
 import { ssdImportStore } from '../stores'
 import type { EquipmentLookupItem, EquipmentMatch } from './types'
 

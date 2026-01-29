@@ -1,4 +1,4 @@
-import type { LNodeTemplate } from '@/headless/types'
+import type { LNodeTemplate } from '@/headless/common-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { ssdImportStore } from '@/headless/stores'
 import {

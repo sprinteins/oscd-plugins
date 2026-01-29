@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { createLNodeElement } from './lnode-creation'
-import type { LNodeTemplate } from '@/headless/types/ssd-types'
+import type { LNodeTemplate } from '@/headless/common-types/ssd-types'
 
 describe('createLNodeElement', () => {
 	let mockDocument: Document

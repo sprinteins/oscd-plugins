@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Card } from '@oscd-plugins/core-ui-svelte'
-import type { LNodeTemplate } from '@/headless/types'
+import type { LNodeTemplate } from '@/headless/common-types'
 
 interface Props {
 	lnode: LNodeTemplate

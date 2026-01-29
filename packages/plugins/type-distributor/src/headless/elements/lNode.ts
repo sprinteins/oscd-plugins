@@ -1,4 +1,4 @@
-import type { LNodeTemplate } from "../types";
+import type { LNodeTemplate } from "../common-types";
 
 export function createLNodeElement(lNode: LNodeTemplate, doc: XMLDocument): Element {
   const lnElement = doc.createElement(lNode.lnClass === "LLN0" ? "LLN0" : "LN");

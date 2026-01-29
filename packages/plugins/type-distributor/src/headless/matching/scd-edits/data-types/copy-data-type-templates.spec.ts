@@ -4,7 +4,7 @@ import {
 	insertDataTypeTemplatesInStages
 } from './copy-data-type-templates'
 import { ssdImportStore } from '@/headless/stores'
-import type { LNodeTemplate } from '@/headless/types/ssd-types'
+import type { LNodeTemplate } from '@/headless/common-types/ssd-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
 
 vi.mock('@/headless/stores', () => ({

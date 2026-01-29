@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { createLNodesInAccessPoint } from './create-lNode-in-access-point'
 import type { XMLEditor } from '@openscd/oscd-editor'
-import type { ConductingEquipmentTemplate, FunctionTemplate, LNodeTemplate } from '../types'
+import type { ConductingEquipmentTemplate, FunctionTemplate, LNodeTemplate } from '../common-types'
 import type { Insert } from '@openscd/oscd-api'
 
 // Mock modules

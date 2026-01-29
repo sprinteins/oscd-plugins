@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { updateBay } from './bay-update'
-import type { BayType } from '../../types/ssd-types'
+import type { BayType } from '../../common-types/ssd-types'
 import type { SetAttributes } from '@openscd/oscd-api'
 
 describe('updateBay', () => {

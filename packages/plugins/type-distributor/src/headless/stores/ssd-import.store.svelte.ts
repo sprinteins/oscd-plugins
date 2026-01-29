@@ -6,7 +6,7 @@ import type {
 	EnumType,
 	FunctionTemplate,
 	LNodeType
-} from '@/headless/types'
+} from '@/headless/common-types'
 
 import {
 	parseBayTypes,

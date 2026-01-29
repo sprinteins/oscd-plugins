@@ -1,5 +1,5 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
-import type { LNodeTemplate } from '@/headless/types'
+import type { LNodeTemplate } from '@/headless/common-types'
 import {
 	ssdImportStore,
 	bayTypesStore,

@@ -10,7 +10,7 @@ import {
 	equipmentMatchingStore,
 	ssdImportStore,
 } from '@/headless/stores'
-import type { ConductingEquipmentTemplate } from '@/headless/types'
+import type { ConductingEquipmentTemplate } from '@/headless/common-types'
 
 const bayType = $derived(
 	bayTypesStore.selectedBayType ? ssdImportStore.bayTypes.find((bt) => bt.uuid === bayTypesStore.selectedBayType) : null
