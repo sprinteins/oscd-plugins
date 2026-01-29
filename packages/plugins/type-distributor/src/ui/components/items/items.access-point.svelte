@@ -1,32 +1,67 @@
 <script lang="ts">
 import { Card } from '@oscd-plugins/core-ui-svelte'
-import { ChevronRight } from '@lucide/svelte'
+import { ChevronRight, CirclePlus } from '@lucide/svelte'
+import { dndStore } from '@/headless/stores'
 import LnodeCard from './lnode-card.svelte'
 import type { LNodeTemplate } from '@/headless/types'
 
 interface Props {
 	accessPoint: Element
-	sIedName: string
 	lNodes: LNodeTemplate[]
+	sIedName: string
 }
 
-const { accessPoint, sIedName, lNodes }: Props = $props()
+const { accessPoint, lNodes, sIedName }: Props = $props()
+
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
+let isDropTarget = $state(false)
+
+function handleDragOver(event: DragEvent) {
+	event.preventDefault()
+	if (!dndStore.isDragging) return
+	isDropTarget = true
+}
+
+function handleDragLeave(event: DragEvent) {
+	console.log('[AccessPoint] DragLeave event')
+	const relatedTarget = event.relatedTarget as HTMLElement
+	const currentTarget = event.currentTarget as HTMLElement
+	if (!currentTarget?.contains(relatedTarget)) {
+		isDropTarget = false
+	}
+}
+
+function handleDrop(event: DragEvent) {
+	event.preventDefault()
+	isDropTarget = false
+
+	if (!dndStore.currentDraggedItem) {
+		console.warn('[AccessPoint] No dragged item in store')
+		return
+	}
+
+	dndStore.handleDrop(accessPoint, sIedName)
+}
 </script>
 
 <div class="space-y-1">
   <button
     class="w-full"
     onclick={() => hasLNodes && (isOpen = !isOpen)}
-    disabled={!hasLNodes}
+    disabled={!hasLNodes && !dndStore.isDragging}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
   >
     <Card.Root
-      class=" {hasLNodes
+      class="{hasLNodes
         ? 'hover:bg-gray-50 cursor-pointer'
-        : 'border border-dashed'}"
+        : 'border border-dashed'} 
+		{isDropTarget ? 'border-primary ring-2 ring-primary ring-offset-2' : ''} 
+		transition-all"
     >
-      <Card.Content class="p-2">
+      <Card.Content class="p-2 relative">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             {#if hasLNodes}
@@ -37,9 +72,13 @@ let hasLNodes = $derived(lNodes.length > 0)
               />
             {/if}
             <span class="text-sm font-medium">
-              {sIedName} - Access Point {accessPoint.getAttribute("name") ?? "(unnamed)"}
+              {sIedName} - Access Point {accessPoint.getAttribute("name") ??
+                "(unnamed)"}
             </span>
           </div>
+          {#if isDropTarget}
+            <CirclePlus class="size-5 text-primary animate-pulse" />
+          {/if}
         </div>
       </Card.Content>
     </Card.Root>
