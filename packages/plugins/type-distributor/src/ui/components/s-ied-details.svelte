@@ -21,7 +21,6 @@ const sIedData = $derived(
 		element: sIedItem
 	}))
 )
-$inspect(sIedData, 'CHANGE SIED DATA')
 </script>
 {#if sIedData && sIedData.length > 0}
   <div class="space-y-2 mb-2">

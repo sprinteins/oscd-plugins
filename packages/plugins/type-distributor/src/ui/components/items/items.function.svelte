@@ -14,8 +14,8 @@ const { func }: Props = $props()
 let isOpen = $state(false)
 let isDragging = $derived(
 	dndStore.isDragging &&
-	dndStore.currentDraggedItem?.type === 'functionTemplate' &&
-	dndStore.currentDraggedItem?.sourceFunction.uuid === func.uuid
+		dndStore.currentDraggedItem?.type === 'functionTemplate' &&
+		dndStore.currentDraggedItem?.sourceFunction.uuid === func.uuid
 )
 
 function handleDragStart(event: DragEvent) {
@@ -30,30 +30,33 @@ function handleDragEnd() {
 	dndStore.handleDragEnd()
 }
 
-
 function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
-    dndStore.handleDragStart({
-        type: 'lNode',
-        sourceFunction: func,
-        lNodes: [lnode]
-    })
+	dndStore.handleDragStart({
+		type: 'lNode',
+		sourceFunction: func,
+		lNodes: [lnode]
+	})
 }
 
 function handleLNodeDragEnd() {
-    dndStore.handleDragEnd()
+	dndStore.handleDragEnd()
 }
 </script>
 
 <div class="space-y-1">
     <button
-		class="w-full"
-		onclick={() => (isOpen = !isOpen)}
-		draggable={true}
-		ondragstart={handleDragStart}
-		ondragend={handleDragEnd}
-		style:cursor={isDragging ? 'grabbing' : 'grab'}
-	>
-        <Card.Root class="hover:bg-gray-50 cursor-pointer transition-opacity {isDragging ? 'opacity-50' : ''}">
+        class="w-full"
+        onclick={() => (isOpen = !isOpen)}
+        draggable={true}
+        ondragstart={handleDragStart}
+        ondragend={handleDragEnd}
+        style:cursor={isDragging ? "grabbing" : "grab"}
+    >
+        <Card.Root
+            class="hover:bg-gray-50 cursor-pointer transition-opacity {isDragging
+                ? 'opacity-50'
+                : ''}"
+        >
             <Card.Content class="p-2">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
@@ -62,7 +65,9 @@ function handleLNodeDragEnd() {
                                 ? 'rotate-90'
                                 : ''}"
                         />
-                        <span class="text-sm font-medium">{func.name}</span>
+                        <span class="text-sm font-medium text-left"
+                            >{func.name}</span
+                        >
                     </div>
                 </div>
             </Card.Content>
@@ -71,12 +76,12 @@ function handleLNodeDragEnd() {
     {#if isOpen}
         <div class="ml-4 space-y-1">
             {#each func.lnodes as lnode}
-                 <LnodeCard
-				{lnode}
-				draggable={true}
-				onDragStart={handleLNodeDragStart}
-				onDragEnd={handleLNodeDragEnd}
-			/>
+                <LnodeCard
+                    {lnode}
+                    draggable={true}
+                    onDragStart={handleLNodeDragStart}
+                    onDragEnd={handleLNodeDragEnd}
+                />
             {/each}
         </div>
     {/if}

@@ -15,8 +15,8 @@ const { eqFunction, equipmentName }: Props = $props()
 let isOpen = $state(false)
 let isDragging = $derived(
 	dndStore.isDragging &&
-	dndStore.currentDraggedItem?.type === 'equipmentFunction' &&
-	dndStore.currentDraggedItem?.sourceFunction.uuid === eqFunction.uuid
+		dndStore.currentDraggedItem?.type === 'equipmentFunction' &&
+		dndStore.currentDraggedItem?.sourceFunction.uuid === eqFunction.uuid
 )
 
 function handleDragStart(event: DragEvent) {
@@ -36,38 +36,40 @@ function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
 	dndStore.handleDragStart({
 		type: 'lNode',
 		sourceFunction: eqFunction,
-        lNodes: [lnode],
-        equipmentName
+		lNodes: [lnode],
+		equipmentName
 	})
 }
 
 function handleLNodeDragEnd() {
-    dndStore.handleDragEnd()
+	dndStore.handleDragEnd()
 }
 </script>
 
 <div class="space-y-1">
     <button
-		class="w-full"
-		onclick={() => (isOpen = !isOpen)}
-		draggable={true}
-		ondragstart={handleDragStart}
-		ondragend={handleDragEnd}
-		style:cursor={isDragging ? 'grabbing' : 'grab'}
-	>
-        <Card.Root class="hover:bg-gray-50 cursor-pointer transition-opacity {isDragging ? 'opacity-50' : ''}">
+        class="w-full"
+        onclick={() => (isOpen = !isOpen)}
+        draggable={true}
+        ondragstart={handleDragStart}
+        ondragend={handleDragEnd}
+        style:cursor={isDragging ? "grabbing" : "grab"}
+    >
+        <Card.Root
+            class="hover:bg-gray-50 cursor-pointer transition-opacity {isDragging
+                ? 'opacity-50'
+                : ''}"
+        >
             <Card.Content class="p-2">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <ChevronRight
-                            class="size-4 transition-transform duration-200 {isOpen
-                                ? 'rotate-90'
-                                : ''}"
-                        />
-                        <span class="text-sm font-medium"
-                            >{eqFunction.name} ({equipmentName})</span
-                        >
-                    </div>
+                <div class="flex items-center gap-2">
+                    <ChevronRight
+                        class="size-4 transition-transform duration-200 {isOpen
+                            ? 'rotate-90'
+                            : ''}"
+                    />
+                    <span class="text-sm font-medium text-left">
+                        {eqFunction.name} ({equipmentName})
+                    </span>
                 </div>
             </Card.Content>
         </Card.Root>
@@ -76,11 +78,11 @@ function handleLNodeDragEnd() {
         <div class="ml-4 space-y-1">
             {#each eqFunction.lnodes as lnode}
                 <LnodeCard
-				{lnode}
-				draggable={true}
-				onDragStart={handleLNodeDragStart}
-				onDragEnd={handleLNodeDragEnd}
-			/>
+                    {lnode}
+                    draggable={true}
+                    onDragStart={handleLNodeDragStart}
+                    onDragEnd={handleLNodeDragEnd}
+                />
             {/each}
         </div>
     {/if}
