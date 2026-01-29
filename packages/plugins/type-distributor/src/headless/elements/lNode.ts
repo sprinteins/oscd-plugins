@@ -1,4 +1,3 @@
-import type { B } from "node_modules/vitest/dist/chunks/config.d.Cy95HiCx";
 import type { LNodeTemplate } from "../types";
 
 export function createLNodeElement(lNode: LNodeTemplate, iedName: string, doc: XMLDocument): Element {
@@ -14,7 +13,7 @@ export function createLNodeElement(lNode: LNodeTemplate, iedName: string, doc: X
 export function hasLNode(lDevice: Element, lNode: LNodeTemplate): boolean {
 	return Array.from(lDevice.children).some(
 		(child) =>
-			child.localName === 'LN' &&
+			(child.localName === 'LN' || child.localName === 'LLN0') &&
 			child.getAttribute('lnClass') === lNode.lnClass &&
 			child.getAttribute('lnType') === lNode.lnType &&
 			child.getAttribute('lnInst') === lNode.lnInst
