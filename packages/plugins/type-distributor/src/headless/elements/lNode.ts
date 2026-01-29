@@ -1,11 +1,10 @@
 import type { LNodeTemplate } from "../types";
 
-export function createLNodeElement(lNode: LNodeTemplate, iedName: string, doc: XMLDocument): Element {
+export function createLNodeElement(lNode: LNodeTemplate, doc: XMLDocument): Element {
   const lnElement = doc.createElement(lNode.lnClass === "LLN0" ? "LLN0" : "LN");
   lnElement.setAttribute("lnClass", lNode.lnClass);
   lnElement.setAttribute("lnType", lNode.lnType);
   lnElement.setAttribute("lnInst", lNode.lnInst);
-  lnElement.setAttribute("iedName", iedName);
 
   return lnElement;
 }

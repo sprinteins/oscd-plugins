@@ -24,7 +24,6 @@ function handleDragOver(event: DragEvent) {
 }
 
 function handleDragLeave(event: DragEvent) {
-	console.log('[AccessPoint] DragLeave event')
 	const relatedTarget = event.relatedTarget as HTMLElement
 	const currentTarget = event.currentTarget as HTMLElement
 	if (!currentTarget?.contains(relatedTarget)) {
@@ -71,7 +70,7 @@ function handleDrop(event: DragEvent) {
                   : ''}"
               />
             {/if}
-            <span class="text-sm font-medium">
+            <span class="text-sm font-medium text-left">
               {sIedName} - Access Point {accessPoint.getAttribute("name") ??
                 "(unnamed)"}
             </span>
