@@ -1,2 +1,2 @@
 export { validateBayTypeSelection } from './validateBayTypeSelection'
-export type { ValidationResult, AmbiguousTypeInfo } from './validation'
+export type { ValidationResult } from './types'

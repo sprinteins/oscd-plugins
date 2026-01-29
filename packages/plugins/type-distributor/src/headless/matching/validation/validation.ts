@@ -4,29 +4,7 @@ import type {
 	ConductingEquipmentType
 } from '@/headless/types'
 import { ssdImportStore } from '@/headless/stores'
-//TODO: move types
-
-export type AmbiguousTypeInfo = {
-	typeCode: string
-	templateNames: string[]
-}
-
-export type ValidationResult = {
-	isValid: boolean
-	errors: string[]
-	requiresManualMatching?: boolean
-	ambiguousTypes?: AmbiguousTypeInfo[]
-	canAutoMatch?: boolean
-}
-
-export type EquipmentMatchingInfo = {
-	scdEquipment: Element[]
-	templateEquipment: {
-		bayTypeEquipment: ConductingEquipmentType
-		template: ConductingEquipmentTemplate
-	}[]
-	type: string
-}
+import type { AmbiguousTypeInfo, ValidationResult } from './types'
 
 export function validateEquipmentMatch(
 	scdBay: Element,
