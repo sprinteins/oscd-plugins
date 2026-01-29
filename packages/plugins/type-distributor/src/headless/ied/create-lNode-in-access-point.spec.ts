@@ -88,13 +88,12 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			expect(mockEditor.commit).toHaveBeenCalled()
-			const calls = mockEditor.commit.mock.calls
+			expect(mockEditor.commit).toHaveBeenCalledTimes(1)
+			const [[edits]] = mockEditor.commit.mock.calls
 			
 			// Find the Server creation edit
 			let serverCreated = false
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'Server') {
 					serverCreated = true
 					expect(edit.parent).toBe(accessPoint)
@@ -111,11 +110,10 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			const calls = mockEditor.commit.mock.calls
+			const [[edits]] = mockEditor.commit.mock.calls
 			
 			let lDeviceCreated = false
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'LDevice') {
 					lDeviceCreated = true
 					expect(edit.node.getAttribute('inst')).toBe('CBFunction')
@@ -133,11 +131,10 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			const calls = mockEditor.commit.mock.calls
+			const [[edits]] = mockEditor.commit.mock.calls
 			
 			let lnCount = 0
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'LN') {
 					lnCount++
 				}
@@ -160,16 +157,15 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			const calls = mockEditor.commit.mock.calls
+			const [[edits]] = mockEditor.commit.mock.calls
 			
 			let serverCreated = false
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'Server') {
 					serverCreated = true
 				}
 			}
-			expect(serverCreated).toBe(true)
+			expect(serverCreated).toBe(false)
 		})
 
 		it('should reuse existing LDevice', () => {
@@ -191,11 +187,10 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			const calls = mockEditor.commit.mock.calls
+			const [[edits]] = mockEditor.commit.mock.calls
 			
 			let lDeviceCreated = false
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'LDevice') {
 					lDeviceCreated = true
 				}
@@ -213,11 +208,10 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			const calls = mockEditor.commit.mock.calls
+			const [[edits]] = mockEditor.commit.mock.calls
 			
 			let lDeviceCreated = false
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'LDevice') {
 					lDeviceCreated = true
 					expect(edit.node.getAttribute('inst')).toBe('CircuitBreaker1_CBFunction')
@@ -234,11 +228,10 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			const calls = mockEditor.commit.mock.calls
+			const [[edits]] = mockEditor.commit.mock.calls
 			
 			let lnCreated = false
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'LN') {
 					lnCreated = true
 					expect(edit.node.getAttribute('lnClass')).toBe('XCBR')
@@ -258,11 +251,10 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			const calls = mockEditor.commit.mock.calls
+			const [[edits]] = mockEditor.commit.mock.calls
 			
 			let lnElement: Element | null = null
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'LN') {
 					lnElement = edit.node
 					break
@@ -286,11 +278,10 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			const calls = mockEditor.commit.mock.calls
+			const [[edits]] = mockEditor.commit.mock.calls
 			
 			const lnInstances = new Set<string | null>()
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'LN') {
 					lnInstances.add(edit.node.getAttribute('lnInst'))
 				}
@@ -338,13 +329,12 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			const calls = mockEditor.commit.mock.calls
+			const [[edits]] = mockEditor.commit.mock.calls
 			
 			// Should still create Server and LDevice
 			let serverCreated = false
 			let lDeviceCreated = false
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'Server') {
 					serverCreated = true
 				}
@@ -367,10 +357,9 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			const calls = mockEditor.commit.mock.calls
+			const [[edits]] = mockEditor.commit.mock.calls
 			
-			for (const call of calls) {
-				const edit = call[0] as Insert
+			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'Server') {
 					const authElement = edit.node.querySelector('Authentication')
 					expect(authElement).not.toBeNull()
@@ -391,12 +380,9 @@ describe('createLNodesInAccessPoint', () => {
 
 			const calls = mockEditor.commit.mock.calls
 
-			expect(calls.length).toBeGreaterThanOrEqual(3) // At least Server, LDevice, and LN
-
-			const titles = calls.map((call) => call[1]?.title)
-			expect(titles).toContain('Add Server element')
-			expect(titles.some((t) => t?.includes('Add LDevice'))).toBe(true)
-			expect(titles.some((t) => t?.includes('Add LN'))).toBe(true)
+			expect(calls.length).toBe(1)
+			const [[, options]] = calls
+			expect(options?.title).toBe('Add LNodes to IED TestIED')
 		})
 	})
 })
