@@ -1,6 +1,11 @@
-import type { ConductingEquipmentTemplate, FunctionTemplate } from "../../common-types"
+import type {
+	ConductingEquipmentTemplate,
+	FunctionTemplate
+} from '../../common-types'
 
-function extractFunctionNames(sourceFunction: ConductingEquipmentTemplate | FunctionTemplate): {
+function extractFunctionNames(
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
+): {
 	functionName: string
 	conductingEquipmentName: string | undefined
 } {
@@ -26,24 +31,33 @@ function generateLDeviceInst(
 }
 
 export function getExistingLDevice(
-	server: Element, 
+	server: Element,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 ): Element | undefined {
-	const { functionName, conductingEquipmentName } = extractFunctionNames(sourceFunction)
-	const lDeviceInst = generateLDeviceInst(functionName, conductingEquipmentName)
+	const { functionName, conductingEquipmentName } =
+		extractFunctionNames(sourceFunction)
+	const lDeviceInst = generateLDeviceInst(
+		functionName,
+		conductingEquipmentName
+	)
 	return Array.from(server.children).find(
 		(child) =>
-			child.localName === "LDevice" && child.getAttribute("inst") === lDeviceInst
+			child.localName === 'LDevice' &&
+			child.getAttribute('inst') === lDeviceInst
 	)
 }
 
 export function createLDeviceElement(
-	doc: XMLDocument, 
+	doc: XMLDocument,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 ): Element {
-	const { functionName, conductingEquipmentName } = extractFunctionNames(sourceFunction)
-	const lDevice = doc.createElement("LDevice")
-	const lDeviceInst = generateLDeviceInst(functionName, conductingEquipmentName)
-	lDevice.setAttribute("inst", lDeviceInst)
+	const { functionName, conductingEquipmentName } =
+		extractFunctionNames(sourceFunction)
+	const lDevice = doc.createElement('LDevice')
+	const lDeviceInst = generateLDeviceInst(
+		functionName,
+		conductingEquipmentName
+	)
+	lDevice.setAttribute('inst', lDeviceInst)
 	return lDevice
 }

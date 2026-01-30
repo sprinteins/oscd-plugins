@@ -11,7 +11,7 @@ import {
 	getExistingServer,
 	getExistingLDevice,
 	createLDeviceElement,
-	hasLNodeInTargetDoc,
+	hasLNodeInTargetDoc
 } from './elements'
 
 type CreateLNodesParams = {
@@ -100,7 +100,7 @@ export function createLNodesInAccessPoint({
 	}
 
 	const doc = pluginGlobalStore.xmlDocument
-	
+
 	const lNodesToAdd = lNodes.filter((lNode) => {
 		const exists = hasLNodeInTargetDoc(doc, lNode)
 		if (exists) {
@@ -110,12 +110,12 @@ export function createLNodesInAccessPoint({
 		}
 		return !exists
 	})
-	
+
 	if (lNodesToAdd.length === 0) {
 		console.info('[createLNodesInAccessPoint] No new lNodes to add')
 		return
 	}
-	
+
 	const edits: Insert[] = []
 	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
 	const { lDevice, edit: lDeviceEdit } = ensureLDevice(
@@ -134,7 +134,7 @@ export function createLNodesInAccessPoint({
 		})
 		edits.push(lNodeEdit)
 	}
-	
+
 	editor.commit(edits, {
 		title: `Add LNodes to IED ${iedName}`
 	})
