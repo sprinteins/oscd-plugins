@@ -9,7 +9,8 @@ import {
 	createLNodeElementInIED,
 	createServerElementWithAuth,
 	getExistingServer,
-	getOrCreateLDeviceElement,
+	getExistingLDevice,
+	createLDeviceElement,
 	hasLNodeInTargetDoc,
 } from './elements'
 
@@ -36,7 +37,6 @@ function ensureServer(
 	}
 
 	const serverElement = createServerElementWithAuth(doc)
-	accessPoint.appendChild(serverElement)
 
 	const edit: Insert = {
 		node: serverElement,
@@ -51,8 +51,13 @@ function ensureLDevice(
 	server: Element,
 	doc: XMLDocument,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
-): { lDevice: Element; edit: Insert } {
-	const lDevice = getOrCreateLDeviceElement(doc, sourceFunction, server)
+): { lDevice: Element; edit: Insert | undefined } {
+	const existingLDevice = getExistingLDevice(server, sourceFunction)
+	if (existingLDevice) {
+		return { lDevice: existingLDevice, edit: undefined }
+	}
+
+	const lDevice = createLDeviceElement(doc, sourceFunction)
 
 	const edit: Insert = {
 		node: lDevice,
@@ -119,7 +124,7 @@ export function createLNodesInAccessPoint({
 		sourceFunction
 	)
 	if (serverEdit) edits.push(serverEdit)
-	edits.push(lDeviceEdit)
+	if (lDeviceEdit) edits.push(lDeviceEdit)
 
 	for (const lNode of lNodesToAdd) {
 		const lNodeEdit = createLNodeInAccessPoint({

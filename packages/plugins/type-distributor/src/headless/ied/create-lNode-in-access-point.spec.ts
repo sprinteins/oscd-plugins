@@ -168,7 +168,7 @@ describe('createLNodesInAccessPoint', () => {
 			expect(serverCreated).toBe(false)
 		})
 
-		it('should still create LDevice edit even if it exists (always creates new)', () => {
+		it('should reuse existing LDevice without creating new edit', () => {
 			// Create existing Server and LDevice
 			const server = mockDocument.createElement('Server')
 			const auth = mockDocument.createElement('Authentication')
@@ -189,14 +189,23 @@ describe('createLNodesInAccessPoint', () => {
 
 			const [[edits]] = mockEditor.commit.mock.calls
 			
-			// LDevice edit is always created by ensureLDevice
+			// Should not create LDevice edit since it already exists
 			let lDeviceCreated = false
 			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'LDevice') {
 					lDeviceCreated = true
 				}
 			}
-			expect(lDeviceCreated).toBe(true)
+			expect(lDeviceCreated).toBe(false)
+			
+			// Should still create LN edit
+			let lnCreated = false
+			for (const edit of edits as Insert[]) {
+				if (edit.node instanceof Element && edit.node.localName === 'LN') {
+					lnCreated = true
+				}
+			}
+			expect(lnCreated).toBe(true)
 		})
 	})
 
