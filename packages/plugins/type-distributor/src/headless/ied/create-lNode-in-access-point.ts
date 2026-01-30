@@ -9,8 +9,9 @@ import {
 	createLNodeElementInIED,
 	createServerElementWithAuth,
 	getExistingServer,
-	getOrCreateLDeviceElement,
-	hasLNode
+	getExistingLDevice,
+	createLDeviceElement,
+	hasLNodeInTargetDoc
 } from './elements'
 
 type CreateLNodesParams = {
@@ -36,7 +37,6 @@ function ensureServer(
 	}
 
 	const serverElement = createServerElementWithAuth(doc)
-	accessPoint.appendChild(serverElement)
 
 	const edit: Insert = {
 		node: serverElement,
@@ -51,8 +51,13 @@ function ensureLDevice(
 	server: Element,
 	doc: XMLDocument,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
-): { lDevice: Element; edit: Insert } {
-	const lDevice = getOrCreateLDeviceElement(doc, sourceFunction, server)
+): { lDevice: Element; edit: Insert | undefined } {
+	const existingLDevice = getExistingLDevice(server, sourceFunction)
+	if (existingLDevice) {
+		return { lDevice: existingLDevice, edit: undefined }
+	}
+
+	const lDevice = createLDeviceElement(doc, sourceFunction)
 
 	const edit: Insert = {
 		node: lDevice,
@@ -67,31 +72,16 @@ function createLNodeInAccessPoint({
 	lNode,
 	lDevice,
 	doc
-}: CreateLNodeParams): Insert | undefined {
-	if (hasLNode(lDevice, lNode)) {
-		console.warn(
-			`[createLNodesInAccessPoint] LN ${lNode.lnClass}:${lNode.lnType}:${lNode.lnInst} already exists in LDevice`
-		)
-		return
-	}
-
+}: CreateLNodeParams): Insert {
 	const lNodeElement = createLNodeElementInIED(lNode, doc)
 
-	try {
-		const edit: Insert = {
-			node: lNodeElement,
-			parent: lDevice,
-			reference: null
-		}
-
-		return edit
-	} catch (error) {
-		console.error(
-			'[createLNodesInAccessPoint] Error dispatching edit event:',
-			error
-		)
-		throw error
+	const edit: Insert = {
+		node: lNodeElement,
+		parent: lDevice,
+		reference: null
 	}
+
+	return edit
 }
 
 export function createLNodesInAccessPoint({
@@ -101,7 +91,6 @@ export function createLNodesInAccessPoint({
 	accessPoint
 }: CreateLNodesParams): void {
 	const editor = pluginGlobalStore.editor
-	const edits: Insert[] = []
 	if (!editor) {
 		throw new Error('No editor found')
 	}
@@ -111,6 +100,23 @@ export function createLNodesInAccessPoint({
 	}
 
 	const doc = pluginGlobalStore.xmlDocument
+
+	const lNodesToAdd = lNodes.filter((lNode) => {
+		const exists = hasLNodeInTargetDoc(doc, lNode)
+		if (exists) {
+			console.warn(
+				`[createLNodesInAccessPoint] LN ${lNode.lnClass}:${lNode.lnType}:${lNode.lnInst} already exists in target document, skipping`
+			)
+		}
+		return !exists
+	})
+
+	if (lNodesToAdd.length === 0) {
+		console.info('[createLNodesInAccessPoint] No new lNodes to add')
+		return
+	}
+
+	const edits: Insert[] = []
 	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
 	const { lDevice, edit: lDeviceEdit } = ensureLDevice(
 		serverElement,
@@ -118,17 +124,15 @@ export function createLNodesInAccessPoint({
 		sourceFunction
 	)
 	if (serverEdit) edits.push(serverEdit)
-	edits.push(lDeviceEdit)
+	if (lDeviceEdit) edits.push(lDeviceEdit)
 
-	for (const lNode of lNodes) {
+	for (const lNode of lNodesToAdd) {
 		const lNodeEdit = createLNodeInAccessPoint({
 			lNode,
 			lDevice,
 			doc
 		})
-		if (lNodeEdit) {
-			edits.push(lNodeEdit)
-		}
+		edits.push(lNodeEdit)
 	}
 
 	editor.commit(edits, {
