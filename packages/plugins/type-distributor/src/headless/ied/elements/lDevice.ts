@@ -1,9 +1,26 @@
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate
-} from '@/headless/common-types'
+} from '../../common-types'
 
-export function generateLDeviceInst(
+function extractFunctionNames(
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
+): {
+	functionName: string
+	conductingEquipmentName: string | undefined
+} {
+	let functionName = sourceFunction.name
+	let conductingEquipmentName: string | undefined
+
+	if ('eqFunctions' in sourceFunction) {
+		conductingEquipmentName = sourceFunction.name
+		functionName = sourceFunction.eqFunctions[0]?.name || functionName
+	}
+
+	return { functionName, conductingEquipmentName }
+}
+
+function generateLDeviceInst(
 	functionName: string,
 	conductingEquipmentName?: string
 ): string {
@@ -13,11 +30,12 @@ export function generateLDeviceInst(
 	return functionName
 }
 
-function getLDevice(
+function getExistingLDevice(
 	server: Element,
-	functionName: string,
-	conductingEquipmentName?: string
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 ): Element | undefined {
+	const { functionName, conductingEquipmentName } =
+		extractFunctionNames(sourceFunction)
 	const lDeviceInst = generateLDeviceInst(
 		functionName,
 		conductingEquipmentName
@@ -34,22 +52,13 @@ export function getOrCreateLDeviceElement(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	server: Element
 ): Element {
-	let functionName = sourceFunction.name
-	let conductingEquipmentName: string | undefined
-
-	if ('eqFunctions' in sourceFunction) {
-		functionName = sourceFunction.eqFunctions[0]?.name || functionName
-	}
-
-	const existingLDevice = getLDevice(
-		server,
-		functionName,
-		conductingEquipmentName
-	)
+	const existingLDevice = getExistingLDevice(server, sourceFunction)
 	if (existingLDevice) {
 		return existingLDevice
 	}
 
+	const { functionName, conductingEquipmentName } =
+		extractFunctionNames(sourceFunction)
 	const lDevice = doc.createElement('LDevice')
 	const lDeviceInst = generateLDeviceInst(
 		functionName,

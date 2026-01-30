@@ -15,6 +15,7 @@ export function getLNodesFromAccessPoint(
 		)
 
 		for (const lDevice of lDevices) {
+			const lDeviceName = lDevice.getAttribute('inst') ?? undefined
 			const lnElements = Array.from(lDevice.children).filter(
 				(child) => child.localName === 'LN0' || child.localName === 'LN'
 			)
@@ -24,7 +25,8 @@ export function getLNodesFromAccessPoint(
 					lnClass: lnode.getAttribute('lnClass') ?? '',
 					lnType: lnode.getAttribute('lnType') ?? '',
 					lnInst: lnode.getAttribute('lnInst') ?? '',
-					iedName: lnode.getAttribute('iedName') ?? undefined
+					iedName: lnode.getAttribute('iedName') ?? undefined,
+					lDeviceName
 				})
 			}
 		}

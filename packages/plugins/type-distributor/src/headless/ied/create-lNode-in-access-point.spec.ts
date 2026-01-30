@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { createLNodesInAccessPoint } from './create-lNode-in-access-point'
 import type { XMLEditor } from '@openscd/oscd-editor'
-import type { ConductingEquipmentTemplate, FunctionTemplate, LNodeTemplate } from '../common-types'
+import type {
+	ConductingEquipmentTemplate,
+	FunctionTemplate,
+	LNodeTemplate
+} from '../common-types'
 import type { Insert } from '@openscd/oscd-api'
 
 // Mock modules
@@ -70,7 +74,9 @@ describe('createLNodesInAccessPoint', () => {
 			eqFunctions: [functionTemplate]
 		}
 
-		accessPoint = mockDocument.querySelector('AccessPoint[name="TestAP"]') as Element
+		accessPoint = mockDocument.querySelector(
+			'AccessPoint[name="TestAP"]'
+		) as Element
 
 		vi.clearAllMocks()
 	})
@@ -90,11 +96,14 @@ describe('createLNodesInAccessPoint', () => {
 
 			expect(mockEditor.commit).toHaveBeenCalledTimes(1)
 			const [[edits]] = mockEditor.commit.mock.calls
-			
+
 			// Find the Server creation edit
 			let serverCreated = false
 			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'Server') {
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'Server'
+				) {
 					serverCreated = true
 					expect(edit.parent).toBe(accessPoint)
 				}
@@ -111,10 +120,13 @@ describe('createLNodesInAccessPoint', () => {
 			})
 
 			const [[edits]] = mockEditor.commit.mock.calls
-			
+
 			let lDeviceCreated = false
 			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'LDevice') {
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'LDevice'
+				) {
 					lDeviceCreated = true
 					expect(edit.node.getAttribute('inst')).toBe('CBFunction')
 				}
@@ -123,7 +135,11 @@ describe('createLNodesInAccessPoint', () => {
 		})
 
 		it('should create LN elements for each lNode', () => {
-			const lnode2 = { ...lnodeTemplate, uuid: 'lnode2-uuid', lnInst: '2' }
+			const lnode2 = {
+				...lnodeTemplate,
+				uuid: 'lnode2-uuid',
+				lnInst: '2'
+			}
 			createLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2],
@@ -132,10 +148,13 @@ describe('createLNodesInAccessPoint', () => {
 			})
 
 			const [[edits]] = mockEditor.commit.mock.calls
-			
+
 			let lnCount = 0
 			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'LN') {
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'LN'
+				) {
 					lnCount++
 				}
 			}
@@ -158,17 +177,20 @@ describe('createLNodesInAccessPoint', () => {
 			})
 
 			const [[edits]] = mockEditor.commit.mock.calls
-			
+
 			let serverCreated = false
 			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'Server') {
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'Server'
+				) {
 					serverCreated = true
 				}
 			}
 			expect(serverCreated).toBe(false)
 		})
 
-		it('should reuse existing LDevice', () => {
+		it('should reuse existing LDevice without creating new edit', () => {
 			// Create existing Server and LDevice
 			const server = mockDocument.createElement('Server')
 			const auth = mockDocument.createElement('Authentication')
@@ -188,14 +210,30 @@ describe('createLNodesInAccessPoint', () => {
 			})
 
 			const [[edits]] = mockEditor.commit.mock.calls
-			
+
+			// Should not create LDevice edit since it already exists
 			let lDeviceCreated = false
 			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'LDevice') {
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'LDevice'
+				) {
 					lDeviceCreated = true
 				}
 			}
-			expect(lDeviceCreated).toBe(true)
+			expect(lDeviceCreated).toBe(false)
+
+			// Should still create LN edit
+			let lnCreated = false
+			for (const edit of edits as Insert[]) {
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'LN'
+				) {
+					lnCreated = true
+				}
+			}
+			expect(lnCreated).toBe(true)
 		})
 	})
 
@@ -209,12 +247,17 @@ describe('createLNodesInAccessPoint', () => {
 			})
 
 			const [[edits]] = mockEditor.commit.mock.calls
-			
+
 			let lDeviceCreated = false
 			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'LDevice') {
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'LDevice'
+				) {
 					lDeviceCreated = true
-					expect(edit.node.getAttribute('inst')).toBe('CircuitBreaker1_CBFunction')
+					expect(edit.node.getAttribute('inst')).toBe(
+						'CircuitBreaker1_CBFunction'
+					)
 				}
 			}
 			expect(lDeviceCreated).toBe(true)
@@ -229,10 +272,13 @@ describe('createLNodesInAccessPoint', () => {
 			})
 
 			const [[edits]] = mockEditor.commit.mock.calls
-			
+
 			let lnCreated = false
 			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'LN') {
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'LN'
+				) {
 					lnCreated = true
 					expect(edit.node.getAttribute('lnClass')).toBe('XCBR')
 					expect(edit.node.getAttribute('lnType')).toBe('TestLNType')
@@ -252,10 +298,13 @@ describe('createLNodesInAccessPoint', () => {
 			})
 
 			const [[edits]] = mockEditor.commit.mock.calls
-			
+
 			let lnElement: Element | null = null
 			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'LN') {
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'LN'
+				) {
 					lnElement = edit.node
 					break
 				}
@@ -268,8 +317,16 @@ describe('createLNodesInAccessPoint', () => {
 		})
 
 		it('should create multiple LN elements with unique inst values', () => {
-			const lnode2 = { ...lnodeTemplate, uuid: 'lnode2-uuid', lnInst: '2' }
-			const lnode3 = { ...lnodeTemplate, uuid: 'lnode3-uuid', lnInst: '3' }
+			const lnode2 = {
+				...lnodeTemplate,
+				uuid: 'lnode2-uuid',
+				lnInst: '2'
+			}
+			const lnode3 = {
+				...lnodeTemplate,
+				uuid: 'lnode3-uuid',
+				lnInst: '3'
+			}
 
 			createLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
@@ -279,10 +336,13 @@ describe('createLNodesInAccessPoint', () => {
 			})
 
 			const [[edits]] = mockEditor.commit.mock.calls
-			
+
 			const lnInstances = new Set<string | null>()
 			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'LN') {
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'LN'
+				) {
 					lnInstances.add(edit.node.getAttribute('lnInst'))
 				}
 			}
@@ -321,30 +381,45 @@ describe('createLNodesInAccessPoint', () => {
 			).toThrow('No editor found')
 		})
 
-		it('should handle empty lNodes array gracefully', () => {
+		it('should not commit when lNodes array is empty', () => {
 			createLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [],
 				iedName: 'TestIED',
 				accessPoint
 			})
+			// Should not commit anything
+			expect(mockEditor.commit).not.toHaveBeenCalled()
+		})
 
-			const [[edits]] = mockEditor.commit.mock.calls
-			
-			// Should still create Server and LDevice
-			let serverCreated = false
-			let lDeviceCreated = false
-			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'Server') {
-					serverCreated = true
-				}
-				if (edit.node instanceof Element && edit.node.localName === 'LDevice') {
-					lDeviceCreated = true
-				}
-			}
+		it('should not commit when all lNodes already exist in target document', () => {
+			// Create existing LNode in another IED
+			const otherIED = mockDocument.createElement('IED')
+			otherIED.setAttribute('name', 'OtherIED')
+			const otherAP = mockDocument.createElement('AccessPoint')
+			otherAP.setAttribute('name', 'OtherAP')
+			otherIED.appendChild(otherAP)
+			const otherServer = mockDocument.createElement('Server')
+			otherAP.appendChild(otherServer)
+			const otherLDevice = mockDocument.createElement('LDevice')
+			otherLDevice.setAttribute('inst', 'TestLD')
+			otherServer.appendChild(otherLDevice)
+			const existingLN = mockDocument.createElement('LN')
+			existingLN.setAttribute('lnClass', 'XCBR')
+			existingLN.setAttribute('lnType', 'TestLNType')
+			existingLN.setAttribute('lnInst', '1')
+			otherLDevice.appendChild(existingLN)
+			mockDocument.documentElement.appendChild(otherIED)
 
-			expect(serverCreated).toBe(true)
-			expect(lDeviceCreated).toBe(true)
+			createLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				iedName: 'TestIED',
+				accessPoint
+			})
+
+			// Should not commit anything since lNode already exists
+			expect(mockEditor.commit).not.toHaveBeenCalled()
 		})
 	})
 
@@ -358,10 +433,14 @@ describe('createLNodesInAccessPoint', () => {
 			})
 
 			const [[edits]] = mockEditor.commit.mock.calls
-			
+
 			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'Server') {
-					const authElement = edit.node.querySelector('Authentication')
+				if (
+					edit.node instanceof Element &&
+					edit.node.localName === 'Server'
+				) {
+					const authElement =
+						edit.node.querySelector('Authentication')
 					expect(authElement).not.toBeNull()
 					expect(authElement?.getAttribute('none')).toBe('true')
 				}

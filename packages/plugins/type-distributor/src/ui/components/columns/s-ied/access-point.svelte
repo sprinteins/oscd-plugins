@@ -2,8 +2,8 @@
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
 import { dndStore } from '@/headless/stores'
-import LNode from './lnode.svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
+import IedLnode from './ied-lnode.svelte'
 
 interface Props {
 	accessPoint: Element
@@ -85,7 +85,7 @@ function handleDrop(event: DragEvent) {
   {#if isOpen && hasLNodes}
     <div class="ml-4 space-y-1">
       {#each lNodes as lnode}
-        <LNode {lnode} />
+        <IedLnode {lnode} lDeviceName={lnode.lDeviceName ?? 'Unknown'} />
       {/each}
     </div>
   {/if}
