@@ -1,9 +1,12 @@
 import { getDocumentAndEditor } from '@/headless/utils'
+import type { EquipmentMatch } from '@/headless/matching/types'
 
 class UseBayStore {
 	selectedBay: string | null = $state<string | null>(null)
 	selectedBayUuid = $state<string | null>(null)
-	assigendBayType: string | null = null // As soon as any lnode is assigned
+	assigendBayType = $state<string | null>(null)
+	pendingBayTypeApply = $state<string | null>(null)
+	equipmentMatches: EquipmentMatch[] = $state<EquipmentMatch[]>([])
 
 	scdBay = $derived.by(() => {
 		if (!this.selectedBay) {

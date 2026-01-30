@@ -99,12 +99,8 @@ export function createLNodesInAccessPoint({
 	lNodes,
 	iedName,
 	accessPoint
-}: CreateLNodesParams): void {
-	const editor = pluginGlobalStore.editor
+}: CreateLNodesParams): Insert[] {
 	const edits: Insert[] = []
-	if (!editor) {
-		throw new Error('No editor found')
-	}
 
 	if (!pluginGlobalStore.xmlDocument) {
 		throw new Error('No XML document found')
@@ -131,7 +127,5 @@ export function createLNodesInAccessPoint({
 		}
 	}
 
-	editor.commit(edits, {
-		title: `Add LNodes to IED ${iedName}`
-	})
+	return edits
 }
