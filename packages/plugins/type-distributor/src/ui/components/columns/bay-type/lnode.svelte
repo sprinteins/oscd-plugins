@@ -19,6 +19,6 @@ const { lnode, draggable = false, onDragStart, onDragEnd }: Props = $props()
     class="hover:bg-gray-50 cursor-pointer transition-opacity"
 >
     <Card.Content class="p-2">
-        <span class="text-sm text-left">{lnode.lnType}</span>
+        <span class="text-sm text-left">{lnode.lnType}gg</span>
     </Card.Content>
 </Card.Root>

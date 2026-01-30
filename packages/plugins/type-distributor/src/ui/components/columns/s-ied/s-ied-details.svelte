@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AccessPoint } from '@/ui/components/items'
+import AccessPoint from './access-point.svelte'
 import { getLNodesFromAccessPoint } from '@/headless/ied'
 import { Card } from '@oscd-plugins/core-ui-svelte'
 
