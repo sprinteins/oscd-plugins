@@ -168,7 +168,7 @@ describe('createLNodesInAccessPoint', () => {
 			expect(serverCreated).toBe(false)
 		})
 
-		it('should reuse existing LDevice', () => {
+		it('should still create LDevice edit even if it exists (always creates new)', () => {
 			// Create existing Server and LDevice
 			const server = mockDocument.createElement('Server')
 			const auth = mockDocument.createElement('Authentication')
@@ -189,6 +189,7 @@ describe('createLNodesInAccessPoint', () => {
 
 			const [[edits]] = mockEditor.commit.mock.calls
 			
+			// LDevice edit is always created by ensureLDevice
 			let lDeviceCreated = false
 			for (const edit of edits as Insert[]) {
 				if (edit.node instanceof Element && edit.node.localName === 'LDevice') {
@@ -321,30 +322,45 @@ describe('createLNodesInAccessPoint', () => {
 			).toThrow('No editor found')
 		})
 
-		it('should handle empty lNodes array gracefully', () => {
+		it('should not commit when lNodes array is empty', () => {
 			createLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [],
 				iedName: 'TestIED',
 				accessPoint
 			})
+			// Should not commit anything
+			expect(mockEditor.commit).not.toHaveBeenCalled()
+		})
 
-			const [[edits]] = mockEditor.commit.mock.calls
-			
-			// Should still create Server and LDevice
-			let serverCreated = false
-			let lDeviceCreated = false
-			for (const edit of edits as Insert[]) {
-				if (edit.node instanceof Element && edit.node.localName === 'Server') {
-					serverCreated = true
-				}
-				if (edit.node instanceof Element && edit.node.localName === 'LDevice') {
-					lDeviceCreated = true
-				}
-			}
+		it('should not commit when all lNodes already exist in target document', () => {
+			// Create existing LNode in another IED
+			const otherIED = mockDocument.createElement('IED')
+			otherIED.setAttribute('name', 'OtherIED')
+			const otherAP = mockDocument.createElement('AccessPoint')
+			otherAP.setAttribute('name', 'OtherAP')
+			otherIED.appendChild(otherAP)
+			const otherServer = mockDocument.createElement('Server')
+			otherAP.appendChild(otherServer)
+			const otherLDevice = mockDocument.createElement('LDevice')
+			otherLDevice.setAttribute('inst', 'TestLD')
+			otherServer.appendChild(otherLDevice)
+			const existingLN = mockDocument.createElement('LN')
+			existingLN.setAttribute('lnClass', 'XCBR')
+			existingLN.setAttribute('lnType', 'TestLNType')
+			existingLN.setAttribute('lnInst', '1')
+			otherLDevice.appendChild(existingLN)
+			mockDocument.documentElement.appendChild(otherIED)
 
-			expect(serverCreated).toBe(true)
-			expect(lDeviceCreated).toBe(true)
+			createLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				iedName: 'TestIED',
+				accessPoint
+			})
+
+			// Should not commit anything since lNode already exists
+			expect(mockEditor.commit).not.toHaveBeenCalled()
 		})
 	})
 
