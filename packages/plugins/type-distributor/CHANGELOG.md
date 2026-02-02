@@ -7,8 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 ### Added 
-- Dialog to create S-Ieds and Aps
-- S-IED AccessPoints view
+- Dialog to create S-IEDs and AccessPoints with validation
+- S-IED AccessPoints view showing LNodes per AccessPoint
+- Bay type assignment workflow with automatic equipment matching
+- Manual equipment matching for ambiguous types
+- Drag-and-drop functionality to assign LNodes from bay types to IED AccessPoints
+- LNode assignment to IEDs with automatic LDevice creation
+- Equipment matching validation with error reporting
+- Bay LNode update functionality to link LNodes to IEDs
+- Unit tests for IED operations, matching logic, and validation
+- Type definitions for assignable templates and equipment matching
+
+### Changed
+- Restructured type definitions from `headless/types` to `headless/common-types`
+- Improved component organization with dedicated column folders (bay-type, s-ied)
+- Updated store architecture with bay, equipment matching, and DnD stores
 
 ## [0.1.3] - 2026-01-19
 ### Added
