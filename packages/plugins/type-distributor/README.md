@@ -1,6 +1,6 @@
 # Type Distributor
 
-OpenSCD plugin for distributing IEC 61850 System Specification Description (SSD) templates to Substation Configuration Description (SCD) files.
+OpenSCD plugin for distributin (SSD) templates to (SCD) files.
 
 ## Purpose
 
