@@ -17,7 +17,7 @@ export function createLNodeElementInIED(
 function hasLNodeInLDevice(lDevice: Element, lNode: LNodeTemplate): boolean {
 	return Array.from(lDevice.children).some(
 		(child) =>
-			(child.localName === 'LN' || child.localName === 'LLN0') &&
+			(child.localName === 'LN' || child.localName === 'LN0') &&
 			child.getAttribute('lnClass') === lNode.lnClass &&
 			child.getAttribute('lnType') === lNode.lnType &&
 			child.getAttribute('lnInst') === lNode.lnInst
