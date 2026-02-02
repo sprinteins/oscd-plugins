@@ -87,15 +87,11 @@ describe('createLNodesInAccessPoint', () => {
 
 	describe('with FunctionTemplate', () => {
 		it('should create Server element if it does not exist', () => {
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				iedName: 'TestIED',
 				accessPoint
 			})
-
-			expect(mockEditor.commit).toHaveBeenCalledTimes(1)
-			const [[edits]] = mockEditor.commit.mock.calls
 
 			// Find the Server creation edit
 			let serverCreated = false
@@ -112,14 +108,11 @@ describe('createLNodesInAccessPoint', () => {
 		})
 
 		it('should create LDevice with function name', () => {
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				iedName: 'TestIED',
 				accessPoint
 			})
-
-			const [[edits]] = mockEditor.commit.mock.calls
 
 			let lDeviceCreated = false
 			for (const edit of edits as Insert[]) {
@@ -140,14 +133,11 @@ describe('createLNodesInAccessPoint', () => {
 				uuid: 'lnode2-uuid',
 				lnInst: '2'
 			}
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2],
-				iedName: 'TestIED',
 				accessPoint
 			})
-
-			const [[edits]] = mockEditor.commit.mock.calls
 
 			let lnCount = 0
 			for (const edit of edits as Insert[]) {
@@ -169,14 +159,11 @@ describe('createLNodesInAccessPoint', () => {
 			server.appendChild(auth)
 			accessPoint.appendChild(server)
 
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				iedName: 'TestIED',
 				accessPoint
 			})
-
-			const [[edits]] = mockEditor.commit.mock.calls
 
 			let serverCreated = false
 			for (const edit of edits as Insert[]) {
@@ -202,14 +189,11 @@ describe('createLNodesInAccessPoint', () => {
 			lDevice.setAttribute('inst', 'CBFunction')
 			server.appendChild(lDevice)
 
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				iedName: 'TestIED',
 				accessPoint
 			})
-
-			const [[edits]] = mockEditor.commit.mock.calls
 
 			// Should not create LDevice edit since it already exists
 			let lDeviceCreated = false
@@ -239,14 +223,11 @@ describe('createLNodesInAccessPoint', () => {
 
 	describe('with ConductingEquipmentTemplate', () => {
 		it('should create LDevice with equipment name', () => {
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: equipmentTemplate,
 				lNodes: [lnodeTemplate],
-				iedName: 'TestIED',
 				accessPoint
 			})
-
-			const [[edits]] = mockEditor.commit.mock.calls
 
 			let lDeviceCreated = false
 			for (const edit of edits as Insert[]) {
@@ -264,14 +245,11 @@ describe('createLNodesInAccessPoint', () => {
 		})
 
 		it('should create LN elements for equipment lNodes', () => {
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: equipmentTemplate,
 				lNodes: [lnodeTemplate],
-				iedName: 'TestIED',
 				accessPoint
 			})
-
-			const [[edits]] = mockEditor.commit.mock.calls
 
 			let lnCreated = false
 			for (const edit of edits as Insert[]) {
@@ -290,14 +268,11 @@ describe('createLNodesInAccessPoint', () => {
 
 	describe('LN element creation', () => {
 		it('should create LN with correct attributes', () => {
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				iedName: 'TestIED',
 				accessPoint
 			})
-
-			const [[edits]] = mockEditor.commit.mock.calls
 
 			let lnElement: Element | null = null
 			for (const edit of edits as Insert[]) {
@@ -328,14 +303,11 @@ describe('createLNodesInAccessPoint', () => {
 				lnInst: '3'
 			}
 
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2, lnode3],
-				iedName: 'TestIED',
 				accessPoint
 			})
-
-			const [[edits]] = mockEditor.commit.mock.calls
 
 			const lnInstances = new Set<string | null>()
 			for (const edit of edits as Insert[]) {
@@ -362,37 +334,22 @@ describe('createLNodesInAccessPoint', () => {
 				createMultipleLNodesInAccessPoint({
 					sourceFunction: functionTemplate,
 					lNodes: [lnodeTemplate],
-					iedName: 'TestIED',
 					accessPoint
 				})
 			).toThrow('No XML document found')
 		})
 
-		it('should throw error when editor is not available', () => {
-			pluginGlobalStore.editor = undefined
-
-			expect(() =>
-				createMultipleLNodesInAccessPoint({
-					sourceFunction: functionTemplate,
-					lNodes: [lnodeTemplate],
-					iedName: 'TestIED',
-					accessPoint
-				})
-			).toThrow('No editor found')
-		})
-
-		it('should not commit when lNodes array is empty', () => {
-			createMultipleLNodesInAccessPoint({
+		it('should return empty array when lNodes array is empty', () => {
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [],
-				iedName: 'TestIED',
 				accessPoint
 			})
-			// Should not commit anything
-			expect(mockEditor.commit).not.toHaveBeenCalled()
+			// Should return empty array
+			expect(edits).toEqual([])
 		})
 
-		it('should not commit when all lNodes already exist in target document', () => {
+		it('should return empty array when all lNodes already exist in target document', () => {
 			// Create existing LNode in another IED
 			const otherIED = mockDocument.createElement('IED')
 			otherIED.setAttribute('name', 'OtherIED')
@@ -411,28 +368,24 @@ describe('createLNodesInAccessPoint', () => {
 			otherLDevice.appendChild(existingLN)
 			mockDocument.documentElement.appendChild(otherIED)
 
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				iedName: 'TestIED',
 				accessPoint
 			})
 
-			// Should not commit anything since lNode already exists
-			expect(mockEditor.commit).not.toHaveBeenCalled()
+			// Should return empty array since lNode already exists
+			expect(edits).toEqual([])
 		})
 	})
 
 	describe('authentication setup', () => {
 		it('should create Server with Authentication element set to none=true', () => {
-			createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				iedName: 'TestIED',
 				accessPoint
 			})
-
-			const [[edits]] = mockEditor.commit.mock.calls
 
 			for (const edit of edits as Insert[]) {
 				if (
@@ -448,20 +401,4 @@ describe('createLNodesInAccessPoint', () => {
 		})
 	})
 
-	describe('editor commit calls', () => {
-		it('should call editor.commit with appropriate titles', () => {
-			createMultipleLNodesInAccessPoint({
-				sourceFunction: functionTemplate,
-				lNodes: [lnodeTemplate],
-				iedName: 'TestIED',
-				accessPoint
-			})
-
-			const calls = mockEditor.commit.mock.calls
-
-			expect(calls.length).toBe(1)
-			const [[, options]] = calls
-			expect(options?.title).toBe('Add LNodes to IED TestIED')
-		})
-	})
 })
