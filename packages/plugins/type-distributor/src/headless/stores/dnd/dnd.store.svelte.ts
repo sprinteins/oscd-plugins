@@ -15,7 +15,7 @@ type DraggedItem = {
 	equipmentUuid?: string
 }
 
-function validateDraggedItem(draggedItem: DraggedItem | null): boolean {
+function validateDraggedItem(draggedItem: DraggedItem | null): draggedItem is DraggedItem {
 	if (!draggedItem) {
 		console.warn('[DnD] No dragged item to drop')
 		return false
@@ -49,7 +49,7 @@ class UseDndStore {
 			return
 		}
 
-		const { lNodes, sourceFunction: functionFromSSD } = this.draggedItem as DraggedItem
+		const { lNodes, sourceFunction: functionFromSSD } = this.draggedItem
 
 		try {
 			const applicationState = getBayTypeApplicationState()
@@ -60,7 +60,7 @@ class UseDndStore {
 					functionFromSSD,
 					lNodes,
 					targetAccessPoint,
-					this.draggedItem?.equipmentUuid
+					this.draggedItem.equipmentUuid
 				)
 			]
 
@@ -73,7 +73,7 @@ class UseDndStore {
 						lNodes,
 						targetSIedName,
 						functionFromSSD,
-						this.draggedItem?.equipmentUuid
+						this.draggedItem.equipmentUuid
 					)
 				)
 			}
