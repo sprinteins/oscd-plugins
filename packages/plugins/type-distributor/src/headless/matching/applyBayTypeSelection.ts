@@ -69,6 +69,9 @@ export function applyBayTypeSelection(bayName: string): void {
 		title: `Assign BayType "${bayType.name}" to Bay "${bayName}"`
 	})
 
+	bayStore.assigendBayType = selectedBayTypeName
+	bayStore.equipmentMatches = matches
+
 	const allLNodeTemplates: LNodeTemplate[] = []
 
 	for (const match of matches) {

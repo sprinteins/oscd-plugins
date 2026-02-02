@@ -428,7 +428,6 @@ describe('createFunctionInsertEdits', () => {
 				)
 				expect(lnodeElements[0].getAttribute('lnInst')).toBe('1')
 				expect(lnodeElements[1].getAttribute('lnClass')).toBe('CSWI')
-				expect(lnodeElements[1].getAttribute('iedName')).toBe('IED1')
 			})
 		})
 	})

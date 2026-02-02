@@ -1,16 +1,16 @@
 <script lang="ts">
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
-import type { EqFunctionTemplate, LNodeTemplate } from '@/headless/common-types'
+import type { ConductingEquipmentTemplate, EqFunctionTemplate, LNodeTemplate } from '@/headless/common-types'
 import { dndStore } from '@/headless/stores'
 import LNode from './lnode.svelte'
 
 interface Props {
 	eqFunction: EqFunctionTemplate
-	equipmentName: string
+	equipment: ConductingEquipmentTemplate
 }
 
-const { eqFunction, equipmentName }: Props = $props()
+const { eqFunction, equipment }: Props = $props()
 
 let isOpen = $state(false)
 let isDragging = $derived(
@@ -24,7 +24,7 @@ function handleDragStart(event: DragEvent) {
 		type: 'equipmentFunction',
 		sourceFunction: eqFunction,
 		lNodes: eqFunction.lnodes || [],
-		equipmentName
+		equipmentUuid: equipment.uuid
 	})
 }
 
@@ -37,7 +37,7 @@ function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
 		type: 'lNode',
 		sourceFunction: eqFunction,
 		lNodes: [lnode],
-		equipmentName
+		equipmentUuid: equipment.uuid
 	})
 }
 
@@ -68,7 +68,7 @@ function handleLNodeDragEnd() {
                             : ''}"
                     />
                     <span class="text-sm font-medium text-left">
-                        {eqFunction.name} ({equipmentName})
+                        {eqFunction.name} ({equipment.name})
                     </span>
                 </div>
             </Card.Content>
