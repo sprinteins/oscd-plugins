@@ -6,18 +6,19 @@ import type {
 	LNodeTemplate
 } from '../common-types'
 import {
+	createLDeviceElement,
 	createLNodeElementInIED,
 	createServerElementWithAuth,
 	getExistingServer,
-	getOrCreateLDeviceElement,
 	hasLNodeInTargetDoc
 } from './elements'
+import { bayStore } from '../stores/bay.store.svelte'
 
-type CreateLNodesParams = {
+type CreateMultipleLNodesParams = {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	lNodes: LNodeTemplate[]
-	iedName: string
 	accessPoint: Element
+	equipmentUuid?: string
 }
 
 type CreateLNodeParams = {
@@ -49,11 +50,11 @@ function ensureServer(
 function ensureLDevice(
 	server: Element,
 	doc: XMLDocument,
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
+	equipmentUuid?: string
 ): { lDevice: Element; edit: Insert | undefined } {
-	const lDevice = getOrCreateLDeviceElement(doc, sourceFunction, server)
-	
-	// If lDevice already existed in server, no edit needed
+	const lDevice = createLDeviceElement(doc, sourceFunction, equipmentUuid)
+
 	const alreadyExists = Array.from(server.children).includes(lDevice)
 	if (alreadyExists) {
 		return { lDevice, edit: undefined }
@@ -84,12 +85,12 @@ function createLNodeInAccessPoint({
 	return edit
 }
 
-export function createLNodesInAccessPoint({
+export function createMultipleLNodesInAccessPoint({
 	sourceFunction,
 	lNodes,
-	iedName,
-	accessPoint
-}: CreateLNodesParams): Insert[] {
+	accessPoint,
+	equipmentUuid
+}: CreateMultipleLNodesParams): Insert[] {
 	const edits: Insert[] = []
 
 	if (!pluginGlobalStore.xmlDocument) {
@@ -116,7 +117,8 @@ export function createLNodesInAccessPoint({
 	const { lDevice, edit: lDeviceEdit } = ensureLDevice(
 		serverElement,
 		doc,
-		sourceFunction
+		sourceFunction,
+		equipmentUuid
 	)
 	if (serverEdit) edits.push(serverEdit)
 	if (lDeviceEdit) edits.push(lDeviceEdit)

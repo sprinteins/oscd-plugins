@@ -5,7 +5,7 @@ import type {
 } from '../common-types'
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { createLNodesInAccessPoint } from '../ied/create-lNode-in-access-point'
+import { createMultipleLNodesInAccessPoint } from '../ied/create-lNode-in-access-point'
 import { updateBayLNodeIedNames } from '../ied/update-bay-lnodes'
 import { applyBayTypeSelection } from '../matching'
 import { bayStore } from './bay.store.svelte'
@@ -71,6 +71,11 @@ class UseDndStore {
 				}
 
 				if (hasValidAutoSelection || hasPendingManualSelection) {
+					if (!bayStore.selectedBay) {
+						throw new Error(
+							'[DnD] No bay type selected to apply to bay'
+						)
+					}
 					applyBayTypeSelection(bayStore.selectedBay)
 					bayStore.assigendBayType = bayTypesStore.selectedBayType
 					bayStore.pendingBayTypeApply = null
@@ -81,11 +86,11 @@ class UseDndStore {
 
 			const allEdits: (Insert | SetAttributes)[] = []
 
-			const iedEdits = createLNodesInAccessPoint({
+			const iedEdits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionFromSSD,
 				lNodes,
-				iedName: targetSIedName,
-				accessPoint: targetAccessPoint
+				accessPoint: targetAccessPoint,
+				equipmentUuid: this.draggedItem.equipmentUuid
 			})
 			allEdits.push(...iedEdits)
 
@@ -112,13 +117,22 @@ class UseDndStore {
 						? `${lNodes[0].lnClass}`
 						: `${lNodes.length} LNodes`
 
-				const title = didApplyBayType
-					? `Apply BayType and assign ${lnodeInfo} from ${functionName} to IED ${targetSIedName}`
-					: `Assign ${lnodeInfo} from ${functionName} to IED ${targetSIedName}`
+				let title: string
+				if (didApplyBayType) {
+					const bayName = bayStore.selectedBay ?? 'Unknown'
+					const bayTypeUuid = bayTypesStore.selectedBayType
+					const bayTypeDetails = bayTypeUuid
+						? bayTypesStore.getBayTypeWithTemplates(bayTypeUuid)
+						: null
+					const bayTypeName = bayTypeDetails?.name ?? 'Unknown'
+					title = `Assign BayType "${bayTypeName}" to Bay "${bayName}" + Assign ${lnodeInfo} from ${functionName} to IED ${targetSIedName}`
+				} else {
+					title = `Assign ${lnodeInfo} from ${functionName} to IED ${targetSIedName}`
+				}
 
 				editor.commit(
 					allEdits,
-					didApplyBayType ? { squash: true } : { title }
+					didApplyBayType ? { title, squash: true } : { title }
 				)
 			}
 		} catch (error) {
