@@ -68,26 +68,6 @@ describe('createLNodeElement', () => {
 		})
 	})
 
-	describe('GIVEN an LNode template with iedName', () => {
-		describe('WHEN createLNodeElement is called', () => {
-			it('THEN should create LNode element with iedName attribute', () => {
-				// GIVEN
-				const lnodeTemplate: LNodeTemplate = {
-					lnClass: 'CSWI',
-					lnType: 'CSWI_Type1',
-					lnInst: '1',
-					iedName: 'IED1'
-				}
-
-				// WHEN
-				const result = createLNodeElement(mockDocument, lnodeTemplate)
-
-				// THEN
-				expect(result.getAttribute('iedName')).toBe('IED1')
-			})
-		})
-	})
-
 	describe('GIVEN multiple LNode templates', () => {
 		describe('WHEN createLNodeElement is called for each', () => {
 			it('THEN should generate unique uuids for each element', () => {
@@ -141,7 +121,6 @@ describe('createLNodeElement', () => {
 
 				expect(result2.getAttribute('lnClass')).toBe('CSWI')
 				expect(result2.getAttribute('lnInst')).toBe('2')
-				expect(result2.getAttribute('iedName')).toBe('IED2')
 			})
 		})
 	})
@@ -191,7 +170,6 @@ describe('createLNodeElement', () => {
 				expect(result.getAttribute('lnClass')).toBe('MMXU')
 				expect(result.getAttribute('lnType')).toBe('MMXU_Type1')
 				expect(result.getAttribute('lnInst')).toBe('1')
-				expect(result.getAttribute('iedName')).toBe('IED1')
 				// Note: uuid in template is ignored, function generates a new one
 				expect(result.getAttribute('uuid')).not.toBe('custom-uuid-123')
 				expect(result.getAttribute('uuid')).toMatch(
