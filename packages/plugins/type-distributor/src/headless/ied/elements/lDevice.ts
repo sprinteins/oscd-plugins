@@ -30,7 +30,7 @@ function generateLDeviceInst(
 	return functionName
 }
 
-function getExistingLDevice(
+export function getExistingLDevice(
 	server: Element,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 ): Element | undefined {
@@ -47,16 +47,10 @@ function getExistingLDevice(
 	)
 }
 
-export function getOrCreateLDeviceElement(
+export function createLDeviceElement(
 	doc: XMLDocument,
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	server: Element
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 ): Element {
-	const existingLDevice = getExistingLDevice(server, sourceFunction)
-	if (existingLDevice) {
-		return existingLDevice
-	}
-
 	const { functionName, conductingEquipmentName } =
 		extractFunctionNames(sourceFunction)
 	const lDevice = doc.createElement('LDevice')
