@@ -9,10 +9,10 @@ import {
 	createLDeviceElement,
 	createLNodeElementInIED,
 	createServerElementWithAuth,
+	getExistingLDevice,
 	getExistingServer,
 	hasLNodeInTargetDoc
 } from './elements'
-import { bayStore } from '../stores/bay.store.svelte'
 
 type CreateMultipleLNodesParams = {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
@@ -53,12 +53,12 @@ function ensureLDevice(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	equipmentUuid?: string
 ): { lDevice: Element; edit: Insert | undefined } {
-	const lDevice = createLDeviceElement(doc, sourceFunction, equipmentUuid)
-
-	const alreadyExists = Array.from(server.children).includes(lDevice)
-	if (alreadyExists) {
-		return { lDevice, edit: undefined }
+	const existingLDevice = getExistingLDevice(server, sourceFunction, equipmentUuid)
+	if(existingLDevice) {
+		return { lDevice: existingLDevice, edit: undefined }
 	}
+
+	const lDevice = createLDeviceElement(doc, sourceFunction, equipmentUuid)
 
 	const edit: Insert = {
 		node: lDevice,
