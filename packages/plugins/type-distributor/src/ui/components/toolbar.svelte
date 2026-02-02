@@ -4,7 +4,12 @@ import {
 	pluginGlobalStore,
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
-import { bayStore, ssdImportStore } from '@/headless/stores'
+import {
+	bayStore,
+	bayTypesStore,
+	equipmentMatchingStore,
+	ssdImportStore
+} from '@/headless/stores'
 import { loadFromLocal } from '@/headless/import'
 
 const bays = $derived(
@@ -19,6 +24,11 @@ const bayOptions = $derived(
 		label: bay.getAttribute('name') ?? ''
 	}))
 )
+
+function handleBayChange() {
+	equipmentMatchingStore.reset()
+	bayTypesStore.selectedBayType = null
+}
 </script>
 
 <div class="flex items-center justify-end space-x-5 px-4 pt-4 h-fit">
@@ -26,6 +36,7 @@ const bayOptions = $derived(
         <div class="ml-4">
             <SelectWorkaround
                 bind:value={bayStore.selectedBay}
+                handleChange={handleBayChange}
                 options={bayOptions}
                 placeholder="Select a bay"
                 class="w-64"

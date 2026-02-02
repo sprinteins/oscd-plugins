@@ -14,11 +14,11 @@ class UseEquipmentMatchingStore {
 
 	setValidationResult(result: ValidationResult, clearMatches = true) {
 		this.validationResult = result
-		
+
 		if (result.requiresManualMatching) {
 			this.isManualMatchingExpanded = true
 		}
-		
+
 		if (clearMatches) {
 			this.manualMatches.clear()
 		}
@@ -26,6 +26,11 @@ class UseEquipmentMatchingStore {
 
 	setManualMatch(scdEquipmentName: string, templateEquipmentUuid: string) {
 		this.manualMatches.set(scdEquipmentName, templateEquipmentUuid)
+	}
+
+	reset() {
+		this.clearManualMatches()
+		this.clearValidationResult()
 	}
 
 	clearManualMatches() {
