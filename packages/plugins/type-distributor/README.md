@@ -7,8 +7,8 @@ OpenSCD plugin for distributin (SSD) templates to (SCD) files.
 The Type Distributor plugin enables users to:
 - Import bay templates and data type definitions from SSD files
 - Match and distribute templates to existing SCD bays
-- Automatically generate and insert data types (LNodeType, DOType, DAType, EnumType)
-- Create IEDs with access points and logical nodes based on SSD templates
+- Copy relevant data types (LNodeType, DOType, DAType, EnumType)
+- Create SIEDs with access points and assign functionality to them
 
 ## Key Features
 
