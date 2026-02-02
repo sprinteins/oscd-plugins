@@ -1,5 +1,9 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
-import type { LNodeTemplate, EqFunctionTemplate, FunctionTemplate } from '@/headless/common-types'
+import type {
+	LNodeTemplate,
+	EqFunctionTemplate,
+	FunctionTemplate
+} from '@/headless/common-types'
 import { applyBayTypeSelection } from '@/headless/matching'
 import { createMultipleLNodesInAccessPoint } from '@/headless/ied/create-lNode-in-access-point'
 import { updateBayLNodeIedNames } from '@/headless/ied/update-bay-lnodes'

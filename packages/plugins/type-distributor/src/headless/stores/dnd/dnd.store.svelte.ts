@@ -1,4 +1,8 @@
-import type { LNodeTemplate, EqFunctionTemplate, FunctionTemplate } from '@/headless/common-types'
+import type {
+	LNodeTemplate,
+	EqFunctionTemplate,
+	FunctionTemplate
+} from '@/headless/common-types'
 import {
 	getBayTypeApplicationState,
 	applyBayTypeIfNeeded,
@@ -15,7 +19,9 @@ type DraggedItem = {
 	equipmentUuid?: string
 }
 
-function validateDraggedItem(draggedItem: DraggedItem | null): draggedItem is DraggedItem {
+function validateDraggedItem(
+	draggedItem: DraggedItem | null
+): draggedItem is DraggedItem {
 	if (!draggedItem) {
 		console.warn('[DnD] No dragged item to drop')
 		return false
