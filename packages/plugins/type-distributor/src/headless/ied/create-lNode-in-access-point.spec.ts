@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { createLNodesInAccessPoint } from './create-lNode-in-access-point'
+import { createMultipleLNodesInAccessPoint } from './create-lNode-in-access-point'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import type {
 	ConductingEquipmentTemplate,
@@ -87,7 +87,7 @@ describe('createLNodesInAccessPoint', () => {
 
 	describe('with FunctionTemplate', () => {
 		it('should create Server element if it does not exist', () => {
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				iedName: 'TestIED',
@@ -112,7 +112,7 @@ describe('createLNodesInAccessPoint', () => {
 		})
 
 		it('should create LDevice with function name', () => {
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				iedName: 'TestIED',
@@ -140,7 +140,7 @@ describe('createLNodesInAccessPoint', () => {
 				uuid: 'lnode2-uuid',
 				lnInst: '2'
 			}
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2],
 				iedName: 'TestIED',
@@ -169,7 +169,7 @@ describe('createLNodesInAccessPoint', () => {
 			server.appendChild(auth)
 			accessPoint.appendChild(server)
 
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				iedName: 'TestIED',
@@ -202,7 +202,7 @@ describe('createLNodesInAccessPoint', () => {
 			lDevice.setAttribute('inst', 'CBFunction')
 			server.appendChild(lDevice)
 
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				iedName: 'TestIED',
@@ -239,7 +239,7 @@ describe('createLNodesInAccessPoint', () => {
 
 	describe('with ConductingEquipmentTemplate', () => {
 		it('should create LDevice with equipment name', () => {
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: equipmentTemplate,
 				lNodes: [lnodeTemplate],
 				iedName: 'TestIED',
@@ -264,7 +264,7 @@ describe('createLNodesInAccessPoint', () => {
 		})
 
 		it('should create LN elements for equipment lNodes', () => {
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: equipmentTemplate,
 				lNodes: [lnodeTemplate],
 				iedName: 'TestIED',
@@ -290,7 +290,7 @@ describe('createLNodesInAccessPoint', () => {
 
 	describe('LN element creation', () => {
 		it('should create LN with correct attributes', () => {
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				iedName: 'TestIED',
@@ -328,7 +328,7 @@ describe('createLNodesInAccessPoint', () => {
 				lnInst: '3'
 			}
 
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2, lnode3],
 				iedName: 'TestIED',
@@ -359,7 +359,7 @@ describe('createLNodesInAccessPoint', () => {
 			pluginGlobalStore.xmlDocument = undefined
 
 			expect(() =>
-				createLNodesInAccessPoint({
+				createMultipleLNodesInAccessPoint({
 					sourceFunction: functionTemplate,
 					lNodes: [lnodeTemplate],
 					iedName: 'TestIED',
@@ -372,7 +372,7 @@ describe('createLNodesInAccessPoint', () => {
 			pluginGlobalStore.editor = undefined
 
 			expect(() =>
-				createLNodesInAccessPoint({
+				createMultipleLNodesInAccessPoint({
 					sourceFunction: functionTemplate,
 					lNodes: [lnodeTemplate],
 					iedName: 'TestIED',
@@ -382,7 +382,7 @@ describe('createLNodesInAccessPoint', () => {
 		})
 
 		it('should not commit when lNodes array is empty', () => {
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [],
 				iedName: 'TestIED',
@@ -411,7 +411,7 @@ describe('createLNodesInAccessPoint', () => {
 			otherLDevice.appendChild(existingLN)
 			mockDocument.documentElement.appendChild(otherIED)
 
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				iedName: 'TestIED',
@@ -425,7 +425,7 @@ describe('createLNodesInAccessPoint', () => {
 
 	describe('authentication setup', () => {
 		it('should create Server with Authentication element set to none=true', () => {
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				iedName: 'TestIED',
@@ -450,7 +450,7 @@ describe('createLNodesInAccessPoint', () => {
 
 	describe('editor commit calls', () => {
 		it('should call editor.commit with appropriate titles', () => {
-			createLNodesInAccessPoint({
+			createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				iedName: 'TestIED',

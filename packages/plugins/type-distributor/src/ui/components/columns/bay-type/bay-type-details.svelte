@@ -21,7 +21,7 @@ const {
     {#each conductingEquipmentTemplates as equipment}
       {#if equipment.eqFunctions && equipment.eqFunctions.length > 0}
         {#each equipment.eqFunctions as eqFunc}
-          <EqFunctionType eqFunction={eqFunc} equipmentName={equipment.name} />
+          <EqFunctionType eqFunction={eqFunc} {equipment} />
         {/each}
       {/if}
     {/each}

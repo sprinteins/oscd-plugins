@@ -6,19 +6,19 @@ import type {
 	LNodeTemplate
 } from '../common-types'
 import {
+	createLDeviceElement,
 	createLNodeElementInIED,
 	createServerElementWithAuth,
 	getExistingServer,
-	getExistingLDevice,
-	createLDeviceElement,
 	hasLNodeInTargetDoc
 } from './elements'
+import { bayStore } from '../stores/bay.store.svelte'
 
-type CreateLNodesParams = {
+type CreateMultipleLNodesParams = {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	lNodes: LNodeTemplate[]
-	iedName: string
 	accessPoint: Element
+	equipmentUuid?: string
 }
 
 type CreateLNodeParams = {
@@ -50,14 +50,15 @@ function ensureServer(
 function ensureLDevice(
 	server: Element,
 	doc: XMLDocument,
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
+	equipmentUuid?: string
 ): { lDevice: Element; edit: Insert | undefined } {
-	const existingLDevice = getExistingLDevice(server, sourceFunction)
-	if (existingLDevice) {
-		return { lDevice: existingLDevice, edit: undefined }
-	}
+	const lDevice = createLDeviceElement(doc, sourceFunction, equipmentUuid)
 
-	const lDevice = createLDeviceElement(doc, sourceFunction)
+	const alreadyExists = Array.from(server.children).includes(lDevice)
+	if (alreadyExists) {
+		return { lDevice, edit: undefined }
+	}
 
 	const edit: Insert = {
 		node: lDevice,
@@ -84,16 +85,13 @@ function createLNodeInAccessPoint({
 	return edit
 }
 
-export function createLNodesInAccessPoint({
+export function createMultipleLNodesInAccessPoint({
 	sourceFunction,
 	lNodes,
-	iedName,
-	accessPoint
-}: CreateLNodesParams): void {
-	const editor = pluginGlobalStore.editor
-	if (!editor) {
-		throw new Error('No editor found')
-	}
+	accessPoint,
+	equipmentUuid
+}: CreateMultipleLNodesParams): Insert[] {
+	const edits: Insert[] = []
 
 	if (!pluginGlobalStore.xmlDocument) {
 		throw new Error('No XML document found')
@@ -113,15 +111,14 @@ export function createLNodesInAccessPoint({
 
 	if (lNodesToAdd.length === 0) {
 		console.info('[createLNodesInAccessPoint] No new lNodes to add')
-		return
+		return edits
 	}
-
-	const edits: Insert[] = []
 	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
 	const { lDevice, edit: lDeviceEdit } = ensureLDevice(
 		serverElement,
 		doc,
-		sourceFunction
+		sourceFunction,
+		equipmentUuid
 	)
 	if (serverEdit) edits.push(serverEdit)
 	if (lDeviceEdit) edits.push(lDeviceEdit)
@@ -135,7 +132,5 @@ export function createLNodesInAccessPoint({
 		edits.push(lNodeEdit)
 	}
 
-	editor.commit(edits, {
-		title: `Add LNodes to IED ${iedName}`
-	})
+	return edits
 }

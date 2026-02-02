@@ -330,7 +330,6 @@ describe('createEqFunctionInsertEdits', () => {
 				expect(lnodeElements).toHaveLength(2)
 				expect(lnodeElements[0].getAttribute('lnClass')).toBe('XCBR')
 				expect(lnodeElements[1].getAttribute('lnClass')).toBe('CSWI')
-				expect(lnodeElements[1].getAttribute('iedName')).toBe('IED1')
 			})
 		})
 	})
