@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - S-IED AccessPoints view showing LNodes per AccessPoint
 - Bay type assignment workflow with automatic equipment matching
 - Manual equipment matching for ambiguous types
+- Restricts the BayType usage to only match with Bays that have the same amount of ConductinEquipments
 - Drag-and-drop functionality to assign LNodes from bay types to IED AccessPoints
 - LNode assignment to IEDs with automatic LDevice creation
 - Equipment matching validation with error reporting
