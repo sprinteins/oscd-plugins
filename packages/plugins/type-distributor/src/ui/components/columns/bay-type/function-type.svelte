@@ -18,12 +18,10 @@ let isDragging = $derived(
 		dndStore.currentDraggedItem?.sourceFunction.uuid === func.uuid
 )
 
-// Check assignment status for each LNode
 let assignedStatuses = $derived(
 	func.lnodes.map(lnode => assignedLNodesStore.isAssigned(lnode))
 )
 
-// Check if all LNodes are assigned
 let allAssigned = $derived(
 	func.lnodes.length > 0 && assignedStatuses.every(status => status)
 )
@@ -61,7 +59,6 @@ function handleLNodeDragEnd() {
         ondragstart={allAssigned ? undefined : handleDragStart}
         ondragend={handleDragEnd}
         style:cursor={allAssigned ? "not-allowed" : (isDragging ? "grabbing" : "grab")}
-        title={allAssigned ? 'All LNodes already assigned' : ''}
     >
         <Card.Root
             class="hover:bg-gray-50 transition-opacity {isDragging

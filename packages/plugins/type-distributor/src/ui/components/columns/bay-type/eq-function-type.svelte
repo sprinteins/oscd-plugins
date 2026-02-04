@@ -62,7 +62,6 @@ function handleLNodeDragEnd() {
         ondragstart={allAssigned ? undefined : handleDragStart}
         ondragend={handleDragEnd}
         style:cursor={allAssigned ? "not-allowed" : (isDragging ? "grabbing" : "grab")}
-        title={allAssigned ? 'All LNodes already assigned' : ''}
     >
         <Card.Root
             class="hover:bg-gray-50 transition-opacity {isDragging
