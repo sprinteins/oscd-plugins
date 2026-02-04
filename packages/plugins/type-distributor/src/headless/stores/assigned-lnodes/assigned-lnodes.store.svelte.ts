@@ -28,9 +28,9 @@ class UseAssignedLNodesStore {
 			for (const ln of lnElements) {
 				const lnClass = ln.getAttribute('lnClass')
 				const lnType = ln.getAttribute('lnType')
-				const lnInst = ln.getAttribute('lnInst')
+				const lnInst = ln.getAttribute('lnInst') ?? ''
 
-				if (lnClass && lnType && lnInst) {
+				if (lnClass && lnType) {
 					const key = `${lnClass}:${lnType}:${lnInst}` as LNodeKey
 					index.add(key)
 				}
