@@ -13,12 +13,17 @@ const { lnode, draggable = false, onDragStart, onDragEnd }: Props = $props()
 </script>
 
 <Card.Root
-    {draggable}
-    {...{ ondragstart: (event: DragEvent) => onDragStart?.(event, lnode) }}
-    {...{ ondragend: () => onDragEnd?.() }}
-    class="hover:bg-gray-50 cursor-pointer transition-opacity"
+    draggable={draggable}
+    ondragstart={(event) => onDragStart?.(event, lnode)}
+    ondragend={() => onDragEnd?.()}
+    class="hover:bg-gray-50 transition-opacity {draggable 
+        ? 'cursor-pointer' 
+        : 'opacity-50 cursor-not-allowed '}"
+    title={draggable ? '' : 'Already assigned to an IED'}
 >
     <Card.Content class="p-2">
-        <span class="text-sm text-left">{lnode.lnType}</span>
+        <span class="text-sm text-left {draggable ? '' : 'text-gray-400'}">
+            {lnode.lnType}
+        </span>
     </Card.Content>
 </Card.Root>
