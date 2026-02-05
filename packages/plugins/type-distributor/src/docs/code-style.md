@@ -6,7 +6,8 @@
 - Use descriptive verb-based names: `matchEquipment`, `validateBayTypeSelection`, `applyBayTypeSelection`
 - Prefix boolean-returning functions with `is`, `has`, `can`: `isValid`, `canAutoMatch`
 - Use `create*` prefix for factory functions: `createEquipmentLookup`, `createTypeEdits`
-- Use `get*` prefix for retrieval functions: `getConductingEquipmentTemplate`, `getOrCreateDataTypeTemplates`
+- Use `query*` prefix for querying XML structure: `queryConductingEquipment`, `queryLNodeTypes`
+- use `ensure` prefix for functions that guarantee a condition: `ensureDataTypeTemplates`
 
 ### Variables
 - Use camelCase for variables: `scdBay`, `bayType`, `manualMatches`
@@ -32,6 +33,8 @@ src/
 │   └── common-types/   # Shared type definitions
 └── ui/                 # UI components
     └── components/
+        └── views/      # Main View
+        └── columns/    # the 3 columns in the Type Distributor UI: SLD, S-IED and BayType
 ```
 
 ### File Naming
