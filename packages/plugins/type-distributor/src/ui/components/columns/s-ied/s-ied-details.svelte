@@ -12,8 +12,7 @@ const {
 const sIedData = $derived(
 	sIedItems.map((sIedItem) => ({
 		name: sIedItem.getAttribute('name') ?? 'Unnamed SIed',
-    accessPoints: Array.from(sIedItem.children)
-      .filter((child) => child.localName === 'AccessPoint')
+    accessPoints: Array.from(sIedItem.querySelectorAll(':scope > AccessPoint'))
       .map((ap) => ({
         element: ap,
         lNodes: queryLNodesFromAccessPoint(ap)
