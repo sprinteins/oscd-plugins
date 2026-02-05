@@ -1,18 +1,15 @@
 import type { BayType } from '@/headless/common-types'
+import { queryTemplateVoltageLevel, queryNonTemplateBays } from '@/headless/xml-querries/xml-querries'
 
 export function parseBayTypes(doc: XMLDocument): BayType[] {
-	const voltageLevel = doc.querySelector(
-		'Substation[name="TEMPLATE"] > VoltageLevel[name="TEMPLATE"]'
-	)
+	const voltageLevel = queryTemplateVoltageLevel(doc)
 
 	if (!voltageLevel) {
 		console.warn('No TEMPLATE VoltageLevel found in SSD document')
 		return []
 	}
 
-	return Array.from(
-		voltageLevel.querySelectorAll('Bay:not([name="TEMPLATE"])')
-	).map((bay) => ({
+	return queryNonTemplateBays(voltageLevel).map((bay) => ({
 		uuid: bay.getAttribute('uuid') || '',
 		name: bay.getAttribute('name') || 'Unnamed Bay',
 		desc: bay.getAttribute('desc') || undefined,
