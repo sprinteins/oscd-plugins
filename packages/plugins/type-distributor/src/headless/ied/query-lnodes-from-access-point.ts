@@ -1,6 +1,6 @@
 import type { LNodeTemplate } from '../common-types'
 
-export function getLNodesFromAccessPoint(
+export function queryLNodesFromAccessPoint(
 	accessPoint: Element
 ): LNodeTemplate[] {
 	const lNodes: LNodeTemplate[] = []

@@ -13,10 +13,7 @@ export function createEqFunctionInsertEdits(
 		const templateEquipment = match.templateEquipment
 
 		for (const eqFunctionTemplate of templateEquipment.eqFunctions) {
-			const eqFunctionElement = doc.createElementNS(
-				match.scdElement.namespaceURI,
-				'EqFunction'
-			)
+			const eqFunctionElement = doc.createElement('EqFunction')
 			eqFunctionElement.setAttribute('name', eqFunctionTemplate.name)
 			eqFunctionElement.setAttribute('uuid', uuidv4())
 

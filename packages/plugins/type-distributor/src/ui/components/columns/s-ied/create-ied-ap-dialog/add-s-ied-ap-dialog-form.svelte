@@ -1,5 +1,5 @@
 <script lang="ts">
-import { createSIED, getSIEDs, createAccessPoints } from '@/headless/ied'
+import { createSIED, querySIEDs, createAccessPoints } from '@/headless/ied'
 import { bayStore } from '@/headless/stores'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import IedSelectorSection from './ied-selector-section.svelte'
@@ -15,7 +15,7 @@ let accessPointDesc = $state('')
 let iedCreationError = $state<string | null>(null)
 
 const existingSIeds = $derived.by(() => {
-	const sieds = getSIEDs(bayStore.selectedBay ?? '')
+	const sieds = querySIEDs(bayStore.selectedBay ?? '')
 	return sieds.map((ied) => ({
 		value: ied.getAttribute('name') || '',
 		label: ied.getAttribute('name') || 'Unnamed IED'

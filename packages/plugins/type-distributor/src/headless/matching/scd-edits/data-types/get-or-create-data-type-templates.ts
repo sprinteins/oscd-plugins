@@ -1,4 +1,5 @@
 import type { Insert } from '@openscd/oscd-api'
+import { createElement } from '@oscd-plugins/core'
 
 export function getOrCreateDataTypeTemplates(doc: XMLDocument): {
 	element: Element
@@ -6,7 +7,7 @@ export function getOrCreateDataTypeTemplates(doc: XMLDocument): {
 } {
 	let dataTypeTemplates = doc.querySelector('DataTypeTemplates')
 	if (!dataTypeTemplates) {
-		dataTypeTemplates = doc.createElement('DataTypeTemplates')
+		dataTypeTemplates = createElement(doc, 'DataTypeTemplates', {})
 		const root = doc.documentElement
 
 		const edit: Insert = {

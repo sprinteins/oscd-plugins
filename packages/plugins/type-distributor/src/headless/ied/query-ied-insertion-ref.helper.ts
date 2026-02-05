@@ -1,4 +1,4 @@
-export function findSclInsertionReference(root: Element): Element | null {
+export function queryIEDInsertionReference(root: Element): Element | null {
 	const existingIEDs = root.querySelectorAll(':scope > IED')
 	const dataTypeTemplates = root.querySelector(':scope > DataTypeTemplates')
 
