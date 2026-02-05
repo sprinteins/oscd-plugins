@@ -42,10 +42,9 @@ function getAccessPointsFromIED(iedName: string): string[] {
 	const xmlDocument = pluginGlobalStore.xmlDocument
 	if (!xmlDocument) return []
 
-	const ied = xmlDocument.querySelector(`IED[name="${iedName}"]`)
-	if (!ied) return []
-
-	const accessPoints = Array.from(ied.querySelectorAll('AccessPoint'))
+	const accessPoints = Array.from(
+		xmlDocument.querySelectorAll(`IED[name="${iedName}"] AccessPoint`)
+	)
 	return accessPoints
 		.map((ap) => ap.getAttribute('name'))
 		.filter((name): name is string => name !== null)
