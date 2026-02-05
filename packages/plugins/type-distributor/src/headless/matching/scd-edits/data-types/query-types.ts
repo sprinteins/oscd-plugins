@@ -1,4 +1,4 @@
-export function collectTypeReferences(
+export function queryTypeReferences(
 	elements: NodeListOf<Element>
 ): { daTypeIds: Set<string>; enumTypeIds: Set<string> } {
 	const daTypeIds = new Set<string>()
@@ -20,21 +20,21 @@ export function collectTypeReferences(
 	return { daTypeIds, enumTypeIds }
 }
 
-export function collectTypesFromDOType(
+export function queryTypesFromDOType(
 	doTypeElement: Element
 ): { daTypeIds: Set<string>; enumTypeIds: Set<string> } {
 	const daElements = doTypeElement.querySelectorAll('DA')
-	return collectTypeReferences(daElements)
+	return queryTypeReferences(daElements)
 }
 
-export function collectTypesFromDAType(
+export function queryTypesFromDAType(
 	daTypeElement: Element
 ): { daTypeIds: Set<string>; enumTypeIds: Set<string> } {
 	const bdaElements = daTypeElement.querySelectorAll('BDA')
-	return collectTypeReferences(bdaElements)
+	return queryTypeReferences(bdaElements)
 }
 
-export function collectDOTypesFromLNodeType(lNodeType: Element): string[] {
+export function queryDOTypesFromLNodeType(lNodeType: Element): string[] {
 	const doElements = lNodeType.querySelectorAll('DO')
 	const doTypeIds: string[] = []
 
