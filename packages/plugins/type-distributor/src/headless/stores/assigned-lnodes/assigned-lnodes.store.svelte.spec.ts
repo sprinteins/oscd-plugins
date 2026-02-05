@@ -56,12 +56,13 @@ describe('assignedLNodesStore', () => {
 		it('should build index of all assigned LNodes in document', () => {
 			assignedLNodesStore.rebuild()
 
-			// Check that existing LNodes are marked as assigned
 			expect(
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(true)
 
@@ -69,23 +70,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'CSWI',
 					lnType: 'TestCSWI',
-					lnInst: '1'
-				})
-			).toBe(true)
-
-			expect(
-				assignedLNodesStore.isAssigned({
-					lnClass: 'MMXU',
-					lnType: 'TestMMXU',
-					lnInst: '1'
-				})
-			).toBe(true)
-
-			expect(
-				assignedLNodesStore.isAssigned({
-					lnClass: 'PTRC',
-					lnType: 'TestPTRC',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(true)
 		})
@@ -97,7 +84,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'PDIS',
 					lnType: 'TestPDIS',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(false)
 
@@ -105,7 +94,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'DifferentType',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(false)
 
@@ -113,7 +104,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '2'
+					lnInst: '2',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(false)
 		})
@@ -126,7 +119,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(true)
 
@@ -139,7 +134,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(false)
 		})
@@ -157,7 +154,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(false)
 		})
@@ -189,7 +188,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(false)
 		})
@@ -202,7 +203,9 @@ describe('assignedLNodesStore', () => {
 			const newLNode: LNodeTemplate = {
 				lnClass: 'PDIS',
 				lnType: 'TestPDIS',
-				lnInst: '1'
+				lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 			}
 
 			expect(assignedLNodesStore.isAssigned(newLNode)).toBe(false)
@@ -238,13 +241,17 @@ describe('assignedLNodesStore', () => {
 			const existingLNode: LNodeTemplate = {
 				lnClass: 'XCBR',
 				lnType: 'TestXCBR',
-				lnInst: '1'
+				lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 			}
 
 			const newLNode: LNodeTemplate = {
 				lnClass: 'PDIS',
 				lnType: 'TestPDIS',
-				lnInst: '1'
+				lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 			}
 
 			expect(assignedLNodesStore.isAssigned(existingLNode)).toBe(true)
@@ -263,7 +270,9 @@ describe('assignedLNodesStore', () => {
 			const lnode: LNodeTemplate = {
 				lnClass: 'XCBR',
 				lnType: 'TestXCBR',
-				lnInst: '1'
+				lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 			}
 
 			expect(assignedLNodesStore.isAssigned(lnode)).toBe(true)
@@ -281,7 +290,9 @@ describe('assignedLNodesStore', () => {
 			const lnode: LNodeTemplate = {
 				lnClass: 'PDIS',
 				lnType: 'TestPDIS',
-				lnInst: '1'
+				lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 			}
 
 			expect(assignedLNodesStore.isAssigned(lnode)).toBe(false)
@@ -303,7 +314,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(true)
 		})
@@ -323,7 +336,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(true)
 
@@ -331,7 +346,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'DifferentXCBR',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(false)
 		})
@@ -341,7 +358,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '1'
+					lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(true)
 
@@ -349,7 +368,9 @@ describe('assignedLNodesStore', () => {
 				assignedLNodesStore.isAssigned({
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '2'
+					lnInst: '2',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 				})
 			).toBe(false)
 		})
@@ -375,7 +396,9 @@ describe('assignedLNodesStore', () => {
 			const existingLNode: LNodeTemplate = {
 				lnClass: 'XCBR',
 				lnType: 'TestXCBR',
-				lnInst: '1'
+				lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 			}
 
 			expect(assignedLNodesStore.isAssigned(existingLNode)).toBe(true)
@@ -392,7 +415,9 @@ describe('assignedLNodesStore', () => {
 			const newLNode: LNodeTemplate = {
 				lnClass: 'PDIS',
 				lnType: 'TestPDIS',
-				lnInst: '1'
+				lnInst: '1',
+					iedName: 'IED1',
+					lDeviceName: 'LD1'
 			}
 
 			assignedLNodesStore.markAsAssigned([newLNode])

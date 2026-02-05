@@ -1,13 +1,15 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
 
-type LNodeKey = `${string}:${string}:${string}` // lnClass:lnType:lnInst
+type LNodeKey = `${string}:${string}:${string}:${string}:${string}` // iedName:ldInst:lnClass:lnType:lnInst
 
 class UseAssignedLNodesStore {
 	private assignedIndex = $state<Set<LNodeKey>>(new Set())
 
 	private buildKey(lnode: LNodeTemplate): LNodeKey {
-		return `${lnode.lnClass}:${lnode.lnType}:${lnode.lnInst}`
+		const iedName = lnode.iedName || ''
+		const ldInst = lnode.lDeviceName || ''
+		return `${iedName}:${ldInst}:${lnode.lnClass}:${lnode.lnType}:${lnode.lnInst}`
 	}
 
 	rebuild() {
@@ -21,6 +23,11 @@ class UseAssignedLNodesStore {
 		const lDevices = doc.querySelectorAll('IED > AccessPoint > Server > LDevice')
 
 		for (const lDevice of lDevices) {
+			// Get IED name and LDevice instance
+			const ied = lDevice.closest('IED')
+			const iedName = ied?.getAttribute('name') || ''
+			const ldInst = lDevice.getAttribute('inst') || ''
+
 			const lnElements = Array.from(lDevice.children).filter(
 				(child) => child.localName === 'LN' || child.localName === 'LN0'
 			)
@@ -31,7 +38,7 @@ class UseAssignedLNodesStore {
 				const lnInst = ln.getAttribute('lnInst') ?? ''
 
 				if (lnClass && lnType) {
-					const key = `${lnClass}:${lnType}:${lnInst}` as LNodeKey
+					const key = `${iedName}:${ldInst}:${lnClass}:${lnType}:${lnInst}` as LNodeKey
 					index.add(key)
 				}
 			}

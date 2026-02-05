@@ -122,12 +122,12 @@ function handleBayTypeChange() {
 		</Card.Header>
 		<Card.Content class="overflow-y-auto space-y-4">
 			<BayTypeValidation {bayTypeError} />
-			<!-- {#if shouldShowBayTypeDetails} -->
+			{#if shouldShowBayTypeDetails}
 				<BayTypeDetails
 					{functionTemplates}
 					{conductingEquipmentTemplates}
 				/>
-			{#if !bayTypesStore.selectedBayType}
+			{:else if !bayTypesStore.selectedBayType}
 				<p class="text-gray-500 text-sm">
 					Select a bay type to see details
 				</p>

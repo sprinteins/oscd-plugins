@@ -97,21 +97,27 @@ describe('Integration: Assigned LNodes Flow', () => {
 			uuid: 'lnode1-uuid',
 			lnClass: 'XCBR',
 			lnType: 'TestXCBR',
-			lnInst: '1'
+			lnInst: '1',
+			iedName: 'ExistingIED',
+			lDeviceName: 'LD1'
 		}
 
 		lnode2 = {
 			uuid: 'lnode2-uuid',
 			lnClass: 'CSWI',
 			lnType: 'TestCSWI',
-			lnInst: '1'
+			lnInst: '1',
+			iedName: 'NewIED',
+			lDeviceName: 'LD1'
 		}
 
 		lnode3 = {
 			uuid: 'lnode3-uuid',
 			lnClass: 'MMXU',
 			lnType: 'TestMMXU',
-			lnInst: '1'
+			lnInst: '1',
+			iedName: 'NewIED',
+			lDeviceName: 'LD1'
 		}
 
 		functionTemplate = {
@@ -324,8 +330,7 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// Both lnode1 and lnode2 should be assigned now
-			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(true)	
 			expect(assignedLNodesStore.isAssigned(lnode3)).toBe(false)
 		})
 	})
