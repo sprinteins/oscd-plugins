@@ -1,7 +1,7 @@
 export const TYPE_ORDER = ['LNodeType', 'DOType', 'DAType', 'EnumType'] as const
 export type TypeName = (typeof TYPE_ORDER)[number]
 
-function findLastOfTypes(
+function queryLastOfTypes(
 	dataTypeTemplates: Element,
 	typeNames: readonly string[]
 ): Node | null {
@@ -16,11 +16,11 @@ function findLastOfTypes(
 	return dataTypeTemplates.firstChild
 }
 
-export function getTypeReference(
+export function queryTypeReference(
 	dataTypeTemplates: Element,
 	typeName: TypeName
 ): Node | null {
 	const typeIndex = TYPE_ORDER.indexOf(typeName)
 	const precedingTypes = TYPE_ORDER.slice(0, typeIndex + 1)
-	return findLastOfTypes(dataTypeTemplates, precedingTypes)
+	return queryLastOfTypes(dataTypeTemplates, precedingTypes)
 }

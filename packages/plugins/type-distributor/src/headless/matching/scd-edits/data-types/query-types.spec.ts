@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import {
-	collectDOTypesFromLNodeType,
-	collectTypesFromDOType,
-	collectTypesFromDAType
-} from './type-collectors'
+	queryDOTypesFromLNodeType,
+	queryTypesFromDOType,
+	queryTypesFromDAType
+} from './query-types'
 
 describe('type-collectors', () => {
 	let mockDocument: Document
@@ -15,7 +15,7 @@ describe('type-collectors', () => {
 		)
 	})
 
-	describe('collectDOTypesFromLNodeType', () => {
+	describe('queryDOTypesFromLNodeType', () => {
 		describe('GIVEN an LNodeType with no DO elements', () => {
 			describe('WHEN collectDOTypesFromLNodeType is called', () => {
 				it('THEN should return an empty array', () => {
@@ -24,7 +24,7 @@ describe('type-collectors', () => {
 					lnodeType.setAttribute('id', 'TestLN')
 
 					// WHEN
-					const result = collectDOTypesFromLNodeType(lnodeType)
+					const result = queryDOTypesFromLNodeType(lnodeType)
 
 					// THEN
 					expect(result).toEqual([])
@@ -51,7 +51,7 @@ describe('type-collectors', () => {
 					lnodeType.appendChild(do2)
 
 					// WHEN
-					const result = collectDOTypesFromLNodeType(lnodeType)
+					const result = queryDOTypesFromLNodeType(lnodeType)
 
 					// THEN
 					expect(result).toEqual(['MOD_Type1', 'BEH_Type1'])
@@ -69,7 +69,7 @@ describe('type-collectors', () => {
 					}
 
 					// WHEN
-					const result = collectDOTypesFromLNodeType(lnodeType)
+					const result = queryDOTypesFromLNodeType(lnodeType)
 
 					// THEN
 					expect(result).toHaveLength(5)
@@ -101,7 +101,7 @@ describe('type-collectors', () => {
 					lnodeType.appendChild(do2)
 
 					// WHEN
-					const result = collectDOTypesFromLNodeType(lnodeType)
+					const result = queryDOTypesFromLNodeType(lnodeType)
 
 					// THEN
 					expect(result).toEqual(['MOD_Type1'])
@@ -110,7 +110,7 @@ describe('type-collectors', () => {
 		})
 	})
 
-	describe('collectTypesFromDOType', () => {
+	describe('queryTypesFromDOType', () => {
 		describe('GIVEN a DOType with no DA elements', () => {
 			describe('WHEN collectTypesFromDOType is called', () => {
 				it('THEN should return empty sets', () => {
@@ -119,7 +119,7 @@ describe('type-collectors', () => {
 					doType.setAttribute('id', 'TestDO')
 
 					// WHEN
-					const result = collectTypesFromDOType(doType)
+					const result = queryTypesFromDOType(doType)
 
 					// THEN
 					expect(result.daTypeIds.size).toBe(0)
@@ -148,7 +148,7 @@ describe('type-collectors', () => {
 					doType.appendChild(da2)
 
 					// WHEN
-					const result = collectTypesFromDOType(doType)
+					const result = queryTypesFromDOType(doType)
 
 					// THEN
 					expect(result.daTypeIds.size).toBe(2)
@@ -179,7 +179,7 @@ describe('type-collectors', () => {
 					doType.appendChild(da2)
 
 					// WHEN
-					const result = collectTypesFromDOType(doType)
+					const result = queryTypesFromDOType(doType)
 
 					// THEN
 					expect(result.enumTypeIds.size).toBe(2)
@@ -217,7 +217,7 @@ describe('type-collectors', () => {
 					doType.appendChild(da3)
 
 					// WHEN
-					const result = collectTypesFromDOType(doType)
+					const result = queryTypesFromDOType(doType)
 
 					// THEN
 					expect(result.daTypeIds.size).toBe(1)
@@ -229,7 +229,7 @@ describe('type-collectors', () => {
 		})
 	})
 
-	describe('collectTypesFromDAType', () => {
+	describe('queryTypesFromDAType', () => {
 		describe('GIVEN a DAType with no BDA elements', () => {
 			describe('WHEN collectTypesFromDAType is called', () => {
 				it('THEN should return empty sets', () => {
@@ -238,7 +238,7 @@ describe('type-collectors', () => {
 					daType.setAttribute('id', 'TestDA')
 
 					// WHEN
-					const result = collectTypesFromDAType(daType)
+					const result = queryTypesFromDAType(daType)
 
 					// THEN
 					expect(result.daTypeIds.size).toBe(0)
@@ -267,7 +267,7 @@ describe('type-collectors', () => {
 					daType.appendChild(bda2)
 
 					// WHEN
-					const result = collectTypesFromDAType(daType)
+					const result = queryTypesFromDAType(daType)
 
 					// THEN
 					expect(result.daTypeIds.size).toBe(2)
@@ -292,7 +292,7 @@ describe('type-collectors', () => {
 					daType.appendChild(bda1)
 
 					// WHEN
-					const result = collectTypesFromDAType(daType)
+					const result = queryTypesFromDAType(daType)
 
 					// THEN
 					expect(result.enumTypeIds.size).toBe(1)
@@ -327,7 +327,7 @@ describe('type-collectors', () => {
 					daType.appendChild(bda3)
 
 					// WHEN
-					const result = collectTypesFromDAType(daType)
+					const result = queryTypesFromDAType(daType)
 
 					// THEN
 					expect(result.daTypeIds.size).toBe(1)
@@ -357,7 +357,7 @@ describe('type-collectors', () => {
 					daType.appendChild(bda2)
 
 					// WHEN
-					const result = collectTypesFromDAType(daType)
+					const result = queryTypesFromDAType(daType)
 
 					// THEN
 					expect(result.daTypeIds.size).toBe(1)
@@ -392,9 +392,9 @@ describe('type-collectors', () => {
 					daType.appendChild(bda)
 
 					// WHEN
-					const doTypes = collectDOTypesFromLNodeType(lnodeType)
-					const fromDO = collectTypesFromDOType(doType)
-					const fromDA = collectTypesFromDAType(daType)
+					const doTypes = queryDOTypesFromLNodeType(lnodeType)
+					const fromDO = queryTypesFromDOType(doType)
+					const fromDA = queryTypesFromDAType(daType)
 
 					// THEN
 					expect(doTypes).toEqual(['DO_Type1'])

@@ -20,14 +20,14 @@ function findMatchingLNodeElement(
 	sourceFunction: EqFunctionTemplate | FunctionTemplate,
 	equipmentUuid?: string
 ): Element | null {
-	const functionElements = getFunctionElements(
+	const functionElements = queryFunctionElements(
 		scdBay,
 		sourceFunction,
 		equipmentUuid
 	)
 
 	for (const functionElement of functionElements) {
-		const matches = getLNodeMatchesFromFunction(functionElement, lNode)
+		const matches = queryLNodeMatchesFromFunction(functionElement, lNode)
 		const preferred = choosePreferredMatch(matches)
 		if (preferred) return preferred
 	}
@@ -35,7 +35,7 @@ function findMatchingLNodeElement(
 	return null
 }
 
-function getFunctionElements(
+function queryFunctionElements(
 	scdBay: Element,
 	sourceFunction: EqFunctionTemplate | FunctionTemplate,
 	equipmentUuid?: string
@@ -44,38 +44,31 @@ function getFunctionElements(
 		const match = bayStore.equipmentMatches.find(
 			(m) => m.templateEquipment.uuid === equipmentUuid
 		)
-
 		if (!match) return []
 
 		const targetEquipment = match.scdElement
-		const eqFunctions = Array.from(
-			targetEquipment.querySelectorAll('EqFunction')
-		)
-		return eqFunctions.filter(
-			(eqFunc) => eqFunc.getAttribute('name') === sourceFunction.name
+		return Array.from(
+			targetEquipment.querySelectorAll(
+				`EqFunction[name="${sourceFunction.name}"]`
+			)
 		)
 	}
 
-	const functions = Array.from(scdBay.querySelectorAll(':scope > Function'))
-	return functions.filter(
-		(func) => func.getAttribute('name') === sourceFunction.name
+	return Array.from(
+		scdBay.querySelectorAll(
+			`:scope > Function[name="${sourceFunction.name}"]`
+		)
 	)
 }
 
-function getLNodeMatchesFromFunction(
+function queryLNodeMatchesFromFunction(
 	functionElement: Element,
 	lNode: LNodeTemplate
 ): Element[] {
-	const lnodeElements = Array.from(functionElement.querySelectorAll('LNode'))
-	return lnodeElements.filter((element) => {
-		const lnType = element.getAttribute('lnType')
-		const lnInst = element.getAttribute('lnInst')
+	const { lnType, lnInst } = lNode
 
-		return (
-			lnType === lNode.lnType &&
-			lnInst === lNode.lnInst
-		)
-	})
+	const selector = `LNode[lnType="${lnType}"][lnInst="${lnInst}"]`
+	return Array.from(functionElement.querySelectorAll(selector))
 }
 
 function choosePreferredMatch(matches: Element[]): Element | null {

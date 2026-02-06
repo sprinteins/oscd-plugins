@@ -1,6 +1,6 @@
 <script lang="ts">
 import AccessPoint from './access-point.svelte'
-import { getLNodesFromAccessPoint } from '@/headless/ied'
+import { queryLNodesFromAccessPoint } from '@/headless/ied'
 import { Card } from '@oscd-plugins/core-ui-svelte'
 
 const {
@@ -12,11 +12,10 @@ const {
 const sIedData = $derived(
 	sIedItems.map((sIedItem) => ({
 		name: sIedItem.getAttribute('name') ?? 'Unnamed SIed',
-    accessPoints: Array.from(sIedItem.children)
-      .filter((child) => child.localName === 'AccessPoint')
+    accessPoints: Array.from(sIedItem.querySelectorAll(':scope > AccessPoint'))
       .map((ap) => ({
         element: ap,
-        lNodes: getLNodesFromAccessPoint(ap)
+        lNodes: queryLNodesFromAccessPoint(ap)
       })),
 		element: sIedItem
 	}))

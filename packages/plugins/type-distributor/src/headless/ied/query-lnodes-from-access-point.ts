@@ -1,24 +1,18 @@
 import type { LNodeTemplate } from '../common-types'
 
-export function getLNodesFromAccessPoint(
+export function queryLNodesFromAccessPoint(
 	accessPoint: Element
 ): LNodeTemplate[] {
 	const lNodes: LNodeTemplate[] = []
 
-	const servers = Array.from(accessPoint.children).filter(
-		(child) => child.localName === 'Server'
-	)
+	const servers = accessPoint.querySelectorAll(':scope > Server')
 
 	for (const server of servers) {
-		const lDevices = Array.from(server.children).filter(
-			(child) => child.localName === 'LDevice'
-		)
+		const lDevices = server.querySelectorAll(':scope > LDevice')
 
 		for (const lDevice of lDevices) {
 			const lDeviceName = lDevice.getAttribute('inst') ?? undefined
-			const lnElements = Array.from(lDevice.children).filter(
-				(child) => child.localName === 'LN0' || child.localName === 'LN'
-			)
+			const lnElements = lDevice.querySelectorAll(':scope > LN, :scope > LN0')
 
 			for (const lnode of lnElements) {
 				lNodes.push({
