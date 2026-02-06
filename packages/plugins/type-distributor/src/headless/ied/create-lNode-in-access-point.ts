@@ -9,8 +9,8 @@ import {
 	createLDeviceElement,
 	createLNodeElementInIED,
 	createServerElementWithAuth,
-	getExistingLDevice,
-	getExistingServer,
+	queryLDevice,
+	queryServer,
 	hasLNodeInTargetDoc
 } from './elements'
 
@@ -31,7 +31,7 @@ function ensureServer(
 	accessPoint: Element,
 	doc: XMLDocument
 ): { serverElement: Element; edit: Insert | undefined } {
-	const existingServer = getExistingServer(accessPoint)
+	const existingServer = queryServer(accessPoint)
 	if (existingServer) {
 		return { serverElement: existingServer, edit: undefined }
 	}
@@ -53,8 +53,8 @@ function ensureLDevice(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	equipmentUuid?: string
 ): { lDevice: Element; edit: Insert | undefined } {
-	const existingLDevice = getExistingLDevice(server, sourceFunction, equipmentUuid)
-	if(existingLDevice) {
+	const existingLDevice = queryLDevice(server, sourceFunction, equipmentUuid)
+	if (existingLDevice) {
 		return { lDevice: existingLDevice, edit: undefined }
 	}
 

@@ -1,38 +1,31 @@
 import type { LNodeTemplate } from '../../common-types'
+import { createElement } from '@oscd-plugins/core'
 
 export function createLNodeElementInIED(
 	lNode: LNodeTemplate,
 	doc: XMLDocument
 ): Element {
-	const lnElement = doc.createElement(
-		lNode.lnClass === 'LLN0' ? 'LLN0' : 'LN'
-	)
-	lnElement.setAttribute('lnClass', lNode.lnClass)
-	lnElement.setAttribute('lnType', lNode.lnType)
-	lnElement.setAttribute('lnInst', lNode.lnInst)
+	const tag = lNode.lnClass === 'LLN0' ? 'LN0' : 'LN'
+	const lnElement = createElement(doc, tag, {
+		lnClass: lNode.lnClass,
+		lnType: lNode.lnType,
+		lnInst: lNode.lnInst
+	})
 
 	return lnElement
-}
-
-function hasLNodeInLDevice(lDevice: Element, lNode: LNodeTemplate): boolean {
-	return Array.from(lDevice.children).some(
-		(child) =>
-			(child.localName === 'LN' || child.localName === 'LN0') &&
-			child.getAttribute('lnClass') === lNode.lnClass &&
-			child.getAttribute('lnType') === lNode.lnType &&
-			child.getAttribute('lnInst') === lNode.lnInst
-	)
 }
 
 export function hasLNodeInTargetDoc(
 	targetDoc: XMLDocument,
 	lNode: LNodeTemplate
 ): boolean {
-	const lDevices = targetDoc.querySelectorAll(
-		'IED > AccessPoint > Server > LDevice'
-	)
+	const base = 'IED > AccessPoint > Server > LDevice >'
+	const attrs =
+		`[lnClass="${lNode.lnClass}"]` +
+		`[lnType="${lNode.lnType}"]` +
+		`[lnInst="${lNode.lnInst}"]`
 
-	return Array.from(lDevices).some((lDevice) =>
-		hasLNodeInLDevice(lDevice, lNode)
-	)
+	const selector = `${base} LN${attrs}, ${base} LN0${attrs}`
+
+	return !!targetDoc.querySelector(selector)
 }

@@ -1,6 +1,6 @@
 import type { Insert } from '@openscd/oscd-api'
 import { ssdImportStore } from '@/headless/stores'
-import { getTypeReference, type TypeName } from './insertion-references'
+import { queryTypeReference, type TypeName } from './query-insertion-references'
 
 function cloneTypeFromSSD(typeId: string, typeName: TypeName): Element | null {
 	const ssdDoc = ssdImportStore.loadedSSDDocument
@@ -18,7 +18,7 @@ export function createTypeEdits(
 	typeName: TypeName
 ): Insert[] {
 	const edits: Insert[] = []
-	const reference = getTypeReference(dataTypeTemplates, typeName)
+	const reference = queryTypeReference(dataTypeTemplates, typeName)
 
 	for (const id of typeIds) {
 		const clonedElement = cloneTypeFromSSD(id, typeName)

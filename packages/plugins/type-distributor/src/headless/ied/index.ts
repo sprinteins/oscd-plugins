@@ -1,5 +1,5 @@
 export { createSIED } from './create-s-ied'
 export { createAccessPoints } from './create-accesspoints'
-export { getSIEDs } from './get-s-ieds'
-export { getLNodesFromAccessPoint } from './get-lNodes-from-access-point'
+export { querySIEDs } from './query-s-ieds'
+export { queryLNodesFromAccessPoint } from './query-lnodes-from-access-point'
 export { createMultipleLNodesInAccessPoint as createLNodesInAccessPoint } from './create-lNode-in-access-point'

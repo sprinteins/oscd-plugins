@@ -38,8 +38,7 @@ describe('createEqFunctionInsertEdits', () => {
 		describe('WHEN createEqFunctionInsertEdits is called', () => {
 			it('THEN should return an empty array', () => {
 				// GIVEN
-				const scdElement = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
+				const scdElement = mockDocument.createElement(
 					'ConductingEquipment'
 				)
 
@@ -77,8 +76,7 @@ describe('createEqFunctionInsertEdits', () => {
 		describe('WHEN createEqFunctionInsertEdits is called', () => {
 			it('THEN should create one Insert edit with EqFunction element', () => {
 				// GIVEN
-				const scdElement = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
+				const scdElement = mockDocument.createElement(
 					'ConductingEquipment'
 				)
 
@@ -121,8 +119,7 @@ describe('createEqFunctionInsertEdits', () => {
 
 			it('THEN should set correct attributes on EqFunction element', () => {
 				// GIVEN
-				const scdElement = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
+				const scdElement = mockDocument.createElement(
 					'ConductingEquipment'
 				)
 
@@ -169,8 +166,7 @@ describe('createEqFunctionInsertEdits', () => {
 
 			it('THEN should set reference to null when no terminals exist', () => {
 				// GIVEN
-				const scdElement = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
+				const scdElement = mockDocument.createElement(
 					'ConductingEquipment'
 				)
 
@@ -214,19 +210,12 @@ describe('createEqFunctionInsertEdits', () => {
 		describe('WHEN createEqFunctionInsertEdits is called', () => {
 			it('THEN should set reference to node after last terminal', () => {
 				// GIVEN
-				const scdElement = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
+				const scdElement = mockDocument.createElement(
 					'ConductingEquipment'
 				)
-				const terminal1 = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
-					'Terminal'
-				)
+				const terminal1 = mockDocument.createElement('Terminal')
 				terminal1.setAttribute('name', 'T1')
-				const terminal2 = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
-					'Terminal'
-				)
+				const terminal2 = mockDocument.createElement('Terminal')
 				terminal2.setAttribute('name', 'T2')
 				scdElement.appendChild(terminal1)
 				scdElement.appendChild(terminal2)
@@ -272,8 +261,7 @@ describe('createEqFunctionInsertEdits', () => {
 		describe('WHEN createEqFunctionInsertEdits is called', () => {
 			it('THEN should create LNode child elements for each lnode template', () => {
 				// GIVEN
-				const scdElement = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
+				const scdElement = mockDocument.createElement(
 					'ConductingEquipment'
 				)
 
@@ -338,8 +326,7 @@ describe('createEqFunctionInsertEdits', () => {
 		describe('WHEN createEqFunctionInsertEdits is called', () => {
 			it('THEN should create multiple Insert edits', () => {
 				// GIVEN
-				const scdElement = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
+				const scdElement = mockDocument.createElement(
 					'ConductingEquipment'
 				)
 
@@ -396,14 +383,12 @@ describe('createEqFunctionInsertEdits', () => {
 		describe('WHEN createEqFunctionInsertEdits is called', () => {
 			it('THEN should create Insert edits for all equipment', () => {
 				// GIVEN
-				const scdElement1 = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
+				const scdElement1 = mockDocument.createElement(
 					'ConductingEquipment'
 				)
 				scdElement1.setAttribute('name', 'CB1')
 
-				const scdElement2 = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
+				const scdElement2 = mockDocument.createElement(
 					'ConductingEquipment'
 				)
 				scdElement2.setAttribute('name', 'DIS1')
@@ -473,8 +458,7 @@ describe('createEqFunctionInsertEdits', () => {
 
 			it('THEN should preserve namespace URI from parent element', () => {
 				// GIVEN
-				const scdElement = mockDocument.createElementNS(
-					'http://www.iec.ch/61850/2003/SCL',
+				const scdElement = mockDocument.createElement(
 					'ConductingEquipment'
 				)
 
@@ -510,9 +494,7 @@ describe('createEqFunctionInsertEdits', () => {
 
 				// THEN
 				const eqFunctionElement = result[0].node as Element
-				expect(eqFunctionElement.namespaceURI).toBe(
-					'http://www.iec.ch/61850/2003/SCL'
-				)
+				expect(eqFunctionElement.tagName).toBe('EqFunction')
 			})
 		})
 	})

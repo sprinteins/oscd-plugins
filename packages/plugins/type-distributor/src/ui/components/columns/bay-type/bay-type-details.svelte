@@ -14,6 +14,7 @@ const {
 	conductingEquipmentTemplates: ConductingEquipmentTemplate[]
 } = $props()
 </script>
+
 {#if conductingEquipmentTemplates && conductingEquipmentTemplates.length > 0}
   <div class="space-y-2 mb-2">
     <h3 class="text-sm font-semibold text-gray-700">Equipment Functions</h3>

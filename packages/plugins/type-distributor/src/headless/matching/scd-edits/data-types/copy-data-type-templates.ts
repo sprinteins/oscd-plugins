@@ -2,11 +2,11 @@ import type { LNodeTemplate } from '@/headless/common-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { ssdImportStore } from '@/headless/stores'
 import {
-	collectDOTypesFromLNodeType,
-	collectTypesFromDOType,
-	collectTypesFromDAType
-} from './type-collectors'
-import { TYPE_ORDER, type TypeName } from './insertion-references'
+	queryDOTypesFromLNodeType,
+	queryTypesFromDOType,
+	queryTypesFromDAType
+} from './query-types'
+import { TYPE_ORDER, type TypeName } from './query-insertion-references'
 import { createTypeEdits } from './type-creation-helpers'
 
 interface TypeCollections {
@@ -16,7 +16,7 @@ interface TypeCollections {
 	enumTypeIds: Set<string>
 }
 
-function collectAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
+function queryAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
 	const ssdDoc = ssdImportStore.loadedSSDDocument
 	if (!ssdDoc) {
 		throw new Error('No SSD document loaded in store')
@@ -38,7 +38,7 @@ function collectAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
 		return collections
 	}
 
-	const doTypeIds = collectDOTypesFromLNodeType(lnodeType)
+	const doTypeIds = queryDOTypesFromLNodeType(lnodeType)
 	for (const id of doTypeIds) {
 		collections.doTypeIds.add(id)
 	}
@@ -47,7 +47,7 @@ function collectAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
 		const doTypeElement = ssdDoc.querySelector(`DOType[id="${doTypeId}"]`)
 		if (doTypeElement) {
 			const { daTypeIds, enumTypeIds } =
-				collectTypesFromDOType(doTypeElement)
+				queryTypesFromDOType(doTypeElement)
 			for (const id of daTypeIds) {
 				collections.daTypeIds.add(id)
 			}
@@ -68,7 +68,7 @@ function collectAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
 		const daTypeElement = ssdDoc.querySelector(`DAType[id="${daTypeId}"]`)
 		if (daTypeElement) {
 			const { daTypeIds, enumTypeIds } =
-				collectTypesFromDAType(daTypeElement)
+				queryTypesFromDAType(daTypeElement)
 			for (const id of daTypeIds) {
 				collections.daTypeIds.add(id)
 				if (!processedDaTypes.has(id)) {
@@ -114,7 +114,7 @@ function filterExistingTypes(
 	}
 }
 
-export function collectAllTypesFromLNodeTemplates(
+export function queryAllTypesFromLNodeTemplates(
 	lnodeTemplates: LNodeTemplate[]
 ): TypeCollections {
 	const allCollections: TypeCollections = {
@@ -125,7 +125,7 @@ export function collectAllTypesFromLNodeTemplates(
 	}
 
 	for (const lnodeTemplate of lnodeTemplates) {
-		const collections = collectAllTypeIds(lnodeTemplate)
+		const collections = queryAllTypeIds(lnodeTemplate)
 
 		for (const id of collections.lnodeTypeIds) {
 			allCollections.lnodeTypeIds.add(id)
@@ -157,7 +157,7 @@ export function insertDataTypeTemplatesInStages(
 	lnodeTemplates: LNodeTemplate[],
 	editor: XMLEditor
 ): void {
-	const allCollections = collectAllTypesFromLNodeTemplates(lnodeTemplates)
+	const allCollections = queryAllTypesFromLNodeTemplates(lnodeTemplates)
 	const missingCollections = filterExistingTypes(doc, allCollections)
 
 	for (const typeName of TYPE_ORDER) {

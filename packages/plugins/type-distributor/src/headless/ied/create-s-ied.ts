@@ -1,7 +1,7 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { createBasicIEDElement } from './create-basic-ied-element.helper'
 import { createAccessPoints } from './create-accesspoints'
-import { findSclInsertionReference } from './find-scl-insertion-ref.helper'
+import { queryIEDInsertionReference } from './query-ied-insertion-ref.helper'
 import type { Insert } from '@openscd/oscd-api'
 
 export function createSIED(
@@ -22,7 +22,7 @@ export function createSIED(
 	const iedElement = createBasicIEDElement(name, xmlDocument, description)
 	const sclRoot = xmlDocument.documentElement
 
-	const reference = findSclInsertionReference(sclRoot)
+	const reference = queryIEDInsertionReference(sclRoot)
 
 	const edit: Insert = {
 		node: iedElement,
