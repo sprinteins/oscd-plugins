@@ -20,13 +20,12 @@ export function createSIED(
 	const xmlDocument = pluginGlobalStore.xmlDocument
 
 	const iedElement = createBasicIEDElement(name, xmlDocument, description)
-	const sclRoot = xmlDocument.documentElement
 
-	const reference = queryIEDInsertionReference(sclRoot)
+	const reference = queryIEDInsertionReference(xmlDocument)
 
 	const edit: Insert = {
 		node: iedElement,
-		parent: sclRoot,
+		parent: xmlDocument.documentElement,
 		reference: reference
 	}
 

@@ -1,6 +1,8 @@
-export function queryIEDInsertionReference(root: Element): Element | null {
+import { queryDataTypeTemplates } from "../xml-querries"
+
+export function queryIEDInsertionReference(root: XMLDocument): Element | null {
 	const existingIEDs = root.querySelectorAll(':scope > IED')
-	const dataTypeTemplates = root.querySelector(':scope > DataTypeTemplates')
+	const dataTypeTemplates = queryDataTypeTemplates(root)
 
 	if (dataTypeTemplates) return dataTypeTemplates
 	if (existingIEDs.length > 0) {
