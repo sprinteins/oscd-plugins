@@ -3,6 +3,7 @@ import { createSIED } from './create-s-ied'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
 import type { Insert } from '@openscd/oscd-api'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 // Mock the pluginGlobalStore module
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -11,7 +12,6 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 		editor: null
 	}
 }))
-const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
 describe('createSIED', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { loadFromLocal } from './load-file.helper'
-import { ssdImportStore } from '@/headless/stores'
+import { ssdImportStore } from '@/headless/stores/ssd-import.store.svelte'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
 import { resetSSDImportStore } from '@/headless/test-helpers'
 

@@ -1,5 +1,6 @@
 import type { Insert } from '@openscd/oscd-api'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { createElement } from '@oscd-plugins/core'
 
 export function createAccessPoints(
 	iedName: string,
@@ -21,15 +22,16 @@ export function createAccessPoints(
 	}
 
 	for (const ap of accessPoints) {
-		const apElement = doc.createElement('AccessPoint')
-		apElement.setAttribute('name', ap.name)
-		if (ap.description !== undefined) {
-			apElement.setAttribute('desc', ap.description)
-		}
+		const apElement = createElement(doc, 'AccessPoint', {
+			name: ap.name,
+			desc: ap.description ?? null
+		})
 
-		const serverElement = doc.createElement('Server')
-		const authElement = doc.createElement('Authentication')
-		authElement.setAttribute('none', 'true')
+		const serverElement = createElement(doc, 'Server', {})
+
+		const authElement = createElement(doc, 'Authentication', {
+			none: 'true'
+		})
 
 		serverElement.appendChild(authElement)
 		apElement.appendChild(serverElement)
