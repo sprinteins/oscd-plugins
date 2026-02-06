@@ -60,11 +60,17 @@ export function queryLNode(
 	ldInst: string,
 	lnClass: string,
 	lnInst: string,
-	prefix: string
+	prefix: string | null
 ): Element | null {
-	return doc.querySelector(
-		`SCL > Substation > VoltageLevel > Bay LNode[iedName="${iedName}"][ldInst="${ldInst}"][lnClass="${lnClass}"][lnInst="${lnInst}"][prefix="${prefix}"]`
-	)
+	let lnodeQuery = `SCL > Substation > VoltageLevel > Bay LNode[iedName="${iedName}"][ldInst="${ldInst}"][lnClass="${lnClass}"][lnInst="${lnInst}"]`
+
+	if (prefix) {
+		lnodeQuery += `[prefix="${prefix}"]`
+	} else {
+		lnodeQuery += `:not([prefix]), ${lnodeQuery}[prefix=""]`
+	}
+
+	return doc.querySelector(lnodeQuery)
 }
 
 export function queryFCDA(
