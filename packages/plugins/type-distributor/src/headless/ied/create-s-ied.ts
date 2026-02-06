@@ -3,24 +3,17 @@ import { createBasicIEDElement } from './create-basic-ied-element.helper'
 import { createAccessPoints } from './create-accesspoints'
 import { queryIEDInsertionReference } from './query-ied-insertion-ref.helper'
 import type { Insert } from '@openscd/oscd-api'
+import { getDocumentAndEditor } from '../utils'
 
 export function createSIED(
 	name: string,
 	description?: string,
 	accessPoints?: { name: string; description?: string }[]
 ): void {
-	const editor = pluginGlobalStore.editor
-	if (!editor) {
-		throw new Error('No editor found')
-	}
+	const { doc, editor } = getDocumentAndEditor()
 
-	if (!pluginGlobalStore.xmlDocument) {
-		throw new Error('No XML document found')
-	}
-	const xmlDocument = pluginGlobalStore.xmlDocument
-
-	const iedElement = createBasicIEDElement(name, xmlDocument, description)
-	const sclRoot = xmlDocument.documentElement
+	const iedElement = createBasicIEDElement(name, doc, description)
+	const sclRoot = doc.documentElement
 
 	const reference = queryIEDInsertionReference(sclRoot)
 
