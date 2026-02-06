@@ -6,7 +6,7 @@ import {
 	equipmentMatchingStore,
 	bayStore
 } from '../stores'
-import { insertDataTypeTemplatesInStages } from './scd-edits/data-types'
+import { buildDataTypeTemplatesEdits } from './scd-edits/data-types'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
 import { matchEquipment } from './matching'
 import {
@@ -65,10 +65,6 @@ export function applyBayTypeSelection(bayName: string): void {
 		edits.push(dtsCreationEdit)
 	}
 
-	editor.commit(edits, {
-		title: `Assign BayType "${bayType.name}" to Bay "${bayName}"`
-	})
-
 	bayStore.assigendBayType = selectedBayTypeName
 	bayStore.equipmentMatches = matches
 
@@ -89,10 +85,13 @@ export function applyBayTypeSelection(bayName: string): void {
 		}
 	}
 
-	insertDataTypeTemplatesInStages(
+	edits.push(...buildDataTypeTemplatesEdits(
 		doc,
 		dataTypeTemplates,
-		allLNodeTemplates,
-		editor
-	)
+		allLNodeTemplates
+	))
+
+	editor.commit(edits, {
+		title: `Assign BayType "${bayType.name}" to Bay "${bayName}"`
+	})
 }

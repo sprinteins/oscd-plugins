@@ -11,6 +11,7 @@ import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { bayTypesStore } from '../bay-types.store.svelte'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
+import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 
 type BayTypeApplicationState = {
 	hasAssignedBayType: boolean
@@ -131,10 +132,7 @@ export function commitEdits(
 	title: string,
 	squash: boolean
 ): void {
-	const editor = pluginGlobalStore.editor
-	if (!editor) {
-		throw new Error('No editor found')
-	}
+	const { editor } = getDocumentAndEditor()
 
 	editor.commit(edits, squash ? { title, squash: true } : { title })
 }
