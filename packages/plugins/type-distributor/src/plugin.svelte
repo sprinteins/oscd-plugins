@@ -19,7 +19,8 @@ import { initPlugin, DialogWorkaround } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 // COMPONENTS
-import { Toolbar, TypeDistributorView } from '@/ui/components/views'
+import { TypeDistributorView } from '@/ui/components/views'
+import { Toolbar } from '@/ui/components'
 
 // props
 const {
