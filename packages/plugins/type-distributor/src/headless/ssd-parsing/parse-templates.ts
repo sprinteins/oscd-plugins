@@ -2,7 +2,7 @@ import type {
 	FunctionTemplate,
 	ConductingEquipmentTemplate,
 	LNodeTemplate
-} from '@/headless/types'
+} from '@/headless/common-types'
 
 export function parseFunctionTemplate(element: Element): FunctionTemplate {
 	return {

@@ -74,9 +74,9 @@ async function generatePdf(
 	function extractTextSegments(
 		node: Node,
 		options: {
-		inheritBold?: boolean
-		inheritItalic?: boolean
-	} = {}
+			inheritBold?: boolean
+			inheritItalic?: boolean
+		} = {}
 	): TextSegment[] {
 		const { inheritBold = false, inheritItalic = false } = options
 		const segments: TextSegment[] = []
@@ -157,12 +157,16 @@ async function generatePdf(
 					break
 				}
 				case 'strong': {
-					const segments = extractTextSegments(element, { inheritBold: true })
+					const segments = extractTextSegments(element, {
+						inheritBold: true
+					})
 					renderTextSegments(segments, DEFAULT_FONT_SIZE)
 					break
 				}
 				case 'em': {
-					const segments = extractTextSegments(element, { inheritItalic: true })
+					const segments = extractTextSegments(element, {
+						inheritItalic: true
+					})
 					renderTextSegments(segments, DEFAULT_FONT_SIZE)
 					break
 				}
