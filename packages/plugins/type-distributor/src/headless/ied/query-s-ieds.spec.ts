@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { getSIEDs } from './get-s-ieds'
+import { querySIEDs } from './query-s-ieds'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
@@ -9,7 +9,7 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 }))
 const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
-describe('getSIEDs', () => {
+describe('querySIEDs', () => {
 	let mockDocument: Document
 
 	beforeEach(() => {
@@ -37,7 +37,7 @@ describe('getSIEDs', () => {
 	})
 
 	it('should return ieds not assigned to a Bay', () => {
-		const result = getSIEDs('Bay1')
+		const result = querySIEDs('Bay1')
 
 		const iedNames = result.map((ied) => ied.getAttribute('name'))
 		expect(iedNames).toContain('IED1')
@@ -45,7 +45,7 @@ describe('getSIEDs', () => {
 	})
 
 	it('should return ieds assigned to a selected Bay', () => {
-		const result = getSIEDs('Bay1')
+		const result = querySIEDs('Bay1')
 
 		const iedNames = result.map((ied) => ied.getAttribute('name'))
 		expect(iedNames).toContain('IED2')
@@ -59,13 +59,13 @@ describe('getSIEDs', () => {
 		)
 		pluginGlobalStore.xmlDocument = emptyDoc
 
-		const result = getSIEDs('Bay1')
+		const result = querySIEDs('')
 
 		expect(result).toEqual([])
 	})
 
 	it('should not return ieds assigned to a not selected Bay', () => {
-		const result = getSIEDs('Bay1')
+		const result = querySIEDs('Bay1')
 
 		const iedNames = result.map((ied) => ied.getAttribute('name'))
 		expect(iedNames).not.toContain('IED3')
@@ -74,13 +74,13 @@ describe('getSIEDs', () => {
 	it('should return empty array when xmlDocument is undefined', () => {
 		pluginGlobalStore.xmlDocument = undefined
 
-		const result = getSIEDs('Bay1')
+		const result = querySIEDs('Bay1')
 
 		expect(result).toEqual([])
 	})
 
 	it('should return all unassigned IEDs and selected bay IEDs together', () => {
-		const result = getSIEDs('Bay2')
+		const result = querySIEDs('Bay2')
 
 		const iedNames = result.map((ied) => ied.getAttribute('name'))
 		expect(iedNames).toContain('IED1')

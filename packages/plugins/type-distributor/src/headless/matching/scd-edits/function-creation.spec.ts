@@ -5,10 +5,9 @@ import type {
 	FunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types/ssd-types'
-import type { Insert } from '@openscd/oscd-api'
-import { ssdImportStore } from '../../stores'
+import { ssdImportStore } from '../../stores/ssd-import.store.svelte'
 
-vi.mock('../../stores', () => ({
+vi.mock('../../stores/ssd-import.store.svelte', () => ({
 	ssdImportStore: {
 		getFunctionTemplate: vi.fn()
 	}

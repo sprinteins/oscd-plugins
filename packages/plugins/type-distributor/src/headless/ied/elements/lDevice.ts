@@ -45,7 +45,7 @@ function generateLDeviceInst(
 	return functionName
 }
 
-export function getExistingLDevice(
+export function queryLDevice(
 	server: Element,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	equipmentUuid?: string
@@ -56,11 +56,7 @@ export function getExistingLDevice(
 		functionName,
 		conductingEquipmentName
 	)
-	return Array.from(server.children).find(
-		(child) =>
-			child.localName === 'LDevice' &&
-			child.getAttribute('inst') === lDeviceInst
-	)
+	return (server.querySelector(`LDevice[inst="${lDeviceInst}"]`) as Element) || undefined
 }
 
 export function createLDeviceElement(
@@ -70,11 +66,11 @@ export function createLDeviceElement(
 ): Element {
 	const { functionName, conductingEquipmentName } =
 		extractFunctionNames(sourceFunction, equipmentUuid)
-	const lDevice = doc.createElement('LDevice')
 	const lDeviceInst = generateLDeviceInst(
 		functionName,
 		conductingEquipmentName
 	)
+	const lDevice = doc.createElement('LDevice')
 	lDevice.setAttribute('inst', lDeviceInst)
 	return lDevice
 }

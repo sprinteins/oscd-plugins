@@ -7,7 +7,7 @@ import {
 	bayStore
 } from '../stores'
 import { insertDataTypeTemplatesInStages } from './scd-edits/data-types'
-import { getOrCreateDataTypeTemplates } from './scd-edits/data-types/get-or-create-data-type-templates'
+import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
 import { matchEquipment } from './matching'
 import {
 	createEqFunctionInsertEdits,
@@ -59,7 +59,7 @@ export function applyBayTypeSelection(bayName: string): void {
 	edits.push(...functionEdits)
 
 	const { element: dataTypeTemplates, edit: dtsCreationEdit } =
-		getOrCreateDataTypeTemplates(doc)
+		ensureDataTypeTemplates(doc)
 
 	if (dtsCreationEdit) {
 		edits.push(dtsCreationEdit)

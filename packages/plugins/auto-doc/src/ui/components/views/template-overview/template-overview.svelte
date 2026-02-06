@@ -77,7 +77,7 @@ function deleteTemplate(templateId: string) {
 }
 
 function downloadTemplateContent(templateId: string) {
-	pdfGenerator.downloadAsPdf(templateId)
+	pdfGenerator.downloadAsPdf(templateId, 'portrait')
 }
 
 function navigateToEditTemplate(templateId: string) {
@@ -113,90 +113,95 @@ let importToolTipText = $derived(
 </script>
 
 <div class="template-overview">
-    <header class="template-controls">
-        <Button variant="raised" class="btn-pill btn-pill-primary" onclick={() => menu.setOpen(true)} > 
-            <IconWrapper fillColor="white" icon="add"/>
-           <Label>Add template</Label> 
-        </Button>
-        <FileSelector bind:this={fileSelector} onchange={onImportTemplate} />
-        <Menu bind:this={menu}>
-            <List>
-                <Item onSMUIAction={() => {
-                        // Use timeout to prevent an error from dispatching smui action event
-                        // for some reason smui action event is not cancelable, so preventDefault() does not work
-                        setTimeout(navigateToCreateTemplate, 0);
-                    }}>
-                    <Text>New</Text>
-                </Item>
-                <Item onSMUIAction={() => openFileSelectorIfNotMasterTemplate()}
-                    title={importToolTipText}
-                >
-                    <Text class={isMasterTemplate ? "cursor-not-allowed": ""}>Import from</Text>
-                </Item>
-            </List>
-        </Menu>
-        <!-- <Button variant="outlined" class="btn-pill btn-pill-outlined">Generate Document</Button> -->
-         <div class="master-template-checkbox-area">
-            <Checkbox bind:checked={isMasterTemplate} />
-            <span>Master Template</span>
-         </div>
-
-    </header>  
-    <main>
-        <Table 
-            allTemplates={templatesConvertedToTableRow} 
-            deleteTemplate={deleteTemplate}
-            downloadTemplate={downloadTemplateContent}
-            editTemplate={navigateToEditTemplate}
-            duplicateTemplate={duplicateTemplate}
-        />
-    </main>
+  <header class="template-controls">
+    <Button
+      variant="raised"
+      class="btn-pill btn-pill-primary"
+      onclick={() => menu.setOpen(true)}
+    >
+      <IconWrapper fillColor="white" icon="add" />
+      <Label>Add template</Label>
+    </Button>
+    <FileSelector bind:this={fileSelector} onchange={onImportTemplate} />
+    <Menu bind:this={menu}>
+      <List>
+        <Item
+          onSMUIAction={() => {
+            // Use timeout to prevent an error from dispatching smui action event
+            // for some reason smui action event is not cancelable, so preventDefault() does not work
+            setTimeout(navigateToCreateTemplate, 0);
+          }}
+        >
+          <Text>New</Text>
+        </Item>
+        <Item
+          onSMUIAction={() => openFileSelectorIfNotMasterTemplate()}
+          title={importToolTipText}
+        >
+          <Text class={isMasterTemplate ? "cursor-not-allowed" : ""}
+            >Import from</Text
+          >
+        </Item>
+      </List>
+    </Menu>
+    <div class="master-template-checkbox-area">
+      <Checkbox bind:checked={isMasterTemplate} />
+      <span>Master Template</span>
+    </div>
+  </header>
+  <main>
+    <Table
+      allTemplates={templatesConvertedToTableRow}
+      {deleteTemplate}
+      downloadTemplate={downloadTemplateContent}
+      editTemplate={navigateToEditTemplate}
+      {duplicateTemplate}
+    />
+  </main>
 </div>
 
-
 <style lang="scss">
+  $clr-secondary: var(--mdc-theme-secondary);
+  $clr-secondary-15: #494fbfcd;
 
-    $clr-secondary: var(--mdc-theme-secondary);
-    $clr-secondary-15: #494fbfcd;
-
-    .template-overview{
-        padding: 2rem;
-    }
-    .template-controls{
-        margin: 0 0 1rem 1rem;
-        display: flex;
-        justify-content: space-between;
-        & :global(.btn-pill){
-                border-radius: 2em;
-                cursor: pointer;
-                border-color: $clr-secondary;
-        }
-
-        & :global(.btn-pill-outlined){
-            color: $clr-secondary;
-            &:hover{
-                background-color: $clr-secondary;
-                color: white;
-            }
-        }
-
-        & :global(.btn-pill-primary){
-            background-color: $clr-secondary;
-            color: white;
-
-            &:hover{
-                background-color:$clr-secondary-15;
-            }
-        }
+  .template-overview {
+    padding: 2rem;
+  }
+  .template-controls {
+    margin: 0 0 1rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    & :global(.btn-pill) {
+      border-radius: 2em;
+      cursor: pointer;
+      border-color: $clr-secondary;
     }
 
-    .master-template-checkbox-area{
-        display: flex;
-        align-items: center;
+    & :global(.btn-pill-outlined) {
+      color: $clr-secondary;
+      &:hover {
+        background-color: $clr-secondary;
+        color: white;
+      }
     }
 
-    :global(.cursor-not-allowed){
-        cursor: not-allowed;
-        color: #a6a6a6;
+    & :global(.btn-pill-primary) {
+      background-color: $clr-secondary;
+      color: white;
+
+      &:hover {
+        background-color: $clr-secondary-15;
+      }
     }
+  }
+
+  .master-template-checkbox-area {
+    display: flex;
+    align-items: center;
+  }
+
+  :global(.cursor-not-allowed) {
+    cursor: not-allowed;
+    color: #a6a6a6;
+  }
 </style>

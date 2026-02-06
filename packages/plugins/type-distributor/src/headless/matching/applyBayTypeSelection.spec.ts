@@ -31,8 +31,8 @@ vi.mock('./scd-edits/data-types', () => ({
 	insertDataTypeTemplatesInStages: vi.fn()
 }))
 
-vi.mock('./scd-edits/data-types/get-or-create-data-type-templates', () => ({
-	getOrCreateDataTypeTemplates: vi.fn()
+vi.mock('./scd-edits/data-types/ensure-data-type-templates', () => ({
+	ensureDataTypeTemplates: vi.fn()
 }))
 
 vi.mock('./matching', () => ({
@@ -53,8 +53,8 @@ vi.mock('@/headless/utils', () => ({
 const { insertDataTypeTemplatesInStages } = await import(
 	'./scd-edits/data-types'
 )
-const { getOrCreateDataTypeTemplates } = await import(
-	'./scd-edits/data-types/get-or-create-data-type-templates'
+const { ensureDataTypeTemplates } = await import(
+	'./scd-edits/data-types/ensure-data-type-templates'
 )
 const { matchEquipment } = await import('./matching')
 const {
@@ -197,7 +197,7 @@ describe('applyBayTypeSelection', () => {
 				vi.mocked(createEquipmentUpdateEdits).mockReturnValue([])
 				vi.mocked(createEqFunctionInsertEdits).mockReturnValue([])
 				vi.mocked(createFunctionInsertEdits).mockReturnValue([])
-				vi.mocked(getOrCreateDataTypeTemplates).mockReturnValue({
+				vi.mocked(ensureDataTypeTemplates).mockReturnValue({
 					element: mockDataTypeTemplates,
 					edit: mockDTSCreationEdit
 				})
@@ -297,7 +297,7 @@ describe('applyBayTypeSelection', () => {
 				vi.mocked(createEquipmentUpdateEdits).mockReturnValue([])
 				vi.mocked(createEqFunctionInsertEdits).mockReturnValue([])
 				vi.mocked(createFunctionInsertEdits).mockReturnValue([])
-				vi.mocked(getOrCreateDataTypeTemplates).mockReturnValue({
+				vi.mocked(ensureDataTypeTemplates).mockReturnValue({
 					element: mockDataTypeTemplates,
 					edit: null
 				})
