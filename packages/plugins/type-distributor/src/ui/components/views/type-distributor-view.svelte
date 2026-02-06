@@ -7,7 +7,8 @@ import {
 import {
 	bayStore,
 	bayTypesStore,
-	equipmentMatchingStore
+	equipmentMatchingStore,
+	assignedLNodesStore
 } from '@/headless/stores'
 import type { BayType } from '@/headless/common-types'
 import {
@@ -43,6 +44,12 @@ const sIedItems = $derived.by(() => {
 })
 
 let bayTypeError = $state<string | null>(null)
+
+$effect(() => {
+	if (bayTypesStore.selectedBayType) {
+		assignedLNodesStore.rebuild()
+	}
+})
 
 const shouldShowBayTypeDetails = $derived.by(() => {
 	if (!bayTypeWithTemplates) return false
@@ -115,7 +122,6 @@ function handleBayTypeChange() {
 		</Card.Header>
 		<Card.Content class="overflow-y-auto space-y-4">
 			<BayTypeValidation {bayTypeError} />
-
 			{#if shouldShowBayTypeDetails}
 				<BayTypeDetails
 					{functionTemplates}
