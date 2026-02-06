@@ -235,7 +235,7 @@ function handleAccessPoint(targetContext: TargetContext) {
 }
 
 function handleLDevice(targetContext: TargetContext) {
-	const lns = targetContext.lDevice.querySelectorAll(':scope > LN')
+	const lns = targetContext.lDevice.querySelectorAll(':scope > LN, :scope > LN0')
 
 	return Array.from(lns).map((ln) => {
 		const newTargetContext = {
@@ -316,7 +316,7 @@ function getSourceContext(targetContext: TargetContext): SourceContext | null {
 	if (!serviceType) {
 		targetContext.invaliditiesReports.push({
 			IEDName: iedName,
-			invalidities: `ExtRef is missing serviceType attribute`
+			invalidities: 'ExtRef is missing serviceType attribute'
 		})
 		return null
 	}
@@ -350,7 +350,7 @@ function getSourceContext(targetContext: TargetContext): SourceContext | null {
 	if (!sourceAccessPoint) {
 		targetContext.invaliditiesReports.push({
 			IEDName: iedName,
-			invalidities: `Source AccessPoint not found`
+			invalidities: 'Source AccessPoint not found'
 		})
 		return null
 	}
