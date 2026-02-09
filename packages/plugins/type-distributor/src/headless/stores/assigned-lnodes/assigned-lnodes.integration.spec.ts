@@ -3,7 +3,6 @@ import { assignedLNodesStore } from '@/headless/stores/assigned-lnodes'
 import { dndStore } from '@/headless/stores/dnd'
 import type { LNodeTemplate, FunctionTemplate } from '@/headless/common-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
-import { getLDeviceInst } from '@/headless/ied/elements'
 
 // Mock modules
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -61,13 +60,24 @@ describe('Integration: Assigned LNodes Flow', () => {
 	let lnode2: LNodeTemplate
 	let lnode3: LNodeTemplate
 	let functionTemplate: FunctionTemplate
-	let functionLDeviceInst: string
-	let existingLDeviceInst: string
+	let funcUuid: string
+	let funcUuid2: string
 
 	beforeEach(() => {
-		// Create SCD with one IED already having an LNode
+		// Create SCD with Bay structure and IED structure
 		mockDocument = new DOMParser().parseFromString(
 			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+				<Substation name="Sub1">
+					<VoltageLevel name="VL1">
+						<Bay name="Bay1">
+							<Function name="TestFunction" templateUuid="func-uuid-1">
+								<LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="ExistingIED" ldInst="LD1" />
+							</Function>
+							<Function name="AnotherFunction" templateUuid="func-uuid-2">
+							</Function>
+						</Bay>
+					</VoltageLevel>
+				</Substation>
 				<IED name="ExistingIED">
 					<AccessPoint name="AP1">
 						<Server>
@@ -96,6 +106,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 			'IED[name="NewIED"] AccessPoint[name="AP1"]'
 		) as Element
 
+		funcUuid = 'func-uuid-1'
+		funcUuid2 = 'func-uuid-2'
+
 		lnode1 = {
 			uuid: 'lnode1-uuid',
 			lnClass: 'XCBR',
@@ -118,14 +131,11 @@ describe('Integration: Assigned LNodes Flow', () => {
 		}
 
 		functionTemplate = {
-			uuid: 'func-template-uuid',
+			uuid: funcUuid,
 			name: 'TestFunction',
 			desc: 'Test Function',
 			lnodes: [lnode1, lnode2, lnode3]
 		}
-
-		functionLDeviceInst = getLDeviceInst(functionTemplate)
-		existingLDeviceInst = 'LD1'
 
 		vi.clearAllMocks()
 	})
@@ -139,18 +149,12 @@ describe('Integration: Assigned LNodes Flow', () => {
 		it('should identify already assigned LNodes after rebuild', () => {
 			assignedLNodesStore.rebuild()
 
-			// lnode1 already exists in ExistingIED
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
-			).toBe(true)
+			// lnode1 already exists in Bay structure with iedName
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
 
 			// lnode2 and lnode3 do not exist yet
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
-			).toBe(false)
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode3)
-			).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
 		})
 	})
 
@@ -158,8 +162,13 @@ describe('Integration: Assigned LNodes Flow', () => {
 		beforeEach(() => {
 			// Mock createIedEdits to return a non-empty array so commitEdits is called
 			vi.mocked(dropHandler.createIedEdits).mockReturnValue([
-				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-				{ type: 'insert', node: {}, parent: accessPoint, reference: null } as any
+				// biome-ignore lint/suspicious/noExplicitAny: mock data
+				{
+					type: 'insert',
+					node: {},
+					parent: accessPoint,
+					reference: null
+				} as any
 			])
 		})
 
@@ -167,15 +176,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// Initial state - only lnode1 is assigned
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
-			).toBe(true)
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
-			).toBe(false)
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode3)
-			).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
 
 			// Start drag with unassigned LNodes
 			dndStore.handleDragStart({
@@ -188,29 +191,19 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
 			// After drop, lnode2 and lnode3 should be marked as assigned
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
-			).toBe(true)
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode3)
-			).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(true)
 
 			// lnode1 should still be assigned
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
-			).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
 		})
 
 		it('should handle mixed assigned/unassigned LNodes in drag', () => {
 			assignedLNodesStore.rebuild()
 
 			// lnode1 is already assigned
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
-			).toBe(true)
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
-			).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
 
 			// Drag all LNodes including the already assigned one
 			dndStore.handleDragStart({
@@ -222,12 +215,8 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
 			// Both should be marked as assigned
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
-			).toBe(true)
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
-			).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
 		})
 	})
 
@@ -236,61 +225,52 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// Mark lnode2 as assigned manually
-			assignedLNodesStore.markAsAssigned(functionLDeviceInst, [lnode2])
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
-			).toBe(true)
+			assignedLNodesStore.markAsAssigned(funcUuid, [lnode2])
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
 
-			// Rebuild from document (which doesn't have lnode2)
+			// Rebuild from document (which doesn't have lnode2 in Bay structure)
 			assignedLNodesStore.rebuild()
 
 			// lnode2 should no longer be marked as assigned
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
-			).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
 
-			// lnode1 (which exists in document) should still be assigned
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
-			).toBe(true)
+			// lnode1 (which exists in Bay structure with iedName) should still be assigned
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
 		})
 
-		it('should sync state after document modifications', () => {
+		it('should sync state after document modifications to Bay structure', () => {
 			assignedLNodesStore.rebuild()
 
 			// Initial state
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode2)
-			).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
 
-			// Manually add lnode2 to document
-			const newIED = mockDocument.querySelector('IED[name="NewIED"]')
-			const newAP = newIED?.querySelector('AccessPoint[name="AP1"]')
-			const newServer = mockDocument.createElement('Server')
-			const newLDevice = mockDocument.createElement('LDevice')
-			newLDevice.setAttribute('inst', 'LD1')
-			const newLN = mockDocument.createElement('LN')
+			// Manually add lnode2 to Bay structure with iedName
+			const func = mockDocument.querySelector(
+				'Function[templateUuid="func-uuid-1"]'
+			)
+			const newLN = mockDocument.createElement('LNode')
 			newLN.setAttribute('lnClass', 'CSWI')
 			newLN.setAttribute('lnType', 'TestCSWI')
 			newLN.setAttribute('lnInst', '1')
-			newLDevice.appendChild(newLN)
-			newServer.appendChild(newLDevice)
-			newAP?.appendChild(newServer)
+			newLN.setAttribute('iedName', 'NewIED')
+			newLN.setAttribute('ldInst', 'LD2')
+			func?.appendChild(newLN)
 
 			// Rebuild to sync with document
 			assignedLNodesStore.rebuild()
 
 			// Now lnode2 should be marked as assigned
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode2)
-			).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
 		})
 	})
 
 	describe('Performance: Incremental updates vs full rebuild', () => {
 		it('should use incremental update during drop instead of full rebuild', () => {
 			const rebuildSpy = vi.spyOn(assignedLNodesStore, 'rebuild')
-			const markAsAssignedSpy = vi.spyOn(assignedLNodesStore, 'markAsAssigned')
+			const markAsAssignedSpy = vi.spyOn(
+				assignedLNodesStore,
+				'markAsAssigned'
+			)
 
 			assignedLNodesStore.rebuild()
 			rebuildSpy.mockClear()
@@ -315,7 +295,7 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			const initialState = assignedLNodesStore.isAssigned(
-				functionLDeviceInst,
+				funcUuid,
 				lnode2
 			)
 
@@ -329,9 +309,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDragEnd()
 
 			// State should remain unchanged
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
-			).toBe(initialState)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(
+				initialState
+			)
 		})
 
 		it('should handle empty document', () => {
@@ -343,15 +323,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
 
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
-			).toBe(false)
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
-			).toBe(false)
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode3)
-			).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
 		})
 
 		it('should handle null document', () => {
@@ -359,35 +333,40 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
 
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
-			).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(false)
 		})
 	})
 
-	describe('Multiple IEDs scenario', () => {
-		it('should track LNodes across multiple IEDs', () => {
-			// Add lnode2 to ExistingIED
-			const existingIED = mockDocument.querySelector('IED[name="ExistingIED"]')
-			const existingLDevice = existingIED?.querySelector('LDevice[inst="LD1"]')
-			const ln2 = mockDocument.createElement('LN')
+	describe('Multiple Functions scenario', () => {
+		it('should track LNodes across multiple Functions', () => {
+			// Add lnode2 to another Function
+			const func2 = mockDocument.querySelector(
+				'Function[templateUuid="func-uuid-2"]'
+			)
+			const ln2 = mockDocument.createElement('LNode')
 			ln2.setAttribute('lnClass', 'CSWI')
 			ln2.setAttribute('lnType', 'TestCSWI')
 			ln2.setAttribute('lnInst', '1')
-			existingLDevice?.appendChild(ln2)
+			ln2.setAttribute('iedName', 'NewIED')
+			ln2.setAttribute('ldInst', 'LD2')
+			func2?.appendChild(ln2)
 
 			assignedLNodesStore.rebuild()
 
-			// Both lnode1 and lnode2 should be assigned now
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
-			).toBe(true)
-			expect(
-				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode2)
-			).toBe(true)
-			expect(
-				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode3)
-			).toBe(false)
+			// lnode1 should be assigned in funcUuid
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
+
+			// lnode2 should be assigned in funcUuid2 (different function)
+			expect(assignedLNodesStore.isAssigned(funcUuid2, lnode2)).toBe(true)
+
+			// But lnode2 should not be assigned in funcUuid
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+
+			// And lnode3 should not be assigned anywhere
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid2, lnode3)).toBe(
+				false
+			)
 		})
 	})
 })

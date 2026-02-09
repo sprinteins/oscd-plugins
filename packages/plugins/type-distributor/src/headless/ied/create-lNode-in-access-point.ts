@@ -108,7 +108,7 @@ export function createMultipleLNodesInAccessPoint({
 	)
 
 	const lNodesToAdd = lNodes.filter((lNode) => {
-		const exists = hasLNodeInTargetDoc(doc, lNode, lDevice)
+		const exists = hasLNodeInTargetDoc(lNode, lDevice)
 		if (exists) {
 			console.warn(
 				`[createLNodesInAccessPoint] LN ${lNode.lnClass}:${lNode.lnType}:${lNode.lnInst} already exists in LDevice, skipping`

@@ -16,27 +16,14 @@ export function createLNodeElementInIED(
 }
 
 export function hasLNodeInTargetDoc(
-	targetDoc: XMLDocument,
 	lNode: LNodeTemplate,
-	lDevice?: Element
+	lDevice: Element
 ): boolean {
-	if (lDevice) {
-		const attrs =
-			`[lnClass="${lNode.lnClass}"]` +
-			`[lnType="${lNode.lnType}"]` +
-			`[lnInst="${lNode.lnInst}"]`
-
-		const selector = `LN${attrs}, LN0${attrs}`
-		return !!lDevice.querySelector(selector)
-	}
-
-	const base = 'IED > AccessPoint > Server > LDevice >'
 	const attrs =
 		`[lnClass="${lNode.lnClass}"]` +
 		`[lnType="${lNode.lnType}"]` +
 		`[lnInst="${lNode.lnInst}"]`
 
-	const selector = `${base} LN${attrs}, ${base} LN0${attrs}`
-
-	return !!targetDoc.querySelector(selector)
+	const selector = `LN${attrs}, LN0${attrs}`
+	return !!lDevice.querySelector(selector)
 }

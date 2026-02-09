@@ -9,40 +9,57 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
+// Mock bayTypesStore
+vi.mock('../bay-types.store.svelte', () => ({
+	bayTypesStore: {
+		bayTypes: [
+			{
+				uuid: 'baytype-uuid-1',
+				name: 'TestBayType',
+				conductingEquipments: [
+					{
+						uuid: 'eq-uuid-1',
+						name: 'CB1',
+						type: 'CBR'
+					}
+				]
+			}
+		]
+	}
+}))
+
 const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
 describe('assignedLNodesStore', () => {
 	let mockDocument: Document
-	const ld1 = 'LD1'
-	const ld2 = 'LD2'
+	const funcUuid1 = 'func-uuid-1'
+	const funcUuid2 = 'func-uuid-2'
+	const eqUuid1 = 'eq-uuid-1'
 
 	beforeEach(() => {
-		// Create a mock SCD document with some existing LNodes
+		// Create a mock SCD document with Bay structures containing LNodes
 		mockDocument = new DOMParser().parseFromString(
 			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-				<IED name="IED1">
-					<AccessPoint name="AP1">
-						<Server>
-							<LDevice inst="LD1">
-								<LN lnClass="XCBR" lnType="TestXCBR" lnInst="1" />
-								<LN lnClass="CSWI" lnType="TestCSWI" lnInst="1" />
-							<LN0 lnClass="LLN0" lnType="TestLLN0" />
-							</LDevice>
-							<LDevice inst="LD2">
-								<LN lnClass="MMXU" lnType="TestMMXU" lnInst="1" />
-							</LDevice>
-						</Server>
-					</AccessPoint>
-				</IED>
-				<IED name="IED2">
-					<AccessPoint name="AP1">
-						<Server>
-							<LDevice inst="LD1">
-								<LN lnClass="PTRC" lnType="TestPTRC" lnInst="1" />
-							</LDevice>
-						</Server>
-					</AccessPoint>
-				</IED>
+				<Substation name="Sub1">
+					<VoltageLevel name="VL1">
+						<Bay name="Bay1">
+							<Function name="ProtectionFunc" templateUuid="${funcUuid1}">
+								<LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1" ldInst="LD1" />
+								<LNode lnClass="CSWI" lnType="TestCSWI" lnInst="1" iedName="IED1" ldInst="LD1" />
+								<LNode lnClass="LLN0" lnType="TestLLN0" iedName="IED1" ldInst="LD1" />
+							</Function>
+							<Function name="ControlFunc" templateUuid="${funcUuid2}">
+								<LNode lnClass="MMXU" lnType="TestMMXU" lnInst="1" iedName="IED2" ldInst="LD2" />
+								<LNode lnClass="PDIS" lnType="TestPDIS" lnInst="1" />
+							</Function>
+							<ConductingEquipment name="CB1" type="CBR" templateUuid="${eqUuid1}">
+								<EqFunction name="Control">
+									<LNode lnClass="PTRC" lnType="TestPTRC" lnInst="1" iedName="IED1" ldInst="LD1" />
+								</EqFunction>
+							</ConductingEquipment>
+						</Bay>
+					</VoltageLevel>
+				</Substation>
 			</SCL>`,
 			'application/xml'
 		)
@@ -55,12 +72,12 @@ describe('assignedLNodesStore', () => {
 	})
 
 	describe('rebuild', () => {
-		it('should build index of all assigned LNodes in document', () => {
+		it('should build index of all assigned LNodes in Bay structures', () => {
 			assignedLNodesStore.rebuild()
 
-			// Check that existing LNodes are marked as assigned
+			// Check Function LNodes with iedName are marked as assigned
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -68,7 +85,7 @@ describe('assignedLNodesStore', () => {
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'CSWI',
 					lnType: 'TestCSWI',
 					lnInst: '1'
@@ -76,15 +93,16 @@ describe('assignedLNodesStore', () => {
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned(ld2, {
+				assignedLNodesStore.isAssigned(funcUuid2, {
 					lnClass: 'MMXU',
 					lnType: 'TestMMXU',
 					lnInst: '1'
 				})
 			).toBe(true)
 
+			// Check EqFunction LNode with iedName
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(eqUuid1, {
 					lnClass: 'PTRC',
 					lnType: 'TestPTRC',
 					lnInst: '1'
@@ -92,19 +110,32 @@ describe('assignedLNodesStore', () => {
 			).toBe(true)
 		})
 
-		it('should not mark non-existent LNodes as assigned', () => {
+		it('should not mark LNodes without iedName attribute as assigned', () => {
 			assignedLNodesStore.rebuild()
 
+			// PDIS LNode doesn't have iedName attribute
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid2, {
 					lnClass: 'PDIS',
 					lnType: 'TestPDIS',
 					lnInst: '1'
 				})
 			).toBe(false)
+		})
+
+		it('should not mark non-existent LNodes as assigned', () => {
+			assignedLNodesStore.rebuild()
 
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
+					lnClass: 'RDIR',
+					lnType: 'TestRDIR',
+					lnInst: '1'
+				})
+			).toBe(false)
+
+			expect(
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'DifferentType',
 					lnInst: '1'
@@ -112,7 +143,7 @@ describe('assignedLNodesStore', () => {
 			).toBe(false)
 
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '2'
@@ -125,7 +156,7 @@ describe('assignedLNodesStore', () => {
 
 			// Verify some LNodes are assigned
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -138,7 +169,7 @@ describe('assignedLNodesStore', () => {
 
 			// Verify index is cleared
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -156,7 +187,7 @@ describe('assignedLNodesStore', () => {
 			assignedLNodesStore.rebuild()
 
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -167,17 +198,17 @@ describe('assignedLNodesStore', () => {
 		it('should handle LNodes with missing attributes', () => {
 			const docWithMissingAttrs = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-					<IED name="IED1">
-						<AccessPoint name="AP1">
-							<Server>
-								<LDevice inst="LD1">
-									<LN lnClass="XCBR" lnType="TestXCBR" />
-									<LN lnClass="CSWI" lnInst="1" />
-									<LN lnType="TestMMXU" lnInst="1" />
-								</LDevice>
-							</Server>
-						</AccessPoint>
-					</IED>
+					<Substation name="Sub1">
+						<VoltageLevel name="VL1">
+							<Bay name="Bay1">
+								<Function name="TestFunc" templateUuid="${funcUuid1}">
+									<LNode lnClass="XCBR" lnType="TestXCBR" iedName="IED1" />
+									<LNode lnClass="CSWI" lnInst="1" iedName="IED1" />
+									<LNode lnType="TestMMXU" lnInst="1" iedName="IED1" />
+								</Function>
+							</Bay>
+						</VoltageLevel>
+					</Substation>
 				</SCL>`,
 				'application/xml'
 			)
@@ -186,14 +217,46 @@ describe('assignedLNodesStore', () => {
 			// Should not throw error
 			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
 
-			// LNodes with missing attributes should not be indexed
+			// LNodes with missing lnClass or lnType should not be indexed
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
 				})
 			).toBe(false)
+		})
+
+		it('should skip Functions without templateUuid', () => {
+			const docWithoutUuid = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation name="Sub1">
+						<VoltageLevel name="VL1">
+							<Bay name="Bay1">
+								<Function name="NoUuidFunc">
+									<LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1" />
+								</Function>
+							</Bay>
+						</VoltageLevel>
+					</Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = docWithoutUuid
+
+			const consoleSpy = vi
+				.spyOn(console, 'warn')
+				.mockImplementation(() => {})
+
+			assignedLNodesStore.rebuild()
+
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining(
+					'Function "NoUuidFunc" has no templateUuid'
+				)
+			)
+
+			consoleSpy.mockRestore()
 		})
 	})
 
@@ -202,35 +265,43 @@ describe('assignedLNodesStore', () => {
 			assignedLNodesStore.rebuild()
 
 			const newLNode: LNodeTemplate = {
-				lnClass: 'PDIS',
-				lnType: 'TestPDIS',
+				lnClass: 'RDIR',
+				lnType: 'TestRDIR',
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
+				false
+			)
 
-			assignedLNodesStore.markAsAssigned(ld1, [newLNode])
+			assignedLNodesStore.markAsAssigned(funcUuid1, [newLNode])
 
-			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
+				true
+			)
 		})
 
 		it('should add multiple LNodes to index', () => {
 			assignedLNodesStore.rebuild()
 
 			const newLNodes: LNodeTemplate[] = [
-				{ lnClass: 'PDIS', lnType: 'TestPDIS', lnInst: '1' },
+				{ lnClass: 'RDIR', lnType: 'TestRDIR', lnInst: '1' },
 				{ lnClass: 'PSCH', lnType: 'TestPSCH', lnInst: '1' },
-				{ lnClass: 'RDIR', lnType: 'TestRDIR', lnInst: '1' }
+				{ lnClass: 'RSYN', lnType: 'TestRSYN', lnInst: '1' }
 			]
 
 			for (const lnode of newLNodes) {
-				expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(false)
+				expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(
+					false
+				)
 			}
 
-			assignedLNodesStore.markAsAssigned(ld1, newLNodes)
+			assignedLNodesStore.markAsAssigned(funcUuid1, newLNodes)
 
 			for (const lnode of newLNodes) {
-				expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(true)
+				expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(
+					true
+				)
 			}
 		})
 
@@ -244,19 +315,27 @@ describe('assignedLNodesStore', () => {
 			}
 
 			const newLNode: LNodeTemplate = {
-				lnClass: 'PDIS',
-				lnType: 'TestPDIS',
+				lnClass: 'RDIR',
+				lnType: 'TestRDIR',
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(ld1, existingLNode)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(funcUuid1, existingLNode)
+			).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
+				false
+			)
 
-			assignedLNodesStore.markAsAssigned(ld1, [newLNode])
+			assignedLNodesStore.markAsAssigned(funcUuid1, [newLNode])
 
 			// Both should be assigned
-			expect(assignedLNodesStore.isAssigned(ld1, existingLNode)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(funcUuid1, existingLNode)
+			).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
+				true
+			)
 		})
 
 		it('should handle marking already assigned LNodes', () => {
@@ -268,30 +347,32 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(true)
 
 			// Should not throw error when marking already assigned LNode
-			expect(() => assignedLNodesStore.markAsAssigned(ld1, [lnode])).not.toThrow()
+			expect(() =>
+				assignedLNodesStore.markAsAssigned(funcUuid1, [lnode])
+			).not.toThrow()
 
 			// Should still be assigned
-			expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(true)
 		})
 
 		it('should handle empty array', () => {
 			assignedLNodesStore.rebuild()
 
 			const lnode: LNodeTemplate = {
-				lnClass: 'PDIS',
-				lnType: 'TestPDIS',
+				lnClass: 'RDIR',
+				lnType: 'TestRDIR',
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(false)
 
-			assignedLNodesStore.markAsAssigned(ld1, [])
+			assignedLNodesStore.markAsAssigned(funcUuid1, [])
 
 			// Should still not be assigned
-			expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(false)
 		})
 	})
 
@@ -302,7 +383,7 @@ describe('assignedLNodesStore', () => {
 
 		it('should return true for assigned LNode', () => {
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -312,9 +393,9 @@ describe('assignedLNodesStore', () => {
 
 		it('should return false for non-assigned LNode', () => {
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
-					lnClass: 'PDIS',
-					lnType: 'TestPDIS',
+				assignedLNodesStore.isAssigned(funcUuid1, {
+					lnClass: 'RDIR',
+					lnType: 'TestRDIR',
 					lnInst: '1'
 				})
 			).toBe(false)
@@ -322,7 +403,7 @@ describe('assignedLNodesStore', () => {
 
 		it('should differentiate between LNodes with same lnClass but different lnType', () => {
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -330,7 +411,7 @@ describe('assignedLNodesStore', () => {
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'DifferentXCBR',
 					lnInst: '1'
@@ -340,7 +421,7 @@ describe('assignedLNodesStore', () => {
 
 		it('should differentiate between LNodes with same lnClass and lnType but different lnInst', () => {
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -348,12 +429,31 @@ describe('assignedLNodesStore', () => {
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned(ld1, {
+				assignedLNodesStore.isAssigned(funcUuid1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '2'
 				})
 			).toBe(false)
+		})
+
+		it('should differentiate LNodes across different parent UUIDs', () => {
+			// Same LNode tuple but different parent UUID
+			expect(
+				assignedLNodesStore.isAssigned(funcUuid1, {
+					lnClass: 'MMXU',
+					lnType: 'TestMMXU',
+					lnInst: '1'
+				})
+			).toBe(false)
+
+			expect(
+				assignedLNodesStore.isAssigned(funcUuid2, {
+					lnClass: 'MMXU',
+					lnType: 'TestMMXU',
+					lnInst: '1'
+				})
+			).toBe(true)
 		})
 
 		it('should handle LNode with optional properties', () => {
@@ -367,7 +467,7 @@ describe('assignedLNodesStore', () => {
 			}
 
 			expect(
-				assignedLNodesStore.isAssigned(ld1, lnodeWithOptionals)
+				assignedLNodesStore.isAssigned(funcUuid1, lnodeWithOptionals)
 			).toBe(true)
 		})
 	})
@@ -382,31 +482,39 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(ld1, existingLNode)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(funcUuid1, existingLNode)
+			).toBe(true)
 
 			// Rebuild should still show it as assigned
 			assignedLNodesStore.rebuild()
 
-			expect(assignedLNodesStore.isAssigned(ld1, existingLNode)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(funcUuid1, existingLNode)
+			).toBe(true)
 		})
 
 		it('should remove manually marked LNodes after rebuild if they do not exist in document', () => {
 			assignedLNodesStore.rebuild()
 
 			const newLNode: LNodeTemplate = {
-				lnClass: 'PDIS',
-				lnType: 'TestPDIS',
+				lnClass: 'RDIR',
+				lnType: 'TestRDIR',
 				lnInst: '1'
 			}
 
-			assignedLNodesStore.markAsAssigned(ld1, [newLNode])
-			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(true)
+			assignedLNodesStore.markAsAssigned(funcUuid1, [newLNode])
+			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
+				true
+			)
 
 			// Rebuild from document (which doesn't have this LNode)
 			assignedLNodesStore.rebuild()
 
 			// Should no longer be marked as assigned
-			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
+				false
+			)
 		})
 	})
 })
