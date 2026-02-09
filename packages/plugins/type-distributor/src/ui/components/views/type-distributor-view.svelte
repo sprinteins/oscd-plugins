@@ -7,15 +7,14 @@ import {
 import {
 	bayStore,
 	bayTypesStore,
-	equipmentMatchingStore,
-	assignedLNodesStore
+	equipmentMatchingStore
 } from '@/headless/stores'
 import type { BayType } from '@/headless/common-types'
 import {
 	BayTypeDetails,
 	BayTypeValidation
 } from '@/ui/components/columns/bay-type'
-import { getSIEDs } from '@/headless/ied'
+import { querySIEDs } from '@/headless/ied'
 import SIedDetails from '@/ui/components/columns/s-ied/s-ied-details.svelte'
 import { AddSIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'
@@ -40,16 +39,10 @@ const conductingEquipmentTemplates = $derived(
 
 const sIedItems = $derived.by(() => {
 	pluginGlobalStore.editCount
-	return getSIEDs(bayStore.selectedBay ?? '')
+	return querySIEDs(bayStore.selectedBay ?? '')
 })
 
 let bayTypeError = $state<string | null>(null)
-
-$effect(() => {
-	if (bayTypesStore.selectedBayType) {
-		assignedLNodesStore.rebuild()
-	}
-})
 
 const shouldShowBayTypeDetails = $derived.by(() => {
 	if (!bayTypeWithTemplates) return false

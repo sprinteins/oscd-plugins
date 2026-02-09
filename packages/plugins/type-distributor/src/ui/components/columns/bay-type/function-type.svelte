@@ -55,15 +55,15 @@ function handleLNodeDragEnd() {
     <button
         class="w-full"
         onclick={() => (isOpen = !isOpen)}
-        draggable={!allAssigned}
-        ondragstart={allAssigned ? undefined : handleDragStart}
+        draggable={true}
+        ondragstart={handleDragStart}
         ondragend={handleDragEnd}
-        style:cursor={allAssigned ? "not-allowed" : (isDragging ? "grabbing" : "grab")}
+        style:cursor={isDragging ? "grabbing" : "grab"}
     >
         <Card.Root
-            class="hover:bg-gray-50 transition-opacity {isDragging
+            class="hover:bg-gray-50 cursor-pointer transition-opacity {isDragging
                 ? 'opacity-50'
-                : allAssigned ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}"
+                : ''}"
         >
             <Card.Content class="p-2">
                 <div class="flex items-center justify-between">
@@ -73,7 +73,7 @@ function handleLNodeDragEnd() {
                                 ? 'rotate-90'
                                 : ''}"
                         />
-                        <span class="text-sm font-medium text-left {allAssigned ? 'text-gray-400' : ''}"
+                        <span class="text-sm font-medium text-left"
                             >{func.name}</span
                         >
                     </div>
@@ -83,10 +83,10 @@ function handleLNodeDragEnd() {
     </button>
     {#if isOpen}
         <div class="ml-4 space-y-1">
-            {#each func.lnodes as lnode, idx}
+            {#each func.lnodes as lnode}
                 <LNode
                     {lnode}
-                    draggable={!assignedStatuses[idx]}
+                    draggable={true}
                     onDragStart={handleLNodeDragStart}
                     onDragEnd={handleLNodeDragEnd}
                 />

@@ -11,7 +11,6 @@ import {
 	generateCommitTitle,
 	commitEdits
 } from './drop-handler'
-import { assignedLNodesStore } from '../assigned-lnodes'
 
 type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'
@@ -94,7 +93,6 @@ class UseDndStore {
 				)
 
 				commitEdits(allEdits, title, didApplyBayType)
-				assignedLNodesStore.markAsAssigned(lNodes)
 			}
 		} catch (error) {
 			console.error('[DnD] Error creating LNodes:', error)

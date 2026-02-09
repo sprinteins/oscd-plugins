@@ -1,13 +1,12 @@
+import { createElement } from '@oscd-plugins/core'
+
 export function createServerElementWithAuth(doc: XMLDocument): Element {
-	const serverElement = doc.createElement('Server')
-	const authElement = doc.createElement('Authentication')
-	authElement.setAttribute('none', 'true')
+	const serverElement = createElement(doc, 'Server', {})
+	const authElement = createElement(doc, 'Authentication', { none: 'true' })
 	serverElement.appendChild(authElement)
 	return serverElement
 }
 
-export function getExistingServer(accessPoint: Element): Element | undefined {
-	return Array.from(accessPoint.children).find(
-		(child) => child.localName === 'Server'
-	)
+export function queryServer(accessPoint: Element): Element | undefined {
+	return (accessPoint.querySelector('Server') as Element) || undefined
 }

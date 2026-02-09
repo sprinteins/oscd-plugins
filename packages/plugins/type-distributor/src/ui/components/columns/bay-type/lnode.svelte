@@ -10,29 +10,15 @@ interface Props {
 }
 
 const { lnode, draggable = false, onDragStart, onDragEnd }: Props = $props()
-
-function handleDragStart(event: DragEvent) {
-	if (!draggable) return
-	onDragStart?.(event, lnode)
-}
-
-function handleDragEnd() {
-	if (!draggable) return
-	onDragEnd?.()
-}
 </script>
 
 <Card.Root
-    draggable={draggable}
-    ondragstart={handleDragStart}
-    ondragend={handleDragEnd}
-    class="hover:bg-gray-50 transition-opacity {draggable 
-        ? 'cursor-pointer' 
-        : 'opacity-50 cursor-not-allowed '}"
+    {draggable}
+    {...{ ondragstart: (event: DragEvent) => onDragStart?.(event, lnode) }}
+    {...{ ondragend: () => onDragEnd?.() }}
+    class="hover:bg-gray-50 cursor-pointer transition-opacity"
 >
     <Card.Content class="p-2">
-        <span class="text-sm text-left {draggable ? '' : 'text-gray-400'}">
-            {lnode.lnType}
-        </span>
+        <span class="text-sm text-left">{lnode.lnType}</span>
     </Card.Content>
 </Card.Root>
