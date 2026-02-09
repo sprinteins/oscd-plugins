@@ -11,7 +11,7 @@ import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type
 import { matchEquipment } from './matching'
 import {
 	buildEditForBayUpdate,
-	createEqFunctionInsertEdits,
+	buildInsertEditsForEqFunction,
 	buildEditsForEquipmentUpdates,
 	createFunctionInsertEdits
 } from './scd-edits'
@@ -52,7 +52,7 @@ export function applyBayTypeSelection(bayName: string): void {
 	const equipmentEdits = buildEditsForEquipmentUpdates(matches)
 	edits.push(...equipmentEdits)
 
-	const eqFunctionEdits = createEqFunctionInsertEdits(doc, matches)
+	const eqFunctionEdits = buildInsertEditsForEqFunction(doc, matches)
 	edits.push(...eqFunctionEdits)
 
 	const functionEdits = createFunctionInsertEdits(doc, bayType, scdBay)

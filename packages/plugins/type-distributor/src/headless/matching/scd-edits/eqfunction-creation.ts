@@ -3,7 +3,7 @@ import type { Insert } from '@openscd/oscd-api'
 import type { EquipmentMatch } from '../types'
 import { createLNodeElement } from './lnode-creation'
 
-export function createEqFunctionInsertEdits(
+export function buildInsertEditsForEqFunction(
 	doc: Document,
 	matches: EquipmentMatch[]
 ): Insert[] {
