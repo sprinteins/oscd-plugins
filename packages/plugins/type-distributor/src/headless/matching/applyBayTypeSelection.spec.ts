@@ -1,15 +1,48 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { SvelteMap } from 'svelte/reactivity'
-import { applyBayTypeSelection } from './applyBayTypeSelection'
+import type { BayType, LNodeTemplate } from '@/headless/common-types'
+import type { Insert } from '@openscd/oscd-api'
+import type { XMLEditor } from '@openscd/oscd-editor'
+import { getDocumentAndEditor } from '@/headless/utils'
+import { matchEquipment } from './matching'
+import {
+	createBayUpdateEdit,
+	createEquipmentUpdateEdits,
+	createEqFunctionInsertEdits,
+	createFunctionInsertEdits
+} from './scd-edits'
+import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
+import { createDataTypeTemplatesEdits } from './scd-edits/data-types'
 import {
 	ssdImportStore,
 	bayTypesStore,
 	equipmentMatchingStore,
 	bayStore
 } from '@/headless/stores'
-import type { BayType, LNodeTemplate } from '@/headless/common-types'
-import type { Insert } from '@openscd/oscd-api'
-import type { XMLEditor } from '@openscd/oscd-editor'
+import { applyBayTypeSelection } from './applyBayTypeSelection'
+
+vi.mock('@/headless/utils', () => ({
+	getDocumentAndEditor: vi.fn()
+}))
+
+vi.mock('./matching', () => ({
+	matchEquipment: vi.fn()
+}))
+
+vi.mock('./scd-edits', () => ({
+	createBayUpdateEdit: vi.fn(),
+	createEquipmentUpdateEdits: vi.fn(),
+	createEqFunctionInsertEdits: vi.fn(),
+	createFunctionInsertEdits: vi.fn()
+}))
+
+vi.mock('./scd-edits/data-types/ensure-data-type-templates', () => ({
+	ensureDataTypeTemplates: vi.fn()
+}))
+
+vi.mock('./scd-edits/data-types', () => ({
+	createDataTypeTemplatesEdits: vi.fn()
+}))
 
 vi.mock('@/headless/stores', () => ({
 	ssdImportStore: {
@@ -23,47 +56,11 @@ vi.mock('@/headless/stores', () => ({
 		manualMatches: new SvelteMap()
 	},
 	bayStore: {
-		scdBay: null
+		scdBay: null,
+		assignedBayType: null,
+		equipmentMatches: []
 	}
 }))
-
-vi.mock('./scd-edits/data-types', () => ({
-	insertDataTypeTemplatesInStages: vi.fn()
-}))
-
-vi.mock('./scd-edits/data-types/ensure-data-type-templates', () => ({
-	ensureDataTypeTemplates: vi.fn()
-}))
-
-vi.mock('./matching', () => ({
-	matchEquipment: vi.fn()
-}))
-
-vi.mock('./scd-edits', () => ({
-	createEqFunctionInsertEdits: vi.fn(),
-	createEquipmentUpdateEdits: vi.fn(),
-	createFunctionInsertEdits: vi.fn(),
-	updateBay: vi.fn()
-}))
-
-vi.mock('@/headless/utils', () => ({
-	getDocumentAndEditor: vi.fn()
-}))
-
-const { insertDataTypeTemplatesInStages } = await import(
-	'./scd-edits/data-types'
-)
-const { ensureDataTypeTemplates } = await import(
-	'./scd-edits/data-types/ensure-data-type-templates'
-)
-const { matchEquipment } = await import('./matching')
-const {
-	createEqFunctionInsertEdits,
-	createEquipmentUpdateEdits,
-	createFunctionInsertEdits,
-	updateBay
-} = await import('./scd-edits')
-const { getDocumentAndEditor } = await import('@/headless/utils')
 
 describe('applyBayTypeSelection', () => {
 	let mockDoc: Document
@@ -190,13 +187,15 @@ describe('applyBayTypeSelection', () => {
 				}
 
 				vi.mocked(matchEquipment).mockReturnValue([])
-				vi.mocked(updateBay).mockReturnValue({
+				vi.mocked(createBayUpdateEdit).mockReturnValue({
 					element: mockScdBay,
-					attributes: {}
+					attributes: {},
+					attributesNS: {}
 				})
 				vi.mocked(createEquipmentUpdateEdits).mockReturnValue([])
 				vi.mocked(createEqFunctionInsertEdits).mockReturnValue([])
 				vi.mocked(createFunctionInsertEdits).mockReturnValue([])
+				vi.mocked(createDataTypeTemplatesEdits).mockReturnValue([])
 				vi.mocked(ensureDataTypeTemplates).mockReturnValue({
 					element: mockDataTypeTemplates,
 					edit: mockDTSCreationEdit
@@ -290,13 +289,15 @@ describe('applyBayTypeSelection', () => {
 				})
 
 				vi.mocked(matchEquipment).mockReturnValue(mockMatches)
-				vi.mocked(updateBay).mockReturnValue({
+				vi.mocked(createBayUpdateEdit).mockReturnValue({
 					element: mockScdBay,
-					attributes: {}
+					attributes: {},
+					attributesNS: {}
 				})
 				vi.mocked(createEquipmentUpdateEdits).mockReturnValue([])
 				vi.mocked(createEqFunctionInsertEdits).mockReturnValue([])
 				vi.mocked(createFunctionInsertEdits).mockReturnValue([])
+				vi.mocked(createDataTypeTemplatesEdits).mockReturnValue([])
 				vi.mocked(ensureDataTypeTemplates).mockReturnValue({
 					element: mockDataTypeTemplates,
 					edit: null
@@ -309,11 +310,10 @@ describe('applyBayTypeSelection', () => {
 				expect(ssdImportStore.getFunctionTemplate).toHaveBeenCalledWith(
 					'func-template1'
 				)
-				expect(insertDataTypeTemplatesInStages).toHaveBeenCalledWith(
+				expect(createDataTypeTemplatesEdits).toHaveBeenCalledWith(
 					mockDoc,
 					mockDataTypeTemplates,
-					[...equipmentLNodes, ...functionLNodes],
-					mockEditor
+					[...equipmentLNodes, ...functionLNodes]
 				)
 			})
 		})

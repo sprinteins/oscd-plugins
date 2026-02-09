@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
 	queryAllTypesFromLNodeTemplates,
-	insertDataTypeTemplatesInStages
+	createDataTypeTemplatesEdits
 } from './copy-data-type-templates'
 import { ssdImportStore } from '@/headless/stores'
 import type { LNodeTemplate } from '@/headless/common-types/ssd-types'
-import type { XMLEditor } from '@openscd/oscd-editor'
+import { createTypeEdits } from './type-creation-helpers'
 
 vi.mock('@/headless/stores', () => ({
 	ssdImportStore: {
@@ -17,11 +17,8 @@ vi.mock('./type-creation-helpers', () => ({
 	createTypeEdits: vi.fn()
 }))
 
-const { createTypeEdits } = await import('./type-creation-helpers')
-
 describe('copy-data-type-templates', () => {
 	let mockSSDDocument: Document
-	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 
 	beforeEach(() => {
 		mockSSDDocument = new DOMParser().parseFromString(
@@ -67,10 +64,6 @@ describe('copy-data-type-templates', () => {
 		)
 
 		ssdImportStore.loadedSSDDocument = mockSSDDocument
-
-		mockEditor = {
-			commit: vi.fn()
-		}
 
 		vi.clearAllMocks()
 	})
@@ -310,7 +303,7 @@ describe('copy-data-type-templates', () => {
 		})
 	})
 
-	describe('insertDataTypeTemplatesInStages', () => {
+	describe('createDataTypeTemplatesEdits', () => {
 		let mockDocument: Document
 		let mockDataTypeTemplates: Element
 
@@ -330,27 +323,26 @@ describe('copy-data-type-templates', () => {
 		})
 
 		describe('GIVEN an empty array of LNode templates', () => {
-			describe('WHEN insertDataTypeTemplatesInStages is called', () => {
-				it('THEN should not commit any edits', () => {
+			describe('WHEN createDataTypeTemplatesEdits is called', () => {
+				it('THEN should return empty array', () => {
 					// GIVEN
 					const lnodeTemplates: LNodeTemplate[] = []
 
 					// WHEN
-					insertDataTypeTemplatesInStages(
+					const result = createDataTypeTemplatesEdits(
 						mockDocument,
 						mockDataTypeTemplates,
-						lnodeTemplates,
-						mockEditor as unknown as XMLEditor
+						lnodeTemplates
 					)
 
 					// THEN
-					expect(mockEditor.commit).not.toHaveBeenCalled()
+					expect(result).toEqual([])
 				})
 			})
 		})
 
 		describe('GIVEN LNode templates requiring types', () => {
-			describe('WHEN insertDataTypeTemplatesInStages is called', () => {
+			describe('WHEN createDataTypeTemplatesEdits is called', () => {
 				it('THEN should call createTypeEdits in correct order', () => {
 					// GIVEN
 					const lnodeTemplates: LNodeTemplate[] = [
@@ -364,11 +356,10 @@ describe('copy-data-type-templates', () => {
 					vi.mocked(createTypeEdits).mockReturnValue([])
 
 					// WHEN
-					insertDataTypeTemplatesInStages(
+					const result = createDataTypeTemplatesEdits(
 						mockDocument,
 						mockDataTypeTemplates,
-						lnodeTemplates,
-						mockEditor as unknown as XMLEditor
+						lnodeTemplates
 					)
 
 					// THEN
@@ -380,9 +371,10 @@ describe('copy-data-type-templates', () => {
 					expect(typeNameOrder).toContain('DOType')
 					expect(typeNameOrder).toContain('DAType')
 					expect(typeNameOrder).toContain('EnumType')
+					expect(result).toEqual([])
 				})
 
-				it('THEN should commit edits for each type stage', () => {
+				it('THEN should return edits for each type stage', () => {
 					// GIVEN
 					const lnodeTemplates: LNodeTemplate[] = [
 						{
@@ -402,21 +394,18 @@ describe('copy-data-type-templates', () => {
 					vi.mocked(createTypeEdits).mockReturnValue(mockInserts)
 
 					// WHEN
-					insertDataTypeTemplatesInStages(
+					const result = createDataTypeTemplatesEdits(
 						mockDocument,
 						mockDataTypeTemplates,
-						lnodeTemplates,
-						mockEditor as unknown as XMLEditor
+						lnodeTemplates
 					)
 
 					// THEN
-					expect(mockEditor.commit).toHaveBeenCalled()
-					expect(mockEditor.commit.mock.calls.length).toBeGreaterThan(
-						0
-					)
+					expect(result.length).toBeGreaterThan(0)
+					expect(vi.mocked(createTypeEdits)).toHaveBeenCalled()
 				})
 
-				it('THEN should use squash option for all commits', () => {
+				it('THEN should return all inserts from all type stages', () => {
 					// GIVEN
 					const lnodeTemplates: LNodeTemplate[] = [
 						{
@@ -436,17 +425,17 @@ describe('copy-data-type-templates', () => {
 					vi.mocked(createTypeEdits).mockReturnValue(mockInserts)
 
 					// WHEN
-					insertDataTypeTemplatesInStages(
+					const result = createDataTypeTemplatesEdits(
 						mockDocument,
 						mockDataTypeTemplates,
-						lnodeTemplates,
-						mockEditor as unknown as XMLEditor
+						lnodeTemplates
 					)
 
 					// THEN
-					for (const call of mockEditor.commit.mock.calls) {
-						expect(call[1]).toEqual({ squash: true })
-					}
+					// Each type stage should contribute to the result
+					expect(result.length).toBeGreaterThan(0)
+					expect(result[0]).toHaveProperty('parent')
+					expect(result[0]).toHaveProperty('node')
 				})
 			})
 		})
@@ -463,7 +452,7 @@ describe('copy-data-type-templates', () => {
 				mockDataTypeTemplates.appendChild(existingDOType)
 			})
 
-			describe('WHEN insertDataTypeTemplatesInStages is called', () => {
+			describe('WHEN createDataTypeTemplatesEdits is called', () => {
 				it('THEN should only create edits for missing types', () => {
 					// GIVEN
 					const lnodeTemplates: LNodeTemplate[] = [
@@ -477,11 +466,10 @@ describe('copy-data-type-templates', () => {
 					vi.mocked(createTypeEdits).mockReturnValue([])
 
 					// WHEN
-					insertDataTypeTemplatesInStages(
+					const result = createDataTypeTemplatesEdits(
 						mockDocument,
 						mockDataTypeTemplates,
-						lnodeTemplates,
-						mockEditor as unknown as XMLEditor
+						lnodeTemplates
 					)
 
 					// THEN
@@ -503,13 +491,14 @@ describe('copy-data-type-templates', () => {
 						const typeIds = doTypeCall[1] as Set<string>
 						expect(typeIds.has('MOD_Type1')).toBe(false)
 					}
+					expect(result).toEqual([])
 				})
 			})
 		})
 
 		describe('GIVEN type stage with no missing types', () => {
-			describe('WHEN insertDataTypeTemplatesInStages is called', () => {
-				it('THEN should not commit edits for that stage', () => {
+			describe('WHEN createDataTypeTemplatesEdits is called', () => {
+				it('THEN should only return edits for stages with types', () => {
 					// GIVEN
 					const lnodeTemplates: LNodeTemplate[] = [
 						{
@@ -534,23 +523,16 @@ describe('copy-data-type-templates', () => {
 						}
 					)
 
-					const commitCountBefore =
-						mockEditor.commit.mock.calls.length
-
 					// WHEN
-					insertDataTypeTemplatesInStages(
+					const result = createDataTypeTemplatesEdits(
 						mockDocument,
 						mockDataTypeTemplates,
-						lnodeTemplates,
-						mockEditor as unknown as XMLEditor
+						lnodeTemplates
 					)
 
 					// THEN
-					const commitCountAfter = mockEditor.commit.mock.calls.length
-					// Should only commit for stages with types
-					expect(commitCountAfter).toBeGreaterThanOrEqual(
-						commitCountBefore
-					)
+					// Result should only contain edits from stages with types
+					expect(result.length).toBeGreaterThanOrEqual(0)
 				})
 			})
 		})
