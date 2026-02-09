@@ -1,10 +1,11 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
+import { SvelteSet } from 'svelte/reactivity'
 
 type LNodeKey = `${string}:${string}:${string}` // lnClass:lnType:lnInst
 
 class UseAssignedLNodesStore {
-	private assignedIndex = $state<Set<LNodeKey>>(new Set())
+	private assignedIndex = new SvelteSet<LNodeKey>()
 
 	private buildKey(lnode: LNodeTemplate): LNodeKey {
 		return `${lnode.lnClass}:${lnode.lnType}:${lnode.lnInst}`
@@ -13,11 +14,11 @@ class UseAssignedLNodesStore {
 	rebuild() {
 		const doc = pluginGlobalStore.xmlDocument
 		if (!doc) {
-			this.assignedIndex = new Set()
+			this.assignedIndex.clear()
 			return
 		}
 
-		const index = new Set<LNodeKey>()
+		this.assignedIndex.clear()
 		const lDevices = doc.querySelectorAll('IED > AccessPoint > Server > LDevice')
 
 		for (const lDevice of lDevices) {
@@ -32,20 +33,16 @@ class UseAssignedLNodesStore {
 
 				if (lnClass && lnType) {
 					const key = `${lnClass}:${lnType}:${lnInst}` as LNodeKey
-					index.add(key)
+					this.assignedIndex.add(key)
 				}
 			}
 		}
-
-		this.assignedIndex = index
 	}
 
 	markAsAssigned(lNodes: LNodeTemplate[]) {
-		const newIndex = new Set(this.assignedIndex)
 		for (const lnode of lNodes) {
-			newIndex.add(this.buildKey(lnode))
+			this.assignedIndex.add(this.buildKey(lnode))
 		}
-		this.assignedIndex = newIndex
 	}
 
 	isAssigned(lnode: LNodeTemplate): boolean {
