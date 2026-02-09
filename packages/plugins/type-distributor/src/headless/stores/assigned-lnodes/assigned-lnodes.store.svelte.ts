@@ -2,13 +2,13 @@ import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
 import { SvelteSet } from 'svelte/reactivity'
 
-type LNodeKey = `${string}:${string}:${string}` // lnClass:lnType:lnInst
+type LNodeKey = `${string}:${string}:${string}:${string}` // lDeviceInst:lnClass:lnType:lnInst
 
 class UseAssignedLNodesStore {
 	private assignedIndex = new SvelteSet<LNodeKey>()
 
-	private buildKey(lnode: LNodeTemplate): LNodeKey {
-		return `${lnode.lnClass}:${lnode.lnType}:${lnode.lnInst}`
+	private buildKey(lDeviceInst: string, lnode: LNodeTemplate): LNodeKey {
+		return `${lDeviceInst}:${lnode.lnClass}:${lnode.lnType}:${lnode.lnInst}`
 	}
 
 	rebuild() {
@@ -30,21 +30,21 @@ class UseAssignedLNodesStore {
 				const lnInst = ln.getAttribute('lnInst') ?? ''
 
 				if (lnClass && lnType) {
-					const key = `${lnClass}:${lnType}:${lnInst}` as LNodeKey
+					const key = `${lDevice.getAttribute('inst')}:${lnClass}:${lnType}:${lnInst}` as LNodeKey
 					this.assignedIndex.add(key)
 				}
 			}
 		}
 	}
 
-	markAsAssigned(lNodes: LNodeTemplate[]) {
+	markAsAssigned(lDeviceInst: string, lNodes: LNodeTemplate[]) {
 		for (const lnode of lNodes) {
-			this.assignedIndex.add(this.buildKey(lnode))
+			this.assignedIndex.add(this.buildKey(lDeviceInst, lnode))
 		}
 	}
 
-	isAssigned(lnode: LNodeTemplate): boolean {
-		return this.assignedIndex.has(this.buildKey(lnode))
+	isAssigned(lDeviceInst: string, lnode: LNodeTemplate): boolean {
+		return this.assignedIndex.has(this.buildKey(lDeviceInst, lnode))
 	}
 }
 

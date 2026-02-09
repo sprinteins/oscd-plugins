@@ -3,6 +3,7 @@ import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
 import type { ConductingEquipmentTemplate, EqFunctionTemplate, LNodeTemplate } from '@/headless/common-types'
 import { dndStore, assignedLNodesStore } from '@/headless/stores'
+import { getLDeviceInst } from '@/headless/ied/elements'
 import LNode from './lnode.svelte'
 
 interface Props {
@@ -19,8 +20,14 @@ let isDragging = $derived(
 		dndStore.currentDraggedItem?.sourceFunction.uuid === eqFunction.uuid
 )
 
+const lDeviceInst = $derived.by(() =>
+    getLDeviceInst(eqFunction, equipment.uuid)
+)
+
 let assignedStatuses = $derived(
-	eqFunction.lnodes.map(lnode => assignedLNodesStore.isAssigned(lnode))
+    eqFunction.lnodes.map(lnode =>
+        assignedLNodesStore.isAssigned(lDeviceInst, lnode)
+    )
 )
 
 let allAssigned = $derived(

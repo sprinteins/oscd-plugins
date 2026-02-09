@@ -45,6 +45,15 @@ function generateLDeviceInst(
 	return functionName
 }
 
+export function getLDeviceInst(
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
+	equipmentUuid?: string
+): string {
+	const { functionName, conductingEquipmentName } =
+		extractFunctionNames(sourceFunction, equipmentUuid)
+	return generateLDeviceInst(functionName, conductingEquipmentName)
+}
+
 export function queryLDevice(
 	server: Element,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
