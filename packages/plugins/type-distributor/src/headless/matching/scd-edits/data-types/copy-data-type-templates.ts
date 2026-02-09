@@ -151,7 +151,7 @@ const TYPE_TO_COLLECTION_KEY: Record<TypeName, keyof TypeCollections> = {
 	EnumType: 'enumTypeIds'
 }
 
-export function buildDataTypeTemplatesEdits(
+export function createDataTypeTemplatesEdits(
 	doc: Document,
 	dataTypeTemplates: Element,
 	lnodeTemplates: LNodeTemplate[]

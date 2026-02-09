@@ -6,14 +6,14 @@ import {
 	equipmentMatchingStore,
 	bayStore
 } from '../stores'
-import { buildDataTypeTemplatesEdits } from './scd-edits/data-types'
+import { createDataTypeTemplatesEdits } from './scd-edits/data-types'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
 import { matchEquipment } from './matching'
 import {
+	createBayUpdateEdit,
 	createEqFunctionInsertEdits,
 	createEquipmentUpdateEdits,
-	createFunctionInsertEdits,
-	updateBay
+	createFunctionInsertEdits
 } from './scd-edits'
 import { getDocumentAndEditor } from '@/headless/utils'
 
@@ -46,7 +46,7 @@ export function applyBayTypeSelection(bayName: string): void {
 
 	const edits: (Insert | SetAttributes)[] = []
 
-	const bayEdits = updateBay(scdBay, bayType)
+	const bayEdits = createBayUpdateEdit(scdBay, bayType)
 	edits.push(bayEdits)
 
 	const equipmentEdits = createEquipmentUpdateEdits(matches)
@@ -65,7 +65,7 @@ export function applyBayTypeSelection(bayName: string): void {
 		edits.push(dtsCreationEdit)
 	}
 
-	bayStore.assigendBayType = selectedBayTypeName
+	bayStore.assignedBayType = selectedBayTypeName
 	bayStore.equipmentMatches = matches
 
 	const allLNodeTemplates: LNodeTemplate[] = []
@@ -85,11 +85,12 @@ export function applyBayTypeSelection(bayName: string): void {
 		}
 	}
 
-	edits.push(...buildDataTypeTemplatesEdits(
+	const dataTypeTemplateEdits = createDataTypeTemplatesEdits(
 		doc,
 		dataTypeTemplates,
 		allLNodeTemplates
-	))
+	)
+	edits.push(...dataTypeTemplateEdits)
 
 	editor.commit(edits, {
 		title: `Assign BayType "${bayType.name}" to Bay "${bayName}"`

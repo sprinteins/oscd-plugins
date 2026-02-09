@@ -1,1 +1,1 @@
-export { buildDataTypeTemplatesEdits } from './copy-data-type-templates'
+export { createDataTypeTemplatesEdits } from './copy-data-type-templates'
