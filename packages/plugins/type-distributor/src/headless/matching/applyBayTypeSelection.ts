@@ -12,7 +12,7 @@ import { matchEquipment } from './matching'
 import {
 	creatEditForBayUpdate,
 	createEqFunctionInsertEdits,
-	createEquipmentUpdateEdits,
+	buildEditsForEquipmentUpdates,
 	createFunctionInsertEdits
 } from './scd-edits'
 import { getDocumentAndEditor } from '@/headless/utils'
@@ -49,7 +49,7 @@ export function applyBayTypeSelection(bayName: string): void {
 	const bayEdits = creatEditForBayUpdate(scdBay, bayType)
 	edits.push(bayEdits)
 
-	const equipmentEdits = createEquipmentUpdateEdits(matches)
+	const equipmentEdits = buildEditsForEquipmentUpdates(matches)
 	edits.push(...equipmentEdits)
 
 	const eqFunctionEdits = createEqFunctionInsertEdits(doc, matches)

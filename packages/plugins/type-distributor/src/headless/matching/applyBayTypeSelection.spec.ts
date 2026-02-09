@@ -7,9 +7,9 @@ import { getDocumentAndEditor } from '@/headless/utils'
 import { matchEquipment } from './matching'
 import {
 	creatEditForBayUpdate,
-	createEquipmentUpdateEdits,
 	createEqFunctionInsertEdits,
 	createFunctionInsertEdits,
+	buildEditsForEquipmentUpdates,
 } from './scd-edits'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
 import { createDataTypeTemplatesEdits } from './scd-edits/data-types'
@@ -31,7 +31,7 @@ vi.mock('./matching', () => ({
 
 vi.mock('./scd-edits', () => ({
 	creatEditForBayUpdate: vi.fn(),
-	createEquipmentUpdateEdits: vi.fn(),
+	buildEditsForEquipmentUpdates: vi.fn(),
 	createEqFunctionInsertEdits: vi.fn(),
 	createFunctionInsertEdits: vi.fn()
 }))
@@ -192,7 +192,7 @@ describe('applyBayTypeSelection', () => {
 					attributes: {},
 					attributesNS: {}
 				})
-				vi.mocked(createEquipmentUpdateEdits).mockReturnValue([])
+				vi.mocked(buildEditsForEquipmentUpdates).mockReturnValue([])
 				vi.mocked(createEqFunctionInsertEdits).mockReturnValue([])
 				vi.mocked(createFunctionInsertEdits).mockReturnValue([])
 				vi.mocked(createDataTypeTemplatesEdits).mockReturnValue([])
@@ -294,7 +294,7 @@ describe('applyBayTypeSelection', () => {
 					attributes: {},
 					attributesNS: {}
 				})
-				vi.mocked(createEquipmentUpdateEdits).mockReturnValue([])
+				vi.mocked(buildEditsForEquipmentUpdates).mockReturnValue([])
 				vi.mocked(createEqFunctionInsertEdits).mockReturnValue([])
 				vi.mocked(createFunctionInsertEdits).mockReturnValue([])
 				vi.mocked(createDataTypeTemplatesEdits).mockReturnValue([])
