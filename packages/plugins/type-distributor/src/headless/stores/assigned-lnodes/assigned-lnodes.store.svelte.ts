@@ -22,9 +22,7 @@ class UseAssignedLNodesStore {
 		const lDevices = doc.querySelectorAll('IED > AccessPoint > Server > LDevice')
 
 		for (const lDevice of lDevices) {
-			const lnElements = Array.from(lDevice.children).filter(
-				(child) => child.localName === 'LN' || child.localName === 'LN0'
-			)
+			const lnElements = lDevice.querySelectorAll(':scope > LN, :scope > LN0')
 
 			for (const ln of lnElements) {
 				const lnClass = ln.getAttribute('lnClass')
