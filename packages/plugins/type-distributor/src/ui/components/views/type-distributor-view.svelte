@@ -43,12 +43,6 @@ const sIedItems = $derived.by(() => {
 	return querySIEDs(bayStore.selectedBay ?? '')
 })
 
-$effect(() => {
-	if (bayTypesStore.selectedBayType) {
-		assignedLNodesStore.rebuild()
-	}
-})
-
 let bayTypeError = $state<string | null>(null)
 
 const shouldShowBayTypeDetails = $derived.by(() => {
@@ -85,7 +79,8 @@ function handleBayTypeChange() {
 
 		if (validation.isValid && !validation.requiresManualMatching) {
 			bayStore.pendingBayTypeApply = bayTypesStore.selectedBayType
-		}
+		}		
+		assignedLNodesStore.rebuild()
 	} catch (error) {
 		console.error('[handleBayTypeChange] Error:', error)
 	}
