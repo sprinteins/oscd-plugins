@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { BayType } from '@/headless/common-types'
 import type { SetAttributes } from '@openscd/oscd-api'
 
-export function creatEditForBayUpdate(
+export function buildEditForBayUpdate(
 	scdBay: Element,
 	bayType: BayType
 ): SetAttributes {

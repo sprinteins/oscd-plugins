@@ -6,7 +6,7 @@ import type { XMLEditor } from '@openscd/oscd-editor'
 import { getDocumentAndEditor } from '@/headless/utils'
 import { matchEquipment } from './matching'
 import {
-	creatEditForBayUpdate,
+	buildEditForBayUpdate,
 	createEqFunctionInsertEdits,
 	createFunctionInsertEdits,
 	buildEditsForEquipmentUpdates,
@@ -30,7 +30,7 @@ vi.mock('./matching', () => ({
 }))
 
 vi.mock('./scd-edits', () => ({
-	creatEditForBayUpdate: vi.fn(),
+	buildEditForBayUpdate: vi.fn(),
 	buildEditsForEquipmentUpdates: vi.fn(),
 	createEqFunctionInsertEdits: vi.fn(),
 	createFunctionInsertEdits: vi.fn()
@@ -187,7 +187,7 @@ describe('applyBayTypeSelection', () => {
 				}
 
 				vi.mocked(matchEquipment).mockReturnValue([])
-				vi.mocked(creatEditForBayUpdate).mockReturnValue({
+				vi.mocked(buildEditForBayUpdate).mockReturnValue({
 					element: mockScdBay,
 					attributes: {},
 					attributesNS: {}
@@ -289,7 +289,7 @@ describe('applyBayTypeSelection', () => {
 				})
 
 				vi.mocked(matchEquipment).mockReturnValue(mockMatches)
-				vi.mocked(creatEditForBayUpdate).mockReturnValue({
+				vi.mocked(buildEditForBayUpdate).mockReturnValue({
 					element: mockScdBay,
 					attributes: {},
 					attributesNS: {}
