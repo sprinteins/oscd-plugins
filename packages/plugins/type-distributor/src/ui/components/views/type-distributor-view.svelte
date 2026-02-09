@@ -7,7 +7,8 @@ import {
 import {
 	bayStore,
 	bayTypesStore,
-	equipmentMatchingStore
+	equipmentMatchingStore,
+	assignedLNodesStore
 } from '@/headless/stores'
 import type { BayType } from '@/headless/common-types'
 import {
@@ -40,6 +41,12 @@ const conductingEquipmentTemplates = $derived(
 const sIedItems = $derived.by(() => {
 	pluginGlobalStore.editCount
 	return querySIEDs(bayStore.selectedBay ?? '')
+})
+
+$effect(() => {
+	if (bayTypesStore.selectedBayType) {
+		assignedLNodesStore.rebuild()
+	}
 })
 
 let bayTypeError = $state<string | null>(null)
