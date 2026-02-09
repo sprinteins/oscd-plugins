@@ -1,17 +1,21 @@
 <script lang="ts">
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
-import type { ConductingEquipmentTemplate, EqFunctionTemplate, LNodeTemplate } from '@/headless/common-types'
+import type {
+	ConductingEquipmentTemplate,
+	EqFunctionTemplate,
+	LNodeTemplate
+} from '@/headless/common-types'
 import { dndStore, assignedLNodesStore } from '@/headless/stores'
-import { getLDeviceInst } from '@/headless/ied/elements'
 import LNode from './lnode.svelte'
 
 interface Props {
 	eqFunction: EqFunctionTemplate
 	equipment: ConductingEquipmentTemplate
+	bayTypeInstanceUuid?: string
 }
 
-const { eqFunction, equipment }: Props = $props()
+const { eqFunction, equipment, bayTypeInstanceUuid }: Props = $props()
 
 let isOpen = $state(false)
 let isDragging = $derived(
@@ -20,18 +24,16 @@ let isDragging = $derived(
 		dndStore.currentDraggedItem?.sourceFunction.uuid === eqFunction.uuid
 )
 
-const lDeviceInst = $derived.by(() =>
-    getLDeviceInst(eqFunction, equipment.uuid)
-)
+const parentUuid = $derived(bayTypeInstanceUuid || eqFunction.uuid)
 
 let assignedStatuses = $derived(
-    eqFunction.lnodes.map(lnode =>
-        assignedLNodesStore.isAssigned(lDeviceInst, lnode)
-    )
+	eqFunction.lnodes.map((lnode) =>
+		assignedLNodesStore.isAssigned(parentUuid, lnode)
+	)
 )
 
 let allAssigned = $derived(
-	eqFunction.lnodes.length > 0 && assignedStatuses.every(status => status)
+	eqFunction.lnodes.length > 0 && assignedStatuses.every((status) => status)
 )
 
 function handleDragStart(event: DragEvent) {
@@ -39,7 +41,8 @@ function handleDragStart(event: DragEvent) {
 		type: 'equipmentFunction',
 		sourceFunction: eqFunction,
 		lNodes: eqFunction.lnodes || [],
-		equipmentUuid: equipment.uuid
+		equipmentUuid: bayTypeInstanceUuid,
+		bayTypeInstanceUuid: bayTypeInstanceUuid
 	})
 }
 
@@ -52,7 +55,8 @@ function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
 		type: 'lNode',
 		sourceFunction: eqFunction,
 		lNodes: [lnode],
-		equipmentUuid: equipment.uuid
+		equipmentUuid: bayTypeInstanceUuid,
+		bayTypeInstanceUuid: bayTypeInstanceUuid
 	})
 }
 
@@ -68,12 +72,18 @@ function handleLNodeDragEnd() {
         draggable={!allAssigned}
         ondragstart={allAssigned ? undefined : handleDragStart}
         ondragend={handleDragEnd}
-        style:cursor={allAssigned ? "not-allowed" : (isDragging ? "grabbing" : "grab")}
+        style:cursor={allAssigned
+            ? "not-allowed"
+            : isDragging
+              ? "grabbing"
+              : "grab"}
     >
         <Card.Root
             class="hover:bg-gray-50 transition-opacity {isDragging
                 ? 'opacity-50'
-                : allAssigned ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}"
+                : allAssigned
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'cursor-pointer'}"
         >
             <Card.Content class="p-2">
                 <div class="flex items-center gap-2">
@@ -82,7 +92,11 @@ function handleLNodeDragEnd() {
                             ? 'rotate-90'
                             : ''}"
                     />
-                    <span class="text-sm font-medium text-left {allAssigned ? 'text-gray-400' : ''}">
+                    <span
+                        class="text-sm font-medium text-left {allAssigned
+                            ? 'text-gray-400'
+                            : ''}"
+                    >
                         {eqFunction.name} ({equipment.name})
                     </span>
                 </div>

@@ -41,8 +41,10 @@ function queryFunctionElements(
 	equipmentUuid?: string
 ): Element[] {
 	if (equipmentUuid) {
+		// equipmentUuid represents the BayType equipment INSTANCE UUID
+		// Look up the match using the instance UUID
 		const match = bayStore.equipmentMatches.find(
-			(m) => m.templateEquipment.uuid === equipmentUuid
+			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
 		if (!match) return []
 

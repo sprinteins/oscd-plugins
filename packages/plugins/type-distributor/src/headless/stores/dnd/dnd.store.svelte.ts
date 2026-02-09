@@ -12,13 +12,13 @@ import {
 	commitEdits
 } from './drop-handler'
 import { assignedLNodesStore } from '../assigned-lnodes'
-import { getLDeviceInst } from '@/headless/ied/elements'
 
 type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'
 	lNodes: LNodeTemplate[]
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentUuid?: string
+	bayTypeInstanceUuid?: string
 }
 
 function validateDraggedItem(
@@ -95,11 +95,9 @@ class UseDndStore {
 				)
 
 				commitEdits(allEdits, title, didApplyBayType)
-				const lDeviceInst = getLDeviceInst(
-					functionFromSSD,
-					this.draggedItem.equipmentUuid
-				)
-				assignedLNodesStore.markAsAssigned(lDeviceInst, lNodes)
+				const parentUuid =
+					this.draggedItem.bayTypeInstanceUuid || functionFromSSD.uuid
+				assignedLNodesStore.markAsAssigned(parentUuid, lNodes)
 			}
 		} catch (error) {
 			console.error('[DnD] Error creating LNodes:', error)

@@ -20,8 +20,10 @@ function extractFunctionNames(
 	}
 
 	if (equipmentUuid) {
+		// equipmentUuid represents the BayType equipment INSTANCE UUID
+		// Look up the match using the instance UUID to get the correct SCD equipment
 		const match = bayStore.equipmentMatches.find(
-			(m) => m.templateEquipment.uuid === equipmentUuid
+			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
 		if (match) {
 			const scdEquipmentName =

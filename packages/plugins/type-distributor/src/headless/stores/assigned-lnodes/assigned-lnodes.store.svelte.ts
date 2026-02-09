@@ -1,14 +1,15 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
 import { SvelteSet } from 'svelte/reactivity'
+import { bayTypesStore } from '../bay-types.store.svelte'
 
-type LNodeKey = `${string}:${string}:${string}:${string}` // lDeviceInst:lnClass:lnType:lnInst
+type LNodeKey = `${string}:${string}:${string}:${string}` // parentUuid:lnClass:lnType:lnInst
 
 class UseAssignedLNodesStore {
 	private assignedIndex = new SvelteSet<LNodeKey>()
 
-	private buildKey(lDeviceInst: string, lnode: LNodeTemplate): LNodeKey {
-		return `${lDeviceInst}:${lnode.lnClass}:${lnode.lnType}:${lnode.lnInst}`
+	private buildKey(parentUuid: string, lnode: LNodeTemplate): LNodeKey {
+		return `${parentUuid}:${lnode.lnClass}:${lnode.lnType}:${lnode.lnInst}`
 	}
 
 	rebuild() {
@@ -19,32 +20,99 @@ class UseAssignedLNodesStore {
 		}
 
 		this.assignedIndex.clear()
-		const lDevices = doc.querySelectorAll('IED > AccessPoint > Server > LDevice')
 
-		for (const lDevice of lDevices) {
-			const lnElements = lDevice.querySelectorAll(':scope > LN, :scope > LN0')
+		const functions = doc.querySelectorAll('Bay > Function')
+		for (const func of functions) {
+			const functionName = func.getAttribute('name')
 
-			for (const ln of lnElements) {
-				const lnClass = ln.getAttribute('lnClass')
-				const lnType = ln.getAttribute('lnType')
-				const lnInst = ln.getAttribute('lnInst') ?? ''
+			const parentUuid = func.getAttribute('templateUuid')
+			if (!parentUuid) {
+				console.warn(
+					`[AssignedLNodes] Function "${functionName}" has no templateUuid, skipping`
+				)
+				continue
+			}
+
+			const lnodes = func.querySelectorAll('LNode[iedName]')
+			for (const lnode of lnodes) {
+				const lnClass = lnode.getAttribute('lnClass')
+				const lnType = lnode.getAttribute('lnType')
+				const lnInst = lnode.getAttribute('lnInst')
 
 				if (lnClass && lnType) {
-					const key = `${lDevice.getAttribute('inst')}:${lnClass}:${lnType}:${lnInst}` as LNodeKey
+					const key =
+						`${parentUuid}:${lnClass}:${lnType}:${lnInst}` as LNodeKey
+					this.assignedIndex.add(key)
+				}
+			}
+		}
+
+		const eqFunctions = doc.querySelectorAll(
+			'Bay ConductingEquipment EqFunction'
+		)
+		for (const eqFunc of eqFunctions) {
+			const lnodes = eqFunc.querySelectorAll('LNode[iedName]')
+			if (lnodes.length === 0) continue
+
+			const equipment = eqFunc.parentElement
+			if (!equipment || equipment.tagName !== 'ConductingEquipment')
+				continue
+
+			const equipmentName = equipment.getAttribute('name')
+			const equipmentInstanceUuid = equipment.getAttribute('templateUuid')
+			const eqFuncName = eqFunc.getAttribute('name')
+
+			if (!equipmentInstanceUuid || !eqFuncName) {
+				console.warn(
+					`[AssignedLNodes] EqFunction "${eqFuncName}" in Equipment "${equipmentName}" missing templateUuid or name`
+				)
+				continue
+			}
+
+			let parentUuid: string | null = null
+
+			for (const bayType of bayTypesStore.bayTypes) {
+				const eqInstance = bayType.conductingEquipments.find(
+					(ce) => ce.uuid === equipmentInstanceUuid
+				)
+				if (eqInstance) {
+					parentUuid = equipmentInstanceUuid
+					break
+				}
+			}
+
+			if (!parentUuid) {
+				console.warn(
+					`[AssignedLNodes] Could not find BayType instance for equipment UUID: ${equipmentInstanceUuid}`
+				)
+				continue
+			}
+
+			for (const lnode of lnodes) {
+				const lnClass = lnode.getAttribute('lnClass')
+				const lnType = lnode.getAttribute('lnType')
+				const lnInst = lnode.getAttribute('lnInst')
+
+				if (lnClass && lnType) {
+					const key =
+						`${parentUuid}:${lnClass}:${lnType}:${lnInst}` as LNodeKey
 					this.assignedIndex.add(key)
 				}
 			}
 		}
 	}
 
-	markAsAssigned(lDeviceInst: string, lNodes: LNodeTemplate[]) {
+	markAsAssigned(parentUuid: string, lNodes: LNodeTemplate[]) {
 		for (const lnode of lNodes) {
-			this.assignedIndex.add(this.buildKey(lDeviceInst, lnode))
+			const key = this.buildKey(parentUuid, lnode)
+			this.assignedIndex.add(key)
 		}
 	}
 
-	isAssigned(lDeviceInst: string, lnode: LNodeTemplate): boolean {
-		return this.assignedIndex.has(this.buildKey(lDeviceInst, lnode))
+	isAssigned(parentUuid: string, lnode: LNodeTemplate): boolean {
+		const key = this.buildKey(parentUuid, lnode)
+		const assigned = this.assignedIndex.has(key)
+		return assigned
 	}
 }
 

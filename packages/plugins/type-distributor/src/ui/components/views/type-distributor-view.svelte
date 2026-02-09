@@ -79,7 +79,7 @@ function handleBayTypeChange() {
 
 		if (validation.isValid && !validation.requiresManualMatching) {
 			bayStore.pendingBayTypeApply = bayTypesStore.selectedBayType
-		}		
+		}
 		assignedLNodesStore.rebuild()
 	} catch (error) {
 		console.error('[handleBayTypeChange] Error:', error)
@@ -121,6 +121,7 @@ function handleBayTypeChange() {
 				<BayTypeDetails
 					{functionTemplates}
 					{conductingEquipmentTemplates}
+					{bayTypeWithTemplates}
 				/>
 			{:else if !bayTypesStore.selectedBayType}
 				<p class="text-gray-500 text-sm">
