@@ -10,7 +10,7 @@ import { createDataTypeTemplatesEdits } from './scd-edits/data-types'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
 import { matchEquipment } from './matching'
 import {
-	createBayUpdateEdit,
+	creatEditForBayUpdate,
 	createEqFunctionInsertEdits,
 	createEquipmentUpdateEdits,
 	createFunctionInsertEdits
@@ -46,7 +46,7 @@ export function applyBayTypeSelection(bayName: string): void {
 
 	const edits: (Insert | SetAttributes)[] = []
 
-	const bayEdits = createBayUpdateEdit(scdBay, bayType)
+	const bayEdits = creatEditForBayUpdate(scdBay, bayType)
 	edits.push(bayEdits)
 
 	const equipmentEdits = createEquipmentUpdateEdits(matches)
