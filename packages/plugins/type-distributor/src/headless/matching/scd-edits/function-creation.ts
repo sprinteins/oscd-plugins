@@ -5,7 +5,7 @@ import { ssdImportStore } from '../../stores/ssd-import.store.svelte'
 import { createElement } from '@oscd-plugins/core'
 import { createLNodeElement } from './lnode-creation'
 
-export function createFunctionInsertEdits(
+export function buildInsertEditsForFunction(
 	doc: Document,
 	bayType: BayType,
 	scdBay: Element

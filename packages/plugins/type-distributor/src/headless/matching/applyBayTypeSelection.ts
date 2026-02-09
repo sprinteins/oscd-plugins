@@ -13,7 +13,7 @@ import {
 	buildEditForBayUpdate,
 	buildInsertEditsForEqFunction,
 	buildEditsForEquipmentUpdates,
-	createFunctionInsertEdits
+	buildInsertEditsForFunction
 } from './scd-edits'
 import { getDocumentAndEditor } from '@/headless/utils'
 
@@ -55,7 +55,7 @@ export function applyBayTypeSelection(bayName: string): void {
 	const eqFunctionEdits = buildInsertEditsForEqFunction(doc, matches)
 	edits.push(...eqFunctionEdits)
 
-	const functionEdits = createFunctionInsertEdits(doc, bayType, scdBay)
+	const functionEdits = buildInsertEditsForFunction(doc, bayType, scdBay)
 	edits.push(...functionEdits)
 
 	const { element: dataTypeTemplates, edit: dtsCreationEdit } =
