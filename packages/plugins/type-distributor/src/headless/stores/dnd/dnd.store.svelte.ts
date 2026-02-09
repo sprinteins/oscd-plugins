@@ -109,6 +109,20 @@ class UseDndStore {
 	get currentDraggedItem() {
 		return this.draggedItem
 	}
+
+	isDraggingItem(
+		type: DraggedItem['type'],
+		sourceFunctionUuid: string,
+		bayTypeInstanceUuid?: string
+	): boolean {
+		if (!this.isDragging || !this.draggedItem) return false
+
+		return (
+			this.draggedItem.type === type &&
+			this.draggedItem.sourceFunction.uuid === sourceFunctionUuid &&
+			this.draggedItem.bayTypeInstanceUuid === bayTypeInstanceUuid
+		)
+	}
 }
 
 export const dndStore = new UseDndStore()

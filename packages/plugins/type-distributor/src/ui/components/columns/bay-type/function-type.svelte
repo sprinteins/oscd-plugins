@@ -14,9 +14,7 @@ const { func, bayTypeInstanceUuid }: Props = $props()
 
 let isOpen = $state(false)
 let isDragging = $derived(
-	dndStore.isDragging &&
-		dndStore.currentDraggedItem?.type === 'functionTemplate' &&
-		dndStore.currentDraggedItem?.sourceFunction.uuid === func.uuid
+	dndStore.isDraggingItem('functionTemplate', func.uuid, bayTypeInstanceUuid)
 )
 
 const parentUuid = $derived(bayTypeInstanceUuid || func.uuid)
