@@ -3,6 +3,7 @@ import { assignedLNodesStore } from '@/headless/stores/assigned-lnodes'
 import { dndStore } from '@/headless/stores/dnd'
 import type { LNodeTemplate, FunctionTemplate } from '@/headless/common-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
+import { getLDeviceInst } from '@/headless/ied/elements'
 
 // Mock modules
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -60,6 +61,8 @@ describe('Integration: Assigned LNodes Flow', () => {
 	let lnode2: LNodeTemplate
 	let lnode3: LNodeTemplate
 	let functionTemplate: FunctionTemplate
+	let functionLDeviceInst: string
+	let existingLDeviceInst: string
 
 	beforeEach(() => {
 		// Create SCD with one IED already having an LNode
@@ -121,6 +124,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 			lnodes: [lnode1, lnode2, lnode3]
 		}
 
+		functionLDeviceInst = getLDeviceInst(functionTemplate)
+		existingLDeviceInst = 'LD1'
+
 		vi.clearAllMocks()
 	})
 
@@ -134,11 +140,17 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// lnode1 already exists in ExistingIED
-			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
+			).toBe(true)
 
 			// lnode2 and lnode3 do not exist yet
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(lnode3)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
+			).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode3)
+			).toBe(false)
 		})
 	})
 
@@ -155,9 +167,15 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// Initial state - only lnode1 is assigned
-			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(lnode3)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
+			).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode3)
+			).toBe(false)
 
 			// Start drag with unassigned LNodes
 			dndStore.handleDragStart({
@@ -170,19 +188,29 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
 			// After drop, lnode2 and lnode3 should be marked as assigned
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(lnode3)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode3)
+			).toBe(true)
 
 			// lnode1 should still be assigned
-			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
+			).toBe(true)
 		})
 
 		it('should handle mixed assigned/unassigned LNodes in drag', () => {
 			assignedLNodesStore.rebuild()
 
 			// lnode1 is already assigned
-			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
+			).toBe(false)
 
 			// Drag all LNodes including the already assigned one
 			dndStore.handleDragStart({
@@ -194,8 +222,12 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
 			// Both should be marked as assigned
-			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
+			).toBe(true)
 		})
 	})
 
@@ -204,24 +236,32 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// Mark lnode2 as assigned manually
-			assignedLNodesStore.markAsAssigned([lnode2])
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(true)
+			assignedLNodesStore.markAsAssigned(functionLDeviceInst, [lnode2])
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
+			).toBe(true)
 
 			// Rebuild from document (which doesn't have lnode2)
 			assignedLNodesStore.rebuild()
 
 			// lnode2 should no longer be marked as assigned
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
+			).toBe(false)
 
 			// lnode1 (which exists in document) should still be assigned
-			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
+			).toBe(true)
 		})
 
 		it('should sync state after document modifications', () => {
 			assignedLNodesStore.rebuild()
 
 			// Initial state
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode2)
+			).toBe(false)
 
 			// Manually add lnode2 to document
 			const newIED = mockDocument.querySelector('IED[name="NewIED"]')
@@ -241,7 +281,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// Now lnode2 should be marked as assigned
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode2)
+			).toBe(true)
 		})
 	})
 
@@ -272,7 +314,10 @@ describe('Integration: Assigned LNodes Flow', () => {
 		it('should handle drag end without drop', () => {
 			assignedLNodesStore.rebuild()
 
-			const initialState = assignedLNodesStore.isAssigned(lnode2)
+			const initialState = assignedLNodesStore.isAssigned(
+				functionLDeviceInst,
+				lnode2
+			)
 
 			dndStore.handleDragStart({
 				type: 'lNode',
@@ -284,7 +329,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDragEnd()
 
 			// State should remain unchanged
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(initialState)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
+			).toBe(initialState)
 		})
 
 		it('should handle empty document', () => {
@@ -296,9 +343,15 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
 
-			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(lnode3)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
+			).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode2)
+			).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode3)
+			).toBe(false)
 		})
 
 		it('should handle null document', () => {
@@ -306,7 +359,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
 
-			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
+			).toBe(false)
 		})
 	})
 
@@ -324,9 +379,15 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// Both lnode1 and lnode2 should be assigned now
-			expect(assignedLNodesStore.isAssigned(lnode1)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(lnode2)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(lnode3)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode1)
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(existingLDeviceInst, lnode2)
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(functionLDeviceInst, lnode3)
+			).toBe(false)
 		})
 	})
 })

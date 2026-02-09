@@ -13,6 +13,8 @@ const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
 describe('assignedLNodesStore', () => {
 	let mockDocument: Document
+	const ld1 = 'LD1'
+	const ld2 = 'LD2'
 
 	beforeEach(() => {
 		// Create a mock SCD document with some existing LNodes
@@ -58,7 +60,7 @@ describe('assignedLNodesStore', () => {
 
 			// Check that existing LNodes are marked as assigned
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -66,7 +68,7 @@ describe('assignedLNodesStore', () => {
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'CSWI',
 					lnType: 'TestCSWI',
 					lnInst: '1'
@@ -74,7 +76,7 @@ describe('assignedLNodesStore', () => {
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld2, {
 					lnClass: 'MMXU',
 					lnType: 'TestMMXU',
 					lnInst: '1'
@@ -82,7 +84,7 @@ describe('assignedLNodesStore', () => {
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'PTRC',
 					lnType: 'TestPTRC',
 					lnInst: '1'
@@ -94,7 +96,7 @@ describe('assignedLNodesStore', () => {
 			assignedLNodesStore.rebuild()
 
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'PDIS',
 					lnType: 'TestPDIS',
 					lnInst: '1'
@@ -102,7 +104,7 @@ describe('assignedLNodesStore', () => {
 			).toBe(false)
 
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'DifferentType',
 					lnInst: '1'
@@ -110,7 +112,7 @@ describe('assignedLNodesStore', () => {
 			).toBe(false)
 
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '2'
@@ -123,7 +125,7 @@ describe('assignedLNodesStore', () => {
 
 			// Verify some LNodes are assigned
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -136,7 +138,7 @@ describe('assignedLNodesStore', () => {
 
 			// Verify index is cleared
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -154,7 +156,7 @@ describe('assignedLNodesStore', () => {
 			assignedLNodesStore.rebuild()
 
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -186,7 +188,7 @@ describe('assignedLNodesStore', () => {
 
 			// LNodes with missing attributes should not be indexed
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -205,11 +207,11 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(newLNode)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(false)
 
-			assignedLNodesStore.markAsAssigned([newLNode])
+			assignedLNodesStore.markAsAssigned(ld1, [newLNode])
 
-			expect(assignedLNodesStore.isAssigned(newLNode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(true)
 		})
 
 		it('should add multiple LNodes to index', () => {
@@ -222,13 +224,13 @@ describe('assignedLNodesStore', () => {
 			]
 
 			for (const lnode of newLNodes) {
-				expect(assignedLNodesStore.isAssigned(lnode)).toBe(false)
+				expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(false)
 			}
 
-			assignedLNodesStore.markAsAssigned(newLNodes)
+			assignedLNodesStore.markAsAssigned(ld1, newLNodes)
 
 			for (const lnode of newLNodes) {
-				expect(assignedLNodesStore.isAssigned(lnode)).toBe(true)
+				expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(true)
 			}
 		})
 
@@ -247,14 +249,14 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(existingLNode)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(newLNode)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(ld1, existingLNode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(false)
 
-			assignedLNodesStore.markAsAssigned([newLNode])
+			assignedLNodesStore.markAsAssigned(ld1, [newLNode])
 
 			// Both should be assigned
-			expect(assignedLNodesStore.isAssigned(existingLNode)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(newLNode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(ld1, existingLNode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(true)
 		})
 
 		it('should handle marking already assigned LNodes', () => {
@@ -266,13 +268,13 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(lnode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(true)
 
 			// Should not throw error when marking already assigned LNode
-			expect(() => assignedLNodesStore.markAsAssigned([lnode])).not.toThrow()
+			expect(() => assignedLNodesStore.markAsAssigned(ld1, [lnode])).not.toThrow()
 
 			// Should still be assigned
-			expect(assignedLNodesStore.isAssigned(lnode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(true)
 		})
 
 		it('should handle empty array', () => {
@@ -284,12 +286,12 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(lnode)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(false)
 
-			assignedLNodesStore.markAsAssigned([])
+			assignedLNodesStore.markAsAssigned(ld1, [])
 
 			// Should still not be assigned
-			expect(assignedLNodesStore.isAssigned(lnode)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(ld1, lnode)).toBe(false)
 		})
 	})
 
@@ -300,7 +302,7 @@ describe('assignedLNodesStore', () => {
 
 		it('should return true for assigned LNode', () => {
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -310,7 +312,7 @@ describe('assignedLNodesStore', () => {
 
 		it('should return false for non-assigned LNode', () => {
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'PDIS',
 					lnType: 'TestPDIS',
 					lnInst: '1'
@@ -320,7 +322,7 @@ describe('assignedLNodesStore', () => {
 
 		it('should differentiate between LNodes with same lnClass but different lnType', () => {
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -328,7 +330,7 @@ describe('assignedLNodesStore', () => {
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'DifferentXCBR',
 					lnInst: '1'
@@ -338,7 +340,7 @@ describe('assignedLNodesStore', () => {
 
 		it('should differentiate between LNodes with same lnClass and lnType but different lnInst', () => {
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
@@ -346,7 +348,7 @@ describe('assignedLNodesStore', () => {
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned({
+				assignedLNodesStore.isAssigned(ld1, {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '2'
@@ -364,7 +366,9 @@ describe('assignedLNodesStore', () => {
 				lDeviceName: 'LD1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(lnodeWithOptionals)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned(ld1, lnodeWithOptionals)
+			).toBe(true)
 		})
 	})
 
@@ -378,12 +382,12 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(existingLNode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(ld1, existingLNode)).toBe(true)
 
 			// Rebuild should still show it as assigned
 			assignedLNodesStore.rebuild()
 
-			expect(assignedLNodesStore.isAssigned(existingLNode)).toBe(true)
+			expect(assignedLNodesStore.isAssigned(ld1, existingLNode)).toBe(true)
 		})
 
 		it('should remove manually marked LNodes after rebuild if they do not exist in document', () => {
@@ -395,14 +399,14 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			assignedLNodesStore.markAsAssigned([newLNode])
-			expect(assignedLNodesStore.isAssigned(newLNode)).toBe(true)
+			assignedLNodesStore.markAsAssigned(ld1, [newLNode])
+			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(true)
 
 			// Rebuild from document (which doesn't have this LNode)
 			assignedLNodesStore.rebuild()
 
 			// Should no longer be marked as assigned
-			expect(assignedLNodesStore.isAssigned(newLNode)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(ld1, newLNode)).toBe(false)
 		})
 	})
 })
