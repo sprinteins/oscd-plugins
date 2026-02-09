@@ -7,10 +7,10 @@ import {
 	getBayTypeApplicationState,
 	applyBayTypeIfNeeded,
 	createIedEdits,
-	createBayEdits,
 	generateCommitTitle,
 	commitEdits
 } from './drop-handler'
+import { createBayLNodeEdits } from '@/headless/ied'
 
 type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'
@@ -75,12 +75,12 @@ class UseDndStore {
 
 			if (shouldUpdateBay) {
 				allEdits.push(
-					...createBayEdits(
+					...createBayLNodeEdits({
 						lNodes,
-						targetSIedName,
-						functionFromSSD,
-						this.draggedItem.equipmentUuid
-					)
+						iedName: targetSIedName,
+						sourceFunction: functionFromSSD,
+						equipmentUuid: this.draggedItem.equipmentUuid
+					})
 				)
 			}
 

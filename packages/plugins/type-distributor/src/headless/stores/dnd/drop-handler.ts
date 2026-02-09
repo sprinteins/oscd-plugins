@@ -5,13 +5,11 @@ import type {
 	FunctionTemplate
 } from '@/headless/common-types'
 import { applyBayTypeSelection } from '@/headless/matching'
-import { createMultipleLNodesInAccessPoint } from '@/headless/ied/create-lNode-in-access-point'
-import { updateBayLNodeIedNames } from '@/headless/ied/update-bay-lnodes'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { bayTypesStore } from '../bay-types.store.svelte'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
+import { createMultipleLNodesInAccessPoint } from '@/headless/ied'
 
 type BayTypeApplicationState = {
 	hasAssignedBayType: boolean
@@ -81,25 +79,6 @@ export function createIedEdits(
 		sourceFunction,
 		lNodes,
 		accessPoint: targetAccessPoint,
-		equipmentUuid
-	})
-}
-
-export function createBayEdits(
-	lNodes: LNodeTemplate[],
-	targetSIedName: string,
-	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	equipmentUuid?: string
-): (Insert | SetAttributes)[] {
-	if (!bayStore.scdBay) {
-		return []
-	}
-
-	return updateBayLNodeIedNames({
-		scdBay: bayStore.scdBay,
-		lNodes,
-		iedName: targetSIedName,
-		sourceFunction,
 		equipmentUuid
 	})
 }
