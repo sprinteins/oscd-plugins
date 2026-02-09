@@ -1,4 +1,5 @@
 import type {
+	BayTypeWithTemplates,
 	ConductingEquipmentTemplate,
 	ConductingEquipmentType,
 	FunctionTemplate,
@@ -43,7 +44,7 @@ class UseBayTypesStore {
 	}
 
 	// Get full bay type details with resolved templates
-	getBayTypeWithTemplates(bayUuid: string) {
+	getBayTypeWithTemplates(bayUuid: string): BayTypeWithTemplates | null {
 		const bayType = this.bayTypes.find((b) => b.uuid === bayUuid)
 		if (!bayType) return null
 

@@ -43,6 +43,11 @@ const sIedItems = $derived.by(() => {
 	return querySIEDs(bayStore.selectedBay ?? '')
 })
 
+$effect(() => {
+	pluginGlobalStore.editCount
+	assignedLNodesStore.rebuild()
+})
+
 let bayTypeError = $state<string | null>(null)
 
 const shouldShowBayTypeDetails = $derived.by(() => {
