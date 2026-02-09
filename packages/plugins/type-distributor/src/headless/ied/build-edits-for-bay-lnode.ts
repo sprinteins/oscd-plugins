@@ -87,7 +87,7 @@ function createSetIedNameEdit(
 	}
 }
 
-export function createBayLNodeEdits({
+export function buildEditsForBayLNode({
 	lNodes,
 	iedName,
 	sourceFunction,

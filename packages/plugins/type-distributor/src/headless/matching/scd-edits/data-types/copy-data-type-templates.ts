@@ -7,7 +7,7 @@ import {
 	queryTypesFromDAType
 } from './query-types'
 import { TYPE_ORDER, type TypeName } from './query-insertion-references'
-import { createTypeEdits } from './type-creation-helpers'
+import { buildEditsForType } from './type-creation-helpers'
 
 interface TypeCollections {
 	lnodeTypeIds: Set<string>
@@ -151,7 +151,7 @@ const TYPE_TO_COLLECTION_KEY: Record<TypeName, keyof TypeCollections> = {
 	EnumType: 'enumTypeIds'
 }
 
-export function createDataTypeTemplatesEdits(
+export function buildEditsForDataTypeTemplates(
 	doc: Document,
 	dataTypeTemplates: Element,
 	lnodeTemplates: LNodeTemplate[]
@@ -165,7 +165,7 @@ export function createDataTypeTemplatesEdits(
 		const typeIds = missingCollections[collectionKey]
 
 		if (typeIds.size > 0) {
-			edits.push(...createTypeEdits(dataTypeTemplates, typeIds, typeName))
+			edits.push(...buildEditsForType(dataTypeTemplates, typeIds, typeName))
 		}
 	}
 	return edits

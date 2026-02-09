@@ -12,7 +12,7 @@ function cloneTypeFromSSD(typeId: string, typeName: TypeName): Element | null {
 	return sourceElement.cloneNode(true) as Element
 }
 
-export function createTypeEdits(
+export function buildEditsForType(
 	dataTypeTemplates: Element,
 	typeIds: Set<string>,
 	typeName: TypeName

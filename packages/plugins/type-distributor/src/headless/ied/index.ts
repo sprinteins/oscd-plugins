@@ -1,6 +1,6 @@
 export { createSIED } from './create-s-ied'
 export { createAccessPoints } from './create-accesspoints'
-export { createBayLNodeEdits } from './create-bay-lnode-edits'
+export { buildEditsForBayLNode } from './build-edits-for-bay-lnode'
 export { querySIEDs } from './query-s-ieds'
 export { queryLNodesFromAccessPoint } from './query-lnodes-from-access-point'
 export { createMultipleLNodesInAccessPoint } from './create-lNode-in-access-point'

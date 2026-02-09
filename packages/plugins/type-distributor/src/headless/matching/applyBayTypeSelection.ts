@@ -6,7 +6,7 @@ import {
 	equipmentMatchingStore,
 	bayStore
 } from '../stores'
-import { createDataTypeTemplatesEdits } from './scd-edits/data-types'
+import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
 import { matchEquipment } from './matching'
 import {
@@ -85,7 +85,7 @@ export function applyBayTypeSelection(bayName: string): void {
 		}
 	}
 
-	const dataTypeTemplateEdits = createDataTypeTemplatesEdits(
+	const dataTypeTemplateEdits = buildEditsForDataTypeTemplates(
 		doc,
 		dataTypeTemplates,
 		allLNodeTemplates

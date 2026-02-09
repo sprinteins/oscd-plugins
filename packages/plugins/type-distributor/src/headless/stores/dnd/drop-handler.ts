@@ -69,7 +69,7 @@ export function applyBayTypeIfNeeded(state: BayTypeApplicationState): boolean {
 	return true
 }
 
-export function createIedEdits(
+export function buildEditsForIed(
 	sourceFunction: EqFunctionTemplate | FunctionTemplate,
 	lNodes: LNodeTemplate[],
 	targetAccessPoint: Element,

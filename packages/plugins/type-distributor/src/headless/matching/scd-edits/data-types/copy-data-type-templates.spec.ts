@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
 	queryAllTypesFromLNodeTemplates,
-	createDataTypeTemplatesEdits
+	buildEditsForDataTypeTemplates
 } from './copy-data-type-templates'
 import { ssdImportStore } from '@/headless/stores'
 import type { LNodeTemplate } from '@/headless/common-types/ssd-types'
-import { createTypeEdits } from './type-creation-helpers'
+import { buildEditsForType } from './type-creation-helpers'
 
 vi.mock('@/headless/stores', () => ({
 	ssdImportStore: {
@@ -14,7 +14,7 @@ vi.mock('@/headless/stores', () => ({
 }))
 
 vi.mock('./type-creation-helpers', () => ({
-	createTypeEdits: vi.fn()
+	buildEditsForType: vi.fn()
 }))
 
 describe('copy-data-type-templates', () => {
@@ -303,7 +303,7 @@ describe('copy-data-type-templates', () => {
 		})
 	})
 
-	describe('createDataTypeTemplatesEdits', () => {
+	describe('buildEditsForDataTypeTemplates', () => {
 		let mockDocument: Document
 		let mockDataTypeTemplates: Element
 
@@ -323,13 +323,13 @@ describe('copy-data-type-templates', () => {
 		})
 
 		describe('GIVEN an empty array of LNode templates', () => {
-			describe('WHEN createDataTypeTemplatesEdits is called', () => {
+			describe('WHEN buildEditsForDataTypeTemplates is called', () => {
 				it('THEN should return empty array', () => {
 					// GIVEN
 					const lnodeTemplates: LNodeTemplate[] = []
 
 					// WHEN
-					const result = createDataTypeTemplatesEdits(
+					const result = buildEditsForDataTypeTemplates(
 						mockDocument,
 						mockDataTypeTemplates,
 						lnodeTemplates
@@ -342,8 +342,8 @@ describe('copy-data-type-templates', () => {
 		})
 
 		describe('GIVEN LNode templates requiring types', () => {
-			describe('WHEN createDataTypeTemplatesEdits is called', () => {
-				it('THEN should call createTypeEdits in correct order', () => {
+			describe('WHEN buildEditsForDataTypeTemplates is called', () => {
+				it('THEN should call buildEditsForType in correct order', () => {
 					// GIVEN
 					const lnodeTemplates: LNodeTemplate[] = [
 						{
@@ -353,17 +353,17 @@ describe('copy-data-type-templates', () => {
 						}
 					]
 
-					vi.mocked(createTypeEdits).mockReturnValue([])
+					vi.mocked(buildEditsForType).mockReturnValue([])
 
 					// WHEN
-					const result = createDataTypeTemplatesEdits(
+					const result = buildEditsForDataTypeTemplates(
 						mockDocument,
 						mockDataTypeTemplates,
 						lnodeTemplates
 					)
 
 					// THEN
-					const calls = vi.mocked(createTypeEdits).mock.calls
+					const calls = vi.mocked(buildEditsForType).mock.calls
 					const typeNameOrder = calls.map((call) => call[2])
 
 					// Should be called for each type in TYPE_ORDER
@@ -391,10 +391,10 @@ describe('copy-data-type-templates', () => {
 							reference: null
 						}
 					]
-					vi.mocked(createTypeEdits).mockReturnValue(mockInserts)
+					vi.mocked(buildEditsForType).mockReturnValue(mockInserts)
 
 					// WHEN
-					const result = createDataTypeTemplatesEdits(
+					const result = buildEditsForDataTypeTemplates(
 						mockDocument,
 						mockDataTypeTemplates,
 						lnodeTemplates
@@ -402,7 +402,7 @@ describe('copy-data-type-templates', () => {
 
 					// THEN
 					expect(result.length).toBeGreaterThan(0)
-					expect(vi.mocked(createTypeEdits)).toHaveBeenCalled()
+					expect(vi.mocked(buildEditsForType)).toHaveBeenCalled()
 				})
 
 				it('THEN should return all inserts from all type stages', () => {
@@ -422,10 +422,10 @@ describe('copy-data-type-templates', () => {
 							reference: null
 						}
 					]
-					vi.mocked(createTypeEdits).mockReturnValue(mockInserts)
+					vi.mocked(buildEditsForType).mockReturnValue(mockInserts)
 
 					// WHEN
-					const result = createDataTypeTemplatesEdits(
+					const result = buildEditsForDataTypeTemplates(
 						mockDocument,
 						mockDataTypeTemplates,
 						lnodeTemplates
@@ -452,7 +452,7 @@ describe('copy-data-type-templates', () => {
 				mockDataTypeTemplates.appendChild(existingDOType)
 			})
 
-			describe('WHEN createDataTypeTemplatesEdits is called', () => {
+			describe('WHEN buildEditsForDataTypeTemplates is called', () => {
 				it('THEN should only create edits for missing types', () => {
 					// GIVEN
 					const lnodeTemplates: LNodeTemplate[] = [
@@ -463,17 +463,17 @@ describe('copy-data-type-templates', () => {
 						}
 					]
 
-					vi.mocked(createTypeEdits).mockReturnValue([])
+					vi.mocked(buildEditsForType).mockReturnValue([])
 
 					// WHEN
-					const result = createDataTypeTemplatesEdits(
+					const result = buildEditsForDataTypeTemplates(
 						mockDocument,
 						mockDataTypeTemplates,
 						lnodeTemplates
 					)
 
 					// THEN
-					const calls = vi.mocked(createTypeEdits).mock.calls
+					const calls = vi.mocked(buildEditsForType).mock.calls
 
 					// Check that existing types are filtered out
 					const lnodeTypeCall = calls.find(
@@ -497,7 +497,7 @@ describe('copy-data-type-templates', () => {
 		})
 
 		describe('GIVEN type stage with no missing types', () => {
-			describe('WHEN createDataTypeTemplatesEdits is called', () => {
+			describe('WHEN buildEditsForDataTypeTemplates is called', () => {
 				it('THEN should only return edits for stages with types', () => {
 					// GIVEN
 					const lnodeTemplates: LNodeTemplate[] = [
@@ -509,7 +509,7 @@ describe('copy-data-type-templates', () => {
 					]
 
 					// Mock to return empty array for some stages
-					vi.mocked(createTypeEdits).mockImplementation(
+					vi.mocked(buildEditsForType).mockImplementation(
 						(_, typeIds) => {
 							return typeIds.size > 0
 								? [
@@ -524,7 +524,7 @@ describe('copy-data-type-templates', () => {
 					)
 
 					// WHEN
-					const result = createDataTypeTemplatesEdits(
+					const result = buildEditsForDataTypeTemplates(
 						mockDocument,
 						mockDataTypeTemplates,
 						lnodeTemplates

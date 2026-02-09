@@ -12,7 +12,7 @@ import {
 	buildEditsForEquipmentUpdates,
 } from './scd-edits'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
-import { createDataTypeTemplatesEdits } from './scd-edits/data-types'
+import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'
 import {
 	ssdImportStore,
 	bayTypesStore,
@@ -41,7 +41,7 @@ vi.mock('./scd-edits/data-types/ensure-data-type-templates', () => ({
 }))
 
 vi.mock('./scd-edits/data-types', () => ({
-	createDataTypeTemplatesEdits: vi.fn()
+	buildEditsForDataTypeTemplates: vi.fn()
 }))
 
 vi.mock('@/headless/stores', () => ({
@@ -195,7 +195,7 @@ describe('applyBayTypeSelection', () => {
 				vi.mocked(buildEditsForEquipmentUpdates).mockReturnValue([])
 				vi.mocked(buildInsertEditsForEqFunction).mockReturnValue([])
 				vi.mocked(buildInsertEditsForFunction).mockReturnValue([])
-				vi.mocked(createDataTypeTemplatesEdits).mockReturnValue([])
+				vi.mocked(buildEditsForDataTypeTemplates).mockReturnValue([])
 				vi.mocked(ensureDataTypeTemplates).mockReturnValue({
 					element: mockDataTypeTemplates,
 					edit: mockDTSCreationEdit
@@ -297,7 +297,7 @@ describe('applyBayTypeSelection', () => {
 				vi.mocked(buildEditsForEquipmentUpdates).mockReturnValue([])
 				vi.mocked(buildInsertEditsForEqFunction).mockReturnValue([])
 				vi.mocked(buildInsertEditsForFunction).mockReturnValue([])
-				vi.mocked(createDataTypeTemplatesEdits).mockReturnValue([])
+				vi.mocked(buildEditsForDataTypeTemplates).mockReturnValue([])
 				vi.mocked(ensureDataTypeTemplates).mockReturnValue({
 					element: mockDataTypeTemplates,
 					edit: null
@@ -310,7 +310,7 @@ describe('applyBayTypeSelection', () => {
 				expect(ssdImportStore.getFunctionTemplate).toHaveBeenCalledWith(
 					'func-template1'
 				)
-				expect(createDataTypeTemplatesEdits).toHaveBeenCalledWith(
+				expect(buildEditsForDataTypeTemplates).toHaveBeenCalledWith(
 					mockDoc,
 					mockDataTypeTemplates,
 					[...equipmentLNodes, ...functionLNodes]
