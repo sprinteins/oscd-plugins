@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { Insert } from '@openscd/oscd-api'
 import type { BayType } from '../../common-types'
-import { ssdImportStore } from '../../stores'
+import { ssdImportStore } from '../../stores/ssd-import.store.svelte'
+import { createElement } from '@oscd-plugins/core'
 import { createLNodeElement } from './lnode-creation'
 
 export function createFunctionInsertEdits(
@@ -23,15 +24,13 @@ export function createFunctionInsertEdits(
 			continue
 		}
 
-		const functionElement = doc.createElement('Function')
-		functionElement.setAttribute('name', functionTemplate.name)
-		functionElement.setAttribute('uuid', uuidv4())
-		functionElement.setAttribute('templateUuid', functionType.uuid)
-		functionElement.setAttribute('originUuid', functionTemplate.uuid)
-
-		if (functionTemplate.desc) {
-			functionElement.setAttribute('desc', functionTemplate.desc)
-		}
+		const functionElement = createElement(doc, 'Function', {
+			name: functionTemplate.name,
+			uuid: uuidv4(),
+			templateUuid: functionType.uuid,
+			originUuid: functionTemplate.uuid,
+			desc: functionTemplate.desc ?? null
+		})
 
 		for (const lnodeTemplate of functionTemplate.lnodes) {
 			const lnodeElement = createLNodeElement(

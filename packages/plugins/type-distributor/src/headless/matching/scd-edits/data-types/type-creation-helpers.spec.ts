@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createTypeEdits } from './type-creation-helpers'
 import { ssdImportStore } from '@/headless/stores'
 import type { Insert } from '@openscd/oscd-api'
+import { queryTypeReference } from './query-insertion-references'
 
 vi.mock('@/headless/stores', () => ({
 	ssdImportStore: {
@@ -9,11 +10,9 @@ vi.mock('@/headless/stores', () => ({
 	}
 }))
 
-vi.mock('./insertion-references', () => ({
-	getTypeReference: vi.fn()
+vi.mock('./query-insertion-references', () => ({
+queryTypeReference: vi.fn()
 }))
-
-const { getTypeReference } = await import('./insertion-references')
 
 describe('type-creation-helpers', () => {
 	let mockSSDDocument: Document
@@ -66,7 +65,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should return an empty array', () => {
 					// GIVEN
 					const typeIds = new Set<string>()
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -87,7 +86,7 @@ describe('type-creation-helpers', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1'])
 					const mockReference = mockDataTypeTemplates.firstChild
-					vi.mocked(getTypeReference).mockReturnValue(mockReference)
+					vi.mocked(queryTypeReference).mockReturnValue(mockReference)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -106,7 +105,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should clone the element from SSD', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -126,7 +125,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should preserve all child elements', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -146,7 +145,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should set correct parent', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -159,27 +158,27 @@ describe('type-creation-helpers', () => {
 					expect(result[0].parent).toBe(mockDataTypeTemplates)
 				})
 
-				it('THEN should call getTypeReference with correct arguments', () => {
+				it('THEN should call queryTypeReference with correct arguments', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					createTypeEdits(mockDataTypeTemplates, typeIds, 'LNodeType')
 
 					// THEN
-					expect(getTypeReference).toHaveBeenCalledWith(
+					expect(queryTypeReference).toHaveBeenCalledWith(
 						mockDataTypeTemplates,
 						'LNodeType'
 					)
-					expect(getTypeReference).toHaveBeenCalledTimes(1)
+					expect(queryTypeReference).toHaveBeenCalledTimes(1)
 				})
 
-				it('THEN should use reference from getTypeReference', () => {
+				it('THEN should use reference from queryTypeReference', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1'])
 					const mockReference = { nodeType: 1 } as Node
-					vi.mocked(getTypeReference).mockReturnValue(mockReference)
+					vi.mocked(queryTypeReference).mockReturnValue(mockReference)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -199,7 +198,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should create multiple Insert edits', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1', 'TestLN2'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -215,7 +214,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should clone all specified elements', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1', 'TestLN2'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -236,7 +235,7 @@ describe('type-creation-helpers', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1', 'TestLN2'])
 					const mockReference = { nodeType: 1 } as Node
-					vi.mocked(getTypeReference).mockReturnValue(mockReference)
+					vi.mocked(queryTypeReference).mockReturnValue(mockReference)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -257,7 +256,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should clone DOType elements correctly', () => {
 					// GIVEN
 					const typeIds = new Set(['MOD_Type1', 'POS_Type1'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -276,7 +275,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should preserve attributes and children of DOType', () => {
 					// GIVEN
 					const typeIds = new Set(['MOD_Type1'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -299,7 +298,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should clone DAType elements correctly', () => {
 					// GIVEN
 					const typeIds = new Set(['Origin_Type'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -322,7 +321,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should clone EnumType elements correctly', () => {
 					// GIVEN
 					const typeIds = new Set(['OriginatorCategory'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -348,7 +347,7 @@ describe('type-creation-helpers', () => {
 				it('THEN should skip non-existent types', () => {
 					// GIVEN
 					const typeIds = new Set(['NonExistent_Type'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -368,7 +367,7 @@ describe('type-creation-helpers', () => {
 						'NonExistent_Type',
 						'TestLN2'
 					])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
 					const result = createTypeEdits(
@@ -395,7 +394,7 @@ describe('type-creation-helpers', () => {
 					// GIVEN
 					ssdImportStore.loadedSSDDocument = null
 					const typeIds = new Set(['TestLN1'])
-					vi.mocked(getTypeReference).mockReturnValue(null)
+					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN & THEN
 					expect(() => {

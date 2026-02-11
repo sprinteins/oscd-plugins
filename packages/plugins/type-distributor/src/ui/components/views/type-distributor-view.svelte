@@ -4,10 +4,17 @@ import {
 	pluginGlobalStore,
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
-import { bayStore, bayTypesStore } from '@/headless/stores'
+import {
+	bayStore,
+	bayTypesStore,
+	equipmentMatchingStore
+} from '@/headless/stores'
 import type { BayType } from '@/headless/common-types'
-import { BayTypeDetails, BayTypeValidation } from '@/ui/components/columns/bay-type'
-import { getSIEDs } from '@/headless/ied'
+import {
+	BayTypeDetails,
+	BayTypeValidation
+} from '@/ui/components/columns/bay-type'
+import { querySIEDs } from '@/headless/ied'
 import SIedDetails from '@/ui/components/columns/s-ied/s-ied-details.svelte'
 import { AddSIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'
@@ -32,13 +39,34 @@ const conductingEquipmentTemplates = $derived(
 
 const sIedItems = $derived.by(() => {
 	pluginGlobalStore.editCount
-	return getSIEDs(bayStore.selectedBay ?? '')
+	return querySIEDs(bayStore.selectedBay ?? '')
 })
 
 let bayTypeError = $state<string | null>(null)
 
+const shouldShowBayTypeDetails = $derived.by(() => {
+	if (!bayTypeWithTemplates) return false
+
+	const validation = equipmentMatchingStore.validationResult
+
+	if (
+		validation &&
+		!validation.isValid &&
+		!validation.requiresManualMatching
+	) {
+		return false
+	}
+
+	if (bayStore.assigendBayType === bayTypesStore.selectedBayType) {
+		return true
+	}
+
+	return !!bayStore.pendingBayTypeApply
+})
+
 function handleBayTypeChange() {
 	bayTypeError = null
+	equipmentMatchingStore.reset()
 
 	if (!bayStore.selectedBay) {
 		bayTypeError = 'No Bay selected'
@@ -46,7 +74,11 @@ function handleBayTypeChange() {
 	}
 
 	try {
-		validateBayTypeSelection(bayStore.selectedBay)
+		const validation = validateBayTypeSelection(bayStore.selectedBay)
+
+		if (validation.isValid && !validation.requiresManualMatching) {
+			bayStore.pendingBayTypeApply = bayTypesStore.selectedBayType
+		}
 	} catch (error) {
 		console.error('[handleBayTypeChange] Error:', error)
 	}
@@ -84,12 +116,12 @@ function handleBayTypeChange() {
 		<Card.Content class="overflow-y-auto space-y-4">
 			<BayTypeValidation {bayTypeError} />
 
-			{#if bayTypeWithTemplates}
+			{#if shouldShowBayTypeDetails}
 				<BayTypeDetails
 					{functionTemplates}
 					{conductingEquipmentTemplates}
 				/>
-			{:else}
+			{:else if !bayTypesStore.selectedBayType}
 				<p class="text-gray-500 text-sm">
 					Select a bay type to see details
 				</p>

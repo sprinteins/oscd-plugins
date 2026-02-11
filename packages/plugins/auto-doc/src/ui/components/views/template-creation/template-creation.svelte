@@ -1,14 +1,15 @@
 <script lang="ts">
 import { type NavigateProps, View } from '../view-navigator/view'
-
 import { clickOutside } from '@/actions'
 import { docTemplatesStore } from '@/stores'
 import { TemplateBuilder, Tooltip } from '@/ui/components'
 import { pdfGenerator } from '@/pdf'
 import { CustomIconButton } from '@oscd-plugins/ui/src/components'
-import Button from '@smui/button'
+import Button, { Label } from '@smui/button'
 import Textfield from '@smui/textfield'
 import { onMount } from 'svelte'
+import Menu from '@smui/menu'
+import List, { Item } from '@smui/list'
 
 interface Props extends NavigateProps {
 	id: string | null
@@ -22,6 +23,7 @@ let isMetadataVisible = $state(false)
 let isGenerating = $state(false)
 let templateId: string | undefined = undefined
 let template: Element | null = $state(null)
+let menu: Menu
 
 const NO_TITLE_TEXT = 'Untitled Document'
 
@@ -91,12 +93,14 @@ function updateTitleAndDescription() {
 	)
 }
 
-function downloadTemplateContent() {
+function downloadTemplateContent(
+	orientation: 'landscape' | 'portrait' = 'portrait'
+) {
 	if (!templateId || isGenerating) return
 
 	isGenerating = true
 	pdfGenerator
-		.downloadAsPdf(templateId)
+		.downloadAsPdf(templateId, orientation)
 		.catch((error) => console.error('Error generating PDF:', error))
 		.finally(() => {
 			isGenerating = false
@@ -123,20 +127,40 @@ function downloadTemplateContent() {
               e.key === "Enter" && displayTitleAndDescription(e)}
           >
             {templateTitle}
-          </div></Tooltip
-        >
+          </div>
+        </Tooltip>
       </div>
-      <!-- <div class="template-options">
-                <Button>open template</Button>
-                <Button>save template</Button>
-            </div> -->
-      <Button
-        variant="raised"
-        onclick={downloadTemplateContent}
-        disabled={isGenerating}
-      >
-        {isGenerating ? "Generating..." : "Generate Document"}
-      </Button>
+      <div>
+        <div>
+          <Button
+            variant="raised"
+            onclick={() => menu.setOpen(true)}
+            disabled={isGenerating}
+          >
+            <Label>
+              {isGenerating ? "Generating..." : "Generate Document"}</Label
+            >
+          </Button>
+          <Menu bind:this={menu} anchorCorner="BOTTOM_LEFT">
+            <List>
+              <Item
+                onSMUIAction={() => {
+                  downloadTemplateContent("portrait");
+                }}
+              >
+                <span>Portrait PDF</span>
+              </Item>
+              <Item
+                onSMUIAction={() => {
+                  downloadTemplateContent("landscape");
+                }}
+              >
+                <span>Landscape PDF</span>
+              </Item>
+            </List>
+          </Menu>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -146,6 +170,7 @@ function downloadTemplateContent() {
       class="template-metadata"
       use:clickOutside={closeTitleAndDescription}
       role="dialog"
+      tabindex="0"
       onkeydown={(e) => e.key === "Escape" && closeTitleAndDescription()}
       onclick={(e) => e.stopPropagation()}
     >

@@ -1,3 +1,5 @@
+import { createElement } from '@oscd-plugins/core'
+
 const DEFAULT_SIED_ATTRIBUTES = {
 	configVersion: '1.0',
 	engRight: 'full',
@@ -12,19 +14,15 @@ export function createBasicIEDElement(
 	xmlDocument: XMLDocument,
 	description?: string
 ): Element {
-	const iedElement = xmlDocument.createElement('IED')
+	const iedElement = createElement(xmlDocument, 'IED', {
+		...DEFAULT_SIED_ATTRIBUTES,
+		name,
+		desc: description ?? null
+	})
 
-	for (const [key, value] of Object.entries(DEFAULT_SIED_ATTRIBUTES)) {
-		iedElement.setAttribute(key, value)
-	}
-
-	iedElement.setAttribute('name', name)
-	if (description) {
-		iedElement.setAttribute('desc', description)
-	}
-
-	const servicesElement = xmlDocument.createElement('Services')
-	servicesElement.setAttribute('nameLength', '64')
+	const servicesElement = createElement(xmlDocument, 'Services', {
+		nameLength: '64'
+	})
 	iedElement.appendChild(servicesElement)
 
 	return iedElement

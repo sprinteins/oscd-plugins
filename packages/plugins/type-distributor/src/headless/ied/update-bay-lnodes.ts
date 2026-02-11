@@ -4,7 +4,6 @@ import type {
 	FunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
-import { getDocumentAndEditor } from '../utils'
 import { bayStore } from '@/headless/stores'
 
 type UpdateBayLNodesParams = {
@@ -21,64 +20,72 @@ function findMatchingLNodeElement(
 	sourceFunction: EqFunctionTemplate | FunctionTemplate,
 	equipmentUuid?: string
 ): Element | null {
-	let functionElements: Element[] = []
+	const functionElements = queryFunctionElements(
+		scdBay,
+		sourceFunction,
+		equipmentUuid
+	)
 
-	// EqFunctions are inside ConductingEquipment
+	for (const functionElement of functionElements) {
+		const matches = queryLNodeMatchesFromFunction(functionElement, lNode)
+		const preferred = choosePreferredMatch(matches)
+		if (preferred) return preferred
+	}
+
+	return null
+}
+
+function queryFunctionElements(
+	scdBay: Element,
+	sourceFunction: EqFunctionTemplate | FunctionTemplate,
+	equipmentUuid?: string
+): Element[] {
 	if (equipmentUuid) {
 		const match = bayStore.equipmentMatches.find(
 			(m) => m.templateEquipment.uuid === equipmentUuid
 		)
+		if (!match) return []
 
-		if (match) {
-			const targetEquipment = match.scdElement
-			const eqFunctions = Array.from(
-				targetEquipment.querySelectorAll('EqFunction')
+		const targetEquipment = match.scdElement
+		return Array.from(
+			targetEquipment.querySelectorAll(
+				`EqFunction[name="${sourceFunction.name}"]`
 			)
-			functionElements = eqFunctions.filter((eqFunc) => {
-				const name = eqFunc.getAttribute('name')
-				return name === sourceFunction.name
-			})
-		}
-	} else {
-		const functions = Array.from(
-			scdBay.querySelectorAll(':scope > Function')
 		)
-		functionElements = functions.filter((func) => {
-			const name = func.getAttribute('name')
-			return name === sourceFunction.name
-		})
 	}
 
-	for (const functionElement of functionElements) {
-		const lnodeElements = Array.from(
-			functionElement.querySelectorAll('LNode')
+	return Array.from(
+		scdBay.querySelectorAll(
+			`:scope > Function[name="${sourceFunction.name}"]`
 		)
+	)
+}
 
-		const matches = lnodeElements.filter((element) => {
-			const lnClass = element.getAttribute('lnClass')
-			const lnType = element.getAttribute('lnType')
-			const lnInst = element.getAttribute('lnInst')
+function queryLNodeMatchesFromFunction(
+	functionElement: Element,
+	lNode: LNodeTemplate
+): Element[] {
+	const { lnType, lnInst } = lNode
 
-			return (
-				lnClass === lNode.lnClass &&
-				lnType === lNode.lnType &&
-				lnInst === lNode.lnInst
-			)
-		})
+	const selector = `LNode[lnType="${lnType}"][lnInst="${lnInst}"]`
+	return Array.from(functionElement.querySelectorAll(selector))
+}
 
-		const unassignedMatch = matches.find(
-			(element) => !element.getAttribute('iedName')
-		)
-		if (unassignedMatch) {
-			return unassignedMatch
-		}
+function choosePreferredMatch(matches: Element[]): Element | null {
+	if (matches.length === 0) return null
+	const unassigned = matches.find((el) => !el.getAttribute('iedName'))
+	return unassigned ?? matches[0]
+}
 
-		if (matches.length > 0) {
-			return matches[0]
-		}
+function createSetIedNameEdit(
+	element: Element,
+	iedName: string
+): SetAttributes {
+	return {
+		element,
+		attributes: { iedName },
+		attributesNS: {}
 	}
-
-	return null
 }
 
 export function updateBayLNodeIedNames({
@@ -105,13 +112,7 @@ export function updateBayLNodeIedNames({
 		if (currentIedName) {
 			continue
 		}
-		edits.push({
-			element: lnodeElement,
-			attributes: {
-				iedName
-			},
-			attributesNS: {}
-		})
+		edits.push(createSetIedNameEdit(lnodeElement, iedName))
 	}
 
 	return edits

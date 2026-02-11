@@ -1,4 +1,4 @@
-import { ssdImportStore } from '@/headless/stores'
+import { ssdImportStore } from '@/headless/stores/ssd-import.store.svelte'
 
 export async function loadFromLocal() {
 	const file = ssdImportStore.fileInput?.files?.[0]

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
-	collectAllTypesFromLNodeTemplates,
+	queryAllTypesFromLNodeTemplates,
 	insertDataTypeTemplatesInStages
 } from './copy-data-type-templates'
 import { ssdImportStore } from '@/headless/stores'
@@ -88,7 +88,7 @@ describe('copy-data-type-templates', () => {
 
 					// WHEN
 					const result =
-						collectAllTypesFromLNodeTemplates(lnodeTemplates)
+						queryAllTypesFromLNodeTemplates(lnodeTemplates)
 
 					// THEN
 					expect(result.lnodeTypeIds.size).toBe(0)
@@ -113,7 +113,7 @@ describe('copy-data-type-templates', () => {
 
 					// WHEN
 					const result =
-						collectAllTypesFromLNodeTemplates(lnodeTemplates)
+						queryAllTypesFromLNodeTemplates(lnodeTemplates)
 
 					// THEN
 					expect(result.lnodeTypeIds.size).toBe(1)
@@ -132,7 +132,7 @@ describe('copy-data-type-templates', () => {
 
 					// WHEN
 					const result =
-						collectAllTypesFromLNodeTemplates(lnodeTemplates)
+						queryAllTypesFromLNodeTemplates(lnodeTemplates)
 
 					// THEN
 					expect(result.doTypeIds.size).toBe(2)
@@ -152,7 +152,7 @@ describe('copy-data-type-templates', () => {
 
 					// WHEN
 					const result =
-						collectAllTypesFromLNodeTemplates(lnodeTemplates)
+						queryAllTypesFromLNodeTemplates(lnodeTemplates)
 
 					// THEN
 					expect(result.daTypeIds.size).toBeGreaterThan(0)
@@ -171,7 +171,7 @@ describe('copy-data-type-templates', () => {
 
 					// WHEN
 					const result =
-						collectAllTypesFromLNodeTemplates(lnodeTemplates)
+						queryAllTypesFromLNodeTemplates(lnodeTemplates)
 
 					// THEN
 					expect(result.enumTypeIds.size).toBeGreaterThan(0)
@@ -191,7 +191,7 @@ describe('copy-data-type-templates', () => {
 
 					// WHEN
 					const result =
-						collectAllTypesFromLNodeTemplates(lnodeTemplates)
+						queryAllTypesFromLNodeTemplates(lnodeTemplates)
 
 					// THEN
 					expect(result.daTypeIds.has('Origin_Type')).toBe(true)
@@ -222,7 +222,7 @@ describe('copy-data-type-templates', () => {
 
 					// WHEN
 					const result =
-						collectAllTypesFromLNodeTemplates(lnodeTemplates)
+						queryAllTypesFromLNodeTemplates(lnodeTemplates)
 
 					// THEN
 					expect(result.lnodeTypeIds.size).toBe(2)
@@ -247,7 +247,7 @@ describe('copy-data-type-templates', () => {
 
 					// WHEN
 					const result =
-						collectAllTypesFromLNodeTemplates(lnodeTemplates)
+						queryAllTypesFromLNodeTemplates(lnodeTemplates)
 
 					// THEN
 					expect(result.lnodeTypeIds.size).toBe(1)
@@ -274,7 +274,7 @@ describe('copy-data-type-templates', () => {
 
 					// WHEN
 					const result =
-						collectAllTypesFromLNodeTemplates(lnodeTemplates)
+						queryAllTypesFromLNodeTemplates(lnodeTemplates)
 
 					// THEN
 					expect(result.lnodeTypeIds.has('NonExistent_Type')).toBe(
@@ -303,7 +303,7 @@ describe('copy-data-type-templates', () => {
 
 					// WHEN & THEN
 					expect(() => {
-						collectAllTypesFromLNodeTemplates(lnodeTemplates)
+						queryAllTypesFromLNodeTemplates(lnodeTemplates)
 					}).toThrow('No SSD document loaded in store')
 				})
 			})
