@@ -1,7 +1,7 @@
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
 import { SvelteSet } from 'svelte/reactivity'
 import { bayTypesStore } from '../bay-types.store.svelte'
+import { bayStore } from '../bay.store.svelte'
 
 type LNodeKey = `${string}:${string}:${string}:${string}` // parentUuid:lnClass:lnType:lnInst
 
@@ -13,15 +13,15 @@ class UseAssignedLNodesStore {
 	}
 
 	rebuild() {
-		const doc = pluginGlobalStore.xmlDocument
-		if (!doc) {
+		const scdBay = bayStore.scdBay
+		if (!scdBay) {
 			this.assignedIndex.clear()
 			return
 		}
 
 		this.assignedIndex.clear()
 
-		const functions = doc.querySelectorAll('Bay > Function')
+		const functions = scdBay.querySelectorAll(':scope > Function')
 		for (const func of functions) {
 			const functionName = func.getAttribute('name')
 
@@ -47,8 +47,8 @@ class UseAssignedLNodesStore {
 			}
 		}
 
-		const eqFunctions = doc.querySelectorAll(
-			'Bay ConductingEquipment EqFunction'
+		const eqFunctions = scdBay.querySelectorAll(
+			':scope > ConductingEquipment > EqFunction'
 		)
 		for (const eqFunc of eqFunctions) {
 			const lnodes = eqFunc.querySelectorAll('LNode[iedName]')
