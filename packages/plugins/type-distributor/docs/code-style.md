@@ -5,7 +5,7 @@
 ### Functions
 - Use descriptive verb-based names: `matchEquipment`, `validateBayTypeSelection`, `applyBayTypeSelection`
 - Prefix boolean-returning functions with `is`, `has`, `can`: `isValid`, `canAutoMatch`
-- Use `create*` prefix for factory functions: `createEquipmentLookup`, `createTypeEdits`
+- Use `build*` prefix for factory functions returning edits: `buildEditsForBayLNode`, `buildEditsForType`
 - Use `query*` prefix for querying XML structure: `queryConductingEquipment`, `queryLNodeTypes`
 - use `ensure` prefix for functions that guarantee a condition: `ensureDataTypeTemplates`
 
