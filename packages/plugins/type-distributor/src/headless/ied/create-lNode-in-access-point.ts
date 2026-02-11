@@ -11,7 +11,7 @@ import {
 	createServerElementWithAuth,
 	queryLDevice,
 	queryServer,
-	hasLNodeInTargetDoc
+	isLNodePresentInDevice
 } from './elements'
 
 type CreateMultipleLNodesParams = {
@@ -108,7 +108,7 @@ export function createMultipleLNodesInAccessPoint({
 	)
 
 	const lNodesToAdd = lNodes.filter((lNode) => {
-		const exists = hasLNodeInTargetDoc(lNode, lDevice)
+		const exists = isLNodePresentInDevice(lNode, lDevice)
 		if (exists) {
 			console.warn(
 				`[createLNodesInAccessPoint] LN ${lNode.lnClass}:${lNode.lnType}:${lNode.lnInst} already exists in LDevice, skipping`

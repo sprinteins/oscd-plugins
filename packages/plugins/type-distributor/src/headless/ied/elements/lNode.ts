@@ -15,7 +15,7 @@ export function createLNodeElementInIED(
 	return lnElement
 }
 
-export function hasLNodeInTargetDoc(
+export function isLNodePresentInDevice(
 	lNode: LNodeTemplate,
 	lDevice: Element
 ): boolean {
