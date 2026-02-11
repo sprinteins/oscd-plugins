@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { assignedLNodesStore } from './assigned-lnodes.store.svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { bayStore } from '../bay.store.svelte'
 
 // Mock pluginGlobalStore
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -26,6 +27,13 @@ vi.mock('../bay-types.store.svelte', () => ({
 				]
 			}
 		]
+	}
+}))
+
+// Mock bayStore
+vi.mock('../bay.store.svelte', () => ({
+	bayStore: {
+		scdBay: null
 	}
 }))
 
@@ -64,6 +72,10 @@ describe('assignedLNodesStore', () => {
 		)
 
 		pluginGlobalStore.xmlDocument = mockDocument
+		
+		// Set up bayStore.scdBay to point to the Bay element in the mock document
+		const bayElement = mockDocument.querySelector('Bay')
+		bayStore.scdBay = bayElement as Element
 	})
 
 	afterEach(() => {
@@ -162,8 +174,9 @@ describe('assignedLNodesStore', () => {
 				})
 			).toBe(true)
 
-			// Set document to null
+			// Set document to null and clear bayStore.scdBay
 			pluginGlobalStore.xmlDocument = undefined
+			bayStore.scdBay = null
 			assignedLNodesStore.rebuild()
 
 			// Verify index is cleared
@@ -182,6 +195,7 @@ describe('assignedLNodesStore', () => {
 				'application/xml'
 			)
 			pluginGlobalStore.xmlDocument = emptyDoc
+			bayStore.scdBay = null
 
 			assignedLNodesStore.rebuild()
 
@@ -212,6 +226,8 @@ describe('assignedLNodesStore', () => {
 				'application/xml'
 			)
 			pluginGlobalStore.xmlDocument = docWithMissingAttrs
+			const bayElement = docWithMissingAttrs.querySelector('Bay')
+			bayStore.scdBay = bayElement as Element
 
 			// Should not throw error
 			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
@@ -242,6 +258,8 @@ describe('assignedLNodesStore', () => {
 				'application/xml'
 			)
 			pluginGlobalStore.xmlDocument = docWithoutUuid
+			const bayElement = docWithoutUuid.querySelector('Bay')
+			bayStore.scdBay = bayElement as Element
 
 			const consoleSpy = vi
 				.spyOn(console, 'warn')

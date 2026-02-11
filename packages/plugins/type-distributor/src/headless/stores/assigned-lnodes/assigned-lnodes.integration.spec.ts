@@ -5,6 +5,7 @@ import type { LNodeTemplate, FunctionTemplate } from '@/headless/common-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { buildEditsForIed } from '@/headless/stores/dnd/drop-handler'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { bayStore } from '@/headless/stores/bay.store.svelte'
 
 // Mock modules
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -100,6 +101,10 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 		pluginGlobalStore.xmlDocument = mockDocument
 		pluginGlobalStore.editor = mockEditor as unknown as XMLEditor
+
+		// Set up bayStore.scdBay to point to the Bay element in the mock document
+		const bayElement = mockDocument.querySelector('Bay')
+		bayStore.scdBay = bayElement as Element
 
 		accessPoint = mockDocument.querySelector(
 			'IED[name="NewIED"] AccessPoint[name="AP1"]'
@@ -319,6 +324,7 @@ describe('Integration: Assigned LNodes Flow', () => {
 				'application/xml'
 			)
 			pluginGlobalStore.xmlDocument = emptyDoc
+			bayStore.scdBay = null
 
 			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
 
@@ -329,6 +335,7 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 		it('should handle null document', () => {
 			pluginGlobalStore.xmlDocument = undefined
+			bayStore.scdBay = null
 
 			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
 
@@ -349,6 +356,10 @@ describe('Integration: Assigned LNodes Flow', () => {
 			ln2.setAttribute('iedName', 'NewIED')
 			ln2.setAttribute('ldInst', 'LD2')
 			func2?.appendChild(ln2)
+
+			// Update bayStore.scdBay to reflect the modified document
+			const updatedBayElement = mockDocument.querySelector('Bay')
+			bayStore.scdBay = updatedBayElement as Element
 
 			assignedLNodesStore.rebuild()
 
