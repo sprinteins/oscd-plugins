@@ -5,9 +5,9 @@ import type {
 	LNodeTemplate
 } from '@/headless/common-types'
 import { bayStore } from '@/headless/stores'
+import { getDocumentAndEditor } from '../utils'
 
 type UpdateBayLNodesParams = {
-	scdBay: Element
 	lNodes: LNodeTemplate[]
 	iedName: string
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
@@ -15,13 +15,11 @@ type UpdateBayLNodesParams = {
 }
 
 function findMatchingLNodeElement(
-	scdBay: Element,
 	lNode: LNodeTemplate,
 	sourceFunction: EqFunctionTemplate | FunctionTemplate,
 	equipmentUuid?: string
 ): Element | null {
 	const functionElements = queryFunctionElements(
-		scdBay,
 		sourceFunction,
 		equipmentUuid
 	)
@@ -36,7 +34,6 @@ function findMatchingLNodeElement(
 }
 
 function queryFunctionElements(
-	scdBay: Element,
 	sourceFunction: EqFunctionTemplate | FunctionTemplate,
 	equipmentUuid?: string
 ): Element[] {
@@ -54,8 +51,10 @@ function queryFunctionElements(
 		)
 	}
 
+	const { doc } = getDocumentAndEditor()
+
 	return Array.from(
-		scdBay.querySelectorAll(
+		doc.querySelectorAll(
 			`:scope > Function[name="${sourceFunction.name}"]`
 		)
 	)
@@ -88,8 +87,7 @@ function createSetIedNameEdit(
 	}
 }
 
-export function updateBayLNodeIedNames({
-	scdBay,
+export function buildEditsForBayLNode({
 	lNodes,
 	iedName,
 	sourceFunction,
@@ -99,7 +97,6 @@ export function updateBayLNodeIedNames({
 
 	for (const lNode of lNodes) {
 		const lnodeElement = findMatchingLNodeElement(
-			scdBay,
 			lNode,
 			sourceFunction,
 			equipmentUuid

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { createFunctionInsertEdits } from './function-creation'
+import { buildInsertEditsForFunction } from './function-creation'
 import type {
 	BayType,
 	FunctionTemplate,
@@ -13,7 +13,7 @@ vi.mock('../../stores/ssd-import.store.svelte', () => ({
 	}
 }))
 
-describe('createFunctionInsertEdits', () => {
+describe('buildInsertEditsForFunction', () => {
 	let mockDocument: Document
 	let mockScdBay: Element
 
@@ -31,7 +31,7 @@ describe('createFunctionInsertEdits', () => {
 	})
 
 	describe('GIVEN a bay type with no functions', () => {
-		describe('WHEN createFunctionInsertEdits is called', () => {
+		describe('WHEN buildInsertEditsForFunction is called', () => {
 			it('THEN should return an empty array', () => {
 				// GIVEN
 				const bayType: BayType = {
@@ -42,7 +42,7 @@ describe('createFunctionInsertEdits', () => {
 				}
 
 				// WHEN
-				const result = createFunctionInsertEdits(
+				const result = buildInsertEditsForFunction(
 					mockDocument,
 					bayType,
 					mockScdBay
@@ -82,7 +82,7 @@ describe('createFunctionInsertEdits', () => {
 				)
 
 				// WHEN
-				const result = createFunctionInsertEdits(
+				const result = buildInsertEditsForFunction(
 					mockDocument,
 					bayType,
 					mockScdBay
@@ -121,7 +121,7 @@ describe('createFunctionInsertEdits', () => {
 				)
 
 				// WHEN
-				const result = createFunctionInsertEdits(
+				const result = buildInsertEditsForFunction(
 					mockDocument,
 					bayType,
 					mockScdBay
@@ -174,7 +174,7 @@ describe('createFunctionInsertEdits', () => {
 				)
 
 				// WHEN
-				const result = createFunctionInsertEdits(
+				const result = buildInsertEditsForFunction(
 					mockDocument,
 					bayType,
 					mockScdBay
@@ -212,7 +212,7 @@ describe('createFunctionInsertEdits', () => {
 				)
 
 				// WHEN
-				const result = createFunctionInsertEdits(
+				const result = buildInsertEditsForFunction(
 					mockDocument,
 					bayType,
 					mockScdBay
@@ -251,7 +251,7 @@ describe('createFunctionInsertEdits', () => {
 					.mockImplementation(() => {})
 
 				// WHEN
-				const result = createFunctionInsertEdits(
+				const result = buildInsertEditsForFunction(
 					mockDocument,
 					bayType,
 					mockScdBay
@@ -303,7 +303,7 @@ describe('createFunctionInsertEdits', () => {
 					.mockReturnValueOnce(functionTemplate2)
 
 				// WHEN
-				const result = createFunctionInsertEdits(
+				const result = buildInsertEditsForFunction(
 					mockDocument,
 					bayType,
 					mockScdBay
@@ -352,7 +352,7 @@ describe('createFunctionInsertEdits', () => {
 				vi.spyOn(console, 'warn').mockImplementation(() => {})
 
 				// WHEN
-				const result = createFunctionInsertEdits(
+				const result = buildInsertEditsForFunction(
 					mockDocument,
 					bayType,
 					mockScdBay
@@ -368,7 +368,7 @@ describe('createFunctionInsertEdits', () => {
 	})
 
 	describe('GIVEN a function template with LNodes', () => {
-		describe('WHEN createFunctionInsertEdits is called', () => {
+		describe('WHEN buildInsertEditsForFunction is called', () => {
 			it('THEN should create LNode child elements for each lnode template', () => {
 				// GIVEN
 				const lnodeTemplates: LNodeTemplate[] = [
@@ -408,7 +408,7 @@ describe('createFunctionInsertEdits', () => {
 				)
 
 				// WHEN
-				const result = createFunctionInsertEdits(
+				const result = buildInsertEditsForFunction(
 					mockDocument,
 					bayType,
 					mockScdBay
@@ -432,7 +432,7 @@ describe('createFunctionInsertEdits', () => {
 	})
 
 	describe('GIVEN an SCD Bay without ConnectivityNode', () => {
-		describe('WHEN createFunctionInsertEdits is called', () => {
+		describe('WHEN buildInsertEditsForFunction is called', () => {
 			it('THEN should create Insert with null reference', () => {
 				// GIVEN
 				const mockDocWithoutCN = new DOMParser().parseFromString(
@@ -464,7 +464,7 @@ describe('createFunctionInsertEdits', () => {
 				)
 
 				// WHEN
-				const result = createFunctionInsertEdits(
+				const result = buildInsertEditsForFunction(
 					mockDocWithoutCN,
 					bayType,
 					mockBayWithoutCN

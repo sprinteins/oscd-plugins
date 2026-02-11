@@ -185,12 +185,12 @@ describe('createSIED', () => {
 		it('should throw error when xmlDocument is not available', () => {
 			pluginGlobalStore.xmlDocument = undefined
 
-			expect(() => createSIED('TestIED')).toThrow('No XML document found')
+			expect(() => createSIED('TestIED')).toThrow('No XML document loaded')
 		})
 		it('should throw error when editor is not available', () => {
 			pluginGlobalStore.editor = undefined
 
-			expect(() => createSIED('TestIED')).toThrow('No editor found')
+			expect(() => createSIED('TestIED')).toThrow('No editor available')
 		})
 	})
 

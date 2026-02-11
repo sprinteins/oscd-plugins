@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createEqFunctionInsertEdits } from './eqfunction-creation'
+import { buildInsertEditsForEqFunction } from './eqfunction-creation'
 import type { EquipmentMatch } from '@/headless/matching/types'
 import type {
 	EqFunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types/ssd-types'
 
-describe('createEqFunctionInsertEdits', () => {
+describe('buildInsertEditsForEqFunction', () => {
 	let mockDocument: Document
 
 	beforeEach(() => {
@@ -17,13 +17,13 @@ describe('createEqFunctionInsertEdits', () => {
 	})
 
 	describe('GIVEN an empty array of equipment matches', () => {
-		describe('WHEN createEqFunctionInsertEdits is called', () => {
+		describe('WHEN buildInsertEditsForEqFunction is called', () => {
 			it('THEN should return an empty array', () => {
 				// GIVEN
 				const matches: EquipmentMatch[] = []
 
 				// WHEN
-				const result = createEqFunctionInsertEdits(
+				const result = buildInsertEditsForEqFunction(
 					mockDocument,
 					matches
 				)
@@ -35,7 +35,7 @@ describe('createEqFunctionInsertEdits', () => {
 	})
 
 	describe('GIVEN equipment match with no EqFunctions', () => {
-		describe('WHEN createEqFunctionInsertEdits is called', () => {
+		describe('WHEN buildInsertEditsForEqFunction is called', () => {
 			it('THEN should return an empty array', () => {
 				// GIVEN
 				const scdElement = mockDocument.createElement(
@@ -61,7 +61,7 @@ describe('createEqFunctionInsertEdits', () => {
 				]
 
 				// WHEN
-				const result = createEqFunctionInsertEdits(
+				const result = buildInsertEditsForEqFunction(
 					mockDocument,
 					matches
 				)
@@ -73,7 +73,7 @@ describe('createEqFunctionInsertEdits', () => {
 	})
 
 	describe('GIVEN equipment match with single EqFunction without LNodes', () => {
-		describe('WHEN createEqFunctionInsertEdits is called', () => {
+		describe('WHEN buildInsertEditsForEqFunction is called', () => {
 			it('THEN should create one Insert edit with EqFunction element', () => {
 				// GIVEN
 				const scdElement = mockDocument.createElement(
@@ -105,7 +105,7 @@ describe('createEqFunctionInsertEdits', () => {
 				]
 
 				// WHEN
-				const result = createEqFunctionInsertEdits(
+				const result = buildInsertEditsForEqFunction(
 					mockDocument,
 					matches
 				)
@@ -149,7 +149,7 @@ describe('createEqFunctionInsertEdits', () => {
 				]
 
 				// WHEN
-				const result = createEqFunctionInsertEdits(
+				const result = buildInsertEditsForEqFunction(
 					mockDocument,
 					matches
 				)
@@ -195,7 +195,7 @@ describe('createEqFunctionInsertEdits', () => {
 				]
 
 				// WHEN
-				const result = createEqFunctionInsertEdits(
+				const result = buildInsertEditsForEqFunction(
 					mockDocument,
 					matches
 				)
@@ -207,7 +207,7 @@ describe('createEqFunctionInsertEdits', () => {
 	})
 
 	describe('GIVEN equipment match with terminals', () => {
-		describe('WHEN createEqFunctionInsertEdits is called', () => {
+		describe('WHEN buildInsertEditsForEqFunction is called', () => {
 			it('THEN should set reference to node after last terminal', () => {
 				// GIVEN
 				const scdElement = mockDocument.createElement(
@@ -245,7 +245,7 @@ describe('createEqFunctionInsertEdits', () => {
 				]
 
 				// WHEN
-				const result = createEqFunctionInsertEdits(
+				const result = buildInsertEditsForEqFunction(
 					mockDocument,
 					matches
 				)
@@ -258,7 +258,7 @@ describe('createEqFunctionInsertEdits', () => {
 	})
 
 	describe('GIVEN equipment match with EqFunction containing LNodes', () => {
-		describe('WHEN createEqFunctionInsertEdits is called', () => {
+		describe('WHEN buildInsertEditsForEqFunction is called', () => {
 			it('THEN should create LNode child elements for each lnode template', () => {
 				// GIVEN
 				const scdElement = mockDocument.createElement(
@@ -304,7 +304,7 @@ describe('createEqFunctionInsertEdits', () => {
 				]
 
 				// WHEN
-				const result = createEqFunctionInsertEdits(
+				const result = buildInsertEditsForEqFunction(
 					mockDocument,
 					matches
 				)
@@ -323,7 +323,7 @@ describe('createEqFunctionInsertEdits', () => {
 	})
 
 	describe('GIVEN equipment match with multiple EqFunctions', () => {
-		describe('WHEN createEqFunctionInsertEdits is called', () => {
+		describe('WHEN buildInsertEditsForEqFunction is called', () => {
 			it('THEN should create multiple Insert edits', () => {
 				// GIVEN
 				const scdElement = mockDocument.createElement(
@@ -362,7 +362,7 @@ describe('createEqFunctionInsertEdits', () => {
 				]
 
 				// WHEN
-				const result = createEqFunctionInsertEdits(
+				const result = buildInsertEditsForEqFunction(
 					mockDocument,
 					matches
 				)
@@ -380,7 +380,7 @@ describe('createEqFunctionInsertEdits', () => {
 	})
 
 	describe('GIVEN multiple equipment matches with EqFunctions', () => {
-		describe('WHEN createEqFunctionInsertEdits is called', () => {
+		describe('WHEN buildInsertEditsForEqFunction is called', () => {
 			it('THEN should create Insert edits for all equipment', () => {
 				// GIVEN
 				const scdElement1 = mockDocument.createElement(
@@ -444,7 +444,7 @@ describe('createEqFunctionInsertEdits', () => {
 				]
 
 				// WHEN
-				const result = createEqFunctionInsertEdits(
+				const result = buildInsertEditsForEqFunction(
 					mockDocument,
 					matches
 				)
@@ -487,7 +487,7 @@ describe('createEqFunctionInsertEdits', () => {
 				]
 
 				// WHEN
-				const result = createEqFunctionInsertEdits(
+				const result = buildInsertEditsForEqFunction(
 					mockDocument,
 					matches
 				)

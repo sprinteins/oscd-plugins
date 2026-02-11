@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { updateBay } from './bay-update'
+import { buildEditForBayUpdate } from './bay-update'
 import type { BayType } from '../../common-types/ssd-types'
 import type { SetAttributes } from '@openscd/oscd-api'
 
-describe('updateBay', () => {
+describe('buildEditForBayUpdate', () => {
 	describe('GIVEN an SCD Bay element with existing uuid', () => {
-		describe('WHEN updateBay is called', () => {
+		describe('WHEN buildEditForBayUpdate is called', () => {
 			it('THEN should preserve the existing uuid', () => {
 				//NOTE - When switching BayTypes it should update so this will need to be removed later or put in a different place
 				// GIVEN
@@ -23,7 +23,7 @@ describe('updateBay', () => {
 				}
 
 				// WHEN
-				const result: SetAttributes = updateBay(scdBay, bayType)
+				const result: SetAttributes = buildEditForBayUpdate(scdBay, bayType)
 
 				// THEN
 				expect(result.element).toBe(scdBay)
@@ -34,7 +34,7 @@ describe('updateBay', () => {
 	})
 
 	describe('GIVEN an SCD Bay element without uuid', () => {
-		describe('WHEN updateBay is called', () => {
+		describe('WHEN buildEditForBayUpdate is called', () => {
 			it('THEN should generate a new uuid', () => {
 				// GIVEN
 				const mockDocument = new DOMParser().parseFromString(
@@ -51,7 +51,7 @@ describe('updateBay', () => {
 				}
 
 				// WHEN
-				const result: SetAttributes = updateBay(scdBay, bayType)
+				const result: SetAttributes = buildEditForBayUpdate(scdBay, bayType)
 
 				// THEN
 				expect(result.element).toBe(scdBay)
@@ -65,7 +65,7 @@ describe('updateBay', () => {
 	})
 
 	describe('GIVEN a BayType with specific uuid', () => {
-		describe('WHEN updateBay is called', () => {
+		describe('WHEN buildEditForBayUpdate is called', () => {
 			it('THEN should set templateUuid to BayType uuid', () => {
 				// GIVEN
 				const mockDocument = new DOMParser().parseFromString(
@@ -83,7 +83,7 @@ describe('updateBay', () => {
 				}
 
 				// WHEN
-				const result: SetAttributes = updateBay(scdBay, bayType)
+				const result: SetAttributes = buildEditForBayUpdate(scdBay, bayType)
 
 				// THEN
 				expect(result.attributes?.templateUuid).toBe(
@@ -94,7 +94,7 @@ describe('updateBay', () => {
 	})
 
 	describe('GIVEN various bay configurations', () => {
-		describe('WHEN updateBay is called', () => {
+		describe('WHEN buildEditForBayUpdate is called', () => {
 			it('THEN should always return a SetAttributes object with empty attributesNS', () => {
 				// GIVEN
 				const mockDocument = new DOMParser().parseFromString(
@@ -111,7 +111,7 @@ describe('updateBay', () => {
 				}
 
 				// WHEN
-				const result: SetAttributes = updateBay(scdBay, bayType)
+				const result: SetAttributes = buildEditForBayUpdate(scdBay, bayType)
 
 				// THEN
 				expect(result.attributesNS).toEqual({})
@@ -133,7 +133,7 @@ describe('updateBay', () => {
 				}
 
 				// WHEN
-				const result: SetAttributes = updateBay(scdBay, bayType)
+				const result: SetAttributes = buildEditForBayUpdate(scdBay, bayType)
 
 				// THEN
 				expect(result).toHaveProperty('element')

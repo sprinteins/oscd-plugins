@@ -57,7 +57,7 @@ const shouldShowBayTypeDetails = $derived.by(() => {
 		return false
 	}
 
-	if (bayStore.assigendBayType === bayTypesStore.selectedBayType) {
+	if (bayStore.assignedBayType === bayTypesStore.selectedBayType) {
 		return true
 	}
 

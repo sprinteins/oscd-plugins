@@ -6,14 +6,14 @@ import {
 	equipmentMatchingStore,
 	bayStore
 } from '../stores'
-import { insertDataTypeTemplatesInStages } from './scd-edits/data-types'
+import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
 import { matchEquipment } from './matching'
 import {
-	createEqFunctionInsertEdits,
-	createEquipmentUpdateEdits,
-	createFunctionInsertEdits,
-	updateBay
+	buildEditForBayUpdate,
+	buildInsertEditsForEqFunction,
+	buildEditsForEquipmentUpdates,
+	buildInsertEditsForFunction
 } from './scd-edits'
 import { getDocumentAndEditor } from '@/headless/utils'
 
@@ -46,16 +46,16 @@ export function applyBayTypeSelection(bayName: string): void {
 
 	const edits: (Insert | SetAttributes)[] = []
 
-	const bayEdits = updateBay(scdBay, bayType)
+	const bayEdits = buildEditForBayUpdate(scdBay, bayType)
 	edits.push(bayEdits)
 
-	const equipmentEdits = createEquipmentUpdateEdits(matches)
+	const equipmentEdits = buildEditsForEquipmentUpdates(matches)
 	edits.push(...equipmentEdits)
 
-	const eqFunctionEdits = createEqFunctionInsertEdits(doc, matches)
+	const eqFunctionEdits = buildInsertEditsForEqFunction(doc, matches)
 	edits.push(...eqFunctionEdits)
 
-	const functionEdits = createFunctionInsertEdits(doc, bayType, scdBay)
+	const functionEdits = buildInsertEditsForFunction(doc, bayType, scdBay)
 	edits.push(...functionEdits)
 
 	const { element: dataTypeTemplates, edit: dtsCreationEdit } =
@@ -65,11 +65,7 @@ export function applyBayTypeSelection(bayName: string): void {
 		edits.push(dtsCreationEdit)
 	}
 
-	editor.commit(edits, {
-		title: `Assign BayType "${bayType.name}" to Bay "${bayName}"`
-	})
-
-	bayStore.assigendBayType = selectedBayTypeName
+	bayStore.assignedBayType = selectedBayTypeName
 	bayStore.equipmentMatches = matches
 
 	const allLNodeTemplates: LNodeTemplate[] = []
@@ -89,10 +85,14 @@ export function applyBayTypeSelection(bayName: string): void {
 		}
 	}
 
-	insertDataTypeTemplatesInStages(
+	const dataTypeTemplateEdits = buildEditsForDataTypeTemplates(
 		doc,
 		dataTypeTemplates,
-		allLNodeTemplates,
-		editor
+		allLNodeTemplates
 	)
+	edits.push(...dataTypeTemplateEdits)
+
+	editor.commit(edits, {
+		title: `Assign BayType "${bayType.name}" to Bay "${bayName}"`
+	})
 }

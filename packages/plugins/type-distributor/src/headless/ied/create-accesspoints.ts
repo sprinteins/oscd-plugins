@@ -1,20 +1,14 @@
 import type { Insert } from '@openscd/oscd-api'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { createElement } from '@oscd-plugins/core'
+import { getDocumentAndEditor } from '../utils';
 
 export function createAccessPoints(
 	iedName: string,
 	accessPoints: { name: string; description?: string }[],
 	squash = false
 ): void {
-	if (!pluginGlobalStore.xmlDocument) {
-		throw new Error('No XML document found')
-	}
-	if (!pluginGlobalStore.editor) {
-		throw new Error('No editor found')
-	}
-	const editor = pluginGlobalStore.editor
-	const doc = pluginGlobalStore.xmlDocument
+	const { doc, editor } = getDocumentAndEditor()
 
 	const iedElement = doc.querySelector(`IED[name="${iedName}"]`)
 	if (!iedElement) {

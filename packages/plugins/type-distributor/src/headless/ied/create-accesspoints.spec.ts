@@ -130,7 +130,7 @@ describe('createAccessPoints', () => {
 
 			expect(() =>
 				createAccessPoints('TestIED', [{ name: 'AP1' }])
-			).toThrow('No XML document found')
+			).toThrow('No XML document loaded')
 		})
 
 		it('should throw error when editor is not available', () => {
@@ -138,7 +138,7 @@ describe('createAccessPoints', () => {
 
 			expect(() =>
 				createAccessPoints('TestIED', [{ name: 'AP1' }])
-			).toThrow('No editor found')
+			).toThrow('No editor available')
 		})
 
 		it('should throw error when IED with given name is not found', () => {

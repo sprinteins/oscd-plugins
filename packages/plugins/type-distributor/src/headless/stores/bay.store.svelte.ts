@@ -4,7 +4,7 @@ import type { EquipmentMatch } from '@/headless/matching/types'
 class UseBayStore {
 	selectedBay: string | null = $state<string | null>(null)
 	selectedBayUuid = $state<string | null>(null)
-	assigendBayType = $state<string | null>(null)
+	assignedBayType = $state<string | null>(null)
 	pendingBayTypeApply = $state<string | null>(null)
 	equipmentMatches: EquipmentMatch[] = $state<EquipmentMatch[]>([])
 

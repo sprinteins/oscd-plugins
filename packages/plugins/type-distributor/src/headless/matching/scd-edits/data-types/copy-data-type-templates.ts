@@ -1,5 +1,5 @@
 import type { LNodeTemplate } from '@/headless/common-types'
-import type { XMLEditor } from '@openscd/oscd-editor'
+import type { Insert } from '@openscd/oscd-editor'
 import { ssdImportStore } from '@/headless/stores'
 import {
 	queryDOTypesFromLNodeType,
@@ -7,7 +7,7 @@ import {
 	queryTypesFromDAType
 } from './query-types'
 import { TYPE_ORDER, type TypeName } from './query-insertion-references'
-import { createTypeEdits } from './type-creation-helpers'
+import { buildEditsForType } from './type-creation-helpers'
 
 interface TypeCollections {
 	lnodeTypeIds: Set<string>
@@ -151,22 +151,22 @@ const TYPE_TO_COLLECTION_KEY: Record<TypeName, keyof TypeCollections> = {
 	EnumType: 'enumTypeIds'
 }
 
-export function insertDataTypeTemplatesInStages(
+export function buildEditsForDataTypeTemplates(
 	doc: Document,
 	dataTypeTemplates: Element,
-	lnodeTemplates: LNodeTemplate[],
-	editor: XMLEditor
-): void {
+	lnodeTemplates: LNodeTemplate[]
+): Insert[] {
 	const allCollections = queryAllTypesFromLNodeTemplates(lnodeTemplates)
 	const missingCollections = filterExistingTypes(doc, allCollections)
+	const edits = []
 
 	for (const typeName of TYPE_ORDER) {
 		const collectionKey = TYPE_TO_COLLECTION_KEY[typeName]
 		const typeIds = missingCollections[collectionKey]
 
 		if (typeIds.size > 0) {
-			const edits = createTypeEdits(dataTypeTemplates, typeIds, typeName)
-			editor.commit(edits, { squash: true })
+			edits.push(...buildEditsForType(dataTypeTemplates, typeIds, typeName))
 		}
 	}
+	return edits
 }
