@@ -1,6 +1,5 @@
 import { getDocumentAndEditor } from '@/headless/utils'
 import type { EquipmentMatch } from '@/headless/matching/types'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 class UseBayStore {
 	selectedBay: string | null = $state<string | null>(null)
