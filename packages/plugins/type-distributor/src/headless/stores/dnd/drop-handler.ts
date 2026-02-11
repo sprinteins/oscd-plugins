@@ -5,12 +5,11 @@ import type {
 	FunctionTemplate
 } from '@/headless/common-types'
 import { applyBayTypeSelection } from '@/headless/matching'
-import { createMultipleLNodesInAccessPoint } from '@/headless/ied/create-lNode-in-access-point'
-import { updateBayLNodeIedNames } from '@/headless/ied/update-bay-lnodes'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { bayTypesStore } from '../bay-types.store.svelte'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
+import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
+import { createMultipleLNodesInAccessPoint } from '@/headless/ied'
 
 type BayTypeApplicationState = {
 	hasAssignedBayType: boolean
@@ -41,7 +40,7 @@ export function getBayTypeApplicationState(): BayTypeApplicationState {
 		!!bayStore.pendingBayTypeApply && requiresManualMatching
 
 	return {
-		hasAssignedBayType: !!bayStore.assigendBayType,
+		hasAssignedBayType: !!bayStore.assignedBayType,
 		hasSelectedBay: !!bayStore.selectedBay,
 		requiresManualMatching,
 		hasValidAutoSelection,
@@ -63,14 +62,14 @@ export function applyBayTypeIfNeeded(state: BayTypeApplicationState): boolean {
 	}
 
 	applyBayTypeSelection(bayStore.selectedBay)
-	bayStore.assigendBayType = bayTypesStore.selectedBayType
+	bayStore.assignedBayType = bayTypesStore.selectedBayType
 	bayStore.pendingBayTypeApply = null
 	equipmentMatchingStore.clearValidationResult()
 
 	return true
 }
 
-export function createIedEdits(
+export function buildEditsForIed(
 	sourceFunction: EqFunctionTemplate | FunctionTemplate,
 	lNodes: LNodeTemplate[],
 	targetAccessPoint: Element,
@@ -80,25 +79,6 @@ export function createIedEdits(
 		sourceFunction,
 		lNodes,
 		accessPoint: targetAccessPoint,
-		equipmentUuid
-	})
-}
-
-export function createBayEdits(
-	lNodes: LNodeTemplate[],
-	targetSIedName: string,
-	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	equipmentUuid?: string
-): (Insert | SetAttributes)[] {
-	if (!bayStore.scdBay) {
-		return []
-	}
-
-	return updateBayLNodeIedNames({
-		scdBay: bayStore.scdBay,
-		lNodes,
-		iedName: targetSIedName,
-		sourceFunction,
 		equipmentUuid
 	})
 }
@@ -131,10 +111,7 @@ export function commitEdits(
 	title: string,
 	squash: boolean
 ): void {
-	const editor = pluginGlobalStore.editor
-	if (!editor) {
-		throw new Error('No editor found')
-	}
+	const { editor } = getDocumentAndEditor()
 
 	editor.commit(edits, squash ? { title, squash: true } : { title })
 }

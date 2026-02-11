@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { createEquipmentUpdateEdits } from './equipment-updates'
+import { buildEditsForEquipmentUpdates } from './equipment-updates'
 import type { EquipmentMatch } from '../types'
 import type {
 	ConductingEquipmentType,
@@ -7,15 +7,15 @@ import type {
 } from '@/headless/common-types/ssd-types'
 import type { SetAttributes } from '@openscd/oscd-api'
 
-describe('createEquipmentUpdateEdits', () => {
+describe('buildEditsForEquipmentUpdates', () => {
 	describe('GIVEN an empty array of equipment matches', () => {
-		describe('WHEN createEquipmentUpdateEdits is called', () => {
+		describe('WHEN buildEditsForEquipmentUpdates is called', () => {
 			it('THEN should return an empty array', () => {
 				// GIVEN
 				const matches: EquipmentMatch[] = []
 
 				// WHEN
-				const result = createEquipmentUpdateEdits(matches)
+				const result = buildEditsForEquipmentUpdates(matches)
 
 				// THEN
 				expect(result).toEqual([])
@@ -24,7 +24,7 @@ describe('createEquipmentUpdateEdits', () => {
 	})
 
 	describe('GIVEN a single equipment match without terminals', () => {
-		describe('WHEN createEquipmentUpdateEdits is called', () => {
+		describe('WHEN buildEditsForEquipmentUpdates is called', () => {
 			it('THEN should create one SetAttributes edit for the equipment', () => {
 				// GIVEN
 				const mockDocument = new DOMParser().parseFromString(
@@ -56,7 +56,7 @@ describe('createEquipmentUpdateEdits', () => {
 				]
 
 				// WHEN
-				const result = createEquipmentUpdateEdits(matches)
+				const result = buildEditsForEquipmentUpdates(matches)
 
 				// THEN
 				expect(result).toHaveLength(1)
@@ -72,7 +72,7 @@ describe('createEquipmentUpdateEdits', () => {
 	})
 
 	describe('GIVEN equipment match with terminals without uuid', () => {
-		describe('WHEN createEquipmentUpdateEdits is called', () => {
+		describe('WHEN buildEditsForEquipmentUpdates is called', () => {
 			it('THEN should create SetAttributes edits for equipment and all terminals', () => {
 				// GIVEN
 				const mockDocument = new DOMParser().parseFromString(
@@ -107,7 +107,7 @@ describe('createEquipmentUpdateEdits', () => {
 				]
 
 				// WHEN
-				const result = createEquipmentUpdateEdits(matches)
+				const result = buildEditsForEquipmentUpdates(matches)
 
 				// THEN
 				expect(result).toHaveLength(3) // 1 equipment + 2 terminals
@@ -127,7 +127,7 @@ describe('createEquipmentUpdateEdits', () => {
 	})
 
 	describe('GIVEN equipment match with terminals that have uuid', () => {
-		describe('WHEN createEquipmentUpdateEdits is called', () => {
+		describe('WHEN buildEditsForEquipmentUpdates is called', () => {
 			it('THEN should not create updates for terminals with existing uuid', () => {
 				// GIVEN
 				const mockDocument = new DOMParser().parseFromString(
@@ -162,7 +162,7 @@ describe('createEquipmentUpdateEdits', () => {
 				]
 
 				// WHEN
-				const result = createEquipmentUpdateEdits(matches)
+				const result = buildEditsForEquipmentUpdates(matches)
 
 				// THEN
 				expect(result).toHaveLength(1) // Only equipment update
@@ -171,7 +171,7 @@ describe('createEquipmentUpdateEdits', () => {
 	})
 
 	describe('GIVEN equipment match with mixed terminals', () => {
-		describe('WHEN createEquipmentUpdateEdits is called', () => {
+		describe('WHEN buildEditsForEquipmentUpdates is called', () => {
 			it('THEN should only create updates for terminals without uuid', () => {
 				// GIVEN
 				const mockDocument = new DOMParser().parseFromString(
@@ -208,7 +208,7 @@ describe('createEquipmentUpdateEdits', () => {
 				]
 
 				// WHEN
-				const result = createEquipmentUpdateEdits(matches)
+				const result = buildEditsForEquipmentUpdates(matches)
 
 				// THEN
 				expect(result).toHaveLength(3) // 1 equipment + 2 terminals (T2 and T4)
@@ -227,7 +227,7 @@ describe('createEquipmentUpdateEdits', () => {
 	})
 
 	describe('GIVEN multiple equipment matches', () => {
-		describe('WHEN createEquipmentUpdateEdits is called', () => {
+		describe('WHEN buildEditsForEquipmentUpdates is called', () => {
 			it('THEN should create updates for all equipment', () => {
 				// GIVEN
 				const mockDoc1 = new DOMParser().parseFromString(
@@ -273,7 +273,7 @@ describe('createEquipmentUpdateEdits', () => {
 				]
 
 				// WHEN
-				const result = createEquipmentUpdateEdits(matches)
+				const result = buildEditsForEquipmentUpdates(matches)
 
 				// THEN
 				expect(result).toHaveLength(2)
@@ -330,7 +330,7 @@ describe('createEquipmentUpdateEdits', () => {
 				]
 
 				// WHEN
-				const result = createEquipmentUpdateEdits(matches)
+				const result = buildEditsForEquipmentUpdates(matches)
 
 				// THEN
 				const uuid1 = (result[0] as SetAttributes).attributes?.uuid
@@ -341,7 +341,7 @@ describe('createEquipmentUpdateEdits', () => {
 	})
 
 	describe('GIVEN equipment matches with complex terminal scenarios', () => {
-		describe('WHEN createEquipmentUpdateEdits is called', () => {
+		describe('WHEN buildEditsForEquipmentUpdates is called', () => {
 			it('THEN should handle each equipment independently', () => {
 				// GIVEN
 				const mockDoc1 = new DOMParser().parseFromString(
@@ -392,7 +392,7 @@ describe('createEquipmentUpdateEdits', () => {
 				]
 
 				// WHEN
-				const result = createEquipmentUpdateEdits(matches)
+				const result = buildEditsForEquipmentUpdates(matches)
 
 				// THEN
 				// Equipment 1: 1 equipment + 1 terminal = 2

@@ -1,1 +1,1 @@
-export { insertDataTypeTemplatesInStages } from './copy-data-type-templates'
+export { buildEditsForDataTypeTemplates } from './copy-data-type-templates'

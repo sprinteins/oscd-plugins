@@ -1,4 +1,4 @@
-export { createEquipmentUpdateEdits } from './equipment-updates'
-export { createEqFunctionInsertEdits } from './eqfunction-creation'
-export { createFunctionInsertEdits } from './function-creation'
-export { updateBay } from './bay-update'
+export { buildEditsForEquipmentUpdates } from './equipment-updates'
+export { buildInsertEditsForEqFunction } from './eqfunction-creation'
+export { buildInsertEditsForFunction } from './function-creation'
+export { buildEditForBayUpdate } from './bay-update'

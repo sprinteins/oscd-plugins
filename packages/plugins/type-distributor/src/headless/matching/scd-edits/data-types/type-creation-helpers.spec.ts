@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { createTypeEdits } from './type-creation-helpers'
+import { buildEditsForType } from './type-creation-helpers'
 import { ssdImportStore } from '@/headless/stores'
 import type { Insert } from '@openscd/oscd-api'
 import { queryTypeReference } from './query-insertion-references'
@@ -59,16 +59,16 @@ describe('type-creation-helpers', () => {
 		ssdImportStore.loadedSSDDocument = null
 	})
 
-	describe('createTypeEdits', () => {
+	describe('buildEditsForType', () => {
 		describe('GIVEN an empty set of type IDs', () => {
-			describe('WHEN createTypeEdits is called', () => {
+			describe('WHEN buildEditsForType is called', () => {
 				it('THEN should return an empty array', () => {
 					// GIVEN
 					const typeIds = new Set<string>()
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -81,7 +81,7 @@ describe('type-creation-helpers', () => {
 		})
 
 		describe('GIVEN a set with one LNodeType ID that exists in SSD', () => {
-			describe('WHEN createTypeEdits is called', () => {
+			describe('WHEN buildEditsForType is called', () => {
 				it('THEN should create one Insert edit', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1'])
@@ -89,7 +89,7 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(mockReference)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -108,7 +108,7 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -128,7 +128,7 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -148,7 +148,7 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -164,7 +164,7 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					createTypeEdits(mockDataTypeTemplates, typeIds, 'LNodeType')
+					buildEditsForType(mockDataTypeTemplates, typeIds, 'LNodeType')
 
 					// THEN
 					expect(queryTypeReference).toHaveBeenCalledWith(
@@ -181,7 +181,7 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(mockReference)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -194,14 +194,14 @@ describe('type-creation-helpers', () => {
 		})
 
 		describe('GIVEN multiple type IDs that exist in SSD', () => {
-			describe('WHEN createTypeEdits is called', () => {
+			describe('WHEN buildEditsForType is called', () => {
 				it('THEN should create multiple Insert edits', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1', 'TestLN2'])
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -217,7 +217,7 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -238,7 +238,7 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(mockReference)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -252,14 +252,14 @@ describe('type-creation-helpers', () => {
 		})
 
 		describe('GIVEN type IDs for DOType elements', () => {
-			describe('WHEN createTypeEdits is called', () => {
+			describe('WHEN buildEditsForType is called', () => {
 				it('THEN should clone DOType elements correctly', () => {
 					// GIVEN
 					const typeIds = new Set(['MOD_Type1', 'POS_Type1'])
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'DOType'
@@ -278,7 +278,7 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'DOType'
@@ -294,14 +294,14 @@ describe('type-creation-helpers', () => {
 		})
 
 		describe('GIVEN type IDs for DAType elements', () => {
-			describe('WHEN createTypeEdits is called', () => {
+			describe('WHEN buildEditsForType is called', () => {
 				it('THEN should clone DAType elements correctly', () => {
 					// GIVEN
 					const typeIds = new Set(['Origin_Type'])
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'DAType'
@@ -317,14 +317,14 @@ describe('type-creation-helpers', () => {
 		})
 
 		describe('GIVEN type IDs for EnumType elements', () => {
-			describe('WHEN createTypeEdits is called', () => {
+			describe('WHEN buildEditsForType is called', () => {
 				it('THEN should clone EnumType elements correctly', () => {
 					// GIVEN
 					const typeIds = new Set(['OriginatorCategory'])
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'EnumType'
@@ -343,14 +343,14 @@ describe('type-creation-helpers', () => {
 		})
 
 		describe('GIVEN a type ID that does not exist in SSD', () => {
-			describe('WHEN createTypeEdits is called', () => {
+			describe('WHEN buildEditsForType is called', () => {
 				it('THEN should skip non-existent types', () => {
 					// GIVEN
 					const typeIds = new Set(['NonExistent_Type'])
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -370,7 +370,7 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					const result = createTypeEdits(
+					const result = buildEditsForType(
 						mockDataTypeTemplates,
 						typeIds,
 						'LNodeType'
@@ -389,7 +389,7 @@ describe('type-creation-helpers', () => {
 		})
 
 		describe('GIVEN no SSD document loaded', () => {
-			describe('WHEN createTypeEdits is called', () => {
+			describe('WHEN buildEditsForType is called', () => {
 				it('THEN should throw an error', () => {
 					// GIVEN
 					ssdImportStore.loadedSSDDocument = null
@@ -398,7 +398,7 @@ describe('type-creation-helpers', () => {
 
 					// WHEN & THEN
 					expect(() => {
-						createTypeEdits(
+						buildEditsForType(
 							mockDataTypeTemplates,
 							typeIds,
 							'LNodeType'

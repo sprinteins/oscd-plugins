@@ -7,6 +7,7 @@ import {
 	bayStore
 } from '@/headless/stores'
 import type { BayType } from '@/headless/common-types'
+import { validateEquipmentMatch } from './validation'
 
 vi.mock('@/headless/stores', () => ({
 	ssdImportStore: {
@@ -26,8 +27,6 @@ vi.mock('@/headless/stores', () => ({
 vi.mock('./validation', () => ({
 	validateEquipmentMatch: vi.fn()
 }))
-
-const { validateEquipmentMatch } = await import('./validation')
 
 describe('validateBayTypeSelection', () => {
 	let mockScdBay: Element
