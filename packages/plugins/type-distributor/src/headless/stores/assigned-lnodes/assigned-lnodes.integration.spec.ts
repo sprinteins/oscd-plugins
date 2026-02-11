@@ -3,7 +3,7 @@ import { assignedLNodesStore } from '@/headless/stores/assigned-lnodes'
 import { dndStore } from '@/headless/stores/dnd'
 import type { LNodeTemplate, FunctionTemplate } from '@/headless/common-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
-import { createIedEdits } from '@/headless/stores/dnd/drop-handler'
+import { buildEditsForIed } from '@/headless/stores/dnd/drop-handler'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 // Mock modules
@@ -24,7 +24,7 @@ vi.mock('@/headless/stores/dnd/drop-handler', () => ({
 		hasPendingManualSelection: false
 	})),
 	applyBayTypeIfNeeded: vi.fn(() => false),
-	createIedEdits: vi.fn(() => []),
+	buildEditsForIed: vi.fn(() => []),
 	createBayEdits: vi.fn(() => []),
 	generateCommitTitle: vi.fn(() => 'Test Commit'),
 	commitEdits: vi.fn()
@@ -159,14 +159,14 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 	describe('Drag and drop flow', () => {
 		beforeEach(() => {
-			// Mock createIedEdits to return a non-empty array so commitEdits is called
-			vi.mocked(createIedEdits).mockReturnValue([
-				// biome-ignore lint/suspicious/noExplicitAny: mock data
+			// Mock buildEditsForIed to return a non-empty array so commitEdits is called
+			vi.mocked(buildEditsForIed).mockReturnValue([
 				{
 					type: 'insert',
 					node: {},
 					parent: accessPoint,
 					reference: null
+					// biome-ignore lint/suspicious/noExplicitAny: mock data
 				} as any
 			])
 		})
