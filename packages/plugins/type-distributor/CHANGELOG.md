@@ -6,25 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.3.0] - 2026-02-11
-### Added
-- Assigned LNodes tracking system to prevent duplicate LNode assignments to IEDs
-  - New `assignedLNodesStore` that maintains an index of already-assigned LNodes
-  - Visual feedback for assigned LNodes (50% opacity, disabled cursor, gray text)
-  - Parent-level disabling when all child LNodes are assigned
-  - Automatic rebuild on bay selection changes and document edits
-  - Incremental updates during drag-and-drop for performance
-- Scoped LNode uniqueness using `parentUuid:lnClass:lnType:lnInst` format
-- Detection of assigned LNodes via `iedName` attribute presence
-- Integration with drag-and-drop workflow to mark LNodes as assigned after successful drop
+## Added
+- Added `assignedLNodesStore` to track and prevent duplicate LNode assignments, with visual feedback and parent-level disabling.
+- Scoped LNode uniqueness to `LDevice` using `parentUuid:lnClass:lnType:lnInst` and detect assignments via `iedName`.
+- Drag-and-drop integration marks LNodes assigned and components check assignment status before enabling dragging.
 
-### Changed
-- LNode uniqueness is now scoped to LDevice instead of entire document^
-  - `hasLNodeInTargetDoc` now checks within specific LDevice context
-  - Prevents false positives when same LNode type exists in different LDevices
-- Drag-and-drop components now check assignment status before enabling dragging
-- UI components reactively update based on assignment status using Svelte 5 `$derived`
-- Equipment matching updated to use `bayTypeEquipment.uuid` instead of `templateEquipment.uuid`
-- Bay type details view now receives full `bayTypeWithTemplates` for improved context
+## Changed
+- Supports incremental updates during drag-and-drop and automatic rebuilds on bay selection or document edits for performance.
+- Equipment matching now uses `bayTypeEquipment.uuid`; UI updates use Svelte 5 `$derived` and bay details receive `bayTypeWithTemplates`.
 
 ## [0.2.1] - 2026-02-06
 ## Fixed
