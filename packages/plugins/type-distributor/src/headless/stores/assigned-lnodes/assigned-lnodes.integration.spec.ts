@@ -3,6 +3,8 @@ import { assignedLNodesStore } from '@/headless/stores/assigned-lnodes'
 import { dndStore } from '@/headless/stores/dnd'
 import type { LNodeTemplate, FunctionTemplate } from '@/headless/common-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
+import { createIedEdits } from '@/headless/stores/dnd/drop-handler'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 // Mock modules
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -48,9 +50,6 @@ vi.mock('@/headless/stores/equipment-matching.store.svelte', () => ({
 		validationResult: null
 	}
 }))
-
-const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
-const dropHandler = await import('@/headless/stores/dnd/drop-handler')
 
 describe('Integration: Assigned LNodes Flow', () => {
 	let mockDocument: Document
@@ -161,7 +160,7 @@ describe('Integration: Assigned LNodes Flow', () => {
 	describe('Drag and drop flow', () => {
 		beforeEach(() => {
 			// Mock createIedEdits to return a non-empty array so commitEdits is called
-			vi.mocked(dropHandler.createIedEdits).mockReturnValue([
+			vi.mocked(createIedEdits).mockReturnValue([
 				// biome-ignore lint/suspicious/noExplicitAny: mock data
 				{
 					type: 'insert',

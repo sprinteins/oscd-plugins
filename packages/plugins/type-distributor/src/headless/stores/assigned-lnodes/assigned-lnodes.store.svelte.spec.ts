@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { assignedLNodesStore } from './assigned-lnodes.store.svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 // Mock pluginGlobalStore
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -27,8 +28,6 @@ vi.mock('../bay-types.store.svelte', () => ({
 		]
 	}
 }))
-
-const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
 describe('assignedLNodesStore', () => {
 	let mockDocument: Document
