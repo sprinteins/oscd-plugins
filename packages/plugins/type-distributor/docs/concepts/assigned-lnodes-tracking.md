@@ -2,14 +2,13 @@
 
 ## Overview
 
-The assigned LNodes tracking system prevents duplicate assignment of LNodes to IEDs by maintaining an index of already-assigned LNodes and disabling drag-and-drop functionality for them.
+The assigned LNodes tracking system prevents duplicate assignment of LNodes from one BayType to IEDs by maintaining an index of already-assigned LNodes and disabling drag-and-drop functionality for them.
 
 ## Problem Statement
 
-When distributing types from bay templates to IEDs, LNodes can be assigned multiple times if not tracked. This creates:
+When distributing types from BayTypes to IEDs, LNodes can be assigned multiple times if not tracked. This creates:
 
 - **Duplicate configurations**: Same LNode assigned to multiple IEDs or within the same IED
-- **Configuration errors**: Violates IEC 61850 uniqueness constraints
 - **User confusion**: No visual feedback about which LNodes are already assigned
 
 ## Solution Architecture
@@ -76,22 +75,6 @@ rebuild() {
 - Bay selection changes
 - Document edit count changes (tracked via `$effect`)
 
-### Incremental Updates
-
-For performance, the store supports incremental updates during drag-and-drop:
-
-```typescript
-// After successful LNode drop
-dndStore.handleDrop(accessPoint, iedName) {
-  // ... create edits and commit
-  
-  // Mark dropped LNodes as assigned without full rebuild
-  assignedLNodesStore.markAsAssigned(parentUuid, droppedLNodes)
-}
-```
-
-**Rationale**: Avoids expensive full document scans after every drop operation. Full rebuilds are reserved for significant state changes (bay selection, document reload).
-
 ## UI Integration
 
 ### Visual Feedback
@@ -130,7 +113,7 @@ let allAssigned = $derived(
 
 The store uses Svelte 5's `SvelteSet` for reactive updates:
 
-```svelte
+```typescript
 let assignedStatuses = $derived(
   func.lnodes.map((lnode) =>
     assignedLNodesStore.isAssigned(parentUuid, lnode)
@@ -204,17 +187,6 @@ const lnodes = func.querySelectorAll('LNode[iedName]')
 
 **Rationale**: LNodes without `iedName` exist in the bay structure as templates but haven't been assigned to any IED yet.
 
-### Null Document
-
-When the document is null/undefined, the index is cleared:
-
-```typescript
-if (!doc) {
-  this.assignedIndex.clear()
-  return
-}
-```
-
 ### Rebuild Synchronization
 
 Manual assignments are not persisted across rebuilds:
@@ -227,28 +199,6 @@ assignedLNodesStore.rebuild()  // Clears manual marks
 ```
 
 **Rationale**: The document is the single source of truth. Manual marks are runtime optimizations that must be validated against document state.
-
-## Testing Strategy
-
-### Unit Tests
-
-Tests covering store operations in isolation:
-
-- Building index from document structure
-- Marking LNodes as assigned
-- Checking assignment status
-- Parent UUID scoping
-- Edge cases (null document, missing attributes)
-
-### Integration Tests
-
-Tests covering full drag-and-drop flow:
-
-- Initial rebuild identifies existing assignments
-- Dragging unassigned LNodes marks them after drop
-- Mixed assigned/unassigned LNode handling
-- Rebuild synchronization after document changes
-- Performance: incremental updates vs full rebuild
 
 ## Performance Considerations
 
@@ -271,7 +221,7 @@ Rebuilds are triggered by:
 2. **Bay change**: When user selects different bay
 3. **Document edits**: Via `$effect` watching `editCount`
 
-**Optimization**: Drag-and-drop uses `markAsAssigned()` instead of `rebuild()` to avoid scanning entire document after each drop.
+**Should be kept in mind:** Each Drop edits the document, so rebuilds will occur after each assignment. 
 
 ### Memory Footprint
 
@@ -283,22 +233,8 @@ Memory impact: Negligible (strings are interned, Set overhead is minimal)
 
 ## Future Enhancements
 
-### Persistence
-
-Currently, assignments are tracked in-memory. Could be extended to:
-
-- Store assignment metadata as XML attributes
-- Generate assignment reports
-- Track assignment history/audit trail
-
-### Conflict Detection
-
-Could detect when an LNode is assigned to multiple IEDs and provide conflict resolution UI.
-
-### Assignment Validation
-
-Could validate LNode assignments against IEC 61850 rules:
-
-- LDevice uniqueness
-- LNode iedName/ldInst consistency
-- Cross-IED reference validation
+### Performance optimizations could include:
+- Debouncing rebuilds during rapid edits
+- Incremental updates instead of full rebuilds (e.g., only update affected parent UUIDs)
+- Caching results for unchanged parents
+- react better to edits
