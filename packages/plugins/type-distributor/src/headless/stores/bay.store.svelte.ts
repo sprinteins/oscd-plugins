@@ -1,10 +1,14 @@
 import { getDocumentAndEditor } from '@/headless/utils'
 import type { EquipmentMatch } from '@/headless/matching/types'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 class UseBayStore {
 	selectedBay: string | null = $state<string | null>(null)
 	selectedBayUuid = $state<string | null>(null)
-	assignedBayType = $state<string | null>(null)
+	assignedBayTypeUuid = $derived.by(() => {
+		if (!this.scdBay) return null
+		return this.scdBay.getAttribute('templateUuid') ?? null
+	})
 	pendingBayTypeApply = $state<string | null>(null)
 	equipmentMatches: EquipmentMatch[] = $state<EquipmentMatch[]>([])
 

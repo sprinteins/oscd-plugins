@@ -114,6 +114,10 @@ class UseAssignedLNodesStore {
 		const assigned = this.assignedIndex.has(key)
 		return assigned
 	}
+
+	get hasConnections(): boolean {
+		return this.assignedIndex.size > 0
+	}
 }
 
 export const assignedLNodesStore = new UseAssignedLNodesStore()
