@@ -3,8 +3,8 @@ import { queryLNodesFromAccessPoint } from './query-lnodes-from-access-point'
 
 describe('queryLNodesFromAccessPoint', () => {
 	describe('basic functionality', () => {
-		it('//GIVEN access point with single LN //WHEN queryLNodesFromAccessPoint is called //THEN should return LNode template', () => {
-			//GIVEN access point with single LN
+		it('GIVEN access point with single LN WHEN queryLNodesFromAccessPoint is called THEN should return LNode template', () => {
+			// GIVEN access point with single LN
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -18,10 +18,10 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should return LNode template
+			// THEN should return LNode template
 			expect(result).toHaveLength(1)
 			expect(result[0]).toEqual({
 				lnClass: 'XCBR',
@@ -32,8 +32,8 @@ describe('queryLNodesFromAccessPoint', () => {
 			})
 		})
 
-		it('//GIVEN access point with LN0 //WHEN queryLNodesFromAccessPoint is called //THEN should include LN0', () => {
-			//GIVEN access point with LN0
+		it('GIVEN access point with LN0 WHEN queryLNodesFromAccessPoint is called THEN should include LN0', () => {
+			// GIVEN access point with LN0
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -47,17 +47,17 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should include LN0
+			// THEN should include LN0
 			expect(result).toHaveLength(1)
 			expect(result[0].lnClass).toBe('LLN0')
 			expect(result[0].lnInst).toBe('')
 		})
 
-		it('//GIVEN access point with both LN and LN0 //WHEN queryLNodesFromAccessPoint is called //THEN should return both', () => {
-			//GIVEN access point with both LN and LN0
+		it('GIVEN access point with both LN and LN0 WHEN queryLNodesFromAccessPoint is called THEN should return both', () => {
+			// GIVEN access point with both LN and LN0
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -72,10 +72,10 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should return both
+			// THEN should return both
 			expect(result).toHaveLength(2)
 			expect(result[0].lnClass).toBe('LLN0')
 			expect(result[1].lnClass).toBe('XCBR')
@@ -83,8 +83,8 @@ describe('queryLNodesFromAccessPoint', () => {
 	})
 
 	describe('multiple elements', () => {
-		it('//GIVEN access point with multiple LDevice elements //WHEN queryLNodesFromAccessPoint is called //THEN should aggregate all LNodes', () => {
-			//GIVEN access point with multiple LDevice elements
+		it('GIVEN access point with multiple LDevice elements WHEN queryLNodesFromAccessPoint is called THEN should aggregate all LNodes', () => {
+			// GIVEN access point with multiple LDevice elements
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -101,10 +101,10 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should aggregate all LNodes
+			// THEN should aggregate all LNodes
 			expect(result).toHaveLength(2)
 			expect(result[0].lDeviceName).toBe('LD0')
 			expect(result[0].lnClass).toBe('XCBR')
@@ -112,8 +112,8 @@ describe('queryLNodesFromAccessPoint', () => {
 			expect(result[1].lnClass).toBe('XSWI')
 		})
 
-		it('//GIVEN access point with multiple Server elements //WHEN queryLNodesFromAccessPoint is called //THEN should aggregate from all servers', () => {
-			//GIVEN access point with multiple Server elements
+		it('GIVEN access point with multiple Server elements WHEN queryLNodesFromAccessPoint is called THEN should aggregate from all servers', () => {
+			// GIVEN access point with multiple Server elements
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -132,17 +132,17 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should aggregate from all servers
+			// THEN should aggregate from all servers
 			expect(result).toHaveLength(2)
 			expect(result[0].lnClass).toBe('XCBR')
 			expect(result[1].lnClass).toBe('XSWI')
 		})
 
-		it('//GIVEN LDevice with multiple LN elements //WHEN queryLNodesFromAccessPoint is called //THEN should return all with same lDeviceName', () => {
-			//GIVEN LDevice with multiple LN elements
+		it('GIVEN LDevice with multiple LN elements WHEN queryLNodesFromAccessPoint is called THEN should return all with same lDeviceName', () => {
+			// GIVEN LDevice with multiple LN elements
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -158,10 +158,10 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should return all with same lDeviceName
+			// THEN should return all with same lDeviceName
 			expect(result).toHaveLength(3)
 			expect(result.every((ln) => ln.lDeviceName === 'LD0')).toBe(true)
 			expect(result[0].lnInst).toBe('1')
@@ -171,8 +171,8 @@ describe('queryLNodesFromAccessPoint', () => {
 	})
 
 	describe('attribute handling', () => {
-		it('//GIVEN LNode with missing attributes //WHEN queryLNodesFromAccessPoint is called //THEN should use empty strings', () => {
-			//GIVEN LNode with missing attributes
+		it('GIVEN LNode with missing attributes WHEN queryLNodesFromAccessPoint is called THEN should use empty strings', () => {
+			// GIVEN LNode with missing attributes
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -186,18 +186,18 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should use empty strings
+			// THEN should use empty strings
 			expect(result).toHaveLength(1)
 			expect(result[0].lnClass).toBe('')
 			expect(result[0].lnType).toBe('')
 			expect(result[0].lnInst).toBe('')
 		})
 
-		it('//GIVEN LNode with iedName attribute //WHEN queryLNodesFromAccessPoint is called //THEN should capture iedName', () => {
-			//GIVEN LNode with iedName attribute
+		it('GIVEN LNode with iedName attribute WHEN queryLNodesFromAccessPoint is called THEN should capture iedName', () => {
+			// GIVEN LNode with iedName attribute
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -211,16 +211,16 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should capture iedName
+			// THEN should capture iedName
 			expect(result).toHaveLength(1)
 			expect(result[0].iedName).toBe('IED1')
 		})
 
-		it('//GIVEN LNode without iedName attribute //WHEN queryLNodesFromAccessPoint is called //THEN should have undefined iedName', () => {
-			//GIVEN LNode without iedName attribute
+		it('GIVEN LNode without iedName attribute WHEN queryLNodesFromAccessPoint is called THEN should have undefined iedName', () => {
+			// GIVEN LNode without iedName attribute
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -234,16 +234,16 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should have undefined iedName
+			// THEN should have undefined iedName
 			expect(result).toHaveLength(1)
 			expect(result[0].iedName).toBeUndefined()
 		})
 
-		it('//GIVEN LDevice without inst attribute //WHEN queryLNodesFromAccessPoint is called //THEN should have undefined lDeviceName', () => {
-			//GIVEN LDevice without inst attribute
+		it('GIVEN LDevice without inst attribute WHEN queryLNodesFromAccessPoint is called THEN should have undefined lDeviceName', () => {
+			// GIVEN LDevice without inst attribute
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -257,18 +257,18 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should have undefined lDeviceName
+			// THEN should have undefined lDeviceName
 			expect(result).toHaveLength(1)
 			expect(result[0].lDeviceName).toBeUndefined()
 		})
 	})
 
 	describe('edge cases', () => {
-		it('//GIVEN access point with no Server elements //WHEN queryLNodesFromAccessPoint is called //THEN should return empty array', () => {
-			//GIVEN access point with no Server elements
+		it('GIVEN access point with no Server elements WHEN queryLNodesFromAccessPoint is called THEN should return empty array', () => {
+			// GIVEN access point with no Server elements
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -277,15 +277,15 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should return empty array
+			// THEN should return empty array
 			expect(result).toEqual([])
 		})
 
-		it('//GIVEN access point with Server but no LDevice //WHEN queryLNodesFromAccessPoint is called //THEN should return empty array', () => {
-			//GIVEN access point with Server but no LDevice
+		it('GIVEN access point with Server but no LDevice WHEN queryLNodesFromAccessPoint is called THEN should return empty array', () => {
+			// GIVEN access point with Server but no LDevice
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -295,15 +295,15 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should return empty array
+			// THEN should return empty array
 			expect(result).toEqual([])
 		})
 
-		it('//GIVEN LDevice with no LN or LN0 elements //WHEN queryLNodesFromAccessPoint is called //THEN should return empty array', () => {
-			//GIVEN LDevice with no LN or LN0 elements
+		it('GIVEN LDevice with no LN or LN0 elements WHEN queryLNodesFromAccessPoint is called THEN should return empty array', () => {
+			// GIVEN LDevice with no LN or LN0 elements
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
@@ -315,10 +315,10 @@ describe('queryLNodesFromAccessPoint', () => {
 			)
 			const accessPoint = doc.documentElement
 
-			//WHEN queryLNodesFromAccessPoint is called
+			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			//THEN should return empty array
+			// THEN should return empty array
 			expect(result).toEqual([])
 		})
 	})

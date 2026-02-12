@@ -50,14 +50,14 @@ describe('bayStore', () => {
 	})
 
 	describe('state management', () => {
-		it('//GIVEN initial state //WHEN store is accessed //THEN should have null values', () => {
-			//GIVEN initial state
+		it('GIVEN initial state WHEN store is accessed THEN should have null values', () => {
+			// GIVEN initial state
 			const store = bayStore
 
-			//WHEN store is accessed
+			// WHEN store is accessed
 			const { selectedBay, selectedBayUuid, assignedBayType, pendingBayTypeApply, equipmentMatches } = store
 
-			//THEN should have null values
+			// THEN should have null values
 			expect(selectedBay).toBeNull()
 			expect(selectedBayUuid).toBeNull()
 			expect(assignedBayType).toBeNull()
@@ -65,52 +65,52 @@ describe('bayStore', () => {
 			expect(equipmentMatches).toEqual([])
 		})
 
-		it('//GIVEN a bay name //WHEN selectedBay is set //THEN should update selectedBay state', () => {
-			//GIVEN a bay name
+		it('GIVEN a bay name WHEN selectedBay is set THEN should update selectedBay state', () => {
+			// GIVEN a bay name
 			const bayName = 'TestBay1'
 
-			//WHEN selectedBay is set
+			// WHEN selectedBay is set
 			bayStore.selectedBay = bayName
 
-			//THEN should update selectedBay state
+			// THEN should update selectedBay state
 			expect(bayStore.selectedBay).toBe(bayName)
 		})
 
-		it('//GIVEN a bay UUID //WHEN selectedBayUuid is set //THEN should update selectedBayUuid state', () => {
-			//GIVEN a bay UUID
+		it('GIVEN a bay UUID WHEN selectedBayUuid is set THEN should update selectedBayUuid state', () => {
+			// GIVEN a bay UUID
 			const bayUuid = 'test-bay-uuid'
 
-			//WHEN selectedBayUuid is set
+			// WHEN selectedBayUuid is set
 			bayStore.selectedBayUuid = bayUuid
 
-			//THEN should update selectedBayUuid state
+			// THEN should update selectedBayUuid state
 			expect(bayStore.selectedBayUuid).toBe(bayUuid)
 		})
 
-		it('//GIVEN a bay type //WHEN assignedBayType is set //THEN should update assignedBayType state', () => {
-			//GIVEN a bay type
+		it('GIVEN a bay type WHEN assignedBayType is set THEN should update assignedBayType state', () => {
+			// GIVEN a bay type
 			const bayType = 'test-bay-type'
 
-			//WHEN assignedBayType is set
+			// WHEN assignedBayType is set
 			bayStore.assignedBayType = bayType
 
-			//THEN should update assignedBayType state
+			// THEN should update assignedBayType state
 			expect(bayStore.assignedBayType).toBe(bayType)
 		})
 
-		it('//GIVEN a pending bay type //WHEN pendingBayTypeApply is set //THEN should update pendingBayTypeApply state', () => {
-			//GIVEN a pending bay type
+		it('GIVEN a pending bay type WHEN pendingBayTypeApply is set THEN should update pendingBayTypeApply state', () => {
+			// GIVEN a pending bay type
 			const pendingType = 'pending-bay-type'
 
-			//WHEN pendingBayTypeApply is set
+			// WHEN pendingBayTypeApply is set
 			bayStore.pendingBayTypeApply = pendingType
 
-			//THEN should update pendingBayTypeApply state
+			// THEN should update pendingBayTypeApply state
 			expect(bayStore.pendingBayTypeApply).toBe(pendingType)
 		})
 
-		it('//GIVEN equipment matches //WHEN equipmentMatches is set //THEN should update equipmentMatches state', () => {
-			//GIVEN equipment matches
+		it('GIVEN equipment matches WHEN equipmentMatches is set THEN should update equipmentMatches state', () => {
+			// GIVEN equipment matches
 			const matches = [
 				{
 					scdElement: document.createElement('ConductingEquipment'),
@@ -129,85 +129,85 @@ describe('bayStore', () => {
 				}
 			]
 
-			//WHEN equipmentMatches is set
+			// WHEN equipmentMatches is set
 			bayStore.equipmentMatches = matches
 
-			//THEN should update equipmentMatches state
+			// THEN should update equipmentMatches state
 			expect(bayStore.equipmentMatches).toStrictEqual(matches)
 			expect(bayStore.equipmentMatches.length).toBe(1)
 		})
 	})
 
 	describe('scdBay derived state', () => {
-		it('//GIVEN no selected bay //WHEN scdBay is accessed //THEN should return null', () => {
-			//GIVEN no selected bay
+		it('GIVEN no selected bay WHEN scdBay is accessed THEN should return null', () => {
+			// GIVEN no selected bay
 			bayStore.selectedBay = null
 
-			//WHEN scdBay is accessed
+			// WHEN scdBay is accessed
 			const result = bayStore.scdBay
 
-			//THEN should return null
+			// THEN should return null
 			expect(result).toBeNull()
 		})
 
-		it('//GIVEN selected bay exists in document //WHEN scdBay is accessed //THEN should return bay element', () => {
-			//GIVEN selected bay exists in document
+		it('GIVEN selected bay exists in document WHEN scdBay is accessed THEN should return bay element', () => {
+			// GIVEN selected bay exists in document
 			bayStore.selectedBay = 'TestBay1'
 
-			//WHEN scdBay is accessed
+			// WHEN scdBay is accessed
 			const result = bayStore.scdBay
 
-			//THEN should return bay element
+			// THEN should return bay element
 			expect(result).toBeDefined()
 			expect(result?.tagName).toBe('Bay')
 			expect(result?.getAttribute('name')).toBe('TestBay1')
 		})
 
-		it('//GIVEN selected bay does not exist in document //WHEN scdBay is accessed //THEN should return null', () => {
-			//GIVEN selected bay does not exist in document
+		it('GIVEN selected bay does not exist in document WHEN scdBay is accessed THEN should return null', () => {
+			// GIVEN selected bay does not exist in document
 			bayStore.selectedBay = 'NonExistentBay'
 
-			//WHEN scdBay is accessed
+			// WHEN scdBay is accessed
 			const result = bayStore.scdBay
 
-			//THEN should return null
+			// THEN should return null
 			expect(result).toBeNull()
 		})
 
-		it('//GIVEN no document loaded //WHEN scdBay is accessed //THEN should return null', () => {
-			//GIVEN no document loaded
+		it('GIVEN no document loaded WHEN scdBay is accessed THEN should return null', () => {
+			// GIVEN no document loaded
 			bayStore.selectedBay = 'TestBay1'
 			pluginGlobalStore.xmlDocument = undefined
 
-			//WHEN scdBay is accessed
+			// WHEN scdBay is accessed
 			const result = bayStore.scdBay
 
-			//THEN should return null
+			// THEN should return null
 			expect(result).toBeNull()
 		})
 
-		it('//GIVEN no editor available //WHEN scdBay is accessed //THEN should return null', () => {
-			//GIVEN no editor available
+		it('GIVEN no editor available WHEN scdBay is accessed THEN should return null', () => {
+			// GIVEN no editor available
 			bayStore.selectedBay = 'TestBay1'
 			pluginGlobalStore.editor = undefined
 
-			//WHEN scdBay is accessed
+			// WHEN scdBay is accessed
 			const result = bayStore.scdBay
 
-			//THEN should return null
+			// THEN should return null
 			expect(result).toBeNull()
 		})
 
-		it('//GIVEN selected bay changes //WHEN scdBay is accessed //THEN should return updated bay element', () => {
-			//GIVEN selected bay changes
+		it('GIVEN selected bay changes WHEN scdBay is accessed THEN should return updated bay element', () => {
+			// GIVEN selected bay changes
 			bayStore.selectedBay = 'TestBay1'
 			const firstBay = bayStore.scdBay
 
-			//WHEN selected bay changes
+			// WHEN selected bay changes
 			bayStore.selectedBay = 'TestBay2'
 			const secondBay = bayStore.scdBay
 
-			//THEN should return updated bay element
+			// THEN should return updated bay element
 			expect(firstBay?.getAttribute('name')).toBe('TestBay1')
 			expect(secondBay?.getAttribute('name')).toBe('TestBay2')
 			expect(firstBay).not.toBe(secondBay)

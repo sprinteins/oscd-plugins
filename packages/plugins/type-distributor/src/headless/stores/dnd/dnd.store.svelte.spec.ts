@@ -46,26 +46,26 @@ describe('dndStore', () => {
 	})
 
 	describe('handleDragStart', () => {
-		it('//GIVEN a dragged item //WHEN handleDragStart is called //THEN should set isDragging to true and store the item', () => {
-			//GIVEN a dragged item
+		it('GIVEN a dragged item WHEN handleDragStart is called THEN should set isDragging to true and store the item', () => {
+			// GIVEN a dragged item
 			const draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
 				sourceFunction: mockFunction
 			}
 
-			//WHEN handleDragStart is called
+			// WHEN handleDragStart is called
 			dndStore.handleDragStart(draggedItem)
 
-			//THEN should set isDragging to true and store the item
+			// THEN should set isDragging to true and store the item
 			expect(dndStore.isDragging).toBe(true)
 			expect(dndStore.draggedItem).toStrictEqual(draggedItem)
 		})
 	})
 
 	describe('handleDragEnd', () => {
-		it('//GIVEN an active drag //WHEN handleDragEnd is called //THEN should reset drag state', () => {
-			//GIVEN an active drag
+		it('GIVEN an active drag WHEN handleDragEnd is called THEN should reset drag state', () => {
+			// GIVEN an active drag
 			dndStore.isDragging = true
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
@@ -73,48 +73,48 @@ describe('dndStore', () => {
 				sourceFunction: mockFunction
 			}
 
-			//WHEN handleDragEnd is called
+			// WHEN handleDragEnd is called
 			dndStore.handleDragEnd()
 
-			//THEN should reset drag state
+			// THEN should reset drag state
 			expect(dndStore.isDragging).toBe(false)
 			expect(dndStore.draggedItem).toBeNull()
 		})
 	})
 
 	describe('handleDrop', () => {
-		it('//GIVEN no dragged item //WHEN handleDrop is called //THEN should exit early and call handleDragEnd', () => {
-			//GIVEN no dragged item
+		it('GIVEN no dragged item WHEN handleDrop is called THEN should exit early and call handleDragEnd', () => {
+			// GIVEN no dragged item
 			dndStore.draggedItem = null
 
-			//WHEN handleDrop is called
+			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
-			//THEN should exit early and call handleDragEnd
+			// THEN should exit early and call handleDragEnd
 			expect(dropHandler.getBayTypeApplicationState).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
 			expect(dndStore.isDragging).toBe(false)
 		})
 
-		it('//GIVEN dragged item with empty lNodes //WHEN handleDrop is called //THEN should exit early and reset state', () => {
-			//GIVEN dragged item with empty lNodes
+		it('GIVEN dragged item with empty lNodes WHEN handleDrop is called THEN should exit early and reset state', () => {
+			// GIVEN dragged item with empty lNodes
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: [],
 				sourceFunction: mockFunction
 			}
 
-			//WHEN handleDrop is called
+			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
-			//THEN should exit early and reset state
+			// THEN should exit early and reset state
 			expect(dropHandler.getBayTypeApplicationState).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
 			expect(dndStore.draggedItem).toBeNull()
 		})
 
-		it('//GIVEN valid dragged item and no bay type //WHEN handleDrop is called //THEN should build IED edits only and commit', () => {
-			//GIVEN valid dragged item and no bay type
+		it('GIVEN valid dragged item and no bay type WHEN handleDrop is called THEN should build IED edits only and commit', () => {
+			// GIVEN valid dragged item and no bay type
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
@@ -133,10 +133,10 @@ describe('dndStore', () => {
 			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(mockIedEdits)
 			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue('Test Commit')
 
-			//WHEN handleDrop is called
+			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
-			//THEN should build IED edits only and commit
+			// THEN should build IED edits only and commit
 			expect(dropHandler.buildEditsForIed).toHaveBeenCalledWith(
 				mockFunction,
 				mockLNodes,
@@ -152,8 +152,8 @@ describe('dndStore', () => {
 			expect(dndStore.draggedItem).toBeNull()
 		})
 
-		it('//GIVEN valid dragged item and bay type applied //WHEN handleDrop is called //THEN should build both IED and bay edits', () => {
-			//GIVEN valid dragged item and bay type applied
+		it('GIVEN valid dragged item and bay type applied WHEN handleDrop is called THEN should build both IED and bay edits', () => {
+			// GIVEN valid dragged item and bay type applied
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
@@ -176,10 +176,10 @@ describe('dndStore', () => {
 			vi.mocked(buildEditsForBayLNode).mockReturnValue(mockBayEdits)
 			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue('Test Commit with Bay')
 
-			//WHEN handleDrop is called
+			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
-			//THEN should build both IED and bay edits
+			// THEN should build both IED and bay edits
 			expect(dropHandler.buildEditsForIed).toHaveBeenCalledWith(
 				mockFunction,
 				mockLNodes,
@@ -199,8 +199,8 @@ describe('dndStore', () => {
 			)
 		})
 
-		it('//GIVEN bay type needs applying //WHEN handleDrop is called //THEN should apply bay type and use squash flag', () => {
-			//GIVEN bay type needs applying
+		it('GIVEN bay type needs applying WHEN handleDrop is called THEN should apply bay type and use squash flag', () => {
+			// GIVEN bay type needs applying
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
@@ -222,10 +222,10 @@ describe('dndStore', () => {
 			vi.mocked(buildEditsForBayLNode).mockReturnValue(mockBayEdits)
 			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue('Apply Bay Type')
 
-			//WHEN handleDrop is called
+			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
-			//THEN should apply bay type and use squash flag
+			// THEN should apply bay type and use squash flag
 			expect(dropHandler.applyBayTypeIfNeeded).toHaveBeenCalled()
 			expect(buildEditsForBayLNode).toHaveBeenCalled()
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith(
@@ -235,8 +235,8 @@ describe('dndStore', () => {
 			)
 		})
 
-		it('//GIVEN no edits generated //WHEN handleDrop is called //THEN should not call commitEdits', () => {
-			//GIVEN no edits generated
+		it('GIVEN no edits generated WHEN handleDrop is called THEN should not call commitEdits', () => {
+			// GIVEN no edits generated
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
@@ -253,16 +253,16 @@ describe('dndStore', () => {
 			vi.mocked(dropHandler.applyBayTypeIfNeeded).mockReturnValue(false)
 			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue([])
 
-			//WHEN handleDrop is called
+			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
-			//THEN should not call commitEdits
+			// THEN should not call commitEdits
 			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
 			expect(dndStore.draggedItem).toBeNull()
 		})
 
-		it('//GIVEN error during edit creation //WHEN handleDrop is called //THEN should catch error and still call handleDragEnd', () => {
-			//GIVEN error during edit creation
+		it('GIVEN error during edit creation WHEN handleDrop is called THEN should catch error and still call handleDragEnd', () => {
+			// GIVEN error during edit creation
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
@@ -275,10 +275,10 @@ describe('dndStore', () => {
 
 			const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-			//WHEN handleDrop is called
+			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
-			//THEN should catch error and still call handleDragEnd
+			// THEN should catch error and still call handleDragEnd
 			expect(consoleErrorSpy).toHaveBeenCalledWith(
 				'[DnD] Error creating LNodes:',
 				expect.any(Error)
@@ -291,8 +291,8 @@ describe('dndStore', () => {
 	})
 
 	describe('currentDraggedItem', () => {
-		it('//GIVEN dragged item is set //WHEN currentDraggedItem is accessed //THEN should return the dragged item', () => {
-			//GIVEN dragged item is set
+		it('GIVEN dragged item is set WHEN currentDraggedItem is accessed THEN should return the dragged item', () => {
+			// GIVEN dragged item is set
 			const draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
@@ -300,21 +300,21 @@ describe('dndStore', () => {
 			}
 			dndStore.draggedItem = draggedItem
 
-			//WHEN currentDraggedItem is accessed
+			// WHEN currentDraggedItem is accessed
 			const result = dndStore.currentDraggedItem
 
-			//THEN should return the dragged item
+			// THEN should return the dragged item
 			expect(result).toStrictEqual(draggedItem)
 		})
 
-		it('//GIVEN no dragged item //WHEN currentDraggedItem is accessed //THEN should return null', () => {
-			//GIVEN no dragged item
+		it('GIVEN no dragged item WHEN currentDraggedItem is accessed THEN should return null', () => {
+			// GIVEN no dragged item
 			dndStore.draggedItem = null
 
-			//WHEN currentDraggedItem is accessed
+			// WHEN currentDraggedItem is accessed
 			const result = dndStore.currentDraggedItem
 
-			//THEN should return null
+			// THEN should return null
 			expect(result).toBeNull()
 		})
 	})
