@@ -51,6 +51,8 @@ $effect(() => {
 $effect(() => {
 	if (bayStore.assignedBayTypeUuid) {
 		bayTypesStore.selectedBayType = bayStore.assignedBayTypeUuid
+	} else {
+		bayTypesStore.selectedBayType = null
 	}
 })
 
