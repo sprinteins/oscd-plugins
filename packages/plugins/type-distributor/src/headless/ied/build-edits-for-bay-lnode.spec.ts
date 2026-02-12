@@ -62,7 +62,7 @@ describe('buildEditsForBayLNode', () => {
 	})
 
 	describe('with equipment UUID', () => {
-		it.skip('GIVEN equipment UUID and matching LNode WHEN buildEditsForBayLNode is called THEN should create edit for EqFunction LNode', () => {
+		it('GIVEN equipment UUID and matching LNode WHEN buildEditsForBayLNode is called THEN should create edit for EqFunction LNode', () => {
 			// GIVEN equipment UUID and matching LNode
 			const breaker = mockDocument.querySelector('ConductingEquipment[name="Breaker1"]')!
 			bayStore.equipmentMatches = [
@@ -74,7 +74,7 @@ describe('buildEditsForBayLNode', () => {
 						virtual: false
 					},
 					templateEquipment: {
-						uuid: 'template-uuid',
+						uuid: 'eq-uuid',
 						name: 'Breaker1',
 						type: 'CBR',
 						terminals: [],
@@ -204,20 +204,14 @@ describe('buildEditsForBayLNode', () => {
 	})
 
 	describe('LNode matching preferences', () => {
-		it.skip('GIVEN multiple LNode matches with one unassigned WHEN buildEditsForBayLNode is called THEN should prefer unassigned LNode', () => {
+		it('GIVEN multiple LNode matches with one unassigned WHEN buildEditsForBayLNode is called THEN should prefer unassigned LNode', () => {
 			// GIVEN multiple LNode matches with one unassigned
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-					<Substation>
-						<VoltageLevel>
-							<Bay name="TestBay">
-								<Function name="TestFunc">
-									<LNode lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
-									<LNode lnType="XCBR_Type1" lnInst="1"/>
-								</Function>
-							</Bay>
-						</VoltageLevel>
-					</Substation>
+					<Function name="TestFunc">
+						<LNode lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
+						<LNode lnType="XCBR_Type1" lnInst="1"/>
+					</Function>
 				</SCL>`,
 				'application/xml'
 			)
@@ -253,16 +247,10 @@ describe('buildEditsForBayLNode', () => {
 			// GIVEN all LNode matches already assigned
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-					<Substation>
-						<VoltageLevel>
-							<Bay name="TestBay">
-								<Function name="TestFunc">
-									<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED1"/>
-									<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED2"/>
-								</Function>
-							</Bay>
-						</VoltageLevel>
-					</Substation>
+					<Function name="TestFunc">
+						<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED1"/>
+						<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED2"/>
+					</Function>
 				</SCL>`,
 				'application/xml'
 			)
@@ -295,21 +283,15 @@ describe('buildEditsForBayLNode', () => {
 	})
 
 	describe('multiple LNodes', () => {
-		it.skip('GIVEN multiple LNodes in template WHEN buildEditsForBayLNode is called THEN should create edit for each unassigned match', () => {
+		it('GIVEN multiple LNodes in template WHEN buildEditsForBayLNode is called THEN should create edit for each unassigned match', () => {
 			// GIVEN multiple LNodes in template
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-					<Substation>
-						<VoltageLevel>
-							<Bay name="TestBay">
-								<Function name="TestFunc">
-									<LNode lnType="XCBR_Type1" lnInst="1"/>
-									<LNode lnType="XSWI_Type1" lnInst="1"/>
-									<LNode lnType="CSWI_Type1" lnInst="1"/>
-								</Function>
-							</Bay>
-						</VoltageLevel>
-					</Substation>
+					<Function name="TestFunc">
+						<LNode lnType="XCBR_Type1" lnInst="1"/>
+						<LNode lnType="XSWI_Type1" lnInst="1"/>
+						<LNode lnType="CSWI_Type1" lnInst="1"/>
+					</Function>
 				</SCL>`,
 				'application/xml'
 			)
@@ -353,19 +335,13 @@ describe('buildEditsForBayLNode', () => {
 			expect(edits[2].element.getAttribute('lnType')).toBe('CSWI_Type1')
 		})
 
-		it.skip('GIVEN some LNodes with no match WHEN buildEditsForBayLNode is called THEN should create edits only for matching LNodes', () => {
+		it('GIVEN some LNodes with no match WHEN buildEditsForBayLNode is called THEN should create edits only for matching LNodes', () => {
 			// GIVEN some LNodes with no match
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-					<Substation>
-						<VoltageLevel>
-							<Bay name="TestBay">
-								<Function name="TestFunc">
-									<LNode lnType="XCBR_Type1" lnInst="1"/>
-								</Function>
-							</Bay>
-						</VoltageLevel>
-					</Substation>
+					<Function name="TestFunc">
+						<LNode lnType="XCBR_Type1" lnInst="1"/>
+					</Function>
 				</SCL>`,
 				'application/xml'
 			)
