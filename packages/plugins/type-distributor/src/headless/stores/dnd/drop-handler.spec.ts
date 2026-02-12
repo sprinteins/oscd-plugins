@@ -80,66 +80,78 @@ describe('drop-handler', () => {
 	})
 
 	describe('shouldApplyBayType', () => {
-		it('returns false when bay type already assigned', () => {
-			// GIVEN a state with an assigned bay type
-			expect(
-				shouldApplyBayType({
-					hasAssignedBayType: true,
-					hasSelectedBay: true,
-					requiresManualMatching: false,
-					hasValidAutoSelection: true,
-					hasPendingManualSelection: false
-				})
-			).toBe(false)
-			// THEN should not apply bay type
+		it('GIVEN state with assigned bay type WHEN shouldApplyBayType THEN returns false', () => {
+			// GIVEN
+			const state = {
+				hasAssignedBayType: true,
+				hasSelectedBay: true,
+				requiresManualMatching: false,
+				hasValidAutoSelection: true,
+				hasPendingManualSelection: false
+			}
+
+			// WHEN
+			const result = shouldApplyBayType(state)
+
+			// THEN
+			expect(result).toBe(false)
 		})
 
-		it('returns false when no bay selected', () => {
-			// GIVEN a state with no selected bay
-			expect(
-				shouldApplyBayType({
-					hasAssignedBayType: false,
-					hasSelectedBay: false,
-					requiresManualMatching: false,
-					hasValidAutoSelection: true,
-					hasPendingManualSelection: true
-				})
-			).toBe(false)
-			// THEN should not apply bay type
+		it('GIVEN state with no bay selected WHEN shouldApplyBayType THEN returns false', () => {
+			// GIVEN
+			const state = {
+				hasAssignedBayType: false,
+				hasSelectedBay: false,
+				requiresManualMatching: false,
+				hasValidAutoSelection: true,
+				hasPendingManualSelection: true
+			}
+
+			// WHEN
+			const result = shouldApplyBayType(state)
+
+			// THEN
+			expect(result).toBe(false)
 		})
 
-		it('returns true for valid auto selection', () => {
-			// GIVEN a valid auto-selection state
-			expect(
-				shouldApplyBayType({
-					hasAssignedBayType: false,
-					hasSelectedBay: true,
-					requiresManualMatching: false,
-					hasValidAutoSelection: true,
-					hasPendingManualSelection: false
-				})
-			).toBe(true)
-			// THEN should apply bay type
+		it('GIVEN valid auto selection state WHEN shouldApplyBayType THEN returns true', () => {
+			// GIVEN
+			const state = {
+				hasAssignedBayType: false,
+				hasSelectedBay: true,
+				requiresManualMatching: false,
+				hasValidAutoSelection: true,
+				hasPendingManualSelection: false
+			}
+
+			// WHEN
+			const result = shouldApplyBayType(state)
+
+			// THEN
+			expect(result).toBe(true)
 		})
 
-		it('returns true for pending manual selection', () => {
-			// GIVEN a pending manual selection state
-			expect(
-				shouldApplyBayType({
-					hasAssignedBayType: false,
-					hasSelectedBay: true,
-					requiresManualMatching: true,
-					hasValidAutoSelection: false,
-					hasPendingManualSelection: true
-				})
-			).toBe(true)
-			// THEN should apply bay type
+		it('GIVEN pending manual selection state WHEN shouldApplyBayType THEN returns true', () => {
+			// GIVEN
+			const state = {
+				hasAssignedBayType: false,
+				hasSelectedBay: true,
+				requiresManualMatching: true,
+				hasValidAutoSelection: false,
+				hasPendingManualSelection: true
+			}
+
+			// WHEN
+			const result = shouldApplyBayType(state)
+
+			// THEN
+			expect(result).toBe(true)
 		})
 	})
 
 	describe('getBayTypeApplicationState', () => {
-		it('derives auto selection state when validation is valid', () => {
-			// GIVEN a selected bay type with valid auto selection
+		it('GIVEN selected bay type with valid auto selection WHEN getBayTypeApplicationState THEN derives correct state', () => {
+			// GIVEN
 			bayTypesStore.selectedBayType = 'bt-1'
 			bayStore.assignedBayType = null
 			bayStore.selectedBay = 'Bay-1'
@@ -149,10 +161,10 @@ describe('drop-handler', () => {
 				errors: []
 			}
 
-			// WHEN the application state is derived
+			// WHEN
 			const result = getBayTypeApplicationState()
 
-			// THEN it reflects a valid auto selection
+			// THEN
 			expect(result).toStrictEqual({
 				hasAssignedBayType: false,
 				hasSelectedBay: true,
@@ -162,8 +174,8 @@ describe('drop-handler', () => {
 			})
 		})
 
-		it('derives pending manual selection when required', () => {
-			// GIVEN a pending manual selection requirement
+		it('GIVEN pending manual selection requirement WHEN getBayTypeApplicationState THEN derives correct state', () => {
+			// GIVEN
 			bayStore.pendingBayTypeApply = 'bt-2'
 			bayStore.selectedBay = 'Bay-2'
 			equipmentMatchingStore.validationResult = {
@@ -172,10 +184,10 @@ describe('drop-handler', () => {
 				errors: []
 			}
 
-			// WHEN the application state is derived
+			// WHEN
 			const result = getBayTypeApplicationState()
 
-			// THEN it reflects the pending manual selection
+			// THEN
 			expect(result).toStrictEqual({
 				hasAssignedBayType: false,
 				hasSelectedBay: true,
@@ -187,54 +199,58 @@ describe('drop-handler', () => {
 	})
 
 	describe('applyBayTypeIfNeeded', () => {
-		it('returns false when should not apply', () => {
-			// GIVEN a state where bay type should not be applied
-			const didApply = applyBayTypeIfNeeded({
+		it('GIVEN state where bay type should not apply WHEN applyBayTypeIfNeeded THEN returns false', () => {
+			// GIVEN
+			const state = {
 				hasAssignedBayType: true,
 				hasSelectedBay: true,
 				requiresManualMatching: false,
 				hasValidAutoSelection: true,
 				hasPendingManualSelection: false
-			})
+			}
 
-			// THEN no application occurs
+			// WHEN
+			const didApply = applyBayTypeIfNeeded(state)
+
+			// THEN
 			expect(didApply).toBe(false)
 			expect(applyBayTypeSelection).not.toHaveBeenCalled()
 		})
 
-		it('throws when state says selected bay but store is missing', () => {
-			// GIVEN a state that requires a selected bay but store is missing it
+		it('GIVEN state requires selected bay but store is missing WHEN applyBayTypeIfNeeded THEN throws error', () => {
+			// GIVEN
 			bayStore.selectedBay = null
 			bayStore.pendingBayTypeApply = 'bt-3'
-
-			// WHEN apply is attempted
-			expect(() =>
-				applyBayTypeIfNeeded({
-					hasAssignedBayType: false,
-					hasSelectedBay: true,
-					requiresManualMatching: true,
-					hasValidAutoSelection: false,
-					hasPendingManualSelection: true
-				})
-			).toThrowError('[DnD] No bay type selected to apply to bay')
-			// THEN it throws a meaningful error
-		})
-
-		it('applies pending manual selection and clears validation', () => {
-			// GIVEN a pending manual selection
-			bayStore.selectedBay = 'Bay-3'
-			bayStore.pendingBayTypeApply = 'bt-3'
-
-			// WHEN applying the bay type
-			const didApply = applyBayTypeIfNeeded({
+			const state = {
 				hasAssignedBayType: false,
 				hasSelectedBay: true,
 				requiresManualMatching: true,
 				hasValidAutoSelection: false,
 				hasPendingManualSelection: true
-			})
+			}
 
-			// THEN it updates stores and clears validation
+			// WHEN / THEN
+			expect(() => applyBayTypeIfNeeded(state)).toThrowError(
+				'[DnD] No bay type selected to apply to bay'
+			)
+		})
+
+		it('GIVEN pending manual selection WHEN applyBayTypeIfNeeded THEN applies and clears validation', () => {
+			// GIVEN
+			bayStore.selectedBay = 'Bay-3'
+			bayStore.pendingBayTypeApply = 'bt-3'
+			const state = {
+				hasAssignedBayType: false,
+				hasSelectedBay: true,
+				requiresManualMatching: true,
+				hasValidAutoSelection: false,
+				hasPendingManualSelection: true
+			}
+
+			// WHEN
+			const didApply = applyBayTypeIfNeeded(state)
+
+			// THEN
 			expect(didApply).toBe(true)
 			expect(bayTypesStore.selectedBayType).toBe('bt-3')
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-3')
@@ -245,21 +261,22 @@ describe('drop-handler', () => {
 			).toHaveBeenCalled()
 		})
 
-		it('applies when auto selection is valid', () => {
-			// GIVEN a valid auto selection
+		it('GIVEN valid auto selection WHEN applyBayTypeIfNeeded THEN applies successfully', () => {
+			// GIVEN
 			bayStore.selectedBay = 'Bay-4'
 			bayTypesStore.selectedBayType = 'bt-4'
-
-			// WHEN applying the bay type
-			const didApply = applyBayTypeIfNeeded({
+			const state = {
 				hasAssignedBayType: false,
 				hasSelectedBay: true,
 				requiresManualMatching: false,
 				hasValidAutoSelection: true,
 				hasPendingManualSelection: false
-			})
+			}
 
-			// THEN it applies successfully
+			// WHEN
+			const didApply = applyBayTypeIfNeeded(state)
+
+			// THEN
 			expect(didApply).toBe(true)
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-4')
 			expect(bayStore.assignedBayType).toBe('bt-4')
@@ -268,31 +285,37 @@ describe('drop-handler', () => {
 	})
 
 	describe('generateCommitTitle', () => {
-		it('GIVEN didApplyBayType = false WHEN generateCommitTitle THEN return correct title', () => {
-			// GIVEN a standard commit title request
-			// WHEN the title is generated without applying bay type
+		it('GIVEN didApplyBayType = false WHEN generateCommitTitle THEN returns base title format', () => {
+			// GIVEN
+			const didApplyBayType = false
+
+			// WHEN
 			const commitTitle = generateCommitTitle(
 				mockLNodes,
 				mockFunction.name,
 				'targetSied',
-				false
+				didApplyBayType
 			)
-			// THEN it uses the base title format
+
+			// THEN
 			expect(commitTitle).toBe(
 				'Assign XCBR from TestFunction to IED targetSied'
 			)
 		})
 
-		it('GIVEN didApplyBayType = false WHEN generateCommitTitle THEN return correct title', () => {
-			// GIVEN a commit title request with bay type application
-			// WHEN the title is generated with bay type applied
+		it('GIVEN didApplyBayType = true WHEN generateCommitTitle THEN returns title with bay type info', () => {
+			// GIVEN
+			const didApplyBayType = true
+
+			// WHEN
 			const commitTitle = generateCommitTitle(
 				mockLNodes,
 				mockFunction.name,
 				'targetSied',
-				true
+				didApplyBayType
 			)
-			// THEN it includes bay type and bay name placeholders
+
+			// THEN
 			expect(commitTitle).toBe(
 				'Assign BayType "Unknown" to Bay "Unknown" + Assign XCBR from TestFunction to IED targetSied'
 			)
