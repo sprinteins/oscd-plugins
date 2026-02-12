@@ -7,6 +7,11 @@ export type BayType = {
 	functions: FunctionType[]
 }
 
+export type BayTypeWithTemplates = BayType & {
+	conductingEquipmentTemplates: ConductingEquipmentTemplate[]
+	functionTemplates: FunctionTemplate[]
+}
+
 export type ConductingEquipmentType = {
 	uuid: string
 	templateUuid: string

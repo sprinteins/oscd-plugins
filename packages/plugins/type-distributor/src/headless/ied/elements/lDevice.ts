@@ -1,8 +1,8 @@
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate
-} from '../../common-types'
-import { bayStore } from '../../stores/bay.store.svelte'
+} from '@/headless/common-types'
+import { bayStore } from '@/headless/stores/bay.store.svelte'
 
 function extractFunctionNames(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
@@ -21,7 +21,7 @@ function extractFunctionNames(
 
 	if (equipmentUuid) {
 		const match = bayStore.equipmentMatches.find(
-			(m) => m.templateEquipment.uuid === equipmentUuid
+			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
 		if (match) {
 			const scdEquipmentName =
@@ -45,18 +45,34 @@ function generateLDeviceInst(
 	return functionName
 }
 
+export function getLDeviceInst(
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
+	equipmentUuid?: string
+): string {
+	const { functionName, conductingEquipmentName } = extractFunctionNames(
+		sourceFunction,
+		equipmentUuid
+	)
+	return generateLDeviceInst(functionName, conductingEquipmentName)
+}
+
 export function queryLDevice(
 	server: Element,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	equipmentUuid?: string
 ): Element | undefined {
-	const { functionName, conductingEquipmentName } =
-		extractFunctionNames(sourceFunction, equipmentUuid)
+	const { functionName, conductingEquipmentName } = extractFunctionNames(
+		sourceFunction,
+		equipmentUuid
+	)
 	const lDeviceInst = generateLDeviceInst(
 		functionName,
 		conductingEquipmentName
 	)
-	return (server.querySelector(`LDevice[inst="${lDeviceInst}"]`) as Element) || undefined
+	return (
+		(server.querySelector(`LDevice[inst="${lDeviceInst}"]`) as Element) ||
+		undefined
+	)
 }
 
 export function createLDeviceElement(
@@ -64,8 +80,10 @@ export function createLDeviceElement(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	equipmentUuid?: string
 ): Element {
-	const { functionName, conductingEquipmentName } =
-		extractFunctionNames(sourceFunction, equipmentUuid)
+	const { functionName, conductingEquipmentName } = extractFunctionNames(
+		sourceFunction,
+		equipmentUuid
+	)
 	const lDeviceInst = generateLDeviceInst(
 		functionName,
 		conductingEquipmentName

@@ -7,7 +7,8 @@ import {
 import {
 	bayStore,
 	bayTypesStore,
-	equipmentMatchingStore
+	equipmentMatchingStore,
+	assignedLNodesStore
 } from '@/headless/stores'
 import type { BayType } from '@/headless/common-types'
 import {
@@ -42,6 +43,21 @@ const sIedItems = $derived.by(() => {
 	return querySIEDs(bayStore.selectedBay ?? '')
 })
 
+$effect(() => {
+	pluginGlobalStore.editCount
+	assignedLNodesStore.rebuild()
+})
+
+$effect(() => {
+	if (bayStore.assignedBayTypeUuid) {
+		bayTypesStore.selectedBayType = bayStore.assignedBayTypeUuid
+	} else {
+		bayTypesStore.selectedBayType = null
+	}
+})
+
+const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
+
 let bayTypeError = $state<string | null>(null)
 
 const shouldShowBayTypeDetails = $derived.by(() => {
@@ -57,7 +73,7 @@ const shouldShowBayTypeDetails = $derived.by(() => {
 		return false
 	}
 
-	if (bayStore.assignedBayType === bayTypesStore.selectedBayType) {
+	if (bayStore.assignedBayTypeUuid === bayTypesStore.selectedBayType) {
 		return true
 	}
 
@@ -79,6 +95,7 @@ function handleBayTypeChange() {
 		if (validation.isValid && !validation.requiresManualMatching) {
 			bayStore.pendingBayTypeApply = bayTypesStore.selectedBayType
 		}
+		assignedLNodesStore.rebuild()
 	} catch (error) {
 		console.error('[handleBayTypeChange] Error:', error)
 	}
@@ -105,7 +122,7 @@ function handleBayTypeChange() {
 	<Card.Root class="flex-1 flex flex-col min-h-full">
 		<Card.Header>
 			<SelectWorkaround
-				disabled={bayTypeOptions.length === 0}
+				disabled={bayTypeOptions.length === 0 || isBayTypeLocked}
 				bind:value={bayTypesStore.selectedBayType}
 				handleChange={handleBayTypeChange}
 				options={bayTypeOptions}
@@ -115,11 +132,11 @@ function handleBayTypeChange() {
 		</Card.Header>
 		<Card.Content class="overflow-y-auto space-y-4">
 			<BayTypeValidation {bayTypeError} />
-
 			{#if shouldShowBayTypeDetails}
 				<BayTypeDetails
 					{functionTemplates}
 					{conductingEquipmentTemplates}
+					{bayTypeWithTemplates}
 				/>
 			{:else if !bayTypesStore.selectedBayType}
 				<p class="text-gray-500 text-sm">

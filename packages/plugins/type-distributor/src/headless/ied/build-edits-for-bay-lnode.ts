@@ -5,7 +5,6 @@ import type {
 	LNodeTemplate
 } from '@/headless/common-types'
 import { bayStore } from '@/headless/stores'
-import { getDocumentAndEditor } from '../utils'
 
 type UpdateBayLNodesParams = {
 	lNodes: LNodeTemplate[]
@@ -39,7 +38,7 @@ function queryFunctionElements(
 ): Element[] {
 	if (equipmentUuid) {
 		const match = bayStore.equipmentMatches.find(
-			(m) => m.templateEquipment.uuid === equipmentUuid
+			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
 		if (!match) return []
 
@@ -51,10 +50,14 @@ function queryFunctionElements(
 		)
 	}
 
-	const { doc } = getDocumentAndEditor()
+	const scdBay = bayStore.scdBay
+	if (!scdBay) {
+		console.warn('No bay selected or bay not found in document')
+		return []
+	}
 
 	return Array.from(
-		doc.querySelectorAll(
+		scdBay.querySelectorAll(
 			`:scope > Function[name="${sourceFunction.name}"]`
 		)
 	)
@@ -104,7 +107,7 @@ export function buildEditsForBayLNode({
 		if (!lnodeElement) {
 			continue
 		}
-
+		
 		const currentIedName = lnodeElement.getAttribute('iedName')
 		if (currentIedName) {
 			continue

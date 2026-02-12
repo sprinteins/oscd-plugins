@@ -20,7 +20,11 @@ vi.mock('@/headless/stores', () => ({
 		setValidationResult: vi.fn()
 	},
 	bayStore: {
-		scdBay: null
+		scdBay: null,
+		assignedBayTypeUuid: null
+	},
+	assignedLNodesStore: {
+		hasConnections: false
 	}
 }))
 

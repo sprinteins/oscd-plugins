@@ -10,6 +10,7 @@ import {
 	generateCommitTitle,
 	commitEdits
 } from './drop-handler'
+import { assignedLNodesStore } from '@/headless/stores'
 import { buildEditsForBayLNode } from '@/headless/ied'
 
 type DraggedItem = {
@@ -17,6 +18,7 @@ type DraggedItem = {
 	lNodes: LNodeTemplate[]
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentUuid?: string
+	bayTypeInstanceUuid?: string
 }
 
 function validateDraggedItem(
@@ -93,6 +95,9 @@ class UseDndStore {
 				)
 
 				commitEdits(allEdits, title, didApplyBayType)
+				const parentUuid =
+					this.draggedItem.bayTypeInstanceUuid || functionFromSSD.uuid
+				assignedLNodesStore.markAsAssigned(parentUuid, lNodes)
 			}
 		} catch (error) {
 			console.error('[DnD] Error creating LNodes:', error)
@@ -103,6 +108,20 @@ class UseDndStore {
 
 	get currentDraggedItem() {
 		return this.draggedItem
+	}
+
+	isDraggingItem(
+		type: DraggedItem['type'],
+		sourceFunctionUuid: string,
+		bayTypeInstanceUuid?: string
+	): boolean {
+		if (!this.isDragging || !this.draggedItem) return false
+
+		return (
+			this.draggedItem.type === type &&
+			this.draggedItem.sourceFunction.uuid === sourceFunctionUuid &&
+			this.draggedItem.bayTypeInstanceUuid === bayTypeInstanceUuid
+		)
 	}
 }
 

@@ -65,7 +65,6 @@ export function applyBayTypeSelection(bayName: string): void {
 		edits.push(dtsCreationEdit)
 	}
 
-	bayStore.assignedBayType = selectedBayTypeName
 	bayStore.equipmentMatches = matches
 
 	const allLNodeTemplates: LNodeTemplate[] = []
