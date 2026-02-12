@@ -91,7 +91,9 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should exit early and call handleDragEnd
-			expect(dropHandler.getBayTypeApplicationState).not.toHaveBeenCalled()
+			expect(
+				dropHandler.getBayTypeApplicationState
+			).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
 			expect(dndStore.isDragging).toBe(false)
 		})
@@ -108,7 +110,9 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should exit early and reset state
-			expect(dropHandler.getBayTypeApplicationState).not.toHaveBeenCalled()
+			expect(
+				dropHandler.getBayTypeApplicationState
+			).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
 			expect(dndStore.draggedItem).toBeNull()
 		})
@@ -121,7 +125,9 @@ describe('dndStore', () => {
 				sourceFunction: mockFunction
 			}
 
-			const mockIedEdits = [{ element: mockAccessPoint, attributes: {}, attributesNS: {} }]
+			const mockIedEdits = [
+				{ element: mockAccessPoint, attributes: {}, attributesNS: {} }
+			]
 			vi.mocked(dropHandler.getBayTypeApplicationState).mockReturnValue({
 				hasAssignedBayType: false,
 				hasSelectedBay: false,
@@ -130,8 +136,12 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.applyBayTypeIfNeeded).mockReturnValue(false)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(mockIedEdits)
-			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue('Test Commit')
+			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
+				mockIedEdits
+			)
+			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue(
+				'Test Commit'
+			)
 
 			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
@@ -161,8 +171,16 @@ describe('dndStore', () => {
 				equipmentUuid: 'eq-uuid'
 			}
 
-			const mockIedEdits = [{ element: mockAccessPoint, attributes: {}, attributesNS: {} }]
-			const mockBayEdits = [{ element: document.createElement('LNode'), attributes: { iedName: 'TestIED' }, attributesNS: {} }]
+			const mockIedEdits = [
+				{ element: mockAccessPoint, attributes: {}, attributesNS: {} }
+			]
+			const mockBayEdits = [
+				{
+					element: document.createElement('LNode'),
+					attributes: { iedName: 'TestIED' },
+					attributesNS: {}
+				}
+			]
 
 			vi.mocked(dropHandler.getBayTypeApplicationState).mockReturnValue({
 				hasAssignedBayType: true,
@@ -172,9 +190,13 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.applyBayTypeIfNeeded).mockReturnValue(false)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(mockIedEdits)
+			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
+				mockIedEdits
+			)
 			vi.mocked(buildEditsForBayLNode).mockReturnValue(mockBayEdits)
-			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue('Test Commit with Bay')
+			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue(
+				'Test Commit with Bay'
+			)
 
 			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
@@ -207,8 +229,16 @@ describe('dndStore', () => {
 				sourceFunction: mockFunction
 			}
 
-			const mockIedEdits = [{ element: mockAccessPoint, attributes: {}, attributesNS: {} }]
-			const mockBayEdits = [{ element: document.createElement('LNode'), attributes: { iedName: 'TestIED' }, attributesNS: {} }]
+			const mockIedEdits = [
+				{ element: mockAccessPoint, attributes: {}, attributesNS: {} }
+			]
+			const mockBayEdits = [
+				{
+					element: document.createElement('LNode'),
+					attributes: { iedName: 'TestIED' },
+					attributesNS: {}
+				}
+			]
 
 			vi.mocked(dropHandler.getBayTypeApplicationState).mockReturnValue({
 				hasAssignedBayType: false,
@@ -218,9 +248,13 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.applyBayTypeIfNeeded).mockReturnValue(true)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(mockIedEdits)
+			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
+				mockIedEdits
+			)
 			vi.mocked(buildEditsForBayLNode).mockReturnValue(mockBayEdits)
-			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue('Apply Bay Type')
+			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue(
+				'Apply Bay Type'
+			)
 
 			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
@@ -269,11 +303,15 @@ describe('dndStore', () => {
 				sourceFunction: mockFunction
 			}
 
-			vi.mocked(dropHandler.getBayTypeApplicationState).mockImplementation(() => {
+			vi.mocked(
+				dropHandler.getBayTypeApplicationState
+			).mockImplementation(() => {
 				throw new Error('Test error')
 			})
 
-			const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+			const consoleErrorSpy = vi
+				.spyOn(console, 'error')
+				.mockImplementation(() => {})
 
 			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')

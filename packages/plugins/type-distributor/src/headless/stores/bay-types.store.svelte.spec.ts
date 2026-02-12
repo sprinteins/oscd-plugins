@@ -18,7 +18,7 @@ describe('bayTypesStore', () => {
 	describe('bayTypes getter', () => {
 		it('GIVEN ssdImportStore has bay types WHEN bayTypes is accessed THEN should return bay types from ssdImportStore', () => {
 			// GIVEN ssdImportStore has bay types loaded
-			
+
 			// WHEN bayTypes is accessed
 			const result = bayTypesStore.bayTypes
 
@@ -80,7 +80,9 @@ describe('bayTypesStore', () => {
 			expect(result?.name).toBe(bayType.name)
 			expect(result?.conductingEquipmentTemplates).toBeDefined()
 			expect(result?.functionTemplates).toBeDefined()
-			expect(Array.isArray(result?.conductingEquipmentTemplates)).toBe(true)
+			expect(Array.isArray(result?.conductingEquipmentTemplates)).toBe(
+				true
+			)
 			expect(Array.isArray(result?.functionTemplates)).toBe(true)
 		})
 
@@ -89,7 +91,8 @@ describe('bayTypesStore', () => {
 			const nonExistentUuid = 'non-existent-uuid'
 
 			// WHEN getBayTypeWithTemplates is called
-			const result = bayTypesStore.getBayTypeWithTemplates(nonExistentUuid)
+			const result =
+				bayTypesStore.getBayTypeWithTemplates(nonExistentUuid)
 
 			// THEN should return null
 			expect(result).toBeNull()
@@ -129,9 +132,15 @@ describe('bayTypesStore', () => {
 
 			// THEN should resolve conducting equipment templates
 			expect(result?.conductingEquipmentTemplates).toBeDefined()
-			expect(result!.conductingEquipmentTemplates.length).toBeGreaterThan(0)
-			expect(result!.conductingEquipmentTemplates[0]).toHaveProperty('name')
-			expect(result!.conductingEquipmentTemplates[0]).toHaveProperty('type')
+			expect(result!.conductingEquipmentTemplates.length).toBeGreaterThan(
+				0
+			)
+			expect(result!.conductingEquipmentTemplates[0]).toHaveProperty(
+				'name'
+			)
+			expect(result!.conductingEquipmentTemplates[0]).toHaveProperty(
+				'type'
+			)
 		})
 
 		it('GIVEN bay type with missing template UUIDs WHEN getBayTypeWithTemplates is called THEN should filter out undefined templates', () => {
@@ -178,7 +187,9 @@ describe('bayTypesStore', () => {
 			ssdImportStore.bayTypes.push(emptyBayType)
 
 			// WHEN getBayTypeWithTemplates is called
-			const result = bayTypesStore.getBayTypeWithTemplates(emptyBayType.uuid)
+			const result = bayTypesStore.getBayTypeWithTemplates(
+				emptyBayType.uuid
+			)
 
 			// THEN should return empty arrays
 			expect(result).toBeDefined()

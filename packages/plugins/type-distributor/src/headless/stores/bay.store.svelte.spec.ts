@@ -55,7 +55,13 @@ describe('bayStore', () => {
 			const store = bayStore
 
 			// WHEN store is accessed
-			const { selectedBay, selectedBayUuid, assignedBayType, pendingBayTypeApply, equipmentMatches } = store
+			const {
+				selectedBay,
+				selectedBayUuid,
+				assignedBayType,
+				pendingBayTypeApply,
+				equipmentMatches
+			} = store
 
 			// THEN should have null values
 			expect(selectedBay).toBeNull()

@@ -22,7 +22,9 @@ describe('equipmentMatchingStore', () => {
 			equipmentMatchingStore.setValidationResult(result)
 
 			// THEN should set validation result
-			expect(equipmentMatchingStore.validationResult).toStrictEqual(result)
+			expect(equipmentMatchingStore.validationResult).toStrictEqual(
+				result
+			)
 		})
 
 		it('GIVEN validation requires manual matching WHEN setValidationResult is called THEN should expand manual matching UI', () => {
@@ -89,8 +91,12 @@ describe('equipmentMatchingStore', () => {
 
 			// THEN should preserve existing manual matches
 			expect(equipmentMatchingStore.manualMatches.size).toBe(2)
-			expect(equipmentMatchingStore.manualMatches.get('eq1')).toBe('template1')
-			expect(equipmentMatchingStore.manualMatches.get('eq2')).toBe('template2')
+			expect(equipmentMatchingStore.manualMatches.get('eq1')).toBe(
+				'template1'
+			)
+			expect(equipmentMatchingStore.manualMatches.get('eq2')).toBe(
+				'template2'
+			)
 		})
 	})
 
@@ -104,7 +110,9 @@ describe('equipmentMatchingStore', () => {
 			equipmentMatchingStore.setManualMatch(equipmentName, templateUuid)
 
 			// THEN should add match to map
-			expect(equipmentMatchingStore.manualMatches.get(equipmentName)).toBe(templateUuid)
+			expect(
+				equipmentMatchingStore.manualMatches.get(equipmentName)
+			).toBe(templateUuid)
 		})
 
 		it('GIVEN multiple manual matches WHEN setManualMatch is called multiple times THEN should store all matches', () => {
@@ -123,7 +131,9 @@ describe('equipmentMatchingStore', () => {
 			// THEN should store all matches
 			expect(equipmentMatchingStore.manualMatches.size).toBe(3)
 			matches.forEach((m) => {
-				expect(equipmentMatchingStore.manualMatches.get(m.name)).toBe(m.uuid)
+				expect(equipmentMatchingStore.manualMatches.get(m.name)).toBe(
+					m.uuid
+				)
 			})
 		})
 
@@ -135,7 +145,9 @@ describe('equipmentMatchingStore', () => {
 			equipmentMatchingStore.setManualMatch('Breaker1', 'new-uuid')
 
 			// THEN should update match
-			expect(equipmentMatchingStore.manualMatches.get('Breaker1')).toBe('new-uuid')
+			expect(equipmentMatchingStore.manualMatches.get('Breaker1')).toBe(
+				'new-uuid'
+			)
 			expect(equipmentMatchingStore.manualMatches.size).toBe(1)
 		})
 	})
@@ -186,7 +198,9 @@ describe('equipmentMatchingStore', () => {
 			equipmentMatchingStore.clearManualMatches()
 
 			// THEN should preserve validation result
-			expect(equipmentMatchingStore.validationResult).toStrictEqual(result)
+			expect(equipmentMatchingStore.validationResult).toStrictEqual(
+				result
+			)
 		})
 	})
 

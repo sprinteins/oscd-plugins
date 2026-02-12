@@ -64,7 +64,9 @@ describe('buildEditsForBayLNode', () => {
 	describe('with equipment UUID', () => {
 		it('GIVEN equipment UUID and matching LNode WHEN buildEditsForBayLNode is called THEN should create edit for EqFunction LNode', () => {
 			// GIVEN equipment UUID and matching LNode
-			const breaker = mockDocument.querySelector('ConductingEquipment[name="Breaker1"]')!
+			const breaker = mockDocument.querySelector(
+				'ConductingEquipment[name="Breaker1"]'
+			)!
 			bayStore.equipmentMatches = [
 				{
 					scdElement: breaker,

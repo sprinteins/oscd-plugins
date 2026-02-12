@@ -27,7 +27,10 @@ vi.mock('../bay.store.svelte', () => ({
 
 vi.mock('../equipment-matching.store.svelte', () => ({
 	equipmentMatchingStore: {
-		validationResult: null as null | { isValid?: boolean; requiresManualMatching?: boolean },
+		validationResult: null as null | {
+			isValid?: boolean
+			requiresManualMatching?: boolean
+		},
 		clearValidationResult: vi.fn()
 	}
 }))
@@ -52,7 +55,7 @@ vi.mock('@/headless/ied', () => ({
 }))
 
 describe('drop-handler', () => {
-  const mockLNodes = [
+	const mockLNodes = [
 		{
 			lnClass: 'XCBR',
 			lnType: 'XCBR_Type1',
@@ -143,7 +146,7 @@ describe('drop-handler', () => {
 			equipmentMatchingStore.validationResult = {
 				isValid: true,
 				requiresManualMatching: false,
-        errors: []
+				errors: []
 			}
 
 			// WHEN the application state is derived
@@ -166,7 +169,7 @@ describe('drop-handler', () => {
 			equipmentMatchingStore.validationResult = {
 				isValid: false,
 				requiresManualMatching: true,
-        errors: []
+				errors: []
 			}
 
 			// WHEN the application state is derived
@@ -237,7 +240,9 @@ describe('drop-handler', () => {
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-3')
 			expect(bayStore.assignedBayType).toBe('bt-3')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
-			expect(equipmentMatchingStore.clearValidationResult).toHaveBeenCalled()
+			expect(
+				equipmentMatchingStore.clearValidationResult
+			).toHaveBeenCalled()
 		})
 
 		it('applies when auto selection is valid', () => {
@@ -262,8 +267,8 @@ describe('drop-handler', () => {
 		})
 	})
 
-  describe('generateCommitTitle', () => {
-    it('GIVEN didApplyBayType = false WHEN generateCommitTitle THEN return correct title', () => {
+	describe('generateCommitTitle', () => {
+		it('GIVEN didApplyBayType = false WHEN generateCommitTitle THEN return correct title', () => {
 			// GIVEN a standard commit title request
 			// WHEN the title is generated without applying bay type
 			const commitTitle = generateCommitTitle(
@@ -273,10 +278,12 @@ describe('drop-handler', () => {
 				false
 			)
 			// THEN it uses the base title format
-      expect(commitTitle).toBe('Assign XCBR from TestFunction to IED targetSied')
-    })
+			expect(commitTitle).toBe(
+				'Assign XCBR from TestFunction to IED targetSied'
+			)
+		})
 
-    it('GIVEN didApplyBayType = false WHEN generateCommitTitle THEN return correct title', () => {
+		it('GIVEN didApplyBayType = false WHEN generateCommitTitle THEN return correct title', () => {
 			// GIVEN a commit title request with bay type application
 			// WHEN the title is generated with bay type applied
 			const commitTitle = generateCommitTitle(
@@ -286,7 +293,9 @@ describe('drop-handler', () => {
 				true
 			)
 			// THEN it includes bay type and bay name placeholders
-      expect(commitTitle).toBe('Assign BayType "Unknown" to Bay "Unknown" + Assign XCBR from TestFunction to IED targetSied')
-    })
-  })
+			expect(commitTitle).toBe(
+				'Assign BayType "Unknown" to Bay "Unknown" + Assign XCBR from TestFunction to IED targetSied'
+			)
+		})
+	})
 })
