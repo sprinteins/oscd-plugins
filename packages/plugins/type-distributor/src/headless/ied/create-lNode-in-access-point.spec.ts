@@ -7,6 +7,7 @@ import type {
 	LNodeTemplate
 } from '../common-types'
 import type { Insert } from '@openscd/oscd-api'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 // Mock modules
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -15,8 +16,6 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 		editor: null
 	}
 }))
-
-const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
 describe('createLNodesInAccessPoint', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }

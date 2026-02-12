@@ -3,6 +3,7 @@ import { buildEditsForBayLNode } from './build-edits-for-bay-lnode'
 import { bayStore } from '@/headless/stores'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import type { LNodeTemplate, FunctionTemplate } from '@/headless/common-types'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
@@ -10,8 +11,6 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 		editor: null
 	}
 }))
-
-const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
 describe('buildEditsForBayLNode', () => {
 	let mockDocument: Document

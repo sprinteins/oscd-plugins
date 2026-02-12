@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { bayStore } from './bay.store.svelte'
 import type { XMLEditor } from '@openscd/oscd-editor'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
@@ -8,8 +9,6 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 		editor: null
 	}
 }))
-
-const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
 describe('bayStore', () => {
 	let mockDocument: Document
