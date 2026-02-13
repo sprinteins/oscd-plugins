@@ -18,23 +18,23 @@ describe('buildEditsForBayLNode', () => {
 
 	beforeEach(() => {
 		// Reset bay store
-		bayStore.selectedBay = null
+		bayStore.selectedBay = 'TestBay'
 		bayStore.equipmentMatches = []
 
 		mockDocument = new DOMParser().parseFromString(
 			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-				<Function name="TopLevelFunc">
-					<LNode lnType="XSWI_Type1" lnInst="1"/>
-				</Function>
-				<Function name="TestFunc">
-					<LNode lnType="XCBR_Type1" lnInst="1"/>
-					<LNode lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
-					<LNode lnType="XSWI_Type1" lnInst="1"/>
-					<LNode lnType="CSWI_Type1" lnInst="1"/>
-				</Function>
 				<Substation>
 					<VoltageLevel>
 						<Bay name="TestBay">
+							<Function name="TopLevelFunc">
+								<LNode lnType="XSWI_Type1" lnInst="1"/>
+							</Function>
+							<Function name="TestFunc">
+								<LNode lnType="XCBR_Type1" lnInst="1"/>
+								<LNode lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
+								<LNode lnType="XSWI_Type1" lnInst="1"/>
+								<LNode lnType="CSWI_Type1" lnInst="1"/>
+							</Function>
 							<ConductingEquipment name="Breaker1">
 								<EqFunction name="ProtectionFunc">
 									<LNode lnType="XCBR_Type1" lnInst="1"/>
@@ -209,14 +209,18 @@ describe('buildEditsForBayLNode', () => {
 			// GIVEN multiple LNode matches with one unassigned
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-					<Function name="TestFunc">
-						<LNode lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
-						<LNode lnType="XCBR_Type1" lnInst="1"/>
-					</Function>
+					<Bay name="TestBay">
+						<Function name="TestFunc">
+							<LNode lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
+							<LNode lnType="XCBR_Type1" lnInst="1"/>
+						</Function>
+					</Bay>
 				</SCL>`,
 				'application/xml'
 			)
 			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
 
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -248,14 +252,18 @@ describe('buildEditsForBayLNode', () => {
 			// GIVEN all LNode matches already assigned
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-					<Function name="TestFunc">
-						<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED1"/>
-						<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED2"/>
-					</Function>
+					<Bay name="TestBay">
+						<Function name="TestFunc">
+							<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED1"/>
+							<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED2"/>
+						</Function>
+					</Bay>
 				</SCL>`,
 				'application/xml'
 			)
 			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
 
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -288,15 +296,19 @@ describe('buildEditsForBayLNode', () => {
 			// GIVEN multiple LNodes in template
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-					<Function name="TestFunc">
-						<LNode lnType="XCBR_Type1" lnInst="1"/>
-						<LNode lnType="XSWI_Type1" lnInst="1"/>
-						<LNode lnType="CSWI_Type1" lnInst="1"/>
-					</Function>
+					<Bay name="TestBay">
+						<Function name="TestFunc">
+							<LNode lnType="XCBR_Type1" lnInst="1"/>
+							<LNode lnType="XSWI_Type1" lnInst="1"/>
+							<LNode lnType="CSWI_Type1" lnInst="1"/>
+						</Function>
+					</Bay>
 				</SCL>`,
 				'application/xml'
 			)
 			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
 
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -340,13 +352,17 @@ describe('buildEditsForBayLNode', () => {
 			// GIVEN some LNodes with no match
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-					<Function name="TestFunc">
-						<LNode lnType="XCBR_Type1" lnInst="1"/>
-					</Function>
+					<Bay name="TestBay">
+						<Function name="TestFunc">
+							<LNode lnType="XCBR_Type1" lnInst="1"/>
+						</Function>
+					</Bay>
 				</SCL>`,
 				'application/xml'
 			)
 			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
 
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -400,9 +416,10 @@ describe('buildEditsForBayLNode', () => {
 			expect(edits).toEqual([])
 		})
 
-		it('GIVEN no document loaded WHEN buildEditsForBayLNode is called without equipmentUuid THEN should handle error gracefully', () => {
+		it('GIVEN no document loaded WHEN buildEditsForBayLNode is called without equipmentUuid THEN should return empty array', () => {
 			// GIVEN no document loaded
 			pluginGlobalStore.xmlDocument = undefined
+			bayStore.selectedBay = null
 
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -419,14 +436,14 @@ describe('buildEditsForBayLNode', () => {
 			}
 
 			// WHEN buildEditsForBayLNode is called without equipmentUuid
-			// THEN should handle error gracefully
-			expect(() => {
-				buildEditsForBayLNode({
-					lNodes,
-					iedName: 'IED1',
-					sourceFunction
-				})
-			}).toThrow('No XML document loaded')
+			const edits = buildEditsForBayLNode({
+				lNodes,
+				iedName: 'IED1',
+				sourceFunction
+			})
+
+			// THEN should return empty array
+			expect(edits).toEqual([])
 		})
 	})
 })
