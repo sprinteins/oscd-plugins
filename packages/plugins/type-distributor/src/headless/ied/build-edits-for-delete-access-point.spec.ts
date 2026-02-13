@@ -1,9 +1,31 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import {
 	buildEditsForDeleteAccessPoint,
 	buildEditsForDeleteLNodeFromAccessPoint
 } from './build-edits-for-delete-access-point'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
+
+// Mock dependencies
+vi.mock('@oscd-plugins/core-ui-svelte', () => ({
+	pluginGlobalStore: {
+		editCount: 0
+	}
+}))
+
+vi.mock('@/headless/stores/bay.store.svelte', () => ({
+	bayStore: {
+		selectedBay: null,
+		selectedBayUuid: null,
+		assignedBayTypeUuid: null,
+		pendingBayTypeApply: null,
+		equipmentMatches: [],
+		scdBay: null
+	}
+}))
+
+vi.mock('@/headless/utils', () => ({
+	getDocumentAndEditor: vi.fn()
+}))
 
 type Edit = Remove | SetAttributes
 
@@ -634,7 +656,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 					iedName: 'IED1',
 					accessPointName: 'P1',
 					lDeviceInst: 'CBFunction',
-					lNode: {
+					lNodeTemplate: {
 						lnClass: 'XCBR',
 						lnType: 'TestXCBR',
 						lnInst: '1'
@@ -663,7 +685,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 					iedName: 'IED1',
 					accessPointName: 'P1',
 					lDeviceInst: 'CBFunction',
-					lNode: {
+					lNodeTemplate: {
 						lnClass: 'XCBR',
 						lnType: 'TestXCBR',
 						lnInst: '1'
@@ -695,7 +717,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 					iedName: 'IED1',
 					accessPointName: 'P1',
 					lDeviceInst: 'CBFunction',
-					lNode: {
+					lNodeTemplate: {
 						lnClass: 'XCBR',
 						lnType: 'TestXCBR',
 						lnInst: '1'
@@ -729,7 +751,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 					iedName: 'IED1',
 					accessPointName: 'P1',
 					lDeviceInst: 'QA1_Protection',
-					lNode: {
+					lNodeTemplate: {
 						lnClass: 'PTRC',
 						lnType: 'TestPTRC',
 						lnInst: '1'
@@ -786,7 +808,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 					iedName: 'IED1',
 					accessPointName: 'P1',
 					lDeviceInst: 'CBFunction',
-					lNode: {
+					lNodeTemplate: {
 						lnClass: 'XCBR',
 						lnType: 'TestXCBR',
 						lnInst: '1'
@@ -833,7 +855,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 						iedName: 'IED1',
 						accessPointName: 'P1',
 						lDeviceInst: 'CBFunction',
-						lNode: {
+						lNodeTemplate: {
 							lnClass: 'NonExistent',
 							lnType: 'TestXCBR',
 							lnInst: '99'
