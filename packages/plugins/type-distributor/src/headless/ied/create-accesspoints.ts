@@ -1,5 +1,4 @@
 import type { Insert } from '@openscd/oscd-api'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { createElement } from '@oscd-plugins/core'
 import { getDocumentAndEditor } from '../utils';
 

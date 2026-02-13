@@ -11,7 +11,7 @@ import {
 	createServerElementWithAuth,
 	queryLDevice,
 	queryServer,
-	hasLNodeInTargetDoc
+	isLNodePresentInDevice
 } from './elements'
 
 type CreateMultipleLNodesParams = {
@@ -99,11 +99,19 @@ export function createMultipleLNodesInAccessPoint({
 
 	const doc = pluginGlobalStore.xmlDocument
 
+	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
+	const { lDevice, edit: lDeviceEdit } = ensureLDevice(
+		serverElement,
+		doc,
+		sourceFunction,
+		equipmentUuid
+	)
+
 	const lNodesToAdd = lNodes.filter((lNode) => {
-		const exists = hasLNodeInTargetDoc(doc, lNode)
+		const exists = isLNodePresentInDevice(lNode, lDevice)
 		if (exists) {
 			console.warn(
-				`[createLNodesInAccessPoint] LN ${lNode.lnClass}:${lNode.lnType}:${lNode.lnInst} already exists in target document, skipping`
+				`[createLNodesInAccessPoint] LN ${lNode.lnClass}:${lNode.lnType}:${lNode.lnInst} already exists in LDevice, skipping`
 			)
 		}
 		return !exists
@@ -113,13 +121,6 @@ export function createMultipleLNodesInAccessPoint({
 		console.info('[createLNodesInAccessPoint] No new lNodes to add')
 		return edits
 	}
-	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
-	const { lDevice, edit: lDeviceEdit } = ensureLDevice(
-		serverElement,
-		doc,
-		sourceFunction,
-		equipmentUuid
-	)
 	if (serverEdit) edits.push(serverEdit)
 	if (lDeviceEdit) edits.push(lDeviceEdit)
 

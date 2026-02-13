@@ -7,7 +7,8 @@ import {
 import {
 	bayStore,
 	bayTypesStore,
-	equipmentMatchingStore
+	equipmentMatchingStore,
+	assignedLNodesStore
 } from '@/headless/stores'
 import type { BayType } from '@/headless/common-types'
 import {
@@ -40,6 +41,11 @@ const conductingEquipmentTemplates = $derived(
 const sIedItems = $derived.by(() => {
 	pluginGlobalStore.editCount
 	return querySIEDs(bayStore.selectedBay ?? '')
+})
+
+$effect(() => {
+	pluginGlobalStore.editCount
+	assignedLNodesStore.rebuild()
 })
 
 let bayTypeError = $state<string | null>(null)
@@ -79,6 +85,7 @@ function handleBayTypeChange() {
 		if (validation.isValid && !validation.requiresManualMatching) {
 			bayStore.pendingBayTypeApply = bayTypesStore.selectedBayType
 		}
+		assignedLNodesStore.rebuild()
 	} catch (error) {
 		console.error('[handleBayTypeChange] Error:', error)
 	}
@@ -115,11 +122,11 @@ function handleBayTypeChange() {
 		</Card.Header>
 		<Card.Content class="overflow-y-auto space-y-4">
 			<BayTypeValidation {bayTypeError} />
-
 			{#if shouldShowBayTypeDetails}
 				<BayTypeDetails
 					{functionTemplates}
 					{conductingEquipmentTemplates}
+					{bayTypeWithTemplates}
 				/>
 			{:else if !bayTypesStore.selectedBayType}
 				<p class="text-gray-500 text-sm">

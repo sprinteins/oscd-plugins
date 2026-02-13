@@ -348,7 +348,7 @@ describe('createLNodesInAccessPoint', () => {
 			expect(edits).toEqual([])
 		})
 
-		it('should return empty array when all lNodes already exist in target document', () => {
+		it('should create lNode even when same lNode exists in another IED', () => {
 			// Create existing LNode in another IED
 			const otherIED = mockDocument.createElement('IED')
 			otherIED.setAttribute('name', 'OtherIED')
@@ -373,7 +373,50 @@ describe('createLNodesInAccessPoint', () => {
 				accessPoint
 			})
 
-			// Should return empty array since lNode already exists
+			// Should create edits since lNode uniqueness is scoped to LDevice, not entire document
+			expect(edits.length).toBeGreaterThan(0)
+			
+			// Verify Server, LDevice, and LN are created
+			let hasServer = false
+			let hasLDevice = false
+			let hasLN = false
+			for (const edit of edits as Insert[]) {
+				if (edit.node instanceof Element) {
+					if (edit.node.localName === 'Server') hasServer = true
+					if (edit.node.localName === 'LDevice') hasLDevice = true
+					if (edit.node.localName === 'LN') hasLN = true
+				}
+			}
+			expect(hasServer).toBe(true)
+			expect(hasLDevice).toBe(true)
+			expect(hasLN).toBe(true)
+		})
+
+		it('should return empty array when all lNodes already exist in same LDevice', () => {
+			// Create existing Server and LDevice with the same LNode in target AccessPoint
+			const server = mockDocument.createElement('Server')
+			const auth = mockDocument.createElement('Authentication')
+			auth.setAttribute('none', 'true')
+			server.appendChild(auth)
+			accessPoint.appendChild(server)
+
+			const lDevice = mockDocument.createElement('LDevice')
+			lDevice.setAttribute('inst', 'CBFunction')
+			server.appendChild(lDevice)
+
+			const existingLN = mockDocument.createElement('LN')
+			existingLN.setAttribute('lnClass', 'XCBR')
+			existingLN.setAttribute('lnType', 'TestLNType')
+			existingLN.setAttribute('lnInst', '1')
+			lDevice.appendChild(existingLN)
+
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint
+			})
+
+			// Should return empty array since lNode already exists in the same LDevice
 			expect(edits).toEqual([])
 		})
 	})
