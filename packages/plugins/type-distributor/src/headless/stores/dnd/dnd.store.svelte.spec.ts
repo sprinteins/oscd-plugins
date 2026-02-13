@@ -20,6 +20,17 @@ vi.mock('@/headless/ied', () => ({
 	buildEditsForBayLNode: vi.fn()
 }))
 
+vi.mock('@/headless/stores', () => ({
+	assignedLNodesStore: {
+		markAsAssigned: vi.fn(),
+		rebuild: vi.fn(),
+		isAssigned: vi.fn(),
+		get hasConnections() {
+			return false
+		}
+	}
+}))
+
 describe('dndStore', () => {
 	const mockAccessPoint = document.createElement('AccessPoint')
 	const mockLNodes = [

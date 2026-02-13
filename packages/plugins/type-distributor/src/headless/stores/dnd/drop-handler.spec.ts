@@ -72,7 +72,7 @@ describe('drop-handler', () => {
 
 	beforeEach(() => {
 		bayTypesStore.selectedBayType = null
-		bayStore.assignedBayType = null
+		bayStore.assignedBayTypeUuid = null
 		bayStore.selectedBay = null
 		bayStore.pendingBayTypeApply = null
 		equipmentMatchingStore.validationResult = null
@@ -153,7 +153,7 @@ describe('drop-handler', () => {
 		it('GIVEN selected bay type with valid auto selection WHEN getBayTypeApplicationState THEN derives correct state', () => {
 			// GIVEN
 			bayTypesStore.selectedBayType = 'bt-1'
-			bayStore.assignedBayType = null
+			bayStore.assignedBayTypeUuid = null
 			bayStore.selectedBay = 'Bay-1'
 			equipmentMatchingStore.validationResult = {
 				isValid: true,
@@ -254,7 +254,7 @@ describe('drop-handler', () => {
 			expect(didApply).toBe(true)
 			expect(bayTypesStore.selectedBayType).toBe('bt-3')
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-3')
-			expect(bayStore.assignedBayType).toBe('bt-3')
+			expect(bayStore.assignedBayTypeUuid).toBe('bt-3')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 			expect(
 				equipmentMatchingStore.clearValidationResult
@@ -279,7 +279,7 @@ describe('drop-handler', () => {
 			// THEN
 			expect(didApply).toBe(true)
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-4')
-			expect(bayStore.assignedBayType).toBe('bt-4')
+			expect(bayStore.assignedBayTypeUuid).toBe('bt-4')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 		})
 	})

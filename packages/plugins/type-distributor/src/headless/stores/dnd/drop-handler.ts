@@ -40,7 +40,7 @@ export function getBayTypeApplicationState(): BayTypeApplicationState {
 		!!bayStore.pendingBayTypeApply && requiresManualMatching
 
 	return {
-		hasAssignedBayType: !!bayStore.assignedBayType,
+		hasAssignedBayType: !!bayStore.assignedBayTypeUuid,
 		hasSelectedBay: !!bayStore.selectedBay,
 		requiresManualMatching,
 		hasValidAutoSelection,
@@ -62,7 +62,7 @@ export function applyBayTypeIfNeeded(state: BayTypeApplicationState): boolean {
 	}
 
 	applyBayTypeSelection(bayStore.selectedBay)
-	bayStore.assignedBayType = bayTypesStore.selectedBayType
+	bayStore.assignedBayTypeUuid = bayTypesStore.selectedBayType
 	bayStore.pendingBayTypeApply = null
 	equipmentMatchingStore.clearValidationResult()
 

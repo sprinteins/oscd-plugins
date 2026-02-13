@@ -48,6 +48,16 @@ $effect(() => {
 	assignedLNodesStore.rebuild()
 })
 
+$effect(() => {
+	if (bayStore.assignedBayTypeUuid) {
+		bayTypesStore.selectedBayType = bayStore.assignedBayTypeUuid
+	} else {
+		bayTypesStore.selectedBayType = null
+	}
+})
+
+const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
+
 let bayTypeError = $state<string | null>(null)
 
 const shouldShowBayTypeDetails = $derived.by(() => {
@@ -63,7 +73,7 @@ const shouldShowBayTypeDetails = $derived.by(() => {
 		return false
 	}
 
-	if (bayStore.assignedBayType === bayTypesStore.selectedBayType) {
+	if (bayStore.assignedBayTypeUuid === bayTypesStore.selectedBayType) {
 		return true
 	}
 
@@ -112,7 +122,7 @@ function handleBayTypeChange() {
 	<Card.Root class="flex-1 flex flex-col min-h-full">
 		<Card.Header>
 			<SelectWorkaround
-				disabled={bayTypeOptions.length === 0}
+				disabled={bayTypeOptions.length === 0 || isBayTypeLocked}
 				bind:value={bayTypesStore.selectedBayType}
 				handleChange={handleBayTypeChange}
 				options={bayTypeOptions}

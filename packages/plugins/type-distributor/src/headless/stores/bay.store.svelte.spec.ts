@@ -18,7 +18,7 @@ describe('bayStore', () => {
 		// Reset bay store state
 		bayStore.selectedBay = null
 		bayStore.selectedBayUuid = null
-		bayStore.assignedBayType = null
+		bayStore.assignedBayTypeUuid = null
 		bayStore.pendingBayTypeApply = null
 		bayStore.equipmentMatches = []
 
@@ -57,7 +57,7 @@ describe('bayStore', () => {
 			const {
 				selectedBay,
 				selectedBayUuid,
-				assignedBayType,
+				assignedBayTypeUuid,
 				pendingBayTypeApply,
 				equipmentMatches
 			} = store
@@ -65,7 +65,7 @@ describe('bayStore', () => {
 			// THEN should have null values
 			expect(selectedBay).toBeNull()
 			expect(selectedBayUuid).toBeNull()
-			expect(assignedBayType).toBeNull()
+			expect(assignedBayTypeUuid).toBeNull()
 			expect(pendingBayTypeApply).toBeNull()
 			expect(equipmentMatches).toEqual([])
 		})
@@ -92,15 +92,15 @@ describe('bayStore', () => {
 			expect(bayStore.selectedBayUuid).toBe(bayUuid)
 		})
 
-		it('GIVEN a bay type WHEN assignedBayType is set THEN should update assignedBayType state', () => {
+		it('GIVEN a bay type WHEN assignedBayTypeUuid is set THEN should update assignedBayTypeUuid state', () => {
 			// GIVEN a bay type
 			const bayType = 'test-bay-type'
 
-			// WHEN assignedBayType is set
-			bayStore.assignedBayType = bayType
+			// WHEN assignedBayTypeUuid is set
+			bayStore.assignedBayTypeUuid = bayType
 
-			// THEN should update assignedBayType state
-			expect(bayStore.assignedBayType).toBe(bayType)
+			// THEN should update assignedBayTypeUuid state
+			expect(bayStore.assignedBayTypeUuid).toBe(bayType)
 		})
 
 		it('GIVEN a pending bay type WHEN pendingBayTypeApply is set THEN should update pendingBayTypeApply state', () => {

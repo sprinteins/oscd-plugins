@@ -1,4 +1,10 @@
-import { ssdImportStore, bayTypesStore, equipmentMatchingStore, bayStore } from '@/headless/stores'
+import {
+	ssdImportStore,
+	bayTypesStore,
+	equipmentMatchingStore,
+	bayStore,
+	assignedLNodesStore
+} from '@/headless/stores'
 import type { ValidationResult } from './types'
 import { validateEquipmentMatch } from './validation'
 
@@ -21,9 +27,23 @@ export function validateBayTypeSelection(bayName: string): ValidationResult {
 		throw new Error('No Bay selected in SCD')
 	}
 
+	if (
+		assignedLNodesStore.hasConnections &&
+		bayStore.assignedBayTypeUuid &&
+		bayStore.assignedBayTypeUuid !== bayTypesStore.selectedBayType
+	) {
+		const result: ValidationResult = {
+			isValid: false,
+			errors: ['Cannot change Bay Type - LNode connections exist'],
+			requiresManualMatching: false
+		}
+		equipmentMatchingStore.setValidationResult(result, true)
+		return result
+	}
+
 	const validation = validateEquipmentMatch(scdBay, bayType)
-	
+
 	equipmentMatchingStore.setValidationResult(validation, true)
-	
+
 	return validation
 }
