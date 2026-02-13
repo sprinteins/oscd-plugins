@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { createAccessPoints } from './create-accesspoints'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import type { Insert } from '@openscd/oscd-api'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
@@ -9,7 +10,6 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 		editor: null
 	}
 }))
-const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
 describe('createAccessPoints', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
