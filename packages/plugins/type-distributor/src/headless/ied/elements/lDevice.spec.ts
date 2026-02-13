@@ -6,6 +6,7 @@ vi.mock('../../stores/bay.store.svelte', () => ({
 		equipmentMatches: [] as Array<{
 			scdElement: Element
 			templateEquipment: { uuid: string }
+			bayTypeEquipment: { uuid: string }
 		}>
 	}
 }))
@@ -41,7 +42,7 @@ describe('lDevice', () => {
 		const lDevice = createLDeviceElement(
 			document.implementation.createDocument('', '', null),
 			sourceFunction,
-			'eq-1'
+			'bay-type-1'
 		)
 
 		// THEN the inst uses the SCD equipment name and function name
