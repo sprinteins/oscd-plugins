@@ -285,7 +285,7 @@ describe('drop-handler', () => {
 	})
 
 	describe('generateCommitTitle', () => {
-		it('GIVEN didApplyBayType = false WHEN generateCommitTitle THEN returns base title format', () => {
+		it('GIVEN didApplyBayType is false WHEN generateCommitTitle THEN returns base title format', () => {
 			// GIVEN
 			const didApplyBayType = false
 
@@ -303,7 +303,7 @@ describe('drop-handler', () => {
 			)
 		})
 
-		it('GIVEN didApplyBayType = true WHEN generateCommitTitle THEN returns title with bay type info', () => {
+		it('GIVEN didApplyBayType is true WHEN generateCommitTitle THEN returns title with bay type info', () => {
 			// GIVEN
 			const didApplyBayType = true
 

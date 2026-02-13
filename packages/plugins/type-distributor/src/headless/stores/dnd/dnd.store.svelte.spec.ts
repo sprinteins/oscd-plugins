@@ -83,34 +83,30 @@ describe('dndStore', () => {
 	})
 
 	describe('GIVEN no dragged item', () => {
-		describe('WHEN handleDrop is called', () => {
-			it('THEN should exit early and call handleDragEnd', () => {
-				// GIVEN no dragged item
-				dndStore.draggedItem = null
+		it('WHEN handleDrop is called THEN should exit early and call handleDragEnd', () => {
+			// GIVEN no dragged item
+			dndStore.draggedItem = null
 
-				// WHEN handleDrop is called
-				dndStore.handleDrop(mockAccessPoint, 'TestIED')
+			// WHEN handleDrop is called
+			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
-				// THEN should exit early and call handleDragEnd
-				expect(
-					dropHandler.getBayTypeApplicationState
-				).not.toHaveBeenCalled()
-				expect(dropHandler.commitEdits).not.toHaveBeenCalled()
-				expect(dndStore.isDragging).toBe(false)
-			})
+			// THEN should exit early and call handleDragEnd
+			expect(
+				dropHandler.getBayTypeApplicationState
+			).not.toHaveBeenCalled()
+			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
+			expect(dndStore.isDragging).toBe(false)
 		})
 
-		describe('WHEN currentDraggedItem is accessed', () => {
-			it('THEN should return null', () => {
-				// GIVEN no dragged item
-				dndStore.draggedItem = null
+		it('WHEN currentDraggedItem is accessed THEN should return null', () => {
+			// GIVEN no dragged item
+			dndStore.draggedItem = null
 
-				// WHEN currentDraggedItem is accessed
-				const result = dndStore.currentDraggedItem
+			// WHEN currentDraggedItem is accessed
+			const result = dndStore.currentDraggedItem
 
-				// THEN should return null
-				expect(result).toBeNull()
-			})
+			// THEN should return null
+			expect(result).toBeNull()
 		})
 	})
 
