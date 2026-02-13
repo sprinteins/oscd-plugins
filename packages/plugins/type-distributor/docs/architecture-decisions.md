@@ -9,6 +9,7 @@ The plugin uses Svelte 5 runes-based stores for state management:
 - **bayStore**: Tracks selected SCD bay element
 - **equipmentMatchingStore**: Manages manual equipment-to-template matches
 - **dndStore**: Handles drag-and-drop UI state
+- **assignedLNodesStore**: Tracks which LNodes have been assigned to IEDs
 
 **Rationale**: Centralized state management ensures consistent data flow between UI components and headless logic. Stores act as single source of truth for cross-component state.
 

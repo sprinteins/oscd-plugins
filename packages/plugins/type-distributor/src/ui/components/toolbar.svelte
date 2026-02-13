@@ -5,6 +5,7 @@ import {
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
 import {
+    assignedLNodesStore,
 	bayStore,
 	bayTypesStore,
 	equipmentMatchingStore,
@@ -27,6 +28,7 @@ const bayOptions = $derived(
 
 function handleBayChange() {
 	equipmentMatchingStore.reset()
+    assignedLNodesStore.rebuild()
 	bayTypesStore.selectedBayType = null
 }
 </script>
