@@ -19,6 +19,8 @@ Focus on observable behavior and side effects, not implementation details. Tests
 
 Prefer minimal, well-scoped tests that explain *why* a behavior matters to the user flow.
 
+### Thematical clustering
+- Wrap thematically similar tests with a `describe` block. For instance: `describe('edge cases', () => { ... })`
 
 ### GIVEN WHEN THEN
 Wrap tests that share the same GIVEN setup in a parent `describe` block to avoid repetition and to keep the structure clear.
