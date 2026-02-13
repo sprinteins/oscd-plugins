@@ -11,7 +11,12 @@ vi.mock('./drop-handler', () => ({
 	commitEdits: vi.fn()
 }))
 
+vi.mock('@/headless/utils/get-document-and-Editor', () => ({
+	getDocumentAndEditor: vi.fn()
+}))
+
 vi.mock('@/headless/ied', () => ({
+	createMultipleLNodesInAccessPoint: vi.fn(),
 	buildEditsForBayLNode: vi.fn()
 }))
 
