@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { querySIEDs } from './query-s-ieds'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
@@ -7,7 +9,6 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 		host: null
 	}
 }))
-const { pluginGlobalStore } = await import('@oscd-plugins/core-ui-svelte')
 
 describe('querySIEDs', () => {
 	let mockDocument: Document
