@@ -28,7 +28,7 @@ function handleDelete() {
 			iedName,
 			accessPointName,
 			lDeviceInst: lDeviceName,
-			lNode: {
+			lNodeTemplate: {
 				lnClass: lnode.lnClass,
 				lnType: lnode.lnType,
 				lnInst: lnode.lnInst
@@ -37,8 +37,7 @@ function handleDelete() {
 		})
 
 		editor.commit(edits, {
-			title: `Delete LNode ${lnode.lnClass}`,
-			squash: true
+			title: `Delete LNode ${lnode.lnClass}`
 		})
 	} catch (error) {
 		console.error('[IedLnode] Error deleting LNode:', error)

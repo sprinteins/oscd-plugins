@@ -72,8 +72,7 @@ function handleDelete() {
 		})
 
 		editor.commit(edits, {
-			title: `Delete AccessPoint ${accessPointName}`,
-			squash: true
+			title: `Delete AccessPoint ${accessPointName}`
 		})
 	} catch (error) {
 		console.error('[AccessPoint] Error deleting AccessPoint:', error)
