@@ -45,6 +45,21 @@ function generateLDeviceInst(
 	return functionName
 }
 
+export function parseLDeviceInst(lDeviceInst: string): {
+	equipmentName: string
+	functionName: string
+} | null {
+	const lastUnderscoreIndex = lDeviceInst.lastIndexOf('_')
+	if (lastUnderscoreIndex === -1) {
+		return { equipmentName: '', functionName: lDeviceInst }
+	}
+
+	const equipmentName = lDeviceInst.substring(0, lastUnderscoreIndex)
+	const functionName = lDeviceInst.substring(lastUnderscoreIndex + 1)
+
+	return { equipmentName, functionName }
+}
+
 export function getLDeviceInst(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	equipmentUuid?: string
