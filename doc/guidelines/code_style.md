@@ -1,8 +1,41 @@
 # Code Style
 
+## Formatting & Linting
 
-- do not use prettier for formatting
-- use the [barrel pattern](./barrel-pattern.md)
-- files in a module should not import from their own index file (except tests, demo pages)
-- tests and demo pages (+page.svelte) should import from the module's index to ensure that the module's public API is used
-- files outside of a module should always import from the module's index
+We use [BiomeJS](https://biomejs.dev/) at the root of the project, you can find a [vscode extension](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) to use it.
+
+## Programming
+
+Here we define how to style the Code we write.
+
+### Svelte
+
+* Use Svelte Convetions
+* Props if applicable should be passed with `{params}` not `params={params}`
+* Put variables at the top except they are function specific
+
+### TypeScript
+
+* Prefer functions over arrow functions
+* Use async await syntax over .then()
+
+### Naming Conventions
+
+* Components: PascalCase
+* Cariables: camelCase
+* Functions: camelCase (with verb at the start what it is doing e.g. getBooks())
+* Constants: SCREAMING_SNAKE_CASE
+
+### Dependencies
+
+* Prefer devDependencies if possible
+
+### Files
+* use the [barrel pattern](./barrel-pattern.md)
+* files in a module should not import from their own index file (except tests, demo pages)
+* tests and demo pages (+page.svelte) should import from the module's index to ensure that the module's public API is used
+* files outside of a module should always import from the module's index
+
+## Commit convention
+
+We follow the rules of the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
