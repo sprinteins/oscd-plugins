@@ -65,7 +65,12 @@ describe('buildEditsForBayLNode', () => {
 			// GIVEN equipment UUID and matching LNode
 			const breaker = mockDocument.querySelector(
 				'ConductingEquipment[name="Breaker1"]'
-			)!
+			)
+			if (!breaker) {
+				throw new Error(
+					'Test setup failed: Breaker1 not found in mock document'
+				)
+			}
 			bayStore.equipmentMatches = [
 				{
 					scdElement: breaker,
