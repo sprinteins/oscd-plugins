@@ -4,37 +4,30 @@ import { bayStore } from '@/headless/stores'
 import { buildEditsForDeleteLNodeFromAccessPoint } from '@/headless/ied'
 import { getDocumentAndEditor } from '@/headless/utils'
 import type { LNodeTemplate } from '@/headless/common-types'
+import { getEditor } from '@/headless/utils/get-document-and-Editor'
 
 interface Props {
 	lnode: LNodeTemplate
 	lDeviceName: string
-	iedName: string
-	accessPointName: string
+	sIedName: string
+	accessPoint: Element
 }
 
-const { lnode, lDeviceName, iedName, accessPointName }: Props = $props()
+const { lnode, lDeviceName, sIedName, accessPoint }: Props = $props()
 
 function handleDelete() {
-	if (!bayStore.scdBay) {
-		console.error('[IedLnode] No bay selected')
-		return
-	}
-
-	const { doc, editor } = getDocumentAndEditor()
-
 	try {
-		const edits = buildEditsForDeleteLNodeFromAccessPoint({
-			doc,
-			iedName,
-			accessPointName,
-			lDeviceInst: lDeviceName,
-			lNodeTemplate: {
+		const editor = getEditor()
+		const edits = buildEditsForDeleteLNodeFromAccessPoint(
+			sIedName,
+			accessPoint,
+			lDeviceName,
+			{
 				lnClass: lnode.lnClass,
 				lnType: lnode.lnType,
 				lnInst: lnode.lnInst
-			},
-			selectedBay: bayStore.scdBay
-		})
+			}
+		)
 
 		editor.commit(edits, {
 			title: `Delete LNode ${lnode.lnClass}`
@@ -43,7 +36,6 @@ function handleDelete() {
 		console.error('[IedLnode] Error deleting LNode:', error)
 	}
 }
-
 </script>
 
 <Card.Root

@@ -56,8 +56,8 @@ function handleDelete() {
 			)
 			return
 		}
-    
-		const edits = buildEditsForDeleteAccessPoint(accessPoint)
+
+		const edits = buildEditsForDeleteAccessPoint(accessPoint, sIedName)
 
 		editor.commit(edits, {
 			title: `Delete AccessPoint ${accessPoint.getAttribute('name') ?? '(unnamed)'} from ${sIedName}`
@@ -102,11 +102,16 @@ function handleDelete() {
             {#if isDropTarget}
               <CirclePlus class="size-5 text-primary animate-pulse" />
             {/if}
-            <span onclick={(e) => e.stopPropagation()} role="button" tabindex="0" onkeydown={(e) => e.key === 'Enter' && e.stopPropagation()}>
+            <span
+              onclick={(e) => e.stopPropagation()}
+              role="button"
+              tabindex="0"
+              onkeydown={(e) => e.key === "Enter" && e.stopPropagation()}
+            >
               <DropdownMenuWorkaround
                 size="sm"
                 actions={[
-                  { label: 'Delete', disabled: false, callback: handleDelete }
+                  { label: "Delete", disabled: false, callback: handleDelete },
                 ]}
               />
             </span>
@@ -120,9 +125,9 @@ function handleDelete() {
       {#each lNodes as lnode}
         <IedLnode
           {lnode}
-          lDeviceName={lnode.lDeviceName ?? 'Unknown'}
-          iedName={sIedName}
-          accessPointName={accessPoint.getAttribute('name') ?? ''}
+          lDeviceName={lnode.lDeviceName ?? "Unknown"}
+          {sIedName}
+          {accessPoint}
         />
       {/each}
     </div>

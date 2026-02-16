@@ -1,29 +1,14 @@
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
 import { hasRemainingConnectionsAfterClearing } from './check-bay-connections.helper'
 import { parseLDeviceInst } from './elements'
-import type { LNodeTemplate } from '../common-types'
-import { bayStore } from '../stores'
-
-export interface DeleteAccessPointParams {
-	doc: Document
-	iedName: string
-	accessPointName: string
-	selectedBay: Element
-}
-
-export interface DeleteLNodeFromAccessPointParams {
-	doc: Document
-	iedName: string
-	accessPointName: string
-	lDeviceInst: string
-	lNodeTemplate: LNodeTemplate
-	selectedBay: Element
-}
+import type { LNodeTemplate } from '@/headless/common-types'
+import { bayStore } from '@/headless/stores'
 
 function queryMatchingBayLNode(
 	bay: Element,
 	lNodeTemplate: LNodeTemplate,
-	lDeviceInst: string
+	lDeviceInst: string,
+	iedName: string
 ): Element | null {
 	const parsed = parseLDeviceInst(lDeviceInst)
 	if (!parsed) return null
@@ -50,7 +35,7 @@ function queryMatchingBayLNode(
 	if (!targetFunction) return null
 
 	const matchingLNode = targetFunction.querySelector(
-		`:scope > LNode[lnClass="${lNodeTemplate.lnClass}"][lnType="${lNodeTemplate.lnType}"][lnInst="${lNodeTemplate.lnInst}"]`
+		`:scope > LNode[lnClass="${lNodeTemplate.lnClass}"][lnType="${lNodeTemplate.lnType}"][lnInst="${lNodeTemplate.lnInst}"][ldInst="${lDeviceInst}"][iedName="${iedName}"]`
 	)
 
 	return matchingLNode
@@ -83,7 +68,8 @@ function collectLNodesFromAccessPoint(accessPoint: Element): Array<{
 }
 
 export function buildEditsForDeleteAccessPoint(
-	accessPoint: Element
+	accessPoint: Element,
+	iedName: string
 ): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
 	const clearedBayLNodes = new Set<Element>()
@@ -107,7 +93,8 @@ export function buildEditsForDeleteAccessPoint(
 		const matchingBayLNodes = queryMatchingBayLNode(
 			selectedBay,
 			{ lnClass, lnType, lnInst: lnInst || '' },
-			lDeviceInst
+			lDeviceInst,
+			iedName
 		)
 
 		if (!matchingBayLNodes) continue
@@ -151,36 +138,22 @@ export function buildEditsForDeleteAccessPoint(
 }
 
 export function buildEditsForDeleteLNodeFromAccessPoint(
-	params: DeleteLNodeFromAccessPointParams
+	iedName: string,
+	accessPoint: Element,
+	lDeviceInst: string,
+	lNodeTemplate: LNodeTemplate
 ): (Remove | SetAttributes)[] {
-	const {
-		doc,
-		iedName,
-		accessPointName,
-		lDeviceInst,
-		lNodeTemplate,
-		selectedBay
-	} = params
 	const edits: (Remove | SetAttributes)[] = []
 
-	const ied = doc.querySelector(`IED[name="${iedName}"]`)
-	if (!ied) {
-		throw new Error(`IED with name "${iedName}" not found`)
-	}
-
-	const accessPoint = ied.querySelector(
-		`:scope > AccessPoint[name="${accessPointName}"]`
-	)
-	if (!accessPoint) {
-		throw new Error(
-			`AccessPoint with name "${accessPointName}" not found in IED "${iedName}"`
-		)
+	const selectedBay = bayStore.scdBay
+	if (!selectedBay) {
+		throw new Error('No bay selected')
 	}
 
 	const server = accessPoint.querySelector(':scope > Server')
 	if (!server) {
 		throw new Error(
-			`Server not found in AccessPoint "${accessPointName}" of IED "${iedName}"`
+			`Server not found in AccessPoint "${accessPoint.getAttribute('name')}" of IED "${iedName}"`
 		)
 	}
 
@@ -189,7 +162,7 @@ export function buildEditsForDeleteLNodeFromAccessPoint(
 	)
 	if (!lDevice) {
 		throw new Error(
-			`LDevice with inst "${lDeviceInst}" not found in AccessPoint "${accessPointName}"`
+			`LDevice with inst "${lDeviceInst}" not found in AccessPoint "${accessPoint.getAttribute('name')}" of IED "${iedName}"`
 		)
 	}
 
@@ -209,7 +182,8 @@ export function buildEditsForDeleteLNodeFromAccessPoint(
 	const matchingBayLNode = queryMatchingBayLNode(
 		selectedBay,
 		lNodeTemplate,
-		lDeviceInst
+		lDeviceInst,
+		iedName
 	)
 
 	const clearedBayLNodes = new Set<Element>()
