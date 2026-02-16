@@ -35,7 +35,7 @@ function queryMatchingBayLNode(
 	if (!targetFunction) return null
 
 	const matchingLNode = targetFunction.querySelector(
-		`:scope > LNode[lnClass="${lNodeTemplate.lnClass}"][lnType="${lNodeTemplate.lnType}"][lnInst="${lNodeTemplate.lnInst}"][ldInst="${lDeviceInst}"][iedName="${iedName}"]`
+		`:scope > LNode[lnClass="${lNodeTemplate.lnClass}"][lnType="${lNodeTemplate.lnType}"][lnInst="${lNodeTemplate.lnInst}"][iedName="${iedName}"]`
 	)
 
 	return matchingLNode
@@ -74,47 +74,43 @@ export function buildEditsForDeleteAccessPoint(
 	const edits: (Remove | SetAttributes)[] = []
 	const clearedBayLNodes = new Set<Element>()
 	const selectedBay = bayStore.scdBay
+	let willHaveRemainingConnections = false
 
-	if (!selectedBay) {
-		throw new Error('No bay selected')
-	}
+	if (selectedBay) {
+		const apLNodes = collectLNodesFromAccessPoint(accessPoint)
+		for (const { lnode, lDeviceInst } of apLNodes) {
+			const lnClass = lnode.getAttribute('lnClass')
+			const lnType = lnode.getAttribute('lnType')
+			const lnInst = lnode.getAttribute('lnInst')
 
-	const apLNodes = collectLNodesFromAccessPoint(accessPoint)
-	for (const { lnode, lDeviceInst } of apLNodes) {
-		const lnClass = lnode.getAttribute('lnClass')
-		const lnType = lnode.getAttribute('lnType')
-		const lnInst = lnode.getAttribute('lnInst')
+			if (!lnClass || !lnType) continue
 
-		if (!lnClass || !lnType) continue
+			const matchingBayLNodes = queryMatchingBayLNode(
+				selectedBay,
+				{ lnClass, lnType, lnInst: lnInst || '' },
+				lDeviceInst,
+				iedName
+			)
 
-		console.log(
-			`Processing LNode with lnClass="${lnClass}", lnType="${lnType}", lnInst="${lnInst}" from AccessPoint "${accessPoint.getAttribute('name')}"`
-		)
-		const matchingBayLNodes = queryMatchingBayLNode(
+			if (!matchingBayLNodes) continue
+
+			clearedBayLNodes.add(matchingBayLNodes)
+
+			edits.push({
+				element: matchingBayLNodes,
+				attributes: {
+					iedName: null,
+					ldInst: null
+				},
+				attributesNS: {}
+			} as SetAttributes)
+		}
+
+		willHaveRemainingConnections = hasRemainingConnectionsAfterClearing(
 			selectedBay,
-			{ lnClass, lnType, lnInst: lnInst || '' },
-			lDeviceInst,
-			iedName
+			clearedBayLNodes
 		)
-
-		if (!matchingBayLNodes) continue
-
-		clearedBayLNodes.add(matchingBayLNodes)
-
-		edits.push({
-			element: matchingBayLNodes,
-			attributes: {
-				iedName: null,
-				ldInst: null
-			},
-			attributesNS: {}
-		} as SetAttributes)
 	}
-
-	const willHaveRemainingConnections = hasRemainingConnectionsAfterClearing(
-		selectedBay,
-		clearedBayLNodes
-	)
 
 	const shouldClearTemplateUuid =
 		clearedBayLNodes.size > 0 && !willHaveRemainingConnections
@@ -189,6 +185,7 @@ export function buildEditsForDeleteLNodeFromAccessPoint(
 	const clearedBayLNodes = new Set<Element>()
 
 	if (!matchingBayLNode) return edits
+
 	clearedBayLNodes.add(matchingBayLNode)
 
 	edits.push({

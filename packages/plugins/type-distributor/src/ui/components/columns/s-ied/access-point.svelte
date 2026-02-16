@@ -59,6 +59,13 @@ function handleDelete() {
 
 		const edits = buildEditsForDeleteAccessPoint(accessPoint, sIedName)
 
+		if (!(edits.length > 0)) {
+			console.warn(
+				'[AccessPoint] No edits generated for deleting AccessPoint - check if it still exists'
+			)
+			return
+		}
+
 		editor.commit(edits, {
 			title: `Delete AccessPoint ${accessPoint.getAttribute('name') ?? '(unnamed)'} from ${sIedName}`
 		})
