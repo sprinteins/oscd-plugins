@@ -6,6 +6,7 @@ import { buildEditsForDeleteAccessPoint } from '@/headless/ied'
 import { getDocumentAndEditor } from '@/headless/utils'
 import type { LNodeTemplate } from '@/headless/common-types'
 import IedLnode from './ied-lnode.svelte'
+import { getEditor } from '@/headless/utils/get-document-and-Editor'
 
 interface Props {
 	accessPoint: Element
@@ -46,39 +47,25 @@ function handleDrop(event: DragEvent) {
 }
 
 function handleDelete() {
-	const { doc, editor } = getDocumentAndEditor()
-	const accessPointName = accessPoint.getAttribute('name')
-
-	if (!accessPointName) {
-		console.error('[AccessPoint] No name attribute on AccessPoint')
-		return
-	}
-
-	// If AccessPoint has LNodes, we need a Bay context to clear references
-	if (hasLNodes && !bayStore.scdBay) {
-		console.error('[AccessPoint] No bay selected - required to clear LNode references')
-		return
-	}
-
 	try {
-		// For empty AccessPoints, create a minimal bay reference (won't be used)
-		const selectedBay = bayStore.scdBay || doc.createElement('Bay')
-		
-		const edits = buildEditsForDeleteAccessPoint({
-			doc,
-			iedName: sIedName,
-			accessPointName,
-			selectedBay
-		})
+		const editor = getEditor()
+
+		if (hasLNodes && !bayStore.scdBay) {
+			console.error(
+				'[AccessPoint] No bay selected - required to clear LNode references'
+			)
+			return
+		}
+    
+		const edits = buildEditsForDeleteAccessPoint(accessPoint)
 
 		editor.commit(edits, {
-			title: `Delete AccessPoint ${accessPointName}`
+			title: `Delete AccessPoint ${accessPoint.getAttribute('name') ?? '(unnamed)'} from ${sIedName}`
 		})
 	} catch (error) {
 		console.error('[AccessPoint] Error deleting AccessPoint:', error)
 	}
 }
-
 </script>
 
 <div class="space-y-1">

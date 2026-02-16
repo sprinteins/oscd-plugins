@@ -2,6 +2,7 @@ import type { Remove, SetAttributes } from '@openscd/oscd-api'
 import { hasRemainingConnectionsAfterClearing } from './check-bay-connections.helper'
 import { parseLDeviceInst } from './elements'
 import type { LNodeTemplate } from '../common-types'
+import { bayStore } from '../stores'
 
 export interface DeleteAccessPointParams {
 	doc: Document
@@ -82,29 +83,17 @@ function collectLNodesFromAccessPoint(accessPoint: Element): Array<{
 }
 
 export function buildEditsForDeleteAccessPoint(
-	params: DeleteAccessPointParams
+	accessPoint: Element
 ): (Remove | SetAttributes)[] {
-	const { doc, iedName, accessPointName, selectedBay } = params
 	const edits: (Remove | SetAttributes)[] = []
+	const clearedBayLNodes = new Set<Element>()
+	const selectedBay = bayStore.scdBay
 
-	const ied = doc.querySelector(`IED[name="${iedName}"]`)
-	if (!ied) {
-		throw new Error(`IED with name "${iedName}" not found`)
-	}
-
-	const accessPoint = ied.querySelector(
-		`:scope > AccessPoint[name="${accessPointName}"]`
-	)
-	if (!accessPoint) {
-		throw new Error(
-			`AccessPoint with name "${accessPointName}" not found in IED "${iedName}"`
-		)
+	if (!selectedBay) {
+		throw new Error('No bay selected')
 	}
 
 	const apLNodes = collectLNodesFromAccessPoint(accessPoint)
-
-	const clearedBayLNodes = new Set<Element>()
-
 	for (const { lnode, lDeviceInst } of apLNodes) {
 		const lnClass = lnode.getAttribute('lnClass')
 		const lnType = lnode.getAttribute('lnType')
@@ -112,7 +101,9 @@ export function buildEditsForDeleteAccessPoint(
 
 		if (!lnClass || !lnType) continue
 
-		console.log(`Processing LNode with lnClass="${lnClass}", lnType="${lnType}", lnInst="${lnInst}" from AccessPoint "${accessPointName}"`)
+		console.log(
+			`Processing LNode with lnClass="${lnClass}", lnType="${lnType}", lnInst="${lnInst}" from AccessPoint "${accessPoint.getAttribute('name')}"`
+		)
 		const matchingBayLNodes = queryMatchingBayLNode(
 			selectedBay,
 			{ lnClass, lnType, lnInst: lnInst || '' },
