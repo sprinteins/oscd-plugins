@@ -112,12 +112,12 @@ function handleBayTypeChange() {
 		<Card.Header>
 			<Card.Title>S-IEDs</Card.Title>
 		</Card.Header>
-		<Card.Content class="flex-1 overflow-y-auto">
-			<div class="flex flex-col gap-y-4 h-full justify-between">
+		<Card.Content class="flex-1 flex flex-col gap-y-4 overflow-hidden">
+			<div class="flex-1 overflow-y-auto">
 				<SIedDetails {sIedItems} />
-				<div class="mt-auto">
-					<AddSIedApDialogTrigger />
-				</div>
+			</div>
+			<div>
+				<AddSIedApDialogTrigger />
 			</div>
 		</Card.Content>
 	</Card.Root>
