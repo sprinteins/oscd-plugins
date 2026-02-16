@@ -397,7 +397,7 @@ async function generatePdf(
 			}
 		}
 
-		renderTextLine(pdfHintText)
+		renderText(pdfHintText, DEFAULT_FONT_SIZE, FONT_STYLES.NORMAL)
 		zipcelx(config)
 	}
 
