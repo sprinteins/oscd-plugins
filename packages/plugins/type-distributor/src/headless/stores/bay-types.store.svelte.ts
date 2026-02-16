@@ -8,6 +8,8 @@ import type {
 import { ssdImportStore } from './ssd-import.store.svelte'
 
 class UseBayTypesStore {
+	private templateCache = new Map<string, BayTypeWithTemplates>()
+
 	get bayTypes() {
 		return ssdImportStore.bayTypes
 	}
@@ -43,18 +45,27 @@ class UseBayTypesStore {
 			)
 	}
 
-	// Get full bay type details with resolved templates
 	getBayTypeWithTemplates(bayUuid: string): BayTypeWithTemplates | null {
+		const cached = this.templateCache.get(bayUuid)
+		if (cached) return cached
+
 		const bayType = this.bayTypes.find((b) => b.uuid === bayUuid)
 		if (!bayType) return null
 
-		return {
+		const result: BayTypeWithTemplates = {
 			...bayType,
 			conductingEquipmentTemplates: this.getConductingEquipmentTemplates(
 				bayType.conductingEquipments
 			),
 			functionTemplates: this.getFunctionTemplates(bayType.functions)
 		}
+
+		this.templateCache.set(bayUuid, result)
+		return result
+	}
+
+	clearCache() {
+		this.templateCache.clear()
 	}
 }
 

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.2] - 2026-02-16
 ### Changed
 - Restrict Switching Bays when working on assigning a BayType to a Bay.
+- Cache BayType resolution
 
 ## [0.3.1] - 2026-02-12
 ### Changed
