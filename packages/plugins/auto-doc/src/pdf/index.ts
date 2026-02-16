@@ -1,2 +1,2 @@
-export * from './pdfGenerator'
+export * from './pdf-generator'
 
