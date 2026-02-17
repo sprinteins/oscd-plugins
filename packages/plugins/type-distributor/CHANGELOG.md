@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.4] - 2026-02-17
+### Added
+- Creation of multiple Access Point for one IED in the create-dialog
+
 ## [0.3.1] - 2026-02-12
 ### Changed
 - Restrict BayType usage: As soon as a connection between a BayType and a Bay is established, the BayType becomes locked to that Bay.
