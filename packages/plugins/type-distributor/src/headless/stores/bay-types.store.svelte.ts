@@ -3,7 +3,8 @@ import type {
 	ConductingEquipmentTemplate,
 	ConductingEquipmentType,
 	FunctionTemplate,
-	FunctionType
+	FunctionType,
+	LNodeTemplate
 } from '../common-types'
 import { ssdImportStore } from './ssd-import.store.svelte'
 
@@ -45,6 +46,39 @@ class UseBayTypesStore {
 			)
 	}
 
+	getAllLNodesWithParent(
+		bayTypeWithTemplates: BayTypeWithTemplates
+	): Array<{ parentUuid: string; lnode: LNodeTemplate }> {
+		const result: Array<{ parentUuid: string; lnode: LNodeTemplate }> = []
+
+		for (const instance of bayTypeWithTemplates.conductingEquipments) {
+			const template =
+				bayTypeWithTemplates.conductingEquipmentTemplateMap.get(
+					instance.templateUuid
+				)
+			if (template?.eqFunctions) {
+				for (const eqFunction of template.eqFunctions) {
+					for (const lnode of eqFunction.lnodes) {
+						result.push({ parentUuid: instance.uuid, lnode })
+					}
+				}
+			}
+		}
+
+		for (const instance of bayTypeWithTemplates.functions) {
+			const template = bayTypeWithTemplates.functionTemplateMap.get(
+				instance.templateUuid
+			)
+			if (template?.lnodes) {
+				for (const lnode of template.lnodes) {
+					result.push({ parentUuid: instance.uuid, lnode })
+				}
+			}
+		}
+
+		return result
+	}
+
 	getBayTypeWithTemplates(bayUuid: string): BayTypeWithTemplates | null {
 		const cached = this.templateCache.get(bayUuid)
 		if (cached) return cached
@@ -52,12 +86,20 @@ class UseBayTypesStore {
 		const bayType = this.bayTypes.find((b) => b.uuid === bayUuid)
 		if (!bayType) return null
 
+		const conductingEquipmentTemplates =
+			this.getConductingEquipmentTemplates(bayType.conductingEquipments)
+		const functionTemplates = this.getFunctionTemplates(bayType.functions)
+
 		const result: BayTypeWithTemplates = {
 			...bayType,
-			conductingEquipmentTemplates: this.getConductingEquipmentTemplates(
-				bayType.conductingEquipments
+			conductingEquipmentTemplates,
+			functionTemplates,
+			conductingEquipmentTemplateMap: new Map(
+				conductingEquipmentTemplates.map((t) => [t.uuid, t])
 			),
-			functionTemplates: this.getFunctionTemplates(bayType.functions)
+			functionTemplateMap: new Map(
+				functionTemplates.map((t) => [t.uuid, t])
+			)
 		}
 
 		this.templateCache.set(bayUuid, result)
