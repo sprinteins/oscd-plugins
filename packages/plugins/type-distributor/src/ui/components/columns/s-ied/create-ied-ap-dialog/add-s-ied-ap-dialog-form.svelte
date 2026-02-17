@@ -2,8 +2,12 @@
 import { querySIEDs } from '@/headless/ied'
 import { bayStore } from '@/headless/stores'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { IedSelectorSection, IedFormSection, AccessPointFormSection } from './sections'
-import { IedChip, PendingAccessPoints, MultiApButton, FormActions } from './ui'
+import {
+	IedSelectorSection,
+	IedFormSection,
+	AccessPointFormSection
+} from './sections'
+import { MultiApButton, FormActions } from './ui'
 import {
 	type AccessPointData,
 	validateForm,
@@ -13,6 +17,8 @@ import {
 	submitForm,
 	buildAccessPoint
 } from './lib'
+import MultiApBackButton from './ui/multi-ap-back-button.svelte'
+  import IedAndAccessPointOverview from './sections/ied-and-access-point-overview.svelte';
 
 let iedName = $state('')
 let iedDesc = $state('')
@@ -48,14 +54,21 @@ const hasValidIed = $derived(
 )
 
 const submitLabel = $derived(
-	isMultiApMode ? 'Confirm' : (isCreatingNewIed ? 'Create IED & Access Point' : 'Add Access Point')
+	isMultiApMode
+		? 'Confirm'
+		: isCreatingNewIed
+			? 'Create IED & Access Point'
+			: 'Add Access Point'
 )
 
 const isSubmitDisabled = $derived.by(() => {
 	if (isMultiApMode) {
 		return pendingAccessPoints.length === 0
 	}
-	return (isCreatingNewIed && !iedName.trim()) || (!isCreatingNewIed && !hasAccessPoint)
+	return (
+		(isCreatingNewIed && !iedName.trim()) ||
+		(!isCreatingNewIed && !hasAccessPoint)
+	)
 })
 
 function resetForm() {
@@ -140,7 +153,10 @@ function handleSubmit() {
 	iedCreationError = null
 
 	const validationError = isMultiApMode
-		? validateForm({ isMultiApMode: true, pendingAccessPointsCount: pendingAccessPoints.length })
+		? validateForm({
+				isMultiApMode: true,
+				pendingAccessPointsCount: pendingAccessPoints.length
+			})
 		: validateForm({
 				isMultiApMode: false,
 				isCreatingNewIed,
@@ -189,44 +205,50 @@ async function handleCancel() {
 </script>
 
 <div class="flex flex-col gap-4">
-	{#if isMultiApMode}
-		<IedChip name={lockedIedName} isNew={lockedIsNewIed} />
-		<PendingAccessPoints accessPoints={pendingAccessPoints} onRemove={removeAccessPoint} />
-	{:else}
-		<IedSelectorSection
-			bind:selectedIedName={existingSIedName}
-			options={sIedOptions}
+  {#if isMultiApMode}
+    <MultiApBackButton
+      onGoBackToIedSelection={() => (
+        (isMultiApMode = false), (pendingAccessPoints = [])
+      )}
+    />
+   <IedAndAccessPointOverview
+			lockedIedName={lockedIedName}
+			lockedIsNewIed={lockedIsNewIed}
+			pendingAccessPoints={pendingAccessPoints}
+			removeAccessPoint={removeAccessPoint}
 		/>
+  {:else}
+    <IedSelectorSection
+      bind:selectedIedName={existingSIedName}
+      options={sIedOptions}
+    />
 
-		{#if isCreatingNewIed}
-			<IedFormSection
-				bind:name={iedName}
-				bind:description={iedDesc}
-			/>
-		{/if}
-	{/if}
+    {#if isCreatingNewIed}
+      <IedFormSection bind:name={iedName} bind:description={iedDesc} />
+    {/if}
+  {/if}
 
-	<AccessPointFormSection
-		isRequired={!isCreatingNewIed && !hasAccessPoint && !isMultiApMode}
-		bind:name={accessPointName}
-		bind:description={accessPointDesc}
-	/>
+  <AccessPointFormSection
+    isRequired={!isCreatingNewIed && !hasAccessPoint && !isMultiApMode}
+    bind:name={accessPointName}
+    bind:description={accessPointDesc}
+  />
 
-	<MultiApButton
-		{isMultiApMode}
-		hasValidInput={isMultiApMode ? hasAccessPoint : hasValidIed}
-		onEnterMultiApMode={enterMultiApMode}
-		onAddAccessPoint={addCurrentAccessPoint}
-	/>
+  <MultiApButton
+    {isMultiApMode}
+    hasValidInput={isMultiApMode ? hasAccessPoint : hasValidIed}
+    onEnterMultiApMode={enterMultiApMode}
+    onAddAccessPoint={addCurrentAccessPoint}
+  />
 
-	{#if iedCreationError}
-		<p class="text-sm text-red-600">{iedCreationError}</p>
-	{/if}
+  {#if iedCreationError}
+    <p class="text-sm text-red-600">{iedCreationError}</p>
+  {/if}
 
-	<FormActions
-		onCancel={handleCancel}
-		onSubmit={handleSubmit}
-		{submitLabel}
-		disabled={isSubmitDisabled}
-	/>
+  <FormActions
+    onCancel={handleCancel}
+    onSubmit={handleSubmit}
+    {submitLabel}
+    disabled={isSubmitDisabled}
+  />
 </div>

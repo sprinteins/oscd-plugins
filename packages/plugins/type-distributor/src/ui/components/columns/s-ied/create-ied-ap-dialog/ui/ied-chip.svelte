@@ -8,10 +8,7 @@ let {
 } = $props()
 </script>
 
-<section>
-	<header class="pb-2">
-		<h1 class="text-xl font-bold">IED</h1>
-	</header>
+
 	<div class="flex flex-wrap gap-2 items-center">
 		<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary text-primary-foreground">
 			{name}
@@ -20,4 +17,3 @@ let {
 			{/if}
 		</span>
 	</div>
-</section>
