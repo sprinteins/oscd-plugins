@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { AccessPointData } from "../lib";
   import { IedChip } from "../ui";
   import PendingAccessPoints from "../ui/pending-access-points.svelte";
 
@@ -10,7 +11,7 @@
   }: {
     lockedIedName: string
     lockedIsNewIed: boolean
-    pendingAccessPoints: { name: string; description: string }[]
+    pendingAccessPoints: AccessPointData[]
     removeAccessPoint: (name: string) => void
   } = $props()
 </script>

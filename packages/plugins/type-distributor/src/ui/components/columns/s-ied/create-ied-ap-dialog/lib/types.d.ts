@@ -13,10 +13,16 @@ export type AccessPointFormData = {
 	description: string
 }
 
-export type MultiApModeState = {
-	isActive: boolean
-	lockedIedName: string
-	lockedIedDesc: string
-	isNewIed: boolean
+export type LockedIedState = {
+	name: string
+	description: string
+	isNew: boolean
 	pendingAccessPoints: AccessPointData[]
+}
+
+export type SubmissionParams = {
+	iedName: string
+	iedDescription?: string
+	isNewIed: boolean
+	accessPoints: AccessPointData[]
 }

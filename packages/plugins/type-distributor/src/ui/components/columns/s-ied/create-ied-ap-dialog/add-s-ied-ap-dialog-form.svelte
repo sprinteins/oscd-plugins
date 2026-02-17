@@ -10,28 +10,32 @@ import {
 import { MultiApButton, FormActions } from './ui'
 import {
 	type AccessPointData,
+	type LockedIedState,
 	validateForm,
 	validateIedForMultiApMode,
 	validateAccessPoint,
 	getAccessPointsFromIED,
 	submitForm,
-	buildAccessPoint
+	buildAccessPoint,
+
+  resetPendingAccessPoints
+
 } from './lib'
 import MultiApBackButton from './ui/multi-ap-back-button.svelte'
-  import IedAndAccessPointOverview from './sections/ied-and-access-point-overview.svelte';
+import IedAndAccessPointOverview from './sections/ied-and-access-point-overview.svelte'
 
-let iedName = $state('')
-let iedDesc = $state('')
+let iedForm = $state({ name: '', description: '' })
+let accessPointForm = $state({ name: '', description: '' })
 let existingSIedName = $state('')
-let accessPointName = $state('')
-let accessPointDesc = $state('')
 let iedCreationError = $state<string | null>(null)
 
 let isMultiApMode = $state(false)
-let lockedIedName = $state('')
-let lockedIedDesc = $state('')
-let lockedIsNewIed = $state(false)
-let pendingAccessPoints = $state<AccessPointData[]>([])
+let lockedIed = $state<LockedIedState>({
+	name: '',
+	description: '',
+	isNew: false,
+	pendingAccessPoints: []
+})
 
 const existingSIeds = $derived.by(() => {
 	const sieds = querySIEDs(bayStore.selectedBay ?? '')
@@ -47,10 +51,10 @@ const sIedOptions = $derived([
 ])
 
 const isCreatingNewIed = $derived(!existingSIedName)
-const hasAccessPoint = $derived(accessPointName.trim().length > 0)
+const hasAccessPoint = $derived(accessPointForm.name.trim().length > 0)
 
 const hasValidIed = $derived(
-	isCreatingNewIed ? iedName.trim().length > 0 : existingSIedName.length > 0
+	isCreatingNewIed ? iedForm.name.trim().length > 0 : existingSIedName.length > 0
 )
 
 const submitLabel = $derived(
@@ -63,25 +67,30 @@ const submitLabel = $derived(
 
 const isSubmitDisabled = $derived.by(() => {
 	if (isMultiApMode) {
-		return pendingAccessPoints.length === 0
+		return lockedIed.pendingAccessPoints.length === 0
 	}
 	return (
-		(isCreatingNewIed && !iedName.trim()) ||
+		(isCreatingNewIed && !iedForm.name.trim()) ||
 		(!isCreatingNewIed && !hasAccessPoint)
 	)
 })
 
 function resetForm() {
-	iedName = ''
-	iedDesc = ''
+	iedForm = { name: '', description: '' }
+	accessPointForm = { name: '', description: '' }
 	existingSIedName = ''
-	accessPointName = ''
-	accessPointDesc = ''
+	iedCreationError = null
 	isMultiApMode = false
-	lockedIedName = ''
-	lockedIedDesc = ''
-	lockedIsNewIed = false
-	pendingAccessPoints = []
+	lockedIed = {
+		name: '',
+		description: '',
+		isNew: false,
+		pendingAccessPoints: []
+	}
+}
+
+function resetPendingAccessPoint() {
+	accessPointForm = { name: '', description: '' }
 }
 
 function enterMultiApMode() {
@@ -90,7 +99,7 @@ function enterMultiApMode() {
 	const validationError = validateIedForMultiApMode(
 		pluginGlobalStore.xmlDocument,
 		isCreatingNewIed,
-		iedName
+		iedForm.name
 	)
 
 	if (validationError) {
@@ -99,12 +108,18 @@ function enterMultiApMode() {
 	}
 
 	if (isCreatingNewIed) {
-		lockedIedName = iedName.trim()
-		lockedIedDesc = iedDesc.trim()
-		lockedIsNewIed = true
+		lockedIed = {
+			name: iedForm.name.trim(),
+			description: iedForm.description.trim(),
+			isNew: true,
+			pendingAccessPoints: []
+		}
 	} else {
-		lockedIedName = existingSIedName
-		lockedIsNewIed = false
+		lockedIed = {
+			...lockedIed,
+			name: existingSIedName,
+			isNew: false
+		}
 	}
 
 	isMultiApMode = true
@@ -116,16 +131,16 @@ function enterMultiApMode() {
 function addCurrentAccessPoint() {
 	iedCreationError = null
 
-	const pendingApNames = pendingAccessPoints.map((ap) => ap.name)
-	const existingApNames = lockedIsNewIed
+	const pendingApNames = lockedIed.pendingAccessPoints.map((ap) => ap.name)
+	const existingApNames = lockedIed.isNew
 		? []
-		: getAccessPointsFromIED(pluginGlobalStore.xmlDocument, lockedIedName)
+		: getAccessPointsFromIED(pluginGlobalStore.xmlDocument, lockedIed.name)
 
 	const validationError = validateAccessPoint(
-		accessPointName,
+		accessPointForm.name,
 		pendingApNames,
 		existingApNames,
-		lockedIedName
+		lockedIed.name
 	)
 
 	if (validationError) {
@@ -133,20 +148,30 @@ function addCurrentAccessPoint() {
 		return
 	}
 
-	pendingAccessPoints = [
-		...pendingAccessPoints,
+	lockedIed.pendingAccessPoints = [
+		...lockedIed.pendingAccessPoints,
 		{
-			name: accessPointName.trim(),
-			description: accessPointDesc.trim() || undefined
+			name: accessPointForm.name.trim(),
+			description: accessPointForm.description.trim() || undefined
 		}
 	]
 
-	accessPointName = ''
-	accessPointDesc = ''
+	resetPendingAccessPoint()
 }
 
 function removeAccessPoint(apName: string) {
-	pendingAccessPoints = pendingAccessPoints.filter((ap) => ap.name !== apName)
+	lockedIed.pendingAccessPoints = lockedIed.pendingAccessPoints.filter(
+		(ap) => ap.name !== apName
+	)
+}
+
+function buildAccessPoints(): AccessPointData[] {
+	if (isMultiApMode) {
+		return lockedIed.pendingAccessPoints
+	}
+
+	const ap = buildAccessPoint(accessPointForm.name, accessPointForm.description)
+	return ap ? [ap] : []
 }
 
 function handleSubmit() {
@@ -155,14 +180,14 @@ function handleSubmit() {
 	const validationError = isMultiApMode
 		? validateForm({
 				isMultiApMode: true,
-				pendingAccessPointsCount: pendingAccessPoints.length
+				pendingAccessPointsCount: lockedIed.pendingAccessPoints.length
 			})
 		: validateForm({
 				isMultiApMode: false,
 				isCreatingNewIed,
-				iedName,
+				iedName: iedForm.name,
 				existingSIedName,
-				accessPointName,
+				accessPointName: accessPointForm.name,
 				xmlDocument: pluginGlobalStore.xmlDocument
 			})
 
@@ -172,24 +197,17 @@ function handleSubmit() {
 	}
 
 	try {
-		if (isMultiApMode) {
-			submitForm({
-				isMultiApMode: true,
-				lockedIedName,
-				lockedIedDesc,
-				lockedIsNewIed,
-				pendingAccessPoints
-			})
-		} else {
-			submitForm({
-				isMultiApMode: false,
-				isCreatingNewIed,
-				iedName,
-				iedDesc,
-				existingSIedName,
-				accessPoint: buildAccessPoint(accessPointName, accessPointDesc)
-			})
-		}
+		const accessPoints = buildAccessPoints()
+		const iedName = isMultiApMode ? lockedIed.name : (isCreatingNewIed ? iedForm.name.trim() : existingSIedName)
+		const iedDescription = isMultiApMode ? lockedIed.description : iedForm.description.trim()
+		const isNewIed = isMultiApMode ? lockedIed.isNew : isCreatingNewIed
+
+		submitForm({
+			iedName,
+			iedDescription: iedDescription || undefined,
+			isNewIed,
+			accessPoints
+		})
 
 		resetForm()
 		dialogStore.closeDialog('success')
@@ -208,15 +226,15 @@ async function handleCancel() {
   {#if isMultiApMode}
     <MultiApBackButton
       onGoBackToIedSelection={() => (
-        (isMultiApMode = false), (pendingAccessPoints = [])
+        (isMultiApMode = false), (lockedIed = resetPendingAccessPoints(lockedIed))
       )}
     />
-   <IedAndAccessPointOverview
-			lockedIedName={lockedIedName}
-			lockedIsNewIed={lockedIsNewIed}
-			pendingAccessPoints={pendingAccessPoints}
-			removeAccessPoint={removeAccessPoint}
-		/>
+    <IedAndAccessPointOverview
+      lockedIedName={lockedIed.name}
+      lockedIsNewIed={lockedIed.isNew}
+      pendingAccessPoints={lockedIed.pendingAccessPoints}
+      {removeAccessPoint}
+    />
   {:else}
     <IedSelectorSection
       bind:selectedIedName={existingSIedName}
@@ -224,14 +242,14 @@ async function handleCancel() {
     />
 
     {#if isCreatingNewIed}
-      <IedFormSection bind:name={iedName} bind:description={iedDesc} />
+      <IedFormSection bind:name={iedForm.name} bind:description={iedForm.description} />
     {/if}
   {/if}
 
   <AccessPointFormSection
     isRequired={!isCreatingNewIed && !hasAccessPoint && !isMultiApMode}
-    bind:name={accessPointName}
-    bind:description={accessPointDesc}
+    bind:name={accessPointForm.name}
+    bind:description={accessPointForm.description}
   />
 
   <MultiApButton

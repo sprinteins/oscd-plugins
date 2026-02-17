@@ -1,60 +1,29 @@
 import { createSIED, createAccessPoints } from '@/headless/ied'
-import type { AccessPointData } from './types'
+import type { AccessPointData, SubmissionParams } from './types'
 
-export type SingleModeSubmission = {
-	isMultiApMode: false
-	isCreatingNewIed: boolean
-	iedName: string
-	iedDesc: string
-	existingSIedName: string
-	accessPoint: AccessPointData[] | undefined
-}
+export function submitForm(params: SubmissionParams): void {
+	const { iedName, iedDescription, isNewIed, accessPoints } = params
 
-export type MultiApModeSubmission = {
-	isMultiApMode: true
-	lockedIedName: string
-	lockedIedDesc: string
-	lockedIsNewIed: boolean
-	pendingAccessPoints: AccessPointData[]
-}
+	if (accessPoints.length === 0) {
+		throw new Error('At least one Access Point is required')
+	}
 
-export type SubmissionData = SingleModeSubmission | MultiApModeSubmission
-
-export function submitForm(data: SubmissionData): void {
-	if (data.isMultiApMode) {
-		if (data.lockedIsNewIed) {
-			createSIED(
-				data.lockedIedName,
-				data.lockedIedDesc || undefined,
-				data.pendingAccessPoints
-			)
-		} else {
-			createAccessPoints(data.lockedIedName, data.pendingAccessPoints)
-		}
+	if (isNewIed) {
+		createSIED(iedName, iedDescription, accessPoints)
 	} else {
-		if (data.isCreatingNewIed) {
-			createSIED(
-				data.iedName.trim(),
-				data.iedDesc.trim() || undefined,
-				data.accessPoint
-			)
-		} else if (data.accessPoint && data.existingSIedName) {
-			createAccessPoints(data.existingSIedName, data.accessPoint)
-		}
+		createAccessPoints(iedName, accessPoints)
 	}
 }
 
 export function buildAccessPoint(
 	name: string,
 	description: string
-): AccessPointData[] | undefined {
+): AccessPointData | undefined {
 	const trimmedName = name.trim()
 	if (!trimmedName) return undefined
 
-	return [
-		{
-			name: trimmedName,
-			description: description.trim() || undefined
-		}
-	]
+	return {
+		name: trimmedName,
+		description: description.trim() || undefined
+	}
 }
