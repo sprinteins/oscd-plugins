@@ -17,7 +17,7 @@ import {
 } from '@/ui/components/columns/bay-type'
 import { querySIEDs } from '@/headless/ied'
 import SIedDetails from '@/ui/components/columns/s-ied/s-ied-details.svelte'
-import { AddSIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
+import { AddIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'
 
 const bayTypeOptions = $derived(
@@ -117,7 +117,7 @@ function handleBayTypeChange() {
 				<SIedDetails {sIedItems} />
 			</div>
 			<div>
-				<AddSIedApDialogTrigger />
+				<AddIedApDialogTrigger />
 			</div>
 		</Card.Content>
 	</Card.Root>

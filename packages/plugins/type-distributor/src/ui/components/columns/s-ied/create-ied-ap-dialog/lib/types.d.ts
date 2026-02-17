@@ -1,23 +1,12 @@
 export type AccessPointData = {
 	name: string
-	description?: string
-}
-
-export type IedFormData = {
-	name: string
 	description: string
 }
 
-export type AccessPointFormData = {
-	name: string
-	description: string
-}
-
-export type LockedIedState = {
+export type IedState = {
 	name: string
 	description: string
 	isNew: boolean
-	pendingAccessPoints: AccessPointData[]
 }
 
 export type SubmissionParams = {

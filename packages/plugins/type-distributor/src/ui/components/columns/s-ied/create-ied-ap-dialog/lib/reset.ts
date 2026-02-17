@@ -1,44 +1,31 @@
-import type { IedFormData, AccessPointFormData, LockedIedState } from './types'
+import type { IedState, AccessPointData } from './types'
 
 export type DialogFormState = {
-	iedForm: IedFormData
-	accessPointForm: AccessPointFormData
-	existingSIedName: string
-	lockedIed: LockedIedState
+	ied: IedState
+	currentAp: AccessPointData
+	accessPoints: AccessPointData[]
 	isMultiApMode: boolean
-	iedCreationError: string | null
+	error: string | null
+}
+
+export function createInitialIedState(): IedState {
+	return {
+		name: '',
+		description: '',
+		isNew: true
+	}
+}
+
+export function createInitialAccessPointForm(): AccessPointData {
+	return { name: '', description: '' }
 }
 
 export function createInitialFormState(): DialogFormState {
 	return {
-		iedForm: { name: '', description: '' },
-		accessPointForm: { name: '', description: '' },
-		existingSIedName: '',
-		lockedIed: {
-			name: '',
-			description: '',
-			isNew: false,
-			pendingAccessPoints: []
-		},
+		ied: createInitialIedState(),
+		currentAp: createInitialAccessPointForm(),
+		accessPoints: [],
 		isMultiApMode: false,
-		iedCreationError: null
-	}
-}
-
-export function resetForm(): DialogFormState {
-	return createInitialFormState()
-}
-
-export function resetAccessPointForm(
-): AccessPointFormData {
-	return { name: '', description: '' }
-}
-
-export function resetPendingAccessPoints(
-	lockedIed: LockedIedState
-): LockedIedState {
-	return {
-		...lockedIed,
-		pendingAccessPoints: []
+		error: null
 	}
 }

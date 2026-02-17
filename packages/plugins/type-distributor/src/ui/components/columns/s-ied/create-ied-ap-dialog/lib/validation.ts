@@ -1,3 +1,5 @@
+import type { AccessPointData, IedState } from './types'
+
 export function getAccessPointsFromIED(
 	xmlDocument: XMLDocument | null | undefined,
 	iedName: string
@@ -20,69 +22,52 @@ export function checkIedExists(
 	return xmlDocument.querySelector(`IED[name="${iedName}"]`) !== null
 }
 
-export type SingleModeFormState = {
-	isMultiApMode: false
-	isCreatingNewIed: boolean
-	iedName: string
-	existingSIedName: string
-	accessPointName: string
+export type SubmitValidationParams = {
+	ied: IedState
+	accessPoints: AccessPointData[]
 	xmlDocument: XMLDocument | null | undefined
 }
 
-export type MultiApModeFormState = {
-	isMultiApMode: true
-	pendingAccessPointsCount: number
-}
+export function validateSubmission(params: SubmitValidationParams): string | null {
+	const { ied, accessPoints, xmlDocument } = params
+	const trimmedIedName = ied.name.trim()
 
-export type FormState = SingleModeFormState | MultiApModeFormState
-
-export function validateForm(state: FormState): string | null {
-	if (state.isMultiApMode) {
-		if (state.pendingAccessPointsCount === 0) {
-			return 'At least one Access Point is required'
+	if (ied.isNew) {
+		if (!trimmedIedName) {
+			return 'IED name is required when creating a new IED'
 		}
-		return null
+		if (checkIedExists(xmlDocument, trimmedIedName)) {
+			return `IED "${trimmedIedName}" already exists`
+		}
+	} else {
+		if (!trimmedIedName) {
+			return 'Please select an existing IED or create a new one'
+		}
 	}
 
-	const { isCreatingNewIed, iedName, existingSIedName, accessPointName, xmlDocument } = state
-	const trimmedIedName = iedName.trim()
-	const trimmedApName = accessPointName.trim()
-	const hasAccessPoint = trimmedApName.length > 0
-
-	if (isCreatingNewIed && !trimmedIedName) {
-		return 'IED name is required when creating a new IED'
+	if (accessPoints.length === 0) {
+		return 'At least one Access Point is required'
 	}
 
-	if (isCreatingNewIed && trimmedIedName && checkIedExists(xmlDocument, trimmedIedName)) {
-		return `IED "${trimmedIedName}" already exists`
-	}
-
-	if (!isCreatingNewIed && !existingSIedName) {
-		return 'Please select an existing IED or create a new one'
-	}
-
-	if (!isCreatingNewIed && !hasAccessPoint) {
-		return 'Access Point name is required when adding to existing IED'
-	}
-
-	if (hasAccessPoint && !isCreatingNewIed && existingSIedName) {
-		const existingApNames = getAccessPointsFromIED(xmlDocument, existingSIedName)
-		if (existingApNames.includes(trimmedApName)) {
-			return `Access Point "${trimmedApName}" already exists in IED "${existingSIedName}"`
+	if (!ied.isNew) {
+		const existingApNames = getAccessPointsFromIED(xmlDocument, trimmedIedName)
+		for (const ap of accessPoints) {
+			if (existingApNames.includes(ap.name)) {
+				return `Access Point "${ap.name}" already exists in IED "${trimmedIedName}"`
+			}
 		}
 	}
 
 	return null
 }
 
-export function validateIedForMultiApMode(
+export function validateIedBeforeMultiAp(
 	xmlDocument: XMLDocument | null | undefined,
-	isCreatingNewIed: boolean,
-	iedName: string
+	ied: IedState
 ): string | null {
-	if (!isCreatingNewIed) return null
+	if (!ied.isNew) return null
 
-	const trimmedName = iedName.trim()
+	const trimmedName = ied.name.trim()
 	if (!trimmedName) {
 		return 'IED name is required'
 	}
