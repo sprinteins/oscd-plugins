@@ -132,19 +132,21 @@ function handleBayTypeChange() {
 				class="w-full"
 			/>
 		</Card.Header>
-		<Card.Content class="overflow-y-auto space-y-4">
-			<BayTypeValidation {bayTypeError} />
-			{#if shouldShowBayTypeDetails}
-				<BayTypeDetails
-					{functionTemplates}
-					{conductingEquipmentTemplates}
-					{bayTypeWithTemplates}
-				/>
-			{:else if !bayTypesStore.selectedBayType}
-				<p class="text-gray-500 text-sm">
-					Select a bay type to see details
-				</p>
-			{/if}
+		<Card.Content class="flex-1 flex flex-col overflow-hidden">
+			<div  class="flex-1 flex flex-col gap-y-4 overflow-y-auto">
+				<BayTypeValidation {bayTypeError} />
+				{#if shouldShowBayTypeDetails}
+					<BayTypeDetails
+						{functionTemplates}
+						{conductingEquipmentTemplates}
+						{bayTypeWithTemplates}
+					/>
+				{:else if !bayTypesStore.selectedBayType}
+					<p class="text-gray-500 text-sm">
+						Select a bay type to see details
+					</p>
+				{/if}
+			</div>
 		</Card.Content>
 	</Card.Root>
 </div>
