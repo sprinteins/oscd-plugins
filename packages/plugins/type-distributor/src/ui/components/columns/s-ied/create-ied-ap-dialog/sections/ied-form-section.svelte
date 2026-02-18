@@ -1,11 +1,11 @@
 <script lang="ts">
 import { Label, Input } from '@oscd-plugins/core-ui-svelte'
+import type { IedState } from '../lib'
 
 let {
-	name = $bindable(''),
-	description = $bindable(''),
+	ied = $bindable({ name: '', description: '', isNew: true }),
 	disabled = false
-}: { name: string; description: string; disabled?: boolean } = $props()
+}: { ied: IedState; disabled?: boolean } = $props()
 </script>
 
 <section>
@@ -17,7 +17,7 @@ let {
 			<Label.Root for="ied-name">Name *</Label.Root>
 			<Input.Root
 				id="ied-name"
-				bind:value={name}
+				bind:value={ied.name}
 				placeholder="Enter IED name"
 				{disabled}
 			/>
@@ -26,7 +26,7 @@ let {
 			<Label.Root for="ied-desc">Description</Label.Root>
 			<Input.Root
 				id="ied-desc"
-				bind:value={description}
+				bind:value={ied.description}
 				placeholder="Enter IED description (optional)"
 				{disabled}
 			/>

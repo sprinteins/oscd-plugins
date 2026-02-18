@@ -1,17 +1,15 @@
 import { createSIED, createAccessPoints } from '@/headless/ied'
-import type { AccessPointData, SubmissionParams } from './types'
+import type { AccessPointData, IedData } from './types'
 
-export function submitForm(params: SubmissionParams): void {
-	const { iedName, iedDescription, isNewIed, accessPoints } = params
-
+export function submitForm(ied: IedData, accessPoints: AccessPointData[]): void {
 	if (accessPoints.length === 0) {
 		throw new Error('At least one Access Point is required')
 	}
 
-	if (isNewIed) {
-		createSIED(iedName, iedDescription, accessPoints)
+	if (ied.isNew) {
+		createSIED(ied.name, ied.description, accessPoints)
 	} else {
-		createAccessPoints(iedName, accessPoints)
+		createAccessPoints(ied.name, accessPoints)
 	}
 }
 

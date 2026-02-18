@@ -1,13 +1,13 @@
-import type { AccessPointData, IedState } from './types'
+import type { AccessPointData, IedData } from './types'
 
 export function getAccessPointsFromIED(
 	xmlDocument: XMLDocument | null | undefined,
-	iedName: string
+	ied: IedData
 ): string[] {
 	if (!xmlDocument) return []
 
 	const accessPoints = Array.from(
-		xmlDocument.querySelectorAll(`IED[name="${iedName}"] AccessPoint`)
+		xmlDocument.querySelectorAll(`IED[name="${ied.name.trim()}"] AccessPoint`)
 	)
 	return accessPoints
 		.map((ap) => ap.getAttribute('name'))
@@ -16,14 +16,14 @@ export function getAccessPointsFromIED(
 
 export function checkIedExists(
 	xmlDocument: XMLDocument | null | undefined,
-	iedName: string
+	ied: IedData
 ): boolean {
 	if (!xmlDocument) return false
-	return xmlDocument.querySelector(`IED[name="${iedName}"]`) !== null
+	return xmlDocument.querySelector(`IED[name="${ied.name.trim()}"]`) !== null
 }
 
 export type SubmitValidationParams = {
-	ied: IedState
+	ied: IedData
 	accessPoints: AccessPointData[]
 	xmlDocument: XMLDocument | null | undefined
 }
@@ -36,7 +36,7 @@ export function validateSubmission(params: SubmitValidationParams): string | nul
 		if (!trimmedIedName) {
 			return 'IED name is required when creating a new IED'
 		}
-		if (checkIedExists(xmlDocument, trimmedIedName)) {
+		if (checkIedExists(xmlDocument, ied)) {
 			return `IED "${trimmedIedName}" already exists`
 		}
 	} else {
@@ -50,7 +50,7 @@ export function validateSubmission(params: SubmitValidationParams): string | nul
 	}
 
 	if (!ied.isNew) {
-		const existingApNames = getAccessPointsFromIED(xmlDocument, trimmedIedName)
+		const existingApNames = getAccessPointsFromIED(xmlDocument, ied)
 		for (const ap of accessPoints) {
 			if (existingApNames.includes(ap.name)) {
 				return `Access Point "${ap.name}" already exists in IED "${trimmedIedName}"`
@@ -63,7 +63,7 @@ export function validateSubmission(params: SubmitValidationParams): string | nul
 
 export function validateIedBeforeMultiAp(
 	xmlDocument: XMLDocument | null | undefined,
-	ied: IedState
+	ied: IedData
 ): string | null {
 	if (!ied.isNew) return null
 
@@ -72,7 +72,7 @@ export function validateIedBeforeMultiAp(
 		return 'IED name is required'
 	}
 
-	if (checkIedExists(xmlDocument, trimmedName)) {
+	if (checkIedExists(xmlDocument, ied)) {
 		return `IED "${trimmedName}" already exists`
 	}
 

@@ -1,15 +1,46 @@
 <script lang="ts">
 import { SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
+import type { IedState } from '../lib'
+import { querySIEDs } from '@/headless/ied'
+import { bayStore } from '@/headless/stores'
 
 let {
-	selectedIedName = $bindable(),
-	options,
+	ied = $bindable({ name: '', description: '', isNew: true }),
 	disabled = false
 }: {
-	selectedIedName: string
-	options: { value: string; label: string }[]
+	ied: IedState
 	disabled?: boolean
 } = $props()
+
+const existingSIeds = $derived.by(() => {
+	const sieds = querySIEDs(bayStore.selectedBay ?? '')
+	return sieds.map((ied) => ({
+		value: ied.getAttribute('name') || '',
+		label: ied.getAttribute('name') || 'Unnamed IED'
+	}))
+})
+
+const options = $derived([
+	{ value: '', label: 'None (Create New)' },
+	...existingSIeds
+])
+
+const selectorValue = $derived(ied.isNew ? '' : ied.name)
+
+function handleChange(event: Event) {
+	const target = event.target as HTMLSelectElement
+	const value = target.value
+	
+	if (value) {
+		ied.name = value
+		ied.description = ''
+		ied.isNew = false
+	} else {
+		ied.name = ''
+		ied.description = ''
+		ied.isNew = true
+	}
+}
 </script>
 
 <section>
@@ -18,8 +49,9 @@ let {
   </header>
   <div class="space-y-2">
     <SelectWorkaround
-      bind:value={selectedIedName}
+      value={selectorValue}
       {options}
+      {handleChange}
       placeholder="Search S-IEDs"
       class="w-full"
       {disabled}

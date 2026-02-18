@@ -28,30 +28,6 @@ let currentAccessPoint = $state(createInitialAccessPointForm())
 let accessPoints = $state<AccessPointData[]>([])
 let isMultiApMode = $state(false)
 let error = $state<string | null>(null)
-let selectedExistingIedName = $state('')
-
-$effect(() => {
-	if (selectedExistingIedName) {
-		ied.name = selectedExistingIedName
-		ied.isNew = false
-		ied.description = ''
-	} else if (!ied.isNew) {
-		ied = createInitialIedState()
-	}
-})
-
-const existingSIeds = $derived.by(() => {
-	const sieds = querySIEDs(bayStore.selectedBay ?? '')
-	return sieds.map((ied) => ({
-		value: ied.getAttribute('name') || '',
-		label: ied.getAttribute('name') || 'Unnamed IED'
-	}))
-})
-
-const sIedOptions = $derived([
-	{ value: '', label: 'None (Create New)' },
-	...existingSIeds
-])
 
 const hasCurrentAp = $derived(currentAccessPoint.name.trim().length > 0)
 const hasValidIed = $derived(ied.name.trim().length > 0)
@@ -75,7 +51,6 @@ function resetForm() {
 	ied = createInitialIedState()
 	currentAccessPoint = createInitialAccessPointForm()
 	accessPoints = []
-	selectedExistingIedName = ''
 	isMultiApMode = false
 	error = null
 }
@@ -106,7 +81,7 @@ function addAccessPoint() {
 
 	const existingApNames = ied.isNew
 		? []
-		: getAccessPointsFromIED(pluginGlobalStore.xmlDocument, ied.name)
+		: getAccessPointsFromIED(pluginGlobalStore.xmlDocument, ied)
 
 	const validationError = validateAccessPoint(
 		currentAccessPoint.name,
@@ -160,12 +135,7 @@ function handleSubmit() {
 	}
 
 	try {
-		submitForm({
-			iedName: ied.name.trim(),
-			iedDescription: ied.description.trim() || undefined,
-			isNewIed: ied.isNew,
-			accessPoints: accessPointsToSubmit
-		})
+		submitForm(ied, accessPointsToSubmit)
 
 		resetForm()
 		dialogStore.closeDialog('success')
@@ -188,25 +158,22 @@ async function handleCancel() {
       }}
     />
     <IedAndAccessPointOverview
-      lockedIedName={ied.name}
-      lockedIsNewIed={ied.isNew}
-      pendingAccessPoints={accessPoints}
-      {removeAccessPoint}
+			{ied}
+			{accessPoints}
+			{removeAccessPoint}
     />
   {:else}
     <IedSelectorSection
-      bind:selectedIedName={selectedExistingIedName}
-      options={sIedOptions}
+      bind:ied
     />
 
     {#if ied.isNew}
-      <IedFormSection bind:name={ied.name} bind:description={ied.description} />
+      <IedFormSection bind:ied />
     {/if}
   {/if}
 
   <AccessPointFormSection
-    bind:name={currentAccessPoint.name}
-    bind:description={currentAccessPoint.description}
+    bind:accessPoint={currentAccessPoint}
   />
 
   <MultiApButton

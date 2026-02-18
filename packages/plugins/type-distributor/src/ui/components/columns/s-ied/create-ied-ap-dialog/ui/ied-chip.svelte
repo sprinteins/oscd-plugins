@@ -1,10 +1,10 @@
 <script lang="ts">
+  import type { IedState } from "../lib";
+
 let {
-	name,
-	isNew = false
+	ied
 }: {
-	name: string
-	isNew?: boolean
+	ied: IedState
 } = $props()
 </script>
 
@@ -12,8 +12,8 @@ let {
   <span
     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary text-primary-foreground"
   >
-    {name}
-    {#if isNew}
+    {ied.name}
+    {#if ied.isNew}
       <span class="ml-1 text-xs opacity-75">(new)</span>
     {/if}
   </span>

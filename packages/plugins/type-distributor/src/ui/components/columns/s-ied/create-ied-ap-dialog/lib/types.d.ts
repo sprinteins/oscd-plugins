@@ -3,15 +3,8 @@ export type AccessPointData = {
 	description: string
 }
 
-export type IedState = {
+export type IedData = {
 	name: string
 	description: string
 	isNew: boolean
-}
-
-export type SubmissionParams = {
-	iedName: string
-	iedDescription?: string
-	isNewIed: boolean
-	accessPoints: AccessPointData[]
 }

@@ -1,17 +1,15 @@
 <script lang="ts">
-  import type { AccessPointData } from "../lib";
+  import type { AccessPointData, IedState } from "../lib";
   import { IedChip } from "../ui";
   import PendingAccessPoints from "../ui/pending-access-points.svelte";
 
   let {
-    lockedIedName,
-    lockedIsNewIed,
-    pendingAccessPoints,
+    ied,
+    accessPoints,
     removeAccessPoint
   }: {
-    lockedIedName: string
-    lockedIsNewIed: boolean
-    pendingAccessPoints: AccessPointData[]
+    ied: IedState,
+    accessPoints: AccessPointData[]
     removeAccessPoint: (name: string) => void
   } = $props()
 </script>
@@ -21,9 +19,9 @@
     <h1 class="text-xl font-bold">IED and Access Points</h1>
   </header>
   <div class="flex flex-col gap-y-2">
-    <IedChip name={lockedIedName} isNew={lockedIsNewIed} />
+    <IedChip {ied} />
     <PendingAccessPoints
-      accessPoints={pendingAccessPoints}
+      accessPoints={accessPoints}
       onRemove={removeAccessPoint}
     />
   </div>

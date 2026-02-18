@@ -1,13 +1,12 @@
 <script lang="ts">
 import { Label, Input } from '@oscd-plugins/core-ui-svelte'
+import type { AccessPointData } from '../lib'
 
 let {
-	name = $bindable(''),
-	description = $bindable(''),
+	accessPoint = $bindable({ name: '', description: '' }),
 	disabled = false,
 }: {
-	name: string
-	description: string
+	accessPoint: AccessPointData
 	disabled?: boolean
 } = $props()
 </script>
@@ -21,7 +20,7 @@ let {
       <Label.Root for="ap-name">Name *</Label.Root>
       <Input.Root
         id="ap-name"
-        bind:value={name}
+        bind:value={accessPoint.name}
         placeholder="Enter Access Point name"
         {disabled}
       />
@@ -30,9 +29,9 @@ let {
       <Label.Root for="ap-desc">Description</Label.Root>
       <Input.Root
         id="ap-desc"
-        bind:value={description}
+        bind:value={accessPoint.description}
         placeholder="Enter Access Point description (optional)"
-        disabled={disabled || !name}
+        disabled={disabled || !accessPoint.name}
       />
     </div>
   </div>
