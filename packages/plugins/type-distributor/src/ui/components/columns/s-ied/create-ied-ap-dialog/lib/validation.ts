@@ -7,7 +7,9 @@ export function getAccessPointsFromIED(
 	if (!xmlDocument) return []
 
 	const accessPoints = Array.from(
-		xmlDocument.querySelectorAll(`IED[name="${ied.name.trim()}"] AccessPoint`)
+		xmlDocument.querySelectorAll(
+			`IED[name="${ied.name.trim()}"] AccessPoint`
+		)
 	)
 	return accessPoints
 		.map((ap) => ap.getAttribute('name'))
@@ -28,7 +30,9 @@ export type SubmitValidationParams = {
 	xmlDocument: XMLDocument | null | undefined
 }
 
-export function validateSubmission(params: SubmitValidationParams): string | null {
+export function validateSubmission(
+	params: SubmitValidationParams
+): string | null {
 	const { ied, accessPoints, xmlDocument } = params
 	const trimmedIedName = ied.name.trim()
 

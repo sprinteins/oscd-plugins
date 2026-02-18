@@ -15,19 +15,19 @@ let {
 </script>
 
 {#if isMultiApMode}
-	<Button.Root
-		variant="outline"
-		onclick={onAddAccessPoint}
-		disabled={!hasValidInput}
-	>
-		Add Access Point
-	</Button.Root>
+  <Button.Root
+    variant="outline"
+    onclick={onAddAccessPoint}
+    disabled={!hasValidInput}
+  >
+    Add Access Point
+  </Button.Root>
 {:else}
-	<Button.Root
-		variant="outline"
-		onclick={onEnterMultiApMode}
-		disabled={!hasValidInput}
-	>
-		Create Multiple Access Points
-	</Button.Root>
+  <Button.Root
+    variant="outline"
+    onclick={onEnterMultiApMode}
+    disabled={!hasValidInput}
+  >
+    Create Multiple Access Points
+  </Button.Root>
 {/if}

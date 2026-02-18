@@ -10,6 +10,4 @@ async function handleOpenDialog() {
 }
 </script>
 
-<Button.Root class="w-full" onclick={handleOpenDialog}>
-	Add
-</Button.Root>
+<Button.Root class="w-full" onclick={handleOpenDialog}>Add</Button.Root>

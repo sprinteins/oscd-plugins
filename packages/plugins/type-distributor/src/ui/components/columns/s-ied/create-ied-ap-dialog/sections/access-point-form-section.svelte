@@ -4,7 +4,7 @@ import type { AccessPointData } from '../lib'
 
 let {
 	accessPoint = $bindable({ name: '', description: '' }),
-	disabled = false,
+	disabled = false
 }: {
 	accessPoint: AccessPointData
 	disabled?: boolean

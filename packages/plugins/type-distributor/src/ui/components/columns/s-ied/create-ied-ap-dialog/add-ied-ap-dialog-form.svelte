@@ -1,6 +1,4 @@
 <script lang="ts">
-import { querySIEDs } from '@/headless/ied'
-import { bayStore } from '@/headless/stores'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import {
 	IedSelectorSection,
@@ -68,7 +66,11 @@ function enterMultiApMode() {
 		return
 	}
 
-	ied = { ...ied, name: ied.name.trim(), description: ied.description.trim() }
+	ied = {
+		...ied,
+		name: ied.name.trim(),
+		description: ied.description.trim()
+	}
 	isMultiApMode = true
 
 	if (hasCurrentAp) {
@@ -115,7 +117,10 @@ function getAccessPointsForSubmission(): AccessPointData[] {
 		return accessPoints
 	}
 
-	const ap = buildAccessPoint(currentAccessPoint.name, currentAccessPoint.description)
+	const ap = buildAccessPoint(
+		currentAccessPoint.name,
+		currentAccessPoint.description
+	)
 	return ap ? [ap] : []
 }
 
@@ -153,28 +158,20 @@ async function handleCancel() {
   {#if isMultiApMode}
     <MultiApBackButton
       onGoBackToIedSelection={() => {
-        isMultiApMode = false
-        accessPoints = []
+        isMultiApMode = false;
+        accessPoints = [];
       }}
     />
-    <IedAndAccessPointOverview
-			{ied}
-			{accessPoints}
-			{removeAccessPoint}
-    />
+    <IedAndAccessPointOverview {ied} {accessPoints} {removeAccessPoint} />
   {:else}
-    <IedSelectorSection
-      bind:ied
-    />
+    <IedSelectorSection bind:ied />
 
     {#if ied.isNew}
       <IedFormSection bind:ied />
     {/if}
   {/if}
 
-  <AccessPointFormSection
-    bind:accessPoint={currentAccessPoint}
-  />
+  <AccessPointFormSection bind:accessPoint={currentAccessPoint} />
 
   <MultiApButton
     {isMultiApMode}

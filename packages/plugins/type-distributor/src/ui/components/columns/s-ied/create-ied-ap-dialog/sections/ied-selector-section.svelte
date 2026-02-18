@@ -30,7 +30,7 @@ const selectorValue = $derived(ied.isNew ? '' : ied.name)
 function handleChange(event: Event) {
 	const target = event.target as HTMLSelectElement
 	const value = target.value
-	
+
 	if (value) {
 		ied.name = value
 		ied.description = ''
