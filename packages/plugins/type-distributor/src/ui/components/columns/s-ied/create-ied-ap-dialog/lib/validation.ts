@@ -16,7 +16,7 @@ export function getAccessPointsFromIED(
 		.filter((name): name is string => name !== null)
 }
 
-export function checkIedExists(
+export function hasIed(
 	xmlDocument: XMLDocument | null | undefined,
 	ied: IedData
 ): boolean {
@@ -40,7 +40,7 @@ export function validateSubmission(
 		if (!trimmedIedName) {
 			return 'IED name is required when creating a new IED'
 		}
-		if (checkIedExists(xmlDocument, ied)) {
+		if (hasIed(xmlDocument, ied)) {
 			return `IED "${trimmedIedName}" already exists`
 		}
 	} else {
@@ -76,7 +76,7 @@ export function validateIedBeforeMultiAp(
 		return 'IED name is required'
 	}
 
-	if (checkIedExists(xmlDocument, ied)) {
+	if (hasIed(xmlDocument, ied)) {
 		return `IED "${trimmedName}" already exists`
 	}
 
