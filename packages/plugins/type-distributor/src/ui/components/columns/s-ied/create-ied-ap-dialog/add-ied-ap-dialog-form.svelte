@@ -8,20 +8,20 @@ import {
 import { MultiApButton, FormActions } from './ui'
 import {
 	type AccessPointData,
-	type IedState,
+	type IedData,
 	validateSubmission,
 	validateIedBeforeMultiAp,
 	validateAccessPoint,
 	getAccessPointsFromIED,
 	submitForm,
 	buildAccessPoint,
-	createInitialIedState,
+	createInitialIedData,
 	createInitialAccessPointForm
 } from './lib'
 import MultiApBackButton from './ui/multi-ap-back-button.svelte'
 import IedAndAccessPointOverview from './sections/ied-and-access-point-overview-section.svelte'
 
-let ied = $state<IedState>(createInitialIedState())
+let ied = $state<IedData>(createInitialIedData())
 let currentAccessPoint = $state(createInitialAccessPointForm())
 let accessPoints = $state<AccessPointData[]>([])
 let isMultiApMode = $state(false)
@@ -46,7 +46,7 @@ const isSubmitDisabled = $derived.by(() => {
 })
 
 function resetForm() {
-	ied = createInitialIedState()
+	ied = createInitialIedData()
 	currentAccessPoint = createInitialAccessPointForm()
 	accessPoints = []
 	isMultiApMode = false

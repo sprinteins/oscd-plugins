@@ -1,11 +1,11 @@
 <script lang="ts">
 import { Label, Input } from '@oscd-plugins/core-ui-svelte'
-import type { IedState } from '../lib'
+import type { IedData } from '../lib'
 
 let {
 	ied = $bindable({ name: '', description: '', isNew: true }),
 	disabled = false
-}: { ied: IedState; disabled?: boolean } = $props()
+}: { ied: IedData; disabled?: boolean } = $props()
 </script>
 
 <section>

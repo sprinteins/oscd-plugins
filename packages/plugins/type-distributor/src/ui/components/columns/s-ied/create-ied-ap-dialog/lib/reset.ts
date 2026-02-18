@@ -8,7 +8,7 @@ export type DialogFormState = {
 	error: string | null
 }
 
-export function createInitialIedState(): IedData {
+export function createInitialIedData(): IedData {
 	return {
 		name: '',
 		description: '',
@@ -22,7 +22,7 @@ export function createInitialAccessPointForm(): AccessPointData {
 
 export function createInitialFormState(): DialogFormState {
 	return {
-		ied: createInitialIedState(),
+		ied: createInitialIedData(),
 		currentAp: createInitialAccessPointForm(),
 		accessPoints: [],
 		isMultiApMode: false,

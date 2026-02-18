@@ -1,6 +1,6 @@
 <script lang="ts">
 import { SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
-import type { IedState } from '../lib'
+import type { IedData } from '../lib'
 import { querySIEDs } from '@/headless/ied'
 import { bayStore } from '@/headless/stores'
 
@@ -8,7 +8,7 @@ let {
 	ied = $bindable({ name: '', description: '', isNew: true }),
 	disabled = false
 }: {
-	ied: IedState
+	ied: IedData
 	disabled?: boolean
 } = $props()
 

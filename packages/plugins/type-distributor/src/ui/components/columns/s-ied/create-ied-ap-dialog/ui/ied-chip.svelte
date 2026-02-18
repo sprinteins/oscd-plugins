@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { IedState } from '../lib'
+import type { IedData } from '../lib'
 
-let { ied }: { ied: IedState } = $props()
+let { ied }: { ied: IedData } = $props()
 </script>
 
 <div class="flex flex-wrap gap-2 items-center">

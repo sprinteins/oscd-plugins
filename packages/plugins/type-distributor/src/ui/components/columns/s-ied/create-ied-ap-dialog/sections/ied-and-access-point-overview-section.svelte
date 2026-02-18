@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { AccessPointData, IedState } from '../lib'
+import type { AccessPointData, IedData } from '../lib'
 import { IedChip } from '../ui'
 import PendingAccessPoints from '../ui/pending-access-points.svelte'
 
@@ -8,7 +8,7 @@ let {
 	accessPoints,
 	removeAccessPoint
 }: {
-	ied: IedState
+	ied: IedData
 	accessPoints: AccessPointData[]
 	removeAccessPoint: (name: string) => void
 } = $props()
