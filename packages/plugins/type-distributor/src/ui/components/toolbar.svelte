@@ -5,7 +5,7 @@ import {
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
 import {
-    assignedLNodesStore,
+	assignedLNodesStore,
 	bayStore,
 	bayTypesStore,
 	equipmentMatchingStore,
@@ -28,20 +28,40 @@ const bayOptions = $derived(
 
 function handleBayChange() {
 	equipmentMatchingStore.reset()
-    assignedLNodesStore.rebuild()
+	assignedLNodesStore.rebuild()
 	bayTypesStore.selectedBayType = null
 }
+
+const assignedBayTypeWithTemplates = $derived(
+	bayStore.assignedBayTypeUuid
+		? bayTypesStore.getBayTypeWithTemplates(bayStore.assignedBayTypeUuid)
+		: null
+)
+
+const isBaySwitchLocked = $derived(
+	assignedBayTypeWithTemplates
+		? !assignedLNodesStore.areAllLNodesAssigned(
+				assignedBayTypeWithTemplates
+			)
+		: false
+)
 </script>
 
 <div class="flex items-center justify-end space-x-5 px-4 pt-4 h-fit">
     {#if bayOptions.length > 0}
-        <div class="ml-4">
+        <div
+            class="ml-4"
+            title={isBaySwitchLocked
+                ? "Finish assigning all LNodes to IEDs before switching bays."
+                : ""}
+        >
             <SelectWorkaround
                 bind:value={bayStore.selectedBay}
                 handleChange={handleBayChange}
                 options={bayOptions}
                 placeholder="Select a bay"
                 class="w-64"
+                disabled={isBaySwitchLocked}
             />
         </div>
     {/if}
