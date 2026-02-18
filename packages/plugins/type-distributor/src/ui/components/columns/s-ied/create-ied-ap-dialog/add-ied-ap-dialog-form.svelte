@@ -12,7 +12,7 @@ import {
 	validateSubmission,
 	validateIedBeforeMultiAp,
 	validateAccessPoint,
-	getAccessPointsFromIED,
+	queryAccessPointsFromIed,
 	submitForm,
 	buildAccessPoint,
 	createInitialIedData,
@@ -83,7 +83,7 @@ function addAccessPoint() {
 
 	const existingApNames = ied.isNew
 		? []
-		: getAccessPointsFromIED(pluginGlobalStore.xmlDocument, ied)
+		: queryAccessPointsFromIed(pluginGlobalStore.xmlDocument, ied)
 
 	const validationError = validateAccessPoint(
 		currentAccessPoint.name,

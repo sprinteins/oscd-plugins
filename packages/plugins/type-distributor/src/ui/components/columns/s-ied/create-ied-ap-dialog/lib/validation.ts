@@ -1,6 +1,6 @@
 import type { AccessPointData, IedData } from './types'
 
-export function getAccessPointsFromIED(
+export function queryAccessPointsFromIed(
 	xmlDocument: XMLDocument | null | undefined,
 	ied: IedData
 ): string[] {
@@ -54,7 +54,7 @@ export function validateSubmission(
 	}
 
 	if (!ied.isNew) {
-		const existingApNames = getAccessPointsFromIED(xmlDocument, ied)
+		const existingApNames = queryAccessPointsFromIed(xmlDocument, ied)
 		for (const ap of accessPoints) {
 			if (existingApNames.includes(ap.name)) {
 				return `Access Point "${ap.name}" already exists in IED "${trimmedIedName}"`
