@@ -26,11 +26,17 @@ const bayTypeOptions = $derived(
 		label: bt.name
 	}))
 )
+
+const activeBayTypeUuid = $derived(
+	bayStore.assignedBayTypeUuid || bayTypesStore.selectedBayType
+)
+
 const bayTypeWithTemplates = $derived(
-	bayTypesStore.selectedBayType
-		? bayTypesStore.getBayTypeWithTemplates(bayTypesStore.selectedBayType)
+	activeBayTypeUuid
+		? bayTypesStore.getBayTypeWithTemplates(activeBayTypeUuid)
 		: null
 )
+
 const functionTemplates = $derived(
 	bayTypeWithTemplates?.functionTemplates ?? []
 )
@@ -112,9 +118,11 @@ function handleBayTypeChange() {
 		<Card.Header>
 			<Card.Title>S-IEDs</Card.Title>
 		</Card.Header>
-		<Card.Content class="flex-1 overflow-y-auto">
-			<div class="flex flex-col gap-y-4 justify-between">
+		<Card.Content class="flex-1 flex flex-col gap-y-4 overflow-hidden">
+			<div class="flex-1 overflow-y-auto">
 				<SIedDetails {sIedItems} />
+			</div>
+			<div>
 				<AddSIedApDialogTrigger />
 			</div>
 		</Card.Content>
@@ -130,19 +138,21 @@ function handleBayTypeChange() {
 				class="w-full"
 			/>
 		</Card.Header>
-		<Card.Content class="overflow-y-auto space-y-4">
-			<BayTypeValidation {bayTypeError} />
-			{#if shouldShowBayTypeDetails}
-				<BayTypeDetails
-					{functionTemplates}
-					{conductingEquipmentTemplates}
-					{bayTypeWithTemplates}
-				/>
-			{:else if !bayTypesStore.selectedBayType}
-				<p class="text-gray-500 text-sm">
-					Select a bay type to see details
-				</p>
-			{/if}
+		<Card.Content class="flex-1 flex flex-col overflow-hidden">
+			<div  class="flex-1 flex flex-col gap-y-4 overflow-y-auto">
+				<BayTypeValidation {bayTypeError} />
+				{#if shouldShowBayTypeDetails}
+					<BayTypeDetails
+						{functionTemplates}
+						{conductingEquipmentTemplates}
+						{bayTypeWithTemplates}
+					/>
+				{:else if !bayTypesStore.selectedBayType}
+					<p class="text-gray-500 text-sm">
+						Select a bay type to see details
+					</p>
+				{/if}
+			</div>
 		</Card.Content>
 	</Card.Root>
 </div>

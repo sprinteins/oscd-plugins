@@ -44,36 +44,10 @@ class UseAssignedLNodesStore {
 	}
 
 	areAllLNodesAssigned(bayTypeWithTemplates: BayTypeWithTemplates): boolean {
-		for (const eqInstance of bayTypeWithTemplates.conductingEquipments) {
-			const template =
-				bayTypeWithTemplates.conductingEquipmentTemplates.find(
-					(t) => t.uuid === eqInstance.templateUuid
-				)
-			if (template?.eqFunctions) {
-				for (const eqFunc of template.eqFunctions) {
-					for (const lnode of eqFunc.lnodes) {
-						if (!this.isAssigned(eqInstance.uuid, lnode)) {
-							return false
-						}
-					}
-				}
-			}
-		}
-
-		for (const funcInstance of bayTypeWithTemplates.functions) {
-			const template = bayTypeWithTemplates.functionTemplates.find(
-				(t) => t.uuid === funcInstance.templateUuid
-			)
-			if (template?.lnodes) {
-				for (const lnode of template.lnodes) {
-					if (!this.isAssigned(funcInstance.uuid, lnode)) {
-						return false
-					}
-				}
-			}
-		}
-
-		return true
+		const allLNodes = bayTypesStore.getAllLNodesWithParent(bayTypeWithTemplates)
+		return allLNodes.every(({ parentUuid, lnode }) =>
+			this.isAssigned(parentUuid, lnode)
+		)
 	}
 }
 
