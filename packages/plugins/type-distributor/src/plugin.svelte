@@ -15,7 +15,7 @@
 // PACKAGE
 import jsonPackage from '../package.json'
 // CORE
-import { initPlugin, DialogWorkaround } from '@oscd-plugins/core-ui-svelte'
+import { initPlugin, initScdTemplate, DialogWorkaround } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 // COMPONENTS
@@ -45,6 +45,7 @@ const {
 			edition: "ed2Rev1",
 		},
 	}}
+	use:initScdTemplate={{pluginName: 'TypeDistributor'}}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 	class="overflow-hidden"
