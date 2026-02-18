@@ -1,4 +1,7 @@
-import type { LNodeTemplate } from '@/headless/common-types'
+import type {
+	BayTypeWithTemplates,
+	LNodeTemplate
+} from '@/headless/common-types'
 import { SvelteSet } from 'svelte/reactivity'
 import { bayTypesStore } from '../bay-types.store.svelte'
 import { bayStore } from '../bay.store.svelte'
@@ -38,6 +41,13 @@ class UseAssignedLNodesStore {
 
 	get hasConnections(): boolean {
 		return this.assignedIndex.size > 0
+	}
+
+	areAllLNodesAssigned(bayTypeWithTemplates: BayTypeWithTemplates): boolean {
+		const allLNodes = bayTypesStore.getAllLNodesWithParent(bayTypeWithTemplates)
+		return allLNodes.every(({ parentUuid, lnode }) =>
+			this.isAssigned(parentUuid, lnode)
+		)
 	}
 }
 

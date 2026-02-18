@@ -26,11 +26,17 @@ const bayTypeOptions = $derived(
 		label: bt.name
 	}))
 )
+
+const activeBayTypeUuid = $derived(
+	bayStore.assignedBayTypeUuid || bayTypesStore.selectedBayType
+)
+
 const bayTypeWithTemplates = $derived(
-	bayTypesStore.selectedBayType
-		? bayTypesStore.getBayTypeWithTemplates(bayTypesStore.selectedBayType)
+	activeBayTypeUuid
+		? bayTypesStore.getBayTypeWithTemplates(activeBayTypeUuid)
 		: null
 )
+
 const functionTemplates = $derived(
 	bayTypeWithTemplates?.functionTemplates ?? []
 )

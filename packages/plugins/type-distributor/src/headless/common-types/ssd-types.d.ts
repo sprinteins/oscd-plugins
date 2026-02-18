@@ -10,6 +10,8 @@ export type BayType = {
 export type BayTypeWithTemplates = BayType & {
 	conductingEquipmentTemplates: ConductingEquipmentTemplate[]
 	functionTemplates: FunctionTemplate[]
+	conductingEquipmentTemplateMap: Map<string, ConductingEquipmentTemplate>
+	functionTemplateMap: Map<string, FunctionTemplate>
 }
 
 export type ConductingEquipmentType = {
