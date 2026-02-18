@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ## Added
 - Dialog notifying the User to open only .scd files initially
+### Fixed
+- Dropdown being cut into on scroll of right container
 
 ## [0.3.1] - 2026-02-12
 ### Changed
