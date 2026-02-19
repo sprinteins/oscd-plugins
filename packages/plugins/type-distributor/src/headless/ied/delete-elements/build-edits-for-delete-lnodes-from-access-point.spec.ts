@@ -1,44 +1,33 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import {
-    buildEditsForDeleteLNodeFromAccessPoint
-} from './build-edits-for-delete-lnodes-from-access-point'
-import type { Remove, SetAttributes } from '@openscd/oscd-api'
+import { buildEditsForDeleteLNodeFromAccessPoint } from './build-edits-for-delete-lnodes-from-access-point'
 import { bayStore } from '@/headless/stores'
+import {
+	isRemoveEdit,
+	isSetAttributesEdit
+} from '@/headless/test-helpers/type-guards'
+import { createTestDocument } from '@/headless/test-helpers'
 
 // Mock dependencies
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
-    pluginGlobalStore: {
-        editCount: 0
-    }
+	pluginGlobalStore: {
+		editCount: 0
+	}
 }))
 
 vi.mock('@/headless/stores/bay.store.svelte', () => ({
-    bayStore: {
-        selectedBay: null,
-        selectedBayUuid: null,
-        assignedBayTypeUuid: null,
-        pendingBayTypeApply: null,
-        equipmentMatches: [],
-        scdBay: null
-    }
+	bayStore: {
+		selectedBay: null,
+		selectedBayUuid: null,
+		assignedBayTypeUuid: null,
+		pendingBayTypeApply: null,
+		equipmentMatches: [],
+		scdBay: null
+	}
 }))
 
 vi.mock('@/headless/utils', () => ({
-    getDocumentAndEditor: vi.fn()
+	getDocumentAndEditor: vi.fn()
 }))
-
-type Edit = Remove | SetAttributes
-
-// Test XML Fixtures
-const createTestDocument = (xml: string): Document => {
-    const parser = new DOMParser()
-    return parser.parseFromString(xml, 'application/xml')
-}
-
-// Type guards
-const isRemoveEdit = (edit: Edit): edit is Remove => 'node' in edit
-const isSetAttributesEdit = (edit: Edit): edit is SetAttributes =>
-    'element' in edit && 'attributes' in edit
 
 const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
 <SCL xmlns="http://www.iec.ch/61850/2003/SCL">
@@ -326,16 +315,12 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 		) as Element
 		bayStore.scdBay = bay1
 		expect(() => {
-			buildEditsForDeleteLNodeFromAccessPoint(
-				'IED1',
-				accessPoint,
-				{
-					lnClass: 'NonExistent',
-					lnType: 'TestXCBR',
-					lnInst: '99',
-					ldInst: 'QBFunction'
-				}
-			)
+			buildEditsForDeleteLNodeFromAccessPoint('IED1', accessPoint, {
+				lnClass: 'NonExistent',
+				lnType: 'TestXCBR',
+				lnInst: '99',
+				ldInst: 'QBFunction'
+			})
 		}).toThrow()
 	})
 })
