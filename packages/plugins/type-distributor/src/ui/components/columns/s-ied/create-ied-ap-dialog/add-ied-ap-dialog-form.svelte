@@ -83,7 +83,7 @@ function addAccessPoint() {
 
 	const existingApNames = ied.isNew
 		? []
-		: queryAccessPointsFromIed(pluginGlobalStore.xmlDocument, ied)
+		: queryAccessPointsFromIed(pluginGlobalStore.xmlDocument, ied.name.trim())
 
 	const validationError = validateAccessPoint(
 		currentAccessPoint.name,

@@ -1,20 +1,5 @@
 import type { AccessPointData, IedData } from './types'
-
-export function queryAccessPointsFromIed(
-	xmlDocument: XMLDocument | null | undefined,
-	ied: IedData
-): string[] {
-	if (!xmlDocument) return []
-
-	const accessPoints = Array.from(
-		xmlDocument.querySelectorAll(
-			`IED[name="${ied.name.trim()}"] AccessPoint`
-		)
-	)
-	return accessPoints
-		.map((ap) => ap.getAttribute('name'))
-		.filter((name): name is string => name !== null)
-}
+import { queryAccessPointsFromIed } from '@/headless/ied'
 
 function hasIed(
 	xmlDocument: XMLDocument | null | undefined,
@@ -54,7 +39,7 @@ export function validateSubmission(
 	}
 
 	if (!ied.isNew) {
-		const existingApNames = queryAccessPointsFromIed(xmlDocument, ied)
+		const existingApNames = queryAccessPointsFromIed(xmlDocument, ied.name.trim())
 		for (const ap of accessPoints) {
 			if (existingApNames.includes(ap.name)) {
 				return `Access Point "${ap.name}" already exists in IED "${trimmedIedName}"`
