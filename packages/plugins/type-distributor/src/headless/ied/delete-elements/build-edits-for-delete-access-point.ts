@@ -3,12 +3,18 @@ import { bayStore } from '@/headless/stores'
 import { buildEditsForClearingBayLNodeConnections } from './delete-elements.helper'
 import { queryLNodesFromAccessPoint } from '../query-lnodes-from-access-point'
 
-export function buildEditsForDeleteAccessPoint(
-	accessPoint: Element,
+interface BuildEditsForDeleteAccessPointParams {
+	accessPoint: Element
 	iedName: string
-): (Remove | SetAttributes)[] {
+	selectedBay: Element | null
+}
+
+export function buildEditsForDeleteAccessPoint({
+	selectedBay,
+	accessPoint,
+	iedName
+}: BuildEditsForDeleteAccessPointParams): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
-	const selectedBay = bayStore.scdBay
 
 	if (selectedBay) {
 		const apLNodes = queryLNodesFromAccessPoint(accessPoint)

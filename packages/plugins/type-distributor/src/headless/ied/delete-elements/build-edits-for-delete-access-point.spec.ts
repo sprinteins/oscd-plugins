@@ -123,8 +123,11 @@ describe('buildEditsForDeleteAccessPoint', () => {
 				accessPoint = doc.querySelector(
 					'IED[name="IED1"] AccessPoint[name="P1"]'
 				) as Element
-				bayStore.scdBay = bay1
-				edits = buildEditsForDeleteAccessPoint(accessPoint, 'IED1')
+				edits = buildEditsForDeleteAccessPoint({
+					accessPoint,
+					iedName: 'IED1',
+					selectedBay: bay1
+				})
 			})
 
 			it('THEN should return Remove edit for AccessPoint element', () => {
@@ -187,7 +190,11 @@ describe('buildEditsForDeleteAccessPoint', () => {
 				'IED[name="IED1"] AccessPoint[name="P1"]'
 			) as Element
 			bayStore.scdBay = bay1
-			const edits = buildEditsForDeleteAccessPoint(accessPoint, 'IED1')
+			const edits = buildEditsForDeleteAccessPoint({
+				accessPoint,
+				iedName: 'IED1',
+				selectedBay: bayStore.scdBay
+			})
 
 			const setAttributesEdits = edits.filter(isSetAttributesEdit)
 			const lnodeEdits = setAttributesEdits.filter(
@@ -227,8 +234,11 @@ describe('buildEditsForDeleteAccessPoint', () => {
 		const accessPoint = emptyDoc.querySelector(
 			'IED[name="IED3"] AccessPoint[name="EmptyAP"]'
 		) as Element
-		bayStore.scdBay = bay
-		const edits = buildEditsForDeleteAccessPoint(accessPoint, 'IED3')
+		const edits = buildEditsForDeleteAccessPoint({
+			accessPoint,
+			iedName: 'IED3',
+			selectedBay: bay
+		})
 
 		// Should have Remove edit for AccessPoint
 		const removeEdit = edits.find(isRemoveEdit)
@@ -263,8 +273,11 @@ describe('buildEditsForDeleteAccessPoint', () => {
 			accessPoint = doc.querySelector(
 				'IED[name="IED1"] AccessPoint[name="P1"]'
 			) as Element
-			bayStore.scdBay = bay1
-			edits = buildEditsForDeleteAccessPoint(accessPoint, 'IED1')
+			edits = buildEditsForDeleteAccessPoint({
+				accessPoint,
+				iedName: 'IED1',
+				selectedBay: bay1
+			})
 		})
 
 		it('THEN should only affect LNodes with matching iedName', () => {
@@ -312,8 +325,11 @@ describe('buildEditsForDeleteAccessPoint', () => {
 		const accessPoint = doc.querySelector(
 			'IED[name="IED1"] AccessPoint[name="P1"]'
 		) as Element
-		bayStore.scdBay = bay1
-		const edits = buildEditsForDeleteAccessPoint(accessPoint, 'IED1')
+		const edits = buildEditsForDeleteAccessPoint({
+			accessPoint,
+			iedName: 'IED1',
+			selectedBay: bay1
+		})
 
 		const setAttributesEdits = edits.filter(isSetAttributesEdit)
 		const lnodeEdits = setAttributesEdits.filter(
@@ -369,8 +385,11 @@ describe('buildEditsForDeleteAccessPoint', () => {
 		const accessPoint = dupDoc.querySelector(
 			'IED[name="BCU"] AccessPoint[name="AP1"]'
 		) as Element
-		bayStore.scdBay = bay
-		const edits = buildEditsForDeleteAccessPoint(accessPoint, 'BCU')
+		const edits = buildEditsForDeleteAccessPoint({
+			accessPoint,
+			iedName: 'BCU',
+			selectedBay: bay
+		})
 
 		const setAttributesEdits = edits.filter(isSetAttributesEdit)
 		const lnodeEdits = setAttributesEdits.filter(
@@ -403,8 +422,11 @@ describe('buildEditsForDeleteAccessPoint', () => {
 			const accessPoint = doc.querySelector(
 				'IED[name="IED1"] AccessPoint[name="P1"]'
 			) as Element
-			bayStore.scdBay = bay1
-			const edits = buildEditsForDeleteAccessPoint(accessPoint, 'IED1')
+			const edits = buildEditsForDeleteAccessPoint({
+				accessPoint,
+				iedName: 'IED1',
+				selectedBay: bay1
+			})
 
 			// Apply the edits to simulate the deletion
 			const setAttributesEdits = edits.filter(isSetAttributesEdit)
@@ -471,8 +493,11 @@ describe('buildEditsForDeleteAccessPoint', () => {
 			const accessPoint = simpleDoc.querySelector(
 				'IED[name="IED1"] AccessPoint[name="P1"]'
 			) as Element
-			bayStore.scdBay = simpleBay
-			const edits = buildEditsForDeleteAccessPoint(accessPoint, 'IED1')
+			const edits = buildEditsForDeleteAccessPoint({
+				accessPoint,
+				iedName: 'IED1',
+				selectedBay: simpleBay
+			})
 
 			// Apply attribute clears to simulate
 			const setAttributesEdits = edits.filter(isSetAttributesEdit)

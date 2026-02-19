@@ -1,27 +1,32 @@
-import type { LNodeTemplate } from "@/headless/common-types"
-import { bayStore } from "@/headless/stores"
-import type { Remove, SetAttributes } from "@openscd/oscd-api"
-import { buildEditsForClearingBayLNodeConnections } from "./delete-elements.helper"
-import {
-	queryLDeviceFromAccessPoint,
-	queryLNodeInLDevice
-} from "../elements"
+import type { LNodeTemplate } from '@/headless/common-types'
+import type { Remove, SetAttributes } from '@openscd/oscd-api'
+import { buildEditsForClearingBayLNodeConnections } from './delete-elements.helper'
+import { queryLDeviceFromAccessPoint, queryLNodeInLDevice } from '../elements'
 
-export function buildEditsForDeleteLNodeFromAccessPoint(
-	iedName: string,
-	accessPoint: Element,
+interface BuildEditsForDeleteLNodeFromAccessPointParams {
+	iedName: string
+	accessPoint: Element
 	lNodeTemplate: LNodeTemplate
-): (Remove | SetAttributes)[] {
+	selectedBay: Element | null
+}
+
+export function buildEditsForDeleteLNodeFromAccessPoint({
+	iedName,
+	accessPoint,
+	lNodeTemplate,
+	selectedBay
+}: BuildEditsForDeleteLNodeFromAccessPointParams): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
 
-	const selectedBay = bayStore.scdBay
 	if (!selectedBay) {
 		throw new Error('No bay selected')
 	}
 
 	const ldInst = lNodeTemplate.ldInst
 	if (!ldInst) {
-		throw new Error('LNodeTemplate must have ldInst to delete LNode from AccessPoint')
+		throw new Error(
+			'LNodeTemplate must have ldInst to delete LNode from AccessPoint'
+		)
 	}
 
 	const lDevice = queryLDeviceFromAccessPoint(accessPoint, ldInst)

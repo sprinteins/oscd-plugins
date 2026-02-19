@@ -56,7 +56,11 @@ function handleDelete() {
 			return
 		}
 
-		const edits = buildEditsForDeleteAccessPoint(accessPoint, sIedName)
+		const edits = buildEditsForDeleteAccessPoint({
+			accessPoint,
+			iedName: sIedName,
+			selectedBay: bayStore.scdBay
+		})
 
 		if (!(edits.length > 0)) {
 			console.warn(

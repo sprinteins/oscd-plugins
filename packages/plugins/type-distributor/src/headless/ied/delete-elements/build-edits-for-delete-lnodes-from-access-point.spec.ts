@@ -106,31 +106,34 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 	beforeEach(() => {
 		doc = createTestDocument(sampleSCD)
 		bay1 = doc.querySelector('Bay[name="Bay1"]')
+		expect(bay1).not.toBeNull()
 	})
 
 	describe('GIVEN a specific LNode in an AccessPoint', () => {
 		describe('WHEN deleting the LNode', () => {
-			it('THEN should return Remove edit for the LNode element', () => {
-				// GIVEN
-				expect(bay1).not.toBeNull()
+			let accessPoint: Element
+			let edits: ReturnType<
+				typeof buildEditsForDeleteLNodeFromAccessPoint
+			>
 
-				// WHEN
-				const accessPoint = doc.querySelector(
+			beforeEach(() => {
+				accessPoint = doc.querySelector(
 					'IED[name="IED1"] AccessPoint[name="P1"]'
 				) as Element
-				bayStore.scdBay = bay1
-				const edits = buildEditsForDeleteLNodeFromAccessPoint(
-					'IED1',
+				edits = buildEditsForDeleteLNodeFromAccessPoint({
+					iedName: 'IED1',
 					accessPoint,
-					{
+					lNodeTemplate: {
 						lnClass: 'XCBR',
 						lnType: 'TestXCBR',
 						lnInst: '1',
 						ldInst: 'CBFunction'
-					}
-				)
+					},
+					selectedBay: bay1
+				})
+			})
 
-				// THEN
+			it('THEN should return Remove edit for the LNode element', () => {
 				const removeEdit = edits.find(isRemoveEdit)
 				expect(removeEdit).toBeDefined()
 				if (removeEdit) {
@@ -142,26 +145,6 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 			})
 
 			it('THEN should clear iedName on corresponding Bay LNode', () => {
-				// GIVEN
-				expect(bay1).not.toBeNull()
-
-				// WHEN
-				const accessPoint = doc.querySelector(
-					'IED[name="IED1"] AccessPoint[name="P1"]'
-				) as Element
-				bayStore.scdBay = bay1
-				const edits = buildEditsForDeleteLNodeFromAccessPoint(
-					'IED1',
-					accessPoint,
-					{
-						lnClass: 'XCBR',
-						lnType: 'TestXCBR',
-						lnInst: '1',
-						ldInst: 'CBFunction'
-					}
-				)
-
-				// THEN
 				const setAttributesEdits = edits.filter(isSetAttributesEdit)
 				const lnodeEdit = setAttributesEdits.find(
 					(edit) => edit.element.tagName === 'LNode'
@@ -175,24 +158,21 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 		})
 
 		it('WHEN deleting one LNode from LDevice with multiple LNodes THEN should not delete other LNodes from same LDevice', () => {
-			// GIVEN
-			expect(bay1).not.toBeNull()
-
 			// WHEN
 			const accessPoint = doc.querySelector(
 				'IED[name="IED1"] AccessPoint[name="P1"]'
 			) as Element
-			bayStore.scdBay = bay1
-			const edits = buildEditsForDeleteLNodeFromAccessPoint(
-				'IED1',
+			const edits = buildEditsForDeleteLNodeFromAccessPoint({
+				iedName: 'IED1',
 				accessPoint,
-				{
+				lNodeTemplate: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1',
 					ldInst: 'CBFunction'
-				}
-			)
+				},
+				selectedBay: bay1
+			})
 
 			// THEN
 			// Should only have 1 Remove edit (for XCBR), not for CSWI
@@ -209,24 +189,21 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 		})
 
 		it('WHEN deleting the last LNode from an LDevice THEN should remove the entire LDevice instead of just the LNode', () => {
-			// GIVEN - Use QA1_Protection which has only 1 LNode
-			expect(bay1).not.toBeNull()
-
 			// WHEN
 			const accessPoint = doc.querySelector(
 				'IED[name="IED1"] AccessPoint[name="P1"]'
 			) as Element
-			bayStore.scdBay = bay1
-			const edits = buildEditsForDeleteLNodeFromAccessPoint(
-				'IED1',
+			const edits = buildEditsForDeleteLNodeFromAccessPoint({
+				iedName: 'IED1',
 				accessPoint,
-				{
+				lNodeTemplate: {
 					lnClass: 'PTRC',
 					lnType: 'TestPTRC',
 					lnInst: '1',
 					ldInst: 'QA1_Protection'
-				}
-			)
+				},
+				selectedBay: bay1
+			})
 
 			// THEN
 			const removeEdit = edits.find(isRemoveEdit)
@@ -272,17 +249,17 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 		const accessPoint = simpleDoc.querySelector(
 			'IED[name="IED1"] AccessPoint[name="P1"]'
 		) as Element
-		bayStore.scdBay = simpleBay
-		const edits = buildEditsForDeleteLNodeFromAccessPoint(
-			'IED1',
+		const edits = buildEditsForDeleteLNodeFromAccessPoint({
+			iedName: 'IED1',
 			accessPoint,
-			{
+			lNodeTemplate: {
 				lnClass: 'XCBR',
 				lnType: 'TestXCBR',
 				lnInst: '1',
 				ldInst: 'CBFunction'
-			}
-		)
+			},
+			selectedBay: simpleBay
+		})
 
 		// Apply edits
 		const setAttributesEdits = edits.filter(isSetAttributesEdit)
@@ -306,20 +283,21 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 	})
 
 	it('GIVEN invalid inputs WHEN LNode does not exist in AccessPoint THEN should throw error', () => {
-		// GIVEN
-		expect(bay1).not.toBeNull()
-
 		// WHEN / THEN
 		const accessPoint = doc.querySelector(
 			'IED[name="IED1"] AccessPoint[name="P1"]'
 		) as Element
-		bayStore.scdBay = bay1
 		expect(() => {
-			buildEditsForDeleteLNodeFromAccessPoint('IED1', accessPoint, {
-				lnClass: 'NonExistent',
-				lnType: 'TestXCBR',
-				lnInst: '99',
-				ldInst: 'QBFunction'
+			buildEditsForDeleteLNodeFromAccessPoint({
+				iedName: 'IED1',
+				accessPoint,
+				lNodeTemplate: {
+					lnClass: 'NonExistent',
+					lnType: 'TestXCBR',
+					lnInst: '99',
+					ldInst: 'QBFunction'
+				},
+				selectedBay: bay1
 			})
 		}).toThrow()
 	})
