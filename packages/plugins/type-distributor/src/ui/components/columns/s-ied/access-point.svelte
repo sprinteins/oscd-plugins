@@ -131,7 +131,6 @@ function handleDelete() {
       {#each lNodes as lnode}
         <IedLnode
           {lnode}
-          lDeviceName={lnode.ldInst ?? "Unknown"}
           {sIedName}
           {accessPoint}
         />

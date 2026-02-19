@@ -6,12 +6,11 @@ import { getEditor } from '@/headless/utils'
 
 interface Props {
 	lnode: LNodeTemplate
-	lDeviceName: string
 	sIedName: string
 	accessPoint: Element
 }
 
-const { lnode, lDeviceName, sIedName, accessPoint }: Props = $props()
+const { lnode, sIedName, accessPoint }: Props = $props()
 
 function handleDelete() {
 	try {
@@ -23,7 +22,7 @@ function handleDelete() {
 				lnClass: lnode.lnClass,
 				lnType: lnode.lnType,
 				lnInst: lnode.lnInst,
-				ldInst: lDeviceName
+				ldInst: lnode.ldInst
 			}
 		)
 		if (!(edits.length > 0)) {
@@ -44,7 +43,7 @@ function handleDelete() {
 <Card.Root class="hover:bg-gray-50 cursor-pointer transition-opacity">
 	<Card.Content class="p-2">
 		<div class="flex items-center justify-between">
-			<span class="text-sm text-left">{lDeviceName} - {lnode.lnType}</span
+			<span class="text-sm text-left">{lnode.ldInst} - {lnode.lnType}</span
 			>
 			<DropdownMenuWorkaround
 				size="sm"

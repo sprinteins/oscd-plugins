@@ -141,7 +141,7 @@ describe('queryLNodesFromAccessPoint', () => {
 			expect(result[1].lnClass).toBe('XSWI')
 		})
 
-		it('GIVEN LDevice with multiple LN elements WHEN queryLNodesFromAccessPoint is called THEN should return all with same lDeviceName', () => {
+		it('GIVEN LDevice with multiple LN elements WHEN queryLNodesFromAccessPoint is called THEN should return all with same ldInst', () => {
 			// GIVEN LDevice with multiple LN elements
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
@@ -161,7 +161,7 @@ describe('queryLNodesFromAccessPoint', () => {
 			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			// THEN should return all with same lDeviceName
+			// THEN should return all with same ldInst
 			expect(result).toHaveLength(3)
 			expect(result.every((ln) => ln.ldInst === 'LD0')).toBe(true)
 			expect(result[0].lnInst).toBe('1')
@@ -242,7 +242,7 @@ describe('queryLNodesFromAccessPoint', () => {
 			expect(result[0].iedName).toBeUndefined()
 		})
 
-		it('GIVEN LDevice without inst attribute WHEN queryLNodesFromAccessPoint is called THEN should have undefined lDeviceName', () => {
+		it('GIVEN LDevice without inst attribute WHEN queryLNodesFromAccessPoint is called THEN should have undefined ldInst', () => {
 			// GIVEN LDevice without inst attribute
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
@@ -260,7 +260,7 @@ describe('queryLNodesFromAccessPoint', () => {
 			// WHEN queryLNodesFromAccessPoint is called
 			const result = queryLNodesFromAccessPoint(accessPoint)
 
-			// THEN should have undefined lDeviceName
+			// THEN should have undefined ldInst
 			expect(result).toHaveLength(1)
 			expect(result[0].ldInst).toBeUndefined()
 		})
