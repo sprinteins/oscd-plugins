@@ -10,10 +10,10 @@ import { getEditor } from '@/headless/utils'
 interface Props {
 	accessPoint: Element
 	lNodes: LNodeTemplate[]
-	sIedName: string
+	iedName: string
 }
 
-const { accessPoint, lNodes, sIedName }: Props = $props()
+const { accessPoint, lNodes, iedName }: Props = $props()
 
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
@@ -42,7 +42,7 @@ function handleDrop(event: DragEvent) {
 		return
 	}
 
-	dndStore.handleDrop(accessPoint, sIedName)
+	dndStore.handleDrop(accessPoint, iedName)
 }
 
 function handleDelete() {
@@ -58,7 +58,7 @@ function handleDelete() {
 
 		const edits = buildEditsForDeleteAccessPoint({
 			accessPoint,
-			iedName: sIedName,
+			iedName,
 			selectedBay: bayStore.scdBay
 		})
 
@@ -70,7 +70,7 @@ function handleDelete() {
 		}
 
 		editor.commit(edits, {
-			title: `Delete AccessPoint ${accessPoint.getAttribute('name') ?? '(unnamed)'} from ${sIedName}`
+			title: `Delete AccessPoint ${accessPoint.getAttribute('name') ?? '(unnamed)'} from ${iedName}`
 		})
 	} catch (error) {
 		console.error('[AccessPoint] Error deleting AccessPoint:', error)
@@ -104,7 +104,7 @@ function handleDelete() {
               />
             {/if}
             <span class="text-sm font-medium text-left">
-              {sIedName} - Access Point {accessPoint.getAttribute("name") ??
+              {iedName} - Access Point {accessPoint.getAttribute("name") ??
                 "(unnamed)"}
             </span>
           </div>
@@ -135,7 +135,7 @@ function handleDelete() {
       {#each lNodes as lnode}
         <IedLnode
           {lnode}
-          {sIedName}
+          {iedName}
           {accessPoint}
         />
       {/each}

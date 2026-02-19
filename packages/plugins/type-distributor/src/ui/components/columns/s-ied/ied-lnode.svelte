@@ -7,17 +7,17 @@ import { bayStore } from '@/headless/stores'
 
 interface Props {
 	lnode: LNodeTemplate
-	sIedName: string
+	iedName: string
 	accessPoint: Element
 }
 
-const { lnode, sIedName, accessPoint }: Props = $props()
+const { lnode, iedName, accessPoint }: Props = $props()
 
 function handleDelete() {
 	try {
 		const editor = getEditor()
 		const edits = buildEditsForDeleteLNodeFromAccessPoint({
-			iedName: sIedName,
+			iedName,
 			accessPoint,
 			lNodeTemplate: {
 				lnClass: lnode.lnClass,

@@ -16,7 +16,7 @@ import {
 	BayTypeValidation
 } from '@/ui/components/columns/bay-type'
 import { querySIEDs } from '@/headless/ied'
-import SIedDetails from '@/ui/components/columns/s-ied/s-ied-details.svelte'
+import { IedDetails } from '@/ui/components/columns/s-ied'
 import { AddSIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'
 
@@ -44,7 +44,7 @@ const conductingEquipmentTemplates = $derived(
 	bayTypeWithTemplates?.conductingEquipmentTemplates ?? []
 )
 
-const sIedItems = $derived.by(() => {
+const iedItems = $derived.by(() => {
 	pluginGlobalStore.editCount
 	return querySIEDs(bayStore.selectedBay ?? '')
 })
@@ -120,7 +120,7 @@ function handleBayTypeChange() {
 		</Card.Header>
 		<Card.Content class="flex-1 flex flex-col gap-y-4 overflow-hidden">
 			<div class="flex-1 overflow-y-auto">
-				<SIedDetails {sIedItems} />
+				<IedDetails {iedItems} />
 			</div>
 			<div>
 				<AddSIedApDialogTrigger />
@@ -139,7 +139,7 @@ function handleBayTypeChange() {
 			/>
 		</Card.Header>
 		<Card.Content class="flex-1 flex flex-col overflow-hidden">
-			<div  class="flex-1 flex flex-col gap-y-4 overflow-y-auto">
+			<div class="flex-1 flex flex-col gap-y-4 overflow-y-auto">
 				<BayTypeValidation {bayTypeError} />
 				{#if shouldShowBayTypeDetails}
 					<BayTypeDetails
