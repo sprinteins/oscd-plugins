@@ -16,7 +16,7 @@ export function queryAccessPointsFromIed(
 		.filter((name): name is string => name !== null)
 }
 
-export function hasIed(
+function hasIed(
 	xmlDocument: XMLDocument | null | undefined,
 	ied: IedData
 ): boolean {
@@ -24,7 +24,7 @@ export function hasIed(
 	return xmlDocument.querySelector(`IED[name="${ied.name.trim()}"]`) !== null
 }
 
-export type SubmitValidationParams = {
+type SubmitValidationParams = {
 	ied: IedData
 	accessPoints: AccessPointData[]
 	xmlDocument: XMLDocument | null | undefined

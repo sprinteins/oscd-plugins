@@ -8,3 +8,11 @@ export type IedData = {
 	description: string
 	isNew: boolean
 }
+
+export type DialogFormState = {
+	ied: IedData
+	currentAp: AccessPointData
+	accessPoints: AccessPointData[]
+	isMultiApMode: boolean
+	error: string | null
+}

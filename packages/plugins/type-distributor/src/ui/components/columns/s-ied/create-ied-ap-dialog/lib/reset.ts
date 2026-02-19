@@ -1,12 +1,4 @@
-import type { IedData, AccessPointData } from './types'
-
-export type DialogFormState = {
-	ied: IedData
-	currentAp: AccessPointData
-	accessPoints: AccessPointData[]
-	isMultiApMode: boolean
-	error: string | null
-}
+import type { IedData, AccessPointData, DialogFormState } from './types'
 
 export function createInitialIedData(): IedData {
 	return {
