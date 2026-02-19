@@ -15,9 +15,9 @@ import {
 	BayTypeDetails,
 	BayTypeValidation
 } from '@/ui/components/columns/bay-type'
-import { querySIEDs } from '@/headless/ied'
+import { queryIEDs } from '@/headless/ied'
 import { IedDetails } from '@/ui/components/columns/s-ied'
-import { AddSIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
+import { AddIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'
 
 const bayTypeOptions = $derived(
@@ -46,7 +46,7 @@ const conductingEquipmentTemplates = $derived(
 
 const iedItems = $derived.by(() => {
 	pluginGlobalStore.editCount
-	return querySIEDs(bayStore.selectedBay ?? '')
+	return queryIEDs(bayStore.selectedBay ?? '')
 })
 
 $effect(() => {
@@ -123,7 +123,7 @@ function handleBayTypeChange() {
 				<IedDetails {iedItems} />
 			</div>
 			<div>
-				<AddSIedApDialogTrigger />
+				<AddIedApDialogTrigger />
 			</div>
 		</Card.Content>
 	</Card.Root>
