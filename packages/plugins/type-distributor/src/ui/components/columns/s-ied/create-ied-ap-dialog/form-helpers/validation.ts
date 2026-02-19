@@ -1,13 +1,5 @@
 import type { AccessPointData, IedData } from './types'
-import { queryAccessPointsFromIed } from '@/headless/ied'
-
-function hasIed(
-	xmlDocument: XMLDocument | null | undefined,
-	ied: IedData
-): boolean {
-	if (!xmlDocument) return false
-	return xmlDocument.querySelector(`IED[name="${ied.name.trim()}"]`) !== null
-}
+import { queryAccessPointsFromIed, queryIedExists } from '@/headless/ied'
 
 type SubmitValidationParams = {
 	ied: IedData
@@ -25,7 +17,7 @@ export function validateSubmission(
 		if (!trimmedIedName) {
 			return 'IED name is required when creating a new IED'
 		}
-		if (hasIed(xmlDocument, ied)) {
+		if (queryIedExists(xmlDocument, trimmedIedName)) {
 			return `IED "${trimmedIedName}" already exists`
 		}
 	} else {
@@ -61,7 +53,7 @@ export function validateIedBeforeMultiAp(
 		return 'IED name is required'
 	}
 
-	if (hasIed(xmlDocument, ied)) {
+	if (queryIedExists(xmlDocument, trimmedName)) {
 		return `IED "${trimmedName}" already exists`
 	}
 
