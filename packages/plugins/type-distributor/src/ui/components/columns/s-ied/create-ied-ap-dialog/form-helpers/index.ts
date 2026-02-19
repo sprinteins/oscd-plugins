@@ -1,5 +1,4 @@
 export type { AccessPointData, IedData } from './types'
-export { queryAccessPointsFromIed } from '@/headless/ied'
 export {
 	validateSubmission,
 	validateIedBeforeMultiAp,

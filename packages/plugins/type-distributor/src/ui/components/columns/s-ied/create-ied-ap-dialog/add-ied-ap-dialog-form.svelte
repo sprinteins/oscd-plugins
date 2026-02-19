@@ -4,22 +4,22 @@ import {
 	IedSelectorSection,
 	IedFormSection,
 	AccessPointFormSection
-} from './sections'
-import { MultiApButton, FormActions } from './ui'
+} from './form-sections'
+import { MultiApButton, FormActions } from './form-elements'
 import {
 	type AccessPointData,
 	type IedData,
 	validateSubmission,
 	validateIedBeforeMultiAp,
 	validateAccessPoint,
-	queryAccessPointsFromIed,
 	submitForm,
 	buildAccessPoint,
 	createInitialIedData,
 	createInitialAccessPointForm
 } from './form-helpers'
-import MultiApBackButton from './ui/multi-ap-back-button.svelte'
-import IedAndAccessPointOverview from './sections/ied-and-access-point-overview-section.svelte'
+import MultiApBackButton from './form-elements/multi-ap-back-button.svelte'
+import IedAndAccessPointOverview from './form-sections/ied-and-access-point-overview-section.svelte'
+import { queryAccessPointsFromIed } from '@/headless/ied';
 
 let ied = $state<IedData>(createInitialIedData())
 let currentAccessPoint = $state(createInitialAccessPointForm())
