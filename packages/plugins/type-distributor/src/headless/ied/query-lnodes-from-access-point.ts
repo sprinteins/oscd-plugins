@@ -20,7 +20,7 @@ export function queryLNodesFromAccessPoint(
 					lnType: lnode.getAttribute('lnType') ?? '',
 					lnInst: lnode.getAttribute('lnInst') ?? '',
 					iedName: lnode.getAttribute('iedName') ?? undefined,
-					ldInst: ldInst
+					ldInst
 				})
 			}
 		}

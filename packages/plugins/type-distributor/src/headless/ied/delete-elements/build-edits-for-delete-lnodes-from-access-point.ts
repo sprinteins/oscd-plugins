@@ -51,7 +51,7 @@ export function buildEditsForDeleteLNodeFromAccessPoint({
 				lnClass: lNodeTemplate.lnClass,
 				lnType: lNodeTemplate.lnType,
 				lnInst: lNodeTemplate.lnInst,
-				ldInst: ldInst
+				ldInst
 			}
 		],
 		iedName
