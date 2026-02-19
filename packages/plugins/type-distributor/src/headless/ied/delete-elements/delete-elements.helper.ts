@@ -39,13 +39,13 @@ export function buildEditsForClearingBayLNodeConnections(
 		} as SetAttributes)
 	}
 
-	const willHaveRemainingConnections = hasRemainingConnectionsAfterClearing(
+	const hasRemainingConnections = hasRemainingConnectionsAfterClearing(
 		selectedBay,
 		clearedBayLNodes
 	)
 
 	const shouldClearTemplateUuid =
-		clearedBayLNodes.size > 0 && !willHaveRemainingConnections
+		clearedBayLNodes.size > 0 && !hasRemainingConnections
 
 	if (shouldClearTemplateUuid) {
 		edits.push({
