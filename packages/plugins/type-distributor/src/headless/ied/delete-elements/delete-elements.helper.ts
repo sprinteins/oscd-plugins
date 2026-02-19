@@ -1,39 +1,100 @@
-import type { LNodeTemplate } from "@/headless/common-types"
-import { parseLDeviceInst } from "../elements"
+import type { LNodeTemplate } from '@/headless/common-types'
+import type { SetAttributes } from '@openscd/oscd-api'
+import { parseLDeviceInst } from '../elements'
+import { hasRemainingConnectionsAfterClearing } from '../check-bay-connections.helper'
 
-export function queryMatchingBayLNode(
-    bay: Element,
-    lNodeTemplate: LNodeTemplate,
-    lDeviceInst: string,
-    iedName: string
+export function buildEditsForClearingBayLNodeConnections(
+	selectedBay: Element,
+	lNodeTemplates: LNodeTemplate[],
+	iedName: string
+): SetAttributes[] {
+	const edits: SetAttributes[] = []
+	const clearedBayLNodes = new Set<Element>()
+
+	for (const template of lNodeTemplates) {
+		if (!template.ldInst) continue
+
+		const matchingBayLNode = queryMatchingBayLNode(
+			selectedBay,
+			{
+				lnClass: template.lnClass,
+				lnType: template.lnType,
+				lnInst: template.lnInst,
+                ldInst: template.ldInst
+			},
+			iedName
+		)
+
+		if (!matchingBayLNode) continue
+
+		clearedBayLNodes.add(matchingBayLNode)
+
+		edits.push({
+			element: matchingBayLNode,
+			attributes: {
+				iedName: null,
+				ldInst: null
+			},
+			attributesNS: {}
+		} as SetAttributes)
+	}
+
+	const willHaveRemainingConnections = hasRemainingConnectionsAfterClearing(
+		selectedBay,
+		clearedBayLNodes
+	)
+
+	const shouldClearTemplateUuid =
+		clearedBayLNodes.size > 0 && !willHaveRemainingConnections
+
+	if (shouldClearTemplateUuid) {
+		edits.push({
+			element: selectedBay,
+			attributes: {
+				templateUuid: null
+			},
+			attributesNS: {}
+		} as SetAttributes)
+	}
+
+	return edits
+}
+
+function queryMatchingBayLNode(
+	bay: Element,
+	lNodeTemplate: LNodeTemplate,
+	iedName: string
 ): Element | null {
-    const parsed = parseLDeviceInst(lDeviceInst)
-    if (!parsed) return null
+    const ldInst = lNodeTemplate.ldInst
+    if (!ldInst) return null
 
-    const { equipmentName, functionName } = parsed
+	const parsed = parseLDeviceInst(ldInst)
+	if (!parsed) return null
 
-    let targetFunction: Element | null = null
+	const { equipmentName, functionName } = parsed
 
-    if (equipmentName) {
-        const equipment = bay.querySelector(
-            `ConductingEquipment[name="${equipmentName}"]`
-        )
-        if (equipment) {
-            targetFunction = equipment.querySelector(
-                `:scope > EqFunction[name="${functionName}"]`
-            )
-        }
-    } else {
-        targetFunction = bay.querySelector(
-            `:scope > Function[name="${functionName}"]`
-        )
-    }
+	let targetFunction: Element | null = null
 
-    if (!targetFunction) return null
+	if (equipmentName) {
+		const equipment = bay.querySelector(
+			`ConductingEquipment[name="${equipmentName}"]`
+		)
+		if (equipment) {
+			targetFunction = equipment.querySelector(
+				`:scope > EqFunction[name="${functionName}"]`
+			)
+		}
+	} else {
+		targetFunction = bay.querySelector(
+			`:scope > Function[name="${functionName}"]`
+		)
+	}
 
-    const matchingLNode = targetFunction.querySelector(
-        `:scope > LNode[lnClass="${lNodeTemplate.lnClass}"][lnType="${lNodeTemplate.lnType}"][lnInst="${lNodeTemplate.lnInst}"][iedName="${iedName}"]`
-    )
+	if (!targetFunction) return null
 
-    return matchingLNode
+	const matchingLNode = targetFunction.querySelector(
+		`:scope > LNode[lnClass="${lNodeTemplate.lnClass}"][lnType="${lNodeTemplate.lnType}"][lnInst="${lNodeTemplate.lnInst}"][iedName="${iedName}"]`
+	)
+
+	return matchingLNode
 }

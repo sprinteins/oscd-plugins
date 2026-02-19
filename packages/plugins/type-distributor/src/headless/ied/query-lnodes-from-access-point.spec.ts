@@ -28,7 +28,7 @@ describe('queryLNodesFromAccessPoint', () => {
 				lnType: 'XCBR_Type1',
 				lnInst: '1',
 				iedName: undefined,
-				lDeviceName: 'LD0'
+				ldInst: 'LD0'
 			})
 		})
 
@@ -106,9 +106,9 @@ describe('queryLNodesFromAccessPoint', () => {
 
 			// THEN should aggregate all LNodes
 			expect(result).toHaveLength(2)
-			expect(result[0].lDeviceName).toBe('LD0')
+			expect(result[0].ldInst).toBe('LD0')
 			expect(result[0].lnClass).toBe('XCBR')
-			expect(result[1].lDeviceName).toBe('LD1')
+			expect(result[1].ldInst).toBe('LD1')
 			expect(result[1].lnClass).toBe('XSWI')
 		})
 
@@ -163,7 +163,7 @@ describe('queryLNodesFromAccessPoint', () => {
 
 			// THEN should return all with same lDeviceName
 			expect(result).toHaveLength(3)
-			expect(result.every((ln) => ln.lDeviceName === 'LD0')).toBe(true)
+			expect(result.every((ln) => ln.ldInst === 'LD0')).toBe(true)
 			expect(result[0].lnInst).toBe('1')
 			expect(result[1].lnInst).toBe('2')
 			expect(result[2].lnClass).toBe('XSWI')
@@ -262,7 +262,7 @@ describe('queryLNodesFromAccessPoint', () => {
 
 			// THEN should have undefined lDeviceName
 			expect(result).toHaveLength(1)
-			expect(result[0].lDeviceName).toBeUndefined()
+			expect(result[0].ldInst).toBeUndefined()
 		})
 	})
 

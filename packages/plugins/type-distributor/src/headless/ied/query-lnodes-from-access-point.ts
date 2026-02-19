@@ -11,7 +11,7 @@ export function queryLNodesFromAccessPoint(
 		const lDevices = server.querySelectorAll(':scope > LDevice')
 
 		for (const lDevice of lDevices) {
-			const lDeviceName = lDevice.getAttribute('inst') ?? undefined
+			const ldInst = lDevice.getAttribute('inst') ?? undefined
 			const lnElements = lDevice.querySelectorAll(':scope > LN, :scope > LN0')
 
 			for (const lnode of lnElements) {
@@ -20,7 +20,7 @@ export function queryLNodesFromAccessPoint(
 					lnType: lnode.getAttribute('lnType') ?? '',
 					lnInst: lnode.getAttribute('lnInst') ?? '',
 					iedName: lnode.getAttribute('iedName') ?? undefined,
-					lDeviceName
+					ldInst: ldInst
 				})
 			}
 		}

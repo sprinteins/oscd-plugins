@@ -1,13 +1,15 @@
 import type { LNodeTemplate } from "@/headless/common-types"
 import { bayStore } from "@/headless/stores"
 import type { Remove, SetAttributes } from "@openscd/oscd-api"
-import { hasRemainingConnectionsAfterClearing } from "../check-bay-connections.helper"
-import { queryMatchingBayLNode } from "./delete-elements.helper"
+import { buildEditsForClearingBayLNodeConnections } from "./delete-elements.helper"
+import {
+	queryLDeviceFromAccessPoint,
+	queryLNodeInLDevice
+} from "../elements"
 
 export function buildEditsForDeleteLNodeFromAccessPoint(
 	iedName: string,
 	accessPoint: Element,
-	lDeviceInst: string,
 	lNodeTemplate: LNodeTemplate
 ): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
@@ -17,74 +19,39 @@ export function buildEditsForDeleteLNodeFromAccessPoint(
 		throw new Error('No bay selected')
 	}
 
-	const server = accessPoint.querySelector(':scope > Server')
-	if (!server) {
-		throw new Error(
-			`Server not found in AccessPoint "${accessPoint.getAttribute('name')}" of IED "${iedName}"`
-		)
+	const ldInst = lNodeTemplate.ldInst
+	if (!ldInst) {
+		throw new Error('LNodeTemplate must have ldInst to delete LNode from AccessPoint')
 	}
 
-	const lDevice = server.querySelector(
-		`:scope > LDevice[inst="${lDeviceInst}"]`
-	)
+	const lDevice = queryLDeviceFromAccessPoint(accessPoint, ldInst)
 	if (!lDevice) {
 		throw new Error(
-			`LDevice with inst "${lDeviceInst}" not found in AccessPoint "${accessPoint.getAttribute('name')}" of IED "${iedName}"`
+			`LDevice with inst "${ldInst}" not found in AccessPoint "${accessPoint.getAttribute('name')}" of IED "${iedName}"`
 		)
 	}
 
-	const lnElement = Array.from(lDevice.querySelectorAll(':scope > LN')).find(
-		(ln) =>
-			ln.getAttribute('lnClass') === lNodeTemplate.lnClass &&
-			ln.getAttribute('lnType') === lNodeTemplate.lnType &&
-			ln.getAttribute('lnInst') === lNodeTemplate.lnInst
-	)
+	const lnElement = queryLNodeInLDevice(lDevice, lNodeTemplate)
 
 	if (!lnElement) {
 		throw new Error(
-			`LNode with lnClass="${lNodeTemplate.lnClass}", lnType="${lNodeTemplate.lnType}", lnInst="${lNodeTemplate.lnInst}" not found in LDevice "${lDeviceInst}"`
+			`LNode with lnClass="${lNodeTemplate.lnClass}", lnType="${lNodeTemplate.lnType}", lnInst="${lNodeTemplate.lnInst}" not found in LDevice "${ldInst}"`
 		)
 	}
 
-	const matchingBayLNode = queryMatchingBayLNode(
+	const bayEdits = buildEditsForClearingBayLNodeConnections(
 		selectedBay,
-		lNodeTemplate,
-		lDeviceInst,
+		[
+			{
+				lnClass: lNodeTemplate.lnClass,
+				lnType: lNodeTemplate.lnType,
+				lnInst: lNodeTemplate.lnInst,
+				ldInst: ldInst
+			}
+		],
 		iedName
 	)
-
-	const clearedBayLNodes = new Set<Element>()
-
-	if (!matchingBayLNode) return edits
-
-	clearedBayLNodes.add(matchingBayLNode)
-
-	edits.push({
-		element: matchingBayLNode,
-		attributes: {
-			iedName: null,
-			ldInst: null
-		},
-		attributesNS: {}
-	} as SetAttributes)
-
-	const willHaveRemainingConnections = hasRemainingConnectionsAfterClearing(
-		selectedBay,
-		clearedBayLNodes
-	)
-
-	const shouldClearTemplateUuid =
-		clearedBayLNodes.size > 0 && !willHaveRemainingConnections
-
-	if (shouldClearTemplateUuid) {
-		edits.push({
-			element: selectedBay,
-			attributes: {
-				templateUuid: null
-			},
-			attributesNS: {}
-		} as SetAttributes)
-	}
+	edits.push(...bayEdits)
 
 	const allLNs = Array.from(lDevice.querySelectorAll(':scope > LN'))
 	const isLastLNode = allLNs.length === 1

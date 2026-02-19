@@ -3,6 +3,7 @@ import type {
 	FunctionTemplate
 } from '@/headless/common-types'
 import { bayStore } from '@/headless/stores/bay.store.svelte'
+import { queryServer } from './server'
 
 function extractFunctionNames(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
@@ -88,6 +89,26 @@ export function queryLDevice(
 		(server.querySelector(`LDevice[inst="${lDeviceInst}"]`) as Element) ||
 		undefined
 	)
+}
+
+export function queryLDeviceByInst(
+	server: Element,
+	inst: string
+): Element | undefined {
+	return (
+		(server.querySelector(`LDevice[inst="${inst}"]`) as Element) ||
+		undefined
+	)
+}
+
+export function queryLDeviceFromAccessPoint(
+	accessPoint: Element,
+	lDeviceInst: string
+): Element | undefined {
+	const server = queryServer(accessPoint)
+	if (!server) return undefined
+
+	return queryLDeviceByInst(server, lDeviceInst)
 }
 
 export function createLDeviceElement(

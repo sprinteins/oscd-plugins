@@ -133,11 +133,11 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 				const edits = buildEditsForDeleteLNodeFromAccessPoint(
 					'IED1',
 					accessPoint,
-					'CBFunction',
 					{
 						lnClass: 'XCBR',
 						lnType: 'TestXCBR',
-						lnInst: '1'
+						lnInst: '1',
+						ldInst: 'CBFunction'
 					}
 				)
 
@@ -164,11 +164,11 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 				const edits = buildEditsForDeleteLNodeFromAccessPoint(
 					'IED1',
 					accessPoint,
-					'CBFunction',
 					{
 						lnClass: 'XCBR',
 						lnType: 'TestXCBR',
-						lnInst: '1'
+						lnInst: '1',
+						ldInst: 'CBFunction'
 					}
 				)
 
@@ -197,11 +197,11 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 			const edits = buildEditsForDeleteLNodeFromAccessPoint(
 				'IED1',
 				accessPoint,
-				'CBFunction',
 				{
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
-					lnInst: '1'
+					lnInst: '1',
+					ldInst: 'CBFunction'
 				}
 			)
 
@@ -231,11 +231,11 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 			const edits = buildEditsForDeleteLNodeFromAccessPoint(
 				'IED1',
 				accessPoint,
-				'QA1_Protection',
 				{
 					lnClass: 'PTRC',
 					lnType: 'TestPTRC',
-					lnInst: '1'
+					lnInst: '1',
+					ldInst: 'QA1_Protection'
 				}
 			)
 
@@ -287,11 +287,11 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 		const edits = buildEditsForDeleteLNodeFromAccessPoint(
 			'IED1',
 			accessPoint,
-			'CBFunction',
 			{
 				lnClass: 'XCBR',
 				lnType: 'TestXCBR',
-				lnInst: '1'
+				lnInst: '1',
+				ldInst: 'CBFunction'
 			}
 		)
 
@@ -329,11 +329,11 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 			buildEditsForDeleteLNodeFromAccessPoint(
 				'IED1',
 				accessPoint,
-				'CBFunction',
 				{
 					lnClass: 'NonExistent',
 					lnType: 'TestXCBR',
-					lnInst: '99'
+					lnInst: '99',
+					ldInst: 'QBFunction'
 				}
 			)
 		}).toThrow()

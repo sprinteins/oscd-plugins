@@ -19,11 +19,11 @@ function handleDelete() {
 		const edits = buildEditsForDeleteLNodeFromAccessPoint(
 			sIedName,
 			accessPoint,
-			lDeviceName,
 			{
 				lnClass: lnode.lnClass,
 				lnType: lnode.lnType,
-				lnInst: lnode.lnInst
+				lnInst: lnode.lnInst,
+				ldInst: lDeviceName
 			}
 		)
 		if (!(edits.length > 0)) {
