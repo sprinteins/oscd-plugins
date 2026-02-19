@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { AccessPointData } from '../lib'
+import type { AccessPointData } from '../form-helpers'
 
 let {
 	accessPoints,

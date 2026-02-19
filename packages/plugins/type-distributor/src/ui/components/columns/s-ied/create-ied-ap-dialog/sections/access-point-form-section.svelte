@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Label, Input } from '@oscd-plugins/core-ui-svelte'
-import type { AccessPointData } from '../lib'
+import type { AccessPointData } from '../form-helpers'
 
 let {
 	accessPoint = $bindable({ name: '', description: '' }),

@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { AccessPointData, IedData } from '../lib'
+import type { AccessPointData, IedData } from '../form-helpers'
 import { IedChip } from '../ui'
 import PendingAccessPoints from '../ui/pending-access-points.svelte'
 

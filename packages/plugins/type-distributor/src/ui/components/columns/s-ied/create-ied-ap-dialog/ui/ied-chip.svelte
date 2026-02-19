@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { IedData } from '../lib'
+import type { IedData } from '../form-helpers'
 
 let { ied }: { ied: IedData } = $props()
 </script>

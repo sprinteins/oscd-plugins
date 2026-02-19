@@ -17,7 +17,7 @@ import {
 	buildAccessPoint,
 	createInitialIedData,
 	createInitialAccessPointForm
-} from './lib'
+} from './form-helpers'
 import MultiApBackButton from './ui/multi-ap-back-button.svelte'
 import IedAndAccessPointOverview from './sections/ied-and-access-point-overview-section.svelte'
 

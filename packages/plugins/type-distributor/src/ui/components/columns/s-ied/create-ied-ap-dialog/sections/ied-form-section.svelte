@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Label, Input } from '@oscd-plugins/core-ui-svelte'
-import type { IedData } from '../lib'
+import type { IedData } from '../form-helpers'
 
 let {
 	ied = $bindable({ name: '', description: '', isNew: true }),
