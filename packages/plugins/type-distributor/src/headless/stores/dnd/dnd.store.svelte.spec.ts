@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { dndStore } from './dnd.store.svelte'
 import * as dropHandler from './drop-handler'
-import { buildEditsForBayLNode } from '@/headless/ied'
+import { buildEditsForBayLNode } from '@/headless/scl'
 
 vi.mock('./drop-handler', () => ({
 	getBayTypeApplicationState: vi.fn(),
@@ -15,7 +15,7 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 	getDocumentAndEditor: vi.fn()
 }))
 
-vi.mock('@/headless/ied', () => ({
+vi.mock('@/headless/scl', () => ({
 	createMultipleLNodesInAccessPoint: vi.fn(),
 	buildEditsForBayLNode: vi.fn()
 }))

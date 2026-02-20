@@ -1,5 +1,5 @@
 <script lang="ts">
-import { createSIED, querySIEDs, createAccessPoints } from '@/headless/ied'
+import { createSIED, querySIEDs, createAccessPoints } from '@/headless/scl'
 import { bayStore } from '@/headless/stores'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import IedSelectorSection from './ied-selector-section.svelte'

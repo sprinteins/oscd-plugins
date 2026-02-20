@@ -15,7 +15,7 @@ import {
 	BayTypeDetails,
 	BayTypeValidation
 } from '@/ui/components/columns/bay-type'
-import { querySIEDs } from '@/headless/ied'
+import { querySIEDs } from '@/headless/scl'
 import SIedDetails from '@/ui/components/columns/s-ied/s-ied-details.svelte'
 import { AddSIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'

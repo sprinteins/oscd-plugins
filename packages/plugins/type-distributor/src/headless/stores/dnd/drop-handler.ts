@@ -9,7 +9,7 @@ import { bayTypesStore } from '../bay-types.store.svelte'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
-import { createMultipleLNodesInAccessPoint } from '@/headless/ied'
+import { createMultipleLNodesInAccessPoint } from '@/headless/scl'
 
 type BayTypeApplicationState = {
 	hasAssignedBayType: boolean

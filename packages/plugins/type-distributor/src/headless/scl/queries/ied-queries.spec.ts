@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { querySIEDs } from './query-s-ieds'
+import { querySIEDs } from './ied-queries'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 import AccessPoint from './access-point.svelte'
-import { queryLNodesFromAccessPoint } from '@/headless/ied'
+import { queryLNodesFromAccessPoint } from '@/headless/scl'
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
 

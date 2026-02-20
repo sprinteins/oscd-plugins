@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { queryLNodesFromAccessPoint } from './query-lnodes-from-access-point'
+import { queryLNodesFromAccessPoint } from './lnode-queries'
 
 describe('queryLNodesFromAccessPoint', () => {
 	describe('basic functionality', () => {
