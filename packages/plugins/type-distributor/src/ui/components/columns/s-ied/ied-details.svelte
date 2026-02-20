@@ -42,13 +42,13 @@ const sIedData = $derived.by(() => {
 
 	switch (searchType) {
 		case 'IED':
-			return filterByIED(data, normalizedSearchTerm)
+			return filterByIED(data, searchTerm)
 		case 'AccessPoint':
-			return filterByAccessPoint(data, normalizedSearchTerm)
+			return filterByAccessPoint(data, searchTerm)
 		case 'LDevice':
-			return filterByLDevice(data, normalizedSearchTerm)
+			return filterByLDevice(data, searchTerm)
 		case 'LNode':
-			return filterByLNode(data, normalizedSearchTerm)
+			return filterByLNode(data, searchTerm)
 		default:
 			return data
 	}

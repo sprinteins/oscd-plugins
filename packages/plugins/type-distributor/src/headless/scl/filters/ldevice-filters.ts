@@ -6,12 +6,13 @@ function matchesLDevice(lDeviceName: string | undefined, term: string): boolean 
 }
 
 export function filterByLDevice(ieds: IEDData[], term: string): FilteredIED[] {
+	const normalizedTerm = term.toLowerCase().trim()
 	return ieds
 		.map((ied) => {
 			const filteredAPs: FilteredAccessPoint[] = ied.accessPoints
 				.map((ap) => {
 					const filteredLNodes: LNodeTemplate[] = ap.lNodes.filter((ln) =>
-						matchesLDevice(ln.lDeviceName, term)
+						matchesLDevice(ln.lDeviceName, normalizedTerm)
 					)
 					if (filteredLNodes.length > 0) {
 						return { ...ap, lNodes: filteredLNodes }

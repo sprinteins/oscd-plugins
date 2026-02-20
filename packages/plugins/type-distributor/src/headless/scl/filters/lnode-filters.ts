@@ -10,12 +10,13 @@ function matchesLNode(lNode: LNodeTemplate, term: string): boolean {
 }
 
 export function filterByLNode(ieds: IEDData[], term: string): FilteredIED[] {
+	const normalizedTerm = term.toLowerCase().trim()
 	return ieds
 		.map((ied) => {
 			const filteredAPs: FilteredAccessPoint[] = ied.accessPoints
 				.map((ap) => {
 					const filteredLNodes: LNodeTemplate[] = ap.lNodes.filter((ln) =>
-						matchesLNode(ln, term)
+						matchesLNode(ln, normalizedTerm)
 					)
 					if (filteredLNodes.length > 0) {
 						return { ...ap, lNodes: filteredLNodes }
