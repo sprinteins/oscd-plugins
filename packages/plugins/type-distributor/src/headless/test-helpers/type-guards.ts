@@ -5,5 +5,5 @@ export function isRemoveEdit(edit: EditV2): edit is Remove {
 }
 
 export function isSetAttributesEdit(edit: EditV2): edit is SetAttributes {
-	return 'element' in edit && 'attributes' in edit
+	return 'element' in edit && ('attributes' in edit || 'attributesNs' in edit)
 }
