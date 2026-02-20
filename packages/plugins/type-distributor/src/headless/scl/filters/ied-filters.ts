@@ -6,6 +6,7 @@ function matchesIED(iedName: string, term: string): boolean {
 
 export function filterByIED(ieds: IEDData[], term: string): FilteredIED[] {
 	const normalizedTerm = term.toLowerCase().trim()
+	if (!normalizedTerm) return []
 	return ieds
 		.filter((ied) => matchesIED(ied.name, normalizedTerm))
 		.map((ied) => ({ ...ied }))

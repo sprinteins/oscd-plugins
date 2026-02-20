@@ -7,6 +7,7 @@ function matchesLDevice(lDeviceName: string | undefined, term: string): boolean 
 
 export function filterByLDevice(ieds: IEDData[], term: string): FilteredIED[] {
 	const normalizedTerm = term.toLowerCase().trim()
+	if (!normalizedTerm) return []
 	return ieds
 		.map((ied) => {
 			const filteredAPs: FilteredAccessPoint[] = ied.accessPoints
