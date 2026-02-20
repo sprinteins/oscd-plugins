@@ -15,9 +15,19 @@
   bind:ref
   data-slot="input-group-control"
   class={cn(
-    "flex-1 rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0 dark:bg-transparent",
+    "flex-1 rounded-none border-0 bg-transparent shadow-none dark:bg-transparent",
     className
   )}
   bind:value
   {...props}
 />
+
+<style>
+  :global([data-slot="input-group-control"]:focus-visible) {
+    outline: none !important;
+    box-shadow: none !important;
+    --tw-ring-offset-width: 0px !important;
+    --tw-ring-offset-shadow: none !important;
+    --tw-ring-shadow: none !important;
+  }
+</style>
