@@ -16,10 +16,9 @@ import {
 	BayTypeValidation
 } from '@/ui/components/columns/bay-type'
 import { querySIEDs } from '@/headless/scl'
-import SIedDetails from '@/ui/components/columns/s-ied/s-ied-details.svelte'
 import { AddSIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'
-  import { IedSearch } from '../columns/s-ied';
+import { IedDetails, IedSearch } from '../columns/s-ied';
 
 type SearchType = 'IED' | 'AccessPoint' | 'LDevice' | 'LNode'
 
@@ -129,7 +128,7 @@ function handleBayTypeChange() {
 				<IedSearch bind:searchTerm bind:searchType />
 			</div>
 			<div class="flex-1 overflow-y-auto">
-				<SIedDetails {sIedItems} {searchTerm} {searchType} />
+				<IedDetails {sIedItems} {searchTerm} {searchType} />
 			</div>
 			<div>
 				<AddSIedApDialogTrigger />
