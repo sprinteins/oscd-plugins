@@ -47,17 +47,13 @@ function generateLDeviceInst(
 }
 
 export function parseLDeviceInst(lDeviceInst: string): {
-	equipmentName: string
+	equipmentName: string | null
 	functionName: string
-} | null {
-	const lastUnderscoreIndex = lDeviceInst.lastIndexOf('_')
-	if (lastUnderscoreIndex === -1) {
-		return { equipmentName: '', functionName: lDeviceInst }
+} {
+	if (!lDeviceInst.includes('_')) {
+		return { equipmentName: null, functionName: lDeviceInst }
 	}
-
-	const equipmentName = lDeviceInst.substring(0, lastUnderscoreIndex)
-	const functionName = lDeviceInst.substring(lastUnderscoreIndex + 1)
-
+	const [equipmentName, functionName] = lDeviceInst.split('_')
 	return { equipmentName, functionName }
 }
 
@@ -76,7 +72,7 @@ export function queryLDevice(
 	server: Element,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	equipmentUuid?: string
-): Element | undefined {
+): Element | null {
 	const { functionName, conductingEquipmentName } = extractFunctionNames(
 		sourceFunction,
 		equipmentUuid
@@ -85,28 +81,22 @@ export function queryLDevice(
 		functionName,
 		conductingEquipmentName
 	)
-	return (
-		(server.querySelector(`LDevice[inst="${lDeviceInst}"]`) as Element) ||
-		undefined
-	)
+	return server.querySelector(`LDevice[inst="${lDeviceInst}"]`)
 }
 
 export function queryLDeviceByInst(
 	server: Element,
 	inst: string
-): Element | undefined {
-	return (
-		(server.querySelector(`LDevice[inst="${inst}"]`) as Element) ||
-		undefined
-	)
+): Element | null {
+	return server.querySelector(`LDevice[inst="${inst}"]`)
 }
 
 export function queryLDeviceFromAccessPoint(
 	accessPoint: Element,
 	lDeviceInst: string
-): Element | undefined {
+): Element | null {
 	const server = queryServer(accessPoint)
-	if (!server) return undefined
+	if (!server) return null
 
 	return queryLDeviceByInst(server, lDeviceInst)
 }
