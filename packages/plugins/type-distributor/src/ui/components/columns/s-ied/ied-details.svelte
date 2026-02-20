@@ -1,10 +1,15 @@
 <script lang="ts">
 import AccessPoint from './access-point.svelte'
-import { queryLNodesFromAccessPoint } from '@/headless/scl'
+import {
+	queryLNodesFromAccessPoint,
+	filterByIED,
+	filterByAccessPoint,
+	filterByLDevice,
+	filterByLNode,
+	type SearchType,
+	type IEDData
+} from '@/headless/scl'
 import { Card } from '@oscd-plugins/core-ui-svelte'
-import type { LNodeTemplate } from '@/headless/common-types'
-
-type SearchType = 'IED' | 'AccessPoint' | 'LDevice' | 'LNode'
 
 const {
 	sIedItems,
@@ -18,28 +23,8 @@ const {
 
 const normalizedSearchTerm = $derived(searchTerm.toLowerCase().trim())
 
-function matchesLNode(lNode: LNodeTemplate, term: string): boolean {
-	return (
-		lNode.lnClass.toLowerCase().includes(term) ||
-		lNode.lnType.toLowerCase().includes(term) ||
-		lNode.lnInst.toLowerCase().includes(term)
-	)
-}
-
-function matchesLDevice(lDeviceName: string | undefined, term: string): boolean {
-	return lDeviceName?.toLowerCase().includes(term) ?? false
-}
-
-function matchesAccessPoint(apName: string | null, term: string): boolean {
-	return apName?.toLowerCase().includes(term) ?? false
-}
-
-function matchesIED(iedName: string, term: string): boolean {
-	return iedName.toLowerCase().includes(term)
-}
-
 const sIedData = $derived.by(() => {
-	const data = sIedItems.map((sIedItem) => {
+	const data: IEDData[] = sIedItems.map((sIedItem) => {
 		const name = sIedItem.getAttribute('name') ?? 'Unnamed SIed'
 		const accessPoints = Array.from(sIedItem.querySelectorAll(':scope > AccessPoint'))
 			.map((ap) => {
@@ -55,64 +40,18 @@ const sIedData = $derived.by(() => {
 
 	if (!normalizedSearchTerm) return data
 
-	return data
-		.map((ied) => {
-			if (searchType === 'IED') {
-				if (matchesIED(ied.name, normalizedSearchTerm)) {
-					return ied
-				}
-				return null
-			}
-
-			if (searchType === 'AccessPoint') {
-				const filteredAPs = ied.accessPoints.filter((ap) =>
-					matchesAccessPoint(ap.name, normalizedSearchTerm)
-				)
-				if (filteredAPs.length > 0) {
-					return { ...ied, accessPoints: filteredAPs }
-				}
-				return null
-			}
-
-			if (searchType === 'LDevice') {
-				const filteredAPs = ied.accessPoints
-					.map((ap) => {
-						const filteredLNodes = ap.lNodes.filter((ln) =>
-							matchesLDevice(ln.lDeviceName, normalizedSearchTerm)
-						)
-						if (filteredLNodes.length > 0) {
-							return { ...ap, lNodes: filteredLNodes }
-						}
-						return null
-					})
-					.filter(Boolean) as typeof ied.accessPoints
-				if (filteredAPs.length > 0) {
-					return { ...ied, accessPoints: filteredAPs }
-				}
-				return null
-			}
-
-			if (searchType === 'LNode') {
-				const filteredAPs = ied.accessPoints
-					.map((ap) => {
-						const filteredLNodes = ap.lNodes.filter((ln) =>
-							matchesLNode(ln, normalizedSearchTerm)
-						)
-						if (filteredLNodes.length > 0) {
-							return { ...ap, lNodes: filteredLNodes }
-						}
-						return null
-					})
-					.filter(Boolean) as typeof ied.accessPoints
-				if (filteredAPs.length > 0) {
-					return { ...ied, accessPoints: filteredAPs }
-				}
-				return null
-			}
-
-			return ied
-		})
-		.filter(Boolean) as typeof data
+	switch (searchType) {
+		case 'IED':
+			return filterByIED(data, normalizedSearchTerm)
+		case 'AccessPoint':
+			return filterByAccessPoint(data, normalizedSearchTerm)
+		case 'LDevice':
+			return filterByLDevice(data, normalizedSearchTerm)
+		case 'LNode':
+			return filterByLNode(data, normalizedSearchTerm)
+		default:
+			return data
+	}
 })
 </script>
 {#if sIedData && sIedData.length > 0}
