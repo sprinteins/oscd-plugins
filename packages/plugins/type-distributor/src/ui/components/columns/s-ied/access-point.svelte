@@ -46,35 +46,31 @@ function handleDrop(event: DragEvent) {
 }
 
 function handleDelete() {
-	try {
-		const editor = getEditor()
+	const editor = getEditor()
 
-		if (hasLNodes && !bayStore.scdBay) {
-			console.error(
-				'[AccessPoint] No bay selected - required to clear LNode references'
-			)
-			return
-		}
-
-		const edits = buildEditsForDeleteAccessPoint({
-			accessPoint,
-			iedName,
-			selectedBay: bayStore.scdBay
-		})
-
-		if (!(edits.length > 0)) {
-			console.warn(
-				'[AccessPoint] No edits generated for deleting AccessPoint - check if it still exists'
-			)
-			return
-		}
-
-		editor.commit(edits, {
-			title: `Delete AccessPoint ${accessPoint.getAttribute('name') ?? '(unnamed)'} from ${iedName}`
-		})
-	} catch (error) {
-		console.error('[AccessPoint] Error deleting AccessPoint:', error)
+	if (hasLNodes && !bayStore.scdBay) {
+		console.error(
+			'[AccessPoint] No bay selected - required to clear LNode references'
+		)
+		return
 	}
+
+	const edits = buildEditsForDeleteAccessPoint({
+		accessPoint,
+		iedName,
+		selectedBay: bayStore.scdBay
+	})
+
+	if (!(edits.length > 0)) {
+		console.warn(
+			'[AccessPoint] No edits generated for deleting AccessPoint - check if it still exists'
+		)
+		return
+	}
+
+	editor.commit(edits, {
+		title: `Delete AccessPoint ${accessPoint.getAttribute('name') ?? '(unnamed)'} from ${iedName}`
+	})
 }
 </script>
 

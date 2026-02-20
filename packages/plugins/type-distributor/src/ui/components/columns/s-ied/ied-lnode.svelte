@@ -14,31 +14,27 @@ interface Props {
 const { lnode, iedName, accessPoint }: Props = $props()
 
 function handleDelete() {
-	try {
-		const editor = getEditor()
-		const edits = buildEditsForDeleteLNodeFromAccessPoint({
-			iedName,
-			accessPoint,
-			lNodeTemplate: {
-				lnClass: lnode.lnClass,
-				lnType: lnode.lnType,
-				lnInst: lnode.lnInst,
-				ldInst: lnode.ldInst
-			},
-			selectedBay: bayStore.scdBay
-		})
-		if (!(edits.length > 0)) {
-			console.warn(
-				'[IedLnode] No edits generated for deleting LNode - check if LNode still exists'
-			)
-			return
-		}
-		editor.commit(edits, {
-			title: `Delete LNode ${lnode.lnClass}`
-		})
-	} catch (error) {
-		console.error('[IedLnode] Error deleting LNode:', error)
+	const editor = getEditor()
+	const edits = buildEditsForDeleteLNodeFromAccessPoint({
+		iedName,
+		accessPoint,
+		lNodeTemplate: {
+			lnClass: lnode.lnClass,
+			lnType: lnode.lnType,
+			lnInst: lnode.lnInst,
+			ldInst: lnode.ldInst
+		},
+		selectedBay: bayStore.scdBay
+	})
+	if (!(edits.length > 0)) {
+		console.warn(
+			'[IedLnode] No edits generated for deleting LNode - check if LNode still exists'
+		)
+		return
 	}
+	editor.commit(edits, {
+		title: `Delete LNode ${lnode.lnClass}`
+	})
 }
 </script>
 
