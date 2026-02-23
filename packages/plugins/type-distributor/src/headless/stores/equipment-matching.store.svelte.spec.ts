@@ -7,7 +7,6 @@ describe('equipmentMatchingStore', () => {
 		// Reset store state
 		equipmentMatchingStore.validationResult = null
 		equipmentMatchingStore.manualMatches.clear()
-		equipmentMatchingStore.isManualMatchingExpanded = false
 	})
 
 	describe('setValidationResult', () => {
@@ -25,41 +24,6 @@ describe('equipmentMatchingStore', () => {
 			expect(equipmentMatchingStore.validationResult).toStrictEqual(
 				result
 			)
-		})
-
-		it('GIVEN validation requires manual matching WHEN setValidationResult is called THEN should expand manual matching UI', () => {
-			// GIVEN validation requires manual matching
-			const result: ValidationResult = {
-				isValid: false,
-				errors: ['Ambiguous equipment'],
-				requiresManualMatching: true,
-				ambiguousTypes: [
-					{
-						typeCode: 'CBR',
-						templateNames: ['Breaker1', 'Breaker2']
-					}
-				]
-			}
-
-			// WHEN setValidationResult is called
-			equipmentMatchingStore.setValidationResult(result)
-
-			// THEN should expand manual matching UI
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(true)
-		})
-
-		it('GIVEN validation does not require manual matching WHEN setValidationResult is called THEN should not expand manual matching UI', () => {
-			// GIVEN validation does not require manual matching
-			const result: ValidationResult = {
-				isValid: true,
-				errors: []
-			}
-
-			// WHEN setValidationResult is called
-			equipmentMatchingStore.setValidationResult(result)
-
-			// THEN should not expand manual matching UI
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(false)
 		})
 
 		it('GIVEN clearMatches is true WHEN setValidationResult is called THEN should clear existing manual matches', () => {
@@ -124,17 +88,17 @@ describe('equipmentMatchingStore', () => {
 			]
 
 			// WHEN setManualMatch is called multiple times
-			matches.forEach((m) =>
+			for (const m of matches) {
 				equipmentMatchingStore.setManualMatch(m.name, m.uuid)
-			)
+			}
 
 			// THEN should store all matches
 			expect(equipmentMatchingStore.manualMatches.size).toBe(3)
-			matches.forEach((m) => {
+			for (const m of matches) {
 				expect(equipmentMatchingStore.manualMatches.get(m.name)).toBe(
 					m.uuid
 				)
-			})
+			}
 		})
 
 		it('GIVEN existing match WHEN setManualMatch is called with same equipment name THEN should update match', () => {
@@ -160,7 +124,6 @@ describe('equipmentMatchingStore', () => {
 				errors: ['Error']
 			}
 			equipmentMatchingStore.manualMatches.set('eq1', 'template1')
-			equipmentMatchingStore.isManualMatchingExpanded = true
 
 			// WHEN reset is called
 			equipmentMatchingStore.reset()
@@ -168,7 +131,6 @@ describe('equipmentMatchingStore', () => {
 			// THEN should clear all state
 			expect(equipmentMatchingStore.validationResult).toBeNull()
 			expect(equipmentMatchingStore.manualMatches.size).toBe(0)
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(false)
 		})
 	})
 
@@ -212,7 +174,6 @@ describe('equipmentMatchingStore', () => {
 				errors: []
 			}
 			equipmentMatchingStore.manualMatches.set('eq1', 'template1')
-			equipmentMatchingStore.isManualMatchingExpanded = true
 
 			// WHEN clearValidationResult is called
 			equipmentMatchingStore.clearValidationResult()
@@ -220,98 +181,46 @@ describe('equipmentMatchingStore', () => {
 			// THEN should clear validation and matches
 			expect(equipmentMatchingStore.validationResult).toBeNull()
 			expect(equipmentMatchingStore.manualMatches.size).toBe(0)
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(false)
 		})
 	})
 
-	describe('toggleManualMatching', () => {
-		it('GIVEN manual matching is collapsed WHEN toggleManualMatching is called THEN should expand', () => {
-			// GIVEN manual matching is collapsed
-			equipmentMatchingStore.isManualMatchingExpanded = false
+	describe('setMatch', () => {
+		it('GIVEN a non-empty uuid WHEN setMatch is called THEN should add the match', () => {
+			// GIVEN
+			const name = 'Breaker1'
+			const uuid = 'template-uuid-abc'
 
-			// WHEN toggleManualMatching is called
-			equipmentMatchingStore.toggleManualMatching()
+			// WHEN
+			equipmentMatchingStore.setMatch(name, uuid)
 
-			// THEN should expand
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(true)
+			// THEN
+			expect(equipmentMatchingStore.manualMatches.get(name)).toBe(uuid)
 		})
 
-		it('GIVEN manual matching is expanded WHEN toggleManualMatching is called THEN should collapse', () => {
-			// GIVEN manual matching is expanded
-			equipmentMatchingStore.isManualMatchingExpanded = true
+		it('GIVEN an existing match WHEN setMatch is called with an empty string THEN should remove the match', () => {
+			// GIVEN
+			equipmentMatchingStore.manualMatches.set('Breaker1', 'some-uuid')
 
-			// WHEN toggleManualMatching is called
-			equipmentMatchingStore.toggleManualMatching()
+			// WHEN
+			equipmentMatchingStore.setMatch('Breaker1', '')
 
-			// THEN should collapse
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(false)
+			// THEN
+			expect(equipmentMatchingStore.manualMatches.has('Breaker1')).toBe(
+				false
+			)
 		})
 
-		it('GIVEN multiple toggles WHEN toggleManualMatching is called repeatedly THEN should alternate state', () => {
-			// GIVEN multiple toggles
-			const initialState = equipmentMatchingStore.isManualMatchingExpanded
+		it('GIVEN an existing match WHEN setMatch is called with a new uuid THEN should update the match', () => {
+			// GIVEN
+			equipmentMatchingStore.manualMatches.set('Breaker1', 'old-uuid')
 
-			// WHEN toggleManualMatching is called repeatedly
-			equipmentMatchingStore.toggleManualMatching()
-			const firstToggle = equipmentMatchingStore.isManualMatchingExpanded
+			// WHEN
+			equipmentMatchingStore.setMatch('Breaker1', 'new-uuid')
 
-			equipmentMatchingStore.toggleManualMatching()
-			const secondToggle = equipmentMatchingStore.isManualMatchingExpanded
-
-			// THEN should alternate state
-			expect(firstToggle).toBe(!initialState)
-			expect(secondToggle).toBe(initialState)
-		})
-	})
-
-	describe('areAllManualMatchesSet', () => {
-		it('GIVEN no manual matches and requiredCount is 0 WHEN areAllManualMatchesSet is called THEN should return true', () => {
-			// GIVEN no manual matches and requiredCount is 0
-
-			// WHEN areAllManualMatchesSet is called
-			const result = equipmentMatchingStore.areAllManualMatchesSet(0)
-
-			// THEN should return true
-			expect(result).toBe(true)
-		})
-
-		it('GIVEN fewer matches than required WHEN areAllManualMatchesSet is called THEN should return false', () => {
-			// GIVEN fewer matches than required
-			equipmentMatchingStore.manualMatches.set('eq1', 'template1')
-			equipmentMatchingStore.manualMatches.set('eq2', 'template2')
-
-			// WHEN areAllManualMatchesSet is called with requiredCount=3
-			const result = equipmentMatchingStore.areAllManualMatchesSet(3)
-
-			// THEN should return false
-			expect(result).toBe(false)
-		})
-
-		it('GIVEN exact number of required matches WHEN areAllManualMatchesSet is called THEN should return true', () => {
-			// GIVEN exact number of required matches
-			equipmentMatchingStore.manualMatches.set('eq1', 'template1')
-			equipmentMatchingStore.manualMatches.set('eq2', 'template2')
-			equipmentMatchingStore.manualMatches.set('eq3', 'template3')
-
-			// WHEN areAllManualMatchesSet is called with requiredCount=3
-			const result = equipmentMatchingStore.areAllManualMatchesSet(3)
-
-			// THEN should return true
-			expect(result).toBe(true)
-		})
-
-		it('GIVEN more matches than required WHEN areAllManualMatchesSet is called THEN should return true', () => {
-			// GIVEN more matches than required
-			equipmentMatchingStore.manualMatches.set('eq1', 'template1')
-			equipmentMatchingStore.manualMatches.set('eq2', 'template2')
-			equipmentMatchingStore.manualMatches.set('eq3', 'template3')
-			equipmentMatchingStore.manualMatches.set('eq4', 'template4')
-
-			// WHEN areAllManualMatchesSet is called with requiredCount=3
-			const result = equipmentMatchingStore.areAllManualMatchesSet(3)
-
-			// THEN should return true
-			expect(result).toBe(true)
+			// THEN
+			expect(equipmentMatchingStore.manualMatches.get('Breaker1')).toBe(
+				'new-uuid'
+			)
 		})
 	})
 })

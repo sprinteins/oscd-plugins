@@ -31,6 +31,16 @@ function extractFunctionNames(
 				conductingEquipmentName = scdEquipmentName
 			}
 		}
+
+		if (!conductingEquipmentName) {
+			const ceElement = bayStore.scdBay?.querySelector(
+				`ConductingEquipment[templateUuid="${equipmentUuid}"]`
+			)
+			if (ceElement) {
+				conductingEquipmentName =
+					ceElement.getAttribute('name') ?? undefined
+			}
+		}
 	}
 
 	return { functionName, conductingEquipmentName }

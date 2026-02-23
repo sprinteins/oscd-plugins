@@ -36,23 +36,35 @@ function queryFunctionElements(
 	sourceFunction: EqFunctionTemplate | FunctionTemplate,
 	equipmentUuid?: string
 ): Element[] {
-	if (equipmentUuid) {
-		const match = bayStore.equipmentMatches.find(
-			(m) => m.bayTypeEquipment.uuid === equipmentUuid
-		)
-		if (!match) return []
-
-		const targetEquipment = match.scdElement
-		return Array.from(
-			targetEquipment.querySelectorAll(
-				`EqFunction[name="${sourceFunction.name}"]`
-			)
-		)
-	}
-
 	const scdBay = bayStore.scdBay
 	if (!scdBay) {
 		console.warn('No bay selected or bay not found in document')
+		return []
+	}
+
+	if (equipmentUuid) {
+		const matchFromStore = bayStore.equipmentMatches.find(
+			(m) => m.bayTypeEquipment.uuid === equipmentUuid
+		)
+		if (matchFromStore) {
+			return Array.from(
+				matchFromStore.scdElement.querySelectorAll(
+					`EqFunction[name="${sourceFunction.name}"]`
+				)
+			)
+		}
+
+		const ceElement = scdBay.querySelector(
+			`ConductingEquipment[templateUuid="${equipmentUuid}"]`
+		)
+		if (ceElement) {
+			return Array.from(
+				ceElement.querySelectorAll(
+					`EqFunction[name="${sourceFunction.name}"]`
+				)
+			)
+		}
+
 		return []
 	}
 
@@ -107,7 +119,7 @@ export function buildEditsForBayLNode({
 		if (!lnodeElement) {
 			continue
 		}
-		
+
 		const currentIedName = lnodeElement.getAttribute('iedName')
 		if (currentIedName) {
 			continue

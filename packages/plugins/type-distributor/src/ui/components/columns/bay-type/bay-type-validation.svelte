@@ -66,8 +66,9 @@ const canApply = $derived.by(() => {
 
 	if (!scdBay) return false
 
-	return equipmentMatchingStore.areAllManualMatchesSet(
-		ambiguousEquipmentCount
+	return (
+		equipmentMatchingStore.manualMatches.size >= ambiguousEquipmentCount &&
+		equipmentMatchingStore.templateCountsValid
 	)
 })
 </script>

@@ -62,7 +62,6 @@ export function applyBayTypeIfNeeded(state: BayTypeApplicationState): boolean {
 	}
 
 	applyBayTypeSelection(bayStore.selectedBay)
-	bayStore.assignedBayTypeUuid = bayTypesStore.selectedBayType
 	bayStore.pendingBayTypeApply = null
 	equipmentMatchingStore.clearValidationResult()
 

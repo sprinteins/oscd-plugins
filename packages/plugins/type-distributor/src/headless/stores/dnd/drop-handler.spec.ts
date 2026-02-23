@@ -254,7 +254,6 @@ describe('drop-handler', () => {
 			expect(didApply).toBe(true)
 			expect(bayTypesStore.selectedBayType).toBe('bt-3')
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-3')
-			expect(bayStore.assignedBayTypeUuid).toBe('bt-3')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 			expect(
 				equipmentMatchingStore.clearValidationResult
@@ -279,7 +278,6 @@ describe('drop-handler', () => {
 			// THEN
 			expect(didApply).toBe(true)
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-4')
-			expect(bayStore.assignedBayTypeUuid).toBe('bt-4')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 		})
 	})
