@@ -62,7 +62,7 @@ export type LNodeTemplate = {
 	lnType: string
 	lnInst: string
 	iedName?: string
-	lDeviceName?: string
+	ldInst?: string
 }
 
 export type AssignableTemplates = EqFunctionTemplate | FunctionTemplate | LNodeTemplate // GeneralEqupipment

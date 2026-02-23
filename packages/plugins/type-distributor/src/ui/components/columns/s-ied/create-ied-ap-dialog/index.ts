@@ -1,1 +1,1 @@
-export { default as AddSIedApDialogTrigger } from './add-s-ied-ap-dialog-trigger.svelte'
+export { default as AddIedApDialogTrigger } from './add-ied-ap-dialog-trigger.svelte'
