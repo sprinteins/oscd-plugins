@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-02-13
+### Added
+- Allow user to delete APs and LNodes if it is the last LNode it will also remove the BayType assignment
+
 ## [0.3.2] - 2026-02-18
 ## Added
 - Dialog notifying the User to open only .scd files initially

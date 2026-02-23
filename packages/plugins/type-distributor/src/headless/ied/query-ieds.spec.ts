@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { querySIEDs } from './query-s-ieds'
+import { queryIEDs } from './query-ieds'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 
@@ -10,7 +10,7 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-describe('querySIEDs', () => {
+describe('queryIEDs', () => {
 	let mockDocument: Document
 
 	beforeEach(() => {
@@ -38,7 +38,7 @@ describe('querySIEDs', () => {
 	})
 
 	it('should return ieds not assigned to a Bay', () => {
-		const result = querySIEDs('Bay1')
+		const result = queryIEDs('Bay1')
 
 		const iedNames = result.map((ied) => ied.getAttribute('name'))
 		expect(iedNames).toContain('IED1')
@@ -46,7 +46,7 @@ describe('querySIEDs', () => {
 	})
 
 	it('should return ieds assigned to a selected Bay', () => {
-		const result = querySIEDs('Bay1')
+		const result = queryIEDs('Bay1')
 
 		const iedNames = result.map((ied) => ied.getAttribute('name'))
 		expect(iedNames).toContain('IED2')
@@ -60,13 +60,13 @@ describe('querySIEDs', () => {
 		)
 		pluginGlobalStore.xmlDocument = emptyDoc
 
-		const result = querySIEDs('')
+		const result = queryIEDs('')
 
 		expect(result).toEqual([])
 	})
 
 	it('should not return ieds assigned to a not selected Bay', () => {
-		const result = querySIEDs('Bay1')
+		const result = queryIEDs('Bay1')
 
 		const iedNames = result.map((ied) => ied.getAttribute('name'))
 		expect(iedNames).not.toContain('IED3')
@@ -75,13 +75,13 @@ describe('querySIEDs', () => {
 	it('should return empty array when xmlDocument is undefined', () => {
 		pluginGlobalStore.xmlDocument = undefined
 
-		const result = querySIEDs('Bay1')
+		const result = queryIEDs('Bay1')
 
 		expect(result).toEqual([])
 	})
 
 	it('should return all unassigned IEDs and selected bay IEDs together', () => {
-		const result = querySIEDs('Bay2')
+		const result = queryIEDs('Bay2')
 
 		const iedNames = result.map((ied) => ied.getAttribute('name'))
 		expect(iedNames).toContain('IED1')

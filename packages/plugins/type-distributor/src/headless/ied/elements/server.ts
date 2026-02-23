@@ -7,6 +7,6 @@ export function createServerElementWithAuth(doc: XMLDocument): Element {
 	return serverElement
 }
 
-export function queryServer(accessPoint: Element): Element | undefined {
-	return (accessPoint.querySelector('Server') as Element) || undefined
+export function queryServer(accessPoint: Element): Element | null {
+	return accessPoint.querySelector('Server')
 }

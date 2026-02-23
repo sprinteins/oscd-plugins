@@ -480,7 +480,7 @@ describe('assignedLNodesStore', () => {
 				lnType: 'TestXCBR',
 				lnInst: '1',
 				iedName: 'IED1',
-				lDeviceName: 'LD1'
+				ldInst: 'LD1'
 			}
 
 			expect(

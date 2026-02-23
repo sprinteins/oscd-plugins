@@ -1,1 +1,5 @@
-export { getDocumentAndEditor } from './get-document-and-Editor'
+export {
+	getDocumentAndEditor,
+	getDocument,
+	getEditor
+} from './get-document-and-Editor'

@@ -39,7 +39,7 @@ describe('dndStore', () => {
 			lnType: 'XCBR_Type1',
 			lnInst: '1',
 			iedName: undefined,
-			lDeviceName: 'LD0'
+			ldInst: 'LD0'
 		}
 	]
 	const mockFunction = {

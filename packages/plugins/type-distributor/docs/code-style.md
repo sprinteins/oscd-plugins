@@ -58,3 +58,8 @@ describe('GIVEN matching equipment types', () => {
 ### Test Utilities
 - Extract mock creation into helper functions: `createBayType`, `createTemplate`, `mockTemplates`
 - Use descriptive mock data: `'template1'`, `'CBR'`, not generic values
+
+## Parameter object rule (Code Style Decision)
+
+- For functions with three or more parameters, prefer a single object parameter typed via an interface (see decision: `docs/code-style-decisions/0001-parameter-object-params.md`).
+- Pass resolved inputs into functions instead of reading stores inside the function to keep functions simpler and easier to test.
