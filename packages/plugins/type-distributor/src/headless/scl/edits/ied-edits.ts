@@ -1,15 +1,20 @@
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type { Insert } from '@openscd/oscd-api'
 import { createElement } from '@oscd-plugins/core'
 import { getDocumentAndEditor } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
 import { queryIEDInsertionReference } from '../queries'
 
-export function createSIED(
-	name: string,
-	description?: string,
+type CreateSIEDParams = {
+	name: string
+	description?: string
 	accessPoints?: { name: string; description?: string }[]
-): void {
+}
+
+export function createSIED({
+	name,
+	description,
+	accessPoints
+}: CreateSIEDParams): void {
 	const { doc, editor } = getDocumentAndEditor()
 
 	const iedElement = createBasicIEDElement(name, doc, description)
@@ -28,15 +33,21 @@ export function createSIED(
 	})
 
 	if (accessPoints && accessPoints.length > 0) {
-		createAccessPoints(name, accessPoints, true)
+		createAccessPoints({ iedName: name, accessPoints, squash: true })
 	}
 }
 
-export function createAccessPoints(
-	iedName: string,
-	accessPoints: { name: string; description?: string }[],
+type CreateAccessPointsParams = {
+	iedName: string
+	accessPoints: { name: string; description?: string }[]
+	squash?: boolean
+}
+
+export function createAccessPoints({
+	iedName,
+	accessPoints,
 	squash = false
-): void {
+}: CreateAccessPointsParams): void {
 	const { doc, editor } = getDocumentAndEditor()
 
 	const iedElement = doc.querySelector(`IED[name="${iedName}"]`)

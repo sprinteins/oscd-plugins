@@ -19,19 +19,17 @@ import {
 // ============================================================================
 // buildEditsForBayLNode - SetAttributes edits for assigning iedName to LNodes
 // ============================================================================
-
-type UpdateBayLNodesParams = {
-	lNodes: LNodeTemplate[]
-	iedName: string
+type findMatchingLNodeElementParams = {
+	lNode: LNodeTemplate
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentUuid?: string
 }
 
-function findMatchingLNodeElement(
-	lNode: LNodeTemplate,
-	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	equipmentUuid?: string
-): Element | null {
+function findMatchingLNodeElement({
+	lNode,
+	sourceFunction,
+	equipmentUuid
+}: findMatchingLNodeElementParams): Element | null {
 	const functionElements = queryFunctionElements(
 		sourceFunction,
 		equipmentUuid
@@ -104,6 +102,13 @@ function createSetIedNameEdit(
 	}
 }
 
+type UpdateBayLNodesParams = {
+	lNodes: LNodeTemplate[]
+	iedName: string
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
+	equipmentUuid?: string
+}
+
 export function buildEditsForBayLNode({
 	lNodes,
 	iedName,
@@ -113,15 +118,15 @@ export function buildEditsForBayLNode({
 	const edits: SetAttributes[] = []
 
 	for (const lNode of lNodes) {
-		const lnodeElement = findMatchingLNodeElement(
+		const lnodeElement = findMatchingLNodeElement({
 			lNode,
 			sourceFunction,
 			equipmentUuid
-		)
+		})
 		if (!lnodeElement) {
 			continue
 		}
-		
+
 		const currentIedName = lnodeElement.getAttribute('iedName')
 		if (currentIedName) {
 			continue
@@ -135,20 +140,6 @@ export function buildEditsForBayLNode({
 // ============================================================================
 // createMultipleLNodesInAccessPoint - Insert edits for LNodes in AccessPoint
 // ============================================================================
-
-type CreateMultipleLNodesParams = {
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
-	lNodes: LNodeTemplate[]
-	accessPoint: Element
-	equipmentUuid?: string
-}
-
-type CreateLNodeParams = {
-	lNode: LNodeTemplate
-	lDevice: Element
-	doc: XMLDocument
-}
-
 function ensureServer(
 	accessPoint: Element,
 	doc: XMLDocument
@@ -169,12 +160,19 @@ function ensureServer(
 	return { serverElement, edit }
 }
 
-function ensureLDevice(
-	server: Element,
-	doc: XMLDocument,
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
+type EnsureLDeviceParams = {
+	server: Element
+	doc: XMLDocument
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	equipmentUuid?: string
-): { lDevice: Element; edit: Insert | undefined } {
+}
+
+function ensureLDevice({
+	server,
+	doc,
+	sourceFunction,
+	equipmentUuid
+}: EnsureLDeviceParams): { lDevice: Element; edit: Insert | undefined } {
 	const existingLDevice = queryLDevice(server, sourceFunction, equipmentUuid)
 	if (existingLDevice) {
 		return { lDevice: existingLDevice, edit: undefined }
@@ -189,6 +187,12 @@ function ensureLDevice(
 	}
 
 	return { lDevice, edit }
+}
+
+type CreateLNodeParams = {
+	lNode: LNodeTemplate
+	lDevice: Element
+	doc: XMLDocument
 }
 
 function createLNodeInAccessPoint({
@@ -207,6 +211,13 @@ function createLNodeInAccessPoint({
 	return edit
 }
 
+type CreateMultipleLNodesParams = {
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
+	lNodes: LNodeTemplate[]
+	accessPoint: Element
+	equipmentUuid?: string
+}
+
 export function createMultipleLNodesInAccessPoint({
 	sourceFunction,
 	lNodes,
@@ -222,12 +233,12 @@ export function createMultipleLNodesInAccessPoint({
 	const doc = pluginGlobalStore.xmlDocument
 
 	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
-	const { lDevice, edit: lDeviceEdit } = ensureLDevice(
-		serverElement,
+	const { lDevice, edit: lDeviceEdit } = ensureLDevice({
+		server: serverElement,
 		doc,
 		sourceFunction,
 		equipmentUuid
-	)
+	})
 
 	const lNodesToAdd = lNodes.filter((lNode) => {
 		const exists = isLNodePresentInDevice(lNode, lDevice)

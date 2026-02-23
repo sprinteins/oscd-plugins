@@ -114,9 +114,16 @@ function handleSubmit() {
 	try {
 		const accessPoint = buildAccessPoint()
 		if (isCreatingNewIed) {
-			createSIED(iedName.trim(), iedDesc.trim() || undefined, accessPoint)
+			createSIED({
+				name: iedName.trim(),
+				description: iedDesc.trim() || undefined,
+				accessPoints: accessPoint
+			})
 		} else if (hasAccessPoint && existingSIedName && accessPoint) {
-			createAccessPoints(existingSIedName, accessPoint)
+			createAccessPoints({
+				iedName: existingSIedName,
+				accessPoints: accessPoint
+			})
 		}
 
 		resetForm()
