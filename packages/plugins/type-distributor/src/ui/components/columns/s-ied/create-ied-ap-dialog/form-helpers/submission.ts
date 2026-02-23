@@ -1,4 +1,4 @@
-import { createSIED, createAccessPoints } from '@/headless/ied'
+import { createIED, createAccessPoints } from '@/headless/ied'
 import type { AccessPointData, IedData } from './types'
 
 export function submitForm(ied: IedData, accessPoints: AccessPointData[]): void {
@@ -7,7 +7,7 @@ export function submitForm(ied: IedData, accessPoints: AccessPointData[]): void 
 	}
 
 	if (ied.isNew) {
-		createSIED(ied.name, ied.description, accessPoints)
+		createIED(ied.name, ied.description, accessPoints)
 	} else {
 		createAccessPoints(ied.name, accessPoints)
 	}
