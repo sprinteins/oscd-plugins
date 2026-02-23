@@ -27,6 +27,7 @@ function buildEditsForDeleteAccessPoint({ accessPoint, iedName, selectedBay }: B
 ```
 
 - Prefer passing resolved inputs (e.g. `selectedBay`) into functions rather than having the function read stores directly.
+- Place the `BuildParams` interface next to the function it documents (same file, above or below the function). Keeping the type local improves discoverability and reduces cross-file navigation when the function and its parameter shape are changed.
 
 Why
 
