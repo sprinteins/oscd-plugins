@@ -68,4 +68,6 @@ src/
 ## To be discussed:
 
 - Do we want to really extract all types to a separate folder? Or is it fine to keep related types (e.g. matching-related) in their respective domain folders?
+  - We keep related types together (e.g. MatchingResult inside a types file inside domatin/matching/)
+- If deemed necessary split functions into multiple files and create a deeper folder structure (e.g. scl/equries/ied/queryIED and scl/queries/ied/queryAccessPoints instead of scl/queries/ied-queries).
 
