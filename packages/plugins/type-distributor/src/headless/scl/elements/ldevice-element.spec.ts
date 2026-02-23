@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest'
-import { createLDeviceElement } from './ldevice'
+import { createLDeviceElement } from './ldevice-element'
 
 vi.mock('../../stores/bay.store.svelte', () => ({
 	bayStore: {

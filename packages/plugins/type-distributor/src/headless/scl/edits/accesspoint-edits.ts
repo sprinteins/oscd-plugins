@@ -1,12 +1,10 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import type { Insert, SetAttributes } from '@openscd/oscd-api'
+import type { Insert } from '@openscd/oscd-api'
 import type {
 	ConductingEquipmentTemplate,
-	EqFunctionTemplate,
 	FunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
-import { bayStore } from '@/headless/stores'
 import {
 	createLDeviceElement,
 	createLNodeElementInIED,
@@ -15,127 +13,6 @@ import {
 	queryServer,
 	isLNodePresentInDevice
 } from '../elements'
-
-// ============================================================================
-// buildEditsForBayLNode - SetAttributes edits for assigning iedName to LNodes
-// ============================================================================
-type findMatchingLNodeElementParams = {
-	lNode: LNodeTemplate
-	sourceFunction: EqFunctionTemplate | FunctionTemplate
-	equipmentUuid?: string
-}
-
-function findMatchingLNodeElement({
-	lNode,
-	sourceFunction,
-	equipmentUuid
-}: findMatchingLNodeElementParams): Element | null {
-	const functionElements = queryFunctionElements(
-		sourceFunction,
-		equipmentUuid
-	)
-
-	for (const functionElement of functionElements) {
-		const matches = queryLNodeMatchesFromFunction(functionElement, lNode)
-		const preferred = choosePreferredMatch(matches)
-		if (preferred) return preferred
-	}
-
-	return null
-}
-
-function queryFunctionElements(
-	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	equipmentUuid?: string
-): Element[] {
-	if (equipmentUuid) {
-		const match = bayStore.equipmentMatches.find(
-			(m) => m.bayTypeEquipment.uuid === equipmentUuid
-		)
-		if (!match) return []
-
-		const targetEquipment = match.scdElement
-		return Array.from(
-			targetEquipment.querySelectorAll(
-				`EqFunction[name="${sourceFunction.name}"]`
-			)
-		)
-	}
-
-	const scdBay = bayStore.scdBay
-	if (!scdBay) {
-		console.warn('No bay selected or bay not found in document')
-		return []
-	}
-
-	return Array.from(
-		scdBay.querySelectorAll(
-			`:scope > Function[name="${sourceFunction.name}"]`
-		)
-	)
-}
-
-function queryLNodeMatchesFromFunction(
-	functionElement: Element,
-	lNode: LNodeTemplate
-): Element[] {
-	const { lnType, lnInst } = lNode
-
-	const selector = `LNode[lnType="${lnType}"][lnInst="${lnInst}"]`
-	return Array.from(functionElement.querySelectorAll(selector))
-}
-
-function choosePreferredMatch(matches: Element[]): Element | null {
-	if (matches.length === 0) return null
-	const unassigned = matches.find((el) => !el.getAttribute('iedName'))
-	return unassigned ?? matches[0]
-}
-
-function createSetIedNameEdit(
-	element: Element,
-	iedName: string
-): SetAttributes {
-	return {
-		element,
-		attributes: { iedName },
-		attributesNS: {}
-	}
-}
-
-type UpdateBayLNodesParams = {
-	lNodes: LNodeTemplate[]
-	iedName: string
-	sourceFunction: EqFunctionTemplate | FunctionTemplate
-	equipmentUuid?: string
-}
-
-export function buildEditsForBayLNode({
-	lNodes,
-	iedName,
-	sourceFunction,
-	equipmentUuid
-}: UpdateBayLNodesParams): SetAttributes[] {
-	const edits: SetAttributes[] = []
-
-	for (const lNode of lNodes) {
-		const lnodeElement = findMatchingLNodeElement({
-			lNode,
-			sourceFunction,
-			equipmentUuid
-		})
-		if (!lnodeElement) {
-			continue
-		}
-
-		const currentIedName = lnodeElement.getAttribute('iedName')
-		if (currentIedName) {
-			continue
-		}
-		edits.push(createSetIedNameEdit(lnodeElement, iedName))
-	}
-
-	return edits
-}
 
 // ============================================================================
 // createMultipleLNodesInAccessPoint - Insert edits for LNodes in AccessPoint

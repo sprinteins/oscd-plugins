@@ -1,2 +1,3 @@
 export * from './ied-edits'
-export * from './lnode-edits'
+export * from './bay-edits'
+export * from './accesspoint-edits'
