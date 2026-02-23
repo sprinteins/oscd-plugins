@@ -1,7 +1,7 @@
 <script lang="ts">
 import { SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 import type { IedData } from '../form-helpers'
-import { querySIEDs } from '@/headless/ied'
+import { queryIEDs } from '@/headless/ied'
 import { bayStore } from '@/headless/stores'
 
 let {
@@ -13,7 +13,7 @@ let {
 } = $props()
 
 const existingSIeds = $derived.by(() => {
-	const sieds = querySIEDs(bayStore.selectedBay ?? '')
+	const sieds = queryIEDs(bayStore.selectedBay ?? '')
 	return sieds.map((ied) => ({
 		value: ied.getAttribute('name') || '',
 		label: ied.getAttribute('name') || 'Unnamed IED'
