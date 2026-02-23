@@ -1,16 +1,17 @@
 import type { AccessPointData, IedData } from './types'
 import { queryAccessPointsFromIed, queryIedExists } from '@/headless/ied'
 
-type SubmitValidationParams = {
+type ValidateSubmissionParams = {
 	ied: IedData
 	accessPoints: AccessPointData[]
 	xmlDocument: XMLDocument | null | undefined
 }
 
-export function validateSubmission(
-	params: SubmitValidationParams
-): string | null {
-	const { ied, accessPoints, xmlDocument } = params
+export function validateSubmission({
+	ied,
+	accessPoints,
+	xmlDocument
+}: ValidateSubmissionParams): string | null {
 	const trimmedIedName = ied.name.trim()
 
 	if (ied.isNew) {
@@ -31,7 +32,10 @@ export function validateSubmission(
 	}
 
 	if (!ied.isNew) {
-		const existingApNames = queryAccessPointsFromIed(xmlDocument, ied.name.trim())
+		const existingApNames = queryAccessPointsFromIed(
+			xmlDocument,
+			ied.name.trim()
+		)
 		for (const ap of accessPoints) {
 			if (existingApNames.includes(ap.name)) {
 				return `Access Point "${ap.name}" already exists in IED "${trimmedIedName}"`
@@ -60,12 +64,19 @@ export function validateIedBeforeMultiAp(
 	return null
 }
 
-export function validateAccessPoint(
-	apName: string,
-	pendingApNames: string[],
-	existingApNames: string[],
+type ValidateAccessPointParams = {
+	apName: string
+	pendingApNames: string[]
+	existingApNames: string[]
 	iedName: string
-): string | null {
+}
+
+export function validateAccessPoint({
+	apName,
+	pendingApNames,
+	existingApNames,
+	iedName
+}: ValidateAccessPointParams): string | null {
 	const trimmedName = apName.trim()
 
 	if (!trimmedName) {
