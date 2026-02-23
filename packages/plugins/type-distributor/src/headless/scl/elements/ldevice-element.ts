@@ -3,6 +3,7 @@ import type {
 	FunctionTemplate
 } from '@/headless/common-types'
 import { bayStore } from '@/headless/stores/bay.store.svelte'
+import { queryServer } from './server-element'
 
 function extractFunctionNames(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
@@ -45,6 +46,17 @@ function generateLDeviceInst(
 	return functionName
 }
 
+export function parseLDeviceInst(lDeviceInst: string): {
+	equipmentName: string | null
+	functionName: string
+} {
+	if (!lDeviceInst.includes('_')) {
+		return { equipmentName: null, functionName: lDeviceInst }
+	}
+	const [equipmentName, functionName] = lDeviceInst.split('_')
+	return { equipmentName, functionName }
+}
+
 export function getLDeviceInst(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	equipmentUuid?: string
@@ -60,7 +72,7 @@ export function queryLDevice(
 	server: Element,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
 	equipmentUuid?: string
-): Element | undefined {
+): Element | null {
 	const { functionName, conductingEquipmentName } = extractFunctionNames(
 		sourceFunction,
 		equipmentUuid
@@ -69,10 +81,24 @@ export function queryLDevice(
 		functionName,
 		conductingEquipmentName
 	)
-	return (
-		(server.querySelector(`LDevice[inst="${lDeviceInst}"]`) as Element) ||
-		undefined
-	)
+	return server.querySelector(`LDevice[inst="${lDeviceInst}"]`)
+}
+
+export function queryLDeviceByInst(
+	server: Element,
+	inst: string
+): Element | null {
+	return server.querySelector(`LDevice[inst="${inst}"]`)
+}
+
+export function queryLDeviceFromAccessPoint(
+	accessPoint: Element,
+	lDeviceInst: string
+): Element | null {
+	const server = queryServer(accessPoint)
+	if (!server) return null
+
+	return queryLDeviceByInst(server, lDeviceInst)
 }
 
 export function createLDeviceElement(

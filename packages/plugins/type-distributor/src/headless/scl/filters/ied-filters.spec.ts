@@ -12,7 +12,7 @@ describe('filterByIED', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
 					lNodes: [
-						{ lnClass: 'XCBR', lnType: 'XCBR_Type1', lnInst: '1', lDeviceName: 'LD0' }
+						{ lnClass: 'XCBR', lnType: 'XCBR_Type1', lnInst: '1', ldInst: 'LD0' }
 					]
 				}
 			]
@@ -25,7 +25,7 @@ describe('filterByIED', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
 					lNodes: [
-						{ lnClass: 'CSWI', lnType: 'CSWI_Type1', lnInst: '1', lDeviceName: 'LD0' }
+						{ lnClass: 'CSWI', lnType: 'CSWI_Type1', lnInst: '1', ldInst: 'LD0' }
 					]
 				}
 			]

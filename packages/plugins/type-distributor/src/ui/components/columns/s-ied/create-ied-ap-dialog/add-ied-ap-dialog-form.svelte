@@ -1,5 +1,5 @@
 <script lang="ts">
-import { createIED, querySIEDs, createAccessPoints } from '@/headless/scl'
+import { createIED, queryIEDs, createAccessPoints } from '@/headless/scl'
 import { bayStore } from '@/headless/stores'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import IedSelectorSection from './ied-selector-section.svelte'
@@ -15,8 +15,8 @@ let accessPointDesc = $state('')
 let iedCreationError = $state<string | null>(null)
 
 const existingSIeds = $derived.by(() => {
-	const sieds = querySIEDs(bayStore.selectedBay ?? '')
-	return sieds.map((ied) => ({
+	const ieds = queryIEDs(bayStore.selectedBay ?? '')
+	return ieds.map((ied) => ({
 		value: ied.getAttribute('name') || '',
 		label: ied.getAttribute('name') || 'Unnamed IED'
 	}))
@@ -35,7 +35,8 @@ const submitLabel = $derived(
 )
 
 const isSubmitDisabled = $derived(
-	(isCreatingNewIed && !iedName.trim()) || (!isCreatingNewIed && !hasAccessPoint)
+	(isCreatingNewIed && !iedName.trim()) ||
+		(!isCreatingNewIed && !hasAccessPoint)
 )
 
 function getAccessPointsFromIED(iedName: string): string[] {
@@ -58,7 +59,9 @@ function validateForm(): string | null {
 	if (isCreatingNewIed && iedName.trim()) {
 		const xmlDocument = pluginGlobalStore.xmlDocument
 		if (xmlDocument) {
-			const existingIed = xmlDocument.querySelector(`IED[name="${iedName.trim()}"]`)
+			const existingIed = xmlDocument.querySelector(
+				`IED[name="${iedName.trim()}"]`
+			)
 			if (existingIed) {
 				return `IED "${iedName.trim()}" already exists`
 			}
@@ -131,7 +134,7 @@ function handleSubmit() {
 	} catch (error) {
 		iedCreationError =
 			error instanceof Error ? error.message : 'Failed to create IED'
-	} 
+	}
 }
 
 async function handleCancel() {

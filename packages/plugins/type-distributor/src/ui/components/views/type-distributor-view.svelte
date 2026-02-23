@@ -15,10 +15,10 @@ import {
 	BayTypeDetails,
 	BayTypeValidation
 } from '@/ui/components/columns/bay-type'
-import { querySIEDs } from '@/headless/scl'
-import { AddSIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
+import { IedDetails, IedSearch } from '@/ui/components/columns/s-ied'
+import { AddIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'
-import { IedDetails, IedSearch } from '../columns/s-ied';
+import { queryIEDs } from '@/headless/scl'
 
 type SearchType = 'IED' | 'AccessPoint' | 'LDevice' | 'LNode'
 
@@ -49,9 +49,9 @@ const conductingEquipmentTemplates = $derived(
 	bayTypeWithTemplates?.conductingEquipmentTemplates ?? []
 )
 
-const sIedItems = $derived.by(() => {
+const iedItems = $derived.by(() => {
 	pluginGlobalStore.editCount
-	return querySIEDs(bayStore.selectedBay ?? '')
+	return queryIEDs(bayStore.selectedBay ?? '')
 })
 
 $effect(() => {
@@ -128,10 +128,10 @@ function handleBayTypeChange() {
 				<IedSearch bind:searchTerm bind:searchType />
 			</div>
 			<div class="flex-1 overflow-y-auto">
-				<IedDetails {sIedItems} {searchTerm} {searchType} />
+				<IedDetails {iedItems} {searchTerm} {searchType} />
 			</div>
 			<div>
-				<AddSIedApDialogTrigger />
+				<AddIedApDialogTrigger />
 			</div>
 		</Card.Content>
 	</Card.Root>
@@ -147,7 +147,7 @@ function handleBayTypeChange() {
 			/>
 		</Card.Header>
 		<Card.Content class="flex-1 flex flex-col overflow-hidden">
-			<div  class="flex-1 flex flex-col gap-y-4 overflow-y-auto">
+			<div class="flex-1 flex flex-col gap-y-4 overflow-y-auto">
 				<BayTypeValidation {bayTypeError} />
 				{#if shouldShowBayTypeDetails}
 					<BayTypeDetails

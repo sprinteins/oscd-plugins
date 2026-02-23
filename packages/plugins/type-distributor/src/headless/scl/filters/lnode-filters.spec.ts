@@ -12,16 +12,16 @@ describe('filterByLNode', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
 					lNodes: [
-						{ lnClass: 'XCBR', lnType: 'XCBR_Type1', lnInst: '1', lDeviceName: 'LD0' },
-						{ lnClass: 'XSWI', lnType: 'XSWI_Type1', lnInst: '2', lDeviceName: 'LD0' },
-						{ lnClass: 'CSWI', lnType: 'CSWI_Type1', lnInst: '1', lDeviceName: 'LD1' }
+						{ lnClass: 'XCBR', lnType: 'XCBR_Type1', lnInst: '1', ldInst: 'LD0' },
+						{ lnClass: 'XSWI', lnType: 'XSWI_Type1', lnInst: '2', ldInst: 'LD0' },
+						{ lnClass: 'CSWI', lnType: 'CSWI_Type1', lnInst: '1', ldInst: 'LD1' }
 					]
 				},
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP2',
 					lNodes: [
-						{ lnClass: 'MMXU', lnType: 'MMXU_Measurement', lnInst: '1', lDeviceName: 'LD_Meas' }
+						{ lnClass: 'MMXU', lnType: 'MMXU_Measurement', lnInst: '1', ldInst: 'LD_Meas' }
 					]
 				}
 			]
@@ -34,8 +34,8 @@ describe('filterByLNode', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Main',
 					lNodes: [
-						{ lnClass: 'CSWI', lnType: 'ControlSwitch_Type', lnInst: '10', lDeviceName: 'LD_Control' },
-						{ lnClass: 'CILO', lnType: 'CILO_Type1', lnInst: '1', lDeviceName: 'LD_Interlock' }
+						{ lnClass: 'CSWI', lnType: 'ControlSwitch_Type', lnInst: '10', ldInst: 'LD_Control' },
+						{ lnClass: 'CILO', lnType: 'CILO_Type1', lnInst: '1', ldInst: 'LD_Interlock' }
 					]
 				}
 			]

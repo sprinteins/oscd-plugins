@@ -1,5 +1,4 @@
 <script lang="ts">
-import AccessPoint from './access-point.svelte'
 import {
 	queryLNodesFromAccessPoint,
 	filterByIED,
@@ -10,13 +9,14 @@ import {
 	type IEDData
 } from '@/headless/scl'
 import { Card } from '@oscd-plugins/core-ui-svelte'
+  import AccessPoint from './access-point.svelte';
 
 const {
-	sIedItems,
+	iedItems,
 	searchTerm = '',
 	searchType = 'IED'
 }: {
-	sIedItems: Element[]
+	iedItems: Element[]
 	searchTerm?: string
 	searchType?: SearchType
 } = $props()
@@ -24,9 +24,9 @@ const {
 const normalizedSearchTerm = $derived(searchTerm.toLowerCase().trim())
 
 const sIedData = $derived.by(() => {
-	const data: IEDData[] = sIedItems.map((sIedItem) => {
-		const name = sIedItem.getAttribute('name') ?? 'Unnamed SIed'
-		const accessPoints = Array.from(sIedItem.querySelectorAll(':scope > AccessPoint'))
+	const data: IEDData[] = iedItems.map((iedItem) => {
+		const name = iedItem.getAttribute('name') ?? 'Unnamed IED'
+		const accessPoints = Array.from(iedItem.querySelectorAll(':scope > AccessPoint'))
 			.map((ap) => {
 				const lNodes = queryLNodesFromAccessPoint(ap)
 				return {
@@ -35,7 +35,7 @@ const sIedData = $derived.by(() => {
 					lNodes
 				}
 			})
-		return { name, accessPoints, element: sIedItem }
+		return { name, accessPoints, element: iedItem }
 	})
 
 	if (!normalizedSearchTerm) return data
@@ -56,11 +56,11 @@ const sIedData = $derived.by(() => {
 </script>
 {#if sIedData && sIedData.length > 0}
   <div class="space-y-2 mb-2">
-    {#each sIedData as { name: sIedName, accessPoints }}
+    {#each sIedData as { name: iedName, accessPoints }}
       {#if accessPoints.length === 0}
         <Card.Root class="border border-dashed text-gray-500">
           <Card.Content class="p-2">
-            <span class="text-sm">{sIedName} - no Access Points found</span>
+            <span class="text-sm">{iedName} - no Access Points found</span>
           </Card.Content>
         </Card.Root>
       {:else}
@@ -68,7 +68,7 @@ const sIedData = $derived.by(() => {
           <AccessPoint
             {accessPoint}
             {lNodes}
-            {sIedName}
+            {iedName}
           />
         {/each}
       {/if}

@@ -1,8 +1,8 @@
 import type { LNodeTemplate } from '@/headless/common-types'
 import type { IEDData, FilteredIED, FilteredAccessPoint } from './types'
 
-function matchesLDevice(lDeviceName: string | undefined, term: string): boolean {
-	return lDeviceName?.toLowerCase().includes(term) ?? false
+function matchesLDevice(ldInst: string | undefined, term: string): boolean {
+	return ldInst?.toLowerCase().includes(term) ?? false
 }
 
 export function filterByLDevice(ieds: IEDData[], term: string): FilteredIED[] {
@@ -13,7 +13,7 @@ export function filterByLDevice(ieds: IEDData[], term: string): FilteredIED[] {
 			const filteredAPs: FilteredAccessPoint[] = ied.accessPoints
 				.map((ap) => {
 					const filteredLNodes: LNodeTemplate[] = ap.lNodes.filter((ln) =>
-						matchesLDevice(ln.lDeviceName, normalizedTerm)
+						matchesLDevice(ln.ldInst, normalizedTerm)
 					)
 					if (filteredLNodes.length > 0) {
 						return { ...ap, lNodes: filteredLNodes }

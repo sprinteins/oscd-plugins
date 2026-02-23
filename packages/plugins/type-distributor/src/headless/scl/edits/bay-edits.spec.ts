@@ -69,7 +69,12 @@ describe('buildEditsForBayLNode', () => {
 			// biome-ignore lint/style/noNonNullAssertion: <explanation>
 						const breaker = mockDocument.querySelector(
 				'ConductingEquipment[name="Breaker1"]'
-			)!
+			)
+			if (!breaker) {
+				throw new Error(
+					'Test setup failed: Breaker1 not found in mock document'
+				)
+			}
 			bayStore.equipmentMatches = [
 				{
 					scdElement: breaker,

@@ -17,3 +17,19 @@ export function getDocumentAndEditor(): {
 
 	return { doc, editor }
 }
+
+export function getDocument(): XMLDocument {
+	const { doc } = getDocumentAndEditor()
+	if (!doc) {
+		throw new Error('No XML document loaded')
+	}
+	return doc
+}
+
+export function getEditor(): XMLEditor {
+	const { editor } = getDocumentAndEditor()
+	if (!editor) {
+		throw new Error('No editor available')
+	}
+	return editor
+}
