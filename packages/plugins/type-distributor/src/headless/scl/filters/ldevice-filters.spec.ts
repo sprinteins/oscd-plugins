@@ -12,15 +12,30 @@ describe('filterByLDevice', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
 					lNodes: [
-						{ lnClass: 'XCBR', lnType: 'XCBR_Type1', lnInst: '1', ldInst: 'LD_Circuit_Breaker' },
-						{ lnClass: 'XSWI', lnType: 'XSWI_Type1', lnInst: '1', ldInst: 'LD_Disconnector' }
+						{
+							lnClass: 'XCBR',
+							lnType: 'XCBR_Type1',
+							lnInst: '1',
+							ldInst: 'LD_Circuit_Breaker'
+						},
+						{
+							lnClass: 'XSWI',
+							lnType: 'XSWI_Type1',
+							lnInst: '1',
+							ldInst: 'LD_Disconnector'
+						}
 					]
 				},
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP2',
 					lNodes: [
-						{ lnClass: 'MMXU', lnType: 'MMXU_Type1', lnInst: '1', ldInst: 'LD_Measurement' }
+						{
+							lnClass: 'MMXU',
+							lnType: 'MMXU_Type1',
+							lnInst: '1',
+							ldInst: 'LD_Measurement'
+						}
 					]
 				}
 			]
@@ -33,8 +48,18 @@ describe('filterByLDevice', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Main',
 					lNodes: [
-						{ lnClass: 'CSWI', lnType: 'CSWI_Type1', lnInst: '1', ldInst: 'LD_Control_Unit' },
-						{ lnClass: 'CILO', lnType: 'CILO_Type1', lnInst: '1', ldInst: 'LD_Interlock' }
+						{
+							lnClass: 'CSWI',
+							lnType: 'CSWI_Type1',
+							lnInst: '1',
+							ldInst: 'LD_Control_Unit'
+						},
+						{
+							lnClass: 'CILO',
+							lnType: 'CILO_Type1',
+							lnInst: '1',
+							ldInst: 'LD_Interlock'
+						}
 					]
 				}
 			]
@@ -47,7 +72,12 @@ describe('filterByLDevice', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Test',
 					lNodes: [
-						{ lnClass: 'LLN0', lnType: 'LLN0_Type', lnInst: '', ldInst: undefined }
+						{
+							lnClass: 'LLN0',
+							lnType: 'LLN0_Type',
+							lnInst: '',
+							ldInst: undefined
+						}
 					]
 				}
 			]
@@ -63,7 +93,9 @@ describe('filterByLDevice', () => {
 		expect(result[0].name).toBe('IED_Protection')
 		expect(result[0].accessPoints).toHaveLength(1)
 		expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
-		expect(result[0].accessPoints[0].lNodes[0].ldInst).toBe('LD_Circuit_Breaker')
+		expect(result[0].accessPoints[0].lNodes[0].ldInst).toBe(
+			'LD_Circuit_Breaker'
+		)
 	})
 
 	it('GIVEN IED with multiple LNodes in same AccessPoint WHEN filtering matches multiple THEN should return all matching LNodes', () => {
@@ -86,7 +118,9 @@ describe('filterByLDevice', () => {
 		expect(result[0].name).toBe('IED_Protection')
 		expect(result[0].accessPoints).toHaveLength(1)
 		expect(result[0].accessPoints[0].name).toBe('AP2')
-		expect(result[0].accessPoints[0].lNodes[0].ldInst).toBe('LD_Measurement')
+		expect(result[0].accessPoints[0].lNodes[0].ldInst).toBe(
+			'LD_Measurement'
+		)
 	})
 
 	it('GIVEN multiple IEDs with matching LDevice names WHEN filtering THEN should return all matching IEDs', () => {
@@ -97,7 +131,9 @@ describe('filterByLDevice', () => {
 		expect(result).toHaveLength(1)
 		expect(result[0].name).toBe('IED_Control')
 		expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
-		expect(result[0].accessPoints[0].lNodes[0].ldInst).toBe('LD_Control_Unit')
+		expect(result[0].accessPoints[0].lNodes[0].ldInst).toBe(
+			'LD_Control_Unit'
+		)
 	})
 
 	it('GIVEN IEDs WHEN filtering with case-insensitive term THEN should match correctly', () => {
@@ -106,7 +142,9 @@ describe('filterByLDevice', () => {
 
 		// THEN should match case-insensitively
 		expect(result).toHaveLength(1)
-		expect(result[0].accessPoints[0].lNodes[0].ldInst).toBe('LD_Disconnector')
+		expect(result[0].accessPoints[0].lNodes[0].ldInst).toBe(
+			'LD_Disconnector'
+		)
 	})
 
 	it('GIVEN IEDs WHEN filtering with non-matching term THEN should return empty array', () => {
@@ -167,7 +205,9 @@ describe('filterByLDevice', () => {
 
 	it('GIVEN IED with AccessPoint containing only non-matching LNodes WHEN filtering THEN should not include IED', () => {
 		// GIVEN IED with only undefined ldInst
-		const iedNoMatch = mockIEDs.filter((ied) => ied.name === 'IED_NoLDevice')
+		const iedNoMatch = mockIEDs.filter(
+			(ied) => ied.name === 'IED_NoLDevice'
+		)
 
 		// WHEN filtering
 		const result = filterByLDevice(iedNoMatch, 'anything')

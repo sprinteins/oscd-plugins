@@ -16,8 +16,8 @@ export function filterByLNode(ieds: IEDData[], term: string): FilteredIED[] {
 		.map((ied) => {
 			const filteredAPs: FilteredAccessPoint[] = ied.accessPoints
 				.map((ap) => {
-					const filteredLNodes: LNodeTemplate[] = ap.lNodes.filter((ln) =>
-						matchesLNode(ln, normalizedTerm)
+					const filteredLNodes: LNodeTemplate[] = ap.lNodes.filter(
+						(ln) => matchesLNode(ln, normalizedTerm)
 					)
 					if (filteredLNodes.length > 0) {
 						return { ...ap, lNodes: filteredLNodes }

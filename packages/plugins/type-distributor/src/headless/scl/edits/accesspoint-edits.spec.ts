@@ -374,7 +374,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 
 			// Should create edits since lNode uniqueness is scoped to LDevice, not entire document
 			expect(edits.length).toBeGreaterThan(0)
-			
+
 			// Verify Server, LDevice, and LN are created
 			let hasServer = false
 			let hasLDevice = false

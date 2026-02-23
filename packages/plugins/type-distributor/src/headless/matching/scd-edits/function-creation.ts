@@ -33,10 +33,7 @@ export function buildInsertEditsForFunction(
 		})
 
 		for (const lnodeTemplate of functionTemplate.lnodes) {
-			const lnodeElement = createLNodeElement(
-				doc,
-				lnodeTemplate
-			)
+			const lnodeElement = createLNodeElement(doc, lnodeTemplate)
 			functionElement.appendChild(lnodeElement)
 		}
 

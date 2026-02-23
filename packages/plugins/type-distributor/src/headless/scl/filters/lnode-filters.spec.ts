@@ -12,16 +12,36 @@ describe('filterByLNode', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
 					lNodes: [
-						{ lnClass: 'XCBR', lnType: 'XCBR_Type1', lnInst: '1', ldInst: 'LD0' },
-						{ lnClass: 'XSWI', lnType: 'XSWI_Type1', lnInst: '2', ldInst: 'LD0' },
-						{ lnClass: 'CSWI', lnType: 'CSWI_Type1', lnInst: '1', ldInst: 'LD1' }
+						{
+							lnClass: 'XCBR',
+							lnType: 'XCBR_Type1',
+							lnInst: '1',
+							ldInst: 'LD0'
+						},
+						{
+							lnClass: 'XSWI',
+							lnType: 'XSWI_Type1',
+							lnInst: '2',
+							ldInst: 'LD0'
+						},
+						{
+							lnClass: 'CSWI',
+							lnType: 'CSWI_Type1',
+							lnInst: '1',
+							ldInst: 'LD1'
+						}
 					]
 				},
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP2',
 					lNodes: [
-						{ lnClass: 'MMXU', lnType: 'MMXU_Measurement', lnInst: '1', ldInst: 'LD_Meas' }
+						{
+							lnClass: 'MMXU',
+							lnType: 'MMXU_Measurement',
+							lnInst: '1',
+							ldInst: 'LD_Meas'
+						}
 					]
 				}
 			]
@@ -34,8 +54,18 @@ describe('filterByLNode', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Main',
 					lNodes: [
-						{ lnClass: 'CSWI', lnType: 'ControlSwitch_Type', lnInst: '10', ldInst: 'LD_Control' },
-						{ lnClass: 'CILO', lnType: 'CILO_Type1', lnInst: '1', ldInst: 'LD_Interlock' }
+						{
+							lnClass: 'CSWI',
+							lnType: 'ControlSwitch_Type',
+							lnInst: '10',
+							ldInst: 'LD_Control'
+						},
+						{
+							lnClass: 'CILO',
+							lnType: 'CILO_Type1',
+							lnInst: '1',
+							ldInst: 'LD_Interlock'
+						}
 					]
 				}
 			]
@@ -88,7 +118,9 @@ describe('filterByLNode', () => {
 			// THEN should return matching LNode
 			expect(result).toHaveLength(1)
 			expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnType).toBe('XCBR_Type1')
+			expect(result[0].accessPoints[0].lNodes[0].lnType).toBe(
+				'XCBR_Type1'
+			)
 		})
 
 		it('GIVEN IEDs WHEN filtering with partial lnType match THEN should return matching LNodes', () => {
@@ -99,7 +131,9 @@ describe('filterByLNode', () => {
 			expect(result).toHaveLength(1)
 			expect(result[0].accessPoints).toHaveLength(1)
 			expect(result[0].accessPoints[0].name).toBe('AP2')
-			expect(result[0].accessPoints[0].lNodes[0].lnType).toBe('MMXU_Measurement')
+			expect(result[0].accessPoints[0].lNodes[0].lnType).toBe(
+				'MMXU_Measurement'
+			)
 		})
 
 		it('GIVEN IEDs WHEN filtering by "Type1" THEN should match multiple LNodes with Type1', () => {
@@ -110,7 +144,9 @@ describe('filterByLNode', () => {
 			expect(result).toHaveLength(2)
 			expect(result[0].name).toBe('IED_Protection')
 			// Should have AP1 with XCBR, XSWI, CSWI
-			expect(result[0].accessPoints[0].lNodes.length).toBeGreaterThanOrEqual(2)
+			expect(
+				result[0].accessPoints[0].lNodes.length
+			).toBeGreaterThanOrEqual(2)
 		})
 	})
 
@@ -133,7 +169,9 @@ describe('filterByLNode', () => {
 			// THEN should return multiple LNodes with inst containing "1"
 			expect(result).toHaveLength(2)
 			// IED_Protection should have multiple matches
-			const protectionLNodes = result[0].accessPoints[0].lNodes.length + result[0].accessPoints[1].lNodes.length
+			const protectionLNodes =
+				result[0].accessPoints[0].lNodes.length +
+				result[0].accessPoints[1].lNodes.length
 			expect(protectionLNodes).toBeGreaterThanOrEqual(3)
 		})
 	})
@@ -154,7 +192,9 @@ describe('filterByLNode', () => {
 
 			// THEN should match ControlSwitch_Type
 			expect(result).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnType).toContain('Control')
+			expect(result[0].accessPoints[0].lNodes[0].lnType).toContain(
+				'Control'
+			)
 		})
 	})
 

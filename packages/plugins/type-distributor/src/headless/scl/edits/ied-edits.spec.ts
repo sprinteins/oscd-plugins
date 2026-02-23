@@ -176,20 +176,21 @@ describe('createIED', () => {
 		it('should throw error when xmlDocument is not available', () => {
 			pluginGlobalStore.xmlDocument = undefined
 
-
-			expect(() => createIED({ name: 'TestIED' })).toThrow('No XML document loaded')
+			expect(() => createIED({ name: 'TestIED' })).toThrow(
+				'No XML document loaded'
+			)
 		})
 		it('should throw error when editor is not available', () => {
 			pluginGlobalStore.editor = undefined
 
-
-			expect(() => createIED({ name: 'TestIED' })).toThrow('No editor available')
+			expect(() => createIED({ name: 'TestIED' })).toThrow(
+				'No editor available'
+			)
 		})
 	})
 
 	describe('edge cases', () => {
 		it('should handle empty string as name', () => {
-
 			createIED({ name: '' })
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
@@ -340,7 +341,10 @@ describe('createAccessPoints', () => {
 			pluginGlobalStore.xmlDocument = undefined
 
 			expect(() =>
-				createAccessPoints({ iedName: 'TestIED', accessPoints: [{ name: 'AP1' }] })
+				createAccessPoints({
+					iedName: 'TestIED',
+					accessPoints: [{ name: 'AP1' }]
+				})
 			).toThrow('No XML document loaded')
 		})
 
@@ -348,13 +352,19 @@ describe('createAccessPoints', () => {
 			pluginGlobalStore.editor = undefined
 
 			expect(() =>
-				createAccessPoints({ iedName: 'TestIED', accessPoints: [{ name: 'AP1' }] })
+				createAccessPoints({
+					iedName: 'TestIED',
+					accessPoints: [{ name: 'AP1' }]
+				})
 			).toThrow('No editor available')
 		})
 
 		it('should throw error when IED with given name is not found', () => {
 			expect(() =>
-				createAccessPoints({ iedName: 'NonExistentIED', accessPoints: [{ name: 'AP1' }] })
+				createAccessPoints({
+					iedName: 'NonExistentIED',
+					accessPoints: [{ name: 'AP1' }]
+				})
 			).toThrow('IED with name "NonExistentIED" not found')
 		})
 	})
@@ -368,7 +378,10 @@ describe('createAccessPoints', () => {
 
 		it('should handle special characters in access point name', () => {
 			const specialName = 'AP-1_test.abc'
-			createAccessPoints({ iedName: 'TestIED', accessPoints: [{ name: specialName }] })
+			createAccessPoints({
+				iedName: 'TestIED',
+				accessPoints: [{ name: specialName }]
+			})
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const accessPointElement = edit.node as Element
@@ -378,9 +391,10 @@ describe('createAccessPoints', () => {
 
 		it('should handle special characters in description', () => {
 			const specialDesc = 'Access <>&" Point'
-			createAccessPoints({ iedName: 'TestIED', accessPoints: [
-				{ name: 'AP1', description: specialDesc }
-			] })
+			createAccessPoints({
+				iedName: 'TestIED',
+				accessPoints: [{ name: 'AP1', description: specialDesc }]
+			})
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const accessPointElement = edit.node as Element

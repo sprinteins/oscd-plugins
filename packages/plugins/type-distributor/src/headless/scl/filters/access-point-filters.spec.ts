@@ -12,14 +12,24 @@ describe('filterByAccessPoint', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Primary',
 					lNodes: [
-						{ lnClass: 'XCBR', lnType: 'XCBR_Type1', lnInst: '1', ldInst: 'LD0' }
+						{
+							lnClass: 'XCBR',
+							lnType: 'XCBR_Type1',
+							lnInst: '1',
+							ldInst: 'LD0'
+						}
 					]
 				},
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Secondary',
 					lNodes: [
-						{ lnClass: 'XSWI', lnType: 'XSWI_Type1', lnInst: '1', ldInst: 'LD1' }
+						{
+							lnClass: 'XSWI',
+							lnType: 'XSWI_Type1',
+							lnInst: '1',
+							ldInst: 'LD1'
+						}
 					]
 				}
 			]
@@ -32,7 +42,12 @@ describe('filterByAccessPoint', () => {
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Main',
 					lNodes: [
-						{ lnClass: 'CSWI', lnType: 'CSWI_Type1', lnInst: '1', ldInst: 'LD0' }
+						{
+							lnClass: 'CSWI',
+							lnType: 'CSWI_Type1',
+							lnInst: '1',
+							ldInst: 'LD0'
+						}
 					]
 				}
 			]

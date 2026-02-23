@@ -12,7 +12,9 @@ export function queryLNodesFromAccessPoint(
 
 		for (const lDevice of lDevices) {
 			const ldInst = lDevice.getAttribute('inst') ?? undefined
-			const lnElements = lDevice.querySelectorAll(':scope > LN, :scope > LN0')
+			const lnElements = lDevice.querySelectorAll(
+				':scope > LN, :scope > LN0'
+			)
 
 			for (const lnode of lnElements) {
 				lNodes.push({

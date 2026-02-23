@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { queryIEDs } from '../queries'
 
-
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
 		xmlDocument: null,

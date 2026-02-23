@@ -20,7 +20,7 @@ export function buildEditsForClearingBayLNodeConnections(
 				lnClass: template.lnClass,
 				lnType: template.lnType,
 				lnInst: template.lnInst,
-                ldInst: template.ldInst
+				ldInst: template.ldInst
 			},
 			iedName
 		)
@@ -65,8 +65,8 @@ function queryMatchingBayLNode(
 	lNodeTemplate: LNodeTemplate,
 	iedName: string
 ): Element | null {
-    const ldInst = lNodeTemplate.ldInst
-    if (!ldInst) return null
+	const ldInst = lNodeTemplate.ldInst
+	if (!ldInst) return null
 
 	const parsed = parseLDeviceInst(ldInst)
 	if (!parsed) return null

@@ -1,7 +1,10 @@
 import type { LNodeTemplate } from '@/headless/common-types'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
 import { buildEditsForClearingBayLNodeConnections } from './delete-elements.helper'
-import { queryLDeviceFromAccessPoint, queryLNodeInLDevice } from '../../elements'
+import {
+	queryLDeviceFromAccessPoint,
+	queryLNodeInLDevice
+} from '../../elements'
 
 interface BuildEditsForDeleteLNodeFromAccessPointParams {
 	iedName: string
