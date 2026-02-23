@@ -16,10 +16,6 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-// ============================================================================
-// createMultipleLNodesInAccessPoint Tests
-// ============================================================================
-
 describe('createMultipleLNodesInAccessPoint', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document

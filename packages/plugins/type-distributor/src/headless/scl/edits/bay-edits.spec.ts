@@ -15,10 +15,6 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-// ============================================================================
-// buildEditsForBayLNode Tests
-// ============================================================================
-
 describe('buildEditsForBayLNode', () => {
 	let mockDocument: Document
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
