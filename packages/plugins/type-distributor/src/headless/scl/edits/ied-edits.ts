@@ -4,17 +4,17 @@ import { getDocumentAndEditor } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
 import { queryIEDInsertionReference } from '../queries'
 
-type CreateSIEDParams = {
+type CreateIEDParams = {
 	name: string
 	description?: string
 	accessPoints?: { name: string; description?: string }[]
 }
 
-export function createSIED({
+export function createIED({
 	name,
 	description,
 	accessPoints
-}: CreateSIEDParams): void {
+}: CreateIEDParams): void {
 	const { doc, editor } = getDocumentAndEditor()
 
 	const iedElement = createBasicIEDElement(name, doc, description)
