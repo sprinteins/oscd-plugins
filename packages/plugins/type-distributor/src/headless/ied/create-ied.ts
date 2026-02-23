@@ -5,7 +5,7 @@ import { queryIEDInsertionReference } from './query-ied-insertion-ref.helper'
 import type { Insert } from '@openscd/oscd-api'
 import { getDocumentAndEditor } from '../utils'
 
-export function createSIED(
+export function createIED(
 	name: string,
 	description?: string,
 	accessPoints?: { name: string; description?: string }[]

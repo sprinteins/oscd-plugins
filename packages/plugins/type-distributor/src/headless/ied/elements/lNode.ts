@@ -27,3 +27,11 @@ export function isLNodePresentInDevice(
 	const selector = `LN${attrs}, LN0${attrs}`
 	return !!lDevice.querySelector(selector)
 }
+
+export function queryLNodeInLDevice(
+	lDevice: Element,
+	template: LNodeTemplate
+): Element | null {
+	const attrs = `[lnClass="${template.lnClass}"][lnType="${template.lnType}"][lnInst="${template.lnInst}"]`
+	return lDevice.querySelector(`:scope > LN${attrs}`)
+}

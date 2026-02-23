@@ -1,17 +1,19 @@
 <script lang="ts">
-import { Card } from '@oscd-plugins/core-ui-svelte'
+import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
-import { dndStore } from '@/headless/stores'
+import { dndStore, bayStore } from '@/headless/stores'
+import { buildEditsForDeleteAccessPoint } from '@/headless/ied/delete-elements'
 import type { LNodeTemplate } from '@/headless/common-types'
 import IedLnode from './ied-lnode.svelte'
+import { getEditor } from '@/headless/utils'
 
 interface Props {
 	accessPoint: Element
 	lNodes: LNodeTemplate[]
-	sIedName: string
+	iedName: string
 }
 
-const { accessPoint, lNodes, sIedName }: Props = $props()
+const { accessPoint, lNodes, iedName }: Props = $props()
 
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
@@ -40,7 +42,35 @@ function handleDrop(event: DragEvent) {
 		return
 	}
 
-	dndStore.handleDrop(accessPoint, sIedName)
+	dndStore.handleDrop(accessPoint, iedName)
+}
+
+function handleDelete() {
+	const editor = getEditor()
+
+	if (hasLNodes && !bayStore.scdBay) {
+		console.error(
+			'[AccessPoint] No bay selected - required to clear LNode references'
+		)
+		return
+	}
+
+	const edits = buildEditsForDeleteAccessPoint({
+		accessPoint,
+		iedName,
+		selectedBay: bayStore.scdBay
+	})
+
+	if (!(edits.length > 0)) {
+		console.warn(
+			'[AccessPoint] No edits generated for deleting AccessPoint - check if it still exists'
+		)
+		return
+	}
+
+	editor.commit(edits, {
+		title: `Delete AccessPoint ${accessPoint.getAttribute('name') ?? '(unnamed)'} from ${iedName}`
+	})
 }
 </script>
 
@@ -48,7 +78,6 @@ function handleDrop(event: DragEvent) {
   <button
     class="w-full"
     onclick={() => hasLNodes && (isOpen = !isOpen)}
-    disabled={!hasLNodes && !dndStore.isDragging}
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
     ondrop={handleDrop}
@@ -71,13 +100,28 @@ function handleDrop(event: DragEvent) {
               />
             {/if}
             <span class="text-sm font-medium text-left">
-              {sIedName} - Access Point {accessPoint.getAttribute("name") ??
+              {iedName} - Access Point {accessPoint.getAttribute("name") ??
                 "(unnamed)"}
             </span>
           </div>
-          {#if isDropTarget}
-            <CirclePlus class="size-5 text-primary animate-pulse" />
-          {/if}
+          <div class="flex items-center gap-2">
+            {#if isDropTarget}
+              <CirclePlus class="size-5 text-primary animate-pulse" />
+            {/if}
+            <span
+              onclick={(e) => e.stopPropagation()}
+              role="button"
+              tabindex="0"
+              onkeydown={(e) => e.key === "Enter" && e.stopPropagation()}
+            >
+              <DropdownMenuWorkaround
+                size="sm"
+                actions={[
+                  { label: "Delete", disabled: false, callback: handleDelete },
+                ]}
+              />
+            </span>
+          </div>
         </div>
       </Card.Content>
     </Card.Root>
@@ -85,7 +129,11 @@ function handleDrop(event: DragEvent) {
   {#if isOpen && hasLNodes}
     <div class="ml-4 space-y-1">
       {#each lNodes as lnode}
-        <IedLnode {lnode} lDeviceName={lnode.lDeviceName ?? 'Unknown'} />
+        <IedLnode
+          {lnode}
+          {iedName}
+          {accessPoint}
+        />
       {/each}
     </div>
   {/if}

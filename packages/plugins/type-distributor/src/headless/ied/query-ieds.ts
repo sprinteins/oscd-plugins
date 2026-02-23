@@ -1,6 +1,6 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
-export function querySIEDs(selectedBay: string): Element[] {
+export function queryIEDs(selectedBay: string): Element[] {
 	const xmlDocument = pluginGlobalStore.xmlDocument
 	if (!xmlDocument) {
 		return []

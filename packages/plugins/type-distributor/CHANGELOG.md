@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Creation of multiple Access Point for one IED in the create-dialog
-- Dialog notifying the User to open only .scd files initially
+
+## [0.4.0] - 2026-02-13
+### Added
+- Allow user to delete APs and LNodes if it is the last LNode it will also remove the BayType assignment
 
 ## [0.3.2] - 2026-02-18
 ## Added
