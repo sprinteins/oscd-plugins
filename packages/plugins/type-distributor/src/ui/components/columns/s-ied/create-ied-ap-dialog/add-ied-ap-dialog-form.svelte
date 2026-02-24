@@ -17,7 +17,6 @@ import {
 	createInitialIedData,
 	createInitialAccessPointForm
 } from './form-helpers'
-import MultiApBackButton from './form-elements/multi-ap-back-button.svelte'
 import IedAndAccessPointOverview from './form-sections/ied-and-access-point-overview-section.svelte'
 import { queryAccessPointsFromIed } from '@/headless/ied';
 
@@ -158,12 +157,6 @@ async function handleCancel() {
 
 <div class="flex flex-col gap-4">
   {#if isMultiApMode}
-    <MultiApBackButton
-      onGoBackToIedSelection={() => {
-        isMultiApMode = false;
-        accessPoints = [];
-      }}
-    />
     <IedAndAccessPointOverview {ied} {accessPoints} {removeAccessPoint} />
   {:else}
     <IedSelectorSection bind:ied />
@@ -190,6 +183,11 @@ async function handleCancel() {
     onCancel={handleCancel}
     onSubmit={handleSubmit}
     {submitLabel}
+		{isMultiApMode}
+		onGoBackToIedSelection={() => {
+			isMultiApMode = false;
+			accessPoints = [];
+		}}
     disabled={isSubmitDisabled}
   />
 </div>
