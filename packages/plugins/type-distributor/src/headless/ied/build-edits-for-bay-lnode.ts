@@ -54,17 +54,6 @@ function queryFunctionElements(
 			)
 		}
 
-		const ceElement = scdBay.querySelector(
-			`ConductingEquipment[templateUuid="${equipmentUuid}"]`
-		)
-		if (ceElement) {
-			return Array.from(
-				ceElement.querySelectorAll(
-					`EqFunction[name="${sourceFunction.name}"]`
-				)
-			)
-		}
-
 		return []
 	}
 

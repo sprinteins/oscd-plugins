@@ -19,7 +19,6 @@ describe('buildEditsForBayLNode', () => {
 	beforeEach(() => {
 		// Reset bay store — set to null first to force $derived scdBay re-evaluation
 		bayStore.selectedBay = null
-		bayStore.equipmentMatches = []
 
 		mockDocument = new DOMParser().parseFromString(
 			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
@@ -72,7 +71,7 @@ describe('buildEditsForBayLNode', () => {
 					'Test setup failed: Breaker1 not found in mock document'
 				)
 			}
-			bayStore.equipmentMatches = [
+			vi.spyOn(bayStore, 'equipmentMatches', 'get').mockReturnValue([
 				{
 					scdElement: breaker,
 					bayTypeEquipment: {
@@ -88,7 +87,7 @@ describe('buildEditsForBayLNode', () => {
 						eqFunctions: []
 					}
 				}
-			]
+			])
 
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -121,9 +120,7 @@ describe('buildEditsForBayLNode', () => {
 		})
 
 		it('GIVEN equipment UUID not in matches WHEN buildEditsForBayLNode is called THEN should return empty array', () => {
-			// GIVEN equipment UUID not in matches
-			bayStore.equipmentMatches = []
-
+			// GIVEN equipment UUID not in matches (derived returns [] when no bay type is assigned)
 			const lNodes: LNodeTemplate[] = [
 				{
 					lnClass: 'XCBR',
@@ -150,52 +147,6 @@ describe('buildEditsForBayLNode', () => {
 			expect(edits).toEqual([])
 		})
 
-		it('GIVEN equipment UUID not in matches but CE has templateUuid in DOM WHEN buildEditsForBayLNode is called THEN should find EqFunction via templateUuid DOM fallback', () => {
-			// GIVEN equipmentMatches empty (reload scenario) but ConductingEquipment has templateUuid set
-			const doc = new DOMParser().parseFromString(
-				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-					<Substation>
-						<VoltageLevel>
-							<Bay name="TestBay">
-								<ConductingEquipment name="Breaker1" templateUuid="eq-uuid-123">
-									<EqFunction name="ProtectionFunc">
-										<LNode lnType="XCBR_Type1" lnInst="1"/>
-									</EqFunction>
-								</ConductingEquipment>
-							</Bay>
-						</VoltageLevel>
-					</Substation>
-				</SCL>`,
-				'application/xml'
-			)
-			pluginGlobalStore.xmlDocument = doc
-			bayStore.selectedBay = null
-			bayStore.selectedBay = 'TestBay'
-			bayStore.equipmentMatches = []
-
-			const lNodes: LNodeTemplate[] = [
-				{ lnClass: 'XCBR', lnType: 'XCBR_Type1', lnInst: '1' }
-			]
-			const sourceFunction: FunctionTemplate = {
-				uuid: 'func-uuid',
-				name: 'ProtectionFunc',
-				lnodes: lNodes
-			}
-
-			// WHEN buildEditsForBayLNode is called
-			const edits = buildEditsForBayLNode({
-				lNodes,
-				iedName: 'IED1',
-				sourceFunction,
-				equipmentUuid: 'eq-uuid-123'
-			})
-
-			// THEN should create edit via templateUuid DOM fallback
-			expect(edits).toHaveLength(1)
-			expect(edits[0].element.tagName).toBe('LNode')
-			expect(edits[0].attributes).toEqual({ iedName: 'IED1' })
-			expect(edits[0].element.getAttribute('lnType')).toBe('XCBR_Type1')
-		})
 	})
 
 	describe('without equipment UUID', () => {
