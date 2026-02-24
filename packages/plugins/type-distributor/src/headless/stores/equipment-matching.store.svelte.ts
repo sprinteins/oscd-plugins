@@ -3,14 +3,13 @@ import type { ValidationResult } from '@/headless/matching/validation'
 import type { ConductingEquipmentTemplate } from '@/headless/common-types'
 import type { TemplateCountMismatch } from '@/headless/matching/types'
 import { ssdImportStore } from './ssd-import.store.svelte'
-import { bayTypesStore } from './bay-types.store.svelte'
 
 class UseEquipmentMatchingStore {
 	validationResult = $state<ValidationResult | null>(null)
 	manualMatches = new SvelteMap<string, string>()
 
 	readonly templatesByType = $derived.by(() => {
-		const selectedBayTypeUuid = bayTypesStore.selectedBayType
+		const selectedBayTypeUuid = ssdImportStore.selectedBayType
 		const map = new Map<string, ConductingEquipmentTemplate[]>()
 		if (!selectedBayTypeUuid) return map
 
@@ -34,7 +33,7 @@ class UseEquipmentMatchingStore {
 	})
 
 	readonly requiredTemplateCounts = $derived.by(() => {
-		const selectedBayTypeUuid = bayTypesStore.selectedBayType
+		const selectedBayTypeUuid = ssdImportStore.selectedBayType
 		const counts = new Map<string, number>()
 		if (!selectedBayTypeUuid) return counts
 

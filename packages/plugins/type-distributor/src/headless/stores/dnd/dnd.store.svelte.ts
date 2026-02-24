@@ -5,12 +5,13 @@ import type {
 } from '@/headless/common-types'
 import {
 	getBayTypeApplicationState,
-	applyBayTypeIfNeeded,
+	shouldApplyBayType,
+	applyBayType,
 	buildEditsForIed,
 	generateCommitTitle,
 	commitEdits
 } from './drop-handler'
-import { assignedLNodesStore } from '@/headless/stores'
+import { assignedLNodesStore, bayStore } from '@/headless/stores'
 import { buildEditsForBayLNode } from '@/headless/ied'
 
 type DraggedItem = {
@@ -61,13 +62,16 @@ class UseDndStore {
 
 		try {
 			const applicationState = getBayTypeApplicationState()
-			const didApplyBayType = applyBayTypeIfNeeded(applicationState)
+			const didApplyBayType = shouldApplyBayType(applicationState)
+			const freshMatches = didApplyBayType ? applyBayType(applicationState) : null
+			const equipmentMatches = freshMatches ?? bayStore.equipmentMatches
 
 			const allEdits = [
 				...buildEditsForIed(
 					functionFromSSD,
 					lNodes,
 					targetAccessPoint,
+					equipmentMatches,
 					this.draggedItem.equipmentUuid
 				)
 			]
@@ -81,7 +85,8 @@ class UseDndStore {
 						lNodes,
 						iedName: targetSIedName,
 						sourceFunction: functionFromSSD,
-						equipmentUuid: this.draggedItem.equipmentUuid
+						equipmentUuid: this.draggedItem.equipmentUuid,
+						equipmentMatches
 					})
 				)
 			}

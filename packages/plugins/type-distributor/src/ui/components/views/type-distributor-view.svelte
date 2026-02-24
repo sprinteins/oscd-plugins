@@ -6,9 +6,10 @@ import {
 } from '@oscd-plugins/core-ui-svelte'
 import {
 	bayStore,
-	bayTypesStore,
 	equipmentMatchingStore,
-	assignedLNodesStore
+	assignedLNodesStore,
+	getBayTypeWithTemplates,
+	ssdImportStore
 } from '@/headless/stores'
 import type { BayType } from '@/headless/common-types'
 import {
@@ -21,19 +22,19 @@ import { AddIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-
 import { validateBayTypeSelection } from '@/headless/matching'
 
 const bayTypeOptions = $derived(
-	bayTypesStore.bayTypes.map((bt: BayType) => ({
+	ssdImportStore.bayTypes.map((bt: BayType) => ({
 		value: bt.uuid,
 		label: bt.name
 	}))
 )
 
 const activeBayTypeUuid = $derived(
-	bayStore.assignedBayTypeUuid || bayTypesStore.selectedBayType
+	bayStore.assignedBayTypeUuid || ssdImportStore.selectedBayType
 )
 
 const bayTypeWithTemplates = $derived(
 	activeBayTypeUuid
-		? bayTypesStore.getBayTypeWithTemplates(activeBayTypeUuid)
+		? getBayTypeWithTemplates(activeBayTypeUuid)
 		: null
 )
 
@@ -56,9 +57,9 @@ $effect(() => {
 
 $effect(() => {
 	if (bayStore.assignedBayTypeUuid) {
-		bayTypesStore.selectedBayType = bayStore.assignedBayTypeUuid
+		ssdImportStore.selectedBayType = bayStore.assignedBayTypeUuid
 	} else {
-		bayTypesStore.selectedBayType = null
+		ssdImportStore.selectedBayType = null
 	}
 })
 
@@ -79,7 +80,7 @@ const shouldShowBayTypeDetails = $derived.by(() => {
 		return false
 	}
 
-	if (bayStore.assignedBayTypeUuid === bayTypesStore.selectedBayType) {
+	if (bayStore.assignedBayTypeUuid === ssdImportStore.selectedBayType) {
 		return true
 	}
 
@@ -99,7 +100,7 @@ function handleBayTypeChange() {
 		const validation = validateBayTypeSelection(bayStore.selectedBay)
 
 		if (validation.isValid && !validation.requiresManualMatching) {
-			bayStore.pendingBayTypeApply = bayTypesStore.selectedBayType
+			bayStore.pendingBayTypeApply = ssdImportStore.selectedBayType
 		}
 		assignedLNodesStore.rebuild()
 	} catch (error) {
@@ -131,7 +132,7 @@ function handleBayTypeChange() {
 		<Card.Header>
 			<SelectWorkaround
 				disabled={bayTypeOptions.length === 0 || isBayTypeLocked}
-				bind:value={bayTypesStore.selectedBayType}
+				bind:value={ssdImportStore.selectedBayType}
 				handleChange={handleBayTypeChange}
 				options={bayTypeOptions}
 				placeholder="Select Bay Type"
@@ -147,7 +148,7 @@ function handleBayTypeChange() {
 						{conductingEquipmentTemplates}
 						{bayTypeWithTemplates}
 					/>
-				{:else if !bayTypesStore.selectedBayType}
+				{:else if !ssdImportStore.selectedBayType}
 					<p class="text-gray-500 text-sm">
 						Select a bay type to see details
 					</p>

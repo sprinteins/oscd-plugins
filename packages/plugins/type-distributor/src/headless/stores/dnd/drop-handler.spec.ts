@@ -5,16 +5,20 @@ import {
 	getBayTypeApplicationState,
 	shouldApplyBayType
 } from './drop-handler'
-import { bayTypesStore } from '../bay-types.store.svelte'
+import { ssdImportStore } from '../ssd-import.store.svelte'
+import { getBayTypeWithTemplates } from '../bay-types.utils'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
 import { applyBayTypeSelection } from '@/headless/matching'
 
-vi.mock('../bay-types.store.svelte', () => ({
-	bayTypesStore: {
-		selectedBayType: null as string | null,
-		getBayTypeWithTemplates: vi.fn()
+vi.mock('../ssd-import.store.svelte', () => ({
+	ssdImportStore: {
+		selectedBayType: null as string | null
 	}
+}))
+
+vi.mock('../bay-types.utils', () => ({
+	getBayTypeWithTemplates: vi.fn()
 }))
 
 vi.mock('../bay.store.svelte', () => ({
@@ -71,7 +75,7 @@ describe('drop-handler', () => {
 	}
 
 	beforeEach(() => {
-		bayTypesStore.selectedBayType = null
+		ssdImportStore.selectedBayType = null
 		bayStore.assignedBayTypeUuid = null
 		bayStore.selectedBay = null
 		bayStore.pendingBayTypeApply = null
@@ -152,7 +156,7 @@ describe('drop-handler', () => {
 	describe('getBayTypeApplicationState', () => {
 		it('GIVEN selected bay type with valid auto selection WHEN getBayTypeApplicationState THEN derives correct state', () => {
 			// GIVEN
-			bayTypesStore.selectedBayType = 'bt-1'
+			ssdImportStore.selectedBayType = 'bt-1'
 			bayStore.assignedBayTypeUuid = null
 			bayStore.selectedBay = 'Bay-1'
 			equipmentMatchingStore.validationResult = {
@@ -252,7 +256,7 @@ describe('drop-handler', () => {
 
 			// THEN
 			expect(didApply).toBe(true)
-			expect(bayTypesStore.selectedBayType).toBe('bt-3')
+			expect(ssdImportStore.selectedBayType).toBe('bt-3')
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-3')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 			expect(
@@ -263,7 +267,7 @@ describe('drop-handler', () => {
 		it('GIVEN valid auto selection WHEN applyBayTypeIfNeeded THEN applies successfully', () => {
 			// GIVEN
 			bayStore.selectedBay = 'Bay-4'
-			bayTypesStore.selectedBayType = 'bt-4'
+			ssdImportStore.selectedBayType = 'bt-4'
 			const state = {
 				hasAssignedBayType: false,
 				hasSelectedBay: true,

@@ -1,8 +1,8 @@
 <script lang="ts">
 import {
 	bayStore,
-	bayTypesStore,
-	equipmentMatchingStore
+	equipmentMatchingStore,
+	ssdImportStore
 } from '@/headless/stores'
 import { Button } from '@oscd-plugins/core-ui-svelte'
 import EquipmentMatching from '@/ui/components/columns/bay-type/equipment-matching.svelte'
@@ -23,7 +23,7 @@ function handleApplyBayType() {
 	}
 
 	try {
-		bayStore.pendingBayTypeApply = bayTypesStore.selectedBayType
+		bayStore.pendingBayTypeApply = ssdImportStore.selectedBayType
 	} catch (error) {
 		console.error('[handleApplyBayType] Error:', error)
 	}
@@ -52,7 +52,7 @@ const ambiguousEquipmentCount = $derived.by(() => {
 
 const canApply = $derived.by(() => {
 	if (
-		!bayTypesStore.selectedBayType ||
+		!ssdImportStore.selectedBayType ||
 		!equipmentMatchingStore.validationResult
 	) {
 		return false

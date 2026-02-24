@@ -2,12 +2,13 @@ import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate
 } from '@/headless/common-types'
-import { bayStore } from '@/headless/stores/bay.store.svelte'
+import type { EquipmentMatch } from '@/headless/matching/types'
 import { queryServer } from './server'
 
 function extractFunctionNames(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	equipmentUuid?: string
+	equipmentUuid: string | undefined,
+	equipmentMatches: EquipmentMatch[]
 ): {
 	functionName: string
 	conductingEquipmentName: string | undefined
@@ -21,7 +22,7 @@ function extractFunctionNames(
 	}
 
 	if (equipmentUuid) {
-		const match = bayStore.equipmentMatches.find(
+		const match = equipmentMatches.find(
 			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
 		if (match) {
@@ -59,11 +60,13 @@ export function parseLDeviceInst(lDeviceInst: string): {
 
 export function getLDeviceInst(
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	equipmentUuid?: string
+	equipmentUuid: string | undefined,
+	equipmentMatches: EquipmentMatch[]
 ): string {
 	const { functionName, conductingEquipmentName } = extractFunctionNames(
 		sourceFunction,
-		equipmentUuid
+		equipmentUuid,
+		equipmentMatches
 	)
 	return generateLDeviceInst(functionName, conductingEquipmentName)
 }
@@ -71,11 +74,13 @@ export function getLDeviceInst(
 export function queryLDevice(
 	server: Element,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	equipmentUuid?: string
+	equipmentUuid: string | undefined,
+	equipmentMatches: EquipmentMatch[]
 ): Element | null {
 	const { functionName, conductingEquipmentName } = extractFunctionNames(
 		sourceFunction,
-		equipmentUuid
+		equipmentUuid,
+		equipmentMatches
 	)
 	const lDeviceInst = generateLDeviceInst(
 		functionName,
@@ -104,11 +109,13 @@ export function queryLDeviceFromAccessPoint(
 export function createLDeviceElement(
 	doc: XMLDocument,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	equipmentUuid?: string
+	equipmentUuid: string | undefined,
+	equipmentMatches: EquipmentMatch[]
 ): Element {
 	const { functionName, conductingEquipmentName } = extractFunctionNames(
 		sourceFunction,
-		equipmentUuid
+		equipmentUuid,
+		equipmentMatches
 	)
 	const lDeviceInst = generateLDeviceInst(
 		functionName,

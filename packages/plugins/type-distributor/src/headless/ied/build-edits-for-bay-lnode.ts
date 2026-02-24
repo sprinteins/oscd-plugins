@@ -4,6 +4,7 @@ import type {
 	FunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
+import type { EquipmentMatch } from '@/headless/matching/types'
 import { bayStore } from '@/headless/stores'
 
 type UpdateBayLNodesParams = {
@@ -11,16 +12,19 @@ type UpdateBayLNodesParams = {
 	iedName: string
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentUuid?: string
+	equipmentMatches: EquipmentMatch[]
 }
 
 function findMatchingLNodeElement(
 	lNode: LNodeTemplate,
 	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	equipmentUuid?: string
+	equipmentUuid: string | undefined,
+	equipmentMatches: EquipmentMatch[]
 ): Element | null {
 	const functionElements = queryFunctionElements(
 		sourceFunction,
-		equipmentUuid
+		equipmentUuid,
+		equipmentMatches
 	)
 
 	for (const functionElement of functionElements) {
@@ -34,7 +38,8 @@ function findMatchingLNodeElement(
 
 function queryFunctionElements(
 	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	equipmentUuid?: string
+	equipmentUuid: string | undefined,
+	equipmentMatches: EquipmentMatch[]
 ): Element[] {
 	const scdBay = bayStore.scdBay
 	if (!scdBay) {
@@ -43,7 +48,7 @@ function queryFunctionElements(
 	}
 
 	if (equipmentUuid) {
-		const matchFromStore = bayStore.equipmentMatches.find(
+		const matchFromStore = equipmentMatches.find(
 			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
 		if (matchFromStore) {
@@ -95,7 +100,8 @@ export function buildEditsForBayLNode({
 	lNodes,
 	iedName,
 	sourceFunction,
-	equipmentUuid
+	equipmentUuid,
+	equipmentMatches
 }: UpdateBayLNodesParams): SetAttributes[] {
 	const edits: SetAttributes[] = []
 
@@ -103,8 +109,10 @@ export function buildEditsForBayLNode({
 		const lnodeElement = findMatchingLNodeElement(
 			lNode,
 			sourceFunction,
-			equipmentUuid
+			equipmentUuid,
+			equipmentMatches
 		)
+
 		if (!lnodeElement) {
 			continue
 		}

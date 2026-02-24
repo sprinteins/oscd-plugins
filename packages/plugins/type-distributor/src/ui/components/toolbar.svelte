@@ -7,8 +7,8 @@ import {
 import {
 	assignedLNodesStore,
 	bayStore,
-	bayTypesStore,
 	equipmentMatchingStore,
+	getBayTypeWithTemplates,
 	ssdImportStore
 } from '@/headless/stores'
 import { loadFromLocal } from '@/headless/import'
@@ -29,12 +29,12 @@ const bayOptions = $derived(
 function handleBayChange() {
 	equipmentMatchingStore.reset()
 	assignedLNodesStore.rebuild()
-	bayTypesStore.selectedBayType = null
+	ssdImportStore.selectedBayType = null
 }
 
 const assignedBayTypeWithTemplates = $derived(
 	bayStore.assignedBayTypeUuid
-		? bayTypesStore.getBayTypeWithTemplates(bayStore.assignedBayTypeUuid)
+		? getBayTypeWithTemplates(bayStore.assignedBayTypeUuid)
 		: null
 )
 

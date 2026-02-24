@@ -13,7 +13,6 @@ import {
 	parseTemplates,
 	parseDataTypeTemplates
 } from '@/headless/ssd-parsing'
-import { bayTypesStore } from './bay-types.store.svelte'
 
 class UseImportSSDStore {
 	fileInput = $state<HTMLInputElement>()
@@ -35,8 +34,6 @@ class UseImportSSDStore {
 	selectedBayType = $state<string | null>(null)
 
 	loadFromSSD(xmlDocument: XMLDocument, filename: string) {
-		bayTypesStore.clearCache()
-
 		this.bayTypes = parseBayTypes(xmlDocument)
 
 		const templates = parseTemplates(xmlDocument)

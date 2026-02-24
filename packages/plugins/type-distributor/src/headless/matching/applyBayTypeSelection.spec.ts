@@ -15,7 +15,6 @@ import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type
 import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'
 import {
 	ssdImportStore,
-	bayTypesStore,
 	equipmentMatchingStore,
 	bayStore
 } from '@/headless/stores'
@@ -47,10 +46,8 @@ vi.mock('./scd-edits/data-types', () => ({
 vi.mock('@/headless/stores', () => ({
 	ssdImportStore: {
 		bayTypes: [],
+		selectedBayType: null,
 		getFunctionTemplate: vi.fn()
-	},
-	bayTypesStore: {
-		selectedBayType: null
 	},
 	equipmentMatchingStore: {
 		manualMatches: new SvelteMap()
@@ -117,7 +114,7 @@ describe('applyBayTypeSelection', () => {
 		describe('WHEN applyBayTypeSelection is called', () => {
 			it('THEN should throw error about missing BayType selection', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = null
+				ssdImportStore.selectedBayType = null
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -135,7 +132,7 @@ describe('applyBayTypeSelection', () => {
 		describe('WHEN applyBayTypeSelection is called', () => {
 			it('THEN should throw error about BayType not found', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'non-existent-uuid'
+				ssdImportStore.selectedBayType = 'non-existent-uuid'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -153,7 +150,7 @@ describe('applyBayTypeSelection', () => {
 		describe('WHEN applyBayTypeSelection is called', () => {
 			it('THEN should throw error about missing Bay in SCD', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = null
 
@@ -171,7 +168,7 @@ describe('applyBayTypeSelection', () => {
 		describe('WHEN edits are created and committed', () => {
 			it('THEN should include DataTypeTemplates creation and correct title', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -249,10 +246,9 @@ describe('applyBayTypeSelection', () => {
 					}
 				]
 
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
-				equipmentMatchingStore.manualMatches = new SvelteMap()
 
 				const conductingEquipment = mockScdBay.querySelector(
 					'ConductingEquipment'

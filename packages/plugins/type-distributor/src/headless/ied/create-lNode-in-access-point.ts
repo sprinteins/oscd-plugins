@@ -5,6 +5,7 @@ import type {
 	FunctionTemplate,
 	LNodeTemplate
 } from '../common-types'
+import type { EquipmentMatch } from '../matching/types'
 import {
 	createLDeviceElement,
 	createLNodeElementInIED,
@@ -19,6 +20,7 @@ type CreateMultipleLNodesParams = {
 	lNodes: LNodeTemplate[]
 	accessPoint: Element
 	equipmentUuid?: string
+	equipmentMatches: EquipmentMatch[]
 }
 
 type CreateLNodeParams = {
@@ -51,14 +53,15 @@ function ensureLDevice(
 	server: Element,
 	doc: XMLDocument,
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	equipmentUuid?: string
+	equipmentUuid: string | undefined,
+	equipmentMatches: EquipmentMatch[]
 ): { lDevice: Element; edit: Insert | undefined } {
-	const existingLDevice = queryLDevice(server, sourceFunction, equipmentUuid)
+	const existingLDevice = queryLDevice(server, sourceFunction, equipmentUuid, equipmentMatches)
 	if (existingLDevice) {
 		return { lDevice: existingLDevice, edit: undefined }
 	}
 
-	const lDevice = createLDeviceElement(doc, sourceFunction, equipmentUuid)
+	const lDevice = createLDeviceElement(doc, sourceFunction, equipmentUuid, equipmentMatches)
 
 	const edit: Insert = {
 		node: lDevice,
@@ -89,7 +92,8 @@ export function createMultipleLNodesInAccessPoint({
 	sourceFunction,
 	lNodes,
 	accessPoint,
-	equipmentUuid
+	equipmentUuid,
+	equipmentMatches
 }: CreateMultipleLNodesParams): Insert[] {
 	const edits: Insert[] = []
 
@@ -104,7 +108,8 @@ export function createMultipleLNodesInAccessPoint({
 		serverElement,
 		doc,
 		sourceFunction,
-		equipmentUuid
+		equipmentUuid,
+		equipmentMatches
 	)
 
 	const lNodesToAdd = lNodes.filter((lNode) => {

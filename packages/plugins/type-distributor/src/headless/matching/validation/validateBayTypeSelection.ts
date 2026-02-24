@@ -1,6 +1,5 @@
 import {
 	ssdImportStore,
-	bayTypesStore,
 	equipmentMatchingStore,
 	bayStore,
 	assignedLNodesStore
@@ -9,7 +8,7 @@ import type { ValidationResult } from './types'
 import { validateEquipmentMatch } from './validation'
 
 export function validateBayTypeSelection(bayName: string): ValidationResult {
-	const selectedBayTypeName = bayTypesStore.selectedBayType
+	const selectedBayTypeName = ssdImportStore.selectedBayType
 	if (!selectedBayTypeName) {
 		throw new Error('No BayType selected')
 	}
@@ -30,7 +29,7 @@ export function validateBayTypeSelection(bayName: string): ValidationResult {
 	if (
 		assignedLNodesStore.hasConnections &&
 		bayStore.assignedBayTypeUuid &&
-		bayStore.assignedBayTypeUuid !== bayTypesStore.selectedBayType
+		bayStore.assignedBayTypeUuid !== ssdImportStore.selectedBayType
 	) {
 		const result: ValidationResult = {
 			isValid: false,

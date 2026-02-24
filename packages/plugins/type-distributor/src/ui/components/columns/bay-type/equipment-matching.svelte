@@ -2,7 +2,6 @@
 import { Card } from '@oscd-plugins/core-ui-svelte'
 import {
 	bayStore,
-	bayTypesStore,
 	equipmentMatchingStore,
 	ssdImportStore
 } from '@/headless/stores'
@@ -11,9 +10,9 @@ import EquipmentMatchingRow from './equipment-matching-row.svelte'
 import TemplateCountMismatchPanel from './template-count-mismatch-panel.svelte'
 
 const bayType = $derived(
-	bayTypesStore.selectedBayType
+	ssdImportStore.selectedBayType
 		? ssdImportStore.bayTypes.find(
-				(bt) => bt.uuid === bayTypesStore.selectedBayType
+				(bt) => bt.uuid === ssdImportStore.selectedBayType
 			)
 		: null
 )

@@ -1,8 +1,8 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '@/headless/common-types'
+import type { EquipmentMatch } from './types'
 import {
 	ssdImportStore,
-	bayTypesStore,
 	equipmentMatchingStore,
 	bayStore
 } from '../stores'
@@ -17,10 +17,10 @@ import {
 } from './scd-edits'
 import { getDocumentAndEditor } from '@/headless/utils'
 
-export function applyBayTypeSelection(bayName: string): void {
+export function applyBayTypeSelection(bayName: string): EquipmentMatch[] {
 	const { doc, editor } = getDocumentAndEditor()
 
-	const selectedBayTypeName = bayTypesStore.selectedBayType
+	const selectedBayTypeName = ssdImportStore.selectedBayType
 	if (!selectedBayTypeName) {
 		throw new Error('No BayType selected')
 	}
@@ -92,4 +92,6 @@ export function applyBayTypeSelection(bayName: string): void {
 	editor.commit(edits, {
 		title: `Assign BayType "${bayType.name}" to Bay "${bayName}"`
 	})
+
+	return matches
 }

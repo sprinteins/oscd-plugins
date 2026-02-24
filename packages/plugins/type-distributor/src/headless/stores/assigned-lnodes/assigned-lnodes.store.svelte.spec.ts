@@ -11,9 +11,9 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-// Mock bayTypesStore
-vi.mock('../bay-types.store.svelte', () => ({
-	bayTypesStore: {
+// Mock ssdImportStore
+vi.mock('../ssd-import.store.svelte', () => ({
+	ssdImportStore: {
 		bayTypes: [
 			{
 				uuid: 'baytype-uuid-1',
