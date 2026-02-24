@@ -18,9 +18,7 @@ import {
 import { IedDetails, IedSearch } from '@/ui/components/columns/s-ied'
 import { AddIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'
-import { queryIEDs } from '@/headless/scl'
-
-type SearchType = 'IED' | 'AccessPoint' | 'LDevice' | 'LNode'
+import { queryIEDs, type SearchType } from '@/headless/scl'
 
 let searchTerm = $state('')
 let searchType = $state<SearchType>('IED')

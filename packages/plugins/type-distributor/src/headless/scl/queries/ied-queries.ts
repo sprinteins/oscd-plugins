@@ -18,7 +18,7 @@ export function queryIEDs(selectedBay: string): Element[] {
 		const iedName = ied.getAttribute('name')
 		if (!iedName) continue
 
-		const bayForIED = getBayByIEDName(xmlDocument, iedName)
+		const bayForIED = queryBayByIEDName(xmlDocument, iedName)
 
 		if (!bayForIED) {
 			filteredIEDs.push(ied)
@@ -33,7 +33,7 @@ export function queryIEDs(selectedBay: string): Element[] {
 	return filteredIEDs
 }
 
-function getBayByIEDName(
+function queryBayByIEDName(
 	xmlDocument: XMLDocument,
 	iedName: string
 ): string | null {
