@@ -21,8 +21,6 @@ const {
 	searchType?: SearchType
 } = $props()
 
-const normalizedSearchTerm = $derived(searchTerm.toLowerCase().trim())
-
 const sIedData = $derived.by(() => {
 	const data: IEDData[] = iedItems.map((iedItem) => {
 		const name = iedItem.getAttribute('name') ?? 'Unnamed IED'
@@ -38,7 +36,7 @@ const sIedData = $derived.by(() => {
 		return { name, accessPoints, element: iedItem }
 	})
 
-	if (!normalizedSearchTerm) return data
+	if (!searchTerm) return data
 
 	switch (searchType) {
 		case 'IED':
