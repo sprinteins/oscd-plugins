@@ -17,6 +17,7 @@ let {
 {#if isMultiApMode}
   <Button.Root
     variant="outline"
+    class="text-primary"
     onclick={onAddAccessPoint}
     disabled={!hasValidInput}
   >
@@ -25,6 +26,7 @@ let {
 {:else}
   <Button.Root
     variant="outline"
+    class="text-primary"
     onclick={onEnterMultiApMode}
     disabled={!hasValidInput}
   >

@@ -16,8 +16,8 @@ const {
 
 <section>
   <footer class="flex justify-end space-x-2 mt-4">
-    <Button.Root variant="outline" onclick={onCancel}>Cancel</Button.Root>
-    <Button.Root onclick={onSubmit} {disabled}>
+    <Button.Root variant="ghost" class="hover:bg-destructive/10 hover:text-destructive/90 text-destructive" onclick={onCancel}>Close</Button.Root>
+    <Button.Root variant="ghost" class="text-primary" onclick={onSubmit} {disabled}>
       {submitLabel}
     </Button.Root>
   </footer>
