@@ -19,7 +19,7 @@ vi.mock('../bay-types.store.svelte', () => ({
 
 vi.mock('../bay.store.svelte', () => ({
 	bayStore: {
-		assignedBayType: null as string | null,
+		assignedBayTypeUuid: null as string | null,
 		selectedBay: null as string | null,
 		pendingBayTypeApply: null as string | null
 	}
