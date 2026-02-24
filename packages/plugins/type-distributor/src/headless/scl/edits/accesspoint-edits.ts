@@ -14,9 +14,6 @@ import {
 	isLNodePresentInDevice
 } from '../elements'
 
-// ============================================================================
-// createMultipleLNodesInAccessPoint - Insert edits for LNodes in AccessPoint
-// ============================================================================
 function ensureServer(
 	accessPoint: Element,
 	doc: XMLDocument

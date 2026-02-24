@@ -6,9 +6,6 @@ import type {
 } from '@/headless/common-types'
 import { bayStore } from '@/headless/stores'
 
-// ============================================================================
-// buildEditsForBayLNode - SetAttributes edits for assigning iedName to LNodes
-// ============================================================================
 type findMatchingLNodeElementParams = {
 	lNode: LNodeTemplate
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
