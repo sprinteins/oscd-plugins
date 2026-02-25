@@ -9,7 +9,7 @@ import {
 	type IEDData
 } from '@/headless/scl'
 import { Card } from '@oscd-plugins/core-ui-svelte'
-  import AccessPoint from './access-point.svelte';
+import AccessPoint from './access-point.svelte'
 
 const {
 	iedItems,
@@ -24,15 +24,16 @@ const {
 const sIedData = $derived.by(() => {
 	const data: IEDData[] = iedItems.map((iedItem) => {
 		const name = iedItem.getAttribute('name') ?? 'Unnamed IED'
-		const accessPoints = Array.from(iedItem.querySelectorAll(':scope > AccessPoint'))
-			.map((ap) => {
-				const lNodes = queryLNodesFromAccessPoint(ap)
-				return {
-					element: ap,
-					name: ap.getAttribute('name'),
-					lNodes
-				}
-			})
+		const accessPoints = Array.from(
+			iedItem.querySelectorAll(':scope > AccessPoint')
+		).map((ap) => {
+			const lNodes = queryLNodesFromAccessPoint(ap)
+			return {
+				element: ap,
+				name: ap.getAttribute('name'),
+				lNodes
+			}
+		})
 		return { name, accessPoints, element: iedItem }
 	})
 
