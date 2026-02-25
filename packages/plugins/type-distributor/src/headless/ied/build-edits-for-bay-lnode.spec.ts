@@ -71,23 +71,6 @@ describe('buildEditsForBayLNode', () => {
 					'Test setup failed: Breaker1 not found in mock document'
 				)
 			}
-			vi.spyOn(bayStore, 'equipmentMatches', 'get').mockReturnValue([
-				{
-					scdElement: breaker,
-					bayTypeEquipment: {
-						uuid: 'eq-uuid',
-						templateUuid: 'template-uuid',
-						virtual: false
-					},
-					templateEquipment: {
-						uuid: 'eq-uuid',
-						name: 'Breaker1',
-						type: 'CBR',
-						terminals: [],
-						eqFunctions: []
-					}
-				}
-			])
 
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -108,7 +91,24 @@ describe('buildEditsForBayLNode', () => {
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
-				equipmentUuid: 'eq-uuid'
+				equipmentUuid: 'eq-uuid',
+				equipmentMatches: [
+					{
+						scdElement: breaker,
+						bayTypeEquipment: {
+							uuid: 'eq-uuid',
+							templateUuid: 'template-uuid',
+							virtual: false
+						},
+						templateEquipment: {
+							uuid: 'eq-uuid',
+							name: 'Breaker1',
+							type: 'CBR',
+							terminals: [],
+							eqFunctions: []
+						}
+					}
+				]
 			})
 
 			// THEN should create edit for EqFunction LNode
@@ -140,13 +140,13 @@ describe('buildEditsForBayLNode', () => {
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
-				equipmentUuid: 'non-existent-uuid'
+				equipmentUuid: 'non-existent-uuid',
+				equipmentMatches: []
 			})
 
 			// THEN should return empty array
 			expect(edits).toEqual([])
 		})
-
 	})
 
 	describe('without equipment UUID', () => {
@@ -170,7 +170,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should create edit for top-level Function
@@ -200,7 +201,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should return empty array
@@ -244,7 +246,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should prefer unassigned LNode
@@ -287,7 +290,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should return empty array
@@ -342,7 +346,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should create edit for each unassigned match
@@ -391,7 +396,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should create edits only for matching LNodes
@@ -413,7 +419,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes: [],
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should return empty array
@@ -443,7 +450,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should return empty array

@@ -5,7 +5,8 @@ import { buildEditsForBayLNode } from '@/headless/ied'
 
 vi.mock('./drop-handler', () => ({
 	getBayTypeApplicationState: vi.fn(),
-	applyBayTypeIfNeeded: vi.fn(),
+	shouldApplyBayType: vi.fn(),
+	applyBayType: vi.fn(() => []),
 	buildEditsForIed: vi.fn(),
 	generateCommitTitle: vi.fn(),
 	commitEdits: vi.fn()
@@ -28,6 +29,9 @@ vi.mock('@/headless/stores', () => ({
 		get hasConnections() {
 			return false
 		}
+	},
+	bayStore: {
+		equipmentMatches: []
 	}
 }))
 
@@ -164,7 +168,7 @@ describe('dndStore', () => {
 				hasValidAutoSelection: false,
 				hasPendingManualSelection: false
 			})
-			vi.mocked(dropHandler.applyBayTypeIfNeeded).mockReturnValue(false)
+			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
 			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
 				mockIedEdits
 			)
@@ -180,6 +184,7 @@ describe('dndStore', () => {
 				mockFunction,
 				mockLNodes,
 				mockAccessPoint,
+				[],
 				undefined
 			)
 			expect(buildEditsForBayLNode).not.toHaveBeenCalled()
@@ -218,7 +223,7 @@ describe('dndStore', () => {
 				hasValidAutoSelection: true,
 				hasPendingManualSelection: false
 			})
-			vi.mocked(dropHandler.applyBayTypeIfNeeded).mockReturnValue(false)
+			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
 			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
 				mockIedEdits
 			)
@@ -235,13 +240,15 @@ describe('dndStore', () => {
 				mockFunction,
 				mockLNodes,
 				mockAccessPoint,
+				[],
 				'eq-uuid'
 			)
 			expect(buildEditsForBayLNode).toHaveBeenCalledWith({
 				lNodes: mockLNodes,
 				iedName: 'TestIED',
 				sourceFunction: mockFunction,
-				equipmentUuid: 'eq-uuid'
+				equipmentUuid: 'eq-uuid',
+				equipmentMatches: []
 			})
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith(
 				[...mockIedEdits, ...mockBayEdits],
@@ -276,7 +283,7 @@ describe('dndStore', () => {
 				hasValidAutoSelection: true,
 				hasPendingManualSelection: false
 			})
-			vi.mocked(dropHandler.applyBayTypeIfNeeded).mockReturnValue(true)
+			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(true)
 			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
 				mockIedEdits
 			)
@@ -289,7 +296,8 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should apply bay type and use squash flag
-			expect(dropHandler.applyBayTypeIfNeeded).toHaveBeenCalled()
+			expect(dropHandler.shouldApplyBayType).toHaveBeenCalled()
+			expect(dropHandler.applyBayType).toHaveBeenCalled()
 			expect(buildEditsForBayLNode).toHaveBeenCalled()
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith(
 				[...mockIedEdits, ...mockBayEdits],
@@ -313,7 +321,7 @@ describe('dndStore', () => {
 				hasValidAutoSelection: false,
 				hasPendingManualSelection: false
 			})
-			vi.mocked(dropHandler.applyBayTypeIfNeeded).mockReturnValue(false)
+			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
 			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue([])
 
 			// WHEN handleDrop is called

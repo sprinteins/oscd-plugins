@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-	applyBayTypeIfNeeded,
+	applyBayType,
 	generateCommitTitle,
 	getBayTypeApplicationState,
 	shouldApplyBayType
@@ -47,7 +47,7 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 }))
 
 vi.mock('@/headless/matching', () => ({
-	applyBayTypeSelection: vi.fn()
+	applyBayTypeSelection: vi.fn().mockReturnValue([])
 }))
 
 vi.mock('@/headless/utils/get-document-and-Editor', () => ({
@@ -202,26 +202,8 @@ describe('drop-handler', () => {
 		})
 	})
 
-	describe('applyBayTypeIfNeeded', () => {
-		it('GIVEN state where bay type should not apply WHEN applyBayTypeIfNeeded THEN returns false', () => {
-			// GIVEN
-			const state = {
-				hasAssignedBayType: true,
-				hasSelectedBay: true,
-				requiresManualMatching: false,
-				hasValidAutoSelection: true,
-				hasPendingManualSelection: false
-			}
-
-			// WHEN
-			const didApply = applyBayTypeIfNeeded(state)
-
-			// THEN
-			expect(didApply).toBe(false)
-			expect(applyBayTypeSelection).not.toHaveBeenCalled()
-		})
-
-		it('GIVEN state requires selected bay but store is missing WHEN applyBayTypeIfNeeded THEN throws error', () => {
+	describe('applyBayType', () => {
+		it('GIVEN state requires selected bay but store is missing WHEN applyBayType THEN throws error', () => {
 			// GIVEN
 			bayStore.selectedBay = null
 			bayStore.pendingBayTypeApply = 'bt-3'
@@ -234,12 +216,12 @@ describe('drop-handler', () => {
 			}
 
 			// WHEN / THEN
-			expect(() => applyBayTypeIfNeeded(state)).toThrowError(
+			expect(() => applyBayType(state)).toThrowError(
 				'[DnD] No bay type selected to apply to bay'
 			)
 		})
 
-		it('GIVEN pending manual selection WHEN applyBayTypeIfNeeded THEN applies and clears validation', () => {
+		it('GIVEN pending manual selection WHEN applyBayType THEN applies and clears validation', () => {
 			// GIVEN
 			bayStore.selectedBay = 'Bay-3'
 			bayStore.pendingBayTypeApply = 'bt-3'
@@ -252,10 +234,10 @@ describe('drop-handler', () => {
 			}
 
 			// WHEN
-			const didApply = applyBayTypeIfNeeded(state)
+			const matches = applyBayType(state)
 
 			// THEN
-			expect(didApply).toBe(true)
+			expect(matches).toEqual(expect.any(Array))
 			expect(ssdImportStore.selectedBayType).toBe('bt-3')
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-3')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
@@ -264,7 +246,7 @@ describe('drop-handler', () => {
 			).toHaveBeenCalled()
 		})
 
-		it('GIVEN valid auto selection WHEN applyBayTypeIfNeeded THEN applies successfully', () => {
+		it('GIVEN valid auto selection WHEN applyBayType THEN applies successfully', () => {
 			// GIVEN
 			bayStore.selectedBay = 'Bay-4'
 			ssdImportStore.selectedBayType = 'bt-4'
@@ -277,10 +259,10 @@ describe('drop-handler', () => {
 			}
 
 			// WHEN
-			const didApply = applyBayTypeIfNeeded(state)
+			const matches = applyBayType(state)
 
 			// THEN
-			expect(didApply).toBe(true)
+			expect(matches).toEqual(expect.any(Array))
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-4')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 		})
