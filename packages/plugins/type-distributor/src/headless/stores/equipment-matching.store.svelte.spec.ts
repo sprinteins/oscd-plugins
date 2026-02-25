@@ -1,10 +1,26 @@
 import { describe, it, expect, beforeEach } from 'vitest'
+import { flushSync } from 'svelte'
 import { equipmentMatchingStore } from './equipment-matching.store.svelte'
+import { ssdImportStore } from './ssd-import.store.svelte'
+import { resetSSDImportStore } from '@/headless/test-helpers'
 import type { ValidationResult } from '@/headless/matching/validation'
+import type { ConductingEquipmentTemplate } from '@/headless/common-types'
+
+const createTemplate = (
+	uuid: string,
+	type: string,
+	name = `Template_${uuid}`
+): ConductingEquipmentTemplate => ({
+	uuid,
+	type,
+	name,
+	terminals: [],
+	eqFunctions: []
+})
 
 describe('equipmentMatchingStore', () => {
 	beforeEach(() => {
-		// Reset store state
+		resetSSDImportStore()
 		equipmentMatchingStore.validationResult = null
 		equipmentMatchingStore.manualMatches.clear()
 	})
@@ -63,8 +79,6 @@ describe('equipmentMatchingStore', () => {
 			)
 		})
 	})
-
-
 
 	describe('reset', () => {
 		it('GIVEN store has state WHEN reset is called THEN should clear all state', () => {
@@ -171,6 +185,391 @@ describe('equipmentMatchingStore', () => {
 			expect(equipmentMatchingStore.manualMatches.get('Breaker1')).toBe(
 				'new-uuid'
 			)
+		})
+	})
+
+	describe('selectedTemplateCounts', () => {
+		it('GIVEN no manual matches WHEN selectedTemplateCounts is accessed THEN should return empty map', () => {
+			// GIVEN no manual matches (cleared in beforeEach)
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.selectedTemplateCounts.size).toBe(0)
+		})
+
+		it('GIVEN multiple matches pointing to the same template WHEN selectedTemplateCounts is accessed THEN should count occurrences correctly', () => {
+			// GIVEN
+			equipmentMatchingStore.setMatch('eq1', 'template-uuid-1')
+			equipmentMatchingStore.setMatch('eq2', 'template-uuid-1')
+			equipmentMatchingStore.setMatch('eq3', 'template-uuid-2')
+			flushSync()
+
+			// WHEN
+			const counts = equipmentMatchingStore.selectedTemplateCounts
+
+			// THEN
+			expect(counts.get('template-uuid-1')).toBe(2)
+			expect(counts.get('template-uuid-2')).toBe(1)
+		})
+
+		it('GIVEN each equipment mapped to a unique template WHEN selectedTemplateCounts is accessed THEN each count should be 1', () => {
+			// GIVEN
+			equipmentMatchingStore.setMatch('eq1', 'tmpl-A')
+			equipmentMatchingStore.setMatch('eq2', 'tmpl-B')
+			flushSync()
+
+			// WHEN
+			const counts = equipmentMatchingStore.selectedTemplateCounts
+
+			// THEN
+			expect(counts.get('tmpl-A')).toBe(1)
+			expect(counts.get('tmpl-B')).toBe(1)
+		})
+	})
+
+	describe('templatesByType', () => {
+		it('GIVEN no selected bay type WHEN templatesByType is accessed THEN should return empty map', () => {
+			// GIVEN
+			ssdImportStore.selectedBayType = null
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templatesByType.size).toBe(0)
+		})
+
+		it('GIVEN selected bay type that does not exist in bayTypes WHEN templatesByType is accessed THEN should return empty map', () => {
+			// GIVEN
+			ssdImportStore.selectedBayType = 'non-existent-uuid'
+			ssdImportStore.bayTypes = []
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templatesByType.size).toBe(0)
+		})
+
+		it('GIVEN a selected bay type with templates of different types WHEN templatesByType is accessed THEN should group each template under its type', () => {
+			// GIVEN
+			const tmplCBR = createTemplate('tmpl-1', 'CBR')
+			const tmplDIS = createTemplate('tmpl-2', 'DIS')
+
+			ssdImportStore.conductingEquipmentTemplates = [tmplCBR, tmplDIS]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-1',
+							virtual: false
+						},
+						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN
+			const byType = equipmentMatchingStore.templatesByType
+
+			// THEN
+			expect(byType.get('CBR')).toEqual([tmplCBR])
+			expect(byType.get('DIS')).toEqual([tmplDIS])
+		})
+
+		it('GIVEN a bay type with two conducting equipments of the same template type WHEN templatesByType is accessed THEN should list both templates under that type', () => {
+			// GIVEN
+			const tmpl1 = createTemplate('tmpl-1', 'CBR', 'Breaker1')
+			const tmpl2 = createTemplate('tmpl-2', 'CBR', 'Breaker2')
+
+			ssdImportStore.conductingEquipmentTemplates = [tmpl1, tmpl2]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-1',
+							virtual: false
+						},
+						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN
+			const byType = equipmentMatchingStore.templatesByType
+
+			// THEN
+			expect(byType.get('CBR')).toHaveLength(2)
+			expect(byType.get('CBR')).toEqual(
+				expect.arrayContaining([tmpl1, tmpl2])
+			)
+		})
+
+		it('GIVEN a conducting equipment with an unknown template uuid WHEN templatesByType is accessed THEN should skip that entry', () => {
+			// GIVEN
+			ssdImportStore.conductingEquipmentTemplates = []
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'unknown-tmpl',
+							virtual: false
+						}
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templatesByType.size).toBe(0)
+		})
+	})
+
+	describe('requiredTemplateCounts', () => {
+		it('GIVEN no selected bay type WHEN requiredTemplateCounts is accessed THEN should return empty map', () => {
+			// GIVEN
+			ssdImportStore.selectedBayType = null
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.requiredTemplateCounts.size).toBe(0)
+		})
+
+		it('GIVEN a bay type with multiple conducting equipments sharing a template WHEN requiredTemplateCounts is accessed THEN should sum the counts', () => {
+			// GIVEN
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-A',
+							virtual: false
+						},
+						{
+							uuid: 'ce-2',
+							templateUuid: 'tmpl-A',
+							virtual: false
+						},
+						{ uuid: 'ce-3', templateUuid: 'tmpl-B', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN
+			const counts = equipmentMatchingStore.requiredTemplateCounts
+
+			// THEN
+			expect(counts.get('tmpl-A')).toBe(2)
+			expect(counts.get('tmpl-B')).toBe(1)
+		})
+
+		it('GIVEN a selected bay type that does not exist in bayTypes WHEN requiredTemplateCounts is accessed THEN should return empty map', () => {
+			// GIVEN
+			ssdImportStore.bayTypes = []
+			ssdImportStore.selectedBayType = 'ghost-bay'
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.requiredTemplateCounts.size).toBe(0)
+		})
+	})
+
+	describe('templateCountMismatch', () => {
+		describe('GIVEN a bay type with two templates of the same type', () => {
+			beforeEach(() => {
+				const tmpl1 = createTemplate('tmpl-1', 'CBR', 'Breaker1')
+				const tmpl2 = createTemplate('tmpl-2', 'CBR', 'Breaker2')
+
+				ssdImportStore.conductingEquipmentTemplates = [tmpl1, tmpl2]
+				ssdImportStore.bayTypes = [
+					{
+						uuid: 'bay-1',
+						name: 'BayType1',
+						conductingEquipments: [
+							{
+								uuid: 'ce-1',
+								templateUuid: 'tmpl-1',
+								virtual: false
+							},
+							{
+								uuid: 'ce-2',
+								templateUuid: 'tmpl-2',
+								virtual: false
+							}
+						],
+						functions: []
+					}
+				]
+				ssdImportStore.selectedBayType = 'bay-1'
+				flushSync()
+			})
+
+			it('WHEN no manual matches are set THEN should report mismatches for both templates', () => {
+				// WHEN no manual matches (cleared in beforeEach)
+
+				// THEN
+				const mismatches = equipmentMatchingStore.templateCountMismatch
+				expect(mismatches).toHaveLength(2)
+				const uuids = mismatches.map((m) => m.templateUuid)
+				expect(uuids).toContain('tmpl-1')
+				expect(uuids).toContain('tmpl-2')
+				expect(
+					mismatches.find((m) => m.templateUuid === 'tmpl-1')
+				).toMatchObject({ required: 1, selected: 0 })
+			})
+
+			it('WHEN manual matches satisfy all required counts THEN should report no mismatches', () => {
+				// WHEN
+				equipmentMatchingStore.setMatch('eq-A', 'tmpl-1')
+				equipmentMatchingStore.setMatch('eq-B', 'tmpl-2')
+				flushSync()
+
+				// THEN
+				expect(
+					equipmentMatchingStore.templateCountMismatch
+				).toHaveLength(0)
+			})
+
+			it('WHEN only one of two ambiguous templates is matched correctly THEN should report mismatch for the unmatched template', () => {
+				// WHEN only tmpl-1 is satisfied
+				equipmentMatchingStore.setMatch('eq-A', 'tmpl-1')
+				flushSync()
+
+				// THEN tmpl-2 is still missing
+				const mismatches = equipmentMatchingStore.templateCountMismatch
+				expect(mismatches).toHaveLength(1)
+				expect(mismatches[0].templateUuid).toBe('tmpl-2')
+				expect(mismatches[0]).toMatchObject({
+					required: 1,
+					selected: 0
+				})
+			})
+		})
+
+		it('GIVEN a bay type where each type has only one template WHEN templateCountMismatch is accessed THEN should report no mismatches (no ambiguity)', () => {
+			// GIVEN – unique types, no ambiguity
+			const tmplCBR = createTemplate('tmpl-1', 'CBR')
+			const tmplDIS = createTemplate('tmpl-2', 'DIS')
+
+			ssdImportStore.conductingEquipmentTemplates = [tmplCBR, tmplDIS]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-1',
+							virtual: false
+						},
+						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN no manual matches
+
+			// THEN – no mismatches because each type is unambiguous
+			expect(equipmentMatchingStore.templateCountMismatch).toHaveLength(0)
+		})
+
+		it('GIVEN no selected bay type WHEN templateCountMismatch is accessed THEN should return empty array', () => {
+			// GIVEN
+			ssdImportStore.selectedBayType = null
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templateCountMismatch).toHaveLength(0)
+		})
+	})
+
+	describe('templateCountsValid', () => {
+		it('GIVEN no ambiguous templates WHEN templateCountsValid is accessed THEN should be true', () => {
+			// GIVEN – unique type per template
+			ssdImportStore.conductingEquipmentTemplates = [
+				createTemplate('tmpl-1', 'CBR')
+			]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{ uuid: 'ce-1', templateUuid: 'tmpl-1', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templateCountsValid).toBe(true)
+		})
+
+		it('GIVEN ambiguous templates with unsatisfied counts WHEN templateCountsValid is accessed THEN should be false', () => {
+			// GIVEN – two templates of same type, neither matched
+			ssdImportStore.conductingEquipmentTemplates = [
+				createTemplate('tmpl-1', 'CBR'),
+				createTemplate('tmpl-2', 'CBR')
+			]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-1',
+							virtual: false
+						},
+						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templateCountsValid).toBe(false)
+		})
+
+		it('GIVEN ambiguous templates with all counts satisfied WHEN templateCountsValid is accessed THEN should be true', () => {
+			// GIVEN
+			ssdImportStore.conductingEquipmentTemplates = [
+				createTemplate('tmpl-1', 'CBR'),
+				createTemplate('tmpl-2', 'CBR')
+			]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-1',
+							virtual: false
+						},
+						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+			equipmentMatchingStore.setMatch('eq-A', 'tmpl-1')
+			equipmentMatchingStore.setMatch('eq-B', 'tmpl-2')
+			flushSync()
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templateCountsValid).toBe(true)
 		})
 	})
 })
