@@ -18,7 +18,7 @@ import {
 	createInitialAccessPointForm
 } from './form-helpers'
 import IedAndAccessPointOverview from './form-sections/ied-and-access-point-overview-section.svelte'
-import { queryAccessPointsFromIed } from '@/headless/ied';
+import { queryAccessPointsFromIed } from '@/headless/ied'
 
 let ied = $state<IedData>(createInitialIedData())
 let currentAccessPoint = $state(createInitialAccessPointForm())
@@ -82,16 +82,17 @@ function addAccessPoint() {
 
 	const existingApNames = ied.isNew
 		? []
-		: queryAccessPointsFromIed(pluginGlobalStore.xmlDocument, ied.name.trim())
+		: queryAccessPointsFromIed(
+				pluginGlobalStore.xmlDocument,
+				ied.name.trim()
+			)
 
-	const validationError = validateAccessPoint(
-		{
+	const validationError = validateAccessPoint({
 		apName: currentAccessPoint.name,
-		pendingApNames:accessPoints.map((ap) => ap.name),
+		pendingApNames: accessPoints.map((ap) => ap.name),
 		existingApNames,
 		iedName: ied.name
-		}
-	)
+	})
 
 	if (validationError) {
 		error = validationError
