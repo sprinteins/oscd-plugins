@@ -56,12 +56,12 @@ function ensureLDevice(
 	equipmentUuid: string | undefined,
 	equipmentMatches: EquipmentMatch[]
 ): { lDevice: Element; edit: Insert | undefined } {
-	const existingLDevice = queryLDevice(server, sourceFunction, equipmentUuid, equipmentMatches)
+	const existingLDevice = queryLDevice(server, { sourceFunction, equipmentUuid, equipmentMatches })
 	if (existingLDevice) {
 		return { lDevice: existingLDevice, edit: undefined }
 	}
 
-	const lDevice = createLDeviceElement(doc, sourceFunction, equipmentUuid, equipmentMatches)
+	const lDevice = createLDeviceElement(doc, { sourceFunction, equipmentUuid, equipmentMatches })
 
 	const edit: Insert = {
 		node: lDevice,

@@ -24,9 +24,11 @@ describe('lDevice', () => {
 		// WHEN creating the LDevice element
 		const lDevice = createLDeviceElement(
 			document.implementation.createDocument('', '', null),
-			sourceFunction,
-			'bay-type-1',
-			equipmentMatches as never
+			{
+				sourceFunction,
+				equipmentUuid: 'bay-type-1',
+				equipmentMatches: equipmentMatches as never
+			}
 		)
 
 		// THEN the inst uses the SCD equipment name and function name

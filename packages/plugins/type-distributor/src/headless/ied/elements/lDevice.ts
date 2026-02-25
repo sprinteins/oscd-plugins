@@ -5,11 +5,17 @@ import type {
 import type { EquipmentMatch } from '@/headless/matching'
 import { queryServer } from './server'
 
-function extractFunctionNames(
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	equipmentUuid: string | undefined,
+interface SourceFunctionParams {
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
+	equipmentUuid: string | undefined
 	equipmentMatches: EquipmentMatch[]
-): {
+}
+
+function extractFunctionNames({
+	sourceFunction,
+	equipmentUuid,
+	equipmentMatches
+}: SourceFunctionParams): {
 	functionName: string
 	conductingEquipmentName: string | undefined
 } {
@@ -58,30 +64,15 @@ export function parseLDeviceInst(lDeviceInst: string): {
 	return { equipmentName, functionName }
 }
 
-export function getLDeviceInst(
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	equipmentUuid: string | undefined,
-	equipmentMatches: EquipmentMatch[]
-): string {
-	const { functionName, conductingEquipmentName } = extractFunctionNames(
-		sourceFunction,
-		equipmentUuid,
-		equipmentMatches
-	)
-	return generateLDeviceInst(functionName, conductingEquipmentName)
-}
-
 export function queryLDevice(
 	server: Element,
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	equipmentUuid: string | undefined,
-	equipmentMatches: EquipmentMatch[]
+	{ sourceFunction, equipmentUuid, equipmentMatches }: SourceFunctionParams
 ): Element | null {
-	const { functionName, conductingEquipmentName } = extractFunctionNames(
+	const { functionName, conductingEquipmentName } = extractFunctionNames({
 		sourceFunction,
 		equipmentUuid,
 		equipmentMatches
-	)
+	})
 	const lDeviceInst = generateLDeviceInst(
 		functionName,
 		conductingEquipmentName
@@ -108,15 +99,13 @@ export function queryLDeviceFromAccessPoint(
 
 export function createLDeviceElement(
 	doc: XMLDocument,
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	equipmentUuid: string | undefined,
-	equipmentMatches: EquipmentMatch[]
+	{ sourceFunction, equipmentUuid, equipmentMatches }: SourceFunctionParams
 ): Element {
-	const { functionName, conductingEquipmentName } = extractFunctionNames(
+	const { functionName, conductingEquipmentName } = extractFunctionNames({
 		sourceFunction,
 		equipmentUuid,
 		equipmentMatches
-	)
+	})
 	const lDeviceInst = generateLDeviceInst(
 		functionName,
 		conductingEquipmentName
