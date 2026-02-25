@@ -2,11 +2,17 @@ import type { Insert } from '@openscd/oscd-api'
 import { createElement } from '@oscd-plugins/core'
 import { getDocumentAndEditor } from '../utils';
 
-export function createAccessPoints(
-	iedName: string,
-	accessPoints: { name: string; description?: string }[],
+type CreateAccessPointsParams = {
+	iedName: string
+	accessPoints: { name: string; description?: string }[]
+	squash?: boolean
+}
+
+export function createAccessPoints({
+	iedName,
+	accessPoints,
 	squash = false
-): void {
+}: CreateAccessPointsParams): void {
 	const { doc, editor } = getDocumentAndEditor()
 
 	const iedElement = doc.querySelector(`IED[name="${iedName}"]`)

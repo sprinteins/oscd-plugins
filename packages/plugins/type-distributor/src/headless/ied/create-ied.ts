@@ -5,11 +5,17 @@ import { queryIEDInsertionReference } from './query-ied-insertion-ref.helper'
 import type { Insert } from '@openscd/oscd-api'
 import { getDocumentAndEditor } from '../utils'
 
-export function createIED(
-	name: string,
-	description?: string,
+type CreateIEDParams = {
+	name: string
+	description?: string
 	accessPoints?: { name: string; description?: string }[]
-): void {
+}
+
+export function createIED({
+	name,
+	description,
+	accessPoints
+}: CreateIEDParams): void {
 	const { doc, editor } = getDocumentAndEditor()
 
 	const iedElement = createBasicIEDElement(name, doc, description)
@@ -28,6 +34,6 @@ export function createIED(
 	})
 
 	if (accessPoints && accessPoints.length > 0) {
-		createAccessPoints(name, accessPoints, true)
+		createAccessPoints({ iedName: name, accessPoints, squash: true })
 	}
 }

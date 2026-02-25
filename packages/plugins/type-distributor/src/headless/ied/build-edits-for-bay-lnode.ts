@@ -7,25 +7,24 @@ import type {
 import type { EquipmentMatch } from '@/headless/matching'
 import { bayStore } from '@/headless/stores'
 
-type UpdateBayLNodesParams = {
-	lNodes: LNodeTemplate[]
-	iedName: string
+type FindMatchingLNodeElementParams = {
+	lNode: LNodeTemplate
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
 }
 
-function findMatchingLNodeElement(
-	lNode: LNodeTemplate,
-	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	equipmentUuid: string | undefined,
-	equipmentMatches: EquipmentMatch[]
-): Element | null {
-	const functionElements = queryFunctionElements(
+function findMatchingLNodeElement({
+	lNode,
+	sourceFunction,
+	equipmentUuid,
+	equipmentMatches
+}: FindMatchingLNodeElementParams): Element | null {
+	const functionElements = queryFunctionElements({
 		sourceFunction,
 		equipmentUuid,
 		equipmentMatches
-	)
+	})
 
 	for (const functionElement of functionElements) {
 		const matches = queryLNodeMatchesFromFunction(functionElement, lNode)
@@ -36,11 +35,17 @@ function findMatchingLNodeElement(
 	return null
 }
 
-function queryFunctionElements(
-	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	equipmentUuid: string | undefined,
+type QueryFunctionElementsParams = {
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
+	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
-): Element[] {
+}
+
+function queryFunctionElements({
+	sourceFunction,
+	equipmentUuid,
+	equipmentMatches
+}: QueryFunctionElementsParams): Element[] {
 	const scdBay = bayStore.scdBay
 	if (!scdBay) {
 		console.warn('No bay selected or bay not found in document')
@@ -96,6 +101,14 @@ function createSetIedNameEdit(
 	}
 }
 
+type UpdateBayLNodesParams = {
+	lNodes: LNodeTemplate[]
+	iedName: string
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
+	equipmentUuid?: string
+	equipmentMatches: EquipmentMatch[]
+}
+
 export function buildEditsForBayLNode({
 	lNodes,
 	iedName,
@@ -106,12 +119,12 @@ export function buildEditsForBayLNode({
 	const edits: SetAttributes[] = []
 
 	for (const lNode of lNodes) {
-		const lnodeElement = findMatchingLNodeElement(
+		const lnodeElement = findMatchingLNodeElement({
 			lNode,
 			sourceFunction,
 			equipmentUuid,
 			equipmentMatches
-		)
+		})
 
 		if (!lnodeElement) {
 			continue

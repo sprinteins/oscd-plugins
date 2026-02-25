@@ -35,7 +35,7 @@ describe('createAccessPoints', () => {
 	describe('Functionality Tests', () => {
 		it('should create an AccessPoint element with correct structure', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			createAccessPoints('TestIED', accessPoints)
+			createAccessPoints({ iedName: 'TestIED', accessPoints })
 
 			expect(mockEditor.commit).toHaveBeenCalledTimes(1)
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
@@ -48,7 +48,7 @@ describe('createAccessPoints', () => {
 
 		it('should set the name attribute of AccessPoint', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			createAccessPoints('TestIED', accessPoints)
+			createAccessPoints({ iedName: 'TestIED', accessPoints })
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const accessPointElement = edit.node as Element
@@ -60,7 +60,7 @@ describe('createAccessPoints', () => {
 			const accessPoints = [
 				{ name: 'AP1', description: 'Access Point 1' }
 			]
-			createAccessPoints('TestIED', accessPoints)
+			createAccessPoints({ iedName: 'TestIED', accessPoints })
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const accessPointElement = edit.node as Element
@@ -72,7 +72,7 @@ describe('createAccessPoints', () => {
 
 		it('should not set desc attribute when description is not provided', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			createAccessPoints('TestIED', accessPoints)
+			createAccessPoints({ iedName: 'TestIED', accessPoints })
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const accessPointElement = edit.node as Element
@@ -82,7 +82,7 @@ describe('createAccessPoints', () => {
 
 		it('should create multiple AccessPoint elements when multiple accessPoints are provided', () => {
 			const accessPoints = [{ name: 'AP1' }, { name: 'AP2' }]
-			createAccessPoints('TestIED', accessPoints)
+			createAccessPoints({ iedName: 'TestIED', accessPoints })
 
 			expect(mockEditor.commit).toHaveBeenCalledTimes(2)
 
@@ -98,7 +98,7 @@ describe('createAccessPoints', () => {
 
 		it('should have a Server child element within AccessPoint', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			createAccessPoints('TestIED', accessPoints)
+			createAccessPoints({ iedName: 'TestIED', accessPoints })
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const accessPointElement = edit.node as Element
@@ -110,7 +110,7 @@ describe('createAccessPoints', () => {
 
 		it('should have an Authentication child element within Server with the attribut none="true"', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			createAccessPoints('TestIED', accessPoints)
+			createAccessPoints({ iedName: 'TestIED', accessPoints })
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const accessPointElement = edit.node as Element
@@ -129,7 +129,10 @@ describe('createAccessPoints', () => {
 			pluginGlobalStore.xmlDocument = undefined
 
 			expect(() =>
-				createAccessPoints('TestIED', [{ name: 'AP1' }])
+				createAccessPoints({
+					iedName: 'TestIED',
+					accessPoints: [{ name: 'AP1' }]
+				})
 			).toThrow('No XML document loaded')
 		})
 
@@ -137,27 +140,36 @@ describe('createAccessPoints', () => {
 			pluginGlobalStore.editor = undefined
 
 			expect(() =>
-				createAccessPoints('TestIED', [{ name: 'AP1' }])
+				createAccessPoints({
+					iedName: 'TestIED',
+					accessPoints: [{ name: 'AP1' }]
+				})
 			).toThrow('No editor available')
 		})
 
 		it('should throw error when IED with given name is not found', () => {
 			expect(() =>
-				createAccessPoints('NonExistentIED', [{ name: 'AP1' }])
+				createAccessPoints({
+					iedName: 'NonExistentIED',
+					accessPoints: [{ name: 'AP1' }]
+				})
 			).toThrow('IED with name "NonExistentIED" not found')
 		})
 	})
 
 	describe('edge cases', () => {
 		it('should handle empty accessPoints array', () => {
-			createAccessPoints('TestIED', [])
+			createAccessPoints({ iedName: 'TestIED', accessPoints: [] })
 
 			expect(mockEditor.commit).not.toHaveBeenCalled()
 		})
 
 		it('should handle special characters in access point name', () => {
 			const specialName = 'AP-1_test.abc'
-			createAccessPoints('TestIED', [{ name: specialName }])
+			createAccessPoints({
+				iedName: 'TestIED',
+				accessPoints: [{ name: specialName }]
+			})
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const accessPointElement = edit.node as Element
@@ -167,9 +179,10 @@ describe('createAccessPoints', () => {
 
 		it('should handle special characters in description', () => {
 			const specialDesc = 'Access <>&" Point'
-			createAccessPoints('TestIED', [
-				{ name: 'AP1', description: specialDesc }
-			])
+			createAccessPoints({
+				iedName: 'TestIED',
+				accessPoints: [{ name: 'AP1', description: specialDesc }]
+			})
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
 			const accessPointElement = edit.node as Element

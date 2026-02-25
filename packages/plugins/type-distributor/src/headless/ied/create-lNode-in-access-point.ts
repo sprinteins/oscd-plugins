@@ -49,19 +49,35 @@ function ensureServer(
 	return { serverElement, edit }
 }
 
-function ensureLDevice(
-	server: Element,
-	doc: XMLDocument,
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate,
-	equipmentUuid: string | undefined,
+type EnsureLDeviceParams = {
+	server: Element
+	doc: XMLDocument
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
+	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
-): { lDevice: Element; edit: Insert | undefined } {
-	const existingLDevice = queryLDevice(server, { sourceFunction, equipmentUuid, equipmentMatches })
+}
+
+function ensureLDevice({
+	server,
+	doc,
+	sourceFunction,
+	equipmentUuid,
+	equipmentMatches
+}: EnsureLDeviceParams): { lDevice: Element; edit: Insert | undefined } {
+	const existingLDevice = queryLDevice(server, {
+		sourceFunction,
+		equipmentUuid,
+		equipmentMatches
+	})
 	if (existingLDevice) {
 		return { lDevice: existingLDevice, edit: undefined }
 	}
 
-	const lDevice = createLDeviceElement(doc, { sourceFunction, equipmentUuid, equipmentMatches })
+	const lDevice = createLDeviceElement(doc, {
+		sourceFunction,
+		equipmentUuid,
+		equipmentMatches
+	})
 
 	const edit: Insert = {
 		node: lDevice,
@@ -104,13 +120,13 @@ export function createMultipleLNodesInAccessPoint({
 	const doc = pluginGlobalStore.xmlDocument
 
 	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
-	const { lDevice, edit: lDeviceEdit } = ensureLDevice(
-		serverElement,
+	const { lDevice, edit: lDeviceEdit } = ensureLDevice({
+		server: serverElement,
 		doc,
 		sourceFunction,
 		equipmentUuid,
 		equipmentMatches
-	)
+	})
 
 	const lNodesToAdd = lNodes.filter((lNode) => {
 		const exists = isLNodePresentInDevice(lNode, lDevice)
