@@ -64,57 +64,7 @@ describe('equipmentMatchingStore', () => {
 		})
 	})
 
-	describe('setManualMatch', () => {
-		it('GIVEN equipment name and template UUID WHEN setManualMatch is called THEN should add match to map', () => {
-			// GIVEN equipment name and template UUID
-			const equipmentName = 'Breaker1'
-			const templateUuid = 'template-uuid-123'
 
-			// WHEN setManualMatch is called
-			equipmentMatchingStore.setManualMatch(equipmentName, templateUuid)
-
-			// THEN should add match to map
-			expect(
-				equipmentMatchingStore.manualMatches.get(equipmentName)
-			).toBe(templateUuid)
-		})
-
-		it('GIVEN multiple manual matches WHEN setManualMatch is called multiple times THEN should store all matches', () => {
-			// GIVEN multiple manual matches
-			const matches = [
-				{ name: 'Breaker1', uuid: 'uuid1' },
-				{ name: 'Breaker2', uuid: 'uuid2' },
-				{ name: 'Disconnector1', uuid: 'uuid3' }
-			]
-
-			// WHEN setManualMatch is called multiple times
-			for (const m of matches) {
-				equipmentMatchingStore.setManualMatch(m.name, m.uuid)
-			}
-
-			// THEN should store all matches
-			expect(equipmentMatchingStore.manualMatches.size).toBe(3)
-			for (const m of matches) {
-				expect(equipmentMatchingStore.manualMatches.get(m.name)).toBe(
-					m.uuid
-				)
-			}
-		})
-
-		it('GIVEN existing match WHEN setManualMatch is called with same equipment name THEN should update match', () => {
-			// GIVEN existing match
-			equipmentMatchingStore.setManualMatch('Breaker1', 'old-uuid')
-
-			// WHEN setManualMatch is called with same equipment name
-			equipmentMatchingStore.setManualMatch('Breaker1', 'new-uuid')
-
-			// THEN should update match
-			expect(equipmentMatchingStore.manualMatches.get('Breaker1')).toBe(
-				'new-uuid'
-			)
-			expect(equipmentMatchingStore.manualMatches.size).toBe(1)
-		})
-	})
 
 	describe('reset', () => {
 		it('GIVEN store has state WHEN reset is called THEN should clear all state', () => {

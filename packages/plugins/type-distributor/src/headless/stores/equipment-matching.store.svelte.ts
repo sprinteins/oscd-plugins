@@ -108,9 +108,6 @@ class UseEquipmentMatchingStore {
 		}
 	}
 
-	setManualMatch(scdEquipmentName: string, templateEquipmentUuid: string) {
-		this.manualMatches.set(scdEquipmentName, templateEquipmentUuid)
-	}
 
 	reset() {
 		this.clearManualMatches()
