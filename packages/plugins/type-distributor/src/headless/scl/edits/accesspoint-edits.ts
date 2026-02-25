@@ -1,10 +1,12 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { createElement } from '@oscd-plugins/core'
 import type { Insert } from '@openscd/oscd-api'
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
+import { getDocumentAndEditor } from '../../utils'
 import {
 	createLDeviceElement,
 	createLNodeElementInIED,
@@ -141,4 +143,49 @@ export function createMultipleLNodesInAccessPoint({
 	}
 
 	return edits
+}
+
+type CreateAccessPointsParams = {
+	iedName: string
+	accessPoints: { name: string; description?: string }[]
+	squash?: boolean
+}
+
+export function createAccessPoints({
+	iedName,
+	accessPoints,
+	squash = false
+}: CreateAccessPointsParams): void {
+	const { doc, editor } = getDocumentAndEditor()
+
+	const iedElement = doc.querySelector(`IED[name="${iedName}"]`)
+	if (!iedElement) {
+		throw new Error(`IED with name "${iedName}" not found`)
+	}
+
+	for (const ap of accessPoints) {
+		const apElement = createElement(doc, 'AccessPoint', {
+			name: ap.name,
+			desc: ap.description ?? null
+		})
+
+		const serverElement = createElement(doc, 'Server', {})
+
+		const authElement = createElement(doc, 'Authentication', {
+			none: 'true'
+		})
+
+		serverElement.appendChild(authElement)
+		apElement.appendChild(serverElement)
+
+		const edit: Insert = {
+			node: apElement,
+			parent: iedElement,
+			reference: null
+		}
+
+		editor.commit(edit, {
+			squash
+		})
+	}
 }
