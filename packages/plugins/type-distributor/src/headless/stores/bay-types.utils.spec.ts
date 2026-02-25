@@ -6,6 +6,7 @@ import {
 import { ssdImportStore } from './ssd-import.store.svelte'
 import { resetSSDImportStore } from '@/headless/test-helpers'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
+import type { BayTypeWithTemplates } from '../common-types'
 
 describe('bay-types.utils', () => {
 	let doc: XMLDocument
@@ -224,6 +225,197 @@ describe('bay-types.utils', () => {
 
 			// THEN
 			expect(result).toEqual([])
+		})
+
+		it('GIVEN a constructed BayTypeWithTemplates WHEN called THEN should return lnodes from CE and functions', () => {
+			// GIVEN
+			const fake: BayTypeWithTemplates = {
+				uuid: 'fake',
+				name: 'fake',
+				conductingEquipments: [
+					{ uuid: 'inst-ce', templateUuid: 't-ce', virtual: false }
+				],
+				functions: [{ uuid: 'inst-f', templateUuid: 't-f' }],
+				conductingEquipmentTemplates: [
+					{
+						uuid: 't-ce',
+						name: '',
+						type: '',
+						terminals: [],
+						eqFunctions: [
+							{
+								uuid: 'eq-1',
+								name: 'eq1',
+								lnodes: [
+									{
+										lnClass: 'LLN0',
+										lnType: 'T1',
+										lnInst: '1'
+									}
+								]
+							}
+						]
+					}
+				],
+				functionTemplates: [
+					{
+						uuid: 't-f',
+						name: '',
+						lnodes: [{ lnClass: 'LLN0', lnType: 'T2', lnInst: '1' }]
+					}
+				],
+				conductingEquipmentTemplateMap: new Map([
+					[
+						't-ce',
+						{
+							uuid: 't-ce',
+							name: '',
+							type: '',
+							terminals: [],
+							eqFunctions: [
+								{
+									uuid: 'eq-1',
+									name: 'eq1',
+									lnodes: [
+										{
+											lnClass: 'LLN0',
+											lnType: 'T1',
+											lnInst: '1'
+										}
+									]
+								}
+							]
+						}
+					]
+				]),
+				functionTemplateMap: new Map([
+					[
+						't-f',
+						{
+							uuid: 't-f',
+							name: '',
+							lnodes: [
+								{ lnClass: 'LLN0', lnType: 'T2', lnInst: '1' }
+							]
+						}
+					]
+				])
+			}
+
+			// WHEN
+			const result = getAllLNodesWithParent(fake)
+
+			// THEN
+			expect(result.length).toBe(2)
+			expect(result).toEqual(
+				expect.arrayContaining([
+					{
+						parentUuid: 'inst-ce',
+						lnode: { lnClass: 'LLN0', lnType: 'T1', lnInst: '1' }
+					},
+					{
+						parentUuid: 'inst-f',
+						lnode: { lnClass: 'LLN0', lnType: 'T2', lnInst: '1' }
+					}
+				])
+			)
+		})
+
+		it('GIVEN CE template without eqFunctions WHEN called THEN should not throw and return only function lnodes', () => {
+			// GIVEN
+			const fake: BayTypeWithTemplates = {
+				uuid: 'fake2',
+				name: 'fake2',
+				conductingEquipments: [
+					{ uuid: 'inst-ce', templateUuid: 't-ce', virtual: false }
+				],
+				functions: [{ uuid: 'inst-f', templateUuid: 't-f' }],
+				conductingEquipmentTemplates: [
+					{
+						uuid: 't-ce',
+						name: '',
+						type: '',
+						terminals: [],
+						eqFunctions: []
+					}
+				],
+				functionTemplates: [
+					{
+						uuid: 't-f',
+						name: '',
+						lnodes: [{ lnClass: 'LLN0', lnType: 'T2', lnInst: '1' }]
+					}
+				],
+				conductingEquipmentTemplateMap: new Map([
+					[
+						't-ce',
+						{
+							uuid: 't-ce',
+							name: '',
+							type: '',
+							terminals: [],
+							eqFunctions: []
+						}
+					]
+				]),
+				functionTemplateMap: new Map([
+					[
+						't-f',
+						{
+							uuid: 't-f',
+							name: '',
+							lnodes: [
+								{ lnClass: 'LLN0', lnType: 'T2', lnInst: '1' }
+							]
+						}
+					]
+				])
+			}
+
+			// WHEN
+			const result = getAllLNodesWithParent(fake)
+
+			// THEN
+			expect(result).toEqual([
+				{
+					parentUuid: 'inst-f',
+					lnode: { lnClass: 'LLN0', lnType: 'T2', lnInst: '1' }
+				}
+			])
+		})
+	})
+
+	describe('caching behavior', () => {
+		it('GIVEN valid bay UUID WHEN called twice THEN should return the same cached object instance', () => {
+			// GIVEN
+			const bayType = ssdImportStore.bayTypes[0]
+			const bayUuid = bayType.uuid
+
+			// WHEN
+			const first = getBayTypeWithTemplates(bayUuid)
+			const second = getBayTypeWithTemplates(bayUuid)
+
+			// THEN
+			expect(first).toBeDefined()
+			expect(first).toBe(second)
+		})
+
+		it('GIVEN cached result WHEN bayTypes array reference changes THEN cache is invalidated', () => {
+			// GIVEN
+			const bayType = ssdImportStore.bayTypes[0]
+			const bayUuid = bayType.uuid
+
+			const first = getBayTypeWithTemplates(bayUuid)
+			expect(first).toBeDefined()
+
+			// WHEN: replace the array with a new reference (same contents)
+			ssdImportStore.bayTypes = [...ssdImportStore.bayTypes]
+
+			const after = getBayTypeWithTemplates(bayUuid)
+
+			// THEN: should be a new object (cache cleared)
+			expect(after).toBeDefined()
+			expect(after).not.toBe(first)
 		})
 	})
 })
