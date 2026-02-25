@@ -4,8 +4,8 @@ import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate,
 	LNodeTemplate
-} from '../common-types'
-import type { EquipmentMatch } from '../matching/types'
+} from '@/headless/common-types'
+import type { EquipmentMatch } from '@/headless/matching'
 import {
 	createLDeviceElement,
 	createLNodeElementInIED,

@@ -2,7 +2,7 @@ import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate
 } from '@/headless/common-types'
-import type { EquipmentMatch } from '@/headless/matching/types'
+import type { EquipmentMatch } from '@/headless/matching'
 import { queryServer } from './server'
 
 function extractFunctionNames(

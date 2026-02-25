@@ -108,7 +108,6 @@ class UseEquipmentMatchingStore {
 		}
 	}
 
-
 	reset() {
 		this.clearManualMatches()
 		this.clearValidationResult()

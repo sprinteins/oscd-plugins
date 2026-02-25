@@ -5,9 +5,9 @@ import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate,
 	LNodeTemplate
-} from '../common-types'
+} from '@/headless/common-types'
 import type { Insert } from '@openscd/oscd-api'
-import type { EquipmentMatch } from '../matching/types'
+import type { EquipmentMatch } from '@/headless/matching'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({

@@ -34,6 +34,7 @@ class UseImportSSDStore {
 	selectedBayType = $state<string | null>(null)
 
 	loadFromSSD(xmlDocument: XMLDocument, filename: string) {
+		this.selectedBayType = null
 		this.bayTypes = parseBayTypes(xmlDocument)
 
 		const templates = parseTemplates(xmlDocument)

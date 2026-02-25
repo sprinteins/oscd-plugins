@@ -4,7 +4,7 @@ import type {
 	FunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
-import type { EquipmentMatch } from '@/headless/matching/types'
+import type { EquipmentMatch } from '@/headless/matching'
 import { bayStore } from '@/headless/stores'
 
 type UpdateBayLNodesParams = {
