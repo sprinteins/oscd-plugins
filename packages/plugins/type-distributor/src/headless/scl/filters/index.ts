@@ -4,7 +4,6 @@ export * from './ldevice-filters'
 export * from './lnode-filters'
 export type {
 	IEDData,
-	AccessPointData,
 	SearchType,
 	FilteredAccessPoint,
 	FilteredIED
