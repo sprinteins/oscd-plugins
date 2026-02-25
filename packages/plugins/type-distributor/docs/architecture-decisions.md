@@ -4,12 +4,12 @@
 
 The plugin uses Svelte 5 runes-based stores for state management:
 
-- **bayTypesStore**: Manages selected bay type from SSD
-- **ssdImportStore**: Holds parsed SSD data (bay types, templates, data types)
-- **bayStore**: Tracks selected SCD bay element
-- **equipmentMatchingStore**: Manages manual equipment-to-template matches
-- **dndStore**: Handles drag-and-drop UI state
-- **assignedLNodesStore**: Tracks which LNodes have been assigned to IEDs
+- **ssdImportStore**: Holds all parsed SSD data (bay types, function templates, equipment templates, data type templates, selected bay type). Single source of truth.
+- **bay-types.utils**: Plain module (not a store) that provides a lazy, self-invalidating template cache on top of `ssdImportStore`. Exposes `getBayTypeWithTemplates()` and `getAllLNodesWithParent()`.
+- **bayStore**: Tracks the selected SCD bay element. `scdBay`, `assignedBayTypeUuid`, and `equipmentMatches` are `$derived`; `selectedBay`, `selectedBayUuid`, and `pendingBayTypeApply` are `$state`.
+- **equipmentMatchingStore**: Manages manual equipment-to-template matches and validation state.
+- **dndStore**: Handles drag-and-drop UI state and delegates drop commits to `drop-handler`.
+- **assignedLNodesStore**: Tracks which LNodes have been assigned to IEDs.
 
 **Rationale**: Centralized state management ensures consistent data flow between UI components and headless logic. Stores act as single source of truth for cross-component state.
 
