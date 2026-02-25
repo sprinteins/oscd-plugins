@@ -2,7 +2,7 @@ import type { LNodeTemplate } from '@/headless/common-types'
 
 export type SearchType = 'IED' | 'AccessPoint' | 'LDevice' | 'LNode'
 
-type AccessPointData = {
+export type FilteredAccessPoint = {
 	element: Element
 	name: string | null
 	lNodes: LNodeTemplate[]
@@ -11,13 +11,7 @@ type AccessPointData = {
 export type IEDData = {
 	name: string
 	element: Element
-	accessPoints: AccessPointData[]
-}
-
-export type FilteredAccessPoint = {
-	element: Element
-	name: string | null
-	lNodes: LNodeTemplate[]
+	accessPoints: FilteredAccessPoint[]
 }
 
 export type FilteredIED = {
