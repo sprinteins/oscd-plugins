@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Button } from '@oscd-plugins/core-ui-svelte'
-  import MultiApBackButton from './multi-ap-back-button.svelte';
+import MultiApBackButton from './multi-ap-back-button.svelte'
 
 const {
 	onCancel,

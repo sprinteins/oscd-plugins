@@ -11,13 +11,3 @@ export function createInitialIedData(): IedData {
 export function createInitialAccessPointForm(): AccessPointData {
 	return { name: '', description: '' }
 }
-
-export function createInitialFormState(): DialogFormState {
-	return {
-		ied: createInitialIedData(),
-		currentAp: createInitialAccessPointForm(),
-		accessPoints: [],
-		isMultiApMode: false,
-		error: null
-	}
-}
