@@ -50,9 +50,7 @@ export function getBayTypeApplicationState(): BayTypeApplicationState {
 	}
 }
 
-export function applyBayType(
-	state: BayTypeApplicationState
-): EquipmentMatch[] {
+export function applyBayType(state: BayTypeApplicationState): EquipmentMatch[] {
 	if (state.hasPendingManualSelection) {
 		ssdImportStore.selectedBayType = bayStore.pendingBayTypeApply
 	}
@@ -68,13 +66,21 @@ export function applyBayType(
 	return matches
 }
 
-export function buildEditsForIed(
-	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	lNodes: LNodeTemplate[],
-	targetAccessPoint: Element,
-	equipmentMatches: EquipmentMatch[],
+type BuildEditsForIedParams = {
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
+	lNodes: LNodeTemplate[]
+	targetAccessPoint: Element
+	equipmentMatches: EquipmentMatch[]
 	equipmentUuid?: string
-): (Insert | SetAttributes)[] {
+}
+
+export function buildEditsForIed({
+	sourceFunction,
+	lNodes,
+	targetAccessPoint,
+	equipmentMatches,
+	equipmentUuid
+}: BuildEditsForIedParams): (Insert | SetAttributes)[] {
 	return createMultipleLNodesInAccessPoint({
 		sourceFunction,
 		lNodes,
@@ -84,12 +90,19 @@ export function buildEditsForIed(
 	})
 }
 
-export function generateCommitTitle(
-	lNodes: LNodeTemplate[],
-	functionName: string,
-	targetSIedName: string,
+type GenerateCommitTitleParams = {
+	lNodes: LNodeTemplate[]
+	functionName: string
+	targetSIedName: string
 	didApplyBayType: boolean
-): string {
+}
+
+export function generateCommitTitle({
+	lNodes,
+	functionName,
+	targetSIedName,
+	didApplyBayType
+}: GenerateCommitTitleParams): string {
 	const lnodeInfo =
 		lNodes.length === 1 ? `${lNodes[0].lnClass}` : `${lNodes.length} LNodes`
 
@@ -107,11 +120,13 @@ export function generateCommitTitle(
 	return `Assign ${lnodeInfo} from ${functionName} to IED ${targetSIedName}`
 }
 
-export function commitEdits(
-	edits: (Insert | SetAttributes)[],
-	title: string,
+type CommitEditsParams = {
+	edits: (Insert | SetAttributes)[]
+	title: string
 	squash: boolean
-): void {
+}
+
+export function commitEdits({ edits, title, squash }: CommitEditsParams): void {
 	const { editor } = getDocumentAndEditor()
 
 	editor.commit(edits, squash ? { title, squash: true } : { title })

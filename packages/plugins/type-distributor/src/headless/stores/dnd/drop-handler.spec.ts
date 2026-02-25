@@ -274,12 +274,12 @@ describe('drop-handler', () => {
 			const didApplyBayType = false
 
 			// WHEN
-			const commitTitle = generateCommitTitle(
-				mockLNodes,
-				mockFunction.name,
-				'targetSied',
+			const commitTitle = generateCommitTitle({
+				lNodes: mockLNodes,
+				functionName: mockFunction.name,
+				targetSIedName: 'targetSied',
 				didApplyBayType
-			)
+			})
 
 			// THEN
 			expect(commitTitle).toBe(
@@ -292,12 +292,12 @@ describe('drop-handler', () => {
 			const didApplyBayType = true
 
 			// WHEN
-			const commitTitle = generateCommitTitle(
-				mockLNodes,
-				mockFunction.name,
-				'targetSied',
+			const commitTitle = generateCommitTitle({
+				lNodes: mockLNodes,
+				functionName: mockFunction.name,
+				targetSIedName: 'targetSied',
 				didApplyBayType
-			)
+			})
 
 			// THEN
 			expect(commitTitle).toBe(

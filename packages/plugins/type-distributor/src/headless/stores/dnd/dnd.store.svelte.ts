@@ -63,17 +63,19 @@ class UseDndStore {
 		try {
 			const applicationState = getBayTypeApplicationState()
 			const didApplyBayType = shouldApplyBayType(applicationState)
-			const freshMatches = didApplyBayType ? applyBayType(applicationState) : null
+			const freshMatches = didApplyBayType
+				? applyBayType(applicationState)
+				: null
 			const equipmentMatches = freshMatches ?? bayStore.equipmentMatches
 
 			const allEdits = [
-				...buildEditsForIed(
-					functionFromSSD,
+				...buildEditsForIed({
+					sourceFunction: functionFromSSD,
 					lNodes,
 					targetAccessPoint,
 					equipmentMatches,
-					this.draggedItem.equipmentUuid
-				)
+					equipmentUuid: this.draggedItem.equipmentUuid
+				})
 			]
 
 			const shouldUpdateBay =
@@ -92,14 +94,14 @@ class UseDndStore {
 			}
 
 			if (allEdits.length > 0) {
-				const title = generateCommitTitle(
+				const title = generateCommitTitle({
 					lNodes,
-					functionFromSSD.name,
+					functionName: functionFromSSD.name,
 					targetSIedName,
 					didApplyBayType
-				)
+				})
 
-				commitEdits(allEdits, title, didApplyBayType)
+				commitEdits({ edits: allEdits, title, squash: didApplyBayType })
 				const parentUuid =
 					this.draggedItem.bayTypeInstanceUuid || functionFromSSD.uuid
 				assignedLNodesStore.markAsAssigned(parentUuid, lNodes)

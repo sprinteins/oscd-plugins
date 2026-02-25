@@ -180,19 +180,19 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should build IED edits only and commit
-			expect(dropHandler.buildEditsForIed).toHaveBeenCalledWith(
-				mockFunction,
-				mockLNodes,
-				mockAccessPoint,
-				[],
-				undefined
-			)
+			expect(dropHandler.buildEditsForIed).toHaveBeenCalledWith({
+				sourceFunction: mockFunction,
+				lNodes: mockLNodes,
+				targetAccessPoint: mockAccessPoint,
+				equipmentMatches: [],
+				equipmentUuid: undefined
+			})
 			expect(buildEditsForBayLNode).not.toHaveBeenCalled()
-			expect(dropHandler.commitEdits).toHaveBeenCalledWith(
-				mockIedEdits,
-				'Test Commit',
-				false
-			)
+			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
+				edits: mockIedEdits,
+				title: 'Test Commit',
+				squash: false
+			})
 			expect(dndStore.draggedItem).toBeNull()
 		})
 
@@ -236,13 +236,13 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should build both IED and bay edits
-			expect(dropHandler.buildEditsForIed).toHaveBeenCalledWith(
-				mockFunction,
-				mockLNodes,
-				mockAccessPoint,
-				[],
-				'eq-uuid'
-			)
+			expect(dropHandler.buildEditsForIed).toHaveBeenCalledWith({
+				sourceFunction: mockFunction,
+				lNodes: mockLNodes,
+				targetAccessPoint: mockAccessPoint,
+				equipmentMatches: [],
+				equipmentUuid: 'eq-uuid'
+			})
 			expect(buildEditsForBayLNode).toHaveBeenCalledWith({
 				lNodes: mockLNodes,
 				iedName: 'TestIED',
@@ -250,11 +250,11 @@ describe('dndStore', () => {
 				equipmentUuid: 'eq-uuid',
 				equipmentMatches: []
 			})
-			expect(dropHandler.commitEdits).toHaveBeenCalledWith(
-				[...mockIedEdits, ...mockBayEdits],
-				'Test Commit with Bay',
-				false
-			)
+			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
+				edits: [...mockIedEdits, ...mockBayEdits],
+				title: 'Test Commit with Bay',
+				squash: false
+			})
 		})
 
 		it('GIVEN bay type needs applying WHEN handleDrop is called THEN should apply bay type and use squash flag', () => {
@@ -299,11 +299,11 @@ describe('dndStore', () => {
 			expect(dropHandler.shouldApplyBayType).toHaveBeenCalled()
 			expect(dropHandler.applyBayType).toHaveBeenCalled()
 			expect(buildEditsForBayLNode).toHaveBeenCalled()
-			expect(dropHandler.commitEdits).toHaveBeenCalledWith(
-				[...mockIedEdits, ...mockBayEdits],
-				'Apply Bay Type',
-				true
-			)
+			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
+				edits: [...mockIedEdits, ...mockBayEdits],
+				title: 'Apply Bay Type',
+				squash: true
+			})
 		})
 
 		it('GIVEN no edits generated WHEN handleDrop is called THEN should not call commitEdits', () => {
