@@ -43,13 +43,15 @@ const ambiguousEquipmentRows = $derived.by(() => {
 	return rows
 })
 
-const allMatchesSet = $derived(
-	ambiguousEquipmentRows.length > 0 &&
-		ambiguousEquipmentRows.every((equipment) =>
-			equipmentMatchingStore.manualMatches.has(equipment.name)
-		) &&
+const allMatchesSet = $derived.by(() => {
+	if (ambiguousEquipmentRows.length === 0) return false
+	const allManualMatchesMade = ambiguousEquipmentRows.every((equipment) =>
+		equipmentMatchingStore.manualMatches.has(equipment.name)
+	)
+	const noCountMismatch =
 		equipmentMatchingStore.templateCountMismatch.length === 0
-)
+	return allManualMatchesMade && noCountMismatch
+})
 
 const hasMissingMatches = $derived(
 	ambiguousEquipmentRows.some(
