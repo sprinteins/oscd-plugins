@@ -22,6 +22,9 @@ class UseImportSSDStore {
 
 	// Templates
 	bayTypes = $state<BayType[]>([])
+	/** Functions that contain at least one LLN0 LNode — used for LD0 creation, excluded from BayType view */
+	ld0FunctionTemplates = $state<FunctionTemplate[]>([])
+	/** Functions without an LLN0 LNode — shown in the BayType view */
 	functionTemplates = $state<FunctionTemplate[]>([])
 	conductingEquipmentTemplates = $state<ConductingEquipmentTemplate[]>([])
 
@@ -40,7 +43,13 @@ class UseImportSSDStore {
 		this.bayTypes = parseBayTypes(xmlDocument)
 
 		const templates = parseTemplates(xmlDocument)
-		this.functionTemplates = templates.functionTemplates
+		const allFunctions = templates.functionTemplates
+		this.ld0FunctionTemplates = allFunctions.filter((t) =>
+			t.lnodes.some((ln) => ln.lnClass === 'LLN0')
+		)
+		this.functionTemplates = allFunctions.filter(
+			(t) => !t.lnodes.some((ln) => ln.lnClass === 'LLN0')
+		)
 		this.conductingEquipmentTemplates =
 			templates.conductingEquipmentTemplates
 
