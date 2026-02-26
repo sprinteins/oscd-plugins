@@ -100,7 +100,7 @@ class UseEquipmentMatchingStore {
 		}
 	}
 
-	setMatch(equipmentName: string, templateUuid: string) {
+	setMatch(equipmentName: string, templateUuid?: string) {
 		if (!templateUuid) {
 			this.manualMatches.delete(equipmentName)
 		} else {

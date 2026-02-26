@@ -109,9 +109,7 @@ const optionsByEquipment = $derived.by(() => {
 					{options}
 					selectedTemplateUuid={equipmentMatchingStore.manualMatches.get(
 						equipment.name,
-					) ?? ""}
-					handleMatchChange={(name, uuid) => equipmentMatchingStore.setMatch(name, uuid)}
-				/>
+					) ?? ""}				/>
 			{/each}
 
 			{#if ambiguousEquipmentRows.length === 0}

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { equipmentMatchingStore } from '@/headless/stores'
 import { Label, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 
 interface Props {
@@ -8,11 +9,13 @@ interface Props {
 	}
 	options: { value: string; label: string }[]
 	selectedTemplateUuid: string
-	handleMatchChange: (equipmentName: string, templateUuid: string) => void
 }
 
-let { equipment, options, selectedTemplateUuid, handleMatchChange }: Props =
-	$props()
+let { equipment, options, selectedTemplateUuid }: Props = $props()
+
+function handleMatchChange(value: string) {
+	equipmentMatchingStore.setMatch(equipment.name, value)
+}
 </script>
 
 <div class="space-y-2">
@@ -20,7 +23,8 @@ let { equipment, options, selectedTemplateUuid, handleMatchChange }: Props =
         {equipment.name} <span class="text-gray-500">({equipment.type})</span>
     </Label.Root>
     <SelectWorkaround
-        bind:value={() => selectedTemplateUuid, (v) => handleMatchChange(equipment.name, String(v ?? ''))}
+        value={selectedTemplateUuid}
+        handleChange={(e) => handleMatchChange((e.target as HTMLSelectElement)?.value ?? "")}
         {options}
         placeholder="Select template..."
         class="w-full"
