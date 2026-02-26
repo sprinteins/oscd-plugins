@@ -71,12 +71,12 @@ const optionsByEquipment = $derived.by(() => {
 			continue
 		}
 
-		const seen = new Set<string>()
+		const seenTemplateUuids = new Set<string>()
 		const unique = (
 			equipmentMatchingStore.templatesByType.get(type) ?? []
 		).filter((t) => {
-			if (seen.has(t.uuid)) return false
-			seen.add(t.uuid)
+			if (seenTemplateUuids.has(t.uuid)) return false
+			seenTemplateUuids.add(t.uuid)
 			return true
 		})
 
