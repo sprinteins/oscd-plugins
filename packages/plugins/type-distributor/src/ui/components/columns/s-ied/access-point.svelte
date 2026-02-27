@@ -2,10 +2,10 @@
 import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
 import { dndStore, bayStore } from '@/headless/stores'
-import { buildEditsForDeleteAccessPoint } from '@/headless/ied/delete-elements'
 import type { LNodeTemplate } from '@/headless/common-types'
 import IedLnode from './ied-lnode.svelte'
 import { getEditor } from '@/headless/utils'
+import { buildEditsForDeleteAccessPoint } from '@/headless/scl/edits/delete-elements'
 
 interface Props {
 	accessPoint: Element

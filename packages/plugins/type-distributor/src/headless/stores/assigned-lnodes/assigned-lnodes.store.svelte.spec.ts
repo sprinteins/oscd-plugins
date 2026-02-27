@@ -72,7 +72,7 @@ describe('assignedLNodesStore', () => {
 		)
 
 		pluginGlobalStore.xmlDocument = mockDocument
-		
+
 		// Set up bayStore.scdBay to point to the Bay element in the mock document
 		const bayElement = mockDocument.querySelector('Bay')
 		bayStore.scdBay = bayElement as Element

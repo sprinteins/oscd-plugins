@@ -16,10 +16,13 @@ import {
 	BayTypeDetails,
 	BayTypeValidation
 } from '@/ui/components/columns/bay-type'
-import { queryIEDs } from '@/headless/ied'
-import { IedDetails } from '@/ui/components/columns/s-ied'
+import { IedDetails, IedSearch } from '@/ui/components/columns/s-ied'
 import { AddIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
 import { validateBayTypeSelection } from '@/headless/matching'
+import { queryIEDs, type SearchType } from '@/headless/scl'
+
+let searchTerm = $state('')
+let searchType = $state<SearchType>('IED')
 
 const bayTypeOptions = $derived(
 	ssdImportStore.bayTypes.map((bt: BayType) => ({
@@ -120,8 +123,11 @@ function handleBayTypeChange() {
 			<Card.Title>S-IEDs</Card.Title>
 		</Card.Header>
 		<Card.Content class="flex-1 flex flex-col gap-y-4 overflow-hidden">
+			<div>
+				<IedSearch bind:searchTerm bind:searchType />
+			</div>
 			<div class="flex-1 overflow-y-auto">
-				<IedDetails {iedItems} />
+				<IedDetails {iedItems} {searchTerm} {searchType} />
 			</div>
 			<div>
 				<AddIedApDialogTrigger />

@@ -9,7 +9,7 @@ import {
 	buildEditForBayUpdate,
 	buildInsertEditsForEqFunction,
 	buildInsertEditsForFunction,
-	buildEditsForEquipmentUpdates,
+	buildEditsForEquipmentUpdates
 } from './scd-edits'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
 import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'

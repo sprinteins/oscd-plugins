@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Creation of multiple Access Point for one IED in the create-dialog
+
+## [0.4.1] - 2026-02-23
+### Added
+- Search modal for IEDs, AccessPoints, LDevices, LNodes
+
 ## [0.4.0] - 2026-02-13
 ### Added
 - Allow user to delete APs and LNodes if it is the last LNode it will also remove the BayType assignment

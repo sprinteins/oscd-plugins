@@ -54,7 +54,7 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 	getDocumentAndEditor: vi.fn()
 }))
 
-vi.mock('@/headless/ied', () => ({
+vi.mock('@/headless/scl', () => ({
 	createMultipleLNodesInAccessPoint: vi.fn()
 }))
 

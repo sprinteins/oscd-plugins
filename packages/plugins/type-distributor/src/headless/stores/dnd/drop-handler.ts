@@ -11,7 +11,7 @@ import { getBayTypeWithTemplates } from '../bay-types.utils'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
-import { createMultipleLNodesInAccessPoint } from '@/headless/ied'
+import { createMultipleLNodesInAccessPoint } from '@/headless/scl'
 
 type BayTypeApplicationState = {
 	hasAssignedBayType: boolean
