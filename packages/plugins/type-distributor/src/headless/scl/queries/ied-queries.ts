@@ -33,6 +33,14 @@ export function queryIEDs(selectedBay: string): Element[] {
 	return filteredIEDs
 }
 
+export function queryIedExists(
+	xmlDocument: XMLDocument | null | undefined,
+	iedName: string
+): boolean {
+	if (!xmlDocument) return false
+	return xmlDocument.querySelector(`IED[name="${iedName}"]`) !== null
+}
+
 function queryBayByIEDName(
 	xmlDocument: XMLDocument,
 	iedName: string
@@ -53,4 +61,18 @@ export function queryIEDInsertionReference(root: Element): Element | null {
 		return lastIED.nextElementSibling
 	}
 	return null
+}
+
+export function queryAccessPointsFromIed(
+	xmlDocument: XMLDocument | null | undefined,
+	iedName: string
+): string[] {
+	if (!xmlDocument) return []
+
+	const accessPoints = Array.from(
+		xmlDocument.querySelectorAll(`IED[name="${iedName}"] AccessPoint`)
+	)
+	return accessPoints
+		.map((ap) => ap.getAttribute('name'))
+		.filter((name): name is string => name !== null)
 }

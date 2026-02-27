@@ -1,140 +1,148 @@
 <script lang="ts">
-import { createIED, queryIEDs, createAccessPoints } from '@/headless/scl'
-import { bayStore } from '@/headless/stores'
+import { queryAccessPointsFromIed } from '@/headless/scl'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import IedSelectorSection from './ied-selector-section.svelte'
-import IedFormSection from './ied-form-section.svelte'
-import AccessPointFormSection from './access-point-form-section.svelte'
-import FormActions from './form-actions.svelte'
+import {
+	IedSelectorSection,
+	IedFormSection,
+	AccessPointFormSection
+} from './form-sections'
+import { MultiApButton, FormActions } from './form-elements'
+import {
+	type AccessPointData,
+	type IedData,
+	validateSubmission,
+	validateIedBeforeMultiAp,
+	validateAccessPoint,
+	submitForm,
+	buildAccessPoint,
+	createInitialIedData,
+	createInitialAccessPointForm
+} from './form-helpers'
+import IedAndAccessPointOverview from './form-sections/ied-and-access-point-overview-section.svelte'
 
-let iedName = $state('')
-let iedDesc = $state('')
-let existingSIedName = $state('')
-let accessPointName = $state('')
-let accessPointDesc = $state('')
-let iedCreationError = $state<string | null>(null)
+let ied = $state<IedData>(createInitialIedData())
+let currentAccessPoint = $state(createInitialAccessPointForm())
+let accessPoints = $state<AccessPointData[]>([])
+let isMultiApMode = $state(false)
+let error = $state<string | null>(null)
 
-const existingSIeds = $derived.by(() => {
-	const ieds = queryIEDs(bayStore.selectedBay ?? '')
-	return ieds.map((ied) => ({
-		value: ied.getAttribute('name') || '',
-		label: ied.getAttribute('name') || 'Unnamed IED'
-	}))
-})
-
-const sIedOptions = $derived([
-	{ value: '', label: 'None (Create New)' },
-	...existingSIeds
-])
-
-const isCreatingNewIed = $derived(!existingSIedName)
-const hasAccessPoint = $derived(accessPointName.trim().length > 0)
+const hasCurrentAp = $derived(currentAccessPoint.name.trim().length > 0)
+const hasValidIed = $derived(ied.name.trim().length > 0)
 
 const submitLabel = $derived(
-	isCreatingNewIed ? 'Create IED & Access Point' : 'Add Access Point'
+	isMultiApMode
+		? 'Confirm'
+		: ied.isNew
+			? 'Create IED & Access Point'
+			: 'Add Access Point'
 )
 
-const isSubmitDisabled = $derived(
-	(isCreatingNewIed && !iedName.trim()) ||
-		(!isCreatingNewIed && !hasAccessPoint)
-)
-
-function getAccessPointsFromIED(iedName: string): string[] {
-	const xmlDocument = pluginGlobalStore.xmlDocument
-	if (!xmlDocument) return []
-
-	const accessPoints = Array.from(
-		xmlDocument.querySelectorAll(`IED[name="${iedName}"] AccessPoint`)
-	)
-	return accessPoints
-		.map((ap) => ap.getAttribute('name'))
-		.filter((name): name is string => name !== null)
-}
-
-function validateForm(): string | null {
-	if (isCreatingNewIed && !iedName.trim()) {
-		return 'IED name is required when creating a new IED'
+const isSubmitDisabled = $derived.by(() => {
+	if (isMultiApMode) {
+		return !ied.isNew && accessPoints.length === 0
 	}
-
-	if (isCreatingNewIed && iedName.trim()) {
-		const xmlDocument = pluginGlobalStore.xmlDocument
-		if (xmlDocument) {
-			const existingIed = xmlDocument.querySelector(
-				`IED[name="${iedName.trim()}"]`
-			)
-			if (existingIed) {
-				return `IED "${iedName.trim()}" already exists`
-			}
-		}
-	}
-
-	if (!isCreatingNewIed && !existingSIedName) {
-		return 'Please select an existing IED or create a new one'
-	}
-
-	if (!isCreatingNewIed && !hasAccessPoint) {
-		return 'Access Point name is required when adding to existing IED'
-	}
-
-	if (hasAccessPoint && !isCreatingNewIed && existingSIedName) {
-		const existingApNames = getAccessPointsFromIED(existingSIedName)
-		if (existingApNames.includes(accessPointName.trim())) {
-			return `Access Point "${accessPointName.trim()}" already exists in IED "${existingSIedName}"`
-		}
-	}
-
-	return null
-}
-
-function buildAccessPoint() {
-	if (!hasAccessPoint) return undefined
-
-	return [
-		{
-			name: accessPointName.trim(),
-			description: accessPointDesc.trim() || undefined
-		}
-	]
-}
+	return ied.isNew ? !hasValidIed : !hasCurrentAp
+})
 
 function resetForm() {
-	iedName = ''
-	iedDesc = ''
-	existingSIedName = ''
-	accessPointName = ''
-	accessPointDesc = ''
+	ied = createInitialIedData()
+	currentAccessPoint = createInitialAccessPointForm()
+	accessPoints = []
+	isMultiApMode = false
+	error = null
 }
 
-function handleSubmit() {
-	iedCreationError = null
+function enterMultiApMode() {
+	error = null
 
-	const validationError = validateForm()
+	const validationError = validateIedBeforeMultiAp(
+		pluginGlobalStore.xmlDocument,
+		ied
+	)
 	if (validationError) {
-		iedCreationError = validationError
+		error = validationError
 		return
 	}
 
-	try {
-		const accessPoint = buildAccessPoint()
-		if (isCreatingNewIed) {
-			createIED({
-				name: iedName.trim(),
-				description: iedDesc.trim() || undefined,
-				accessPoints: accessPoint
-			})
-		} else if (hasAccessPoint && existingSIedName && accessPoint) {
-			createAccessPoints({
-				iedName: existingSIedName,
-				accessPoints: accessPoint
-			})
-		}
-
-		resetForm()
-		dialogStore.closeDialog('success')
-	} catch (error) {
-		iedCreationError =
-			error instanceof Error ? error.message : 'Failed to create IED'
+	ied = {
+		...ied,
+		name: ied.name.trim(),
+		description: ied.description.trim()
 	}
+
+	isMultiApMode = true
+
+	if (hasCurrentAp) {
+		addAccessPoint()
+	}
+}
+
+function addAccessPoint() {
+	error = null
+
+	const existingApNames = ied.isNew
+		? []
+		: queryAccessPointsFromIed(
+				pluginGlobalStore.xmlDocument,
+				ied.name.trim()
+			)
+
+	const validationError = validateAccessPoint({
+		apName: currentAccessPoint.name,
+		pendingApNames: accessPoints.map((ap) => ap.name),
+		existingApNames,
+		iedName: ied.name
+	})
+
+	if (validationError) {
+		error = validationError
+		return
+	}
+
+	accessPoints = [
+		...accessPoints,
+		{
+			name: currentAccessPoint.name.trim(),
+			description: currentAccessPoint.description.trim()
+		}
+	]
+
+	currentAccessPoint = createInitialAccessPointForm()
+}
+
+function removeAccessPoint(apName: string) {
+	accessPoints = accessPoints.filter((ap) => ap.name !== apName)
+}
+
+function getAccessPointsForSubmission(): AccessPointData[] {
+	if (isMultiApMode) {
+		return accessPoints
+	}
+	const ap = buildAccessPoint(
+		currentAccessPoint.name,
+		currentAccessPoint.description
+	)
+	return ap ? [ap] : []
+}
+
+function handleSubmit() {
+	error = null
+
+	const accessPointsToSubmit = getAccessPointsForSubmission()
+	const validationError = validateSubmission({
+		ied,
+		accessPoints: accessPointsToSubmit,
+		xmlDocument: pluginGlobalStore.xmlDocument
+	})
+
+	if (validationError) {
+		error = validationError
+		return
+	}
+
+	submitForm(ied, accessPointsToSubmit)
+	resetForm()
+	dialogStore.closeDialog('success')
 }
 
 async function handleCancel() {
@@ -143,32 +151,37 @@ async function handleCancel() {
 </script>
 
 <div class="flex flex-col gap-4">
-	<IedSelectorSection
-		bind:selectedIedName={existingSIedName}
-		options={sIedOptions}
-	/>
+  {#if isMultiApMode}
+    <IedAndAccessPointOverview {ied} {accessPoints} {removeAccessPoint} />
+  {:else}
+    <IedSelectorSection bind:ied />
+    {#if ied.isNew}
+      <IedFormSection bind:ied />
+    {/if}
+  {/if}
 
-	{#if isCreatingNewIed}
-		<IedFormSection
-			bind:name={iedName}
-			bind:description={iedDesc}
-		/>
-	{/if}
+  <AccessPointFormSection bind:accessPoint={currentAccessPoint} isRequired={!ied.isNew} />
 
-	<AccessPointFormSection
-		isRequired={!isCreatingNewIed && !hasAccessPoint}
-		bind:name={accessPointName}
-		bind:description={accessPointDesc}
-	/>
+  <MultiApButton
+    {isMultiApMode}
+    hasValidInput={isMultiApMode ? hasCurrentAp : hasValidIed}
+    onEnterMultiApMode={enterMultiApMode}
+    onAddAccessPoint={addAccessPoint}
+  />
 
-	{#if iedCreationError}
-		<p class="text-sm text-red-600">{iedCreationError}</p>
-	{/if}
+  {#if error}
+    <p class="text-sm text-red-600">{error}</p>
+  {/if}
 
-	<FormActions
-		onCancel={handleCancel}
-		onSubmit={handleSubmit}
-		{submitLabel}
-		disabled={isSubmitDisabled}
-	/>
+  <FormActions
+    onCancel={handleCancel}
+    onSubmit={handleSubmit}
+    {submitLabel}
+    {isMultiApMode}
+    onGoBackToIedSelection={() => {
+      isMultiApMode = false;
+      accessPoints = [];
+    }}
+    disabled={isSubmitDisabled}
+  />
 </div>
