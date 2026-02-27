@@ -1,13 +1,28 @@
 import { describe, it, expect, beforeEach } from 'vitest'
+import { flushSync } from 'svelte'
 import { equipmentMatchingStore } from './equipment-matching.store.svelte'
-import type { ValidationResult } from '@/headless/matching/validation'
+import { ssdImportStore } from './ssd-import.store.svelte'
+import { resetSSDImportStore } from '@/headless/test-helpers'
+import type { ValidationResult } from '@/headless/domain/validation'
+import type { ConductingEquipmentTemplate } from '@/headless/common-types'
+
+const createTemplate = (
+	uuid: string,
+	type: string,
+	name = `Template_${uuid}`
+): ConductingEquipmentTemplate => ({
+	uuid,
+	type,
+	name,
+	terminals: [],
+	eqFunctions: []
+})
 
 describe('equipmentMatchingStore', () => {
 	beforeEach(() => {
-		// Reset store state
+		resetSSDImportStore()
 		equipmentMatchingStore.validationResult = null
 		equipmentMatchingStore.manualMatches.clear()
-		equipmentMatchingStore.isManualMatchingExpanded = false
 	})
 
 	describe('setValidationResult', () => {
@@ -25,41 +40,6 @@ describe('equipmentMatchingStore', () => {
 			expect(equipmentMatchingStore.validationResult).toStrictEqual(
 				result
 			)
-		})
-
-		it('GIVEN validation requires manual matching WHEN setValidationResult is called THEN should expand manual matching UI', () => {
-			// GIVEN validation requires manual matching
-			const result: ValidationResult = {
-				isValid: false,
-				errors: ['Ambiguous equipment'],
-				requiresManualMatching: true,
-				ambiguousTypes: [
-					{
-						typeCode: 'CBR',
-						templateNames: ['Breaker1', 'Breaker2']
-					}
-				]
-			}
-
-			// WHEN setValidationResult is called
-			equipmentMatchingStore.setValidationResult(result)
-
-			// THEN should expand manual matching UI
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(true)
-		})
-
-		it('GIVEN validation does not require manual matching WHEN setValidationResult is called THEN should not expand manual matching UI', () => {
-			// GIVEN validation does not require manual matching
-			const result: ValidationResult = {
-				isValid: true,
-				errors: []
-			}
-
-			// WHEN setValidationResult is called
-			equipmentMatchingStore.setValidationResult(result)
-
-			// THEN should not expand manual matching UI
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(false)
 		})
 
 		it('GIVEN clearMatches is true WHEN setValidationResult is called THEN should clear existing manual matches', () => {
@@ -100,58 +80,6 @@ describe('equipmentMatchingStore', () => {
 		})
 	})
 
-	describe('setManualMatch', () => {
-		it('GIVEN equipment name and template UUID WHEN setManualMatch is called THEN should add match to map', () => {
-			// GIVEN equipment name and template UUID
-			const equipmentName = 'Breaker1'
-			const templateUuid = 'template-uuid-123'
-
-			// WHEN setManualMatch is called
-			equipmentMatchingStore.setManualMatch(equipmentName, templateUuid)
-
-			// THEN should add match to map
-			expect(
-				equipmentMatchingStore.manualMatches.get(equipmentName)
-			).toBe(templateUuid)
-		})
-
-		it('GIVEN multiple manual matches WHEN setManualMatch is called multiple times THEN should store all matches', () => {
-			// GIVEN multiple manual matches
-			const matches = [
-				{ name: 'Breaker1', uuid: 'uuid1' },
-				{ name: 'Breaker2', uuid: 'uuid2' },
-				{ name: 'Disconnector1', uuid: 'uuid3' }
-			]
-
-			// WHEN setManualMatch is called multiple times
-			matches.forEach((m) =>
-				equipmentMatchingStore.setManualMatch(m.name, m.uuid)
-			)
-
-			// THEN should store all matches
-			expect(equipmentMatchingStore.manualMatches.size).toBe(3)
-			matches.forEach((m) => {
-				expect(equipmentMatchingStore.manualMatches.get(m.name)).toBe(
-					m.uuid
-				)
-			})
-		})
-
-		it('GIVEN existing match WHEN setManualMatch is called with same equipment name THEN should update match', () => {
-			// GIVEN existing match
-			equipmentMatchingStore.setManualMatch('Breaker1', 'old-uuid')
-
-			// WHEN setManualMatch is called with same equipment name
-			equipmentMatchingStore.setManualMatch('Breaker1', 'new-uuid')
-
-			// THEN should update match
-			expect(equipmentMatchingStore.manualMatches.get('Breaker1')).toBe(
-				'new-uuid'
-			)
-			expect(equipmentMatchingStore.manualMatches.size).toBe(1)
-		})
-	})
-
 	describe('reset', () => {
 		it('GIVEN store has state WHEN reset is called THEN should clear all state', () => {
 			// GIVEN store has state
@@ -160,7 +88,6 @@ describe('equipmentMatchingStore', () => {
 				errors: ['Error']
 			}
 			equipmentMatchingStore.manualMatches.set('eq1', 'template1')
-			equipmentMatchingStore.isManualMatchingExpanded = true
 
 			// WHEN reset is called
 			equipmentMatchingStore.reset()
@@ -168,7 +95,6 @@ describe('equipmentMatchingStore', () => {
 			// THEN should clear all state
 			expect(equipmentMatchingStore.validationResult).toBeNull()
 			expect(equipmentMatchingStore.manualMatches.size).toBe(0)
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(false)
 		})
 	})
 
@@ -205,113 +131,445 @@ describe('equipmentMatchingStore', () => {
 	})
 
 	describe('clearValidationResult', () => {
-		it('GIVEN validation result and manual matches exist WHEN clearValidationResult is called THEN should clear validation and matches', () => {
+		it('GIVEN validation result and manual matches exist WHEN clearValidationResult is called THEN should clear only the validation result and preserve manual matches', () => {
 			// GIVEN validation result and manual matches exist
 			equipmentMatchingStore.validationResult = {
 				isValid: true,
 				errors: []
 			}
 			equipmentMatchingStore.manualMatches.set('eq1', 'template1')
-			equipmentMatchingStore.isManualMatchingExpanded = true
 
 			// WHEN clearValidationResult is called
 			equipmentMatchingStore.clearValidationResult()
 
-			// THEN should clear validation and matches
+			// THEN should clear only the validation result; manual matches are preserved
 			expect(equipmentMatchingStore.validationResult).toBeNull()
-			expect(equipmentMatchingStore.manualMatches.size).toBe(0)
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(false)
+			expect(equipmentMatchingStore.manualMatches.size).toBe(1)
 		})
 	})
 
-	describe('toggleManualMatching', () => {
-		it('GIVEN manual matching is collapsed WHEN toggleManualMatching is called THEN should expand', () => {
-			// GIVEN manual matching is collapsed
-			equipmentMatchingStore.isManualMatchingExpanded = false
+	describe('setMatch', () => {
+		it('GIVEN a non-empty uuid WHEN setMatch is called THEN should add the match', () => {
+			// GIVEN
+			const name = 'Breaker1'
+			const uuid = 'template-uuid-abc'
 
-			// WHEN toggleManualMatching is called
-			equipmentMatchingStore.toggleManualMatching()
+			// WHEN
+			equipmentMatchingStore.setMatch(name, uuid)
 
-			// THEN should expand
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(true)
+			// THEN
+			expect(equipmentMatchingStore.manualMatches.get(name)).toBe(uuid)
 		})
 
-		it('GIVEN manual matching is expanded WHEN toggleManualMatching is called THEN should collapse', () => {
-			// GIVEN manual matching is expanded
-			equipmentMatchingStore.isManualMatchingExpanded = true
+		it('GIVEN an existing match WHEN setMatch is called with an empty string THEN should remove the match', () => {
+			// GIVEN
+			equipmentMatchingStore.manualMatches.set('Breaker1', 'some-uuid')
 
-			// WHEN toggleManualMatching is called
-			equipmentMatchingStore.toggleManualMatching()
+			// WHEN
+			equipmentMatchingStore.setMatch('Breaker1', '')
 
-			// THEN should collapse
-			expect(equipmentMatchingStore.isManualMatchingExpanded).toBe(false)
+			// THEN
+			expect(equipmentMatchingStore.manualMatches.has('Breaker1')).toBe(
+				false
+			)
 		})
 
-		it('GIVEN multiple toggles WHEN toggleManualMatching is called repeatedly THEN should alternate state', () => {
-			// GIVEN multiple toggles
-			const initialState = equipmentMatchingStore.isManualMatchingExpanded
+		it('GIVEN an existing match WHEN setMatch is called with a new uuid THEN should update the match', () => {
+			// GIVEN
+			equipmentMatchingStore.manualMatches.set('Breaker1', 'old-uuid')
 
-			// WHEN toggleManualMatching is called repeatedly
-			equipmentMatchingStore.toggleManualMatching()
-			const firstToggle = equipmentMatchingStore.isManualMatchingExpanded
+			// WHEN
+			equipmentMatchingStore.setMatch('Breaker1', 'new-uuid')
 
-			equipmentMatchingStore.toggleManualMatching()
-			const secondToggle = equipmentMatchingStore.isManualMatchingExpanded
-
-			// THEN should alternate state
-			expect(firstToggle).toBe(!initialState)
-			expect(secondToggle).toBe(initialState)
+			// THEN
+			expect(equipmentMatchingStore.manualMatches.get('Breaker1')).toBe(
+				'new-uuid'
+			)
 		})
 	})
 
-	describe('areAllManualMatchesSet', () => {
-		it('GIVEN no manual matches and requiredCount is 0 WHEN areAllManualMatchesSet is called THEN should return true', () => {
-			// GIVEN no manual matches and requiredCount is 0
+	describe('selectedTemplateCounts', () => {
+		it('GIVEN no manual matches WHEN selectedTemplateCounts is accessed THEN should return empty map', () => {
+			// GIVEN no manual matches (cleared in beforeEach)
 
-			// WHEN areAllManualMatchesSet is called
-			const result = equipmentMatchingStore.areAllManualMatchesSet(0)
-
-			// THEN should return true
-			expect(result).toBe(true)
+			// WHEN / THEN
+			expect(equipmentMatchingStore.selectedTemplateCounts.size).toBe(0)
 		})
 
-		it('GIVEN fewer matches than required WHEN areAllManualMatchesSet is called THEN should return false', () => {
-			// GIVEN fewer matches than required
-			equipmentMatchingStore.manualMatches.set('eq1', 'template1')
-			equipmentMatchingStore.manualMatches.set('eq2', 'template2')
+		it('GIVEN multiple matches pointing to the same template WHEN selectedTemplateCounts is accessed THEN should count occurrences correctly', () => {
+			// GIVEN
+			equipmentMatchingStore.setMatch('eq1', 'template-uuid-1')
+			equipmentMatchingStore.setMatch('eq2', 'template-uuid-1')
+			equipmentMatchingStore.setMatch('eq3', 'template-uuid-2')
+			flushSync()
 
-			// WHEN areAllManualMatchesSet is called with requiredCount=3
-			const result = equipmentMatchingStore.areAllManualMatchesSet(3)
+			// WHEN
+			const counts = equipmentMatchingStore.selectedTemplateCounts
 
-			// THEN should return false
-			expect(result).toBe(false)
+			// THEN
+			expect(counts.get('template-uuid-1')).toBe(2)
+			expect(counts.get('template-uuid-2')).toBe(1)
 		})
 
-		it('GIVEN exact number of required matches WHEN areAllManualMatchesSet is called THEN should return true', () => {
-			// GIVEN exact number of required matches
-			equipmentMatchingStore.manualMatches.set('eq1', 'template1')
-			equipmentMatchingStore.manualMatches.set('eq2', 'template2')
-			equipmentMatchingStore.manualMatches.set('eq3', 'template3')
+		it('GIVEN each equipment mapped to a unique template WHEN selectedTemplateCounts is accessed THEN each count should be 1', () => {
+			// GIVEN
+			equipmentMatchingStore.setMatch('eq1', 'tmpl-A')
+			equipmentMatchingStore.setMatch('eq2', 'tmpl-B')
+			flushSync()
 
-			// WHEN areAllManualMatchesSet is called with requiredCount=3
-			const result = equipmentMatchingStore.areAllManualMatchesSet(3)
+			// WHEN
+			const counts = equipmentMatchingStore.selectedTemplateCounts
 
-			// THEN should return true
-			expect(result).toBe(true)
+			// THEN
+			expect(counts.get('tmpl-A')).toBe(1)
+			expect(counts.get('tmpl-B')).toBe(1)
+		})
+	})
+
+	describe('templatesByType', () => {
+		it('GIVEN no selected bay type WHEN templatesByType is accessed THEN should return empty map', () => {
+			// GIVEN
+			ssdImportStore.selectedBayType = null
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templatesByType.size).toBe(0)
 		})
 
-		it('GIVEN more matches than required WHEN areAllManualMatchesSet is called THEN should return true', () => {
-			// GIVEN more matches than required
-			equipmentMatchingStore.manualMatches.set('eq1', 'template1')
-			equipmentMatchingStore.manualMatches.set('eq2', 'template2')
-			equipmentMatchingStore.manualMatches.set('eq3', 'template3')
-			equipmentMatchingStore.manualMatches.set('eq4', 'template4')
+		it('GIVEN selected bay type that does not exist in bayTypes WHEN templatesByType is accessed THEN should return empty map', () => {
+			// GIVEN
+			ssdImportStore.selectedBayType = 'non-existent-uuid'
+			ssdImportStore.bayTypes = []
 
-			// WHEN areAllManualMatchesSet is called with requiredCount=3
-			const result = equipmentMatchingStore.areAllManualMatchesSet(3)
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templatesByType.size).toBe(0)
+		})
 
-			// THEN should return true
-			expect(result).toBe(true)
+		it('GIVEN a selected bay type with templates of different types WHEN templatesByType is accessed THEN should group each template under its type', () => {
+			// GIVEN
+			const tmplCBR = createTemplate('tmpl-1', 'CBR')
+			const tmplDIS = createTemplate('tmpl-2', 'DIS')
+
+			ssdImportStore.conductingEquipmentTemplates = [tmplCBR, tmplDIS]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-1',
+							virtual: false
+						},
+						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN
+			const byType = equipmentMatchingStore.templatesByType
+
+			// THEN
+			expect(byType.get('CBR')).toEqual([tmplCBR])
+			expect(byType.get('DIS')).toEqual([tmplDIS])
+		})
+
+		it('GIVEN a bay type with two conducting equipments of the same template type WHEN templatesByType is accessed THEN should list both templates under that type', () => {
+			// GIVEN
+			const tmpl1 = createTemplate('tmpl-1', 'CBR', 'Breaker1')
+			const tmpl2 = createTemplate('tmpl-2', 'CBR', 'Breaker2')
+
+			ssdImportStore.conductingEquipmentTemplates = [tmpl1, tmpl2]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-1',
+							virtual: false
+						},
+						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN
+			const byType = equipmentMatchingStore.templatesByType
+
+			// THEN
+			expect(byType.get('CBR')).toHaveLength(2)
+			expect(byType.get('CBR')).toEqual(
+				expect.arrayContaining([tmpl1, tmpl2])
+			)
+		})
+
+		it('GIVEN a conducting equipment with an unknown template uuid WHEN templatesByType is accessed THEN should skip that entry', () => {
+			// GIVEN
+			ssdImportStore.conductingEquipmentTemplates = []
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'unknown-tmpl',
+							virtual: false
+						}
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templatesByType.size).toBe(0)
+		})
+	})
+
+	describe('requiredTemplateCounts', () => {
+		it('GIVEN no selected bay type WHEN requiredTemplateCounts is accessed THEN should return empty map', () => {
+			// GIVEN
+			ssdImportStore.selectedBayType = null
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.requiredTemplateCounts.size).toBe(0)
+		})
+
+		it('GIVEN a bay type with multiple conducting equipments sharing a template WHEN requiredTemplateCounts is accessed THEN should sum the counts', () => {
+			// GIVEN
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-A',
+							virtual: false
+						},
+						{
+							uuid: 'ce-2',
+							templateUuid: 'tmpl-A',
+							virtual: false
+						},
+						{ uuid: 'ce-3', templateUuid: 'tmpl-B', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN
+			const counts = equipmentMatchingStore.requiredTemplateCounts
+
+			// THEN
+			expect(counts.get('tmpl-A')).toBe(2)
+			expect(counts.get('tmpl-B')).toBe(1)
+		})
+
+		it('GIVEN a selected bay type that does not exist in bayTypes WHEN requiredTemplateCounts is accessed THEN should return empty map', () => {
+			// GIVEN
+			ssdImportStore.bayTypes = []
+			ssdImportStore.selectedBayType = 'ghost-bay'
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.requiredTemplateCounts.size).toBe(0)
+		})
+	})
+
+	describe('templateCountMismatch', () => {
+		describe('GIVEN a bay type with two templates of the same type', () => {
+			beforeEach(() => {
+				const tmpl1 = createTemplate('tmpl-1', 'CBR', 'Breaker1')
+				const tmpl2 = createTemplate('tmpl-2', 'CBR', 'Breaker2')
+
+				ssdImportStore.conductingEquipmentTemplates = [tmpl1, tmpl2]
+				ssdImportStore.bayTypes = [
+					{
+						uuid: 'bay-1',
+						name: 'BayType1',
+						conductingEquipments: [
+							{
+								uuid: 'ce-1',
+								templateUuid: 'tmpl-1',
+								virtual: false
+							},
+							{
+								uuid: 'ce-2',
+								templateUuid: 'tmpl-2',
+								virtual: false
+							}
+						],
+						functions: []
+					}
+				]
+				ssdImportStore.selectedBayType = 'bay-1'
+				flushSync()
+			})
+
+			it('WHEN no manual matches are set THEN should report mismatches for both templates', () => {
+				// WHEN no manual matches (cleared in beforeEach)
+
+				// THEN
+				const mismatches = equipmentMatchingStore.templateCountMismatch
+				expect(mismatches).toHaveLength(2)
+				const uuids = mismatches.map((m) => m.templateUuid)
+				expect(uuids).toContain('tmpl-1')
+				expect(uuids).toContain('tmpl-2')
+				expect(
+					mismatches.find((m) => m.templateUuid === 'tmpl-1')
+				).toMatchObject({ required: 1, selected: 0 })
+			})
+
+			it('WHEN manual matches satisfy all required counts THEN should report no mismatches', () => {
+				// WHEN
+				equipmentMatchingStore.setMatch('eq-A', 'tmpl-1')
+				equipmentMatchingStore.setMatch('eq-B', 'tmpl-2')
+				flushSync()
+
+				// THEN
+				expect(
+					equipmentMatchingStore.templateCountMismatch
+				).toHaveLength(0)
+			})
+
+			it('WHEN only one of two ambiguous templates is matched correctly THEN should report mismatch for the unmatched template', () => {
+				// WHEN only tmpl-1 is satisfied
+				equipmentMatchingStore.setMatch('eq-A', 'tmpl-1')
+				flushSync()
+
+				// THEN tmpl-2 is still missing
+				const mismatches = equipmentMatchingStore.templateCountMismatch
+				expect(mismatches).toHaveLength(1)
+				expect(mismatches[0].templateUuid).toBe('tmpl-2')
+				expect(mismatches[0]).toMatchObject({
+					required: 1,
+					selected: 0
+				})
+			})
+		})
+
+		it('GIVEN a bay type where each type has only one template WHEN templateCountMismatch is accessed THEN should report no mismatches (no ambiguity)', () => {
+			// GIVEN – unique types, no ambiguity
+			const tmplCBR = createTemplate('tmpl-1', 'CBR')
+			const tmplDIS = createTemplate('tmpl-2', 'DIS')
+
+			ssdImportStore.conductingEquipmentTemplates = [tmplCBR, tmplDIS]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-1',
+							virtual: false
+						},
+						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN no manual matches
+
+			// THEN – no mismatches because each type is unambiguous
+			expect(equipmentMatchingStore.templateCountMismatch).toHaveLength(0)
+		})
+
+		it('GIVEN no selected bay type WHEN templateCountMismatch is accessed THEN should return empty array', () => {
+			// GIVEN
+			ssdImportStore.selectedBayType = null
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templateCountMismatch).toHaveLength(0)
+		})
+	})
+
+	describe('templateCountsValid', () => {
+		it('GIVEN no ambiguous templates WHEN templateCountsValid is accessed THEN should be true', () => {
+			// GIVEN – unique type per template
+			ssdImportStore.conductingEquipmentTemplates = [
+				createTemplate('tmpl-1', 'CBR')
+			]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{ uuid: 'ce-1', templateUuid: 'tmpl-1', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templateCountsValid).toBe(true)
+		})
+
+		it('GIVEN ambiguous templates with unsatisfied counts WHEN templateCountsValid is accessed THEN should be false', () => {
+			// GIVEN – two templates of same type, neither matched
+			ssdImportStore.conductingEquipmentTemplates = [
+				createTemplate('tmpl-1', 'CBR'),
+				createTemplate('tmpl-2', 'CBR')
+			]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-1',
+							virtual: false
+						},
+						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templateCountsValid).toBe(false)
+		})
+
+		it('GIVEN ambiguous templates with all counts satisfied WHEN templateCountsValid is accessed THEN should be true', () => {
+			// GIVEN
+			ssdImportStore.conductingEquipmentTemplates = [
+				createTemplate('tmpl-1', 'CBR'),
+				createTemplate('tmpl-2', 'CBR')
+			]
+			ssdImportStore.bayTypes = [
+				{
+					uuid: 'bay-1',
+					name: 'BayType1',
+					conductingEquipments: [
+						{
+							uuid: 'ce-1',
+							templateUuid: 'tmpl-1',
+							virtual: false
+						},
+						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
+					],
+					functions: []
+				}
+			]
+			ssdImportStore.selectedBayType = 'bay-1'
+			equipmentMatchingStore.setMatch('eq-A', 'tmpl-1')
+			equipmentMatchingStore.setMatch('eq-B', 'tmpl-2')
+			flushSync()
+
+			// WHEN / THEN
+			expect(equipmentMatchingStore.templateCountsValid).toBe(true)
 		})
 	})
 })

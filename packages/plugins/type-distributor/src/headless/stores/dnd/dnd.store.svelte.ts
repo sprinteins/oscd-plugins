@@ -5,12 +5,13 @@ import type {
 } from '@/headless/common-types'
 import {
 	getBayTypeApplicationState,
-	applyBayTypeIfNeeded,
+	shouldApplyBayType,
+	applyBayType,
 	buildEditsForIed,
 	generateCommitTitle,
 	commitEdits
 } from './drop-handler'
-import { assignedLNodesStore } from '@/headless/stores'
+import { assignedLNodesStore, bayStore } from '@/headless/stores'
 import { buildEditsForBayLNode } from '@/headless/scl'
 
 type DraggedItem = {
@@ -61,15 +62,20 @@ class UseDndStore {
 
 		try {
 			const applicationState = getBayTypeApplicationState()
-			const didApplyBayType = applyBayTypeIfNeeded(applicationState)
+			const didApplyBayType = shouldApplyBayType(applicationState)
+			const freshMatches = didApplyBayType
+				? applyBayType(applicationState)
+				: null
+			const equipmentMatches = freshMatches ?? bayStore.equipmentMatches
 
 			const allEdits = [
-				...buildEditsForIed(
-					functionFromSSD,
+				...buildEditsForIed({
+					sourceFunction: functionFromSSD,
 					lNodes,
 					targetAccessPoint,
-					this.draggedItem.equipmentUuid
-				)
+					equipmentMatches,
+					equipmentUuid: this.draggedItem.equipmentUuid
+				})
 			]
 
 			const shouldUpdateBay =
@@ -81,20 +87,21 @@ class UseDndStore {
 						lNodes,
 						iedName: targetSIedName,
 						sourceFunction: functionFromSSD,
-						equipmentUuid: this.draggedItem.equipmentUuid
+						equipmentUuid: this.draggedItem.equipmentUuid,
+						equipmentMatches
 					})
 				)
 			}
 
 			if (allEdits.length > 0) {
-				const title = generateCommitTitle(
+				const title = generateCommitTitle({
 					lNodes,
-					functionFromSSD.name,
+					functionName: functionFromSSD.name,
 					targetSIedName,
 					didApplyBayType
-				)
+				})
 
-				commitEdits(allEdits, title, didApplyBayType)
+				commitEdits({ edits: allEdits, title, squash: didApplyBayType })
 				const parentUuid =
 					this.draggedItem.bayTypeInstanceUuid || functionFromSSD.uuid
 				assignedLNodesStore.markAsAssigned(parentUuid, lNodes)

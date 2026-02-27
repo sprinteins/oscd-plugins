@@ -1,8 +1,8 @@
 <script lang="ts">
 import {
 	bayStore,
-	bayTypesStore,
-	equipmentMatchingStore
+	equipmentMatchingStore,
+	ssdImportStore
 } from '@/headless/stores'
 import { Button } from '@oscd-plugins/core-ui-svelte'
 import EquipmentMatching from '@/ui/components/columns/bay-type/equipment-matching.svelte'
@@ -14,7 +14,7 @@ const {
 } = $props()
 
 const hasCountMismatches = $derived(
-	(equipmentMatchingStore.validationResult?.errors?.length ?? 0) > 1
+	(equipmentMatchingStore.validationResult?.countMismatchErrors?.length ?? 0) > 0
 )
 
 function handleApplyBayType() {
@@ -23,7 +23,7 @@ function handleApplyBayType() {
 	}
 
 	try {
-		bayStore.pendingBayTypeApply = bayTypesStore.selectedBayType
+		bayStore.pendingBayTypeApply = ssdImportStore.selectedBayType
 	} catch (error) {
 		console.error('[handleApplyBayType] Error:', error)
 	}
@@ -52,7 +52,7 @@ const ambiguousEquipmentCount = $derived.by(() => {
 
 const canApply = $derived.by(() => {
 	if (
-		!bayTypesStore.selectedBayType ||
+		!ssdImportStore.selectedBayType ||
 		!equipmentMatchingStore.validationResult
 	) {
 		return false
@@ -66,8 +66,9 @@ const canApply = $derived.by(() => {
 
 	if (!scdBay) return false
 
-	return equipmentMatchingStore.areAllManualMatchesSet(
-		ambiguousEquipmentCount
+	return (
+		equipmentMatchingStore.manualMatches.size >= ambiguousEquipmentCount &&
+		equipmentMatchingStore.templateCountsValid
 	)
 })
 </script>
@@ -94,8 +95,7 @@ const canApply = $derived.by(() => {
 {/if}
 
 {#if hasCountMismatches && equipmentMatchingStore.validationResult}
-    {@const countErrors =
-        equipmentMatchingStore.validationResult.errors.slice(1)}
+    {@const countErrors = equipmentMatchingStore.validationResult.countMismatchErrors ?? []}
     <div class="p-3 bg-amber-50 border border-amber-200 rounded mb-4">
         <p class="text-sm font-semibold text-amber-700 mb-2">
             Equipment count mismatches:

@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { assignedLNodesStore } from '@/headless/stores/assigned-lnodes'
 import { dndStore } from '@/headless/stores/dnd'
-import type { LNodeTemplate, FunctionTemplate } from '@/headless/common-types'
+import type {
+	LNodeTemplate,
+	FunctionTemplate,
+	BayTypeWithTemplates
+} from '@/headless/common-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { buildEditsForIed } from '@/headless/stores/dnd/drop-handler'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
@@ -24,7 +28,8 @@ vi.mock('@/headless/stores/dnd/drop-handler', () => ({
 		hasValidAutoSelection: false,
 		hasPendingManualSelection: false
 	})),
-	applyBayTypeIfNeeded: vi.fn(() => false),
+	shouldApplyBayType: vi.fn(() => false),
+	applyBayType: vi.fn(() => []),
 	buildEditsForIed: vi.fn(() => []),
 	createBayEdits: vi.fn(() => []),
 	generateCommitTitle: vi.fn(() => 'Test Commit'),
@@ -42,13 +47,21 @@ vi.mock('@/headless/stores/bay.store.svelte', () => ({
 	bayStore: {
 		selectedBay: null,
 		assigendBayType: null,
-		pendingBayTypeApply: null
+		pendingBayTypeApply: null,
+		equipmentMatches: [],
+		scdBay: null
 	}
 }))
 
 vi.mock('@/headless/stores/equipment-matching.store.svelte', () => ({
 	equipmentMatchingStore: {
 		validationResult: null
+	}
+}))
+
+vi.mock('@/headless/stores/ssd-import.store.svelte', () => ({
+	ssdImportStore: {
+		bayTypes: []
 	}
 }))
 
@@ -145,24 +158,88 @@ describe('Integration: Assigned LNodes Flow', () => {
 	})
 
 	afterEach(() => {
-		vi.clearAllMocks()
+		vi.restoreAllMocks()
 		dndStore.handleDragEnd()
 	})
 
-	describe('Initial state', () => {
-		it('should identify already assigned LNodes after rebuild', () => {
+	describe('GIVEN a Bay with one assigned LNode in the document', () => {
+		it('WHEN rebuild is called THEN already-assigned LNodes are identified correctly', () => {
+			// WHEN
 			assignedLNodesStore.rebuild()
 
-			// lnode1 already exists in Bay structure with iedName
+			// THEN lnode1 exists in Bay structure with iedName → assigned
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
 
-			// lnode2 and lnode3 do not exist yet
+			// THEN lnode2 and lnode3 have no iedName → not assigned
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
+		})
+
+		it('WHEN rebuild is called THEN hasConnections returns true', () => {
+			// WHEN
+			assignedLNodesStore.rebuild()
+
+			// THEN
+			expect(assignedLNodesStore.hasConnections).toBe(true)
+		})
+	})
+
+	describe('GIVEN no scdBay is set', () => {
+		beforeEach(() => {
+			bayStore.scdBay = null
+		})
+
+		it('WHEN rebuild is called THEN no LNodes are assigned and hasConnections is false', () => {
+			// WHEN
+			assignedLNodesStore.rebuild()
+
+			// THEN
+			expect(assignedLNodesStore.hasConnections).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(false)
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+		})
+
+		it('WHEN rebuild is called THEN it does not throw', () => {
+			// WHEN / THEN
+			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
+		})
+	})
+
+	describe('GIVEN an empty SCL document', () => {
+		beforeEach(() => {
+			const emptyDoc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL"></SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = emptyDoc
+			bayStore.scdBay = null
+		})
+
+		it('WHEN rebuild is called THEN no LNodes are assigned and it does not throw', () => {
+			// WHEN / THEN
+			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
+
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(false)
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
 		})
 	})
 
-	describe('Drag and drop flow', () => {
+	describe('GIVEN xmlDocument is undefined', () => {
+		beforeEach(() => {
+			pluginGlobalStore.xmlDocument = undefined
+			bayStore.scdBay = null
+		})
+
+		it('WHEN rebuild is called THEN no LNodes are assigned and it does not throw', () => {
+			// WHEN / THEN
+			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
+
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(false)
+		})
+	})
+
+	describe('GIVEN a drag-and-drop flow with edits produced', () => {
 		beforeEach(() => {
 			// Mock buildEditsForIed to return a non-empty array so commitEdits is called
 			vi.mocked(buildEditsForIed).mockReturnValue([
@@ -174,84 +251,111 @@ describe('Integration: Assigned LNodes Flow', () => {
 					// biome-ignore lint/suspicious/noExplicitAny: mock data
 				} as any
 			])
+
+			assignedLNodesStore.rebuild()
 		})
 
-		it('should mark LNodes as assigned after successful drop', () => {
-			assignedLNodesStore.rebuild()
-
-			// Initial state - only lnode1 is assigned
+		it('WHEN unassigned LNodes are dropped THEN they are marked as assigned', () => {
+			// Initial state – only lnode1 is assigned
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
 
-			// Start drag with unassigned LNodes
+			// WHEN
 			dndStore.handleDragStart({
 				type: 'functionTemplate',
 				sourceFunction: functionTemplate,
 				lNodes: [lnode2, lnode3]
 			})
-
-			// Simulate successful drop
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
-			// After drop, lnode2 and lnode3 should be marked as assigned
+			// THEN lnode2 and lnode3 are now assigned
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(true)
 
-			// lnode1 should still be assigned
+			// AND previously assigned lnode1 remains assigned
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
 		})
 
-		it('should handle mixed assigned/unassigned LNodes in drag', () => {
-			assignedLNodesStore.rebuild()
-
+		it('WHEN mixed assigned/unassigned LNodes are dropped THEN all are marked as assigned', () => {
 			// lnode1 is already assigned
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
 
-			// Drag all LNodes including the already assigned one
+			// WHEN
 			dndStore.handleDragStart({
 				type: 'functionTemplate',
 				sourceFunction: functionTemplate,
 				lNodes: [lnode1, lnode2]
 			})
-
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
-			// Both should be marked as assigned
+			// THEN
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
+		})
+
+		it('WHEN a drop occurs THEN markAsAssigned is used instead of a full rebuild', () => {
+			const rebuildSpy = vi.spyOn(assignedLNodesStore, 'rebuild')
+			const markAsAssignedSpy = vi.spyOn(assignedLNodesStore, 'markAsAssigned')
+
+			// WHEN
+			dndStore.handleDragStart({
+				type: 'lNode',
+				sourceFunction: functionTemplate,
+				lNodes: [lnode2]
+			})
+			dndStore.handleDrop(accessPoint, 'NewIED')
+
+			// THEN incremental update path is taken
+			expect(markAsAssignedSpy).toHaveBeenCalledTimes(1)
+			expect(rebuildSpy).not.toHaveBeenCalled()
 		})
 	})
 
-	describe('Rebuild synchronization', () => {
-		it('should maintain consistency between manual marking and document state', () => {
+	describe('GIVEN a drag that ends without a drop', () => {
+		it('WHEN handleDragEnd is called THEN the assigned state does not change', () => {
 			assignedLNodesStore.rebuild()
 
-			// Mark lnode2 as assigned manually
+			const stateBefore = assignedLNodesStore.isAssigned(funcUuid, lnode2)
+
+			// WHEN
+			dndStore.handleDragStart({
+				type: 'lNode',
+				sourceFunction: functionTemplate,
+				lNodes: [lnode2]
+			})
+			dndStore.handleDragEnd()
+
+			// THEN
+			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(stateBefore)
+		})
+	})
+
+	describe('GIVEN LNodes manually marked then document rebuilt', () => {
+		it('WHEN rebuild is called THEN manually marked LNodes absent from the document are cleared', () => {
+			assignedLNodesStore.rebuild()
+
+			// Mark lnode2 manually
 			assignedLNodesStore.markAsAssigned(funcUuid, [lnode2])
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
 
-			// Rebuild from document (which doesn't have lnode2 in Bay structure)
+			// WHEN rebuild re-reads document (lnode2 not in Bay structure)
 			assignedLNodesStore.rebuild()
 
-			// lnode2 should no longer be marked as assigned
+			// THEN lnode2 is gone
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
 
-			// lnode1 (which exists in Bay structure with iedName) should still be assigned
+			// AND document-backed lnode1 is still assigned
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
 		})
 
-		it('should sync state after document modifications to Bay structure', () => {
+		it('WHEN a LNode is added to the Bay structure and rebuild is called THEN it becomes assigned', () => {
 			assignedLNodesStore.rebuild()
-
-			// Initial state
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
 
-			// Manually add lnode2 to Bay structure with iedName
-			const func = mockDocument.querySelector(
-				'Function[templateUuid="func-uuid-1"]'
-			)
+			// Manually add lnode2 to the document's Bay structure
+			const func = mockDocument.querySelector('Function[templateUuid="func-uuid-1"]')
 			const newLN = mockDocument.createElement('LNode')
 			newLN.setAttribute('lnClass', 'CSWI')
 			newLN.setAttribute('lnType', 'TestCSWI')
@@ -260,95 +364,18 @@ describe('Integration: Assigned LNodes Flow', () => {
 			newLN.setAttribute('ldInst', 'LD2')
 			func?.appendChild(newLN)
 
-			// Rebuild to sync with document
+			// WHEN
 			assignedLNodesStore.rebuild()
 
-			// Now lnode2 should be marked as assigned
+			// THEN
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
 		})
 	})
 
-	describe('Performance: Incremental updates vs full rebuild', () => {
-		it('should use incremental update during drop instead of full rebuild', () => {
-			const rebuildSpy = vi.spyOn(assignedLNodesStore, 'rebuild')
-			const markAsAssignedSpy = vi.spyOn(
-				assignedLNodesStore,
-				'markAsAssigned'
-			)
-
-			assignedLNodesStore.rebuild()
-			rebuildSpy.mockClear()
-
-			// Perform drop
-			dndStore.handleDragStart({
-				type: 'lNode',
-				sourceFunction: functionTemplate,
-				lNodes: [lnode2]
-			})
-
-			dndStore.handleDrop(accessPoint, 'NewIED')
-
-			// Should use markAsAssigned, not rebuild
-			expect(markAsAssignedSpy).toHaveBeenCalledTimes(1)
-			expect(rebuildSpy).not.toHaveBeenCalled()
-		})
-	})
-
-	describe('Edge cases', () => {
-		it('should handle drag end without drop', () => {
-			assignedLNodesStore.rebuild()
-
-			const initialState = assignedLNodesStore.isAssigned(
-				funcUuid,
-				lnode2
-			)
-
-			dndStore.handleDragStart({
-				type: 'lNode',
-				sourceFunction: functionTemplate,
-				lNodes: [lnode2]
-			})
-
-			// End drag without dropping
-			dndStore.handleDragEnd()
-
-			// State should remain unchanged
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(
-				initialState
-			)
-		})
-
-		it('should handle empty document', () => {
-			const emptyDoc = new DOMParser().parseFromString(
-				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL"></SCL>`,
-				'application/xml'
-			)
-			pluginGlobalStore.xmlDocument = emptyDoc
-			bayStore.scdBay = null
-
-			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
-
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
-		})
-
-		it('should handle null document', () => {
-			pluginGlobalStore.xmlDocument = undefined
-			bayStore.scdBay = null
-
-			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
-
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(false)
-		})
-	})
-
-	describe('Multiple Functions scenario', () => {
-		it('should track LNodes across multiple Functions', () => {
-			// Add lnode2 to another Function
-			const func2 = mockDocument.querySelector(
-				'Function[templateUuid="func-uuid-2"]'
-			)
+	describe('GIVEN multiple Function elements in the Bay', () => {
+		it('WHEN rebuild is called THEN LNodes are tracked per-function and not cross-contaminated', () => {
+			// Add lnode2 to funcUuid2 in the document
+			const func2 = mockDocument.querySelector('Function[templateUuid="func-uuid-2"]')
 			const ln2 = mockDocument.createElement('LNode')
 			ln2.setAttribute('lnClass', 'CSWI')
 			ln2.setAttribute('lnType', 'TestCSWI')
@@ -357,26 +384,88 @@ describe('Integration: Assigned LNodes Flow', () => {
 			ln2.setAttribute('ldInst', 'LD2')
 			func2?.appendChild(ln2)
 
-			// Update bayStore.scdBay to reflect the modified document
-			const updatedBayElement = mockDocument.querySelector('Bay')
-			bayStore.scdBay = updatedBayElement as Element
+			bayStore.scdBay = mockDocument.querySelector('Bay') as Element
 
+			// WHEN
 			assignedLNodesStore.rebuild()
 
-			// lnode1 should be assigned in funcUuid
+			// THEN lnode1 is assigned under funcUuid
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
 
-			// lnode2 should be assigned in funcUuid2 (different function)
+			// THEN lnode2 is assigned under funcUuid2 only
 			expect(assignedLNodesStore.isAssigned(funcUuid2, lnode2)).toBe(true)
-
-			// But lnode2 should not be assigned in funcUuid
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
 
-			// And lnode3 should not be assigned anywhere
+			// THEN lnode3 is not assigned anywhere
 			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(funcUuid2, lnode3)).toBe(
-				false
-			)
+			expect(assignedLNodesStore.isAssigned(funcUuid2, lnode3)).toBe(false)
+		})
+	})
+
+	describe('GIVEN a BayTypeWithTemplates where all LNodes are assigned', () => {
+		it('WHEN areAllLNodesAssigned is called THEN it returns true', () => {
+			assignedLNodesStore.rebuild()
+			// Mark lnode1 as assigned (it already is from rebuild)
+			// Build a minimal BayTypeWithTemplates with one function containing lnode1
+			const bayTypeWithTemplates: BayTypeWithTemplates = {
+				uuid: 'bt-uuid',
+				name: 'TestBayType',
+				conductingEquipments: [],
+				functions: [{ uuid: funcUuid, templateUuid: funcUuid }],
+				conductingEquipmentTemplates: [],
+				functionTemplates: [
+					{ uuid: funcUuid, name: 'TestFunction', desc: '', lnodes: [lnode1] }
+				],
+				conductingEquipmentTemplateMap: new Map(),
+				functionTemplateMap: new Map([
+					[funcUuid, { uuid: funcUuid, name: 'TestFunction', desc: '', lnodes: [lnode1] }]
+				])
+			}
+
+			// WHEN
+			const result = assignedLNodesStore.areAllLNodesAssigned(bayTypeWithTemplates)
+
+			// THEN
+			expect(result).toBe(true)
+		})
+
+		it('WHEN areAllLNodesAssigned is called and some LNodes are not assigned THEN it returns false', () => {
+			assignedLNodesStore.rebuild()
+
+			// lnode2 is not assigned
+			const bayTypeWithTemplates: BayTypeWithTemplates = {
+				uuid: 'bt-uuid',
+				name: 'TestBayType',
+				conductingEquipments: [],
+				functions: [{ uuid: funcUuid, templateUuid: funcUuid }],
+				conductingEquipmentTemplates: [],
+				functionTemplates: [
+					{
+						uuid: funcUuid,
+						name: 'TestFunction',
+						desc: '',
+						lnodes: [lnode1, lnode2]
+					}
+				],
+				conductingEquipmentTemplateMap: new Map(),
+				functionTemplateMap: new Map([
+					[
+						funcUuid,
+						{
+							uuid: funcUuid,
+							name: 'TestFunction',
+							desc: '',
+							lnodes: [lnode1, lnode2]
+						}
+					]
+				])
+			}
+
+			// WHEN
+			const result = assignedLNodesStore.areAllLNodesAssigned(bayTypeWithTemplates)
+
+			// THEN
+			expect(result).toBe(false)
 		})
 	})
 })
