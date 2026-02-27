@@ -1,5 +1,5 @@
 import type { AccessPointData, IedData } from './types'
-import { queryAccessPointsFromIed, queryIedExists } from '@/headless/ied'
+import { queryAccessPointsFromIed, queryIedExists } from '@/headless/scl'
 
 type ValidateSubmissionParams = {
 	ied: IedData
