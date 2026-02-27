@@ -71,18 +71,11 @@ const optionsByEquipment = $derived.by(() => {
 			continue
 		}
 
-		const seenTemplateUuids = new Set<string>()
-		const unique = (
-			equipmentMatchingStore.templatesByType.get(type) ?? []
-		).filter((t) => {
-			if (seenTemplateUuids.has(t.uuid)) return false
-			seenTemplateUuids.add(t.uuid)
-			return true
-		})
+		const templates = equipmentMatchingStore.templatesByType.get(type) ?? []
 
 		map.set(name, [
 			...noOption,
-			...unique.map((t) => ({
+			...templates.map((t) => ({
 				value: t.uuid,
 				label: `${t.name} (${t.type})`
 			}))

@@ -131,7 +131,7 @@ describe('equipmentMatchingStore', () => {
 	})
 
 	describe('clearValidationResult', () => {
-		it('GIVEN validation result and manual matches exist WHEN clearValidationResult is called THEN should clear validation and matches', () => {
+		it('GIVEN validation result and manual matches exist WHEN clearValidationResult is called THEN should clear only the validation result and preserve manual matches', () => {
 			// GIVEN validation result and manual matches exist
 			equipmentMatchingStore.validationResult = {
 				isValid: true,
@@ -142,9 +142,9 @@ describe('equipmentMatchingStore', () => {
 			// WHEN clearValidationResult is called
 			equipmentMatchingStore.clearValidationResult()
 
-			// THEN should clear validation and matches
+			// THEN should clear only the validation result; manual matches are preserved
 			expect(equipmentMatchingStore.validationResult).toBeNull()
-			expect(equipmentMatchingStore.manualMatches.size).toBe(0)
+			expect(equipmentMatchingStore.manualMatches.size).toBe(1)
 		})
 	})
 

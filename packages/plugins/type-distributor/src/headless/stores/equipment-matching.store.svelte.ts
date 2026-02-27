@@ -18,7 +18,11 @@ class UseEquipmentMatchingStore {
 		)
 		if (!bayType) return map
 
+		const seenUuids = new Set<string>()
 		for (const ce of bayType.conductingEquipments) {
+			if (seenUuids.has(ce.templateUuid)) continue
+			seenUuids.add(ce.templateUuid)
+
 			const template = ssdImportStore.getConductingEquipmentTemplate(
 				ce.templateUuid
 			)
@@ -117,9 +121,9 @@ class UseEquipmentMatchingStore {
 		this.manualMatches.clear()
 	}
 
+	/** Clears only the validation result. Manual matches are preserved. Use `reset()` to clear both. */
 	clearValidationResult() {
 		this.validationResult = null
-		this.manualMatches.clear()
 	}
 }
 

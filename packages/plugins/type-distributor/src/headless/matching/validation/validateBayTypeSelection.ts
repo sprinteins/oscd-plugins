@@ -4,27 +4,16 @@ import {
 	bayStore,
 	assignedLNodesStore
 } from '@/headless/stores'
+import { resolveMatchingContext } from '../resolve-matching-context'
 import type { ValidationResult } from './types'
 import { validateEquipmentMatch } from './validation'
 
 export function validateBayTypeSelection(bayName: string): ValidationResult {
-	const selectedBayTypeName = ssdImportStore.selectedBayType
-	if (!selectedBayTypeName) {
-		throw new Error('No BayType selected')
-	}
-
-	const bayType = ssdImportStore.bayTypes.find(
-		(bay) => bay.uuid === selectedBayTypeName
+	const { scdBay, bayType } = resolveMatchingContext(
+		ssdImportStore.selectedBayType,
+		ssdImportStore.bayTypes,
+		bayStore.scdBay
 	)
-
-	if (!bayType) {
-		throw new Error(`BayType "${selectedBayTypeName}" not found`)
-	}
-
-	const scdBay = bayStore.scdBay
-	if (!scdBay) {
-		throw new Error('No Bay selected in SCD')
-	}
 
 	if (
 		assignedLNodesStore.hasConnections &&
@@ -34,6 +23,7 @@ export function validateBayTypeSelection(bayName: string): ValidationResult {
 		const result: ValidationResult = {
 			isValid: false,
 			errors: ['Cannot change Bay Type - LNode connections exist'],
+			countMismatchErrors: [],
 			requiresManualMatching: false
 		}
 		equipmentMatchingStore.setValidationResult(result, true)

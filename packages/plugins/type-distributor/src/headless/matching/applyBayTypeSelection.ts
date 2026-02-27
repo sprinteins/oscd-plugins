@@ -1,11 +1,8 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '@/headless/common-types'
 import type { EquipmentMatch } from './types'
-import {
-	ssdImportStore,
-	equipmentMatchingStore,
-	bayStore
-} from '../stores'
+import { equipmentMatchingStore, ssdImportStore, bayStore } from '../stores'
+import { resolveMatchingContext } from './resolve-matching-context'
 import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
 import { matchEquipment } from './matching'
@@ -19,24 +16,11 @@ import { getDocumentAndEditor } from '@/headless/utils'
 
 export function applyBayTypeSelection(bayName: string): EquipmentMatch[] {
 	const { doc, editor } = getDocumentAndEditor()
-
-	const selectedBayTypeName = ssdImportStore.selectedBayType
-	if (!selectedBayTypeName) {
-		throw new Error('No BayType selected')
-	}
-
-	const bayType = ssdImportStore.bayTypes.find(
-		(bay) => bay.uuid === selectedBayTypeName
+	const { scdBay, bayType } = resolveMatchingContext(
+		ssdImportStore.selectedBayType,
+		ssdImportStore.bayTypes,
+		bayStore.scdBay
 	)
-
-	if (!bayType) {
-		throw new Error(`BayType "${selectedBayTypeName}" not found`)
-	}
-
-	const scdBay = bayStore.scdBay
-	if (!scdBay) {
-		throw new Error('No Bay selected in SCD')
-	}
 
 	const matches = matchEquipment(
 		scdBay,

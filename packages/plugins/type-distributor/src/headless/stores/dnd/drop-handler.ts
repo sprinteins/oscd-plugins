@@ -61,7 +61,7 @@ export function applyBayType(state: BayTypeApplicationState): EquipmentMatch[] {
 
 	const matches = applyBayTypeSelection(bayStore.selectedBay)
 	bayStore.pendingBayTypeApply = null
-	equipmentMatchingStore.clearValidationResult()
+	equipmentMatchingStore.reset()
 
 	return matches
 }

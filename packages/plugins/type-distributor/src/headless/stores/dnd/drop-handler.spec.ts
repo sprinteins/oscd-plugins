@@ -35,7 +35,7 @@ vi.mock('../equipment-matching.store.svelte', () => ({
 			isValid?: boolean
 			requiresManualMatching?: boolean
 		},
-		clearValidationResult: vi.fn()
+		reset: vi.fn()
 	}
 }))
 
@@ -242,7 +242,7 @@ describe('drop-handler', () => {
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-3')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 			expect(
-				equipmentMatchingStore.clearValidationResult
+				equipmentMatchingStore.reset
 			).toHaveBeenCalled()
 		})
 

@@ -14,7 +14,7 @@ const {
 } = $props()
 
 const hasCountMismatches = $derived(
-	(equipmentMatchingStore.validationResult?.errors?.length ?? 0) > 1
+	(equipmentMatchingStore.validationResult?.countMismatchErrors?.length ?? 0) > 0
 )
 
 function handleApplyBayType() {
@@ -95,8 +95,7 @@ const canApply = $derived.by(() => {
 {/if}
 
 {#if hasCountMismatches && equipmentMatchingStore.validationResult}
-    {@const countErrors =
-        equipmentMatchingStore.validationResult.errors.slice(1)}
+    {@const countErrors = equipmentMatchingStore.validationResult.countMismatchErrors ?? []}
     <div class="p-3 bg-amber-50 border border-amber-200 rounded mb-4">
         <p class="text-sm font-semibold text-amber-700 mb-2">
             Equipment count mismatches:

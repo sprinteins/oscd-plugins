@@ -1,6 +1,6 @@
 import { getDocumentAndEditor } from '@/headless/utils'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { matchEquipment } from '@/headless/matching/matching'
+import { matchEquipment } from '@/headless/matching'
 import { ssdImportStore } from './ssd-import.store.svelte'
 import { equipmentMatchingStore } from './equipment-matching.store.svelte'
 

@@ -1,5 +1,6 @@
 import type { BayType } from '../common-types'
 import { ssdImportStore } from '../stores'
+import { groupEquipmentByType } from './equipment-grouping'
 import type { EquipmentLookupItem, EquipmentMatch } from './types'
 
 export function matchEquipment(
@@ -49,9 +50,9 @@ export function matchEquipment(
 	const remainingEquipment = scdConductingEquipment.filter(
 		(el) => !manuallyMatched.has(el)
 	)
-	const equipmentByType = groupEquipmentByType(remainingEquipment)
+	const remainingByType = groupEquipmentByType(remainingEquipment)
 
-	for (const [type, scdElements] of Object.entries(equipmentByType)) {
+	for (const [type, scdElements] of Object.entries(remainingByType)) {
 		for (const scdElement of scdElements) {
 			const scdName = scdElement.getAttribute('name') || 'unknown'
 
@@ -112,18 +113,3 @@ function findMatchingEquipment(
 	)
 }
 
-function groupEquipmentByType(elements: Element[]): Record<string, Element[]> {
-	const grouped: Record<string, Element[]> = {}
-
-	for (const element of elements) {
-		const type = element.getAttribute('type')
-		if (!type) continue
-
-		if (!grouped[type]) {
-			grouped[type] = []
-		}
-		grouped[type].push(element)
-	}
-
-	return grouped
-}
