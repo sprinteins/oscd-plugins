@@ -4,11 +4,11 @@ import type { AccessPointData } from '../form-helpers'
 
 let {
 	accessPoint = $bindable({ name: '', description: '' }),
-  isRequired,
+	isRequired,
 	disabled = false
 }: {
 	accessPoint: AccessPointData
-  isRequired: boolean
+	isRequired: boolean
 	disabled?: boolean
 } = $props()
 </script>

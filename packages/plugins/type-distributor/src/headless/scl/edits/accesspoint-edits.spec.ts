@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { createAccessPoints, createMultipleLNodesInAccessPoint } from './accesspoint-edits'
+import {
+	createAccessPoints,
+	createMultipleLNodesInAccessPoint
+} from './accesspoint-edits'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import type {
 	ConductingEquipmentTemplate,

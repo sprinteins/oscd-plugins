@@ -3,7 +3,7 @@ import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
 import { getEditor } from '@/headless/utils'
 import { bayStore } from '@/headless/stores'
-import { buildEditsForDeleteLNodeFromAccessPoint } from '@/headless/scl/edits/delete-elements';
+import { buildEditsForDeleteLNodeFromAccessPoint } from '@/headless/scl/edits/delete-elements'
 
 interface Props {
 	lnode: LNodeTemplate

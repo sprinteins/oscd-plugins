@@ -5,7 +5,7 @@ import { dndStore, bayStore } from '@/headless/stores'
 import type { LNodeTemplate } from '@/headless/common-types'
 import IedLnode from './ied-lnode.svelte'
 import { getEditor } from '@/headless/utils'
-  import { buildEditsForDeleteAccessPoint } from '@/headless/scl/edits/delete-elements';
+import { buildEditsForDeleteAccessPoint } from '@/headless/scl/edits/delete-elements'
 
 interface Props {
 	accessPoint: Element

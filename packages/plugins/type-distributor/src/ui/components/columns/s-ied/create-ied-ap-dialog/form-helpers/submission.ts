@@ -16,7 +16,7 @@ export function submitForm(
 			accessPoints
 		})
 	} else {
-		createAccessPoints({iedName: ied.name, accessPoints})
+		createAccessPoints({ iedName: ied.name, accessPoints })
 	}
 }
 
