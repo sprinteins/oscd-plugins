@@ -18,7 +18,7 @@ import {
 } from '@/ui/components/columns/bay-type'
 import { IedDetails, IedSearch } from '@/ui/components/columns/s-ied'
 import { AddIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
-import { validateBayTypeSelection } from '@/headless/matching'
+import { validateBayTypeSelection } from '@/headless/actions'
 import { queryIEDs, type SearchType } from '@/headless/scl'
 
 let searchTerm = $state('')

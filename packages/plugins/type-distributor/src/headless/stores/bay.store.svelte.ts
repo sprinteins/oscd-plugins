@@ -1,6 +1,6 @@
 import { getDocumentAndEditor } from '@/headless/utils'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { matchEquipment } from '@/headless/matching'
+import { matchEquipment } from '@/headless/domain/matching'
 import { ssdImportStore } from './ssd-import.store.svelte'
 import { equipmentMatchingStore } from './equipment-matching.store.svelte'
 
@@ -22,6 +22,7 @@ class UseBayStore {
 		return matchEquipment(
 			this.scdBay,
 			bayType,
+			ssdImportStore.conductingEquipmentTemplates,
 			equipmentMatchingStore.manualMatches
 		)
 	})

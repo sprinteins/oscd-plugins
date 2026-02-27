@@ -3,7 +3,7 @@ import type {
 	FunctionTemplate
 } from '@/headless/common-types'
 import { queryServer } from './server-element'
-import type { EquipmentMatch } from '@/headless/matching'
+import type { EquipmentMatch } from '@/headless/domain/matching'
 
 interface SourceFunctionParams {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate

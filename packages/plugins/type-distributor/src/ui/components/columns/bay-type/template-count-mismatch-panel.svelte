@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { TemplateCountMismatch } from '@/headless/matching/types'
+import type { TemplateCountMismatch } from '@/headless/domain/matching'
 import { ssdImportStore } from '@/headless/stores'
 
 interface Props {

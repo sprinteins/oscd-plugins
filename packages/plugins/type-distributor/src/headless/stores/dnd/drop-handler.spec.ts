@@ -6,10 +6,9 @@ import {
 	shouldApplyBayType
 } from './drop-handler'
 import { ssdImportStore } from '../ssd-import.store.svelte'
-import { getBayTypeWithTemplates } from '../bay-types.utils'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
-import { applyBayTypeSelection } from '@/headless/matching'
+import { applyBayTypeSelection } from '@/headless/actions'
 
 vi.mock('../ssd-import.store.svelte', () => ({
 	ssdImportStore: {
@@ -46,7 +45,7 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-vi.mock('@/headless/matching', () => ({
+vi.mock('@/headless/actions', () => ({
 	applyBayTypeSelection: vi.fn().mockReturnValue([])
 }))
 

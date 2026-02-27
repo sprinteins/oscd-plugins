@@ -12,7 +12,7 @@ import {
 	parseBayTypes,
 	parseTemplates,
 	parseDataTypeTemplates
-} from '@/headless/ssd-parsing'
+} from '@/headless/domain/ssd-parsing'
 
 class UseImportSSDStore {
 	fileInput = $state<HTMLInputElement>()

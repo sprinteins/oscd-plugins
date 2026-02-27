@@ -3,7 +3,7 @@ import { flushSync } from 'svelte'
 import { equipmentMatchingStore } from './equipment-matching.store.svelte'
 import { ssdImportStore } from './ssd-import.store.svelte'
 import { resetSSDImportStore } from '@/headless/test-helpers'
-import type { ValidationResult } from '@/headless/matching/validation'
+import type { ValidationResult } from '@/headless/domain/validation'
 import type { ConductingEquipmentTemplate } from '@/headless/common-types'
 
 const createTemplate = (
