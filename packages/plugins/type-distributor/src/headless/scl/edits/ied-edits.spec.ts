@@ -3,7 +3,7 @@ import type { XMLEditor } from '@openscd/oscd-editor'
 import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
 import type { Insert } from '@openscd/oscd-api'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { createIED } from './ied-edits'
+import { buildEditsForCreateIED } from './ied-edits'
 
 // Mock the pluginGlobalStore module
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -13,7 +13,7 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-describe('createIED', () => {
+describe('buildEditsForCreateIED', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document
 
@@ -36,10 +36,10 @@ describe('createIED', () => {
 
 	describe('basic functionality', () => {
 		it('should create an IED element with the given name', () => {
-			createIED({ name: 'TestIED' })
+			const edits = buildEditsForCreateIED({ name: 'TestIED' })
 
-			expect(mockEditor.commit).toHaveBeenCalledTimes(1)
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			expect(edits.length).toBe(1)
+			const edit = edits[0]
 
 			expect(edit.node).toBeInstanceOf(Element)
 			const iedElement = edit.node as Element
@@ -48,8 +48,11 @@ describe('createIED', () => {
 		})
 
 		it('should create an IED element with name and description', () => {
-			createIED({ name: 'TestIED', description: 'Test Description' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edits = buildEditsForCreateIED({
+				name: 'TestIED',
+				description: 'Test Description'
+			})
+			const edit = edits[0]
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('name')).toBe('TestIED')
@@ -57,8 +60,8 @@ describe('createIED', () => {
 		})
 
 		it('should not set desc attribute when description is not provided', () => {
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edits = buildEditsForCreateIED({ name: 'TestIED' })
+			const edit = edits[0]
 			const iedElement = edit.node as Element
 
 			expect(iedElement.hasAttribute('desc')).toBe(false)
@@ -67,8 +70,8 @@ describe('createIED', () => {
 
 	describe('default attributes', () => {
 		it('should set all default SIED attributes', () => {
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edits = buildEditsForCreateIED({ name: 'TestIED' })
+			const edit = edits[0]
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('configVersion')).toBe('1.0')
@@ -82,8 +85,8 @@ describe('createIED', () => {
 
 	describe('Services element', () => {
 		it('should create a Services child element with nameLength attribute', () => {
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edits = buildEditsForCreateIED({ name: 'TestIED' })
+			const edit = edits[0]
 			const iedElement = edit.node as Element
 
 			const servicesElement = iedElement.querySelector('Services')
@@ -92,8 +95,8 @@ describe('createIED', () => {
 		})
 
 		it('should have Services as direct child of IED', () => {
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edits = buildEditsForCreateIED({ name: 'TestIED' })
+			const edit = edits[0]
 			const iedElement = edit.node as Element
 
 			const children = Array.from(iedElement.children)
@@ -104,8 +107,8 @@ describe('createIED', () => {
 
 	describe('insertion reference', () => {
 		it('should insert before DataTypeTemplates if it exists', () => {
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edits = buildEditsForCreateIED({ name: 'TestIED' })
+			const edit = edits[0]
 
 			expect(edit.parent).toBe(mockDocument.documentElement)
 			expect(edit.reference?.nodeName).toBe('DataTypeTemplates')
@@ -129,8 +132,8 @@ describe('createIED', () => {
 			const someOtherElement = customDoc.createElement('Communication')
 			customDoc.documentElement.appendChild(someOtherElement)
 
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edits = buildEditsForCreateIED({ name: 'TestIED' })
+			const edit = edits[0]
 
 			expect(edit.parent).toBe(customDoc.documentElement)
 			expect(edit.reference).toBe(someOtherElement)
@@ -143,8 +146,8 @@ describe('createIED', () => {
 			)
 			pluginGlobalStore.xmlDocument = customDoc
 
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edits = buildEditsForCreateIED({ name: 'TestIED' })
+			const edit = edits[0]
 
 			expect(edit.parent).toBe(customDoc.documentElement)
 			expect(edit.reference).toBeNull()
@@ -165,8 +168,8 @@ describe('createIED', () => {
 				customDoc.createElement('DataTypeTemplates')
 			customDoc.documentElement.appendChild(dataTypeTemplates)
 
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edits = buildEditsForCreateIED({ name: 'TestIED' })
+			const edit = edits[0]
 
 			expect(edit.reference).toBe(dataTypeTemplates)
 		})
@@ -176,14 +179,14 @@ describe('createIED', () => {
 		it('should throw error when xmlDocument is not available', () => {
 			pluginGlobalStore.xmlDocument = undefined
 
-			expect(() => createIED({ name: 'TestIED' })).toThrow(
+			expect(() => buildEditsForCreateIED({ name: 'TestIED' })).toThrow(
 				'No XML document loaded'
 			)
 		})
 		it('should throw error when editor is not available', () => {
 			pluginGlobalStore.editor = undefined
 
-			expect(() => createIED({ name: 'TestIED' })).toThrow(
+			expect(() => buildEditsForCreateIED({ name: 'TestIED' })).toThrow(
 				'No editor available'
 			)
 		})
@@ -191,9 +194,9 @@ describe('createIED', () => {
 
 	describe('edge cases', () => {
 		it('should handle empty string as name', () => {
-			createIED({ name: '' })
+			const edits = buildEditsForCreateIED({ name: '' })
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edit = edits[0]
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('name')).toBe('')
@@ -202,9 +205,9 @@ describe('createIED', () => {
 		it('should handle special characters in name', () => {
 			const specialName = 'Test-IED_123.abc'
 
-			createIED({ name: specialName })
+			const edits = buildEditsForCreateIED({ name: specialName })
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edit = edits[0]
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('name')).toBe(specialName)
@@ -213,9 +216,12 @@ describe('createIED', () => {
 		it('should handle special characters in description', () => {
 			const specialDesc = 'Test <>&" description'
 
-			createIED({ name: 'TestIED', description: specialDesc })
+			const edits = buildEditsForCreateIED({
+				name: 'TestIED',
+				description: specialDesc
+			})
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edit = edits[0]
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('desc')).toBe(specialDesc)

@@ -145,18 +145,18 @@ export function createMultipleLNodesInAccessPoint({
 	return edits
 }
 
-type CreateAccessPointsParams = {
+type buildEditsForCreateAccessPointParams = {
 	iedName: string
 	accessPoints: { name: string; description?: string }[]
 	squash?: boolean
 }
 
-export function createAccessPoints({
+export function buildEditsForCreateAccessPoint({
 	iedName,
-	accessPoints,
-	squash = false
-}: CreateAccessPointsParams): void {
+	accessPoints
+}: buildEditsForCreateAccessPointParams): Insert[] {
 	const { doc, editor } = getDocumentAndEditor()
+	const allEdits: Insert[] = []
 
 	const iedElement = doc.querySelector(`IED[name="${iedName}"]`)
 	if (!iedElement) {
@@ -184,8 +184,8 @@ export function createAccessPoints({
 			reference: null
 		}
 
-		editor.commit(edit, {
-			squash
-		})
+		allEdits.push(edit)
 	}
+
+	return allEdits
 }

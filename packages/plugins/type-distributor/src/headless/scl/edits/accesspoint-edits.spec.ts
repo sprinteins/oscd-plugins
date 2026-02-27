@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import {
-	createAccessPoints,
+	buildEditsForCreateAccessPoint,
 	createMultipleLNodesInAccessPoint
 } from './accesspoint-edits'
 import type { XMLEditor } from '@openscd/oscd-editor'
@@ -446,7 +446,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 	})
 })
 
-describe('createAccessPoints', () => {
+describe('buildEditsForCreateAccessPoint', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document
 
@@ -470,10 +470,13 @@ describe('createAccessPoints', () => {
 	describe('Functionality Tests', () => {
 		it('should create an AccessPoint element with correct structure', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			createAccessPoints({ iedName: 'TestIED', accessPoints })
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints
+			})
 
-			expect(mockEditor.commit).toHaveBeenCalledTimes(1)
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			expect(edits.length).toBe(1)
+			const edit = edits[0]
 			const accessPointElement = edit.node as Element
 			const parent = edit.parent as Element
 
@@ -483,9 +486,12 @@ describe('createAccessPoints', () => {
 
 		it('should set the name attribute of AccessPoint', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			createAccessPoints({ iedName: 'TestIED', accessPoints })
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints
+			})
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edit = edits[0]
 			const accessPointElement = edit.node as Element
 
 			expect(accessPointElement.getAttribute('name')).toBe('AP1')
@@ -495,9 +501,12 @@ describe('createAccessPoints', () => {
 			const accessPoints = [
 				{ name: 'AP1', description: 'Access Point 1' }
 			]
-			createAccessPoints({ iedName: 'TestIED', accessPoints })
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints
+			})
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edit = edits[0]
 			const accessPointElement = edit.node as Element
 
 			expect(accessPointElement.getAttribute('desc')).toBe(
@@ -507,9 +516,12 @@ describe('createAccessPoints', () => {
 
 		it('should not set desc attribute when description is not provided', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			createAccessPoints({ iedName: 'TestIED', accessPoints })
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints
+			})
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edit = edits[0]
 			const accessPointElement = edit.node as Element
 
 			expect(accessPointElement.hasAttribute('desc')).toBe(false)
@@ -517,14 +529,17 @@ describe('createAccessPoints', () => {
 
 		it('should create multiple AccessPoint elements when multiple accessPoints are provided', () => {
 			const accessPoints = [{ name: 'AP1' }, { name: 'AP2' }]
-			createAccessPoints({ iedName: 'TestIED', accessPoints })
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints
+			})
 
-			expect(mockEditor.commit).toHaveBeenCalledTimes(2)
+			expect(edits.length).toBe(2)
 
-			const edit1 = mockEditor.commit.mock.calls[0][0] as Insert
+			const edit1 = edits[0]
 			const accessPoint1 = edit1.node as Element
 
-			const edit2 = mockEditor.commit.mock.calls[1][0] as Insert
+			const edit2 = edits[1]
 			const accessPoint2 = edit2.node as Element
 
 			expect(accessPoint1.getAttribute('name')).toBe('AP1')
@@ -533,9 +548,12 @@ describe('createAccessPoints', () => {
 
 		it('should have a Server child element within AccessPoint', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			createAccessPoints({ iedName: 'TestIED', accessPoints })
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints
+			})
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edit = edits[0]
 			const accessPointElement = edit.node as Element
 			const serverElements =
 				accessPointElement.getElementsByTagName('Server')
@@ -545,9 +563,12 @@ describe('createAccessPoints', () => {
 
 		it('should have an Authentication child element within Server with the attribut none="true"', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			createAccessPoints({ iedName: 'TestIED', accessPoints })
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints
+			})
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edit = edits[0]
 			const accessPointElement = edit.node as Element
 			const serverElements =
 				accessPointElement.getElementsByTagName('Server')
@@ -564,7 +585,7 @@ describe('createAccessPoints', () => {
 			pluginGlobalStore.xmlDocument = undefined
 
 			expect(() =>
-				createAccessPoints({
+				buildEditsForCreateAccessPoint({
 					iedName: 'TestIED',
 					accessPoints: [{ name: 'AP1' }]
 				})
@@ -575,7 +596,7 @@ describe('createAccessPoints', () => {
 			pluginGlobalStore.editor = undefined
 
 			expect(() =>
-				createAccessPoints({
+				buildEditsForCreateAccessPoint({
 					iedName: 'TestIED',
 					accessPoints: [{ name: 'AP1' }]
 				})
@@ -584,7 +605,7 @@ describe('createAccessPoints', () => {
 
 		it('should throw error when IED with given name is not found', () => {
 			expect(() =>
-				createAccessPoints({
+				buildEditsForCreateAccessPoint({
 					iedName: 'NonExistentIED',
 					accessPoints: [{ name: 'AP1' }]
 				})
@@ -594,19 +615,27 @@ describe('createAccessPoints', () => {
 
 	describe('edge cases', () => {
 		it('should handle empty accessPoints array', () => {
-			createAccessPoints({ iedName: 'TestIED', accessPoints: [] })
+			buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints: []
+			})
 
 			expect(mockEditor.commit).not.toHaveBeenCalled()
 		})
 
 		it('should handle special characters in access point name', () => {
 			const specialName = 'AP-1_test.abc'
-			createAccessPoints({
+			buildEditsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints: [{ name: specialName }]
 			})
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints: [{ name: specialName }]
+			})
+
+			const edit = edits[0]
 			const accessPointElement = edit.node as Element
 
 			expect(accessPointElement.getAttribute('name')).toBe(specialName)
@@ -614,12 +643,12 @@ describe('createAccessPoints', () => {
 
 		it('should handle special characters in description', () => {
 			const specialDesc = 'Access <>&" Point'
-			createAccessPoints({
+			const edits = buildEditsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints: [{ name: 'AP1', description: specialDesc }]
 			})
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			const edit = edits[0]
 			const accessPointElement = edit.node as Element
 
 			expect(accessPointElement.getAttribute('desc')).toBe(specialDesc)

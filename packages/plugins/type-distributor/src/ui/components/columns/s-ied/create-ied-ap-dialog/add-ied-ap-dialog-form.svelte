@@ -19,12 +19,14 @@ import {
 	createInitialAccessPointForm
 } from './form-helpers'
 import IedAndAccessPointOverview from './form-sections/ied-and-access-point-overview-section.svelte'
+import { getDocumentAndEditor } from '@/headless/utils'
 
 let ied = $state<IedData>(createInitialIedData())
 let currentAccessPoint = $state(createInitialAccessPointForm())
 let accessPoints = $state<AccessPointData[]>([])
 let isMultiApMode = $state(false)
 let error = $state<string | null>(null)
+const { editor } = getDocumentAndEditor()
 
 const hasCurrentAp = $derived(currentAccessPoint.name.trim().length > 0)
 const hasValidIed = $derived(ied.name.trim().length > 0)
@@ -140,7 +142,7 @@ function handleSubmit() {
 		return
 	}
 
-	submitForm(ied, accessPointsToSubmit)
+	submitForm({ ied, accessPoints: accessPointsToSubmit, editor })
 	resetForm()
 	dialogStore.closeDialog('success')
 }

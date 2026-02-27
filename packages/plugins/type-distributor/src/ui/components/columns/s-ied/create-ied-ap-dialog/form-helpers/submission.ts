@@ -1,22 +1,42 @@
-import { createIED, createAccessPoints } from '@/headless/scl'
+import {
+	buildEditsForCreateIED,
+	buildEditsForCreateAccessPoint
+} from '@/headless/scl'
 import type { AccessPointData, IedData } from './types'
+import type { XMLEditor } from '@openscd/oscd-editor'
 
-export function submitForm(
-	ied: IedData,
+type SubmitFormParams = {
+	ied: IedData
 	accessPoints: AccessPointData[]
-): void {
+	editor: XMLEditor
+}
+
+export function submitForm({
+	ied,
+	accessPoints,
+	editor
+}: SubmitFormParams): void {
 	if (!ied.isNew && accessPoints.length === 0) {
 		throw new Error('At least one Access Point is required')
 	}
 
 	if (ied.isNew) {
-		createIED({
+		const edits = buildEditsForCreateIED({
 			name: ied.name,
 			description: ied.description,
 			accessPoints
 		})
+		editor.commit(edits, {
+			title: `Create IED ${ied.name} with ${accessPoints.length} Access Points`
+		})
 	} else {
-		createAccessPoints({ iedName: ied.name, accessPoints })
+		const edits = buildEditsForCreateAccessPoint({
+			iedName: ied.name,
+			accessPoints
+		})
+		editor.commit(edits, {
+			title: `Add ${accessPoints.length} Access Points to IED ${ied.name}`
+		})
 	}
 }
 
