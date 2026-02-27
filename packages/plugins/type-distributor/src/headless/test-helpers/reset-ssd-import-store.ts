@@ -5,6 +5,7 @@ export const resetSSDImportStore = () => {
 	ssdImportStore.currentFilename = null
 	ssdImportStore.loadedSSDDocument = null
 	ssdImportStore.bayTypes = []
+	ssdImportStore.ld0FunctionTemplates = []
 	ssdImportStore.functionTemplates = []
 	ssdImportStore.conductingEquipmentTemplates = []
 	ssdImportStore.lnodeTypes = []
