@@ -1,15 +1,22 @@
-import { createIED, createAccessPoints } from '@/headless/ied'
+import { createIED, createAccessPoints } from '@/headless/scl'
 import type { AccessPointData, IedData } from './types'
 
-export function submitForm(ied: IedData, accessPoints: AccessPointData[]): void {
-	if (accessPoints.length === 0) {
+export function submitForm(
+	ied: IedData,
+	accessPoints: AccessPointData[]
+): void {
+	if (!ied.isNew && accessPoints.length === 0) {
 		throw new Error('At least one Access Point is required')
 	}
 
 	if (ied.isNew) {
-		createIED(ied.name, ied.description, accessPoints)
+		createIED({
+			name: ied.name,
+			description: ied.description,
+			accessPoints
+		})
 	} else {
-		createAccessPoints(ied.name, accessPoints)
+		createAccessPoints({iedName: ied.name, accessPoints})
 	}
 }
 

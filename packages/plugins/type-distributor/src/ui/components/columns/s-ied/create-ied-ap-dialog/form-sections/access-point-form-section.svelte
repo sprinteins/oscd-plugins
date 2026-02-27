@@ -4,9 +4,11 @@ import type { AccessPointData } from '../form-helpers'
 
 let {
 	accessPoint = $bindable({ name: '', description: '' }),
+  isRequired,
 	disabled = false
 }: {
 	accessPoint: AccessPointData
+  isRequired: boolean
 	disabled?: boolean
 } = $props()
 </script>
@@ -17,7 +19,7 @@ let {
   </header>
   <div class="space-y-3">
     <div class="space-y-2">
-      <Label.Root for="ap-name">Name *</Label.Root>
+      <Label.Root for="ap-name">Name {isRequired ? '*' : ''}</Label.Root>
       <Input.Root
         id="ap-name"
         bind:value={accessPoint.name}

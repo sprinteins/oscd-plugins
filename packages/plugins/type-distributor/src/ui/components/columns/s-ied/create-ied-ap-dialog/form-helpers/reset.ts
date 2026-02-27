@@ -1,4 +1,4 @@
-import type { IedData, AccessPointData, DialogFormState } from './types'
+import type { IedData, AccessPointData } from './types'
 
 export function createInitialIedData(): IedData {
 	return {

@@ -25,16 +25,12 @@ export function validateSubmission({
 		if (!trimmedIedName) {
 			return 'Please select an existing IED or create a new one'
 		}
-	}
-
-	if (accessPoints.length === 0) {
-		return 'At least one Access Point is required'
-	}
-
-	if (!ied.isNew) {
+		if (accessPoints.length === 0) {
+			return 'Access Point name is required when adding to existing IED'
+		}
 		const existingApNames = queryAccessPointsFromIed(
 			xmlDocument,
-			ied.name.trim()
+			trimmedIedName
 		)
 		for (const ap of accessPoints) {
 			if (existingApNames.includes(ap.name)) {
@@ -56,7 +52,6 @@ export function validateIedBeforeMultiAp(
 	if (!trimmedName) {
 		return 'IED name is required'
 	}
-
 	if (queryIedExists(xmlDocument, trimmedName)) {
 		return `IED "${trimmedName}" already exists`
 	}
@@ -82,11 +77,9 @@ export function validateAccessPoint({
 	if (!trimmedName) {
 		return 'Access Point name is required'
 	}
-
 	if (pendingApNames.includes(trimmedName)) {
 		return `Access Point "${trimmedName}" is already in the list`
 	}
-
 	if (existingApNames.includes(trimmedName)) {
 		return `Access Point "${trimmedName}" already exists in IED "${iedName}"`
 	}

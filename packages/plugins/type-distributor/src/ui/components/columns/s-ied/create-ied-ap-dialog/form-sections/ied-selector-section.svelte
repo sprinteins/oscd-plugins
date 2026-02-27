@@ -1,7 +1,7 @@
 <script lang="ts">
 import { SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 import type { IedData } from '../form-helpers'
-import { queryIEDs } from '@/headless/ied'
+import { queryIEDs } from '@/headless/scl'
 import { bayStore } from '@/headless/stores'
 
 let {

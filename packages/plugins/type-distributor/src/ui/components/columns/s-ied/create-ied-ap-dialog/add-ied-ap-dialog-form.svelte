@@ -39,9 +39,9 @@ const submitLabel = $derived(
 
 const isSubmitDisabled = $derived.by(() => {
 	if (isMultiApMode) {
-		return accessPoints.length === 0
+		return !ied.isNew && accessPoints.length === 0
 	}
-	return !hasValidIed || !hasCurrentAp
+	return ied.isNew ? !hasValidIed : !hasCurrentAp
 })
 
 function resetForm() {
@@ -59,7 +59,6 @@ function enterMultiApMode() {
 		pluginGlobalStore.xmlDocument,
 		ied
 	)
-
 	if (validationError) {
 		error = validationError
 		return
@@ -70,6 +69,7 @@ function enterMultiApMode() {
 		name: ied.name.trim(),
 		description: ied.description.trim()
 	}
+
 	isMultiApMode = true
 
 	if (hasCurrentAp) {
@@ -118,7 +118,6 @@ function getAccessPointsForSubmission(): AccessPointData[] {
 	if (isMultiApMode) {
 		return accessPoints
 	}
-
 	const ap = buildAccessPoint(
 		currentAccessPoint.name,
 		currentAccessPoint.description
@@ -142,7 +141,6 @@ function handleSubmit() {
 	}
 
 	submitForm(ied, accessPointsToSubmit)
-
 	resetForm()
 	dialogStore.closeDialog('success')
 }
@@ -157,13 +155,12 @@ async function handleCancel() {
     <IedAndAccessPointOverview {ied} {accessPoints} {removeAccessPoint} />
   {:else}
     <IedSelectorSection bind:ied />
-
     {#if ied.isNew}
       <IedFormSection bind:ied />
     {/if}
   {/if}
 
-  <AccessPointFormSection bind:accessPoint={currentAccessPoint} />
+  <AccessPointFormSection bind:accessPoint={currentAccessPoint} isRequired={!ied.isNew} />
 
   <MultiApButton
     {isMultiApMode}
@@ -180,11 +177,11 @@ async function handleCancel() {
     onCancel={handleCancel}
     onSubmit={handleSubmit}
     {submitLabel}
-		{isMultiApMode}
-		onGoBackToIedSelection={() => {
-			isMultiApMode = false;
-			accessPoints = [];
-		}}
+    {isMultiApMode}
+    onGoBackToIedSelection={() => {
+      isMultiApMode = false;
+      accessPoints = [];
+    }}
     disabled={isSubmitDisabled}
   />
 </div>
