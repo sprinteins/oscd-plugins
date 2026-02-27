@@ -44,7 +44,8 @@ class UseAssignedLNodesStore {
 	}
 
 	areAllLNodesAssigned(bayTypeWithTemplates: BayTypeWithTemplates): boolean {
-		const allLNodes = bayTypesStore.getAllLNodesWithParent(bayTypeWithTemplates)
+		const allLNodes =
+			bayTypesStore.getAllLNodesWithParent(bayTypeWithTemplates)
 		return allLNodes.every(({ parentUuid, lnode }) =>
 			this.isAssigned(parentUuid, lnode)
 		)

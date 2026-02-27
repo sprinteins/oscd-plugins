@@ -1,9 +1,9 @@
 <script lang="ts">
 import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
-import { buildEditsForDeleteLNodeFromAccessPoint } from '@/headless/ied/delete-elements'
 import type { LNodeTemplate } from '@/headless/common-types'
 import { getEditor } from '@/headless/utils'
 import { bayStore } from '@/headless/stores'
+import { buildEditsForDeleteLNodeFromAccessPoint } from '@/headless/scl/edits/delete-elements';
 
 interface Props {
 	lnode: LNodeTemplate

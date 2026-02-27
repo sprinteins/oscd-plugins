@@ -1,4 +1,5 @@
 <script lang="ts">
+import { queryAccessPointsFromIed } from '@/headless/scl'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import {
 	IedSelectorSection,
@@ -18,7 +19,6 @@ import {
 	createInitialAccessPointForm
 } from './form-helpers'
 import IedAndAccessPointOverview from './form-sections/ied-and-access-point-overview-section.svelte'
-import { queryAccessPointsFromIed } from '@/headless/ied'
 
 let ied = $state<IedData>(createInitialIedData())
 let currentAccessPoint = $state(createInitialAccessPointForm())
