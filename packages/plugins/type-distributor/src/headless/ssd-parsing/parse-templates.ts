@@ -14,7 +14,7 @@ export function parseFunctionTemplate(element: Element): FunctionTemplate {
 			lnInst: ln.getAttribute('lnInst') || '',
 			lnType: ln.getAttribute('lnType') || '',
 			uuid: ln.getAttribute('uuid') || '',
-			iedName: ln.getAttribute('iedName') || undefined,
+			iedName: ln.getAttribute('iedName') || undefined
 		}))
 	}
 }

@@ -11,7 +11,7 @@ import {
 	commitEdits
 } from './drop-handler'
 import { assignedLNodesStore } from '@/headless/stores'
-import { buildEditsForBayLNode } from '@/headless/ied'
+import { buildEditsForBayLNode } from '@/headless/scl'
 
 type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'

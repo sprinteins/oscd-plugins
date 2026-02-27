@@ -101,15 +101,21 @@ describe('parseTemplates', () => {
 				desc: 'ElementDesc'
 			})
 			const functionTemplates = [
-                {
-                    uuid: 'tpl-uuid',
-                    name: 'TemplateName',
-                    desc: 'TemplateDesc',
-                    lnodes: [
-                        { lnType: 'LT', lnClass: 'LC', lnInst: '1', iedName: '', uuid: 'ln-uuid-2' }
-                    ]
-                }
-            ]
+				{
+					uuid: 'tpl-uuid',
+					name: 'TemplateName',
+					desc: 'TemplateDesc',
+					lnodes: [
+						{
+							lnType: 'LT',
+							lnClass: 'LC',
+							lnInst: '1',
+							iedName: '',
+							uuid: 'ln-uuid-2'
+						}
+					]
+				}
+			]
 			const ceWithTpl = parser.parseFromString(
 				`<ConductingEquipment><EqFunction templateUuid="tpl-uuid" /></ConductingEquipment>`,
 				'application/xml'

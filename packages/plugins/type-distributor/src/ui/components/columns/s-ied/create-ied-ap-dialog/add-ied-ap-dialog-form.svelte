@@ -1,5 +1,5 @@
 <script lang="ts">
-import { createIED, queryIEDs, createAccessPoints } from '@/headless/ied'
+import { createIED, queryIEDs, createAccessPoints } from '@/headless/scl'
 import { bayStore } from '@/headless/stores'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import IedSelectorSection from './ied-selector-section.svelte'
@@ -117,9 +117,16 @@ function handleSubmit() {
 	try {
 		const accessPoint = buildAccessPoint()
 		if (isCreatingNewIed) {
-			createIED(iedName.trim(), iedDesc.trim() || undefined, accessPoint)
+			createIED({
+				name: iedName.trim(),
+				description: iedDesc.trim() || undefined,
+				accessPoints: accessPoint
+			})
 		} else if (hasAccessPoint && existingSIedName && accessPoint) {
-			createAccessPoints(existingSIedName, accessPoint)
+			createAccessPoints({
+				iedName: existingSIedName,
+				accessPoints: accessPoint
+			})
 		}
 
 		resetForm()

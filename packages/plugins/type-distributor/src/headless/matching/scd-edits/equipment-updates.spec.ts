@@ -62,7 +62,9 @@ describe('buildEditsForEquipmentUpdates', () => {
 				expect(result).toHaveLength(1)
 				const update = result[0] as SetAttributes
 				expect(update.element).toBe(scdElement)
-				expect(update.attributes?.templateUuid).toBe('equip-type-uuid-1')
+				expect(update.attributes?.templateUuid).toBe(
+					'equip-type-uuid-1'
+				)
 				expect(update.attributes?.originUuid).toBe('template-uuid-1')
 				expect(update.attributes?.uuid).toMatch(
 					/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
