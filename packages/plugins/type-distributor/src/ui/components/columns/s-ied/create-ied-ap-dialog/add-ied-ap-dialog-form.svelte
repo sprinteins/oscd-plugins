@@ -141,14 +141,10 @@ function handleSubmit() {
 		return
 	}
 
-	try {
-		submitForm(ied, accessPointsToSubmit)
+	submitForm(ied, accessPointsToSubmit)
 
-		resetForm()
-		dialogStore.closeDialog('success')
-	} catch (err) {
-		error = err instanceof Error ? err.message : 'Failed to create IED'
-	}
+	resetForm()
+	dialogStore.closeDialog('success')
 }
 
 async function handleCancel() {
