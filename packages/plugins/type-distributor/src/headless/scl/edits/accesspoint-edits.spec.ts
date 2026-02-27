@@ -10,6 +10,7 @@ import type {
 	LNodeTemplate
 } from '@/headless/common-types'
 import type { Insert } from '@openscd/oscd-api'
+import type { EquipmentMatch } from '@/headless/matching'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -19,286 +20,212 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
+function collectEditsByTag(edits: Insert[], tagName: string): Element[] {
+	return (edits as Insert[])
+		.map((e) => e.node)
+		.filter(
+			(n): n is Element => n instanceof Element && n.localName === tagName
+		)
+}
+
+function buildScl(): Document {
+	return new DOMParser().parseFromString(
+		`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+			<IED name="TestIED">
+				<AccessPoint name="TestAP"></AccessPoint>
+			</IED>
+		</SCL>`,
+		'application/xml'
+	)
+}
+
+function appendServerWithLDevice(
+	doc: Document,
+	accessPoint: Element,
+	lDeviceInst: string
+): { server: Element; lDevice: Element } {
+	const server = doc.createElement('Server')
+	const auth = doc.createElement('Authentication')
+	auth.setAttribute('none', 'true')
+	server.appendChild(auth)
+	accessPoint.appendChild(server)
+
+	const lDevice = doc.createElement('LDevice')
+	lDevice.setAttribute('inst', lDeviceInst)
+	server.appendChild(lDevice)
+	return { server, lDevice }
+}
+
+const lnodeTemplate: LNodeTemplate = {
+	uuid: 'lnode-uuid',
+	lnClass: 'XCBR',
+	lnType: 'TestLNType',
+	lnInst: '1'
+}
+
+const functionTemplate: FunctionTemplate = {
+	uuid: 'func-template-uuid',
+	name: 'CBFunction',
+	desc: 'Circuit Breaker Function',
+	lnodes: [lnodeTemplate]
+}
+
+const equipmentTemplate: ConductingEquipmentTemplate = {
+	uuid: 'eq-template-uuid',
+	name: 'CircuitBreaker1',
+	type: 'CBR',
+	desc: 'Test Circuit Breaker',
+	terminals: [
+		{
+			uuid: 'term-uuid',
+			name: 'Term1',
+			connectivityNode: 'CN1',
+			cNodeName: 'TestPath'
+		}
+	],
+	eqFunctions: [functionTemplate]
+}
+
 describe('createMultipleLNodesInAccessPoint', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document
-	let lnodeTemplate: LNodeTemplate
-	let functionTemplate: FunctionTemplate
-	let equipmentTemplate: ConductingEquipmentTemplate
 	let accessPoint: Element
 
 	beforeEach(() => {
-		mockDocument = new DOMParser().parseFromString(
-			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-				<IED name="TestIED">
-					<AccessPoint name="TestAP">
-					</AccessPoint>
-				</IED>
-			</SCL>`,
-			'application/xml'
-		)
-
-		mockEditor = {
-			commit: vi.fn()
-		}
-
+		mockDocument = buildScl()
 		pluginGlobalStore.xmlDocument = mockDocument
-		pluginGlobalStore.editor = mockEditor as unknown as XMLEditor
-
-		lnodeTemplate = {
-			uuid: 'lnode-uuid',
-			lnClass: 'XCBR',
-			lnType: 'TestLNType',
-			lnInst: '1'
-		}
-
-		functionTemplate = {
-			uuid: 'func-template-uuid',
-			name: 'CBFunction',
-			desc: 'Circuit Breaker Function',
-			lnodes: [lnodeTemplate]
-		}
-
-		equipmentTemplate = {
-			uuid: 'eq-template-uuid',
-			name: 'CircuitBreaker1',
-			type: 'CBR',
-			desc: 'Test Circuit Breaker',
-			terminals: [
-				{
-					uuid: 'term-uuid',
-					name: 'Term1',
-					connectivityNode: 'CN1',
-					cNodeName: 'TestPath'
-				}
-			],
-			eqFunctions: [functionTemplate]
-		}
-
+		pluginGlobalStore.editor = { commit: vi.fn() } as unknown as XMLEditor
 		accessPoint = mockDocument.querySelector(
 			'AccessPoint[name="TestAP"]'
 		) as Element
-
-		vi.clearAllMocks()
 	})
 
 	afterEach(() => {
 		vi.restoreAllMocks()
 	})
 
-	describe('with FunctionTemplate', () => {
-		it('should create Server element if it does not exist', () => {
+	it('GIVEN xmlDocument is not set WHEN creating lNodes THEN throws "No XML document found"', () => {
+		// GIVEN
+		pluginGlobalStore.xmlDocument = undefined
+
+		// WHEN / THEN
+		expect(() =>
+			createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				equipmentMatches: []
+			})
+		).toThrow('No XML document found')
+	})
+
+	it('GIVEN an empty lNodes array WHEN creating lNodes THEN returns empty array', () => {
+		// WHEN
+		const edits = createMultipleLNodesInAccessPoint({
+			sourceFunction: functionTemplate,
+			lNodes: [],
+			accessPoint,
+			equipmentMatches: []
+		})
+
+		// THEN
+		expect(edits).toEqual([])
+	})
+
+	describe('GIVEN a fresh AccessPoint without Server or LDevice', () => {
+		it('WHEN creating lNodes with FunctionTemplate THEN creates Server parented to AccessPoint', () => {
 			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				accessPoint
+				accessPoint,
+				equipmentMatches: []
 			})
 
-			// Find the Server creation edit
-			let serverCreated = false
-			for (const edit of edits as Insert[]) {
-				if (
-					edit.node instanceof Element &&
-					edit.node.localName === 'Server'
-				) {
-					serverCreated = true
-					expect(edit.parent).toBe(accessPoint)
-				}
-			}
-			expect(serverCreated).toBe(true)
+			const servers = collectEditsByTag(edits, 'Server')
+			expect(servers).toHaveLength(1)
+			const serverEdit = (edits as Insert[]).find(
+				(e) =>
+					e.node instanceof Element &&
+					(e.node as Element).localName === 'Server'
+			)
+			expect(serverEdit?.parent).toBe(accessPoint)
 		})
 
-		it('should create LDevice with function name', () => {
+		it('WHEN creating lNodes with FunctionTemplate THEN Server has Authentication none="true"', () => {
 			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				accessPoint
+				accessPoint,
+				equipmentMatches: []
 			})
 
-			let lDeviceCreated = false
-			for (const edit of edits as Insert[]) {
-				if (
-					edit.node instanceof Element &&
-					edit.node.localName === 'LDevice'
-				) {
-					lDeviceCreated = true
-					expect(edit.node.getAttribute('inst')).toBe('CBFunction')
-				}
-			}
-			expect(lDeviceCreated).toBe(true)
+			const [serverEl] = collectEditsByTag(edits, 'Server')
+			const auth = serverEl?.querySelector('Authentication')
+			expect(auth).not.toBeNull()
+			expect(auth?.getAttribute('none')).toBe('true')
 		})
 
-		it('should create LN elements for each lNode', () => {
-			const lnode2 = {
+		it('WHEN creating lNodes with FunctionTemplate THEN creates LDevice with inst=functionName', () => {
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				equipmentMatches: []
+			})
+
+			const [lDeviceEl] = collectEditsByTag(edits, 'LDevice')
+			expect(lDeviceEl).toBeDefined()
+			expect(lDeviceEl.getAttribute('inst')).toBe('CBFunction')
+		})
+
+		it('WHEN creating lNodes with ConductingEquipmentTemplate THEN LDevice inst is equipmentName_functionName', () => {
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: equipmentTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				equipmentMatches: []
+			})
+
+			const [lDeviceEl] = collectEditsByTag(edits, 'LDevice')
+			expect(lDeviceEl.getAttribute('inst')).toBe(
+				'CircuitBreaker1_CBFunction'
+			)
+		})
+
+		it('WHEN equipmentUuid matches an EquipmentMatch THEN LDevice inst uses the SCD element name', () => {
+			const scdElement = mockDocument.createElement('ConductingEquipment')
+			scdElement.setAttribute('name', 'ScdBreaker42')
+			const match: EquipmentMatch = {
+				bayTypeEquipment: {
+					uuid: 'eq-template-uuid',
+					templateUuid: 'eq-template-uuid',
+					virtual: false
+				},
+				templateEquipment: equipmentTemplate,
+				scdElement
+			}
+
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: equipmentTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				equipmentUuid: 'eq-template-uuid',
+				equipmentMatches: [match]
+			})
+
+			const [lDeviceEl] = collectEditsByTag(edits, 'LDevice')
+			expect(lDeviceEl.getAttribute('inst')).toBe(
+				'ScdBreaker42_CBFunction'
+			)
+		})
+
+		it('WHEN creating multiple lNodes THEN creates an LN edit for each', () => {
+			const lnode2: LNodeTemplate = {
 				...lnodeTemplate,
 				uuid: 'lnode2-uuid',
 				lnInst: '2'
 			}
-			const edits = createMultipleLNodesInAccessPoint({
-				sourceFunction: functionTemplate,
-				lNodes: [lnodeTemplate, lnode2],
-				accessPoint
-			})
-
-			let lnCount = 0
-			for (const edit of edits as Insert[]) {
-				if (
-					edit.node instanceof Element &&
-					edit.node.localName === 'LN'
-				) {
-					lnCount++
-				}
-			}
-			expect(lnCount).toBe(2)
-		})
-
-		it('should reuse existing Server', () => {
-			// Create existing Server
-			const server = mockDocument.createElement('Server')
-			const auth = mockDocument.createElement('Authentication')
-			auth.setAttribute('none', 'true')
-			server.appendChild(auth)
-			accessPoint.appendChild(server)
-
-			const edits = createMultipleLNodesInAccessPoint({
-				sourceFunction: functionTemplate,
-				lNodes: [lnodeTemplate],
-				accessPoint
-			})
-
-			let serverCreated = false
-			for (const edit of edits as Insert[]) {
-				if (
-					edit.node instanceof Element &&
-					edit.node.localName === 'Server'
-				) {
-					serverCreated = true
-				}
-			}
-			expect(serverCreated).toBe(false)
-		})
-
-		it('should reuse existing LDevice without creating new edit', () => {
-			// Create existing Server and LDevice
-			const server = mockDocument.createElement('Server')
-			const auth = mockDocument.createElement('Authentication')
-			auth.setAttribute('none', 'true')
-			server.appendChild(auth)
-			accessPoint.appendChild(server)
-
-			const lDevice = mockDocument.createElement('LDevice')
-			lDevice.setAttribute('inst', 'CBFunction')
-			server.appendChild(lDevice)
-
-			const edits = createMultipleLNodesInAccessPoint({
-				sourceFunction: functionTemplate,
-				lNodes: [lnodeTemplate],
-				accessPoint
-			})
-
-			// Should not create LDevice edit since it already exists
-			let lDeviceCreated = false
-			for (const edit of edits as Insert[]) {
-				if (
-					edit.node instanceof Element &&
-					edit.node.localName === 'LDevice'
-				) {
-					lDeviceCreated = true
-				}
-			}
-			expect(lDeviceCreated).toBe(false)
-
-			// Should still create LN edit
-			let lnCreated = false
-			for (const edit of edits as Insert[]) {
-				if (
-					edit.node instanceof Element &&
-					edit.node.localName === 'LN'
-				) {
-					lnCreated = true
-				}
-			}
-			expect(lnCreated).toBe(true)
-		})
-	})
-
-	describe('with ConductingEquipmentTemplate', () => {
-		it('should create LDevice with equipment name', () => {
-			const edits = createMultipleLNodesInAccessPoint({
-				sourceFunction: equipmentTemplate,
-				lNodes: [lnodeTemplate],
-				accessPoint
-			})
-
-			let lDeviceCreated = false
-			for (const edit of edits as Insert[]) {
-				if (
-					edit.node instanceof Element &&
-					edit.node.localName === 'LDevice'
-				) {
-					lDeviceCreated = true
-					expect(edit.node.getAttribute('inst')).toBe(
-						'CircuitBreaker1_CBFunction'
-					)
-				}
-			}
-			expect(lDeviceCreated).toBe(true)
-		})
-
-		it('should create LN elements for equipment lNodes', () => {
-			const edits = createMultipleLNodesInAccessPoint({
-				sourceFunction: equipmentTemplate,
-				lNodes: [lnodeTemplate],
-				accessPoint
-			})
-
-			let lnCreated = false
-			for (const edit of edits as Insert[]) {
-				if (
-					edit.node instanceof Element &&
-					edit.node.localName === 'LN'
-				) {
-					lnCreated = true
-					expect(edit.node.getAttribute('lnClass')).toBe('XCBR')
-					expect(edit.node.getAttribute('lnType')).toBe('TestLNType')
-				}
-			}
-			expect(lnCreated).toBe(true)
-		})
-	})
-
-	describe('LN element creation', () => {
-		it('should create LN with correct attributes', () => {
-			const edits = createMultipleLNodesInAccessPoint({
-				sourceFunction: functionTemplate,
-				lNodes: [lnodeTemplate],
-				accessPoint
-			})
-
-			let lnElement: Element | null = null
-			for (const edit of edits as Insert[]) {
-				if (
-					edit.node instanceof Element &&
-					edit.node.localName === 'LN'
-				) {
-					lnElement = edit.node
-					break
-				}
-			}
-
-			expect(lnElement).not.toBeNull()
-			expect(lnElement?.getAttribute('lnClass')).toBe('XCBR')
-			expect(lnElement?.getAttribute('lnType')).toBe('TestLNType')
-			expect(lnElement?.getAttribute('lnInst')).toBe('1')
-		})
-
-		it('should create multiple LN elements with unique inst values', () => {
-			const lnode2 = {
-				...lnodeTemplate,
-				uuid: 'lnode2-uuid',
-				lnInst: '2'
-			}
-			const lnode3 = {
+			const lnode3: LNodeTemplate = {
 				...lnodeTemplate,
 				uuid: 'lnode3-uuid',
 				lnInst: '3'
@@ -307,51 +234,190 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2, lnode3],
-				accessPoint
+				accessPoint,
+				equipmentMatches: []
 			})
 
-			const lnInstances = new Set<string | null>()
-			for (const edit of edits as Insert[]) {
-				if (
-					edit.node instanceof Element &&
-					edit.node.localName === 'LN'
-				) {
-					lnInstances.add(edit.node.getAttribute('lnInst'))
-				}
+			const lnElements = collectEditsByTag(edits, 'LN')
+			expect(lnElements).toHaveLength(3)
+		})
+
+		it('WHEN creating lNodes THEN LN has correct lnClass / lnType / lnInst attributes', () => {
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				equipmentMatches: []
+			})
+
+			const [lnEl] = collectEditsByTag(edits, 'LN')
+			expect(lnEl.getAttribute('lnClass')).toBe('XCBR')
+			expect(lnEl.getAttribute('lnType')).toBe('TestLNType')
+			expect(lnEl.getAttribute('lnInst')).toBe('1')
+		})
+
+		it('WHEN creating multiple lNodes THEN each LN has a unique lnInst', () => {
+			const lnode2: LNodeTemplate = {
+				...lnodeTemplate,
+				uuid: 'lnode2-uuid',
+				lnInst: '2'
 			}
 
-			expect(lnInstances.size).toBe(3)
-			expect(lnInstances.has('1')).toBe(true)
-			expect(lnInstances.has('2')).toBe(true)
-			expect(lnInstances.has('3')).toBe(true)
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate, lnode2],
+				accessPoint,
+				equipmentMatches: []
+			})
+
+			const insts = collectEditsByTag(edits, 'LN').map((el) =>
+				el.getAttribute('lnInst')
+			)
+			expect(new Set(insts).size).toBe(2)
+		})
+
+		it('WHEN lNode has lnClass LLN0 THEN creates an LN0 element instead of LN', () => {
+			const lln0: LNodeTemplate = {
+				uuid: 'lln0-uuid',
+				lnClass: 'LLN0',
+				lnType: 'LLN0Type',
+				lnInst: '0'
+			}
+
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lln0],
+				accessPoint,
+				equipmentMatches: []
+			})
+
+			const ln0s = collectEditsByTag(edits, 'LN0')
+			const lns = collectEditsByTag(edits, 'LN')
+			expect(ln0s).toHaveLength(1)
+			expect(lns).toHaveLength(0)
+			expect(ln0s[0].getAttribute('lnClass')).toBe('LLN0')
 		})
 	})
 
-	describe('error handling', () => {
-		it('should throw error when xmlDocument is not available', () => {
-			pluginGlobalStore.xmlDocument = undefined
+	it('GIVEN AccessPoint already has a Server WHEN creating lNodes THEN does not create an additional Server edit', () => {
+		const server = mockDocument.createElement('Server')
+		const auth = mockDocument.createElement('Authentication')
+		auth.setAttribute('none', 'true')
+		server.appendChild(auth)
+		accessPoint.appendChild(server)
 
-			expect(() =>
-				createMultipleLNodesInAccessPoint({
-					sourceFunction: functionTemplate,
-					lNodes: [lnodeTemplate],
-					accessPoint
-				})
-			).toThrow('No XML document found')
+		const edits = createMultipleLNodesInAccessPoint({
+			sourceFunction: functionTemplate,
+			lNodes: [lnodeTemplate],
+			accessPoint,
+			equipmentMatches: []
 		})
 
-		it('should return empty array when lNodes array is empty', () => {
+		expect(collectEditsByTag(edits, 'Server')).toHaveLength(0)
+	})
+
+	describe('GIVEN Server and matching LDevice already exist', () => {
+		beforeEach(() => {
+			appendServerWithLDevice(mockDocument, accessPoint, 'CBFunction')
+		})
+
+		it('WHEN creating lNodes THEN does not create LDevice or Server edits', () => {
 			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
-				lNodes: [],
-				accessPoint
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				equipmentMatches: []
 			})
-			// Should return empty array
-			expect(edits).toEqual([])
+
+			expect(collectEditsByTag(edits, 'Server')).toHaveLength(0)
+			expect(collectEditsByTag(edits, 'LDevice')).toHaveLength(0)
 		})
 
-		it('should create lNode even when same lNode exists in another IED', () => {
-			// Create existing LNode in another IED
+		it('WHEN creating lNodes THEN still creates LN edits', () => {
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				equipmentMatches: []
+			})
+
+			expect(collectEditsByTag(edits, 'LN')).toHaveLength(1)
+		})
+	})
+
+	describe('GIVEN all target lNodes already exist in the LDevice', () => {
+		beforeEach(() => {
+			const { lDevice } = appendServerWithLDevice(
+				mockDocument,
+				accessPoint,
+				'CBFunction'
+			)
+			const ln = mockDocument.createElement('LN')
+			ln.setAttribute('lnClass', 'XCBR')
+			ln.setAttribute('lnType', 'TestLNType')
+			ln.setAttribute('lnInst', '1')
+			lDevice.appendChild(ln)
+		})
+
+		it('WHEN creating lNodes THEN returns empty array (no edits at all)', () => {
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				equipmentMatches: []
+			})
+
+			expect(edits).toEqual([])
+		})
+	})
+
+	describe('GIVEN some lNodes already exist in the LDevice and some do not', () => {
+		let lnode2: LNodeTemplate
+
+		beforeEach(() => {
+			lnode2 = { ...lnodeTemplate, uuid: 'lnode2-uuid', lnInst: '2' }
+
+			const { lDevice } = appendServerWithLDevice(
+				mockDocument,
+				accessPoint,
+				'CBFunction'
+			)
+			const existingLN = mockDocument.createElement('LN')
+			existingLN.setAttribute('lnClass', 'XCBR')
+			existingLN.setAttribute('lnType', 'TestLNType')
+			existingLN.setAttribute('lnInst', '1')
+			lDevice.appendChild(existingLN)
+		})
+
+		it('WHEN creating both lNodes THEN only adds the missing lNode', () => {
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate, lnode2],
+				accessPoint,
+				equipmentMatches: []
+			})
+
+			const lnEls = collectEditsByTag(edits, 'LN')
+			expect(lnEls).toHaveLength(1)
+			expect(lnEls[0].getAttribute('lnInst')).toBe('2')
+		})
+
+		it('WHEN adding missing lNode THEN does not emit Server or LDevice edits', () => {
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate, lnode2],
+				accessPoint,
+				equipmentMatches: []
+			})
+
+			expect(collectEditsByTag(edits, 'Server')).toHaveLength(0)
+			expect(collectEditsByTag(edits, 'LDevice')).toHaveLength(0)
+		})
+	})
+
+	describe('GIVEN identical lNode exists only in a different IED', () => {
+		beforeEach(() => {
+			// Build a second IED that already has the same LN in a different LDevice
 			const otherIED = mockDocument.createElement('IED')
 			otherIED.setAttribute('name', 'OtherIED')
 			const otherAP = mockDocument.createElement('AccessPoint')
@@ -360,7 +426,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const otherServer = mockDocument.createElement('Server')
 			otherAP.appendChild(otherServer)
 			const otherLDevice = mockDocument.createElement('LDevice')
-			otherLDevice.setAttribute('inst', 'TestLD')
+			otherLDevice.setAttribute('inst', 'CBFunction')
 			otherServer.appendChild(otherLDevice)
 			const existingLN = mockDocument.createElement('LN')
 			existingLN.setAttribute('lnClass', 'XCBR')
@@ -368,14 +434,16 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			existingLN.setAttribute('lnInst', '1')
 			otherLDevice.appendChild(existingLN)
 			mockDocument.documentElement.appendChild(otherIED)
+		})
 
+		it('WHEN creating lNodes in target AccessPoint THEN creates Server, LDevice and LN (uniqueness is LDevice-scoped)', () => {
 			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				accessPoint
+				accessPoint,
+				equipmentMatches: []
 			})
 
-			// Should create edits since lNode uniqueness is scoped to LDevice, not entire document
 			expect(edits.length).toBeGreaterThan(0)
 
 			// Verify Server, LDevice, and LN are created
@@ -415,7 +483,8 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				accessPoint
+				accessPoint,
+				equipmentMatches: []
 			})
 
 			// Should return empty array since lNode already exists in the same LDevice
@@ -428,7 +497,8 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
-				accessPoint
+				accessPoint,
+				equipmentMatches: []
 			})
 
 			for (const edit of edits as Insert[]) {

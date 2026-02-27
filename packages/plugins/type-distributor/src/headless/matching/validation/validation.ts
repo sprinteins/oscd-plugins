@@ -4,19 +4,18 @@ import type {
 	ConductingEquipmentType
 } from '@/headless/common-types'
 import { ssdImportStore } from '@/headless/stores'
+import { groupEquipmentByType } from '../equipment-grouping'
 import type { AmbiguousTypeInfo, ValidationResult } from './types'
 
 export function validateEquipmentMatch(
 	scdBay: Element,
 	bayType: BayType
 ): ValidationResult {
-	const errors: string[] = []
-
 	const scdConductingEquipment = Array.from(
 		scdBay.querySelectorAll('ConductingEquipment')
 	)
 
-	const scdCEByType = groupByType(scdConductingEquipment)
+	const scdCEByType = groupEquipmentByType(scdConductingEquipment)
 
 	const bayTypeCEWithTemplates = bayType.conductingEquipments
 		.map((ce) => {
@@ -41,58 +40,31 @@ export function validateEquipmentMatch(
 	const bayTypeCEByType = groupTemplatesByType(bayTypeCETemplates)
 
 	const ambiguousTypes = detectAmbiguousTypes(bayTypeCETemplates)
+
+	const countMismatchErrors = buildCountMismatchErrors(
+		scdCEByType,
+		bayTypeCEByType
+	)
+
 	if (ambiguousTypes.length > 0) {
-		errors.push(
-			'Manual matching required: Multiple equipment templates with the same type but different names found.'
-		)
-
-		for (const [type, scdElements] of Object.entries(scdCEByType)) {
-			const bayTypeElements = bayTypeCEByType[type] || []
-			if (scdElements.length !== bayTypeElements.length) {
-				errors.push(
-					`ConductingEquipment type "${type}": SCD has ${scdElements.length}, BayType has ${bayTypeElements.length}`
-				)
-			}
-		}
-
-		for (const [type, bayTypeElements] of Object.entries(bayTypeCEByType)) {
-			if (!scdCEByType[type]) {
-				errors.push(
-					`ConductingEquipment type "${type}": Missing in SCD (BayType has ${bayTypeElements.length})`
-				)
-			}
-		}
-
 		return {
 			isValid: false,
-			errors,
+			errors: [
+				'Manual matching required: Multiple equipment templates with the same type but different names found.',
+				...countMismatchErrors
+			],
+			countMismatchErrors,
 			requiresManualMatching: true,
 			ambiguousTypes,
 			canAutoMatch: false
 		}
 	}
 
-	for (const [type, scdElements] of Object.entries(scdCEByType)) {
-		const bayTypeElements = bayTypeCEByType[type] || []
-		if (scdElements.length !== bayTypeElements.length) {
-			errors.push(
-				`ConductingEquipment type "${type}": SCD has ${scdElements.length}, BayType has ${bayTypeElements.length}`
-			)
-		}
-	}
-
-	for (const [type, bayTypeElements] of Object.entries(bayTypeCEByType)) {
-		if (!scdCEByType[type]) {
-			errors.push(
-				`ConductingEquipment type "${type}": Missing in SCD (BayType has ${bayTypeElements.length})`
-			)
-		}
-	}
-
 	return {
-		isValid: errors.length === 0,
-		errors,
-		canAutoMatch: errors.length === 0
+		isValid: countMismatchErrors.length === 0,
+		errors: countMismatchErrors,
+		countMismatchErrors,
+		canAutoMatch: countMismatchErrors.length === 0
 	}
 }
 
@@ -123,18 +95,30 @@ function detectAmbiguousTypes(
 	return ambiguous
 }
 
-function groupByType(elements: Element[]): Record<string, Element[]> {
-	const grouped: Record<string, Element[]> = {}
-	for (const element of elements) {
-		const type = element.getAttribute('type')
-		if (type) {
-			if (!grouped[type]) {
-				grouped[type] = []
-			}
-			grouped[type].push(element)
+function buildCountMismatchErrors(
+	scdCEByType: Record<string, Element[]>,
+	bayTypeCEByType: Record<string, ConductingEquipmentTemplate[]>
+): string[] {
+	const errors: string[] = []
+
+	for (const [type, scdElements] of Object.entries(scdCEByType)) {
+		const bayTypeElements = bayTypeCEByType[type] || []
+		if (scdElements.length !== bayTypeElements.length) {
+			errors.push(
+				`ConductingEquipment type "${type}": SCD has ${scdElements.length}, BayType has ${bayTypeElements.length}`
+			)
 		}
 	}
-	return grouped
+
+	for (const [type, bayTypeElements] of Object.entries(bayTypeCEByType)) {
+		if (!scdCEByType[type]) {
+			errors.push(
+				`ConductingEquipment type "${type}": Missing in SCD (BayType has ${bayTypeElements.length})`
+			)
+		}
+	}
+
+	return errors
 }
 
 function groupTemplatesByType(

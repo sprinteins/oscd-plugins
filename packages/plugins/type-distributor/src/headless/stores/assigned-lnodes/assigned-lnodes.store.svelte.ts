@@ -3,7 +3,8 @@ import type {
 	LNodeTemplate
 } from '@/headless/common-types'
 import { SvelteSet } from 'svelte/reactivity'
-import { bayTypesStore } from '../bay-types.store.svelte'
+import { getAllLNodesWithParent } from '../bay-types.utils'
+import { ssdImportStore } from '../ssd-import.store.svelte'
 import { bayStore } from '../bay.store.svelte'
 import { processEqFunctions, processFunctions } from './assigned-lnodes.helpers'
 
@@ -23,7 +24,7 @@ class UseAssignedLNodesStore {
 		if (!scdBay) return
 
 		processFunctions(scdBay, this.assignedIndex)
-		processEqFunctions(scdBay, this.assignedIndex, bayTypesStore.bayTypes)
+		processEqFunctions(scdBay, this.assignedIndex, ssdImportStore.bayTypes)
 	}
 
 	markAsAssigned(parentUuid: string, lNodes: LNodeTemplate[]) {
@@ -44,8 +45,7 @@ class UseAssignedLNodesStore {
 	}
 
 	areAllLNodesAssigned(bayTypeWithTemplates: BayTypeWithTemplates): boolean {
-		const allLNodes =
-			bayTypesStore.getAllLNodesWithParent(bayTypeWithTemplates)
+		const allLNodes = getAllLNodesWithParent(bayTypeWithTemplates)
 		return allLNodes.every(({ parentUuid, lnode }) =>
 			this.isAssigned(parentUuid, lnode)
 		)

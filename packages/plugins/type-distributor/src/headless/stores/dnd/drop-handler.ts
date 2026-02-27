@@ -4,8 +4,10 @@ import type {
 	EqFunctionTemplate,
 	FunctionTemplate
 } from '@/headless/common-types'
+import type { EquipmentMatch } from '@/headless/matching/types'
 import { applyBayTypeSelection } from '@/headless/matching'
-import { bayTypesStore } from '../bay-types.store.svelte'
+import { ssdImportStore } from '../ssd-import.store.svelte'
+import { getBayTypeWithTemplates } from '../bay-types.utils'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
@@ -32,7 +34,7 @@ export function getBayTypeApplicationState(): BayTypeApplicationState {
 	const requiresManualMatching = validation?.requiresManualMatching ?? false
 
 	const hasValidAutoSelection =
-		!!bayTypesStore.selectedBayType &&
+		!!ssdImportStore.selectedBayType &&
 		!!validation?.isValid &&
 		!requiresManualMatching
 
@@ -48,55 +50,67 @@ export function getBayTypeApplicationState(): BayTypeApplicationState {
 	}
 }
 
-export function applyBayTypeIfNeeded(state: BayTypeApplicationState): boolean {
-	if (!shouldApplyBayType(state)) {
-		return false
-	}
-
+export function applyBayType(state: BayTypeApplicationState): EquipmentMatch[] {
 	if (state.hasPendingManualSelection) {
-		bayTypesStore.selectedBayType = bayStore.pendingBayTypeApply
+		ssdImportStore.selectedBayType = bayStore.pendingBayTypeApply
 	}
 
 	if (!bayStore.selectedBay) {
 		throw new Error('[DnD] No bay type selected to apply to bay')
 	}
 
-	applyBayTypeSelection(bayStore.selectedBay)
-	bayStore.assignedBayTypeUuid = bayTypesStore.selectedBayType
+	const matches = applyBayTypeSelection(bayStore.selectedBay)
 	bayStore.pendingBayTypeApply = null
-	equipmentMatchingStore.clearValidationResult()
+	equipmentMatchingStore.reset()
 
-	return true
+	return matches
 }
 
-export function buildEditsForIed(
-	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	lNodes: LNodeTemplate[],
-	targetAccessPoint: Element,
+type BuildEditsForIedParams = {
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
+	lNodes: LNodeTemplate[]
+	targetAccessPoint: Element
+	equipmentMatches: EquipmentMatch[]
 	equipmentUuid?: string
-): (Insert | SetAttributes)[] {
+}
+
+export function buildEditsForIed({
+	sourceFunction,
+	lNodes,
+	targetAccessPoint,
+	equipmentMatches,
+	equipmentUuid
+}: BuildEditsForIedParams): (Insert | SetAttributes)[] {
 	return createMultipleLNodesInAccessPoint({
 		sourceFunction,
 		lNodes,
 		accessPoint: targetAccessPoint,
-		equipmentUuid
+		equipmentUuid,
+		equipmentMatches
 	})
 }
 
-export function generateCommitTitle(
-	lNodes: LNodeTemplate[],
-	functionName: string,
-	targetSIedName: string,
+type GenerateCommitTitleParams = {
+	lNodes: LNodeTemplate[]
+	functionName: string
+	targetSIedName: string
 	didApplyBayType: boolean
-): string {
+}
+
+export function generateCommitTitle({
+	lNodes,
+	functionName,
+	targetSIedName,
+	didApplyBayType
+}: GenerateCommitTitleParams): string {
 	const lnodeInfo =
 		lNodes.length === 1 ? `${lNodes[0].lnClass}` : `${lNodes.length} LNodes`
 
 	if (didApplyBayType) {
 		const bayName = bayStore.selectedBay ?? 'Unknown'
-		const bayTypeUuid = bayTypesStore.selectedBayType
+		const bayTypeUuid = ssdImportStore.selectedBayType
 		const bayTypeDetails = bayTypeUuid
-			? bayTypesStore.getBayTypeWithTemplates(bayTypeUuid)
+			? getBayTypeWithTemplates(bayTypeUuid)
 			: null
 		const bayTypeName = bayTypeDetails?.name ?? 'Unknown'
 
@@ -106,11 +120,13 @@ export function generateCommitTitle(
 	return `Assign ${lnodeInfo} from ${functionName} to IED ${targetSIedName}`
 }
 
-export function commitEdits(
-	edits: (Insert | SetAttributes)[],
-	title: string,
+type CommitEditsParams = {
+	edits: (Insert | SetAttributes)[]
+	title: string
 	squash: boolean
-): void {
+}
+
+export function commitEdits({ edits, title, squash }: CommitEditsParams): void {
 	const { editor } = getDocumentAndEditor()
 
 	editor.commit(edits, squash ? { title, squash: true } : { title })
