@@ -11,7 +11,7 @@ import {
 	generateCommitTitle,
 	commitEdits
 } from './drop-handler'
-import { assignedLNodesStore } from '@/headless/stores'
+import { assignedLNodesStore, bayStore } from '@/headless/stores'
 import { buildEditsForBayLNode } from '@/headless/scl'
 
 type DraggedItem = {

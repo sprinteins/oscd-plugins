@@ -2,7 +2,6 @@ import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate
 } from '@/headless/common-types'
-import { bayStore } from '@/headless/stores/bay.store.svelte'
 import { queryServer } from './server-element'
 import type { EquipmentMatch } from '@/headless/matching'
 
