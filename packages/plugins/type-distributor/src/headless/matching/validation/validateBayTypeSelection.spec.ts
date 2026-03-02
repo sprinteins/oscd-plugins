@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { validateBayTypeSelection } from './validateBayTypeSelection'
 import {
 	ssdImportStore,
-	bayTypesStore,
 	equipmentMatchingStore,
 	bayStore
 } from '@/headless/stores'
@@ -11,9 +10,7 @@ import { validateEquipmentMatch } from './validation'
 
 vi.mock('@/headless/stores', () => ({
 	ssdImportStore: {
-		bayTypes: []
-	},
-	bayTypesStore: {
+		bayTypes: [],
 		selectedBayType: null
 	},
 	equipmentMatchingStore: {
@@ -64,7 +61,7 @@ describe('validateBayTypeSelection', () => {
 		describe('WHEN validateBayTypeSelection is called with valid data', () => {
 			it('THEN should validate equipment match and update store', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -96,7 +93,7 @@ describe('validateBayTypeSelection', () => {
 		describe('WHEN validation fails due to mismatches', () => {
 			it('THEN should return validation errors and update store', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -133,7 +130,7 @@ describe('validateBayTypeSelection', () => {
 		describe('WHEN validateBayTypeSelection is called', () => {
 			it('THEN should throw error about missing BayType selection', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = null
+				ssdImportStore.selectedBayType = null
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -153,7 +150,7 @@ describe('validateBayTypeSelection', () => {
 		describe('WHEN validateBayTypeSelection is called', () => {
 			it('THEN should throw error about BayType not found', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'non-existent-uuid'
+				ssdImportStore.selectedBayType = 'non-existent-uuid'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -173,7 +170,7 @@ describe('validateBayTypeSelection', () => {
 		describe('WHEN validateBayTypeSelection is called', () => {
 			it('THEN should throw error about missing Bay in SCD', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = null
 
@@ -200,7 +197,7 @@ describe('validateBayTypeSelection', () => {
 					functions: []
 				}
 
-				bayTypesStore.selectedBayType = 'baytype-uuid-2'
+				ssdImportStore.selectedBayType = 'baytype-uuid-2'
 				ssdImportStore.bayTypes = [mockBayType, secondBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -231,7 +228,7 @@ describe('validateBayTypeSelection', () => {
 		describe('WHEN ambiguous types are detected', () => {
 			it('THEN should return validation result with manual matching flag', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -274,7 +271,7 @@ describe('validateBayTypeSelection', () => {
 		describe('WHEN selected BayType UUID is set but array is empty', () => {
 			it('THEN should throw error about BayType not found', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = []
 				bayStore.scdBay = mockScdBay
 

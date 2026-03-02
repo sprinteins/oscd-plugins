@@ -4,7 +4,7 @@ import type { BayType, LNodeTemplate } from '@/headless/common-types'
 import type { Insert } from '@openscd/oscd-api'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { getDocumentAndEditor } from '@/headless/utils'
-import { matchEquipment } from './matching'
+import { matchEquipmentForInitialApply } from './matching'
 import {
 	buildEditForBayUpdate,
 	buildInsertEditsForEqFunction,
@@ -15,7 +15,6 @@ import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type
 import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'
 import {
 	ssdImportStore,
-	bayTypesStore,
 	equipmentMatchingStore,
 	bayStore
 } from '@/headless/stores'
@@ -26,7 +25,7 @@ vi.mock('@/headless/utils', () => ({
 }))
 
 vi.mock('./matching', () => ({
-	matchEquipment: vi.fn()
+	matchEquipmentForInitialApply: vi.fn()
 }))
 
 vi.mock('./scd-edits', () => ({
@@ -47,10 +46,8 @@ vi.mock('./scd-edits/data-types', () => ({
 vi.mock('@/headless/stores', () => ({
 	ssdImportStore: {
 		bayTypes: [],
+		selectedBayType: null,
 		getFunctionTemplate: vi.fn()
-	},
-	bayTypesStore: {
-		selectedBayType: null
 	},
 	equipmentMatchingStore: {
 		manualMatches: new SvelteMap()
@@ -117,7 +114,7 @@ describe('applyBayTypeSelection', () => {
 		describe('WHEN applyBayTypeSelection is called', () => {
 			it('THEN should throw error about missing BayType selection', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = null
+				ssdImportStore.selectedBayType = null
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -125,7 +122,7 @@ describe('applyBayTypeSelection', () => {
 				expect(() => applyBayTypeSelection('Bay1')).toThrow(
 					'No BayType selected'
 				)
-				expect(matchEquipment).not.toHaveBeenCalled()
+				expect(matchEquipmentForInitialApply).not.toHaveBeenCalled()
 				expect(mockEditor.commit).not.toHaveBeenCalled()
 			})
 		})
@@ -135,7 +132,7 @@ describe('applyBayTypeSelection', () => {
 		describe('WHEN applyBayTypeSelection is called', () => {
 			it('THEN should throw error about BayType not found', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'non-existent-uuid'
+				ssdImportStore.selectedBayType = 'non-existent-uuid'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -143,7 +140,7 @@ describe('applyBayTypeSelection', () => {
 				expect(() => applyBayTypeSelection('Bay1')).toThrow(
 					'BayType "non-existent-uuid" not found'
 				)
-				expect(matchEquipment).not.toHaveBeenCalled()
+				expect(matchEquipmentForInitialApply).not.toHaveBeenCalled()
 				expect(mockEditor.commit).not.toHaveBeenCalled()
 			})
 		})
@@ -153,7 +150,7 @@ describe('applyBayTypeSelection', () => {
 		describe('WHEN applyBayTypeSelection is called', () => {
 			it('THEN should throw error about missing Bay in SCD', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = null
 
@@ -161,7 +158,7 @@ describe('applyBayTypeSelection', () => {
 				expect(() => applyBayTypeSelection('Bay1')).toThrow(
 					'No Bay selected in SCD'
 				)
-				expect(matchEquipment).not.toHaveBeenCalled()
+				expect(matchEquipmentForInitialApply).not.toHaveBeenCalled()
 				expect(mockEditor.commit).not.toHaveBeenCalled()
 			})
 		})
@@ -171,7 +168,7 @@ describe('applyBayTypeSelection', () => {
 		describe('WHEN edits are created and committed', () => {
 			it('THEN should include DataTypeTemplates creation and correct title', () => {
 				// GIVEN
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
 
@@ -186,7 +183,7 @@ describe('applyBayTypeSelection', () => {
 					reference: null
 				}
 
-				vi.mocked(matchEquipment).mockReturnValue([])
+				vi.mocked(matchEquipmentForInitialApply).mockReturnValue([])
 				vi.mocked(buildEditForBayUpdate).mockReturnValue({
 					element: mockScdBay,
 					attributes: {},
@@ -205,11 +202,11 @@ describe('applyBayTypeSelection', () => {
 				applyBayTypeSelection('MyCustomBay')
 
 				// THEN
-				expect(matchEquipment).toHaveBeenCalledWith(
-					mockScdBay,
-					mockBayType,
+				expect(matchEquipmentForInitialApply).toHaveBeenCalledWith({
+					scdBay: mockScdBay,
+					bayType: mockBayType,
 					manualMatches
-				)
+				})
 				expect(mockEditor.commit).toHaveBeenCalledWith(
 					expect.arrayContaining([mockDTSCreationEdit]),
 					{
@@ -249,10 +246,9 @@ describe('applyBayTypeSelection', () => {
 					}
 				]
 
-				bayTypesStore.selectedBayType = 'baytype-uuid-1'
+				ssdImportStore.selectedBayType = 'baytype-uuid-1'
 				ssdImportStore.bayTypes = [mockBayType]
 				bayStore.scdBay = mockScdBay
-				equipmentMatchingStore.manualMatches = new SvelteMap()
 
 				const conductingEquipment = mockScdBay.querySelector(
 					'ConductingEquipment'
@@ -288,7 +284,9 @@ describe('applyBayTypeSelection', () => {
 					lnodes: functionLNodes
 				})
 
-				vi.mocked(matchEquipment).mockReturnValue(mockMatches)
+				vi.mocked(matchEquipmentForInitialApply).mockReturnValue(
+					mockMatches
+				)
 				vi.mocked(buildEditForBayUpdate).mockReturnValue({
 					element: mockScdBay,
 					attributes: {},

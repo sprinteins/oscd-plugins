@@ -17,9 +17,8 @@ describe('buildEditsForBayLNode', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 
 	beforeEach(() => {
-		// Reset bay store
-		bayStore.selectedBay = 'TestBay'
-		bayStore.equipmentMatches = []
+		// Reset bay store — set to null first to force $derived scdBay re-evaluation
+		bayStore.selectedBay = null
 
 		mockDocument = new DOMParser().parseFromString(
 			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
@@ -27,18 +26,18 @@ describe('buildEditsForBayLNode', () => {
 					<VoltageLevel>
 						<Bay name="TestBay">
 							<Function name="TopLevelFunc">
-								<LNode lnType="XSWI_Type1" lnInst="1"/>
+								<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
 							</Function>
 							<Function name="TestFunc">
-								<LNode lnType="XCBR_Type1" lnInst="1"/>
-								<LNode lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
-								<LNode lnType="XSWI_Type1" lnInst="1"/>
-								<LNode lnType="CSWI_Type1" lnInst="1"/>
+								<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
+								<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
+								<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
+								<LNode lnClass="CSWI" lnType="CSWI_Type1" lnInst="1"/>
 							</Function>
 							<ConductingEquipment name="Breaker1">
 								<EqFunction name="ProtectionFunc">
-									<LNode lnType="XCBR_Type1" lnInst="1"/>
-									<LNode lnType="XCBR_Type1" lnInst="2" iedName="ExistingIED"/>
+									<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
+									<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="2" iedName="ExistingIED"/>
 								</EqFunction>
 							</ConductingEquipment>
 						</Bay>
@@ -54,6 +53,7 @@ describe('buildEditsForBayLNode', () => {
 
 		pluginGlobalStore.xmlDocument = mockDocument
 		pluginGlobalStore.editor = mockEditor as unknown as XMLEditor
+		bayStore.selectedBay = 'TestBay'
 	})
 
 	afterEach(() => {
@@ -72,23 +72,6 @@ describe('buildEditsForBayLNode', () => {
 					'Test setup failed: Breaker1 not found in mock document'
 				)
 			}
-			bayStore.equipmentMatches = [
-				{
-					scdElement: breaker,
-					bayTypeEquipment: {
-						uuid: 'eq-uuid',
-						templateUuid: 'template-uuid',
-						virtual: false
-					},
-					templateEquipment: {
-						uuid: 'eq-uuid',
-						name: 'Breaker1',
-						type: 'CBR',
-						terminals: [],
-						eqFunctions: []
-					}
-				}
-			]
 
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -109,7 +92,24 @@ describe('buildEditsForBayLNode', () => {
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
-				equipmentUuid: 'eq-uuid'
+				equipmentUuid: 'eq-uuid',
+				equipmentMatches: [
+					{
+						scdElement: breaker,
+						bayTypeEquipment: {
+							uuid: 'eq-uuid',
+							templateUuid: 'template-uuid',
+							virtual: false
+						},
+						templateEquipment: {
+							uuid: 'eq-uuid',
+							name: 'Breaker1',
+							type: 'CBR',
+							terminals: [],
+							eqFunctions: []
+						}
+					}
+				]
 			})
 
 			// THEN should create edit for EqFunction LNode
@@ -121,9 +121,7 @@ describe('buildEditsForBayLNode', () => {
 		})
 
 		it('GIVEN equipment UUID not in matches WHEN buildEditsForBayLNode is called THEN should return empty array', () => {
-			// GIVEN equipment UUID not in matches
-			bayStore.equipmentMatches = []
-
+			// GIVEN equipment UUID not in matches (derived returns [] when no bay type is assigned)
 			const lNodes: LNodeTemplate[] = [
 				{
 					lnClass: 'XCBR',
@@ -143,7 +141,8 @@ describe('buildEditsForBayLNode', () => {
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
-				equipmentUuid: 'non-existent-uuid'
+				equipmentUuid: 'non-existent-uuid',
+				equipmentMatches: []
 			})
 
 			// THEN should return empty array
@@ -172,7 +171,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should create edit for top-level Function
@@ -202,7 +202,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should return empty array
@@ -217,8 +218,8 @@ describe('buildEditsForBayLNode', () => {
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
 					<Bay name="TestBay">
 						<Function name="TestFunc">
-							<LNode lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
-							<LNode lnType="XCBR_Type1" lnInst="1"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
 						</Function>
 					</Bay>
 				</SCL>`,
@@ -246,7 +247,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should prefer unassigned LNode
@@ -260,8 +262,8 @@ describe('buildEditsForBayLNode', () => {
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
 					<Bay name="TestBay">
 						<Function name="TestFunc">
-							<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED1"/>
-							<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED2"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1" iedName="IED1"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1" iedName="IED2"/>
 						</Function>
 					</Bay>
 				</SCL>`,
@@ -289,7 +291,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should return empty array
@@ -304,9 +307,9 @@ describe('buildEditsForBayLNode', () => {
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
 					<Bay name="TestBay">
 						<Function name="TestFunc">
-							<LNode lnType="XCBR_Type1" lnInst="1"/>
-							<LNode lnType="XSWI_Type1" lnInst="1"/>
-							<LNode lnType="CSWI_Type1" lnInst="1"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
+							<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
+							<LNode lnClass="CSWI" lnType="CSWI_Type1" lnInst="1"/>
 						</Function>
 					</Bay>
 				</SCL>`,
@@ -344,7 +347,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should create edit for each unassigned match
@@ -360,7 +364,7 @@ describe('buildEditsForBayLNode', () => {
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
 					<Bay name="TestBay">
 						<Function name="TestFunc">
-							<LNode lnType="XCBR_Type1" lnInst="1"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
 						</Function>
 					</Bay>
 				</SCL>`,
@@ -393,7 +397,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should create edits only for matching LNodes
@@ -415,7 +420,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes: [],
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should return empty array
@@ -445,7 +451,8 @@ describe('buildEditsForBayLNode', () => {
 			const edits = buildEditsForBayLNode({
 				lNodes,
 				iedName: 'IED1',
-				sourceFunction
+				sourceFunction,
+				equipmentMatches: []
 			})
 
 			// THEN should return empty array

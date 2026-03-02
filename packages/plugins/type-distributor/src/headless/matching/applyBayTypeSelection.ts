@@ -1,14 +1,11 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '@/headless/common-types'
-import {
-	ssdImportStore,
-	bayTypesStore,
-	equipmentMatchingStore,
-	bayStore
-} from '../stores'
+import type { EquipmentMatch } from './types'
+import { equipmentMatchingStore, ssdImportStore, bayStore } from '../stores'
+import { resolveMatchingContext } from './resolve-matching-context'
 import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
-import { matchEquipment } from './matching'
+import { matchEquipmentForInitialApply } from './matching'
 import {
 	buildEditForBayUpdate,
 	buildInsertEditsForEqFunction,
@@ -17,32 +14,19 @@ import {
 } from './scd-edits'
 import { getDocumentAndEditor } from '@/headless/utils'
 
-export function applyBayTypeSelection(bayName: string): void {
+export function applyBayTypeSelection(bayName: string): EquipmentMatch[] {
 	const { doc, editor } = getDocumentAndEditor()
-
-	const selectedBayTypeName = bayTypesStore.selectedBayType
-	if (!selectedBayTypeName) {
-		throw new Error('No BayType selected')
-	}
-
-	const bayType = ssdImportStore.bayTypes.find(
-		(bay) => bay.uuid === selectedBayTypeName
+	const { scdBay, bayType } = resolveMatchingContext(
+		ssdImportStore.selectedBayType,
+		ssdImportStore.bayTypes,
+		bayStore.scdBay
 	)
 
-	if (!bayType) {
-		throw new Error(`BayType "${selectedBayTypeName}" not found`)
-	}
-
-	const scdBay = bayStore.scdBay
-	if (!scdBay) {
-		throw new Error('No Bay selected in SCD')
-	}
-
-	const matches = matchEquipment(
+	const matches = matchEquipmentForInitialApply({
 		scdBay,
 		bayType,
-		equipmentMatchingStore.manualMatches
-	)
+		manualMatches: equipmentMatchingStore.manualMatches
+	})
 
 	const edits: (Insert | SetAttributes)[] = []
 
@@ -64,8 +48,6 @@ export function applyBayTypeSelection(bayName: string): void {
 	if (dtsCreationEdit) {
 		edits.push(dtsCreationEdit)
 	}
-
-	bayStore.equipmentMatches = matches
 
 	const allLNodeTemplates: LNodeTemplate[] = []
 
@@ -94,4 +76,6 @@ export function applyBayTypeSelection(bayName: string): void {
 	editor.commit(edits, {
 		title: `Assign BayType "${bayType.name}" to Bay "${bayName}"`
 	})
+
+	return matches
 }

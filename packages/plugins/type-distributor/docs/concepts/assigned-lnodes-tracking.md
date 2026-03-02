@@ -18,15 +18,15 @@ When distributing types from BayTypes to IEDs, LNodes can be assigned multiple t
 A centralized Svelte store that maintains an index of assigned LNodes:
 
 ```typescript
-type LNodeKey = `${string}:${string}:${string}:${string}` 
-// Format: parentUuid:lnClass:lnType:lnInst
+type LNodeKey = `${string}:${string}:${string}:${string}:${string}`
+// Format: parentUuid:functionScopeUuid:lnClass:lnType:lnInst
 
 class UseAssignedLNodesStore {
   private assignedIndex = new SvelteSet<LNodeKey>()
   
   rebuild(): void
-  markAsAssigned(parentUuid: string, lNodes: LNodeTemplate[]): void
-  isAssigned(parentUuid: string, lnode: LNodeTemplate): boolean
+  markAsAssigned(parentUuid: string, lNodes: LNodeTemplate[], functionScopeUuid?: string): void
+  isAssigned(parentUuid: string, lnode: LNodeTemplate, functionScopeUuid?: string): boolean
 }
 ```
 
@@ -35,9 +35,10 @@ class UseAssignedLNodesStore {
 LNodes are uniquely identified by combining:
 
 1. **Parent UUID**: The template UUID of the containing Function or Equipment instance
-2. **lnClass**: Logical node class (e.g., "XCBR", "CSWI")
-3. **lnType**: Logical node type reference
-4. **lnInst**: Logical node instance identifier
+2. **Function Scope UUID**: The UUID of the source Function/EqFunction template
+3. **lnClass**: Logical node class (e.g., "XCBR", "CSWI")
+4. **lnType**: Logical node type reference
+5. **lnInst**: Logical node instance identifier
 
 **Rationale**: Using parent UUID ensures that the same LNode type can exist in different functions/equipment without false positives. This scoping is essential because bay types can have multiple Functions or Equipment instances that use the same LNode definitions.
 
@@ -59,7 +60,7 @@ rebuild() {
     
     // 4. Index each LNode
     for (const lnode of lnodes) {
-      const key = `${parentUuid}:${lnClass}:${lnType}:${lnInst}`
+      const key = `${parentUuid}:${functionScopeUuid}:${lnClass}:${lnType}:${lnInst}`
       this.assignedIndex.add(key)
     }
   }
@@ -143,14 +144,14 @@ LNodes are scoped to their parent Function or Equipment instance:
 ```
 
 **Tracking**:
-- `func-uuid-1:XCBR:TestXCBR:1` → Assigned ✅
-- `func-uuid-2:XCBR:TestXCBR:1` → Not assigned ❌
+- `func-uuid-1:func-template-1:XCBR:TestXCBR:1` → Assigned ✅
+- `func-uuid-2:func-template-2:XCBR:TestXCBR:1` → Not assigned ❌
 
 This allows the same LNode definition to be used across different Functions without conflict.
 
 ### Equipment Instance Handling
 
-For equipment-based LNodes, the parent UUID is the equipment's templateUuid:
+For equipment-based LNodes, the parent UUID is the matched bay-type equipment instance UUID (stored on SCD equipment as `templateUuid`):
 
 ```xml
 <ConductingEquipment name="CB1" type="CBR" templateUuid="eq-uuid-1">
@@ -160,9 +161,15 @@ For equipment-based LNodes, the parent UUID is the equipment's templateUuid:
 </ConductingEquipment>
 ```
 
-**Key**: `eq-uuid-1:PTRC:TestPTRC:1`
+For EqFunction-based LNodes, `parentUuid` is the bay-type equipment instance UUID and `functionScopeUuid` is the EqFunction template UUID.
 
-The store resolves equipment instances by looking up the bayTypesStore to validate template existence.
+**EqFunction key**: `eq-instance-1:eq-function-template-1:PTRC:TestPTRC:1`
+
+For bay-level Function LNodes, `parentUuid` is the Function instance UUID and `functionScopeUuid` is the Function template UUID.
+
+**Function key**: `func-instance-1:func-template-1:CSWI:TestCSWI:1`
+
+The store resolves equipment assignment state from current bay context and resolved equipment matches.
 
 ## Edge Cases
 
@@ -192,7 +199,7 @@ const lnodes = func.querySelectorAll('LNode[iedName]')
 Manual assignments are not persisted across rebuilds:
 
 ```typescript
-assignedLNodesStore.markAsAssigned(funcUuid, [lnode2])  // Manual mark
+assignedLNodesStore.markAsAssigned({ parentUuid: funcUuid, lNodes: [lnode2] })  // Manual mark
 assignedLNodesStore.rebuild()  // Clears manual marks
 
 // lnode2 is no longer marked unless it exists in document
@@ -207,8 +214,12 @@ assignedLNodesStore.rebuild()  // Clears manual marks
 Using `SvelteSet` provides O(1) lookup performance:
 
 ```typescript
-isAssigned(parentUuid: string, lnode: LNodeTemplate): boolean {
-  const key = this.buildKey(parentUuid, lnode)
+isAssigned({
+  parentUuid,
+  lnode,
+  functionScopeUuid
+}: isAssignedParams): boolean {
+  const key = this.buildKey({ parentUuid, lnode, functionScopeUuid: functionScopeUuid ?? parentUuid })
   return this.assignedIndex.has(key)  // O(1)
 }
 ```
@@ -225,7 +236,7 @@ Rebuilds are triggered by:
 
 ### Memory Footprint
 
-Each LNode key is a string with format: `${uuid}:${class}:${type}:${inst}`
+Each LNode key is a string with format: `${parentUuid}:${functionScopeUuid}:${class}:${type}:${inst}`
 
 Typical bay: 10-50 Functions/Equipment × 5-20 LNodes = 50-1000 keys
 

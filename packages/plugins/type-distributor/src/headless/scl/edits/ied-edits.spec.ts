@@ -201,7 +201,6 @@ describe('createIED', () => {
 
 		it('should handle special characters in name', () => {
 			const specialName = 'Test-IED_123.abc'
-
 			createIED({ name: specialName })
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert
@@ -212,7 +211,6 @@ describe('createIED', () => {
 
 		it('should handle special characters in description', () => {
 			const specialDesc = 'Test <>&" description'
-
 			createIED({ name: 'TestIED', description: specialDesc })
 
 			const edit = mockEditor.commit.mock.calls[0][0] as Insert

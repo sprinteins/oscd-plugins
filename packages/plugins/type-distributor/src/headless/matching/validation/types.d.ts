@@ -6,6 +6,7 @@ export type AmbiguousTypeInfo = {
 export type ValidationResult = {
 	isValid: boolean
 	errors: string[]
+	countMismatchErrors?: string[]
 	requiresManualMatching?: boolean
 	ambiguousTypes?: AmbiguousTypeInfo[]
 	canAutoMatch?: boolean
