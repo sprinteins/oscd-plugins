@@ -146,15 +146,10 @@ export function createMultipleLNodesInAccessPoint({
 	return edits
 }
 
-type buildEditsForCreateAccessPointParams = {
-	iedName: string
+export function buildEditsForCreateAccessPoint(
+	iedName: string,
 	accessPoints: { name: string; description?: string }[]
-}
-
-export function buildEditsForCreateAccessPoint({
-	iedName,
-	accessPoints
-}: buildEditsForCreateAccessPointParams): Insert[] {
+): Insert[] {
 	const { doc } = getDocumentAndEditor()
 	const allEdits: Insert[] = []
 

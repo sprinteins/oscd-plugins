@@ -3,7 +3,7 @@ import { getDocumentAndEditor } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
 import { queryIEDInsertionReference } from '../queries'
 
-export function buildEditForCreateIED(
+export function buildEditForCreateIed(
 	name: string,
 	description?: string
 ): Insert {
