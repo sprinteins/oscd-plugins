@@ -3,7 +3,7 @@ import type { XMLEditor } from '@openscd/oscd-editor'
 import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
 import type { Insert } from '@openscd/oscd-api'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { buildEditsForCreateIED } from './ied-edits'
+import { buildEditForCreateIED } from './ied-edits'
 
 // Mock the pluginGlobalStore module
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -36,11 +36,9 @@ describe('buildEditsForCreateIED', () => {
 
 	describe('basic functionality', () => {
 		it('should create an IED element with the given name', () => {
-			const edits = buildEditsForCreateIED({ name: 'TestIED' })
+			const edit = buildEditForCreateIED('TestIED')
 
-			expect(edits.length).toBe(1)
-			const edit = edits[0]
-
+			expect(edit).toBeInstanceOf(Object)
 			expect(edit.node).toBeInstanceOf(Element)
 			const iedElement = edit.node as Element
 			expect(iedElement.tagName).toBe('IED')
@@ -48,11 +46,10 @@ describe('buildEditsForCreateIED', () => {
 		})
 
 		it('should create an IED element with name and description', () => {
-			const edits = buildEditsForCreateIED({
-				name: 'TestIED',
-				description: 'Test Description'
-			})
-			const edit = edits[0]
+			const edit = buildEditForCreateIED(
+				'TestIED',
+				'Test Description'
+			)
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('name')).toBe('TestIED')
@@ -60,8 +57,7 @@ describe('buildEditsForCreateIED', () => {
 		})
 
 		it('should not set desc attribute when description is not provided', () => {
-			const edits = buildEditsForCreateIED({ name: 'TestIED' })
-			const edit = edits[0]
+			const edit = buildEditForCreateIED('TestIED')
 			const iedElement = edit.node as Element
 
 			expect(iedElement.hasAttribute('desc')).toBe(false)
@@ -70,8 +66,7 @@ describe('buildEditsForCreateIED', () => {
 
 	describe('default attributes', () => {
 		it('should set all default SIED attributes', () => {
-			const edits = buildEditsForCreateIED({ name: 'TestIED' })
-			const edit = edits[0]
+			const edit = buildEditForCreateIED('TestIED')
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('configVersion')).toBe('1.0')
@@ -85,8 +80,7 @@ describe('buildEditsForCreateIED', () => {
 
 	describe('Services element', () => {
 		it('should create a Services child element with nameLength attribute', () => {
-			const edits = buildEditsForCreateIED({ name: 'TestIED' })
-			const edit = edits[0]
+			const edit = buildEditForCreateIED('TestIED')
 			const iedElement = edit.node as Element
 
 			const servicesElement = iedElement.querySelector('Services')
@@ -95,8 +89,7 @@ describe('buildEditsForCreateIED', () => {
 		})
 
 		it('should have Services as direct child of IED', () => {
-			const edits = buildEditsForCreateIED({ name: 'TestIED' })
-			const edit = edits[0]
+			const edit = buildEditForCreateIED('TestIED')
 			const iedElement = edit.node as Element
 
 			const children = Array.from(iedElement.children)
@@ -107,8 +100,7 @@ describe('buildEditsForCreateIED', () => {
 
 	describe('insertion reference', () => {
 		it('should insert before DataTypeTemplates if it exists', () => {
-			const edits = buildEditsForCreateIED({ name: 'TestIED' })
-			const edit = edits[0]
+			const edit = buildEditForCreateIED('TestIED')
 
 			expect(edit.parent).toBe(mockDocument.documentElement)
 			expect(edit.reference?.nodeName).toBe('DataTypeTemplates')
@@ -132,9 +124,7 @@ describe('buildEditsForCreateIED', () => {
 			const someOtherElement = customDoc.createElement('Communication')
 			customDoc.documentElement.appendChild(someOtherElement)
 
-			const edits = buildEditsForCreateIED({ name: 'TestIED' })
-			const edit = edits[0]
-
+			const edit = buildEditForCreateIED('TestIED')
 			expect(edit.parent).toBe(customDoc.documentElement)
 			expect(edit.reference).toBe(someOtherElement)
 		})
@@ -146,8 +136,7 @@ describe('buildEditsForCreateIED', () => {
 			)
 			pluginGlobalStore.xmlDocument = customDoc
 
-			const edits = buildEditsForCreateIED({ name: 'TestIED' })
-			const edit = edits[0]
+			const edit = buildEditForCreateIED('TestIED')
 
 			expect(edit.parent).toBe(customDoc.documentElement)
 			expect(edit.reference).toBeNull()
@@ -168,9 +157,7 @@ describe('buildEditsForCreateIED', () => {
 				customDoc.createElement('DataTypeTemplates')
 			customDoc.documentElement.appendChild(dataTypeTemplates)
 
-			const edits = buildEditsForCreateIED({ name: 'TestIED' })
-			const edit = edits[0]
-
+			const edit = buildEditForCreateIED('TestIED')
 			expect(edit.reference).toBe(dataTypeTemplates)
 		})
 	})
@@ -179,14 +166,14 @@ describe('buildEditsForCreateIED', () => {
 		it('should throw error when xmlDocument is not available', () => {
 			pluginGlobalStore.xmlDocument = undefined
 
-			expect(() => buildEditsForCreateIED({ name: 'TestIED' })).toThrow(
+			expect(() => buildEditForCreateIED('TestIED')).toThrow(
 				'No XML document loaded'
 			)
 		})
 		it('should throw error when editor is not available', () => {
 			pluginGlobalStore.editor = undefined
 
-			expect(() => buildEditsForCreateIED({ name: 'TestIED' })).toThrow(
+			expect(() => buildEditForCreateIED('TestIED')).toThrow(
 				'No editor available'
 			)
 		})
@@ -194,9 +181,8 @@ describe('buildEditsForCreateIED', () => {
 
 	describe('edge cases', () => {
 		it('should handle empty string as name', () => {
-			const edits = buildEditsForCreateIED({ name: '' })
+			const edit = buildEditForCreateIED('')
 
-			const edit = edits[0]
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('name')).toBe('')
@@ -205,9 +191,7 @@ describe('buildEditsForCreateIED', () => {
 		it('should handle special characters in name', () => {
 			const specialName = 'Test-IED_123.abc'
 
-			const edits = buildEditsForCreateIED({ name: specialName })
-
-			const edit = edits[0]
+			const edit = buildEditForCreateIED(specialName)
 			const iedElement = edit.node as Element
 
 			expect(iedElement.getAttribute('name')).toBe(specialName)
@@ -216,14 +200,12 @@ describe('buildEditsForCreateIED', () => {
 		it('should handle special characters in description', () => {
 			const specialDesc = 'Test <>&" description'
 
-			const edits = buildEditsForCreateIED({
-				name: 'TestIED',
-				description: specialDesc
-			})
+			const edit = buildEditForCreateIED(
+			'TestIED',
+			specialDesc
+			)
 
-			const edit = edits[0]
 			const iedElement = edit.node as Element
-
 			expect(iedElement.getAttribute('desc')).toBe(specialDesc)
 		})
 	})

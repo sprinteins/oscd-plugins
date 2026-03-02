@@ -1,5 +1,5 @@
 import {
-	buildEditsForCreateIED,
+	buildEditForCreateIED,
 	buildEditsForCreateAccessPoint
 } from '@/headless/scl'
 import type { AccessPointData, IedData } from './types'
@@ -21,10 +21,10 @@ export function submitForm({
 	}
 
 	if (ied.isNew) {
-		const iedEdits = buildEditsForCreateIED({
-			name: ied.name,
-			description: ied.description,
-		})
+		const iedEdits = buildEditForCreateIED(
+			ied.name,
+			ied.description
+		)
 		editor.commit(iedEdits, {
 			title: `Create IED "${ied.name}"`
 		})

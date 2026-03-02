@@ -3,15 +3,10 @@ import { getDocumentAndEditor } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
 import { queryIEDInsertionReference } from '../queries'
 
-type buildEditsForCreateIEDParams = {
-	name: string
+export function buildEditForCreateIED(
+	name: string,
 	description?: string
-}
-
-export function buildEditsForCreateIED({
-	name,
-	description,
-}: buildEditsForCreateIEDParams): Insert[] {
+): Insert {
 	const { doc } = getDocumentAndEditor()
 
 	const iedElement = createBasicIEDElement(name, doc, description)
@@ -25,5 +20,5 @@ export function buildEditsForCreateIED({
 		reference: reference
 	}
 
-	return [edit]
+	return edit
 }
