@@ -1,10 +1,12 @@
 <script lang="ts">
 import { queryAccessPointsFromIed } from '@/headless/scl'
+import type { LD0Source } from '@/headless/scl'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import {
 	IedSelectorSection,
 	IedFormSection,
-	AccessPointFormSection
+	AccessPointFormSection,
+	Ld0FormSection
 } from './form-sections'
 import { MultiApButton, FormActions } from './form-elements'
 import {
@@ -19,12 +21,25 @@ import {
 	createInitialAccessPointForm
 } from './form-helpers'
 import IedAndAccessPointOverview from './form-sections/ied-and-access-point-overview-section.svelte'
+import { ssdImportStore } from '@/headless/stores'
 
 let ied = $state<IedData>(createInitialIedData())
 let currentAccessPoint = $state(createInitialAccessPointForm())
 let accessPoints = $state<AccessPointData[]>([])
 let isMultiApMode = $state(false)
 let error = $state<string | null>(null)
+
+const ld0FunctionTemplates = $derived(ssdImportStore.ld0FunctionTemplates)
+
+function computeInitialLD0Source(): LD0Source {
+	const templates = ssdImportStore.ld0FunctionTemplates
+	if (templates.length === 1) {
+		return { kind: 'function', functionTemplate: templates[0] }
+	}
+	return { kind: 'default', onlyMandatoryDOs: false }
+}
+
+let selectedLD0Source = $state<LD0Source>(computeInitialLD0Source())
 
 const hasCurrentAp = $derived(currentAccessPoint.name.trim().length > 0)
 const hasValidIed = $derived(ied.name.trim().length > 0)
@@ -50,6 +65,7 @@ function resetForm() {
 	accessPoints = []
 	isMultiApMode = false
 	error = null
+	selectedLD0Source = computeInitialLD0Source()
 }
 
 function enterMultiApMode() {
@@ -140,7 +156,8 @@ function handleSubmit() {
 		return
 	}
 
-	submitForm(ied, accessPointsToSubmit)
+	//TODO: Params
+	submitForm(ied, accessPointsToSubmit, selectedLD0Source)
 	resetForm()
 	dialogStore.closeDialog('success')
 }
@@ -161,6 +178,8 @@ async function handleCancel() {
   {/if}
 
   <AccessPointFormSection bind:accessPoint={currentAccessPoint} isRequired={!ied.isNew} />
+
+  <Ld0FormSection {ld0FunctionTemplates} bind:source={selectedLD0Source} />
 
   <MultiApButton
     {isMultiApMode}
