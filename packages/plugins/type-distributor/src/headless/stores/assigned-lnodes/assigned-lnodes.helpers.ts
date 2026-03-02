@@ -1,10 +1,21 @@
-type LNodeKey = `${string}:${string}:${string}:${string}` // parentUuid:lnClass:lnType:lnInst
+import type { EquipmentMatch } from '@/headless/matching'
+import type { EqFunctionTemplate } from '@/headless/common-types'
 
-export function processLNodesFromElement(
-	element: Element,
-	parentUuid: string,
+export type LNodeKey = `${string}:${string}:${string}:${string}:${string}` // parentUuid:functionScopeUuid:lnClass:lnType:lnInst
+
+interface ProcessLNodesFromElementParams {
+	element: Element
+	parentUuid: string
 	assignedIndex: Set<LNodeKey>
-): void {
+	functionScopeUuid: string
+}
+
+function processLNodesFromElement({
+	element,
+	parentUuid,
+	assignedIndex,
+	functionScopeUuid
+}: ProcessLNodesFromElementParams): void {
 	const lnodes = element.querySelectorAll('LNode[iedName]')
 
 	for (const lnode of lnodes) {
@@ -14,16 +25,25 @@ export function processLNodesFromElement(
 
 		if (lnClass && lnType) {
 			const key =
-				`${parentUuid}:${lnClass}:${lnType}:${lnInst}` as LNodeKey
+				`${parentUuid}:${functionScopeUuid}:${lnClass}:${lnType}:${lnInst}` as LNodeKey
 			assignedIndex.add(key)
 		}
 	}
 }
 
-export function processFunctions(
-	scdBay: Element,
+interface ProcessFunctionsParams {
+	scdBay: Element
 	assignedIndex: Set<LNodeKey>
-): void {
+	bayTypes: Array<{
+		functions: Array<{ uuid: string; templateUuid: string }>
+	}>
+}
+
+export function processFunctions({
+	scdBay,
+	assignedIndex,
+	bayTypes
+}: ProcessFunctionsParams): void {
 	const functions = scdBay.querySelectorAll(':scope > Function')
 
 	for (const func of functions) {
@@ -37,15 +57,43 @@ export function processFunctions(
 			continue
 		}
 
-		processLNodesFromElement(func, parentUuid, assignedIndex)
+		let functionScopeUuid: string | null = null
+
+		for (const bayType of bayTypes) {
+			const functionInstances = bayType.functions ?? []
+			const functionInstance = functionInstances.find(
+				(instance) => instance.uuid === parentUuid
+			)
+			if (functionInstance) {
+				functionScopeUuid = functionInstance.templateUuid
+				break
+			}
+		}
+
+		if (!functionScopeUuid) {
+			functionScopeUuid = parentUuid
+		}
+
+		processLNodesFromElement({
+			element: func,
+			parentUuid,
+			assignedIndex,
+			functionScopeUuid
+		})
 	}
 }
 
-export function processEqFunctions(
-	scdBay: Element,
-	assignedIndex: Set<LNodeKey>,
-	bayTypes: Array<{ conductingEquipments: Array<{ uuid: string }> }>
-): void {
+interface ProcessEqFunctionsParams {
+	scdBay: Element
+	assignedIndex: Set<LNodeKey>
+	equipmentMatches: EquipmentMatch[]
+}
+
+export function processEqFunctions({
+	scdBay,
+	assignedIndex,
+	equipmentMatches
+}: ProcessEqFunctionsParams): void {
 	const eqFunctions = scdBay.querySelectorAll(
 		':scope > ConductingEquipment > EqFunction'
 	)
@@ -58,35 +106,45 @@ export function processEqFunctions(
 		if (!equipment || equipment.tagName !== 'ConductingEquipment') continue
 
 		const equipmentName = equipment.getAttribute('name')
-		const equipmentInstanceUuid = equipment.getAttribute('templateUuid')
 		const eqFuncName = eqFunc.getAttribute('name')
 
-		if (!equipmentInstanceUuid || !eqFuncName) {
+		if (!eqFuncName) {
 			console.warn(
-				`[AssignedLNodes] EqFunction "${eqFuncName}" in Equipment "${equipmentName}" missing templateUuid or name`
+				`[AssignedLNodes] EqFunction in Equipment "${equipmentName}" missing name`
 			)
 			continue
 		}
 
-		let parentUuid: string | null = null
+		const equipmentMatch = equipmentMatches.find(
+			(match) => match.scdElement === equipment
+		)
 
-		for (const bayType of bayTypes) {
-			const eqInstance = bayType.conductingEquipments.find(
-				(ce) => ce.uuid === equipmentInstanceUuid
-			)
-			if (eqInstance) {
-				parentUuid = equipmentInstanceUuid
-				break
-			}
-		}
-
-		if (!parentUuid) {
+		if (!equipmentMatch) {
 			console.warn(
-				`[AssignedLNodes] Could not find BayType instance for equipment UUID: ${equipmentInstanceUuid}`
+				`[AssignedLNodes] Could not resolve equipment match for equipment "${equipmentName}"`
 			)
 			continue
 		}
 
-		processLNodesFromElement(eqFunc, parentUuid, assignedIndex)
+		const parentUuid = equipmentMatch.bayTypeEquipment.uuid
+		const functionScopeUuid =
+			equipmentMatch.templateEquipment.eqFunctions.find(
+				(templateEqFunction: EqFunctionTemplate) =>
+					templateEqFunction.name === eqFuncName
+			)?.uuid ?? null
+
+		if (!functionScopeUuid) {
+			console.warn(
+				`[AssignedLNodes] Could not resolve EqFunction template UUID for "${eqFuncName}" in equipment "${equipmentName}"`
+			)
+			continue
+		}
+
+		processLNodesFromElement({
+			element: eqFunc,
+			parentUuid,
+			assignedIndex,
+			functionScopeUuid
+		})
 	}
 }

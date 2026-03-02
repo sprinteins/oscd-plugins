@@ -11,9 +11,26 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-// Mock bayTypesStore
-vi.mock('../bay-types.store.svelte', () => ({
-	bayTypesStore: {
+// Mock ssdImportStore
+vi.mock('../ssd-import.store.svelte', () => ({
+	ssdImportStore: {
+		getConductingEquipmentTemplate: vi.fn((templateUuid: string) => {
+			if (templateUuid === 'template-ce-1') {
+				return {
+					uuid: templateUuid,
+					name: 'CB1 Template',
+					type: 'CBR',
+					terminals: [],
+					eqFunctions: [{
+						uuid: 'eq-func-template-control',
+						name: 'Control',
+						lnodes: []
+					}]
+				}
+			}
+
+			return undefined
+		}),
 		bayTypes: [
 			{
 				uuid: 'baytype-uuid-1',
@@ -21,8 +38,8 @@ vi.mock('../bay-types.store.svelte', () => ({
 				conductingEquipments: [
 					{
 						uuid: 'eq-uuid-1',
-						name: 'CB1',
-						type: 'CBR'
+						templateUuid: 'template-ce-1',
+						virtual: false
 					}
 				]
 			}
@@ -33,7 +50,8 @@ vi.mock('../bay-types.store.svelte', () => ({
 // Mock bayStore
 vi.mock('../bay.store.svelte', () => ({
 	bayStore: {
-		scdBay: null
+		scdBay: null,
+		equipmentMatches: []
 	}
 }))
 
@@ -72,10 +90,37 @@ describe('assignedLNodesStore', () => {
 		)
 
 		pluginGlobalStore.xmlDocument = mockDocument
-		
+
 		// Set up bayStore.scdBay to point to the Bay element in the mock document
 		const bayElement = mockDocument.querySelector('Bay')
 		bayStore.scdBay = bayElement as Element
+
+		const equipmentElement = mockDocument.querySelector('ConductingEquipment')
+		bayStore.equipmentMatches = equipmentElement
+			? [
+					{
+						scdElement: equipmentElement,
+						bayTypeEquipment: {
+							uuid: eqUuid1,
+							templateUuid: 'template-ce-1',
+							virtual: false
+						},
+						templateEquipment: {
+							uuid: 'template-ce-1',
+							name: 'CB1 Template',
+							type: 'CBR',
+							terminals: [],
+							eqFunctions: [
+								{
+									uuid: 'eq-func-template-control',
+									name: 'Control',
+									lnodes: []
+								}
+							]
+						}
+					}
+				]
+			: []
 	})
 
 	afterEach(() => {
@@ -88,36 +133,36 @@ describe('assignedLNodesStore', () => {
 
 			// Check Function LNodes with iedName are marked as assigned
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
-				})
+				}})
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'CSWI',
 					lnType: 'TestCSWI',
 					lnInst: '1'
-				})
+				}})
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid2, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid2, lnode: {
 					lnClass: 'MMXU',
 					lnType: 'TestMMXU',
 					lnInst: '1'
-				})
+				}})
 			).toBe(true)
 
 			// Check EqFunction LNode with iedName
 			expect(
-				assignedLNodesStore.isAssigned(eqUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: eqUuid1, lnode: {
 					lnClass: 'PTRC',
 					lnType: 'TestPTRC',
 					lnInst: '1'
-				})
+				}, functionScopeUuid: 'eq-func-template-control' })
 			).toBe(true)
 		})
 
@@ -126,11 +171,11 @@ describe('assignedLNodesStore', () => {
 
 			// PDIS LNode doesn't have iedName attribute
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid2, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid2, lnode: {
 					lnClass: 'PDIS',
 					lnType: 'TestPDIS',
 					lnInst: '1'
-				})
+				}})
 			).toBe(false)
 		})
 
@@ -138,27 +183,27 @@ describe('assignedLNodesStore', () => {
 			assignedLNodesStore.rebuild()
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'RDIR',
 					lnType: 'TestRDIR',
 					lnInst: '1'
-				})
+				}})
 			).toBe(false)
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'DifferentType',
 					lnInst: '1'
-				})
+				}})
 			).toBe(false)
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '2'
-				})
+				}})
 			).toBe(false)
 		})
 
@@ -167,11 +212,11 @@ describe('assignedLNodesStore', () => {
 
 			// Verify some LNodes are assigned
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
-				})
+				}})
 			).toBe(true)
 
 			// Set document to null and clear bayStore.scdBay
@@ -181,11 +226,11 @@ describe('assignedLNodesStore', () => {
 
 			// Verify index is cleared
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
-				})
+				}})
 			).toBe(false)
 		})
 
@@ -200,11 +245,11 @@ describe('assignedLNodesStore', () => {
 			assignedLNodesStore.rebuild()
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
-				})
+				}})
 			).toBe(false)
 		})
 
@@ -234,11 +279,11 @@ describe('assignedLNodesStore', () => {
 
 			// LNodes with missing lnClass or lnType should not be indexed
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
-				})
+				}})
 			).toBe(false)
 		})
 
@@ -287,15 +332,15 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
-				false
-			)
+			expect(
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: newLNode })
+			).toBe(false)
 
-			assignedLNodesStore.markAsAssigned(funcUuid1, [newLNode])
+			assignedLNodesStore.markAsAssigned({ parentUuid: funcUuid1, lNodes: [newLNode] })
 
-			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
-				true
-			)
+			expect(
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: newLNode })
+			).toBe(true)
 		})
 
 		it('should add multiple LNodes to index', () => {
@@ -308,17 +353,17 @@ describe('assignedLNodesStore', () => {
 			]
 
 			for (const lnode of newLNodes) {
-				expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(
-					false
-				)
+				expect(
+					assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode })
+				).toBe(false)
 			}
 
-			assignedLNodesStore.markAsAssigned(funcUuid1, newLNodes)
+			assignedLNodesStore.markAsAssigned({ parentUuid: funcUuid1, lNodes: newLNodes })
 
 			for (const lnode of newLNodes) {
-				expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(
-					true
-				)
+				expect(
+					assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode })
+				).toBe(true)
 			}
 		})
 
@@ -338,21 +383,21 @@ describe('assignedLNodesStore', () => {
 			}
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, existingLNode)
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: existingLNode })
 			).toBe(true)
-			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
-				false
-			)
+		expect(
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: newLNode })
+			).toBe(false)
 
-			assignedLNodesStore.markAsAssigned(funcUuid1, [newLNode])
+		assignedLNodesStore.markAsAssigned({ parentUuid: funcUuid1, lNodes: [newLNode] })
 
-			// Both should be assigned
-			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, existingLNode)
-			).toBe(true)
-			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
-				true
-			)
+		// Both should be assigned
+		expect(
+			assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: existingLNode })
+		).toBe(true)
+		expect(
+			assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: newLNode })
+		).toBe(true)
 		})
 
 		it('should handle marking already assigned LNodes', () => {
@@ -364,15 +409,19 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode })
+			).toBe(true)
 
 			// Should not throw error when marking already assigned LNode
 			expect(() =>
-				assignedLNodesStore.markAsAssigned(funcUuid1, [lnode])
+				assignedLNodesStore.markAsAssigned({ parentUuid: funcUuid1, lNodes: [lnode] })
 			).not.toThrow()
 
 			// Should still be assigned
-			expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode })
+			).toBe(true)
 		})
 
 		it('should handle empty array', () => {
@@ -384,12 +433,16 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode })
+			).toBe(false)
 
-			assignedLNodesStore.markAsAssigned(funcUuid1, [])
+			assignedLNodesStore.markAsAssigned({ parentUuid: funcUuid1, lNodes: [] })
 
 			// Should still not be assigned
-			expect(assignedLNodesStore.isAssigned(funcUuid1, lnode)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode })
+			).toBe(false)
 		})
 	})
 
@@ -400,76 +453,76 @@ describe('assignedLNodesStore', () => {
 
 		it('should return true for assigned LNode', () => {
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
-				})
+				} })
 			).toBe(true)
 		})
 
 		it('should return false for non-assigned LNode', () => {
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'RDIR',
 					lnType: 'TestRDIR',
 					lnInst: '1'
-				})
+				} })
 			).toBe(false)
 		})
 
 		it('should differentiate between LNodes with same lnClass but different lnType', () => {
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
-				})
+				} })
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'DifferentXCBR',
 					lnInst: '1'
-				})
+				} })
 			).toBe(false)
 		})
 
 		it('should differentiate between LNodes with same lnClass and lnType but different lnInst', () => {
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1'
-				})
+				} })
 			).toBe(true)
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '2'
-				})
+				} })
 			).toBe(false)
 		})
 
 		it('should differentiate LNodes across different parent UUIDs', () => {
 			// Same LNode tuple but different parent UUID
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: {
 					lnClass: 'MMXU',
 					lnType: 'TestMMXU',
 					lnInst: '1'
-				})
+				} })
 			).toBe(false)
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid2, {
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid2, lnode: {
 					lnClass: 'MMXU',
 					lnType: 'TestMMXU',
 					lnInst: '1'
-				})
+				} })
 			).toBe(true)
 		})
 
@@ -484,7 +537,7 @@ describe('assignedLNodesStore', () => {
 			}
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, lnodeWithOptionals)
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: lnodeWithOptionals })
 			).toBe(true)
 		})
 	})
@@ -500,14 +553,14 @@ describe('assignedLNodesStore', () => {
 			}
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, existingLNode)
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: existingLNode })
 			).toBe(true)
 
 			// Rebuild should still show it as assigned
 			assignedLNodesStore.rebuild()
 
 			expect(
-				assignedLNodesStore.isAssigned(funcUuid1, existingLNode)
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: existingLNode })
 			).toBe(true)
 		})
 
@@ -520,18 +573,20 @@ describe('assignedLNodesStore', () => {
 				lnInst: '1'
 			}
 
-			assignedLNodesStore.markAsAssigned(funcUuid1, [newLNode])
-			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
-				true
-			)
+			assignedLNodesStore.markAsAssigned({ parentUuid: funcUuid1, lNodes: [newLNode] })
+		expect(
+			assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: newLNode })
+		).toBe(
+			true
+		)
 
 			// Rebuild from document (which doesn't have this LNode)
 			assignedLNodesStore.rebuild()
 
 			// Should no longer be marked as assigned
-			expect(assignedLNodesStore.isAssigned(funcUuid1, newLNode)).toBe(
-				false
-			)
+			expect(
+				assignedLNodesStore.isAssigned({ parentUuid: funcUuid1, lnode: newLNode })
+			).toBe(false)
 		})
 	})
 })

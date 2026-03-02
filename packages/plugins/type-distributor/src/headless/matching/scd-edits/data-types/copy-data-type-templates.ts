@@ -165,7 +165,9 @@ export function buildEditsForDataTypeTemplates(
 		const typeIds = missingCollections[collectionKey]
 
 		if (typeIds.size > 0) {
-			edits.push(...buildEditsForType(dataTypeTemplates, typeIds, typeName))
+			edits.push(
+				...buildEditsForType(dataTypeTemplates, typeIds, typeName)
+			)
 		}
 	}
 	return edits

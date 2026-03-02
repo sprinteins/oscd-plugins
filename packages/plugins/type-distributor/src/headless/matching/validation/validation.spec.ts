@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { validateEquipmentMatch } from './validation'
-import type { BayType, ConductingEquipmentTemplate } from '@/headless/common-types'
+import type {
+	BayType,
+	ConductingEquipmentTemplate
+} from '@/headless/common-types'
 import { ssdImportStore } from '@/headless/stores'
 
 vi.mock('@/headless/stores', () => ({

@@ -11,7 +11,7 @@ vi.mock('@/headless/stores', () => ({
 }))
 
 vi.mock('./query-insertion-references', () => ({
-queryTypeReference: vi.fn()
+	queryTypeReference: vi.fn()
 }))
 
 describe('type-creation-helpers', () => {
@@ -164,7 +164,11 @@ describe('type-creation-helpers', () => {
 					vi.mocked(queryTypeReference).mockReturnValue(null)
 
 					// WHEN
-					buildEditsForType(mockDataTypeTemplates, typeIds, 'LNodeType')
+					buildEditsForType(
+						mockDataTypeTemplates,
+						typeIds,
+						'LNodeType'
+					)
 
 					// THEN
 					expect(queryTypeReference).toHaveBeenCalledWith(

@@ -1,6 +1,6 @@
 # Type Distributor
 
-OpenSCD plugin for distributin (SSD) templates to (SCD) files.
+OpenSCD plugin for distributing SSD templates to SCD files.
 
 ## Purpose
 
@@ -13,13 +13,14 @@ The Type Distributor plugin enables users to:
 ## Key Features
 
 - **Template Matching**: Automatic and manual matching of SCD conducting equipment to SSD templates
+- **Deterministic Re-Matching**: Persisted bays are resolved by stored `templateUuid` mappings to preserve equipment identity
 - **Type Distribution**: Staged insertion of data types with dependency resolution
 - **Validation**: Pre-distribution validation to detect ambiguous matches and type mismatches
 - **Drag & Drop**: UI support for selecting and applying bay templates
 
 ## Documentation
 
-- [Architecture Decisions](src/docs/architecture-decisions.md) - Design decisions and rationale
-- [Code Style](src/docs/code-style.md) - Coding conventions and patterns
-- [How-To Guides](src/docs/how-to/) - Task-oriented guides
-- [Concepts](src/docs/concepts/) - Understanding matching
+- [Architecture Decisions](docs/architecture-decisions.md) - Design decisions and rationale
+- [Code Style](docs/code-style.md) - Coding conventions and patterns
+- [How-To Guides](docs/how-to/) - Task-oriented guides
+- [Concepts](docs/concepts/) - Matching, assignment, and state model details

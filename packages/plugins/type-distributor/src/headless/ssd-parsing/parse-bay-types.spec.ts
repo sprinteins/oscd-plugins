@@ -50,7 +50,7 @@ describe('parseBayTypes', () => {
 
 	it('should not include TEMPLATE bay in results', () => {
 		const bayNames = parseBayTypes(doc).map((b) => b.name)
-		
+
 		expect(bayNames).not.toContain('TEMPLATE')
 	})
 

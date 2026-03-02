@@ -45,7 +45,9 @@ describe('ssdImportStore', () => {
 			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 
 			expect(ssdImportStore.conductingEquipmentTemplates).toHaveLength(1)
-			expect(ssdImportStore.conductingEquipmentTemplates[0].name).toBe('Power Cable_1')
+			expect(ssdImportStore.conductingEquipmentTemplates[0].name).toBe(
+				'Power Cable_1'
+			)
 		})
 
 		it('should populate data type templates after loading', () => {
@@ -81,9 +83,10 @@ describe('ssdImportStore', () => {
 		})
 
 		it('should return undefined for non-existent UUID', () => {
-			const template = ssdImportStore.getConductingEquipmentTemplate(
-				'non-existent-uuid'
-			)
+			const template =
+				ssdImportStore.getConductingEquipmentTemplate(
+					'non-existent-uuid'
+				)
 
 			expect(template).toBeUndefined()
 		})
@@ -105,9 +108,8 @@ describe('ssdImportStore', () => {
 		})
 
 		it('should return undefined for non-existent UUID', () => {
-			const template = ssdImportStore.getFunctionTemplate(
-				'non-existent-uuid'
-			)
+			const template =
+				ssdImportStore.getFunctionTemplate('non-existent-uuid')
 
 			expect(template).toBeUndefined()
 		})
@@ -162,9 +164,11 @@ describe('ssdImportStore', () => {
 			expect(ssdImportStore.selectedBayType).toBe(firstBayUuid)
 
 			// 5. Retrieve templates
-			const funcTemplateUuid = ssdImportStore.bayTypes[0].functions[0]?.templateUuid
+			const funcTemplateUuid =
+				ssdImportStore.bayTypes[0].functions[0]?.templateUuid
 			if (funcTemplateUuid) {
-				const funcTemplate = ssdImportStore.getFunctionTemplate(funcTemplateUuid)
+				const funcTemplate =
+					ssdImportStore.getFunctionTemplate(funcTemplateUuid)
 				expect(funcTemplate).toBeDefined()
 				expect(funcTemplate?.name).toBe('Func_2')
 			}

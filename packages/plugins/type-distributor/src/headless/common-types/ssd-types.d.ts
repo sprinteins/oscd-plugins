@@ -65,7 +65,10 @@ export type LNodeTemplate = {
 	ldInst?: string
 }
 
-export type AssignableTemplates = EqFunctionTemplate | FunctionTemplate | LNodeTemplate // GeneralEqupipment
+export type AssignableTemplates =
+	| EqFunctionTemplate
+	| FunctionTemplate
+	| LNodeTemplate // GeneralEqupipment
 
 // Data Type Templates
 export type LNodeType = {

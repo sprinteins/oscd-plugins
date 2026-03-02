@@ -1,4 +1,9 @@
-import type { LNodeType, DOType, DAType, EnumType } from '@/headless/common-types'
+import type {
+	LNodeType,
+	DOType,
+	DAType,
+	EnumType
+} from '@/headless/common-types'
 
 export function parseDataTypeTemplates(doc: XMLDocument) {
 	const dataTypeTemplates = doc.querySelector('SCL > DataTypeTemplates')

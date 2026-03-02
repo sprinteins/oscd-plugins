@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { matchEquipment } from './matching'
-import type { BayType, ConductingEquipmentTemplate } from '@/headless/common-types'
+import { matchEquipmentForInitialApply } from './matching'
+import type {
+	BayType,
+	ConductingEquipmentTemplate
+} from '@/headless/common-types'
 import { ssdImportStore } from '@/headless/stores'
 
 vi.mock('@/headless/stores', () => ({
@@ -54,7 +57,7 @@ const mockTemplates = (templates: ConductingEquipmentTemplate[]): void => {
 }
 
 describe('matching', () => {
-	describe('matchEquipment', () => {
+	describe('matchEquipmentForInitialApply', () => {
 		let scdBay: Element
 		let bayType: BayType
 
@@ -84,7 +87,10 @@ describe('matching', () => {
 					])
 
 					// WHEN
-					const result = matchEquipment(scdBay, bayType)
+					const result = matchEquipmentForInitialApply({
+						scdBay,
+						bayType
+					})
 
 					// THEN
 					expect(result).toHaveLength(2)
@@ -126,11 +132,11 @@ describe('matching', () => {
 					])
 
 					// WHEN
-					const result = matchEquipment(
+					const result = matchEquipmentForInitialApply({
 						scdBay,
 						bayType,
 						manualMatches
-					)
+					})
 
 					// THEN
 					expect(result).toHaveLength(2)
@@ -140,6 +146,48 @@ describe('matching', () => {
 					expect(result[0].templateEquipment.uuid).toBe('template2')
 					expect(result[1].scdElement.getAttribute('name')).toBe(
 						'CB2'
+					)
+					expect(result[1].templateEquipment.uuid).toBe('template1')
+				})
+
+				it('THEN should resolve manual matches by equipment uuid when available', () => {
+					// GIVEN
+					scdBay = parseBay(
+						`<Bay xmlns="http://www.iec.ch/61850/2003/SCL">
+							<ConductingEquipment uuid="scd-eq-1" name="CB1" type="CBR"/>
+							<ConductingEquipment uuid="scd-eq-2" name="CB2" type="CBR"/>
+						</Bay>`
+					)
+
+					bayType = createBayType([
+						{ uuid: 'ce1', templateUuid: 'template1' },
+						{ uuid: 'ce2', templateUuid: 'template2' }
+					])
+
+					mockTemplates([
+						createTemplate('template1', 'CBR', 'CircuitBreakerA'),
+						createTemplate('template2', 'CBR', 'CircuitBreakerB')
+					])
+
+					const manualMatches = new Map<string, string>([
+						['scd-eq-1', 'template2']
+					])
+
+					// WHEN
+					const result = matchEquipmentForInitialApply({
+						scdBay,
+						bayType,
+						manualMatches
+					})
+
+					// THEN
+					expect(result).toHaveLength(2)
+					expect(result[0].scdElement.getAttribute('uuid')).toBe(
+						'scd-eq-1'
+					)
+					expect(result[0].templateEquipment.uuid).toBe('template2')
+					expect(result[1].scdElement.getAttribute('uuid')).toBe(
+						'scd-eq-2'
 					)
 					expect(result[1].templateEquipment.uuid).toBe('template1')
 				})
@@ -168,9 +216,13 @@ describe('matching', () => {
 
 					// WHEN / THEN
 					expect(() =>
-						matchEquipment(scdBay, bayType, manualMatches)
+						matchEquipmentForInitialApply({
+							scdBay,
+							bayType,
+							manualMatches
+						})
 					).toThrow(
-						'No available BayType equipment found for manual match "non-existent-template" (equipment "CB1")'
+						'No available BayType equipment found for manual match "non-existent-template" (equipment "CB1", key "CB1")'
 					)
 				})
 			})
@@ -194,7 +246,9 @@ describe('matching', () => {
 					mockTemplates([createTemplate('template1', 'CBR', 'CB1')])
 
 					// WHEN / THEN
-					expect(() => matchEquipment(scdBay, bayType)).toThrow(
+					expect(() =>
+						matchEquipmentForInitialApply({ scdBay, bayType })
+					).toThrow(
 						'No matching BayType equipment found for SCD equipment "DS1" of type "DIS"'
 					)
 				})
@@ -219,7 +273,10 @@ describe('matching', () => {
 					mockTemplates([createTemplate('template1', 'CBR', 'CB1')])
 
 					// WHEN
-					const result = matchEquipment(scdBay, bayType)
+					const result = matchEquipmentForInitialApply({
+						scdBay,
+						bayType
+					})
 
 					// THEN
 					expect(result).toHaveLength(1)
@@ -243,7 +300,10 @@ describe('matching', () => {
 					mockTemplates([createTemplate('template1', 'CBR', 'CB1')])
 
 					// WHEN
-					const result = matchEquipment(scdBay, bayType)
+					const result = matchEquipmentForInitialApply({
+						scdBay,
+						bayType
+					})
 
 					// THEN
 					expect(result).toEqual([])

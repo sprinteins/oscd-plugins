@@ -5,20 +5,22 @@ import type {
 } from '@/headless/common-types'
 import {
 	getBayTypeApplicationState,
-	applyBayTypeIfNeeded,
+	shouldApplyBayType,
+	applyBayType,
 	buildEditsForIed,
 	generateCommitTitle,
 	commitEdits
 } from './drop-handler'
-import { assignedLNodesStore } from '@/headless/stores'
-import { buildEditsForBayLNode } from '@/headless/ied'
+import { assignedLNodesStore, bayStore } from '@/headless/stores'
+import { buildEditsForBayLNode } from '@/headless/scl'
 
 type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'
 	lNodes: LNodeTemplate[]
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
+	parentUuid: string
+	functionScopeUuid: string
 	equipmentUuid?: string
-	bayTypeInstanceUuid?: string
 }
 
 function validateDraggedItem(
@@ -31,6 +33,16 @@ function validateDraggedItem(
 
 	if (draggedItem.lNodes.length === 0) {
 		console.warn('[DnD] Dragged item contains no LNodes')
+		return false
+	}
+
+	if (!draggedItem.parentUuid) {
+		console.warn('[DnD] Missing parentUuid in dragged item')
+		return false
+	}
+
+	if (!draggedItem.functionScopeUuid) {
+		console.warn('[DnD] Missing functionScopeUuid in dragged item')
 		return false
 	}
 
@@ -57,19 +69,30 @@ class UseDndStore {
 			return
 		}
 
-		const { lNodes, sourceFunction: functionFromSSD } = this.draggedItem
+		const {
+			lNodes,
+			sourceFunction: functionFromSSD,
+			equipmentUuid,
+			parentUuid,
+			functionScopeUuid
+		} = this.draggedItem
 
 		try {
 			const applicationState = getBayTypeApplicationState()
-			const didApplyBayType = applyBayTypeIfNeeded(applicationState)
+			const didApplyBayType = shouldApplyBayType(applicationState)
+			const freshMatches = didApplyBayType
+				? applyBayType(applicationState)
+				: null
+			const equipmentMatches = freshMatches ?? bayStore.equipmentMatches
 
 			const allEdits = [
-				...buildEditsForIed(
-					functionFromSSD,
+				...buildEditsForIed({
+					sourceFunction: functionFromSSD,
 					lNodes,
 					targetAccessPoint,
-					this.draggedItem.equipmentUuid
-				)
+					equipmentMatches,
+					equipmentUuid
+				})
 			]
 
 			const shouldUpdateBay =
@@ -81,23 +104,27 @@ class UseDndStore {
 						lNodes,
 						iedName: targetSIedName,
 						sourceFunction: functionFromSSD,
-						equipmentUuid: this.draggedItem.equipmentUuid
+						equipmentUuid,
+						equipmentMatches
 					})
 				)
 			}
 
 			if (allEdits.length > 0) {
-				const title = generateCommitTitle(
+				const title = generateCommitTitle({
 					lNodes,
-					functionFromSSD.name,
+					functionName: functionFromSSD.name,
 					targetSIedName,
 					didApplyBayType
-				)
+				})
 
-				commitEdits(allEdits, title, didApplyBayType)
-				const parentUuid =
-					this.draggedItem.bayTypeInstanceUuid || functionFromSSD.uuid
-				assignedLNodesStore.markAsAssigned(parentUuid, lNodes)
+				commitEdits({ edits: allEdits, title, squash: didApplyBayType })
+
+				assignedLNodesStore.markAsAssigned({
+					parentUuid,
+					lNodes,
+					functionScopeUuid
+				})
 			}
 		} catch (error) {
 			console.error('[DnD] Error creating LNodes:', error)
@@ -113,14 +140,14 @@ class UseDndStore {
 	isDraggingItem(
 		type: DraggedItem['type'],
 		sourceFunctionUuid: string,
-		bayTypeInstanceUuid?: string
+		parentUuid?: string
 	): boolean {
 		if (!this.isDragging || !this.draggedItem) return false
 
 		return (
 			this.draggedItem.type === type &&
 			this.draggedItem.sourceFunction.uuid === sourceFunctionUuid &&
-			this.draggedItem.bayTypeInstanceUuid === bayTypeInstanceUuid
+			this.draggedItem.parentUuid === parentUuid
 		)
 	}
 }

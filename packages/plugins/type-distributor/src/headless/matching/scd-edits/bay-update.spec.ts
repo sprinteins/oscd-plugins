@@ -23,12 +23,17 @@ describe('buildEditForBayUpdate', () => {
 				}
 
 				// WHEN
-				const result: SetAttributes = buildEditForBayUpdate(scdBay, bayType)
+				const result: SetAttributes = buildEditForBayUpdate(
+					scdBay,
+					bayType
+				)
 
 				// THEN
 				expect(result.element).toBe(scdBay)
 				expect(result.attributes?.uuid).toBe('existing-uuid-123')
-				expect(result.attributes?.templateUuid).toBe('bay-type-uuid-456')
+				expect(result.attributes?.templateUuid).toBe(
+					'bay-type-uuid-456'
+				)
 			})
 		})
 	})
@@ -51,7 +56,10 @@ describe('buildEditForBayUpdate', () => {
 				}
 
 				// WHEN
-				const result: SetAttributes = buildEditForBayUpdate(scdBay, bayType)
+				const result: SetAttributes = buildEditForBayUpdate(
+					scdBay,
+					bayType
+				)
 
 				// THEN
 				expect(result.element).toBe(scdBay)
@@ -59,7 +67,9 @@ describe('buildEditForBayUpdate', () => {
 				expect(result.attributes?.uuid).toMatch(
 					/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 				)
-				expect(result.attributes?.templateUuid).toBe('bay-type-uuid-456')
+				expect(result.attributes?.templateUuid).toBe(
+					'bay-type-uuid-456'
+				)
 			})
 		})
 	})
@@ -83,7 +93,10 @@ describe('buildEditForBayUpdate', () => {
 				}
 
 				// WHEN
-				const result: SetAttributes = buildEditForBayUpdate(scdBay, bayType)
+				const result: SetAttributes = buildEditForBayUpdate(
+					scdBay,
+					bayType
+				)
 
 				// THEN
 				expect(result.attributes?.templateUuid).toBe(
@@ -111,7 +124,10 @@ describe('buildEditForBayUpdate', () => {
 				}
 
 				// WHEN
-				const result: SetAttributes = buildEditForBayUpdate(scdBay, bayType)
+				const result: SetAttributes = buildEditForBayUpdate(
+					scdBay,
+					bayType
+				)
 
 				// THEN
 				expect(result.attributesNS).toEqual({})
@@ -133,7 +149,10 @@ describe('buildEditForBayUpdate', () => {
 				}
 
 				// WHEN
-				const result: SetAttributes = buildEditForBayUpdate(scdBay, bayType)
+				const result: SetAttributes = buildEditForBayUpdate(
+					scdBay,
+					bayType
+				)
 
 				// THEN
 				expect(result).toHaveProperty('element')
