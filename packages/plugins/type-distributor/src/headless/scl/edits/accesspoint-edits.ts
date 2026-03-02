@@ -155,7 +155,7 @@ export function buildEditsForCreateAccessPoint({
 	iedName,
 	accessPoints
 }: buildEditsForCreateAccessPointParams): Insert[] {
-	const { doc, editor } = getDocumentAndEditor()
+	const { doc } = getDocumentAndEditor()
 	const allEdits: Insert[] = []
 
 	const iedElement = doc.querySelector(`IED[name="${iedName}"]`)

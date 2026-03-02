@@ -21,24 +21,28 @@ export function submitForm({
 	}
 
 	if (ied.isNew) {
-		const edits = buildEditsForCreateIED({
+		const iedEdits = buildEditsForCreateIED({
 			name: ied.name,
 			description: ied.description,
-			accessPoints
 		})
-		if (accessPoints.length === 0) {
-			editor.commit(edits, {
-				title: `Create IED "${ied.name}"`
+		editor.commit(iedEdits, {
+			title: `Create IED "${ied.name}"`
+		})
+
+		if (accessPoints.length > 0) {
+			const apEdits = buildEditsForCreateAccessPoint({
+				iedName: ied.name,
+				accessPoints
 			})
-		}
-		if (accessPoints.length === 1)
-			editor.commit(edits, {
-				title: `Create IED "${ied.name}" and with Access Point "${accessPoints[0].name}"`
-			})
-		else {
-			editor.commit(edits, {
-				title: `Create IED "${ied.name}" with ${accessPoints.length} Access Points`
-			})
+			if (accessPoints.length === 1) {
+				editor.commit(apEdits, {
+					title: `Add Access Point "${accessPoints[0].name}" to IED "${ied.name}"`
+				})
+			} else {
+				editor.commit(apEdits, {
+					title: `Add ${accessPoints.length} Access Points to IED "${ied.name}"`
+				})
+			}
 		}
 	} else {
 		const edits = buildEditsForCreateAccessPoint({

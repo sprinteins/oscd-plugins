@@ -7,13 +7,11 @@ import { buildEditsForCreateAccessPoint } from './accesspoint-edits'
 type buildEditsForCreateIEDParams = {
 	name: string
 	description?: string
-	accessPoints?: { name: string; description?: string }[]
 }
 
 export function buildEditsForCreateIED({
 	name,
 	description,
-	accessPoints
 }: buildEditsForCreateIEDParams): Insert[] {
 	const { doc } = getDocumentAndEditor()
 
@@ -26,14 +24,6 @@ export function buildEditsForCreateIED({
 		node: iedElement,
 		parent: sclRoot,
 		reference: reference
-	}
-
-	if (accessPoints && accessPoints.length > 0) {
-		const accessPointEdits = buildEditsForCreateAccessPoint({
-			iedName: name,
-			accessPoints
-		})
-		return [edit, ...accessPointEdits]
 	}
 
 	return [edit]
