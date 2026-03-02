@@ -1,18 +1,9 @@
 import type { AccessPointData, IedData } from './types'
-import type { XMLEditor } from '@openscd/oscd-editor'
 import { createAccessPoint, createIed } from '@/headless/actions'
 
-type SubmitFormParams = {
-	ied: IedData
-	accessPoints: AccessPointData[]
-	editor: XMLEditor
-}
-
-export function submitForm({
-	ied,
-	accessPoints,
-	editor
-}: SubmitFormParams): void {
+export function submitForm(
+	ied: IedData,
+	accessPoints: AccessPointData[]): void {
 	if (!ied.isNew && accessPoints.length === 0) {
 		throw new Error('At least one Access Point is required')
 	}
