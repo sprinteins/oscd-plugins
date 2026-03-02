@@ -4,7 +4,7 @@ import type { BayType, LNodeTemplate } from '@/headless/common-types'
 import type { Insert } from '@openscd/oscd-api'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { getDocumentAndEditor } from '@/headless/utils'
-import { matchEquipment } from './matching'
+import { matchEquipmentForInitialApply } from './matching'
 import {
 	buildEditForBayUpdate,
 	buildInsertEditsForEqFunction,
@@ -25,7 +25,7 @@ vi.mock('@/headless/utils', () => ({
 }))
 
 vi.mock('./matching', () => ({
-	matchEquipment: vi.fn()
+	matchEquipmentForInitialApply: vi.fn()
 }))
 
 vi.mock('./scd-edits', () => ({
@@ -122,7 +122,7 @@ describe('applyBayTypeSelection', () => {
 				expect(() => applyBayTypeSelection('Bay1')).toThrow(
 					'No BayType selected'
 				)
-				expect(matchEquipment).not.toHaveBeenCalled()
+				expect(matchEquipmentForInitialApply).not.toHaveBeenCalled()
 				expect(mockEditor.commit).not.toHaveBeenCalled()
 			})
 		})
@@ -140,7 +140,7 @@ describe('applyBayTypeSelection', () => {
 				expect(() => applyBayTypeSelection('Bay1')).toThrow(
 					'BayType "non-existent-uuid" not found'
 				)
-				expect(matchEquipment).not.toHaveBeenCalled()
+				expect(matchEquipmentForInitialApply).not.toHaveBeenCalled()
 				expect(mockEditor.commit).not.toHaveBeenCalled()
 			})
 		})
@@ -158,7 +158,7 @@ describe('applyBayTypeSelection', () => {
 				expect(() => applyBayTypeSelection('Bay1')).toThrow(
 					'No Bay selected in SCD'
 				)
-				expect(matchEquipment).not.toHaveBeenCalled()
+				expect(matchEquipmentForInitialApply).not.toHaveBeenCalled()
 				expect(mockEditor.commit).not.toHaveBeenCalled()
 			})
 		})
@@ -183,7 +183,7 @@ describe('applyBayTypeSelection', () => {
 					reference: null
 				}
 
-				vi.mocked(matchEquipment).mockReturnValue([])
+				vi.mocked(matchEquipmentForInitialApply).mockReturnValue([])
 				vi.mocked(buildEditForBayUpdate).mockReturnValue({
 					element: mockScdBay,
 					attributes: {},
@@ -202,7 +202,7 @@ describe('applyBayTypeSelection', () => {
 				applyBayTypeSelection('MyCustomBay')
 
 				// THEN
-				expect(matchEquipment).toHaveBeenCalledWith(
+				expect(matchEquipmentForInitialApply).toHaveBeenCalledWith(
 					mockScdBay,
 					mockBayType,
 					manualMatches
@@ -284,7 +284,7 @@ describe('applyBayTypeSelection', () => {
 					lnodes: functionLNodes
 				})
 
-				vi.mocked(matchEquipment).mockReturnValue(mockMatches)
+				vi.mocked(matchEquipmentForInitialApply).mockReturnValue(mockMatches)
 				vi.mocked(buildEditForBayUpdate).mockReturnValue({
 					element: mockScdBay,
 					attributes: {},

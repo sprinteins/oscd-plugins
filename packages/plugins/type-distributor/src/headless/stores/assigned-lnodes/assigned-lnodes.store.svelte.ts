@@ -8,13 +8,17 @@ import { ssdImportStore } from '../ssd-import.store.svelte'
 import { bayStore } from '../bay.store.svelte'
 import { processEqFunctions, processFunctions } from './assigned-lnodes.helpers'
 
-type LNodeKey = `${string}:${string}:${string}:${string}` // parentUuid:lnClass:lnType:lnInst
+type LNodeKey = `${string}:${string}:${string}:${string}:${string}` // parentUuid:functionScopeUuid:lnClass:lnType:lnInst
 
 class UseAssignedLNodesStore {
 	private assignedIndex = new SvelteSet<LNodeKey>()
 
-	private buildKey(parentUuid: string, lnode: LNodeTemplate): LNodeKey {
-		return `${parentUuid}:${lnode.lnClass}:${lnode.lnType}:${lnode.lnInst}`
+	private buildKey(
+		parentUuid: string,
+		lnode: LNodeTemplate,
+		functionScopeUuid: string
+	): LNodeKey {
+		return `${parentUuid}:${functionScopeUuid}:${lnode.lnClass}:${lnode.lnType}:${lnode.lnInst}`
 	}
 
 	rebuild() {
@@ -23,21 +27,38 @@ class UseAssignedLNodesStore {
 		const scdBay = bayStore.scdBay
 		if (!scdBay) return
 
-		processFunctions(scdBay, this.assignedIndex)
-		processEqFunctions(scdBay, this.assignedIndex, ssdImportStore.bayTypes)
+		processFunctions(
+			scdBay,
+			this.assignedIndex,
+			ssdImportStore.bayTypes ?? []
+		)
+		processEqFunctions(
+			scdBay,
+			this.assignedIndex,
+			bayStore.equipmentMatches ?? []
+		)
 	}
 
-	markAsAssigned(parentUuid: string, lNodes: LNodeTemplate[]) {
+	markAsAssigned(
+		parentUuid: string,
+		lNodes: LNodeTemplate[],
+		functionScopeUuid?: string
+	) {
 		for (const lnode of lNodes) {
-			const key = this.buildKey(parentUuid, lnode)
-			this.assignedIndex.add(key)
+			const scope = functionScopeUuid ?? parentUuid
+			const scopedKey = this.buildKey(parentUuid, lnode, scope)
+			this.assignedIndex.add(scopedKey)
 		}
 	}
 
-	isAssigned(parentUuid: string, lnode: LNodeTemplate): boolean {
-		const key = this.buildKey(parentUuid, lnode)
-		const assigned = this.assignedIndex.has(key)
-		return assigned
+	isAssigned(
+		parentUuid: string,
+		lnode: LNodeTemplate,
+		functionScopeUuid?: string
+	): boolean {
+		const scope = functionScopeUuid ?? parentUuid
+		const scopedKey = this.buildKey(parentUuid, lnode, scope)
+		return this.assignedIndex.has(scopedKey)
 	}
 
 	get hasConnections(): boolean {
@@ -46,8 +67,8 @@ class UseAssignedLNodesStore {
 
 	areAllLNodesAssigned(bayTypeWithTemplates: BayTypeWithTemplates): boolean {
 		const allLNodes = getAllLNodesWithParent(bayTypeWithTemplates)
-		return allLNodes.every(({ parentUuid, lnode }) =>
-			this.isAssigned(parentUuid, lnode)
+		return allLNodes.every(({ parentUuid, functionScopeUuid, lnode }) =>
+			this.isAssigned(parentUuid, lnode, functionScopeUuid)
 		)
 	}
 }

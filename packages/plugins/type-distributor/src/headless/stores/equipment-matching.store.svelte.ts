@@ -104,11 +104,11 @@ class UseEquipmentMatchingStore {
 		}
 	}
 
-	setMatch(equipmentName: string, templateUuid?: string) {
+	setMatch(equipmentKey: string, templateUuid?: string) {
 		if (!templateUuid) {
-			this.manualMatches.delete(equipmentName)
+			this.manualMatches.delete(equipmentKey)
 		} else {
-			this.manualMatches.set(equipmentName, templateUuid)
+			this.manualMatches.set(equipmentKey, templateUuid)
 		}
 	}
 

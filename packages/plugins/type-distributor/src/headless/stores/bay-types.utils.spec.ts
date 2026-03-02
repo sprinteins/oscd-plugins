@@ -311,10 +311,12 @@ describe('bay-types.utils', () => {
 				expect.arrayContaining([
 					{
 						parentUuid: 'inst-ce',
+						functionScopeUuid: 'eq-1',
 						lnode: { lnClass: 'LLN0', lnType: 'T1', lnInst: '1' }
 					},
 					{
 						parentUuid: 'inst-f',
+						functionScopeUuid: 't-f',
 						lnode: { lnClass: 'LLN0', lnType: 'T2', lnInst: '1' }
 					}
 				])
@@ -379,6 +381,7 @@ describe('bay-types.utils', () => {
 			expect(result).toEqual([
 				{
 					parentUuid: 'inst-f',
+					functionScopeUuid: 't-f',
 					lnode: { lnClass: 'LLN0', lnType: 'T2', lnInst: '1' }
 				}
 			])

@@ -26,18 +26,18 @@ describe('buildEditsForBayLNode', () => {
 					<VoltageLevel>
 						<Bay name="TestBay">
 							<Function name="TopLevelFunc">
-								<LNode lnType="XSWI_Type1" lnInst="1"/>
+								<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
 							</Function>
 							<Function name="TestFunc">
-								<LNode lnType="XCBR_Type1" lnInst="1"/>
-								<LNode lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
-								<LNode lnType="XSWI_Type1" lnInst="1"/>
-								<LNode lnType="CSWI_Type1" lnInst="1"/>
+								<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
+								<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
+								<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
+								<LNode lnClass="CSWI" lnType="CSWI_Type1" lnInst="1"/>
 							</Function>
 							<ConductingEquipment name="Breaker1">
 								<EqFunction name="ProtectionFunc">
-									<LNode lnType="XCBR_Type1" lnInst="1"/>
-									<LNode lnType="XCBR_Type1" lnInst="2" iedName="ExistingIED"/>
+									<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
+									<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="2" iedName="ExistingIED"/>
 								</EqFunction>
 							</ConductingEquipment>
 						</Bay>
@@ -218,8 +218,8 @@ describe('buildEditsForBayLNode', () => {
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
 					<Bay name="TestBay">
 						<Function name="TestFunc">
-							<LNode lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
-							<LNode lnType="XCBR_Type1" lnInst="1"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1" iedName="AlreadyAssigned"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
 						</Function>
 					</Bay>
 				</SCL>`,
@@ -262,8 +262,8 @@ describe('buildEditsForBayLNode', () => {
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
 					<Bay name="TestBay">
 						<Function name="TestFunc">
-							<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED1"/>
-							<LNode lnType="XCBR_Type1" lnInst="1" iedName="IED2"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1" iedName="IED1"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1" iedName="IED2"/>
 						</Function>
 					</Bay>
 				</SCL>`,
@@ -307,9 +307,9 @@ describe('buildEditsForBayLNode', () => {
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
 					<Bay name="TestBay">
 						<Function name="TestFunc">
-							<LNode lnType="XCBR_Type1" lnInst="1"/>
-							<LNode lnType="XSWI_Type1" lnInst="1"/>
-							<LNode lnType="CSWI_Type1" lnInst="1"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
+							<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
+							<LNode lnClass="CSWI" lnType="CSWI_Type1" lnInst="1"/>
 						</Function>
 					</Bay>
 				</SCL>`,
@@ -364,7 +364,7 @@ describe('buildEditsForBayLNode', () => {
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
 					<Bay name="TestBay">
 						<Function name="TestFunc">
-							<LNode lnType="XCBR_Type1" lnInst="1"/>
+							<LNode lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
 						</Function>
 					</Bay>
 				</SCL>`,

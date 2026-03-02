@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Creation of multiple Access Point for one IED in the create-dialog
 
+### Changed
+- Split equipment matching into explicit modes: `matchEquipmentForInitialApply` (manual + fallback) and `matchEquipmentForPersistedBay` (strict persisted mapping)
+- Updated drag-and-drop payload model to use explicit `parentUuid`, `functionScopeUuid`, and optional `equipmentUuid`
+- Updated assigned-LNode key scoping to include function scope for reliable Function vs EqFunction separation
+### Fixed
+- Prevent same-type equipment identity drift by prioritizing persisted `templateUuid` mappings
+- Scoped conducting-equipment queries to direct bay children (`:scope > ConductingEquipment`) in matching and validation paths
+
 ## [0.4.1] - 2026-02-23
 ### Added
 - Search modal for IEDs, AccessPoints, LDevices, LNodes

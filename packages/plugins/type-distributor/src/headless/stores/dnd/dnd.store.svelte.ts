@@ -18,8 +18,9 @@ type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'
 	lNodes: LNodeTemplate[]
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
+	parentUuid: string
+	functionScopeUuid: string
 	equipmentUuid?: string
-	bayTypeInstanceUuid?: string
 }
 
 function validateDraggedItem(
@@ -32,6 +33,16 @@ function validateDraggedItem(
 
 	if (draggedItem.lNodes.length === 0) {
 		console.warn('[DnD] Dragged item contains no LNodes')
+		return false
+	}
+
+	if (!draggedItem.parentUuid) {
+		console.warn('[DnD] Missing parentUuid in dragged item')
+		return false
+	}
+
+	if (!draggedItem.functionScopeUuid) {
+		console.warn('[DnD] Missing functionScopeUuid in dragged item')
 		return false
 	}
 
@@ -58,7 +69,13 @@ class UseDndStore {
 			return
 		}
 
-		const { lNodes, sourceFunction: functionFromSSD } = this.draggedItem
+		const {
+			lNodes,
+			sourceFunction: functionFromSSD,
+			equipmentUuid,
+			parentUuid,
+			functionScopeUuid
+		} = this.draggedItem
 
 		try {
 			const applicationState = getBayTypeApplicationState()
@@ -74,7 +91,7 @@ class UseDndStore {
 					lNodes,
 					targetAccessPoint,
 					equipmentMatches,
-					equipmentUuid: this.draggedItem.equipmentUuid
+					equipmentUuid
 				})
 			]
 
@@ -87,7 +104,7 @@ class UseDndStore {
 						lNodes,
 						iedName: targetSIedName,
 						sourceFunction: functionFromSSD,
-						equipmentUuid: this.draggedItem.equipmentUuid,
+						equipmentUuid,
 						equipmentMatches
 					})
 				)
@@ -102,9 +119,12 @@ class UseDndStore {
 				})
 
 				commitEdits({ edits: allEdits, title, squash: didApplyBayType })
-				const parentUuid =
-					this.draggedItem.bayTypeInstanceUuid || functionFromSSD.uuid
-				assignedLNodesStore.markAsAssigned(parentUuid, lNodes)
+
+				assignedLNodesStore.markAsAssigned(
+					parentUuid,
+					lNodes,
+					functionScopeUuid
+				)
 			}
 		} catch (error) {
 			console.error('[DnD] Error creating LNodes:', error)
@@ -120,14 +140,14 @@ class UseDndStore {
 	isDraggingItem(
 		type: DraggedItem['type'],
 		sourceFunctionUuid: string,
-		bayTypeInstanceUuid?: string
+		parentUuid?: string
 	): boolean {
 		if (!this.isDragging || !this.draggedItem) return false
 
 		return (
 			this.draggedItem.type === type &&
 			this.draggedItem.sourceFunction.uuid === sourceFunctionUuid &&
-			this.draggedItem.bayTypeInstanceUuid === bayTypeInstanceUuid
+			this.draggedItem.parentUuid === parentUuid
 		)
 	}
 }

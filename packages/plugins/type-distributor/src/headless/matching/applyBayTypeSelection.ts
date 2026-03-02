@@ -5,7 +5,7 @@ import { equipmentMatchingStore, ssdImportStore, bayStore } from '../stores'
 import { resolveMatchingContext } from './resolve-matching-context'
 import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'
 import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
-import { matchEquipment } from './matching'
+import { matchEquipmentForInitialApply } from './matching'
 import {
 	buildEditForBayUpdate,
 	buildInsertEditsForEqFunction,
@@ -22,7 +22,7 @@ export function applyBayTypeSelection(bayName: string): EquipmentMatch[] {
 		bayStore.scdBay
 	)
 
-	const matches = matchEquipment(
+	const matches = matchEquipmentForInitialApply(
 		scdBay,
 		bayType,
 		equipmentMatchingStore.manualMatches

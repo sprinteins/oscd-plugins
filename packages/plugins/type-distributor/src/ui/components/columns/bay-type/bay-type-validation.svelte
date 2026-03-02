@@ -42,7 +42,7 @@ const ambiguousEquipmentCount = $derived.by(() => {
 	if (!scdBay || ambiguousTypeCodes.length === 0) return 0
 
 	const allEquipment = Array.from(
-		scdBay.querySelectorAll('ConductingEquipment')
+			scdBay.querySelectorAll(':scope > ConductingEquipment')
 	)
 	return allEquipment.filter((eq) => {
 		const type = eq.getAttribute('type')

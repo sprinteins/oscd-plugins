@@ -36,7 +36,7 @@ flowchart TB
 
     subgraph EXTERNAL ["External"]
         PGS["pluginGlobalStore</br>core-ui-svelte</br>editCount reactivity"]
-        MTH["matching</br>matchEquipment()"]
+        MTH["matching</br>matchEquipmentForInitialApply()</br>matchEquipmentForPersistedBay()"]
     end
 
     BTU -- reads --> SSD
@@ -46,7 +46,7 @@ flowchart TB
 
     BAY -- reads validationResult --> EQM
     BAY -- reads editCount --> PGS
-    BAY -- matchEquipment --> MTH
+    BAY -- persisted matching --> MTH
     ALN -- reads scdBay --> BAY
     ALN -- getAllLNodesWithParent --> BTU
 

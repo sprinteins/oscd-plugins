@@ -14,6 +14,23 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 // Mock ssdImportStore
 vi.mock('../ssd-import.store.svelte', () => ({
 	ssdImportStore: {
+		getConductingEquipmentTemplate: vi.fn((templateUuid: string) => {
+			if (templateUuid === 'template-ce-1') {
+				return {
+					uuid: templateUuid,
+					name: 'CB1 Template',
+					type: 'CBR',
+					terminals: [],
+					eqFunctions: [{
+						uuid: 'eq-func-template-control',
+						name: 'Control',
+						lnodes: []
+					}]
+				}
+			}
+
+			return undefined
+		}),
 		bayTypes: [
 			{
 				uuid: 'baytype-uuid-1',
@@ -21,8 +38,8 @@ vi.mock('../ssd-import.store.svelte', () => ({
 				conductingEquipments: [
 					{
 						uuid: 'eq-uuid-1',
-						name: 'CB1',
-						type: 'CBR'
+						templateUuid: 'template-ce-1',
+						virtual: false
 					}
 				]
 			}
@@ -33,7 +50,8 @@ vi.mock('../ssd-import.store.svelte', () => ({
 // Mock bayStore
 vi.mock('../bay.store.svelte', () => ({
 	bayStore: {
-		scdBay: null
+		scdBay: null,
+		equipmentMatches: []
 	}
 }))
 
@@ -76,6 +94,33 @@ describe('assignedLNodesStore', () => {
 		// Set up bayStore.scdBay to point to the Bay element in the mock document
 		const bayElement = mockDocument.querySelector('Bay')
 		bayStore.scdBay = bayElement as Element
+
+		const equipmentElement = mockDocument.querySelector('ConductingEquipment')
+		bayStore.equipmentMatches = equipmentElement
+			? [
+					{
+						scdElement: equipmentElement,
+						bayTypeEquipment: {
+							uuid: eqUuid1,
+							templateUuid: 'template-ce-1',
+							virtual: false
+						},
+						templateEquipment: {
+							uuid: 'template-ce-1',
+							name: 'CB1 Template',
+							type: 'CBR',
+							terminals: [],
+							eqFunctions: [
+								{
+									uuid: 'eq-func-template-control',
+									name: 'Control',
+									lnodes: []
+								}
+							]
+						}
+					}
+				]
+			: []
 	})
 
 	afterEach(() => {
@@ -117,7 +162,7 @@ describe('assignedLNodesStore', () => {
 					lnClass: 'PTRC',
 					lnType: 'TestPTRC',
 					lnInst: '1'
-				})
+				}, 'eq-func-template-control')
 			).toBe(true)
 		})
 

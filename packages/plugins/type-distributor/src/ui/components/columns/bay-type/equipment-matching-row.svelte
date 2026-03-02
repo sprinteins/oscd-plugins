@@ -4,6 +4,7 @@ import { Label, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 
 interface Props {
 	equipment: {
+        key: string
 		name: string
 		type: string
 	}
@@ -14,7 +15,7 @@ interface Props {
 let { equipment, options, selectedTemplateUuid }: Props = $props()
 
 function handleMatchChange(value: string) {
-	equipmentMatchingStore.setMatch(equipment.name, value)
+    equipmentMatchingStore.setMatch(equipment.key, value)
 }
 </script>
 

@@ -88,26 +88,52 @@ Result: Ambiguous (requires manual matching)
 
 ## Matching Algorithm
 
-### Two-Phase Approach
+### API Surface
 
-**Phase 1: Manual Matches**
+`matching.ts` exposes two explicit entry points:
+
+- `matchEquipmentForInitialApply(scdBay, bayType, manualMatches?)`
+- `matchEquipmentForPersistedBay(scdBay, bayType)`
+
+This split makes the behavior explicit for first-time application versus already-assigned bays.
+
+### Initial Apply (Three-Pass Approach)
+
+**Pass 1: Persisted mapping (`templateUuid`)**
 ```typescript
-for each manual match (equipmentName → templateUuid):
-  1. Find SCD equipment by name
-  2. Find template by UUID
-  3. Create match
-  4. Mark template as used
-  5. Mark SCD element as matched
+for each SCD ConductingEquipment:
+  1. Read scdElement.getAttribute('templateUuid')
+  2. Find unused bayTypeEquipment by bayTypeEquipment.uuid
+  3. Create match and reserve bayTypeEquipment.uuid
 ```
 
-**Phase 2: Auto Matches**
+**Pass 2: Manual key-based matches**
 ```typescript
-for each unmatched SCD equipment:
-  1. Get equipment type
-  2. Find unused template with matching type
-  3. Create match
-  4. Mark template as used
+for each unmatched SCD ConductingEquipment:
+  1. Compute equipmentKey via getScdEquipmentMatchKey(uuid -> name -> index)
+  2. Read manualMatches.get(equipmentKey)
+  3. Find unused bayTypeEquipment by template.uuid
+  4. Create match and reserve bayTypeEquipment.uuid
 ```
+
+**Pass 3: Type fallback**
+```typescript
+for each remaining unmatched SCD ConductingEquipment grouped by type:
+  1. Find unused bayTypeEquipment where template.type matches
+  2. Create match and reserve bayTypeEquipment.uuid
+```
+
+### Persisted Bay (Strict Mode)
+
+```typescript
+for each SCD ConductingEquipment:
+  1. Require templateUuid attribute
+  2. Find unused bayTypeEquipment by bayTypeEquipment.uuid
+  3. Create match
+  4. Throw on missing mapping or missing bayTypeEquipment
+```
+
+No manual matching and no type fallback are performed in persisted-bay mode.
 
 ### Template Usage Tracking
 

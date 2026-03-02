@@ -265,7 +265,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDragStart({
 				type: 'functionTemplate',
 				sourceFunction: functionTemplate,
-				lNodes: [lnode2, lnode3]
+				lNodes: [lnode2, lnode3],
+				parentUuid: funcUuid,
+				functionScopeUuid: functionTemplate.uuid
 			})
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
@@ -286,7 +288,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDragStart({
 				type: 'functionTemplate',
 				sourceFunction: functionTemplate,
-				lNodes: [lnode1, lnode2]
+				lNodes: [lnode1, lnode2],
+				parentUuid: funcUuid,
+				functionScopeUuid: functionTemplate.uuid
 			})
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
@@ -303,7 +307,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDragStart({
 				type: 'lNode',
 				sourceFunction: functionTemplate,
-				lNodes: [lnode2]
+				lNodes: [lnode2],
+				parentUuid: funcUuid,
+				functionScopeUuid: functionTemplate.uuid
 			})
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
@@ -323,7 +329,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDragStart({
 				type: 'lNode',
 				sourceFunction: functionTemplate,
-				lNodes: [lnode2]
+				lNodes: [lnode2],
+				parentUuid: funcUuid,
+				functionScopeUuid: functionTemplate.uuid
 			})
 			dndStore.handleDragEnd()
 

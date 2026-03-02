@@ -8,7 +8,7 @@ The process runs in three sequential phases:
 
 1. **Validation** – check whether the SCD bay is compatible with the selected bay type
 2. **Manual matching** – resolve ambiguities the user must decide
-3. **Apply** – run the two-phase matching algorithm and commit SCD edits
+3. **Apply** – run initial-apply matching (persisted mapping → manual matches → type fallback) and commit SCD edits
 
 ---
 
@@ -103,7 +103,12 @@ Options:
 
 ### Recording a manual match
 
-When the user picks a template, `equipmentMatchingStore.setMatch(equipmentName, templateUuid)` is called. This writes to the reactive `manualMatches: SvelteMap<string, string>` (equipment name → template UUID).
+When the user picks a template, `equipmentMatchingStore.setMatch(equipmentKey, templateUuid)` is called. This writes to the reactive `manualMatches: SvelteMap<string, string>`.
+
+The equipment key is resolved by `getScdEquipmentMatchKey` and is stable in this order:
+- `uuid` (preferred)
+- `name`
+- fallback `index:<n>`
 
 ### Template count mismatch guard
 
@@ -133,25 +138,33 @@ The "Apply" action remains blocked while any mismatch exists.
 
 Entry point: `applyBayTypeSelection(bayName)`
 
-### Step 3.1 – Run `matchEquipment(scdBay, bayType, manualMatches)`
+### Step 3.1 – Run matching (`matching.ts`)
 
-The two-phase matching algorithm ([`matching.ts`](../../src/headless/matching/matching.ts)) produces an array of `EquipmentMatch` objects.
+`applyBayTypeSelection` uses `matchEquipmentForInitialApply(scdBay, bayType, manualMatches)`.
 
-**Phase A – Manual matches first**
+Initial-apply matching runs in three passes:
 
-For every entry in `manualMatches` (equipment name → template UUID):
-1. Find the SCD element by name.
-2. Resolve the bay type equipment entry whose template has the given UUID and is not yet consumed (`usedUuids`).
-3. Create an `EquipmentMatch` and mark the bay type entry as used.
-4. Mark the SCD element as manually matched.
+**Pass A – Persisted UUID mapping first**
+1. Read each SCD equipment element's `templateUuid` attribute.
+2. Resolve the matching bay-type equipment instance by `bayTypeEquipment.uuid`.
+3. Reserve the instance (`usedUuids`) and emit an `EquipmentMatch`.
 
-If no available bay type entry is found, an error is thrown (e.g., because the template is already exhausted).
+This preserves identity for already-mapped equipment and prevents same-type reshuffling.
 
-**Phase B – Auto-match remaining equipment**
+**Pass B – Manual key-based matches**
+1. For unmatched SCD equipment, resolve a stable key via `getScdEquipmentMatchKey`.
+2. Look up `manualMatches.get(equipmentKey)`.
+3. Resolve an unused bay-type equipment instance by `templateUuid` and emit a match.
 
-SCD elements that were not manually matched are grouped by their `type` attribute. For each group, the algorithm finds an unused bay type entry whose template type matches and creates an `EquipmentMatch`.
+If no available instance exists for the selected template, an error is thrown.
 
-If no match is found, an error is thrown — every SCD element must be matched.
+**Pass C – Type-based fallback**
+1. Group still-unmatched equipment by `type`.
+2. Match each item to an unused bay-type template of the same `type`.
+
+If no type-compatible instance exists, an error is thrown.
+
+For already-assigned bays, `bayStore` resolves matches through `matchEquipmentForPersistedBay(scdBay, bayType)`, which only accepts persisted `templateUuid` mappings and throws on missing mappings.
 
 **Match result structure:**
 
@@ -215,14 +228,15 @@ BayType
 | Equipment type count mismatch (SCD vs BayType) | Validation fails; list of mismatching types shown |
 | Ambiguous types without completing manual matches | Apply disabled; user prompted to fill all dropdowns |
 | Template count mismatch in manual matches | Apply disabled; mismatch panel shows required vs selected |
-| Manual match specifies an already-exhausted template | Runtime error thrown in `matchEquipment` |
-| SCD equipment has no matching template type | Runtime error thrown in `matchEquipment` |
+| Manual match specifies an already-exhausted template | Runtime error thrown in `matchEquipmentForInitialApply` |
+| Persisted bay has missing `templateUuid` mapping | Runtime error thrown in `matchEquipmentForPersistedBay` |
+| SCD equipment has no matching template type | Runtime error thrown in `matchEquipmentForInitialApply` |
 
 ---
 
 ## Related Documents
 
-- [Matching Algorithm](./matching-algorithm.md) — deep-dive into the two-phase algorithm
+- [Matching Algorithm](./matching-algorithm.md) — deep-dive into initial-apply vs persisted-bay matching
 - [How to Match Equipment Manually](../how-to/match-equipment.md) — user-facing guide
 - [How to Distribute Types](../how-to/distribute-types.md) — end-to-end workflow
 - [Store Architecture](./store-architecture.md) — state management overview

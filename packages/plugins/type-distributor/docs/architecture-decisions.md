@@ -13,14 +13,19 @@ The plugin uses Svelte 5 runes-based stores for state management:
 
 **Rationale**: Centralized state management ensures consistent data flow between UI components and headless logic. Stores act as single source of truth for cross-component state.
 
-## Two-Phase Matching Algorithm
+## Explicit Matching Modes
 
-Equipment matching follows a two-phase approach:
+Equipment matching uses two explicit APIs with different behavior:
 
-1. **Manual matching phase**: User-specified matches are applied first
-2. **Auto-matching phase**: Remaining equipment is matched by type
+1. **Initial apply** (`matchEquipmentForInitialApply`):
+	- Pass 1: persisted `templateUuid` mapping
+	- Pass 2: manual key-based matches
+	- Pass 3: type fallback for remaining equipment
+2. **Persisted bay** (`matchEquipmentForPersistedBay`):
+	- strict `templateUuid` mapping only
+	- no manual matching, no type fallback
 
-**Rationale**: Handles ambiguous cases where multiple templates share the same equipment type but have different names. Manual matching provides user control when auto-matching is insufficient.
+**Rationale**: Preserves equipment identity after assignment while still supporting manual disambiguation and first-time auto-matching.
 
 ## Staged Data Type Insertion
 

@@ -12,7 +12,7 @@ export function validateEquipmentMatch(
 	bayType: BayType
 ): ValidationResult {
 	const scdConductingEquipment = Array.from(
-		scdBay.querySelectorAll('ConductingEquipment')
+		scdBay.querySelectorAll(':scope > ConductingEquipment')
 	)
 
 	const scdCEByType = groupEquipmentByType(scdConductingEquipment)

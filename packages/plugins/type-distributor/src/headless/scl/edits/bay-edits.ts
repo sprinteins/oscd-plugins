@@ -78,9 +78,9 @@ function queryLNodeMatchesFromFunction(
 	functionElement: Element,
 	lNode: LNodeTemplate
 ): Element[] {
-	const { lnType, lnInst } = lNode
+	const { lnClass, lnType, lnInst } = lNode
 
-	const selector = `LNode[lnType="${lnType}"][lnInst="${lnInst}"]`
+	const selector = `LNode[lnClass="${lnClass}"][lnType="${lnType}"][lnInst="${lnInst}"]`
 	return Array.from(functionElement.querySelectorAll(selector))
 }
 

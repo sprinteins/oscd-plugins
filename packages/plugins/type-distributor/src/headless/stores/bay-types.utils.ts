@@ -64,8 +64,16 @@ export function getBayTypeWithTemplates(bayUuid: string): BayTypeWithTemplates |
 
 export function getAllLNodesWithParent(
 	bayTypeWithTemplates: BayTypeWithTemplates
-): Array<{ parentUuid: string; lnode: LNodeTemplate }> {
-	const result: Array<{ parentUuid: string; lnode: LNodeTemplate }> = []
+): Array<{
+	parentUuid: string
+	functionScopeUuid: string
+	lnode: LNodeTemplate
+}> {
+	const result: Array<{
+		parentUuid: string
+		functionScopeUuid: string
+		lnode: LNodeTemplate
+	}> = []
 
 	for (const instance of bayTypeWithTemplates.conductingEquipments) {
 		const template = bayTypeWithTemplates.conductingEquipmentTemplateMap.get(
@@ -74,7 +82,11 @@ export function getAllLNodesWithParent(
 		if (template?.eqFunctions) {
 			for (const eqFunction of template.eqFunctions) {
 				for (const lnode of eqFunction.lnodes) {
-					result.push({ parentUuid: instance.uuid, lnode })
+					result.push({
+						parentUuid: instance.uuid,
+						functionScopeUuid: eqFunction.uuid,
+						lnode
+					})
 				}
 			}
 		}
@@ -84,7 +96,11 @@ export function getAllLNodesWithParent(
 		const template = bayTypeWithTemplates.functionTemplateMap.get(instance.templateUuid)
 		if (template?.lnodes) {
 			for (const lnode of template.lnodes) {
-				result.push({ parentUuid: instance.uuid, lnode })
+				result.push({
+					parentUuid: instance.uuid,
+					functionScopeUuid: template.uuid,
+					lnode
+				})
 			}
 		}
 	}

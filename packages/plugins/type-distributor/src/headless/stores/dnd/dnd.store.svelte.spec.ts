@@ -71,7 +71,10 @@ describe('dndStore', () => {
 			const draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
-				sourceFunction: mockFunction
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
 			}
 
 			// WHEN handleDragStart is called
@@ -90,7 +93,10 @@ describe('dndStore', () => {
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
-				sourceFunction: mockFunction
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
 			}
 
 			// WHEN handleDragEnd is called
@@ -136,7 +142,10 @@ describe('dndStore', () => {
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: [],
-				sourceFunction: mockFunction
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
 			}
 
 			// WHEN handleDrop is called
@@ -155,7 +164,10 @@ describe('dndStore', () => {
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
-				sourceFunction: mockFunction
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
 			}
 
 			const mockIedEdits = [
@@ -185,7 +197,7 @@ describe('dndStore', () => {
 				lNodes: mockLNodes,
 				targetAccessPoint: mockAccessPoint,
 				equipmentMatches: [],
-				equipmentUuid: undefined
+				equipmentUuid: 'eq-uuid'
 			})
 			expect(buildEditsForBayLNode).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
@@ -202,6 +214,8 @@ describe('dndStore', () => {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
 				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
 				equipmentUuid: 'eq-uuid'
 			}
 
@@ -262,7 +276,10 @@ describe('dndStore', () => {
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
-				sourceFunction: mockFunction
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
 			}
 
 			const mockIedEdits = [
@@ -311,7 +328,10 @@ describe('dndStore', () => {
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
-				sourceFunction: mockFunction
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
 			}
 
 			vi.mocked(dropHandler.getBayTypeApplicationState).mockReturnValue({
@@ -337,7 +357,10 @@ describe('dndStore', () => {
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
-				sourceFunction: mockFunction
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
 			}
 
 			vi.mocked(
@@ -371,7 +394,10 @@ describe('dndStore', () => {
 			const draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
-				sourceFunction: mockFunction
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
 			}
 			dndStore.draggedItem = draggedItem
 
