@@ -16,11 +16,17 @@ export function getScdEquipmentMatchKey(
 	return `index:${index}`
 }
 
-export function matchEquipmentForInitialApply(
-	scdBay: Element,
-	bayType: BayType,
+interface MatchEquipmentForInitialApplyParams {
+	scdBay: Element
+	bayType: BayType
 	manualMatches?: Map<string, string>
-): EquipmentMatch[] {
+}
+
+export function matchEquipmentForInitialApply({
+	scdBay,
+	bayType,
+	manualMatches
+}: MatchEquipmentForInitialApplyParams): EquipmentMatch[] {
 	const scdEquipment = Array.from(
 		scdBay.querySelectorAll(':scope > ConductingEquipment')
 	)

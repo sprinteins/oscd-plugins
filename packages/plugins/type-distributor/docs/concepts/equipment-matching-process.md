@@ -59,6 +59,7 @@ When ambiguity is detected `ValidationResult.requiresManualMatching` is set to `
 type ValidationResult = {
   isValid: boolean
   errors: string[]
+  countMismatchErrors?: string[]
   requiresManualMatching?: boolean
   ambiguousTypes?: AmbiguousTypeInfo[]   // list of { typeCode, templateNames }
   canAutoMatch?: boolean
@@ -136,7 +137,7 @@ The "Apply" action remains blocked while any mismatch exists.
 
 ## Phase 3: Apply — Matching Algorithm and SCD Edits
 
-Entry point: `applyBayTypeSelection(bayName)`
+Entry point: `applyBayTypeSelection(bayName: string): EquipmentMatch[]`
 
 ### Step 3.1 – Run matching (`matching.ts`)
 
@@ -180,13 +181,13 @@ type EquipmentMatch = {
 
 After matching, a series of edit operations are collected and committed atomically via `editor.commit(edits, { title })`.
 
-| Builder | What it does |
-|---|---|
-| `buildEditForBayUpdate` | Sets `desc` and other attributes on the `<Bay>` element |
-| `buildEditsForEquipmentUpdates` | Sets `uuid`, `templateUuid`, and `originUuid` on each matched `<ConductingEquipment>`; assigns UUIDs to any existing `<Terminal>` children that lack one |
-| `buildInsertEditsForEqFunction` | For each match, inserts `<EqFunction>` children (with nested `<LNode>` elements) into the `<ConductingEquipment>`, derived from `templateEquipment.eqFunctions` |
-| `buildInsertEditsForFunction` | Inserts bay-level `<Function>` elements into the `<Bay>` element, one per `bayType.functions` entry |
-| `ensureDataTypeTemplates` | Creates a `<DataTypeTemplates>` section in the document if one does not already exist |
+| Builder                          | What it does                                                                                                                                                                                                                                        |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `buildEditForBayUpdate`          | Sets `desc` and other attributes on the `<Bay>` element                                                                                                                                                                                             |
+| `buildEditsForEquipmentUpdates`  | Sets `uuid`, `templateUuid`, and `originUuid` on each matched `<ConductingEquipment>`; assigns UUIDs to any existing `<Terminal>` children that lack one                                                                                            |
+| `buildInsertEditsForEqFunction`  | For each match, inserts `<EqFunction>` children (with nested `<LNode>` elements) into the `<ConductingEquipment>`, derived from `templateEquipment.eqFunctions`                                                                                     |
+| `buildInsertEditsForFunction`    | Inserts bay-level `<Function>` elements into the `<Bay>` element, one per `bayType.functions` entry                                                                                                                                                 |
+| `ensureDataTypeTemplates`        | Creates a `<DataTypeTemplates>` section in the document if one does not already exist                                                                                                                                                               |
 | `buildEditsForDataTypeTemplates` | Walks all `LNodeTemplate` references across matched equipment functions and bay functions, resolves `LNodeType → DOType → DAType / EnumType` dependency trees, and inserts all required type elements (deduplicating against already-present types) |
 
 ---
@@ -211,26 +212,26 @@ BayType
 
 ## Store Responsibilities
 
-| Store | Role in matching |
-|---|---|
-| `ssdImportStore` | Source of parsed bay types, templates, and selected bay type UUID |
-| `bayStore` | Holds the target SCD `<Bay>` element and current assignment state |
+| Store                    | Role in matching                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| `ssdImportStore`         | Source of parsed bay types, templates, and selected bay type UUID                     |
+| `bayStore`               | Holds the target SCD `<Bay>` element and current assignment state                     |
 | `equipmentMatchingStore` | Holds `manualMatches`, validation result, `templatesByType`, and count mismatch state |
-| `assignedLNodesStore` | Guards against replacing a bay type when LNode connections already exist |
+| `assignedLNodesStore`    | Guards against replacing a bay type when LNode connections already exist              |
 
 ---
 
 ## Error Conditions
 
-| Situation | Behaviour |
-|---|---|
-| LNode connections exist and bay type changes | Validation blocked with explicit error message |
-| Equipment type count mismatch (SCD vs BayType) | Validation fails; list of mismatching types shown |
-| Ambiguous types without completing manual matches | Apply disabled; user prompted to fill all dropdowns |
-| Template count mismatch in manual matches | Apply disabled; mismatch panel shows required vs selected |
-| Manual match specifies an already-exhausted template | Runtime error thrown in `matchEquipmentForInitialApply` |
-| Persisted bay has missing `templateUuid` mapping | Runtime error thrown in `matchEquipmentForPersistedBay` |
-| SCD equipment has no matching template type | Runtime error thrown in `matchEquipmentForInitialApply` |
+| Situation                                            | Behaviour                                                 |
+| ---------------------------------------------------- | --------------------------------------------------------- |
+| LNode connections exist and bay type changes         | Validation blocked with explicit error message            |
+| Equipment type count mismatch (SCD vs BayType)       | Validation fails; list of mismatching types shown         |
+| Ambiguous types without completing manual matches    | Apply disabled; user prompted to fill all dropdowns       |
+| Template count mismatch in manual matches            | Apply disabled; mismatch panel shows required vs selected |
+| Manual match specifies an already-exhausted template | Runtime error thrown in `matchEquipmentForInitialApply`   |
+| Persisted bay has missing `templateUuid` mapping     | Runtime error thrown in `matchEquipmentForPersistedBay`   |
+| SCD equipment has no matching template type          | Runtime error thrown in `matchEquipmentForInitialApply`   |
 
 ---
 

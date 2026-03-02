@@ -22,11 +22,11 @@ export function applyBayTypeSelection(bayName: string): EquipmentMatch[] {
 		bayStore.scdBay
 	)
 
-	const matches = matchEquipmentForInitialApply(
+	const matches = matchEquipmentForInitialApply({
 		scdBay,
 		bayType,
-		equipmentMatchingStore.manualMatches
-	)
+		manualMatches: equipmentMatchingStore.manualMatches
+	})
 
 	const edits: (Insert | SetAttributes)[] = []
 

@@ -1,14 +1,21 @@
 import type { EquipmentMatch } from '@/headless/matching'
 import type { EqFunctionTemplate } from '@/headless/common-types'
 
-type LNodeKey = `${string}:${string}:${string}:${string}:${string}` // parentUuid:functionScopeUuid:lnClass:lnType:lnInst
+export type LNodeKey = `${string}:${string}:${string}:${string}:${string}` // parentUuid:functionScopeUuid:lnClass:lnType:lnInst
 
-function processLNodesFromElement(
-	element: Element,
-	parentUuid: string,
-	assignedIndex: Set<LNodeKey>,
+interface ProcessLNodesFromElementParams {
+	element: Element
+	parentUuid: string
+	assignedIndex: Set<LNodeKey>
 	functionScopeUuid: string
-): void {
+}
+
+function processLNodesFromElement({
+	element,
+	parentUuid,
+	assignedIndex,
+	functionScopeUuid
+}: ProcessLNodesFromElementParams): void {
 	const lnodes = element.querySelectorAll('LNode[iedName]')
 
 	for (const lnode of lnodes) {
@@ -24,11 +31,19 @@ function processLNodesFromElement(
 	}
 }
 
-export function processFunctions(
-	scdBay: Element,
-	assignedIndex: Set<LNodeKey>,
-	bayTypes: Array<{ functions: Array<{ uuid: string; templateUuid: string }> }>
-): void {
+interface ProcessFunctionsParams {
+	scdBay: Element
+	assignedIndex: Set<LNodeKey>
+	bayTypes: Array<{
+		functions: Array<{ uuid: string; templateUuid: string }>
+	}>
+}
+
+export function processFunctions({
+	scdBay,
+	assignedIndex,
+	bayTypes
+}: ProcessFunctionsParams): void {
 	const functions = scdBay.querySelectorAll(':scope > Function')
 
 	for (const func of functions) {
@@ -59,15 +74,26 @@ export function processFunctions(
 			functionScopeUuid = parentUuid
 		}
 
-		processLNodesFromElement(func, parentUuid, assignedIndex, functionScopeUuid)
+		processLNodesFromElement({
+			element: func,
+			parentUuid,
+			assignedIndex,
+			functionScopeUuid
+		})
 	}
 }
 
-export function processEqFunctions(
-	scdBay: Element,
-	assignedIndex: Set<LNodeKey>,
+interface ProcessEqFunctionsParams {
+	scdBay: Element
+	assignedIndex: Set<LNodeKey>
 	equipmentMatches: EquipmentMatch[]
-): void {
+}
+
+export function processEqFunctions({
+	scdBay,
+	assignedIndex,
+	equipmentMatches
+}: ProcessEqFunctionsParams): void {
 	const eqFunctions = scdBay.querySelectorAll(
 		':scope > ConductingEquipment > EqFunction'
 	)
@@ -114,11 +140,11 @@ export function processEqFunctions(
 			continue
 		}
 
-		processLNodesFromElement(
-			eqFunc,
+		processLNodesFromElement({
+			element: eqFunc,
 			parentUuid,
 			assignedIndex,
 			functionScopeUuid
-		)
+		})
 	}
 }

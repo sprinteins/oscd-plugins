@@ -168,11 +168,26 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// THEN lnode1 exists in Bay structure with iedName → assigned
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode1
+				})
+			).toBe(true)
 
 			// THEN lnode2 and lnode3 have no iedName → not assigned
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode3
+				})
+			).toBe(false)
 		})
 
 		it('WHEN rebuild is called THEN hasConnections returns true', () => {
@@ -195,8 +210,18 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 			// THEN
 			expect(assignedLNodesStore.hasConnections).toBe(false)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode1
+				})
+			).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(false)
 		})
 
 		it('WHEN rebuild is called THEN it does not throw', () => {
@@ -219,9 +244,24 @@ describe('Integration: Assigned LNodes Flow', () => {
 			// WHEN / THEN
 			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
 
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode1
+				})
+			).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode3
+				})
+			).toBe(false)
 		})
 	})
 
@@ -235,7 +275,12 @@ describe('Integration: Assigned LNodes Flow', () => {
 			// WHEN / THEN
 			expect(() => assignedLNodesStore.rebuild()).not.toThrow()
 
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode1
+				})
+			).toBe(false)
 		})
 	})
 
@@ -257,9 +302,24 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 		it('WHEN unassigned LNodes are dropped THEN they are marked as assigned', () => {
 			// Initial state – only lnode1 is assigned
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode1
+				})
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode3
+				})
+			).toBe(false)
 
 			// WHEN
 			dndStore.handleDragStart({
@@ -272,17 +332,42 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
 			// THEN lnode2 and lnode3 are now assigned
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode3
+				})
+			).toBe(true)
 
 			// AND previously assigned lnode1 remains assigned
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode1
+				})
+			).toBe(true)
 		})
 
 		it('WHEN mixed assigned/unassigned LNodes are dropped THEN all are marked as assigned', () => {
 			// lnode1 is already assigned
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode1
+				})
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(false)
 
 			// WHEN
 			dndStore.handleDragStart({
@@ -295,13 +380,26 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDrop(accessPoint, 'NewIED')
 
 			// THEN
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode1
+				})
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(true)
 		})
 
 		it('WHEN a drop occurs THEN markAsAssigned is used instead of a full rebuild', () => {
 			const rebuildSpy = vi.spyOn(assignedLNodesStore, 'rebuild')
-			const markAsAssignedSpy = vi.spyOn(assignedLNodesStore, 'markAsAssigned')
+			const markAsAssignedSpy = vi.spyOn(
+				assignedLNodesStore,
+				'markAsAssigned'
+			)
 
 			// WHEN
 			dndStore.handleDragStart({
@@ -323,7 +421,10 @@ describe('Integration: Assigned LNodes Flow', () => {
 		it('WHEN handleDragEnd is called THEN the assigned state does not change', () => {
 			assignedLNodesStore.rebuild()
 
-			const stateBefore = assignedLNodesStore.isAssigned(funcUuid, lnode2)
+			const stateBefore = assignedLNodesStore.isAssigned({
+				parentUuid: funcUuid,
+				lnode: lnode2
+			})
 
 			// WHEN
 			dndStore.handleDragStart({
@@ -336,7 +437,12 @@ describe('Integration: Assigned LNodes Flow', () => {
 			dndStore.handleDragEnd()
 
 			// THEN
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(stateBefore)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(stateBefore)
 		})
 	})
 
@@ -345,25 +451,51 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// Mark lnode2 manually
-			assignedLNodesStore.markAsAssigned(funcUuid, [lnode2])
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
+			assignedLNodesStore.markAsAssigned({
+				parentUuid: funcUuid,
+				lNodes: [lnode2],
+				functionScopeUuid: funcUuid
+			})
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(true)
 
 			// WHEN rebuild re-reads document (lnode2 not in Bay structure)
 			assignedLNodesStore.rebuild()
 
 			// THEN lnode2 is gone
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(false)
 
 			// AND document-backed lnode1 is still assigned
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode1
+				})
+			).toBe(true)
 		})
 
 		it('WHEN a LNode is added to the Bay structure and rebuild is called THEN it becomes assigned', () => {
 			assignedLNodesStore.rebuild()
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(false)
 
 			// Manually add lnode2 to the document's Bay structure
-			const func = mockDocument.querySelector('Function[templateUuid="func-uuid-1"]')
+			const func = mockDocument.querySelector(
+				'Function[templateUuid="func-uuid-1"]'
+			)
 			const newLN = mockDocument.createElement('LNode')
 			newLN.setAttribute('lnClass', 'CSWI')
 			newLN.setAttribute('lnType', 'TestCSWI')
@@ -376,14 +508,21 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// THEN
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(true)
 		})
 	})
 
 	describe('GIVEN multiple Function elements in the Bay', () => {
 		it('WHEN rebuild is called THEN LNodes are tracked per-function and not cross-contaminated', () => {
 			// Add lnode2 to funcUuid2 in the document
-			const func2 = mockDocument.querySelector('Function[templateUuid="func-uuid-2"]')
+			const func2 = mockDocument.querySelector(
+				'Function[templateUuid="func-uuid-2"]'
+			)
 			const ln2 = mockDocument.createElement('LNode')
 			ln2.setAttribute('lnClass', 'CSWI')
 			ln2.setAttribute('lnType', 'TestCSWI')
@@ -398,15 +537,40 @@ describe('Integration: Assigned LNodes Flow', () => {
 			assignedLNodesStore.rebuild()
 
 			// THEN lnode1 is assigned under funcUuid
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode1)).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode1
+				})
+			).toBe(true)
 
 			// THEN lnode2 is assigned under funcUuid2 only
-			expect(assignedLNodesStore.isAssigned(funcUuid2, lnode2)).toBe(true)
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode2)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid2,
+					lnode: lnode2
+				})
+			).toBe(true)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode2
+				})
+			).toBe(false)
 
 			// THEN lnode3 is not assigned anywhere
-			expect(assignedLNodesStore.isAssigned(funcUuid, lnode3)).toBe(false)
-			expect(assignedLNodesStore.isAssigned(funcUuid2, lnode3)).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid,
+					lnode: lnode3
+				})
+			).toBe(false)
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: funcUuid2,
+					lnode: lnode3
+				})
+			).toBe(false)
 		})
 	})
 
@@ -422,16 +586,30 @@ describe('Integration: Assigned LNodes Flow', () => {
 				functions: [{ uuid: funcUuid, templateUuid: funcUuid }],
 				conductingEquipmentTemplates: [],
 				functionTemplates: [
-					{ uuid: funcUuid, name: 'TestFunction', desc: '', lnodes: [lnode1] }
+					{
+						uuid: funcUuid,
+						name: 'TestFunction',
+						desc: '',
+						lnodes: [lnode1]
+					}
 				],
 				conductingEquipmentTemplateMap: new Map(),
 				functionTemplateMap: new Map([
-					[funcUuid, { uuid: funcUuid, name: 'TestFunction', desc: '', lnodes: [lnode1] }]
+					[
+						funcUuid,
+						{
+							uuid: funcUuid,
+							name: 'TestFunction',
+							desc: '',
+							lnodes: [lnode1]
+						}
+					]
 				])
 			}
 
 			// WHEN
-			const result = assignedLNodesStore.areAllLNodesAssigned(bayTypeWithTemplates)
+			const result =
+				assignedLNodesStore.areAllLNodesAssigned(bayTypeWithTemplates)
 
 			// THEN
 			expect(result).toBe(true)
@@ -470,7 +648,8 @@ describe('Integration: Assigned LNodes Flow', () => {
 			}
 
 			// WHEN
-			const result = assignedLNodesStore.areAllLNodesAssigned(bayTypeWithTemplates)
+			const result =
+				assignedLNodesStore.areAllLNodesAssigned(bayTypeWithTemplates)
 
 			// THEN
 			expect(result).toBe(false)

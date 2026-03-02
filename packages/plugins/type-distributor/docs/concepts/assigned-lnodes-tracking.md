@@ -199,7 +199,7 @@ const lnodes = func.querySelectorAll('LNode[iedName]')
 Manual assignments are not persisted across rebuilds:
 
 ```typescript
-assignedLNodesStore.markAsAssigned(funcUuid, [lnode2])  // Manual mark
+assignedLNodesStore.markAsAssigned({ parentUuid: funcUuid, lNodes: [lnode2] })  // Manual mark
 assignedLNodesStore.rebuild()  // Clears manual marks
 
 // lnode2 is no longer marked unless it exists in document
@@ -214,12 +214,12 @@ assignedLNodesStore.rebuild()  // Clears manual marks
 Using `SvelteSet` provides O(1) lookup performance:
 
 ```typescript
-isAssigned(
-  parentUuid: string,
-  lnode: LNodeTemplate,
-  functionScopeUuid?: string
-): boolean {
-  const key = this.buildKey(parentUuid, lnode, functionScopeUuid ?? parentUuid)
+isAssigned({
+  parentUuid,
+  lnode,
+  functionScopeUuid
+}: isAssignedParams): boolean {
+  const key = this.buildKey({ parentUuid, lnode, functionScopeUuid: functionScopeUuid ?? parentUuid })
   return this.assignedIndex.has(key)  // O(1)
 }
 ```

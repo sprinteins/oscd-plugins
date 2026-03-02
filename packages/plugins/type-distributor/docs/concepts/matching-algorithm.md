@@ -92,7 +92,7 @@ Result: Ambiguous (requires manual matching)
 
 `matching.ts` exposes two explicit entry points:
 
-- `matchEquipmentForInitialApply(scdBay, bayType, manualMatches?)`
+- `matchEquipmentForInitialApply({scdBay, bayType, manualMatches})`
 - `matchEquipmentForPersistedBay(scdBay, bayType)`
 
 This split makes the behavior explicit for first-time application versus already-assigned bays.

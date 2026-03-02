@@ -202,11 +202,11 @@ describe('applyBayTypeSelection', () => {
 				applyBayTypeSelection('MyCustomBay')
 
 				// THEN
-				expect(matchEquipmentForInitialApply).toHaveBeenCalledWith(
-					mockScdBay,
-					mockBayType,
+				expect(matchEquipmentForInitialApply).toHaveBeenCalledWith({
+					scdBay: mockScdBay,
+					bayType: mockBayType,
 					manualMatches
-				)
+				})
 				expect(mockEditor.commit).toHaveBeenCalledWith(
 					expect.arrayContaining([mockDTSCreationEdit]),
 					{
@@ -284,7 +284,9 @@ describe('applyBayTypeSelection', () => {
 					lnodes: functionLNodes
 				})
 
-				vi.mocked(matchEquipmentForInitialApply).mockReturnValue(mockMatches)
+				vi.mocked(matchEquipmentForInitialApply).mockReturnValue(
+					mockMatches
+				)
 				vi.mocked(buildEditForBayUpdate).mockReturnValue({
 					element: mockScdBay,
 					attributes: {},

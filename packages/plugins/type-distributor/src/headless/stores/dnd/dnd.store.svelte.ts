@@ -120,11 +120,11 @@ class UseDndStore {
 
 				commitEdits({ edits: allEdits, title, squash: didApplyBayType })
 
-				assignedLNodesStore.markAsAssigned(
+				assignedLNodesStore.markAsAssigned({
 					parentUuid,
 					lNodes,
 					functionScopeUuid
-				)
+				})
 			}
 		} catch (error) {
 			console.error('[DnD] Error creating LNodes:', error)

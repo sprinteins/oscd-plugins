@@ -87,7 +87,10 @@ describe('matching', () => {
 					])
 
 					// WHEN
-					const result = matchEquipmentForInitialApply(scdBay, bayType)
+					const result = matchEquipmentForInitialApply({
+						scdBay,
+						bayType
+					})
 
 					// THEN
 					expect(result).toHaveLength(2)
@@ -129,11 +132,11 @@ describe('matching', () => {
 					])
 
 					// WHEN
-					const result = matchEquipmentForInitialApply(
+					const result = matchEquipmentForInitialApply({
 						scdBay,
 						bayType,
 						manualMatches
-					)
+					})
 
 					// THEN
 					expect(result).toHaveLength(2)
@@ -171,11 +174,11 @@ describe('matching', () => {
 					])
 
 					// WHEN
-					const result = matchEquipmentForInitialApply(
+					const result = matchEquipmentForInitialApply({
 						scdBay,
 						bayType,
 						manualMatches
-					)
+					})
 
 					// THEN
 					expect(result).toHaveLength(2)
@@ -213,7 +216,11 @@ describe('matching', () => {
 
 					// WHEN / THEN
 					expect(() =>
-						matchEquipmentForInitialApply(scdBay, bayType, manualMatches)
+						matchEquipmentForInitialApply({
+							scdBay,
+							bayType,
+							manualMatches
+						})
 					).toThrow(
 						'No available BayType equipment found for manual match "non-existent-template" (equipment "CB1", key "CB1")'
 					)
@@ -239,7 +246,9 @@ describe('matching', () => {
 					mockTemplates([createTemplate('template1', 'CBR', 'CB1')])
 
 					// WHEN / THEN
-					expect(() => matchEquipmentForInitialApply(scdBay, bayType)).toThrow(
+					expect(() =>
+						matchEquipmentForInitialApply({ scdBay, bayType })
+					).toThrow(
 						'No matching BayType equipment found for SCD equipment "DS1" of type "DIS"'
 					)
 				})
@@ -264,7 +273,10 @@ describe('matching', () => {
 					mockTemplates([createTemplate('template1', 'CBR', 'CB1')])
 
 					// WHEN
-					const result = matchEquipmentForInitialApply(scdBay, bayType)
+					const result = matchEquipmentForInitialApply({
+						scdBay,
+						bayType
+					})
 
 					// THEN
 					expect(result).toHaveLength(1)
@@ -288,7 +300,10 @@ describe('matching', () => {
 					mockTemplates([createTemplate('template1', 'CBR', 'CB1')])
 
 					// WHEN
-					const result = matchEquipmentForInitialApply(scdBay, bayType)
+					const result = matchEquipmentForInitialApply({
+						scdBay,
+						bayType
+					})
 
 					// THEN
 					expect(result).toEqual([])
