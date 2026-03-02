@@ -2,7 +2,6 @@ import type { Insert } from '@openscd/oscd-api'
 import { getDocumentAndEditor } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
 import { queryIEDInsertionReference } from '../queries'
-import { buildEditsForCreateAccessPoint } from './accesspoint-edits'
 
 type buildEditsForCreateIEDParams = {
 	name: string

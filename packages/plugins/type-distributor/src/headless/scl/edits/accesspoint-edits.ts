@@ -15,6 +15,7 @@ import {
 	queryServer,
 	isLNodePresentInDevice
 } from '../elements'
+import { queryIedElement } from '../queries/ied-queries'
 
 function ensureServer(
 	accessPoint: Element,
@@ -148,7 +149,6 @@ export function createMultipleLNodesInAccessPoint({
 type buildEditsForCreateAccessPointParams = {
 	iedName: string
 	accessPoints: { name: string; description?: string }[]
-	squash?: boolean
 }
 
 export function buildEditsForCreateAccessPoint({
@@ -158,7 +158,7 @@ export function buildEditsForCreateAccessPoint({
 	const { doc } = getDocumentAndEditor()
 	const allEdits: Insert[] = []
 
-	const iedElement = doc.querySelector(`IED[name="${iedName}"]`)
+	const iedElement = queryIedElement(doc, iedName)
 	if (!iedElement) {
 		throw new Error(`IED with name "${iedName}" not found`)
 	}
