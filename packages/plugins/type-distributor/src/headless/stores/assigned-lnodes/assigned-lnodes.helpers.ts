@@ -1,6 +1,6 @@
 type LNodeKey = `${string}:${string}:${string}:${string}` // parentUuid:lnClass:lnType:lnInst
 
-export function processLNodesFromElement(
+function processLNodesFromElement(
 	element: Element,
 	parentUuid: string,
 	assignedIndex: Set<LNodeKey>
