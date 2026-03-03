@@ -1,6 +1,7 @@
 <script lang="ts">
 import { Label, Input } from '@oscd-plugins/core-ui-svelte'
 import type { FieldErrors, IedData } from '../form-helpers'
+import { FieldError } from '../form-elements'
 
 let {
 	ied = $bindable({ name: '', description: '', isNew: true }),
@@ -22,9 +23,7 @@ let {
         placeholder="Enter IED name"
         {disabled}
       />
-      {#if errors?.name}
-        <p class="text-sm text-red-600">{errors.name}</p>
-      {/if}
+      <FieldError message={errors?.name} />
     </div>
     <div class="space-y-2">
       <Label.Root for="ied-desc">Description</Label.Root>
@@ -34,9 +33,7 @@ let {
         placeholder="Enter IED description (optional)"
         {disabled}
       />
-      {#if errors?.description}
-        <p class="text-sm text-red-600">{errors.description}</p>
-      {/if}
+      <FieldError message={errors?.description} />
     </div>
   </div>
 </section>

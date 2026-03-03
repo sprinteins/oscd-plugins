@@ -9,9 +9,6 @@ export function submitForm(
 	ied: IedData,
 	accessPoints: AccessPointData[]
 ): void {
-	if (!ied.isNew && accessPoints.length === 0) {
-		throw new Error('At least one Access Point is required')
-	}
 	if (ied.isNew && accessPoints.length > 0) {
 		createIedWithAccessPoints(ied, accessPoints)
 		return
