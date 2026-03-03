@@ -12,21 +12,29 @@ import LNode from './lnode.svelte'
 interface Props {
 	eqFunction: EqFunctionTemplate
 	equipment: ConductingEquipmentTemplate
-	bayTypeInstanceUuid?: string
+	bayTypeInstanceUuid: string
 }
 
 const { eqFunction, equipment, bayTypeInstanceUuid }: Props = $props()
 
 let isOpen = $state(false)
 let isDragging = $derived(
-	dndStore.isDraggingItem('equipmentFunction', eqFunction.uuid, bayTypeInstanceUuid)
+	dndStore.isDraggingItem(
+		'equipmentFunction',
+		eqFunction.uuid,
+		bayTypeInstanceUuid
+	)
 )
 
-const parentUuid = $derived(bayTypeInstanceUuid || eqFunction.uuid)
+const parentUuid = $derived(bayTypeInstanceUuid)
 
 let assignedStatuses = $derived(
 	eqFunction.lnodes.map((lnode) =>
-		assignedLNodesStore.isAssigned(parentUuid, lnode)
+		assignedLNodesStore.isAssigned({
+			parentUuid,
+			lnode,
+			functionScopeUuid: eqFunction.uuid
+		})
 	)
 )
 
@@ -39,8 +47,9 @@ function handleDragStart(event: DragEvent) {
 		type: 'equipmentFunction',
 		sourceFunction: eqFunction,
 		lNodes: eqFunction.lnodes || [],
-		equipmentUuid: bayTypeInstanceUuid,
-		bayTypeInstanceUuid: bayTypeInstanceUuid
+		parentUuid,
+		functionScopeUuid: eqFunction.uuid,
+		equipmentUuid: parentUuid
 	})
 }
 
@@ -53,8 +62,9 @@ function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
 		type: 'lNode',
 		sourceFunction: eqFunction,
 		lNodes: [lnode],
-		equipmentUuid: bayTypeInstanceUuid,
-		bayTypeInstanceUuid: bayTypeInstanceUuid
+		parentUuid,
+		functionScopeUuid: eqFunction.uuid,
+		equipmentUuid: parentUuid
 	})
 }
 

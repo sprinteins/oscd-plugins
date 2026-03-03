@@ -1,25 +1,29 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-	applyBayTypeIfNeeded,
+	applyBayType,
 	generateCommitTitle,
 	getBayTypeApplicationState,
 	shouldApplyBayType
 } from './drop-handler'
-import { bayTypesStore } from '../bay-types.store.svelte'
+import { ssdImportStore } from '../ssd-import.store.svelte'
+import { getBayTypeWithTemplates } from '../bay-types.utils'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
 import { applyBayTypeSelection } from '@/headless/matching'
 
-vi.mock('../bay-types.store.svelte', () => ({
-	bayTypesStore: {
-		selectedBayType: null as string | null,
-		getBayTypeWithTemplates: vi.fn()
+vi.mock('../ssd-import.store.svelte', () => ({
+	ssdImportStore: {
+		selectedBayType: null as string | null
 	}
+}))
+
+vi.mock('../bay-types.utils', () => ({
+	getBayTypeWithTemplates: vi.fn()
 }))
 
 vi.mock('../bay.store.svelte', () => ({
 	bayStore: {
-		assignedBayType: null as string | null,
+		assignedBayTypeUuid: null as string | null,
 		selectedBay: null as string | null,
 		pendingBayTypeApply: null as string | null
 	}
@@ -31,7 +35,7 @@ vi.mock('../equipment-matching.store.svelte', () => ({
 			isValid?: boolean
 			requiresManualMatching?: boolean
 		},
-		clearValidationResult: vi.fn()
+		reset: vi.fn()
 	}
 }))
 
@@ -43,7 +47,7 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 }))
 
 vi.mock('@/headless/matching', () => ({
-	applyBayTypeSelection: vi.fn()
+	applyBayTypeSelection: vi.fn().mockReturnValue([])
 }))
 
 vi.mock('@/headless/utils/get-document-and-Editor', () => ({
@@ -71,7 +75,7 @@ describe('drop-handler', () => {
 	}
 
 	beforeEach(() => {
-		bayTypesStore.selectedBayType = null
+		ssdImportStore.selectedBayType = null
 		bayStore.assignedBayTypeUuid = null
 		bayStore.selectedBay = null
 		bayStore.pendingBayTypeApply = null
@@ -152,7 +156,7 @@ describe('drop-handler', () => {
 	describe('getBayTypeApplicationState', () => {
 		it('GIVEN selected bay type with valid auto selection WHEN getBayTypeApplicationState THEN derives correct state', () => {
 			// GIVEN
-			bayTypesStore.selectedBayType = 'bt-1'
+			ssdImportStore.selectedBayType = 'bt-1'
 			bayStore.assignedBayTypeUuid = null
 			bayStore.selectedBay = 'Bay-1'
 			equipmentMatchingStore.validationResult = {
@@ -198,26 +202,8 @@ describe('drop-handler', () => {
 		})
 	})
 
-	describe('applyBayTypeIfNeeded', () => {
-		it('GIVEN state where bay type should not apply WHEN applyBayTypeIfNeeded THEN returns false', () => {
-			// GIVEN
-			const state = {
-				hasAssignedBayType: true,
-				hasSelectedBay: true,
-				requiresManualMatching: false,
-				hasValidAutoSelection: true,
-				hasPendingManualSelection: false
-			}
-
-			// WHEN
-			const didApply = applyBayTypeIfNeeded(state)
-
-			// THEN
-			expect(didApply).toBe(false)
-			expect(applyBayTypeSelection).not.toHaveBeenCalled()
-		})
-
-		it('GIVEN state requires selected bay but store is missing WHEN applyBayTypeIfNeeded THEN throws error', () => {
+	describe('applyBayType', () => {
+		it('GIVEN state requires selected bay but store is missing WHEN applyBayType THEN throws error', () => {
 			// GIVEN
 			bayStore.selectedBay = null
 			bayStore.pendingBayTypeApply = 'bt-3'
@@ -230,12 +216,12 @@ describe('drop-handler', () => {
 			}
 
 			// WHEN / THEN
-			expect(() => applyBayTypeIfNeeded(state)).toThrowError(
+			expect(() => applyBayType(state)).toThrowError(
 				'[DnD] No bay type selected to apply to bay'
 			)
 		})
 
-		it('GIVEN pending manual selection WHEN applyBayTypeIfNeeded THEN applies and clears validation', () => {
+		it('GIVEN pending manual selection WHEN applyBayType THEN applies and clears validation', () => {
 			// GIVEN
 			bayStore.selectedBay = 'Bay-3'
 			bayStore.pendingBayTypeApply = 'bt-3'
@@ -248,23 +234,22 @@ describe('drop-handler', () => {
 			}
 
 			// WHEN
-			const didApply = applyBayTypeIfNeeded(state)
+			const matches = applyBayType(state)
 
 			// THEN
-			expect(didApply).toBe(true)
-			expect(bayTypesStore.selectedBayType).toBe('bt-3')
+			expect(matches).toEqual(expect.any(Array))
+			expect(ssdImportStore.selectedBayType).toBe('bt-3')
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-3')
-			expect(bayStore.assignedBayTypeUuid).toBe('bt-3')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 			expect(
-				equipmentMatchingStore.clearValidationResult
+				equipmentMatchingStore.reset
 			).toHaveBeenCalled()
 		})
 
-		it('GIVEN valid auto selection WHEN applyBayTypeIfNeeded THEN applies successfully', () => {
+		it('GIVEN valid auto selection WHEN applyBayType THEN applies successfully', () => {
 			// GIVEN
 			bayStore.selectedBay = 'Bay-4'
-			bayTypesStore.selectedBayType = 'bt-4'
+			ssdImportStore.selectedBayType = 'bt-4'
 			const state = {
 				hasAssignedBayType: false,
 				hasSelectedBay: true,
@@ -274,12 +259,11 @@ describe('drop-handler', () => {
 			}
 
 			// WHEN
-			const didApply = applyBayTypeIfNeeded(state)
+			const matches = applyBayType(state)
 
 			// THEN
-			expect(didApply).toBe(true)
+			expect(matches).toEqual(expect.any(Array))
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-4')
-			expect(bayStore.assignedBayTypeUuid).toBe('bt-4')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 		})
 	})
@@ -290,12 +274,12 @@ describe('drop-handler', () => {
 			const didApplyBayType = false
 
 			// WHEN
-			const commitTitle = generateCommitTitle(
-				mockLNodes,
-				mockFunction.name,
-				'targetSied',
+			const commitTitle = generateCommitTitle({
+				lNodes: mockLNodes,
+				functionName: mockFunction.name,
+				targetSIedName: 'targetSied',
 				didApplyBayType
-			)
+			})
 
 			// THEN
 			expect(commitTitle).toBe(
@@ -308,12 +292,12 @@ describe('drop-handler', () => {
 			const didApplyBayType = true
 
 			// WHEN
-			const commitTitle = generateCommitTitle(
-				mockLNodes,
-				mockFunction.name,
-				'targetSied',
+			const commitTitle = generateCommitTitle({
+				lNodes: mockLNodes,
+				functionName: mockFunction.name,
+				targetSIedName: 'targetSied',
 				didApplyBayType
-			)
+			})
 
 			// THEN
 			expect(commitTitle).toBe(

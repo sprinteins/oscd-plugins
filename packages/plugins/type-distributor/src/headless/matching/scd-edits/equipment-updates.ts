@@ -6,10 +6,12 @@ export function buildEditsForEquipmentUpdates(matches: EquipmentMatch[]) {
 	const updates: (SetAttributes | Insert)[] = []
 
 	for (const match of matches) {
+		const existingUuid = match.scdElement.getAttribute('uuid')?.trim()
+
 		updates.push({
 			element: match.scdElement,
 			attributes: {
-				uuid: uuidv4(),
+				uuid: existingUuid || uuidv4(),
 				templateUuid: match.bayTypeEquipment.uuid,
 				originUuid: match.templateEquipment.uuid
 			},

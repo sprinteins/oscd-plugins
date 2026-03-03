@@ -1,4 +1,4 @@
-export function queryTypeReferences(elements: NodeListOf<Element>): {
+function queryTypeReferences(elements: NodeListOf<Element>): {
 	daTypeIds: Set<string>
 	enumTypeIds: Set<string>
 } {

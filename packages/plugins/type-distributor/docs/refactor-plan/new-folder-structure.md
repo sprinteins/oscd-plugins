@@ -39,9 +39,9 @@ src/
 │   │       └── server.ts             # createServerElementWithAuth
 │   │
 │   ├── stores/                   # Thin reactive state — NO orchestration, NO editor.commit()
-│   │   ├── ssd-import.store.svelte.ts     # Parsed SSD data + loaded document ( minus fileInput)
+│   │   ├── ssd-import.store.svelte.ts     # Parsed SSD data + loaded document ( minus fileInput) + selectedBayType
+│   │   ├── bay-types.utils.ts            # Pure template assembly and LNode
 │   │   ├── bay.store.svelte.ts            # Selected bay, scdBay derived, equipment matches
-│   │   ├── bay-types.store.svelte.ts      # Bay type selection, template cache
 │   │   ├── equipment-matching.store.svelte.ts  # Validation result, manual matches (minus isManualMatchingExpanded)
 │   │   ├── assigned-lnodes/               # (keep — already reasonably clean)
 │   │   ├── dnd.store.svelte.ts            # Only isDragging + draggedItem (drop logic removed)

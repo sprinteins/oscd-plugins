@@ -1,7 +1,3 @@
-export function hasRemainingConnections(bay: Element): boolean {
-	return bay.querySelectorAll('LNode[iedName]').length > 0
-}
-
 export function hasRemainingConnectionsAfterClearing(
 	bay: Element,
 	clearedLNodes: Set<Element>

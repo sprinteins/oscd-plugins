@@ -6,6 +6,7 @@ import type {
 	FunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
+import type { EquipmentMatch } from '@/headless/matching'
 import { getDocumentAndEditor } from '../../utils'
 import {
 	createLDeviceElement,
@@ -42,20 +43,30 @@ type EnsureLDeviceParams = {
 	doc: XMLDocument
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	equipmentUuid?: string
+	equipmentMatches: EquipmentMatch[]
 }
 
 function ensureLDevice({
 	server,
 	doc,
 	sourceFunction,
-	equipmentUuid
+	equipmentUuid,
+	equipmentMatches
 }: EnsureLDeviceParams): { lDevice: Element; edit: Insert | undefined } {
-	const existingLDevice = queryLDevice(server, sourceFunction, equipmentUuid)
+	const existingLDevice = queryLDevice(server, {
+		sourceFunction,
+		equipmentUuid,
+		equipmentMatches
+	})
 	if (existingLDevice) {
 		return { lDevice: existingLDevice, edit: undefined }
 	}
 
-	const lDevice = createLDeviceElement(doc, sourceFunction, equipmentUuid)
+	const lDevice = createLDeviceElement(doc, {
+		sourceFunction,
+		equipmentUuid,
+		equipmentMatches
+	})
 
 	const edit: Insert = {
 		node: lDevice,
@@ -93,13 +104,15 @@ type CreateMultipleLNodesParams = {
 	lNodes: LNodeTemplate[]
 	accessPoint: Element
 	equipmentUuid?: string
+	equipmentMatches: EquipmentMatch[]
 }
 
 export function createMultipleLNodesInAccessPoint({
 	sourceFunction,
 	lNodes,
 	accessPoint,
-	equipmentUuid
+	equipmentUuid,
+	equipmentMatches
 }: CreateMultipleLNodesParams): Insert[] {
 	const edits: Insert[] = []
 
@@ -114,7 +127,8 @@ export function createMultipleLNodesInAccessPoint({
 		server: serverElement,
 		doc,
 		sourceFunction,
-		equipmentUuid
+		equipmentUuid,
+		equipmentMatches
 	})
 
 	const lNodesToAdd = lNodes.filter((lNode) => {

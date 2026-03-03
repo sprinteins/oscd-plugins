@@ -7,7 +7,7 @@ import LNode from './lnode.svelte'
 
 interface Props {
 	func: FunctionTemplate
-	bayTypeInstanceUuid?: string
+	bayTypeInstanceUuid: string
 }
 
 const { func, bayTypeInstanceUuid }: Props = $props()
@@ -17,11 +17,15 @@ let isDragging = $derived(
 	dndStore.isDraggingItem('functionTemplate', func.uuid, bayTypeInstanceUuid)
 )
 
-const parentUuid = $derived(bayTypeInstanceUuid || func.uuid)
+const parentUuid = $derived(bayTypeInstanceUuid)
 
 let assignedStatuses = $derived(
 	func.lnodes.map((lnode) =>
-		assignedLNodesStore.isAssigned(parentUuid, lnode)
+		assignedLNodesStore.isAssigned({
+			parentUuid,
+			lnode,
+			functionScopeUuid: func.uuid
+		})
 	)
 )
 
@@ -34,7 +38,8 @@ function handleDragStart(event: DragEvent) {
 		type: 'functionTemplate',
 		sourceFunction: func,
 		lNodes: func.lnodes || [],
-		bayTypeInstanceUuid: bayTypeInstanceUuid
+		parentUuid,
+		functionScopeUuid: func.uuid
 	})
 }
 
@@ -47,7 +52,8 @@ function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
 		type: 'lNode',
 		sourceFunction: func,
 		lNodes: [lnode],
-		bayTypeInstanceUuid: bayTypeInstanceUuid
+		parentUuid,
+		functionScopeUuid: func.uuid
 	})
 }
 

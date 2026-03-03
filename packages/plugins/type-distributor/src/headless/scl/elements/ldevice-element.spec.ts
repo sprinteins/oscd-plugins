@@ -1,24 +1,7 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest'
 import { createLDeviceElement } from './ldevice-element'
 
-vi.mock('../../stores/bay.store.svelte', () => ({
-	bayStore: {
-		equipmentMatches: [] as Array<{
-			scdElement: Element
-			templateEquipment: { uuid: string }
-			bayTypeEquipment: { uuid: string }
-		}>
-	}
-}))
-
-import { bayStore } from '../../stores/bay.store.svelte'
-
 describe('lDevice', () => {
-	beforeEach(() => {
-		bayStore.equipmentMatches = []
-		vi.clearAllMocks()
-	})
-
 	it('GIVEN equipmentUuid match with SCD name WHEN createLDeviceElement THEN uses SCD equipment name for inst', () => {
 		// GIVEN a conducting equipment template with eqFunctions
 		const sourceFunction = {
@@ -30,7 +13,7 @@ describe('lDevice', () => {
 		}
 		const scdElement = document.createElement('ConductingEquipment')
 		scdElement.setAttribute('name', 'BreakerX')
-		bayStore.equipmentMatches = [
+		const equipmentMatches = [
 			{
 				scdElement,
 				templateEquipment: { uuid: 'eq-1' },
@@ -41,8 +24,11 @@ describe('lDevice', () => {
 		// WHEN creating the LDevice element
 		const lDevice = createLDeviceElement(
 			document.implementation.createDocument('', '', null),
-			sourceFunction,
-			'bay-type-1'
+			{
+				sourceFunction,
+				equipmentUuid: 'bay-type-1',
+				equipmentMatches: equipmentMatches as never
+			}
 		)
 
 		// THEN the inst uses the SCD equipment name and function name
