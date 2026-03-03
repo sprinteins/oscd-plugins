@@ -22,16 +22,3 @@ export function submitForm(
 	}
 	createAccessPoint(ied, accessPoints)
 }
-
-export function buildAccessPoint(
-	name: string,
-	description: string
-): AccessPointData | undefined {
-	const trimmedName = name.trim()
-	if (!trimmedName) return undefined
-
-	return {
-		name: trimmedName,
-		description: description.trim()
-	}
-}

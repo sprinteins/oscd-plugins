@@ -9,10 +9,9 @@ export type IedData = {
 	isNew: boolean
 }
 
-export type DialogFormState = {
-	ied: IedData
-	currentAp: AccessPointData
-	accessPoints: AccessPointData[]
-	isMultiApMode: boolean
-	error: string | null
+export type FieldErrors = Partial<Record<'name' | 'description', string>>
+
+export type FormErrors = {
+	ied?: FieldErrors
+	ap?: FieldErrors
 }

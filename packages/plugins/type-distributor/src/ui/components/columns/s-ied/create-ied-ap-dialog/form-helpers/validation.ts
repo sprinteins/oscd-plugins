@@ -1,5 +1,41 @@
-import type { AccessPointData, IedData } from './types'
-import { queryAccessPointsFromIed, queryIedExists } from '@/headless/scl'
+import type { AccessPointData, FieldErrors, FormErrors, IedData } from './types'
+import { queryAccessPointsFromIed } from '@/headless/scl'
+import { createAccessPointSchema, createIedSchema } from './schemas'
+
+function flattenZodErrors(
+	result: ReturnType<ReturnType<typeof createIedSchema>['safeParse']>
+): FieldErrors | null {
+	if (result.success) return null
+	const flat = result.error.flatten().fieldErrors
+	const errors: FieldErrors = {}
+	if (flat.name?.[0]) errors.name = flat.name[0]
+	if (flat.description?.[0]) errors.description = flat.description[0]
+	return Object.keys(errors).length > 0 ? errors : null
+}
+
+export function validateIedFields(
+	ied: Pick<IedData, 'name' | 'description'>,
+	xmlDocument: XMLDocument | null | undefined
+): FieldErrors | null {
+	const schema = createIedSchema(xmlDocument)
+	const result = schema.safeParse(ied)
+	return flattenZodErrors(result)
+}
+
+type ValidateAccessPointContext = {
+	pendingNames: string[]
+	existingNames: string[]
+	iedName: string
+}
+
+export function validateAccessPointFields(
+	ap: AccessPointData,
+	context: ValidateAccessPointContext
+): FieldErrors | null {
+	const schema = createAccessPointSchema(context)
+	const result = schema.safeParse(ap)
+	return flattenZodErrors(result)
+}
 
 type ValidateSubmissionParams = {
 	ied: IedData
@@ -11,78 +47,37 @@ export function validateSubmission({
 	ied,
 	accessPoints,
 	xmlDocument
-}: ValidateSubmissionParams): string | null {
-	const trimmedIedName = ied.name.trim()
+}: ValidateSubmissionParams): FormErrors | null {
+	const errors: FormErrors = {}
 
 	if (ied.isNew) {
-		if (!trimmedIedName) {
-			return 'IED name is required when creating a new IED'
-		}
-		if (queryIedExists(xmlDocument, trimmedIedName)) {
-			return `IED "${trimmedIedName}" already exists`
-		}
+		const iedErrors = validateIedFields(ied, xmlDocument)
+		if (iedErrors) errors.ied = iedErrors
 	} else {
-		if (!trimmedIedName) {
-			return 'Please select an existing IED or create a new one'
-		}
-		if (accessPoints.length === 0) {
-			return 'Access Point name is required when adding to existing IED'
-		}
-		const existingApNames = queryAccessPointsFromIed(
-			xmlDocument,
-			trimmedIedName
-		)
-		for (const ap of accessPoints) {
-			if (existingApNames.includes(ap.name)) {
-				return `Access Point "${ap.name}" already exists in IED "${trimmedIedName}"`
-			}
+		if (!ied.name.trim()) {
+			errors.ied = { name: 'Please select an existing IED or create a new one' }
 		}
 	}
 
-	return null
-}
+	const submittableAps = accessPoints.filter((ap) => ap.name.trim())
 
-export function validateIedBeforeMultiAp(
-	xmlDocument: XMLDocument | null | undefined,
-	ied: IedData
-): string | null {
-	if (!ied.isNew) return null
-
-	const trimmedName = ied.name.trim()
-	if (!trimmedName) {
-		return 'IED name is required'
-	}
-	if (queryIedExists(xmlDocument, trimmedName)) {
-		return `IED "${trimmedName}" already exists`
-	}
-
-	return null
-}
-
-type ValidateAccessPointParams = {
-	apName: string
-	pendingApNames: string[]
-	existingApNames: string[]
-	iedName: string
-}
-
-export function validateAccessPoint({
-	apName,
-	pendingApNames,
-	existingApNames,
-	iedName
-}: ValidateAccessPointParams): string | null {
-	const trimmedName = apName.trim()
-
-	if (!trimmedName) {
-		return 'Access Point name is required'
-	}
-	if (pendingApNames.includes(trimmedName)) {
-		return `Access Point "${trimmedName}" is already in the list`
-	}
-	if (existingApNames.includes(trimmedName)) {
-		return `Access Point "${trimmedName}" already exists in IED "${iedName}"`
+	if (!ied.isNew && submittableAps.length === 0) {
+		errors.ap = { name: 'Access Point name is required when adding to existing IED' }
+	} else if (submittableAps.length > 0) {
+		const existingNames = ied.isNew
+			? []
+			: queryAccessPointsFromIed(xmlDocument, ied.name.trim())
+		const pendingNames: string[] = []
+		for (const ap of submittableAps) {
+			const apErrors = validateAccessPointFields(ap, {
+				pendingNames,
+				existingNames,
+				iedName: ied.name
+			})
+			if (apErrors && !errors.ap) errors.ap = apErrors
+			pendingNames.push(ap.name.trim())
+		}
 	}
 
-	return null
+	return Object.keys(errors).length > 0 ? errors : null
 }
