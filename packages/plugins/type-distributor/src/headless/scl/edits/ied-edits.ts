@@ -1,6 +1,6 @@
 import { createElement } from '@oscd-plugins/core'
 import type { Insert } from '@openscd/oscd-api'
-import { getDocumentAndEditor } from '../../utils'
+import { getDocument } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
 import { queryIEDInsertionReference } from '../queries'
 
@@ -8,7 +8,7 @@ export function buildEditForCreateIed(
 	name: string,
 	description?: string
 ): Insert {
-	const { doc } = getDocumentAndEditor()
+	const doc = getDocument()
 
 	const iedElement = createBasicIEDElement(name, doc, description)
 	const sclRoot = doc.documentElement
@@ -35,7 +35,7 @@ export function buildEditsForCreateIedWithAccessPoints({
 	description,
 	accessPoints
 }: buildEditsForCreateIedWithAccessPointsParams): Insert[] {
-	const { doc } = getDocumentAndEditor()
+	const doc = getDocument()
 
 	const iedElement = createBasicIEDElement(name, doc, description)
 	const sclRoot = doc.documentElement
