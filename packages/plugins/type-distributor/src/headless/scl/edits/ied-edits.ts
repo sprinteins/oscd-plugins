@@ -1,21 +1,14 @@
+import { createElement } from '@oscd-plugins/core'
 import type { Insert } from '@openscd/oscd-api'
-import { getDocumentAndEditor } from '../../utils'
+import { getDocument } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
 import { queryIEDInsertionReference } from '../queries'
-import { createAccessPoints } from './accesspoint-edits'
 
-type CreateIEDParams = {
-	name: string
+export function buildEditForCreateIed(
+	name: string,
 	description?: string
-	accessPoints?: { name: string; description?: string }[]
-}
-
-export function createIED({
-	name,
-	description,
-	accessPoints
-}: CreateIEDParams): void {
-	const { doc, editor } = getDocumentAndEditor()
+): Insert {
+	const doc = getDocument()
 
 	const iedElement = createBasicIEDElement(name, doc, description)
 	const sclRoot = doc.documentElement
@@ -28,11 +21,50 @@ export function createIED({
 		reference: reference
 	}
 
-	editor.commit(edit, {
-		title: `Add SIED ${name}`
+	return edit
+}
+
+type buildEditsForCreateIedWithAccessPointsParams = {
+	name: string
+	description?: string
+	accessPoints: { name: string; description?: string }[]
+}
+
+export function buildEditsForCreateIedWithAccessPoints({
+	name,
+	description,
+	accessPoints
+}: buildEditsForCreateIedWithAccessPointsParams): Insert[] {
+	const doc = getDocument()
+
+	const iedElement = createBasicIEDElement(name, doc, description)
+	const sclRoot = doc.documentElement
+	const reference = queryIEDInsertionReference(sclRoot)
+
+	const iedEdit: Insert = {
+		node: iedElement,
+		parent: sclRoot,
+		reference
+	}
+
+	const apEdits: Insert[] = accessPoints.map((ap) => {
+		const apElement = createElement(doc, 'AccessPoint', {
+			name: ap.name,
+			desc: ap.description ?? null
+		})
+		const serverElement = createElement(doc, 'Server', {})
+		const authElement = createElement(doc, 'Authentication', {
+			none: 'true'
+		})
+		serverElement.appendChild(authElement)
+		apElement.appendChild(serverElement)
+
+		return {
+			node: apElement,
+			parent: iedElement,
+			reference: null
+		}
 	})
 
-	if (accessPoints && accessPoints.length > 0) {
-		createAccessPoints({ iedName: name, accessPoints, squash: true })
-	}
+	return [iedEdit, ...apEdits]
 }

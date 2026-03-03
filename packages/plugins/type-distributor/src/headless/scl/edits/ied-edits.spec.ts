@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
-import type { Insert } from '@openscd/oscd-api'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { createIED } from './ied-edits'
+import { buildEditForCreateIed, buildEditsForCreateIedWithAccessPoints } from './ied-edits'
 
 // Mock the pluginGlobalStore module
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -13,7 +12,7 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-describe('createIED', () => {
+describe('buildEditForCreateIed', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document
 
@@ -35,42 +34,45 @@ describe('createIED', () => {
 	})
 
 	describe('basic functionality', () => {
-		it('should create an IED element with the given name', () => {
-			createIED({ name: 'TestIED' })
+		it('GIVEN a valid name WHEN building the IED edit THEN returns an IED element with that name', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
 
-			expect(mockEditor.commit).toHaveBeenCalledTimes(1)
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
-
+			// THEN
+			expect(edit).toBeInstanceOf(Object)
 			expect(edit.node).toBeInstanceOf(Element)
 			const iedElement = edit.node as Element
 			expect(iedElement.tagName).toBe('IED')
 			expect(iedElement.getAttribute('name')).toBe('TestIED')
 		})
 
-		it('should create an IED element with name and description', () => {
-			createIED({ name: 'TestIED', description: 'Test Description' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+		it('GIVEN a name and description WHEN building the IED edit THEN sets both name and desc attributes', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED', 'Test Description')
 			const iedElement = edit.node as Element
 
+			// THEN
 			expect(iedElement.getAttribute('name')).toBe('TestIED')
 			expect(iedElement.getAttribute('desc')).toBe('Test Description')
 		})
 
-		it('should not set desc attribute when description is not provided', () => {
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+		it('GIVEN no description WHEN building the IED edit THEN does not set desc attribute', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
 			const iedElement = edit.node as Element
 
+			// THEN
 			expect(iedElement.hasAttribute('desc')).toBe(false)
 		})
 	})
 
 	describe('default attributes', () => {
-		it('should set all default SIED attributes', () => {
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+		it('GIVEN any name WHEN building the IED edit THEN sets all default SIED attributes', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
 			const iedElement = edit.node as Element
 
+			// THEN
 			expect(iedElement.getAttribute('configVersion')).toBe('1.0')
 			expect(iedElement.getAttribute('engRight')).toBe('full')
 			expect(iedElement.getAttribute('manufacturer')).toBe('none')
@@ -81,21 +83,23 @@ describe('createIED', () => {
 	})
 
 	describe('Services element', () => {
-		it('should create a Services child element with nameLength attribute', () => {
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+		it('GIVEN a valid name WHEN building the IED edit THEN creates Services child with nameLength="64"', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
 			const iedElement = edit.node as Element
 
+			// THEN
 			const servicesElement = iedElement.querySelector('Services')
 			expect(servicesElement).not.toBeNull()
 			expect(servicesElement?.getAttribute('nameLength')).toBe('64')
 		})
 
-		it('should have Services as direct child of IED', () => {
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+		it('GIVEN a valid name WHEN building the IED edit THEN IED has exactly one child element which is Services', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
 			const iedElement = edit.node as Element
 
+			// THEN
 			const children = Array.from(iedElement.children)
 			expect(children).toHaveLength(1)
 			expect(children[0].tagName).toBe('Services')
@@ -103,15 +107,17 @@ describe('createIED', () => {
 	})
 
 	describe('insertion reference', () => {
-		it('should insert before DataTypeTemplates if it exists', () => {
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+		it('GIVEN DataTypeTemplates exists in document WHEN building the IED edit THEN reference points to DataTypeTemplates', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
 
+			// THEN
 			expect(edit.parent).toBe(mockDocument.documentElement)
 			expect(edit.reference?.nodeName).toBe('DataTypeTemplates')
 		})
 
-		it('should insert after last IED if DataTypeTemplates does not exist', () => {
+		it('GIVEN IEDs exist but no DataTypeTemplates WHEN building the IED edit THEN reference points to element after last IED', () => {
+			// GIVEN
 			const customDoc = new DOMParser().parseFromString(
 				'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"></SCL>',
 				'application/xml'
@@ -129,28 +135,32 @@ describe('createIED', () => {
 			const someOtherElement = customDoc.createElement('Communication')
 			customDoc.documentElement.appendChild(someOtherElement)
 
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
 
+			// THEN
 			expect(edit.parent).toBe(customDoc.documentElement)
 			expect(edit.reference).toBe(someOtherElement)
 		})
 
-		it('should insert with null reference when no IEDs or DataTypeTemplates exist', () => {
+		it('GIVEN empty SCL document WHEN building the IED edit THEN reference is null', () => {
+			// GIVEN
 			const customDoc = new DOMParser().parseFromString(
 				'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"></SCL>',
 				'application/xml'
 			)
 			pluginGlobalStore.xmlDocument = customDoc
 
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
 
+			// THEN
 			expect(edit.parent).toBe(customDoc.documentElement)
 			expect(edit.reference).toBeNull()
 		})
 
-		it('should prioritize DataTypeTemplates over existing IEDs for insertion reference', () => {
+		it('GIVEN both IEDs and DataTypeTemplates exist WHEN building the IED edit THEN DataTypeTemplates takes priority as reference', () => {
+			// GIVEN
 			const customDoc = new DOMParser().parseFromString(
 				'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"></SCL>',
 				'application/xml'
@@ -161,62 +171,328 @@ describe('createIED', () => {
 			existingIED.setAttribute('name', 'ExistingIED')
 			customDoc.documentElement.appendChild(existingIED)
 
-			const dataTypeTemplates =
-				customDoc.createElement('DataTypeTemplates')
+			const dataTypeTemplates = customDoc.createElement('DataTypeTemplates')
 			customDoc.documentElement.appendChild(dataTypeTemplates)
 
-			createIED({ name: 'TestIED' })
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
 
+			// THEN
 			expect(edit.reference).toBe(dataTypeTemplates)
 		})
 	})
 
 	describe('error handling', () => {
-		it('should throw error when xmlDocument is not available', () => {
+		it('GIVEN xmlDocument is not available WHEN building the IED edit THEN throws "No XML document loaded"', () => {
+			// GIVEN
 			pluginGlobalStore.xmlDocument = undefined
 
-			expect(() => createIED({ name: 'TestIED' })).toThrow(
+			// WHEN / THEN
+			expect(() => buildEditForCreateIed('TestIED')).toThrow(
 				'No XML document loaded'
 			)
 		})
-		it('should throw error when editor is not available', () => {
+
+		it('GIVEN editor is not available WHEN building the IED edit THEN throws "No editor available"', () => {
+			// GIVEN
 			pluginGlobalStore.editor = undefined
 
-			expect(() => createIED({ name: 'TestIED' })).toThrow(
+			// WHEN / THEN
+			expect(() => buildEditForCreateIed('TestIED')).toThrow(
 				'No editor available'
 			)
 		})
 	})
 
 	describe('edge cases', () => {
-		it('should handle empty string as name', () => {
-			createIED({ name: '' })
-
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+		it('GIVEN an empty string as name WHEN building the IED edit THEN sets name attribute to empty string', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('')
 			const iedElement = edit.node as Element
 
+			// THEN
 			expect(iedElement.getAttribute('name')).toBe('')
 		})
 
-		it('should handle special characters in name', () => {
+		it('GIVEN special characters in name WHEN building the IED edit THEN preserves them in name attribute', () => {
+			// GIVEN
 			const specialName = 'Test-IED_123.abc'
-			createIED({ name: specialName })
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			// WHEN
+			const edit = buildEditForCreateIed(specialName)
 			const iedElement = edit.node as Element
 
+			// THEN
 			expect(iedElement.getAttribute('name')).toBe(specialName)
 		})
 
-		it('should handle special characters in description', () => {
+		it('GIVEN special characters in description WHEN building the IED edit THEN preserves them in desc attribute', () => {
+			// GIVEN
 			const specialDesc = 'Test <>&" description'
-			createIED({ name: 'TestIED', description: specialDesc })
 
-			const edit = mockEditor.commit.mock.calls[0][0] as Insert
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED', specialDesc)
 			const iedElement = edit.node as Element
 
+			// THEN
 			expect(iedElement.getAttribute('desc')).toBe(specialDesc)
+		})
+	})
+})
+
+describe('buildEditsForCreateIedWithAccessPoints', () => {
+	let mockEditor: { commit: ReturnType<typeof vi.fn> }
+	let mockDocument: Document
+
+	beforeEach(() => {
+		mockDocument = new DOMParser().parseFromString(
+			sclMockA,
+			'application/xml'
+		)
+		mockEditor = {
+			commit: vi.fn()
+		}
+
+		pluginGlobalStore.xmlDocument = mockDocument
+		pluginGlobalStore.editor = mockEditor as unknown as XMLEditor
+	})
+
+	afterEach(() => {
+		vi.restoreAllMocks()
+	})
+
+	describe('returned array structure', () => {
+		it('GIVEN a name and access points WHEN building edits THEN IED edit is the first element in the array', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }]
+			})
+
+			// THEN
+			expect(edits[0].node).toBeInstanceOf(Element)
+			expect((edits[0].node as Element).tagName).toBe('IED')
+			expect((edits[0].node as Element).getAttribute('name')).toBe('TestIED')
+		})
+
+		it('GIVEN one access point WHEN building edits THEN returns 2 edits', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }]
+			})
+
+			// THEN
+			expect(edits).toHaveLength(2)
+		})
+
+		it('GIVEN three access points WHEN building edits THEN returns 4 edits', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [
+					{ name: 'AP1' },
+					{ name: 'AP2' },
+					{ name: 'AP3' }
+				]
+			})
+
+			// THEN
+			expect(edits).toHaveLength(4)
+		})
+
+		it('GIVEN empty accessPoints WHEN building edits THEN returns only the IED edit', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: []
+			})
+
+			// THEN
+			expect(edits).toHaveLength(1)
+			expect((edits[0].node as Element).tagName).toBe('IED')
+		})
+	})
+
+	describe('IED edit', () => {
+		it('GIVEN a name and description WHEN building edits THEN IED element has both name and desc attributes', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				description: 'My IED',
+				accessPoints: [{ name: 'AP1' }]
+			})
+
+			// THEN
+			const iedElement = edits[0].node as Element
+			expect(iedElement.getAttribute('name')).toBe('TestIED')
+			expect(iedElement.getAttribute('desc')).toBe('My IED')
+		})
+
+		it('GIVEN no description WHEN building edits THEN IED element does not have desc attribute', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }]
+			})
+
+			// THEN
+			const iedElement = edits[0].node as Element
+			expect(iedElement.hasAttribute('desc')).toBe(false)
+		})
+
+		it('GIVEN a valid document WHEN building edits THEN IED edit parent is the SCL root', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }]
+			})
+
+			// THEN
+			expect(edits[0].parent).toBe(mockDocument.documentElement)
+		})
+
+		it('GIVEN DataTypeTemplates exists in document WHEN building edits THEN IED edit reference points to DataTypeTemplates', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }]
+			})
+
+			// THEN
+			expect(edits[0].reference?.nodeName).toBe('DataTypeTemplates')
+		})
+	})
+
+	describe('AccessPoint edits', () => {
+		it('GIVEN one access point WHEN building edits THEN AP edit has correct name attribute', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }]
+			})
+
+			// THEN
+			const apElement = edits[1].node as Element
+			expect(apElement.tagName).toBe('AccessPoint')
+			expect(apElement.getAttribute('name')).toBe('AP1')
+		})
+
+		it('GIVEN an access point with description WHEN building edits THEN sets desc attribute on AP element', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1', description: 'First AP' }]
+			})
+
+			// THEN
+			const apElement = edits[1].node as Element
+			expect(apElement.getAttribute('desc')).toBe('First AP')
+		})
+
+		it('GIVEN an access point without description WHEN building edits THEN desc attribute is null on AP element', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }]
+			})
+
+			// THEN
+			const apElement = edits[1].node as Element
+			expect(apElement.getAttribute('desc')).toBeNull()
+		})
+
+		it('GIVEN multiple access points WHEN building edits THEN all AP edits use the IED element as parent', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }, { name: 'AP2' }]
+			})
+
+			// THEN
+			const iedNode = edits[0].node
+			expect(edits[1].parent).toBe(iedNode)
+			expect(edits[2].parent).toBe(iedNode)
+		})
+
+		it('GIVEN multiple access points WHEN building edits THEN all AP edits have null reference', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }, { name: 'AP2' }]
+			})
+
+			// THEN
+			expect(edits[1].reference).toBeNull()
+			expect(edits[2].reference).toBeNull()
+		})
+
+		it('GIVEN one access point WHEN building edits THEN AP element contains a Server child', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }]
+			})
+
+			// THEN
+			const apElement = edits[1].node as Element
+			const server = apElement.querySelector('Server')
+			expect(server).not.toBeNull()
+		})
+
+		it('GIVEN one access point WHEN building edits THEN Server contains Authentication with none="true"', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }]
+			})
+
+			// THEN
+			const apElement = edits[1].node as Element
+			const auth = apElement.querySelector('Server > Authentication')
+			expect(auth).not.toBeNull()
+			expect(auth?.getAttribute('none')).toBe('true')
+		})
+
+		it('GIVEN three access points WHEN building edits THEN AP edits preserve input order', () => {
+			// WHEN
+			const edits = buildEditsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [{ name: 'AP1' }, { name: 'AP2' }, { name: 'AP3' }]
+			})
+
+			// THEN
+			expect((edits[1].node as Element).getAttribute('name')).toBe('AP1')
+			expect((edits[2].node as Element).getAttribute('name')).toBe('AP2')
+			expect((edits[3].node as Element).getAttribute('name')).toBe('AP3')
+		})
+	})
+
+	describe('error handling', () => {
+		it('GIVEN xmlDocument is not available WHEN building edits THEN throws "No XML document loaded"', () => {
+			// GIVEN
+			pluginGlobalStore.xmlDocument = undefined
+
+			// WHEN / THEN
+			expect(() =>
+				buildEditsForCreateIedWithAccessPoints({
+					name: 'TestIED',
+					accessPoints: [{ name: 'AP1' }]
+				})
+			).toThrow('No XML document loaded')
+		})
+
+		it('GIVEN editor is not available WHEN building edits THEN throws "No editor available"', () => {
+			// GIVEN
+			pluginGlobalStore.editor = undefined
+
+			// WHEN / THEN
+			expect(() =>
+				buildEditsForCreateIedWithAccessPoints({
+					name: 'TestIED',
+					accessPoints: [{ name: 'AP1' }]
+				})
+			).toThrow('No editor available')
 		})
 	})
 })
