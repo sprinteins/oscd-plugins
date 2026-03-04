@@ -70,20 +70,20 @@ export function buildEditsForCreateIedWithAccessPoints({
 	return [iedEdit, ...apEdits]
 }
 
-export function buildEditsForDeleteEmptyIed(iedName: string): Remove[] {
+export function buildEditForDeleteEmptyIed(iedName: string): Remove | null {
 	const doc = getDocument()
 	const iedElement = queryIedElement(doc, iedName)
 
 	if (!iedElement) {
 		console.warn(`IED with name "${iedName}" not found.`)
-		return []
+		return null
 	}
 
 	const hasAccessPoints = queryAccessPointsFromIed(doc, iedName).length > 0
 	if (hasAccessPoints) {
 		console.warn(`IED with name "${iedName}" is not empty.`)
-		return []
+		return null
 	}
 
-	return [{ node: iedElement } as Remove]
+	return { node: iedElement } as Remove
 }

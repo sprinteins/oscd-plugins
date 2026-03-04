@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { isRemoveEdit } from '@/headless/test-helpers/type-guards'
 import { createTestDocument } from '@/headless/test-helpers'
-import { buildEditsForDeleteEmptyIed } from './ied-edits'
+import { buildEditForDeleteEmptyIed } from './ied-edits'
 import { getDocument } from '@/headless/utils'
 
 // Mock dependencies
@@ -32,29 +32,30 @@ describe('buildEditsForDeleteEmptyIed', () => {
   describe('GIVEN an empty IED', () => {
     it('WHEN building edits for deleting the empty IED THEN should return Remove edit for the IED element', () => {
       // WHEN
-      const edits = buildEditsForDeleteEmptyIed('IED1')
+      const edit = buildEditForDeleteEmptyIed('IED1')
 
       // THEN
-      expect(edits.length).toBe(1)
-      const removeEdit = edits.find(isRemoveEdit)
-      expect(removeEdit).toBeDefined()
-      if (removeEdit) {
-        const node = removeEdit.node as Element
+      expect(edit).toBeDefined()
+      if (edit) {
+        expect(isRemoveEdit(edit)).toBe(true)
+      }
+      if (edit) {
+        const node = edit.node as Element
         expect(node.tagName).toBe('IED')
         expect(node.getAttribute('name')).toBe('IED1')
       }
     })
 
-    it('WHEN building edits for deleting a non-existent IED THEN should return empty edits array', () => {
+    it('WHEN building edits for deleting a non-existent IED THEN should return null', () => {
       // WHEN
-      const edits = buildEditsForDeleteEmptyIed('NonExistentIED')
+      const edit = buildEditForDeleteEmptyIed('NonExistentIED')
 
       // THEN
-      expect(edits.length).toBe(0)
+      expect(edit).toBeNull()
     })
   })
 
-  describe('GIVEN an IED with AccessPoints and LNodes (not empty) THEN should not delete the IED and return empty edits array', () => {
+  describe('GIVEN an IED with AccessPoints and LNodes (not empty) THEN should not delete the IED and return null', () => {
     const nonEmptySCD = `<?xml version="1.0" encoding="UTF-8"?>
     <SCL xmlns="http://www.iec.ch/61850/2003/SCL">
       <IED name="IED1">
@@ -75,12 +76,12 @@ describe('buildEditsForDeleteEmptyIed', () => {
       vi.mocked(getDocument).mockReturnValue(doc as XMLDocument)
     })
 
-    it('WHEN building edits for deleting the non-empty IED THEN should return empty edits array', () => {
+    it('WHEN building edits for deleting the non-empty IED THEN should return null', () => {
       // WHEN
-      const edits = buildEditsForDeleteEmptyIed('IED1')
+      const edit = buildEditForDeleteEmptyIed('IED1')
 
       // THEN
-      expect(edits.length).toBe(0)
+      expect(edit).toBeNull()
     })
   })
 })
