@@ -1,7 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import {
-	isRemoveEdit,
-} from '@/headless/test-helpers/type-guards'
+import { isRemoveEdit } from '@/headless/test-helpers/type-guards'
 import { createTestDocument } from '@/headless/test-helpers'
 import { buildEditsForDeleteEmptyIed } from './build-edits-for-delete-empty-ied'
 import { getDocument } from '@/headless/utils'

@@ -23,17 +23,23 @@ function resolveConductingEquipmentTemplates(
 	conductingEquipments: ConductingEquipmentType[]
 ): ConductingEquipmentTemplate[] {
 	return conductingEquipments
-		.map((ce) => ssdImportStore.getConductingEquipmentTemplate(ce.templateUuid))
+		.map((ce) =>
+			ssdImportStore.getConductingEquipmentTemplate(ce.templateUuid)
+		)
 		.filter((t): t is ConductingEquipmentTemplate => t != null)
 }
 
-function resolveFunctionTemplates(functions: FunctionType[]): FunctionTemplate[] {
+function resolveFunctionTemplates(
+	functions: FunctionType[]
+): FunctionTemplate[] {
 	return functions
 		.map((f) => ssdImportStore.getFunctionTemplate(f.templateUuid))
 		.filter((t): t is FunctionTemplate => t != null)
 }
 
-export function getBayTypeWithTemplates(bayUuid: string): BayTypeWithTemplates | null {
+export function getBayTypeWithTemplates(
+	bayUuid: string
+): BayTypeWithTemplates | null {
 	const { bayTypes } = ssdImportStore
 	ensureCacheValid(bayTypes)
 
@@ -76,9 +82,10 @@ export function getAllLNodesWithParent(
 	}> = []
 
 	for (const instance of bayTypeWithTemplates.conductingEquipments) {
-		const template = bayTypeWithTemplates.conductingEquipmentTemplateMap.get(
-			instance.templateUuid
-		)
+		const template =
+			bayTypeWithTemplates.conductingEquipmentTemplateMap.get(
+				instance.templateUuid
+			)
 		if (template?.eqFunctions) {
 			for (const eqFunction of template.eqFunctions) {
 				for (const lnode of eqFunction.lnodes) {
@@ -93,7 +100,9 @@ export function getAllLNodesWithParent(
 	}
 
 	for (const instance of bayTypeWithTemplates.functions) {
-		const template = bayTypeWithTemplates.functionTemplateMap.get(instance.templateUuid)
+		const template = bayTypeWithTemplates.functionTemplateMap.get(
+			instance.templateUuid
+		)
 		if (template?.lnodes) {
 			for (const lnode of template.lnodes) {
 				result.push({

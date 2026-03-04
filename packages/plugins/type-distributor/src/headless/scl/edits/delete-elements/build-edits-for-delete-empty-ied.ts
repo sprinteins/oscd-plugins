@@ -16,4 +16,3 @@ export function buildEditsForDeleteEmptyIed(iedName: string): Remove[] {
 
 	return [{ node: iedElement } as Remove]
 }
-
