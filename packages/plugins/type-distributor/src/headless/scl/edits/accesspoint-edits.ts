@@ -16,10 +16,9 @@ import {
 	queryServer,
 	isLNodePresentInDevice
 } from '../elements'
-import { queryIedElement } from '../queries/ied-queries'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
 import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
-import { queryLNodesFromAccessPoint } from '../queries'
+import { queryLNodesFromAccessPoint, queryIedElement } from '../queries'
 
 function ensureServer(
 	accessPoint: Element,
