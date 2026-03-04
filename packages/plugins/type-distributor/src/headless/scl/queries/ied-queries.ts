@@ -45,8 +45,8 @@ export function queryIedElement(
 	xmlDocument: XMLDocument | null | undefined,
 	iedName: string
 ): Element | null {
-    if (!xmlDocument) return null
-    return xmlDocument.querySelector(`IED[name="${iedName}"]`)
+	if (!xmlDocument) return null
+	return xmlDocument.querySelector(`IED[name="${iedName}"]`)
 }
 
 function queryBayByIEDName(

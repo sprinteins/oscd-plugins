@@ -1,7 +1,17 @@
 import type { LNodeTemplate } from '@/headless/common-types'
 import type { SetAttributes } from '@openscd/oscd-api'
-import { hasRemainingConnectionsAfterClearing } from '../check-bay-connections.helper'
-import { parseLDeviceInst } from '../../elements'
+import { parseLDeviceInst } from '../elements'
+
+export function hasRemainingConnectionsAfterClearing(
+	bay: Element,
+	clearedLNodes: Set<Element>
+): boolean {
+	const allLNodes = Array.from(bay.querySelectorAll('LNode[iedName]'))
+	const remainingLNodes = allLNodes.filter(
+		(lnode) => !clearedLNodes.has(lnode)
+	)
+	return remainingLNodes.length > 0
+}
 
 export function buildEditsForClearingBayLNodeConnections(
 	selectedBay: Element,

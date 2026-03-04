@@ -9,18 +9,19 @@ export function createAccessPoint(
 	ied: IedData,
 	accessPoints: AccessPointData[]
 ): void {
-		const editor = getEditor()
-		const accessPointEdits = buildEditsForCreateAccessPoint(
-			ied.name,
-			accessPoints
-		)
-		if (accessPoints.length === 1) {
-			editor.commit(accessPointEdits, {
-				title: `Add Access Point "${accessPoints[0].name}" to IED "${ied.name}"`
-			})
-		} else {
-			editor.commit(accessPointEdits, {
-				title: `Add ${accessPoints.length} Access Points to IED "${ied.name}"`
-			})
-		}
+	const editor = getEditor()
+	
+	const accessPointEdits = buildEditsForCreateAccessPoint(
+		ied.name,
+		accessPoints
+	)
+	if (accessPoints.length === 1) {
+		editor.commit(accessPointEdits, {
+			title: `Add Access Point "${accessPoints[0].name}" to IED "${ied.name}"`
+		})
+	} else {
+		editor.commit(accessPointEdits, {
+			title: `Add ${accessPoints.length} Access Points to IED "${ied.name}"`
+		})
+	}
 }

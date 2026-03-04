@@ -2,7 +2,10 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { buildEditForCreateIed, buildEditsForCreateIedWithAccessPoints } from './ied-edits'
+import {
+	buildEditForCreateIed,
+	buildEditsForCreateIedWithAccessPoints
+} from './ied-edits'
 
 // Mock the pluginGlobalStore module
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -171,7 +174,8 @@ describe('buildEditForCreateIed', () => {
 			existingIED.setAttribute('name', 'ExistingIED')
 			customDoc.documentElement.appendChild(existingIED)
 
-			const dataTypeTemplates = customDoc.createElement('DataTypeTemplates')
+			const dataTypeTemplates =
+				customDoc.createElement('DataTypeTemplates')
 			customDoc.documentElement.appendChild(dataTypeTemplates)
 
 			// WHEN
@@ -272,7 +276,9 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// THEN
 			expect(edits[0].node).toBeInstanceOf(Element)
 			expect((edits[0].node as Element).tagName).toBe('IED')
-			expect((edits[0].node as Element).getAttribute('name')).toBe('TestIED')
+			expect((edits[0].node as Element).getAttribute('name')).toBe(
+				'TestIED'
+			)
 		})
 
 		it('GIVEN one access point WHEN building edits THEN returns 2 edits', () => {
@@ -458,7 +464,11 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }, { name: 'AP2' }, { name: 'AP3' }]
+				accessPoints: [
+					{ name: 'AP1' },
+					{ name: 'AP2' },
+					{ name: 'AP3' }
+				]
 			})
 
 			// THEN
