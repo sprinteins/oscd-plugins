@@ -29,11 +29,11 @@ type ValidateAccessPointContext = {
 }
 
 export function validateAccessPointFields(
-	ap: AccessPointData,
+	accessPointData: AccessPointData,
 	context: ValidateAccessPointContext
 ): FieldErrors | null {
 	const schema = createAccessPointSchema(context)
-	const result = schema.safeParse(ap)
+	const result = schema.safeParse(accessPointData)
 	return flattenZodErrors(result)
 }
 
@@ -59,16 +59,16 @@ export function validateSubmission({
 		}
 	}
 
-	const submittableAps = accessPoints.filter((ap) => ap.name.trim())
+	const submittableAccessPoints = accessPoints.filter((ap) => ap.name.trim())
 
-	if (!ied.isNew && submittableAps.length === 0) {
+	if (!ied.isNew && submittableAccessPoints.length === 0) {
 		errors.ap = { name: 'Access Point name is required when adding to existing IED' }
-	} else if (submittableAps.length > 0) {
+	} else if (submittableAccessPoints.length > 0) {
 		const existingNames = ied.isNew
 			? []
 			: queryAccessPointsFromIed(xmlDocument, ied.name.trim())
 		const pendingNames: string[] = []
-		for (const ap of submittableAps) {
+		for (const ap of submittableAccessPoints) {
 			const apErrors = validateAccessPointFields(ap, {
 				pendingNames,
 				existingNames,
