@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { queryTypeReference, TYPE_ORDER } from './query-insertion-references'
+import { findInsertionReference, TYPE_INSERTION_PRIORITY } from './query-insertion-references'
 
 describe('insertion-references', () => {
 	let mockDocument: Document
@@ -13,7 +13,7 @@ describe('insertion-references', () => {
 		dataTypeTemplates = mockDocument.documentElement
 	})
 
-	describe('getTypeReference', () => {
+	describe('findInsertionReference', () => {
 		describe('GIVEN an empty DataTypeTemplates', () => {
 			describe('WHEN getTypeReference is called for any type', () => {
 				it('THEN should return the first child (null in empty case)', () => {
@@ -21,7 +21,7 @@ describe('insertion-references', () => {
 					expect(dataTypeTemplates.children).toHaveLength(0)
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'LNodeType'
 					)
@@ -32,7 +32,7 @@ describe('insertion-references', () => {
 
 				it('THEN should return null for DOType', () => {
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'DOType'
 					)
@@ -43,7 +43,7 @@ describe('insertion-references', () => {
 
 				it('THEN should return null for DAType', () => {
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'DAType'
 					)
@@ -54,7 +54,7 @@ describe('insertion-references', () => {
 
 				it('THEN should return null for EnumType', () => {
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'EnumType'
 					)
@@ -82,7 +82,7 @@ describe('insertion-references', () => {
 						dataTypeTemplates.querySelectorAll('LNodeType')[1]
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'LNodeType'
 					)
@@ -99,7 +99,7 @@ describe('insertion-references', () => {
 						dataTypeTemplates.querySelectorAll('LNodeType')[1]
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'DOType'
 					)
@@ -130,7 +130,7 @@ describe('insertion-references', () => {
 						dataTypeTemplates.querySelector('LNodeType')
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'LNodeType'
 					)
@@ -141,38 +141,40 @@ describe('insertion-references', () => {
 			})
 
 			describe('WHEN getTypeReference is called for DOType', () => {
-				it('THEN should return nextSibling of the last LNodeType (searches LNodeType, DOType in order)', () => {
+				it('THEN should return nextSibling of the last DOType (most-specific match)', () => {
 					// GIVEN
-					const lastLNodeType =
-						dataTypeTemplates.querySelector('LNodeType')
+					const allDOTypes =
+						dataTypeTemplates.querySelectorAll('DOType')
+					const lastDOType = allDOTypes[allDOTypes.length - 1]
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'DOType'
 					)
 
 					// THEN
-					// precedingTypes = ['LNodeType', 'DOType'], loop finds LNodeType first and returns
-					expect(result).toBe(lastLNodeType?.nextSibling)
+					// priority slice from DOType: ['DOType', 'LNodeType'] → DOType matched first
+					expect(result).toBe(lastDOType?.nextSibling)
 				})
 			})
 
 			describe('WHEN getTypeReference is called for DAType', () => {
-				it('THEN should return nextSibling of the last LNodeType (searches LNodeType, DOType, DAType in order)', () => {
+				it('THEN should return nextSibling of the last DOType (no DAType present, falls back to DOType)', () => {
 					// GIVEN
-					const lastLNodeType =
-						dataTypeTemplates.querySelector('LNodeType')
+					const allDOTypes =
+						dataTypeTemplates.querySelectorAll('DOType')
+					const lastDOType = allDOTypes[allDOTypes.length - 1]
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'DAType'
 					)
 
 					// THEN
-					// precedingTypes = ['LNodeType', 'DOType', 'DAType'], loop finds LNodeType first and returns
-					expect(result).toBe(lastLNodeType?.nextSibling)
+					// priority slice from DAType: ['DAType', 'DOType', 'LNodeType'] → no DAType, falls back to DOType
+					expect(result).toBe(lastDOType?.nextSibling)
 				})
 			})
 		})
@@ -201,7 +203,7 @@ describe('insertion-references', () => {
 						dataTypeTemplates.querySelector('LNodeType')
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'LNodeType'
 					)
@@ -212,50 +214,47 @@ describe('insertion-references', () => {
 
 				it('THEN should return correct reference for DOType', () => {
 					// GIVEN
-					const lnodeType =
-						dataTypeTemplates.querySelector('LNodeType')
+					const doType =
+						dataTypeTemplates.querySelector('DOType')
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'DOType'
 					)
 
 					// THEN
-					// precedingTypes = ['LNodeType', 'DOType'], finds LNodeType first
-					expect(result).toBe(lnodeType?.nextSibling)
+					expect(result).toBe(doType?.nextSibling)
 				})
 
 				it('THEN should return correct reference for DAType', () => {
 					// GIVEN
-					const lnodeType =
-						dataTypeTemplates.querySelector('LNodeType')
+					const daType =
+						dataTypeTemplates.querySelector('DAType')
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'DAType'
 					)
 
 					// THEN
-					// precedingTypes = ['LNodeType', 'DOType', 'DAType'], finds LNodeType first
-					expect(result).toBe(lnodeType?.nextSibling)
+					expect(result).toBe(daType?.nextSibling)
 				})
 
 				it('THEN should return correct reference for EnumType', () => {
 					// GIVEN
-					const lnodeType =
-						dataTypeTemplates.querySelector('LNodeType')
+					const enumType =
+						dataTypeTemplates.querySelector('EnumType')
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'EnumType'
 					)
 
 					// THEN
-					// precedingTypes = ['LNodeType', 'DOType', 'DAType', 'EnumType'], finds LNodeType first
-					expect(result).toBe(lnodeType?.nextSibling)
+					expect(result).toBe(enumType?.nextSibling)
 				})
 			})
 		})
@@ -283,7 +282,7 @@ describe('insertion-references', () => {
 						allLNodeTypes[allLNodeTypes.length - 1]
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'LNodeType'
 					)
@@ -315,7 +314,7 @@ describe('insertion-references', () => {
 						dataTypeTemplates.querySelector('LNodeType')
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'LNodeType'
 					)
@@ -332,7 +331,7 @@ describe('insertion-references', () => {
 						dataTypeTemplates.querySelector('LNodeType')
 
 					// WHEN
-					const result = queryTypeReference(
+					const result = findInsertionReference(
 						dataTypeTemplates,
 						'DOType'
 					)

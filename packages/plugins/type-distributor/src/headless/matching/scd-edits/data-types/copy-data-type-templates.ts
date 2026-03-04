@@ -6,7 +6,10 @@ import {
 	queryTypesFromDOType,
 	queryTypesFromDAType
 } from './query-types'
-import { TYPE_ORDER, type TypeName } from './query-insertion-references'
+import {
+	TYPE_INSERTION_PRIORITY,
+	type TypeName
+} from './query-insertion-references'
 import { buildEditsForType } from './type-creation-helpers'
 
 interface TypeCollections {
@@ -160,7 +163,7 @@ export function buildEditsForDataTypeTemplates(
 	const missingCollections = filterExistingTypes(doc, allCollections)
 	const edits = []
 
-	for (const typeName of TYPE_ORDER) {
+	for (const typeName of TYPE_INSERTION_PRIORITY.toReversed()) {
 		const collectionKey = TYPE_TO_COLLECTION_KEY[typeName]
 		const typeIds = missingCollections[collectionKey]
 

@@ -2,6 +2,7 @@ import type { Insert } from '@openscd/oscd-api'
 import { createElement } from '@oscd-plugins/core'
 import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
 import { buildEditsForDataTypeTemplates } from '@/headless/matching/scd-edits/data-types'
+import { findInsertionReference } from '@/headless/matching/scd-edits/data-types/query-insertion-references'
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -112,18 +113,22 @@ function buildLNodeTypeElement(
 function buildDOTypeStubs(
 	doc: XMLDocument,
 	dataTypeTemplates: Element,
-	typeIds: Iterable<string>
+	typeIds: Iterable<string>,
+	reference: Node | null,
+	queuedIds: Set<string>
 ): Insert[] {
 	const edits: Insert[] = []
 	for (const id of typeIds) {
-		// Skip if already in the document
+		// Skip if already in the document or queued in this batch
 		if (dataTypeTemplates.querySelector(`DOType[id="${id}"]`)) continue
+		if (queuedIds.has(id)) continue
 		const cdc = DEFAULT_DO_TYPE_CDCS[id]
 		if (!cdc) continue
+		queuedIds.add(id)
 		edits.push({
 			node: createElement(doc, 'DOType', { id, cdc }),
 			parent: dataTypeTemplates,
-			reference: null
+			reference
 		})
 	}
 	return edits
@@ -228,7 +233,10 @@ function buildLD0EditsFromDefault(
 	const edits: Insert[] = []
 
 	// --- LDevice with LN0 + LPHD built in-memory ---
-	const lDevice = createElement(doc, 'LDevice', { inst: 'LD0', ldName: 'LD0' })
+	const lDevice = createElement(doc, 'LDevice', {
+		inst: 'LD0',
+		ldName: 'LD0'
+	})
 
 	const ln0 = createElement(doc, 'LN0', {
 		lnClass: 'LLN0',
@@ -246,7 +254,7 @@ function buildLD0EditsFromDefault(
 
 	edits.push({ node: lDevice, parent: server, reference: null })
 
-	// --- LNodeTypes (skip if already in document) ---
+	// --- LNodeTypes (skip if already in document or queued in this batch) ---
 	const lln0Dos = source.onlyMandatoryDOs
 		? LLN0_MANDATORY_DOS
 		: [...LLN0_MANDATORY_DOS, ...LLN0_OPTIONAL_DOS]
@@ -255,11 +263,18 @@ function buildLD0EditsFromDefault(
 		? LPHD_MANDATORY_DOS
 		: [...LPHD_MANDATORY_DOS, ...LPHD_OPTIONAL_DOS]
 
+	// Compute insertion references once — used for all types of the same kind.
+	const lnTypeRef = findInsertionReference(dataTypeTemplates, 'LNodeType')
+	const doTypeRef = findInsertionReference(dataTypeTemplates, 'DOType')
+
+	// Track IDs queued in this batch to prevent cross-call duplicates before commit
+	const queuedDOTypeIds = new Set<string>()
+
 	if (!dataTypeTemplates.querySelector('LNodeType[id="LLN0_Default"]')) {
 		edits.push({
 			node: buildLNodeTypeElement(doc, 'LLN0_Default', 'LLN0', lln0Dos),
 			parent: dataTypeTemplates,
-			reference: null
+			reference: lnTypeRef
 		})
 	}
 
@@ -267,13 +282,21 @@ function buildLD0EditsFromDefault(
 		edits.push({
 			node: buildLNodeTypeElement(doc, 'LPHD_Default', 'LPHD', lphdDos),
 			parent: dataTypeTemplates,
-			reference: null
+			reference: lnTypeRef
 		})
 	}
 
 	// --- DOType stubs for all DO types referenced by the chosen set of DOs ---
 	const referencedDOTypeIds = collectDOTypeIds([...lln0Dos, ...lphdDos])
-	edits.push(...buildDOTypeStubs(doc, dataTypeTemplates, referencedDOTypeIds))
+	edits.push(
+		...buildDOTypeStubs(
+			doc,
+			dataTypeTemplates,
+			referencedDOTypeIds,
+			doTypeRef,
+			queuedDOTypeIds
+		)
+	)
 
 	return edits
 }

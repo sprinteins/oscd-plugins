@@ -231,6 +231,163 @@ describe('buildLD0Edits — kind: default', () => {
 			expect(lln0Inserts).toHaveLength(0)
 		})
 	})
+
+	describe('WHEN DataTypeTemplates ordering must be preserved', () => {
+		it('LNodeType inserts reference before a pre-existing DOType (not appended at end)', () => {
+			const doc = makeDoc()
+			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+
+			const existingDOType = doc.createElement('DOType')
+			existingDOType.setAttribute('id', 'SomeExistingType')
+			dataTypeTemplates.appendChild(existingDOType)
+
+			const edits = buildLD0Edits({
+				doc,
+				server,
+				dataTypeTemplates,
+				source: { kind: 'default', onlyMandatoryDOs: true }
+			})
+
+			const lnTypeInserts = edits.filter(
+				(e) => nodeOf(e as Insert).tagName === 'LNodeType'
+			) as Insert[]
+
+			// Both LNodeType inserts must reference the existing DOType,
+			// meaning they land before it — not appended at end.
+			expect(lnTypeInserts.length).toBeGreaterThan(0)
+			for (const edit of lnTypeInserts) {
+				expect(edit.reference).toBe(existingDOType)
+			}
+		})
+
+		it('DOType stub inserts land AFTER existing DOTypes (not before them)', () => {
+			// This is the core scenario from the bug: when a function path has already
+			// committed $multi DOTypes (and possibly EnumTypes), a subsequent default
+			// path must append its stubs after the existing DOTypes — not anchor them
+			// to the LNodeType boundary, which would interleave them before the stubs.
+			const doc = makeDoc()
+			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+
+			// Simulate existing DOTypes committed by a previous function-path run
+			const existingDOType1 = doc.createElement('DOType')
+			existingDOType1.setAttribute('id', 'ExistingDO_1')
+			dataTypeTemplates.appendChild(existingDOType1)
+
+			const existingDOType2 = doc.createElement('DOType')
+			existingDOType2.setAttribute('id', 'ExistingDO_2')
+			dataTypeTemplates.appendChild(existingDOType2)
+
+			const existingEnumType = doc.createElement('EnumType')
+			existingEnumType.setAttribute('id', 'ExistingEnum')
+			dataTypeTemplates.appendChild(existingEnumType)
+
+			const edits = buildLD0Edits({
+				doc,
+				server,
+				dataTypeTemplates,
+				source: { kind: 'default', onlyMandatoryDOs: true }
+			})
+
+			const doTypeInserts = edits.filter(
+				(e) => nodeOf(e as Insert).tagName === 'DOType'
+			) as Insert[]
+
+			// Stubs must reference existingDOType2.nextSibling (= existingEnumType),
+			// meaning they land after all existing DOTypes, before the EnumType —
+			// NOT anchored to the LNodeType boundary.
+			expect(doTypeInserts.length).toBeGreaterThan(0)
+			for (const edit of doTypeInserts) {
+				expect(edit.reference).toBe(existingEnumType)
+			}
+		})
+
+		it('DOType stub inserts reference before a pre-existing DAType', () => {
+			const doc = makeDoc()
+			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+
+			const existingLNodeType = doc.createElement('LNodeType')
+			existingLNodeType.setAttribute('id', 'SomeExistingLNodeType')
+			dataTypeTemplates.appendChild(existingLNodeType)
+
+			const existingDAType = doc.createElement('DAType')
+			existingDAType.setAttribute('id', 'SomeDaType')
+			dataTypeTemplates.appendChild(existingDAType)
+
+			const edits = buildLD0Edits({
+				doc,
+				server,
+				dataTypeTemplates,
+				source: { kind: 'default', onlyMandatoryDOs: true }
+			})
+
+			const doTypeInserts = edits.filter(
+				(e) => nodeOf(e as Insert).tagName === 'DOType'
+			) as Insert[]
+
+			// All DOType stubs must reference before the existing DAType.
+			expect(doTypeInserts.length).toBeGreaterThan(0)
+			for (const edit of doTypeInserts) {
+				expect(edit.reference).toBe(existingDAType)
+			}
+		})
+
+		it('type-only edits are ordered: all LNodeTypes before all DOTypes', () => {
+			const doc = makeDoc()
+			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+
+			const edits = buildLD0Edits({
+				doc,
+				server,
+				dataTypeTemplates,
+				source: { kind: 'default', onlyMandatoryDOs: true }
+			})
+
+			// Exclude the LDevice edit; only look at type inserts
+			const typeEdits = edits.filter((e) => {
+				const tag = nodeOf(e as Insert).tagName
+				return tag === 'LNodeType' || tag === 'DOType'
+			})
+
+			const tags = typeEdits.map((e) => nodeOf(e as Insert).tagName)
+			const firstDOType = tags.indexOf('DOType')
+			const lastLNodeType = tags.lastIndexOf('LNodeType')
+
+			// Every LNodeType must appear before every DOType
+			expect(lastLNodeType).toBeLessThan(firstDOType)
+		})
+	})
+
+	describe('WHEN buildLD0Edits is called twice before committing (batch deduplication)', () => {
+		it('produces no duplicate LNodeType or DOType IDs within a single call', () => {
+			// Each buildLD0Edits call is self-contained: within one call, the same
+			// type ID is never emitted twice (e.g. LPL is shared by LLN0 & LPHD DOs).
+			// Cross-call deduplication (two calls, same dataTypeTemplates, no commit
+			// in between) is the CALLER's responsibility — the same limitation exists
+			// in buildEditsForDataTypeTemplates.
+			const doc = makeDoc()
+			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+
+			const edits = buildLD0Edits({
+				doc,
+				server,
+				dataTypeTemplates,
+				source: { kind: 'default', onlyMandatoryDOs: true }
+			})
+
+			const typeInserts = edits.filter((e) => {
+				const tag = nodeOf(e as Insert).tagName
+				return tag === 'LNodeType' || tag === 'DOType'
+			})
+
+			const ids = typeInserts.map((e) =>
+				nodeOf(e as Insert).getAttribute('id')
+			)
+			const uniqueIds = new Set(ids)
+
+			// Every type ID must appear exactly once within the single call
+			expect(ids.length).toBe(uniqueIds.size)
+		})
+	})
 })
 
 // ---------------------------------------------------------------------------

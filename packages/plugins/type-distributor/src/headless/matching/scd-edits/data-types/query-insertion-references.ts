@@ -1,26 +1,23 @@
-export const TYPE_ORDER = ['LNodeType', 'DOType', 'DAType', 'EnumType'] as const
-export type TypeName = (typeof TYPE_ORDER)[number]
+export const TYPE_INSERTION_PRIORITY = [
+	'EnumType',
+	'DAType',
+	'DOType',
+	'LNodeType'
+] as const
+export type TypeName = (typeof TYPE_INSERTION_PRIORITY)[number]
 
-function queryLastOfTypes(
+export function findInsertionReference(
 	dataTypeTemplates: Element,
-	typeNames: readonly string[]
+	typeName: TypeName
 ): Node | null {
-	for (const typeName of typeNames) {
-		const elements = Array.from(
-			dataTypeTemplates.querySelectorAll(typeName)
-		)
+	const typeIndex = TYPE_INSERTION_PRIORITY.indexOf(typeName)
+	const priorityTypes = TYPE_INSERTION_PRIORITY.slice(typeIndex)
+
+	for (const name of priorityTypes) {
+		const elements = Array.from(dataTypeTemplates.querySelectorAll(name))
 		if (elements.length > 0) {
 			return elements[elements.length - 1].nextSibling
 		}
 	}
 	return dataTypeTemplates.firstChild
-}
-
-export function queryTypeReference(
-	dataTypeTemplates: Element,
-	typeName: TypeName
-): Node | null {
-	const typeIndex = TYPE_ORDER.indexOf(typeName)
-	const precedingTypes = TYPE_ORDER.slice(0, typeIndex + 1)
-	return queryLastOfTypes(dataTypeTemplates, precedingTypes)
 }
