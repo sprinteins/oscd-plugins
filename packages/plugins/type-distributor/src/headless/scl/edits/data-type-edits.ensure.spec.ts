@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { ensureDataTypeTemplates } from './ensure-data-type-templates'
+import { ensureDataTypeTemplates } from './data-type-edits'
 import type { Insert } from '@openscd/oscd-api'
 
 describe('ensureDataTypeTemplates', () => {

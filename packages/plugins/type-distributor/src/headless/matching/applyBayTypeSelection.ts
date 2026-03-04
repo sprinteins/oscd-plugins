@@ -4,7 +4,7 @@ import type { EquipmentMatch } from './types'
 import { equipmentMatchingStore, ssdImportStore, bayStore } from '../stores'
 import { resolveMatchingContext } from './resolve-matching-context'
 import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'
-import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
+import { ensureDataTypeTemplates } from '@/headless/scl/edits/data-type-edits'
 import { matchEquipmentForInitialApply } from './matching'
 import {
 	buildEditForBayUpdate,

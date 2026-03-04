@@ -11,7 +11,7 @@ import {
 	buildInsertEditsForFunction,
 	buildEditsForEquipmentUpdates
 } from './scd-edits'
-import { ensureDataTypeTemplates } from './scd-edits/data-types/ensure-data-type-templates'
+import { ensureDataTypeTemplates } from '@/headless/scl/edits/data-type-edits'
 import { buildEditsForDataTypeTemplates } from './scd-edits/data-types'
 import {
 	ssdImportStore,
@@ -35,7 +35,7 @@ vi.mock('./scd-edits', () => ({
 	buildInsertEditsForFunction: vi.fn()
 }))
 
-vi.mock('./scd-edits/data-types/ensure-data-type-templates', () => ({
+vi.mock('@/headless/scl/edits/data-type-edits', () => ({
 	ensureDataTypeTemplates: vi.fn()
 }))
 
