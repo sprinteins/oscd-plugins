@@ -8,8 +8,8 @@ import {
 	type SearchType,
 	type IEDData
 } from '@/headless/scl'
-import { Card } from '@oscd-plugins/core-ui-svelte'
 import AccessPoint from './access-point.svelte'
+import IedEmptyItem from './ied-empty-item.svelte'
 
 const {
 	iedItems,
@@ -57,11 +57,12 @@ const sIedData = $derived.by(() => {
   <div class="space-y-2 mb-2">
     {#each sIedData as { name: iedName, accessPoints }}
       {#if accessPoints.length === 0}
-        <Card.Root class="border border-dashed text-gray-500">
+        <!-- <Card.Root class="border border-dashed text-gray-500">
           <Card.Content class="p-2">
             <span class="text-sm">{iedName} - no Access Points found</span>
           </Card.Content>
-        </Card.Root>
+        </Card.Root> -->
+				<IedEmptyItem {iedName} />
       {:else}
         {#each accessPoints as { element: accessPoint, lNodes }}
           <AccessPoint
