@@ -655,10 +655,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 			pluginGlobalStore.xmlDocument = undefined
 
 			expect(() =>
-				buildEditsForCreateAccessPoint(
-					'TestIED',
-					[{ name: 'AP1' }]
-				)
+				buildEditsForCreateAccessPoint('TestIED', [{ name: 'AP1' }])
 			).toThrow('No XML document loaded')
 		})
 
@@ -666,44 +663,33 @@ describe('buildEditsForCreateAccessPoint', () => {
 			pluginGlobalStore.editor = undefined
 
 			expect(() =>
-				buildEditsForCreateAccessPoint(
-					'TestIED',
-					[{ name: 'AP1' }]
-				)
+				buildEditsForCreateAccessPoint('TestIED', [{ name: 'AP1' }])
 			).toThrow('No editor available')
 		})
 
 		it('should throw error when IED with given name is not found', () => {
 			expect(() =>
-				buildEditsForCreateAccessPoint(
-					'NonExistentIED',
-					[{ name: 'AP1' }]
-				)
+				buildEditsForCreateAccessPoint('NonExistentIED', [
+					{ name: 'AP1' }
+				])
 			).toThrow('IED with name "NonExistentIED" not found')
 		})
 	})
 
 	describe('edge cases', () => {
 		it('should handle empty accessPoints array', () => {
-			buildEditsForCreateAccessPoint(
-				'TestIED',
-				[]
-			)
+			buildEditsForCreateAccessPoint('TestIED', [])
 
 			expect(mockEditor.commit).not.toHaveBeenCalled()
 		})
 
 		it('should handle special characters in access point name', () => {
 			const specialName = 'AP-1_test.abc'
-			buildEditsForCreateAccessPoint(
-				'TestIED',
-				[{ name: specialName }]
-			)
+			buildEditsForCreateAccessPoint('TestIED', [{ name: specialName }])
 
-			const edits = buildEditsForCreateAccessPoint(
-				'TestIED',
-				[{ name: specialName }]
-			)
+			const edits = buildEditsForCreateAccessPoint('TestIED', [
+				{ name: specialName }
+			])
 
 			const edit = edits[0]
 			const accessPointElement = edit.node as Element
@@ -713,10 +699,9 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should handle special characters in description', () => {
 			const specialDesc = 'Access <>&" Point'
-			const edits = buildEditsForCreateAccessPoint(
-				'TestIED',
-				[{ name: 'AP1', description: specialDesc }]
-			)
+			const edits = buildEditsForCreateAccessPoint('TestIED', [
+				{ name: 'AP1', description: specialDesc }
+			])
 
 			const edit = edits[0]
 			const accessPointElement = edit.node as Element

@@ -80,7 +80,10 @@ function enterMultiApMode() {
 function confirmActiveAp(): boolean {
 	const existingApNames = ied.isNew
 		? []
-		: queryAccessPointsFromIed(pluginGlobalStore.xmlDocument, ied.name.trim())
+		: queryAccessPointsFromIed(
+				pluginGlobalStore.xmlDocument,
+				ied.name.trim()
+			)
 
 	const apErrors = validateAccessPointFields(activeAp, {
 		pendingNames: confirmedAps.map((ap) => ap.name),
@@ -95,7 +98,10 @@ function confirmActiveAp(): boolean {
 
 	accessPoints = [
 		...confirmedAps,
-		{ name: activeAp.name.trim(), description: activeAp.description.trim() },
+		{
+			name: activeAp.name.trim(),
+			description: activeAp.description.trim()
+		},
 		createInitialAccessPoint()
 	]
 	return true

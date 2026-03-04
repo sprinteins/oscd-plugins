@@ -1,6 +1,16 @@
-import type { AccessPointData, FieldErrors, FormErrors, IedData } from './types'
+import type {
+	AccessPointContext,
+	AccessPointData,
+	FieldErrors,
+	FormErrors,
+	IedData
+} from './types'
 import { queryAccessPointsFromIed } from '@/headless/scl'
-import { createAccessPointSchema, createIedSchema } from './schemas'
+import {
+	createAccessPointSchema,
+	createAccessPointsCollectionSchema,
+	createIedSchema
+} from './schemas'
 
 function flattenZodErrors(
 	result: ReturnType<ReturnType<typeof createIedSchema>['safeParse']>
@@ -15,22 +25,17 @@ function flattenZodErrors(
 
 export function validateIedFields(
 	ied: Pick<IedData, 'name' | 'description'>,
-	xmlDocument: XMLDocument | null | undefined
+	xmlDocument: XMLDocument | null | undefined,
+	isNew = true
 ): FieldErrors | null {
-	const schema = createIedSchema(xmlDocument)
+	const schema = createIedSchema(xmlDocument, isNew)
 	const result = schema.safeParse(ied)
 	return flattenZodErrors(result)
 }
 
-type ValidateAccessPointContext = {
-	pendingNames: string[]
-	existingNames: string[]
-	iedName: string
-}
-
 export function validateAccessPointFields(
 	accessPointData: AccessPointData,
-	context: ValidateAccessPointContext
+	context: AccessPointContext
 ): FieldErrors | null {
 	const schema = createAccessPointSchema(context)
 	const result = schema.safeParse(accessPointData)
@@ -50,33 +55,22 @@ export function validateSubmission({
 }: ValidateSubmissionParams): FormErrors | null {
 	const errors: FormErrors = {}
 
-	if (ied.isNew) {
-		const iedErrors = validateIedFields(ied, xmlDocument)
-		if (iedErrors) errors.ied = iedErrors
-	} else {
-		if (!ied.name.trim()) {
-			errors.ied = { name: 'Please select an existing IED or create a new one' }
-		}
-	}
+	const iedErrors = validateIedFields(ied, xmlDocument, ied.isNew)
+	if (iedErrors) errors.ied = iedErrors
 
-	const submittableAccessPoints = accessPoints.filter((ap) => ap.name.trim())
+	const existingNames = ied.isNew
+		? []
+		: queryAccessPointsFromIed(xmlDocument, ied.name.trim())
 
-	if (!ied.isNew && submittableAccessPoints.length === 0) {
-		errors.ap = { name: 'Access Point name is required when adding to existing IED' }
-	} else if (submittableAccessPoints.length > 0) {
-		const existingNames = ied.isNew
-			? []
-			: queryAccessPointsFromIed(xmlDocument, ied.name.trim())
-		const pendingNames: string[] = []
-		for (const ap of submittableAccessPoints) {
-			const apErrors = validateAccessPointFields(ap, {
-				pendingNames,
-				existingNames,
-				iedName: ied.name
-			})
-			if (apErrors && !errors.ap) errors.ap = apErrors
-			pendingNames.push(ap.name.trim())
-		}
+	const apSchema = createAccessPointsCollectionSchema({
+		isNew: ied.isNew,
+		existingNames,
+		iedName: ied.name
+	})
+	const apResult = apSchema.safeParse(accessPoints)
+	if (!apResult.success) {
+		const message = apResult.error.errors[0]?.message
+		if (message) errors.ap = { name: message }
 	}
 
 	return Object.keys(errors).length > 0 ? errors : null

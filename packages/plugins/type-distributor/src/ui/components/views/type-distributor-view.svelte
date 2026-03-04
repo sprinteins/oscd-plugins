@@ -36,9 +36,7 @@ const activeBayTypeUuid = $derived(
 )
 
 const bayTypeWithTemplates = $derived(
-	activeBayTypeUuid
-		? getBayTypeWithTemplates(activeBayTypeUuid)
-		: null
+	activeBayTypeUuid ? getBayTypeWithTemplates(activeBayTypeUuid) : null
 )
 
 const functionTemplates = $derived(

@@ -15,3 +15,9 @@ export type FormErrors = {
 	ied?: FieldErrors
 	ap?: FieldErrors
 }
+
+export type AccessPointContext = {
+	pendingNames: string[]
+	existingNames: string[]
+	iedName: string
+}
