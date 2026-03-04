@@ -1,6 +1,5 @@
 <script lang="ts">
-import { buildEditsForDeleteEmptyIed } from '@/headless/scl/edits/delete-elements'
-import { getEditor } from '@/headless/utils'
+import { deleteEmptyIed } from '@/headless/actions'
 import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 
 interface Props {
@@ -8,14 +7,6 @@ interface Props {
 }
 
 const { iedName }: Props = $props()
-
-function handleDelete() {
-	const editor = getEditor()
-	const edit = buildEditsForDeleteEmptyIed(iedName)
-	editor.commit(edit, {
-		title: `Delete IED ${iedName}`
-	})
-}
 </script>
 
 <Card.Root class="border border-dashed text-gray-500">
@@ -28,7 +19,7 @@ function handleDelete() {
           {
             label: "Delete",
             disabled: false,
-            callback: handleDelete,
+            callback: () => deleteEmptyIed(iedName),
           },
         ]}
       />
