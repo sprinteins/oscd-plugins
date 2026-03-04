@@ -1,4 +1,4 @@
-import { buildEditsForDeleteAccessPoint } from '../scl/edits/delete-elements'
+import { buildEditsForDeleteAccessPoint } from '../scl/edits/'
 import { bayStore } from '../stores'
 import { getEditor } from '../utils'
 

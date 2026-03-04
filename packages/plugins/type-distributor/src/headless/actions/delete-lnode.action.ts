@@ -1,5 +1,5 @@
 import type { LNodeTemplate } from "../common-types"
-import { buildEditsForDeleteLNodeFromAccessPoint } from "../scl/edits/delete-elements"
+import { buildEditsForDeleteLNodeFromAccessPoint } from "../scl/edits"
 import { bayStore } from "../stores"
 import { getEditor } from "../utils"
 

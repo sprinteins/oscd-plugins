@@ -2,7 +2,8 @@ import { createElement } from '@oscd-plugins/core'
 import type { Insert } from '@openscd/oscd-api'
 import { getDocument } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
-import { queryIEDInsertionReference } from '../queries'
+import { queryIEDInsertionReference, queryAccessPointsFromIed, queryIedElement } from '../queries'
+import type { Remove } from '@openscd/oscd-api'
 
 export function buildEditForCreateIed(
 	name: string,
@@ -67,4 +68,22 @@ export function buildEditsForCreateIedWithAccessPoints({
 	})
 
 	return [iedEdit, ...apEdits]
+}
+
+export function buildEditsForDeleteEmptyIed(iedName: string): Remove[] {
+	const doc = getDocument()
+	const iedElement = queryIedElement(doc, iedName)
+
+	if (!iedElement) {
+		console.warn(`IED with name "${iedName}" not found.`)
+		return []
+	}
+
+	const hasAccessPoints = queryAccessPointsFromIed(doc, iedName).length > 0
+	if (hasAccessPoints) {
+		console.warn(`IED with name "${iedName}" is not empty.`)
+		return []
+	}
+
+	return [{ node: iedElement } as Remove]
 }
