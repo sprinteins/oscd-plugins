@@ -43,11 +43,10 @@ class UseImportSSDStore {
 		const templates = parseTemplates(xmlDocument)
 		const allFunctions = templates.functionTemplates
 		this.ld0FunctionTemplates = allFunctions.filter((t) =>
-			t.lnodes.some((ln) => ln.lnClass === 'LLN0')
+			t.lnodes.some((ln) => ln.lnClass === 'LLN0') &&
+			t.lnodes.some((ln) => ln.lnClass === 'LPHD')
 		)
-		this.functionTemplates = allFunctions.filter(
-			(t) => !t.lnodes.some((ln) => ln.lnClass === 'LLN0')
-		)
+		this.functionTemplates = allFunctions
 		this.conductingEquipmentTemplates =
 			templates.conductingEquipmentTemplates
 
