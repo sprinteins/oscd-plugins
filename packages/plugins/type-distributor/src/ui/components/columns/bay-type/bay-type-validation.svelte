@@ -14,7 +14,8 @@ const {
 } = $props()
 
 const hasCountMismatches = $derived(
-	(equipmentMatchingStore.validationResult?.countMismatchErrors?.length ?? 0) > 0
+	(equipmentMatchingStore.validationResult?.countMismatchErrors?.length ??
+		0) > 0
 )
 
 function handleApplyBayType() {
@@ -42,7 +43,7 @@ const ambiguousEquipmentCount = $derived.by(() => {
 	if (!scdBay || ambiguousTypeCodes.length === 0) return 0
 
 	const allEquipment = Array.from(
-			scdBay.querySelectorAll(':scope > ConductingEquipment')
+		scdBay.querySelectorAll(':scope > ConductingEquipment')
 	)
 	return allEquipment.filter((eq) => {
 		const type = eq.getAttribute('type')

@@ -16,6 +16,9 @@ import {
 	queryServer,
 	isLNodePresentInDevice
 } from '../elements'
+import type { Remove, SetAttributes } from '@openscd/oscd-api'
+import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
+import { queryLNodesFromAccessPoint, queryIedElement } from '../queries'
 
 function ensureServer(
 	accessPoint: Element,
@@ -159,20 +162,14 @@ export function createMultipleLNodesInAccessPoint({
 	return edits
 }
 
-type CreateAccessPointsParams = {
-	iedName: string
+export function buildEditsForCreateAccessPoint(
+	iedName: string,
 	accessPoints: { name: string; description?: string }[]
-	squash?: boolean
-}
+): Insert[] {
+	const { doc } = getDocumentAndEditor()
+	const allEdits: Insert[] = []
 
-export function createAccessPoints({
-	iedName,
-	accessPoints,
-	squash = false
-}: CreateAccessPointsParams): void {
-	const { doc, editor } = getDocumentAndEditor()
-
-	const iedElement = doc.querySelector(`IED[name="${iedName}"]`)
+	const iedElement = queryIedElement(doc, iedName)
 	if (!iedElement) {
 		throw new Error(`IED with name "${iedName}" not found`)
 	}
@@ -198,8 +195,39 @@ export function createAccessPoints({
 			reference: null
 		}
 
-		editor.commit(edit, {
-			squash
-		})
+		allEdits.push(edit)
 	}
+
+	return allEdits
+}
+
+interface BuildEditsForDeleteAccessPointParams {
+	accessPoint: Element
+	iedName: string
+	selectedBay: Element | null
+}
+
+export function buildEditsForDeleteAccessPoint({
+	selectedBay,
+	accessPoint,
+	iedName
+}: BuildEditsForDeleteAccessPointParams): (Remove | SetAttributes)[] {
+	const edits: (Remove | SetAttributes)[] = []
+
+	if (selectedBay) {
+		const apLNodes = queryLNodesFromAccessPoint(accessPoint)
+
+		const bayEdits = buildEditsForClearingBayLNodeConnections(
+			selectedBay,
+			apLNodes,
+			iedName
+		)
+		edits.push(...bayEdits)
+	}
+
+	edits.push({
+		node: accessPoint
+	} as Remove)
+
+	return edits
 }

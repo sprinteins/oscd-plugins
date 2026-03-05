@@ -241,9 +241,7 @@ describe('drop-handler', () => {
 			expect(ssdImportStore.selectedBayType).toBe('bt-3')
 			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-3')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
-			expect(
-				equipmentMatchingStore.reset
-			).toHaveBeenCalled()
+			expect(equipmentMatchingStore.reset).toHaveBeenCalled()
 		})
 
 		it('GIVEN valid auto selection WHEN applyBayType THEN applies successfully', () => {
