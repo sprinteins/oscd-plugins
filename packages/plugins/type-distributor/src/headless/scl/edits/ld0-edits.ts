@@ -4,35 +4,17 @@ import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
 import { buildEditsForDataTypeTemplates } from '@/headless/matching/scd-edits/data-types'
 import { findInsertionReference } from '@/headless/matching/scd-edits/data-types/query-insertion-references'
 
-// ---------------------------------------------------------------------------
-// Public types
-// ---------------------------------------------------------------------------
-
-/**
- * Use an SSD-derived Function template that contains an LLN0 LNode.
- * All its LNodes are inserted into a new LDevice[inst="LD0"].
- * Referenced LNodeTypes + DOTypes are copied from the SSD document.
- */
 export type LD0SourceFromFunction = {
 	kind: 'function'
 	functionTemplate: FunctionTemplate
 }
 
-/**
- * Create a default LD0 using the built-in IEC 61850-7-4 definitions (LLN0 + LPHD).
- * `onlyMandatoryDOs`: when true only mandatory DOs from the standard are added;
- * when false all optional DOs from the reference XML are included as well.
- */
 export type LD0SourceDefault = {
 	kind: 'default'
 	onlyMandatoryDOs: boolean
 }
 
 export type LD0Source = LD0SourceFromFunction | LD0SourceDefault
-
-// ---------------------------------------------------------------------------
-// IEC 61850-7-4 default DO definitions (from reference XML)
-// ---------------------------------------------------------------------------
 
 type DODefinition = { name: string; type: string }
 
@@ -77,7 +59,6 @@ const LPHD_OPTIONAL_DOS: DODefinition[] = [
 	{ name: 'Sim', type: 'SPC' }
 ]
 
-/** Minimal CDC-only DOType stubs — covers all DO types referenced by default LLN0 + LPHD */
 const DEFAULT_DO_TYPE_CDCS: Record<string, string> = {
 	ENC: 'ENC',
 	ENS: 'ENS',
@@ -92,29 +73,24 @@ const DEFAULT_DO_TYPE_CDCS: Record<string, string> = {
 	ING: 'ING'
 }
 
-// ---------------------------------------------------------------------------
-// LNodeType IDs for the default path
-// ---------------------------------------------------------------------------
-
-/** LNodeType id used when only mandatory DOs are included. */
 const LLN0_TYPE_ID_MANDATORY = 'LLN0_Default'
-/** LNodeType id used when all DOs (mandatory + optional) are included. */
 const LLN0_TYPE_ID_FULL = 'LLN0_Default_Full'
-/** LNodeType id used when only mandatory DOs are included. */
 const LPHD_TYPE_ID_MANDATORY = 'LPHD_Default'
-/** LNodeType id used when all DOs (mandatory + optional) are included. */
 const LPHD_TYPE_ID_FULL = 'LPHD_Default_Full'
 
-// ---------------------------------------------------------------------------
-// Internal helpers
-// ---------------------------------------------------------------------------
-
-function buildLNodeTypeElement(
-	doc: XMLDocument,
-	id: string,
-	lnClass: string,
+interface BuildLNodeTypeElementParams {
+	doc: XMLDocument
+	id: string
+	lnClass: string
 	dos: DODefinition[]
-): Element {
+}
+
+function buildLNodeTypeElement({
+	doc,
+	id,
+	lnClass,
+	dos
+}: BuildLNodeTypeElementParams): Element {
 	const lnType = createElement(doc, 'LNodeType', { id, lnClass })
 	for (const { name, type } of dos) {
 		const doEl = createElement(doc, 'DO', { name, type })
@@ -123,16 +99,23 @@ function buildLNodeTypeElement(
 	return lnType
 }
 
-function buildDOTypeStubs(
-	doc: XMLDocument,
-	dataTypeTemplates: Element,
-	typeIds: Iterable<string>,
-	reference: Node | null,
+interface BuildDOTypeStubParams {
+	doc: XMLDocument
+	dataTypeTemplates: Element
+	typeIds: Iterable<string>
+	reference: Node | null
 	queuedIds: Set<string>
-): Insert[] {
+}
+
+function buildDOTypeStubs({
+	doc,
+	dataTypeTemplates,
+	typeIds,
+	reference,
+	queuedIds
+}: BuildDOTypeStubParams): Insert[] {
 	const edits: Insert[] = []
 	for (const id of typeIds) {
-		// Skip if already in the document or queued in this batch
 		if (dataTypeTemplates.querySelector(`DOType[id="${id}"]`)) continue
 		if (queuedIds.has(id)) continue
 		const cdc = DEFAULT_DO_TYPE_CDCS[id]
@@ -151,35 +134,19 @@ function collectDOTypeIds(dos: DODefinition[]): Set<string> {
 	return new Set(dos.map((d) => d.type))
 }
 
-// ---------------------------------------------------------------------------
-// buildLD0Edits
-// ---------------------------------------------------------------------------
-
 type BuildLD0EditsParams = {
 	doc: XMLDocument
-	/** Server element that will parent the new LDevice */
 	server: Element
-	/** DataTypeTemplates element (must already exist) */
 	dataTypeTemplates: Element
 	source: LD0Source
 }
 
-/**
- * Build Insert edits to create an LD0 LDevice inside `server`.
- *
- * Returns an empty array when LDevice[inst="LD0"] already exists in `server`
- * (idempotent).
- *
- * This function is pure: it never calls `editor.commit()`.
- * The caller is responsible for committing the returned edits.
- */
 export function buildLD0Edits({
 	doc,
 	server,
 	dataTypeTemplates,
 	source
 }: BuildLD0EditsParams): Insert[] {
-	// Guard: LD0 already present
 	if (server.querySelector('LDevice[inst="LD0"]')) {
 		console.warn(
 			'[buildLD0Edits] LDevice[inst="LD0"] already exists in Server — skipping'
@@ -188,22 +155,29 @@ export function buildLD0Edits({
 	}
 
 	if (source.kind === 'function') {
-		return buildLD0EditsFromFunction(doc, server, dataTypeTemplates, source)
+		return buildLD0EditsFromFunction({
+			doc,
+			server,
+			dataTypeTemplates,
+			source
+		})
 	}
-
-	return buildLD0EditsFromDefault(doc, server, dataTypeTemplates, source)
+	return buildLD0EditsFromDefault({ doc, server, dataTypeTemplates, source })
 }
 
-// ---------------------------------------------------------------------------
-// kind: 'function' path
-// ---------------------------------------------------------------------------
-
-function buildLD0EditsFromFunction(
-	doc: XMLDocument,
-	server: Element,
-	dataTypeTemplates: Element,
+interface BuildLD0EditsFromFunctionParams {
+	doc: XMLDocument
+	server: Element
+	dataTypeTemplates: Element
 	source: LD0SourceFromFunction
-): Insert[] {
+}
+
+function buildLD0EditsFromFunction({
+	doc,
+	server,
+	dataTypeTemplates,
+	source
+}: BuildLD0EditsFromFunctionParams): Insert[] {
 	const edits: Insert[] = []
 
 	const lDevice = createElement(doc, 'LDevice', {
@@ -217,9 +191,6 @@ function buildLD0EditsFromFunction(
 
 	edits.push({ node: lDevice, parent: server, reference: null })
 
-	// Copy referenced LNodeTypes + DOTypes from the SSD document.
-	// buildEditsForDataTypeTemplates reads ssdImportStore.loadedSSDDocument
-	// internally — acceptable coupling in the current pre-refactor state.
 	const typeEdits = buildEditsForDataTypeTemplates(
 		doc,
 		dataTypeTemplates,
@@ -239,30 +210,27 @@ function buildLNElement(doc: XMLDocument, lnode: LNodeTemplate): Element {
 	})
 }
 
-// ---------------------------------------------------------------------------
-// kind: 'default' path
-// ---------------------------------------------------------------------------
-
-function buildLD0EditsFromDefault(
-	doc: XMLDocument,
-	server: Element,
-	dataTypeTemplates: Element,
+interface BuildLD0EditsFromDefaultParams {
+	doc: XMLDocument
+	server: Element
+	dataTypeTemplates: Element
 	source: LD0SourceDefault
-): Insert[] {
+}
+
+function buildLD0EditsFromDefault({
+	doc,
+	server,
+	dataTypeTemplates,
+	source
+}: BuildLD0EditsFromDefaultParams): Insert[] {
 	const edits: Insert[] = []
 
-	// --- LDevice with LN0 + LPHD built in-memory ---
 	const lln0TypeId = source.onlyMandatoryDOs
 		? LLN0_TYPE_ID_MANDATORY
 		: LLN0_TYPE_ID_FULL
 	const lphdTypeId = source.onlyMandatoryDOs
 		? LPHD_TYPE_ID_MANDATORY
 		: LPHD_TYPE_ID_FULL
-	console.log('[buildLD0Edits:default]', {
-		onlyMandatoryDOs: source.onlyMandatoryDOs,
-		lln0TypeId,
-		lphdTypeId
-	})
 
 	const lDevice = createElement(doc, 'LDevice', {
 		inst: 'LD0',
@@ -285,7 +253,6 @@ function buildLD0EditsFromDefault(
 
 	edits.push({ node: lDevice, parent: server, reference: null })
 
-	// --- LNodeTypes (skip if already in document or queued in this batch) ---
 	const lln0Dos = source.onlyMandatoryDOs
 		? LLN0_MANDATORY_DOS
 		: [...LLN0_MANDATORY_DOS, ...LLN0_OPTIONAL_DOS]
@@ -294,53 +261,46 @@ function buildLD0EditsFromDefault(
 		? LPHD_MANDATORY_DOS
 		: [...LPHD_MANDATORY_DOS, ...LPHD_OPTIONAL_DOS]
 
-	// Compute insertion references once — used for all types of the same kind.
 	const lnTypeRef = findInsertionReference(dataTypeTemplates, 'LNodeType')
 	const doTypeRef = findInsertionReference(dataTypeTemplates, 'DOType')
 
-	// Track IDs queued in this batch to prevent cross-call duplicates before commit
 	const queuedDOTypeIds = new Set<string>()
 
 	if (!dataTypeTemplates.querySelector(`LNodeType[id="${lln0TypeId}"]`)) {
-		console.log(
-			`[buildLD0Edits:default] creating LNodeType id="${lln0TypeId}" with ${lln0Dos.length} DOs`
-		)
 		edits.push({
-			node: buildLNodeTypeElement(doc, lln0TypeId, 'LLN0', lln0Dos),
+			node: buildLNodeTypeElement({
+				doc,
+				id: lln0TypeId,
+				lnClass: 'LLN0',
+				dos: lln0Dos
+			}),
 			parent: dataTypeTemplates,
 			reference: lnTypeRef
 		})
-	} else {
-		console.warn(
-			`[buildLD0Edits:default] LNodeType id="${lln0TypeId}" already exists — skipping`
-		)
 	}
 
 	if (!dataTypeTemplates.querySelector(`LNodeType[id="${lphdTypeId}"]`)) {
-		console.log(
-			`[buildLD0Edits:default] creating LNodeType id="${lphdTypeId}" with ${lphdDos.length} DOs`
-		)
 		edits.push({
-			node: buildLNodeTypeElement(doc, lphdTypeId, 'LPHD', lphdDos),
+			node: buildLNodeTypeElement({
+				doc,
+				id: lphdTypeId,
+				lnClass: 'LPHD',
+				dos: lphdDos
+			}),
 			parent: dataTypeTemplates,
 			reference: lnTypeRef
 		})
-	} else {
-		console.warn(
-			`[buildLD0Edits:default] LNodeType id="${lphdTypeId}" already exists — skipping`
-		)
 	}
 
-	// --- DOType stubs for all DO types referenced by the chosen set of DOs ---
 	const referencedDOTypeIds = collectDOTypeIds([...lln0Dos, ...lphdDos])
 	edits.push(
-		...buildDOTypeStubs(
+		...buildDOTypeStubs({
 			doc,
 			dataTypeTemplates,
-			referencedDOTypeIds,
-			doTypeRef,
-			queuedDOTypeIds
-		)
+			typeIds: referencedDOTypeIds,
+			reference: doTypeRef,
+			queuedIds: queuedDOTypeIds
+		})
 	)
 
 	return edits
