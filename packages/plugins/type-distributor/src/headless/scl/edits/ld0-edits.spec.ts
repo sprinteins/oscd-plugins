@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildLD0Edits } from './ld0-edits'
 import type { Insert } from '@openscd/oscd-api'
 import type { FunctionTemplate } from '@/headless/common-types'
@@ -38,19 +38,29 @@ function nodeOf(edit: Insert): Element {
 // Default path
 // ---------------------------------------------------------------------------
 
-describe('buildLD0Edits — kind: default', () => {
+describe('GIVEN buildLD0Edits is called with kind "default"', () => {
 	describe('WHEN onlyMandatoryDOs is true', () => {
-		it('creates a LDevice[inst="LD0"] Insert targeting server', () => {
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+		let doc: XMLDocument
+		let server: Element
+		let dataTypeTemplates: Element
+		let edits: ReturnType<typeof buildLD0Edits>
 
-			const edits = buildLD0Edits({
+		beforeEach(() => {
+			doc = makeDoc()
+			;({ server, dataTypeTemplates } = makeServerAndDTT(doc))
+			edits = buildLD0Edits({
 				doc,
 				server,
 				dataTypeTemplates,
 				source: { kind: 'default', onlyMandatoryDOs: true }
 			})
+		})
 
+		afterEach(() => {
+			vi.restoreAllMocks()
+		})
+
+		it('THEN it creates a LDevice[inst="LD0"] Insert targeting server', () => {
 			const lDeviceEdit = edits[0] as Insert
 			expect(nodeOf(lDeviceEdit).tagName).toBe('LDevice')
 			expect(nodeOf(lDeviceEdit).getAttribute('inst')).toBe('LD0')
@@ -58,17 +68,7 @@ describe('buildLD0Edits — kind: default', () => {
 			expect(lDeviceEdit.parent).toBe(server)
 		})
 
-		it('LDevice contains LN0[lnClass=LLN0] and LN[lnClass=LPHD]', () => {
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
-
-			const edits = buildLD0Edits({
-				doc,
-				server,
-				dataTypeTemplates,
-				source: { kind: 'default', onlyMandatoryDOs: true }
-			})
-
+		it('THEN LDevice contains LN0[lnClass=LLN0] and LN[lnClass=LPHD]', () => {
 			const lDevice = nodeOf(edits[0] as Insert)
 			const ln0 = lDevice.querySelector('LN0')
 			const lphd = lDevice.querySelector('LN[lnClass="LPHD"]')
@@ -80,17 +80,7 @@ describe('buildLD0Edits — kind: default', () => {
 			expect(lphd?.getAttribute('inst')).toBe('1')
 		})
 
-		it('creates exactly 4 DOs in LLN0_Default LNodeType (mandatory only)', () => {
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
-
-			const edits = buildLD0Edits({
-				doc,
-				server,
-				dataTypeTemplates,
-				source: { kind: 'default', onlyMandatoryDOs: true }
-			})
-
+		it('THEN it creates exactly 4 DOs in LLN0_Default LNodeType (mandatory only)', () => {
 			const lln0TypeInsert = edits.find(
 				(e) =>
 					nodeOf(e as Insert).getAttribute?.('id') === 'LLN0_Default'
@@ -105,17 +95,7 @@ describe('buildLD0Edits — kind: default', () => {
 			])
 		})
 
-		it('creates exactly 5 DOs in LPHD_Default LNodeType (mandatory only)', () => {
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
-
-			const edits = buildLD0Edits({
-				doc,
-				server,
-				dataTypeTemplates,
-				source: { kind: 'default', onlyMandatoryDOs: true }
-			})
-
+		it('THEN it creates exactly 5 DOs in LPHD_Default LNodeType (mandatory only)', () => {
 			const lphdTypeInsert = edits.find(
 				(e) =>
 					nodeOf(e as Insert).getAttribute?.('id') === 'LPHD_Default'
@@ -131,17 +111,7 @@ describe('buildLD0Edits — kind: default', () => {
 			])
 		})
 
-		it('emits DOType stubs only for types referenced by the mandatory DOs', () => {
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
-
-			const edits = buildLD0Edits({
-				doc,
-				server,
-				dataTypeTemplates,
-				source: { kind: 'default', onlyMandatoryDOs: true }
-			})
-
+		it('THEN it emits DOType stubs only for types referenced by the mandatory DOs', () => {
 			const doTypeIds = edits
 				.map((e) => nodeOf(e as Insert))
 				.filter((el) => el.tagName === 'DOType')
@@ -157,17 +127,27 @@ describe('buildLD0Edits — kind: default', () => {
 	})
 
 	describe('WHEN onlyMandatoryDOs is false', () => {
-		it('LN0 lnType is LLN0_Default_Full', () => {
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+		let doc: XMLDocument
+		let server: Element
+		let dataTypeTemplates: Element
+		let edits: ReturnType<typeof buildLD0Edits>
 
-			const edits = buildLD0Edits({
+		beforeEach(() => {
+			doc = makeDoc()
+			;({ server, dataTypeTemplates } = makeServerAndDTT(doc))
+			edits = buildLD0Edits({
 				doc,
 				server,
 				dataTypeTemplates,
 				source: { kind: 'default', onlyMandatoryDOs: false }
 			})
+		})
 
+		afterEach(() => {
+			vi.restoreAllMocks()
+		})
+
+		it('THEN LN0 lnType is LLN0_Default_Full and LPHD lnType is LPHD_Default_Full', () => {
 			const lDevice = nodeOf(edits[0] as Insert)
 			expect(lDevice.querySelector('LN0')?.getAttribute('lnType')).toBe(
 				'LLN0_Default_Full'
@@ -179,17 +159,7 @@ describe('buildLD0Edits — kind: default', () => {
 			).toBe('LPHD_Default_Full')
 		})
 
-		it('creates 13 DOs in LLN0_Default_Full (4 mandatory + 9 optional)', () => {
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
-
-			const edits = buildLD0Edits({
-				doc,
-				server,
-				dataTypeTemplates,
-				source: { kind: 'default', onlyMandatoryDOs: false }
-			})
-
+		it('THEN it creates 13 DOs in LLN0_Default_Full (4 mandatory + 9 optional)', () => {
 			const lln0Insert = edits.find(
 				(e) =>
 					nodeOf(e as Insert).getAttribute?.('id') ===
@@ -198,17 +168,7 @@ describe('buildLD0Edits — kind: default', () => {
 			expect(nodeOf(lln0Insert).querySelectorAll('DO')).toHaveLength(13)
 		})
 
-		it('creates 16 DOs in LPHD_Default_Full (5 mandatory + 11 optional)', () => {
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
-
-			const edits = buildLD0Edits({
-				doc,
-				server,
-				dataTypeTemplates,
-				source: { kind: 'default', onlyMandatoryDOs: false }
-			})
-
+		it('THEN it creates 16 DOs in LPHD_Default_Full (5 mandatory + 11 optional)', () => {
 			const lphdInsert = edits.find(
 				(e) =>
 					nodeOf(e as Insert).getAttribute?.('id') ===
@@ -218,51 +178,46 @@ describe('buildLD0Edits — kind: default', () => {
 		})
 	})
 
-	describe('WHEN LDevice[inst="LD0"] already exists', () => {
-		it('returns an empty array (idempotent)', () => {
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
-			const existing = doc.createElement('LDevice')
-			existing.setAttribute('inst', 'LD0')
-			server.appendChild(existing)
+	it('WHEN LDevice[inst="LD0"] already exists in server THEN it returns an empty array (idempotent)', () => {
+		const doc = makeDoc()
+		const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+		const existing = doc.createElement('LDevice')
+		existing.setAttribute('inst', 'LD0')
+		server.appendChild(existing)
 
-			const edits = buildLD0Edits({
-				doc,
-				server,
-				dataTypeTemplates,
-				source: { kind: 'default', onlyMandatoryDOs: true }
-			})
-
-			expect(edits).toHaveLength(0)
+		const edits = buildLD0Edits({
+			doc,
+			server,
+			dataTypeTemplates,
+			source: { kind: 'default', onlyMandatoryDOs: true }
 		})
+
+		expect(edits).toHaveLength(0)
 	})
 
-	describe('WHEN LNodeType already exists in DataTypeTemplates', () => {
-		it('skips the LNodeType Insert for that id', () => {
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+	it('WHEN a LNodeType already exists in DataTypeTemplates THEN it skips the Insert for that id', () => {
+		const doc = makeDoc()
+		const { server, dataTypeTemplates } = makeServerAndDTT(doc)
 
-			const existingLLN0 = doc.createElement('LNodeType')
-			existingLLN0.setAttribute('id', 'LLN0_Default')
-			dataTypeTemplates.appendChild(existingLLN0)
+		const existingLLN0 = doc.createElement('LNodeType')
+		existingLLN0.setAttribute('id', 'LLN0_Default')
+		dataTypeTemplates.appendChild(existingLLN0)
 
-			const edits = buildLD0Edits({
-				doc,
-				server,
-				dataTypeTemplates,
-				source: { kind: 'default', onlyMandatoryDOs: true }
-			})
-
-			const lln0Inserts = edits.filter(
-				(e) =>
-					nodeOf(e as Insert).getAttribute?.('id') === 'LLN0_Default'
-			)
-			expect(lln0Inserts).toHaveLength(0)
+		const edits = buildLD0Edits({
+			doc,
+			server,
+			dataTypeTemplates,
+			source: { kind: 'default', onlyMandatoryDOs: true }
 		})
+
+		const lln0Inserts = edits.filter(
+			(e) => nodeOf(e as Insert).getAttribute?.('id') === 'LLN0_Default'
+		)
+		expect(lln0Inserts).toHaveLength(0)
 	})
 
 	describe('WHEN DataTypeTemplates ordering must be preserved', () => {
-		it('LNodeType inserts reference before a pre-existing DOType (not appended at end)', () => {
+		it('THEN LNodeType inserts reference before a pre-existing DOType (not appended at end)', () => {
 			const doc = makeDoc()
 			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
 
@@ -289,7 +244,7 @@ describe('buildLD0Edits — kind: default', () => {
 			}
 		})
 
-		it('DOType stub inserts land AFTER existing DOTypes (not before them)', () => {
+		it('THEN DOType stub inserts land after existing DOTypes (not before them)', () => {
 			// This is the core scenario from the bug: when a function path has already
 			// committed $multi DOTypes (and possibly EnumTypes), a subsequent default
 			// path must append its stubs after the existing DOTypes — not anchor them
@@ -330,7 +285,7 @@ describe('buildLD0Edits — kind: default', () => {
 			}
 		})
 
-		it('DOType stub inserts reference before a pre-existing DAType', () => {
+		it('THEN DOType stub inserts reference before a pre-existing DAType', () => {
 			const doc = makeDoc()
 			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
 
@@ -360,7 +315,7 @@ describe('buildLD0Edits — kind: default', () => {
 			}
 		})
 
-		it('type-only edits are ordered: all LNodeTypes before all DOTypes', () => {
+		it('THEN type-only edits are ordered: all LNodeTypes before all DOTypes', () => {
 			const doc = makeDoc()
 			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
 
@@ -386,67 +341,63 @@ describe('buildLD0Edits — kind: default', () => {
 		})
 	})
 
-	describe('WHEN DataTypeTemplates is freshly created (not yet committed, empty)', () => {
-		it('all type inserts have reference null and LNodeTypes appear before DOTypes', () => {
-			const doc = makeDoc()
-			const server = doc.createElement('Server')
-			// Simulate ensureDataTypeTemplates: element created but NOT appended to doc yet
-			const dataTypeTemplates = doc.createElement('DataTypeTemplates')
+	it('WHEN DataTypeTemplates is freshly created (not yet committed) THEN all type inserts have reference null and LNodeTypes appear before DOTypes', () => {
+		const doc = makeDoc()
+		const server = doc.createElement('Server')
+		// Simulate ensureDataTypeTemplates: element created but NOT appended to doc yet
+		const dataTypeTemplates = doc.createElement('DataTypeTemplates')
 
-			const edits = buildLD0Edits({
-				doc,
-				server,
-				dataTypeTemplates,
-				source: { kind: 'default', onlyMandatoryDOs: true }
-			})
-
-			const typeEdits = edits
-				.slice(1) // skip LDevice
-				.map((e) => e as Insert)
-
-			// All inserts must reference null (append-order), since DTT is empty
-			for (const edit of typeEdits) {
-				expect(edit.reference).toBeNull()
-			}
-
-			// LNodeType inserts must come before DOType inserts
-			const tags = typeEdits.map((e) => nodeOf(e).tagName)
-			const firstDOType = tags.indexOf('DOType')
-			const lastLNodeType = tags.lastIndexOf('LNodeType')
-			expect(lastLNodeType).toBeLessThan(firstDOType)
+		const edits = buildLD0Edits({
+			doc,
+			server,
+			dataTypeTemplates,
+			source: { kind: 'default', onlyMandatoryDOs: true }
 		})
+
+		const typeEdits = edits
+			.slice(1) // skip LDevice
+			.map((e) => e as Insert)
+
+		// All inserts must reference null (append-order), since DTT is empty
+		for (const edit of typeEdits) {
+			expect(edit.reference).toBeNull()
+		}
+
+		// LNodeType inserts must come before DOType inserts
+		const tags = typeEdits.map((e) => nodeOf(e).tagName)
+		const firstDOType = tags.indexOf('DOType')
+		const lastLNodeType = tags.lastIndexOf('LNodeType')
+		expect(lastLNodeType).toBeLessThan(firstDOType)
 	})
 
-	describe('WHEN buildLD0Edits is called twice before committing (batch deduplication)', () => {
-		it('produces no duplicate LNodeType or DOType IDs within a single call', () => {
-			// Each buildLD0Edits call is self-contained: within one call, the same
-			// type ID is never emitted twice (e.g. LPL is shared by LLN0 & LPHD DOs).
-			// Cross-call deduplication (two calls, same dataTypeTemplates, no commit
-			// in between) is the CALLER's responsibility — the same limitation exists
-			// in buildEditsForDataTypeTemplates.
-			const doc = makeDoc()
-			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+	it('WHEN called THEN it produces no duplicate LNodeType or DOType IDs within a single call', () => {
+		// Each buildLD0Edits call is self-contained: within one call, the same
+		// type ID is never emitted twice (e.g. LPL is shared by LLN0 & LPHD DOs).
+		// Cross-call deduplication (two calls, same dataTypeTemplates, no commit
+		// in between) is the CALLER's responsibility — the same limitation exists
+		// in buildEditsForDataTypeTemplates.
+		const doc = makeDoc()
+		const { server, dataTypeTemplates } = makeServerAndDTT(doc)
 
-			const edits = buildLD0Edits({
-				doc,
-				server,
-				dataTypeTemplates,
-				source: { kind: 'default', onlyMandatoryDOs: true }
-			})
-
-			const typeInserts = edits.filter((e) => {
-				const tag = nodeOf(e as Insert).tagName
-				return tag === 'LNodeType' || tag === 'DOType'
-			})
-
-			const ids = typeInserts.map((e) =>
-				nodeOf(e as Insert).getAttribute('id')
-			)
-			const uniqueIds = new Set(ids)
-
-			// Every type ID must appear exactly once within the single call
-			expect(ids.length).toBe(uniqueIds.size)
+		const edits = buildLD0Edits({
+			doc,
+			server,
+			dataTypeTemplates,
+			source: { kind: 'default', onlyMandatoryDOs: true }
 		})
+
+		const typeInserts = edits.filter((e) => {
+			const tag = nodeOf(e as Insert).tagName
+			return tag === 'LNodeType' || tag === 'DOType'
+		})
+
+		const ids = typeInserts.map((e) =>
+			nodeOf(e as Insert).getAttribute('id')
+		)
+		const uniqueIds = new Set(ids)
+
+		// Every type ID must appear exactly once within the single call
+		expect(ids.length).toBe(uniqueIds.size)
 	})
 })
 
@@ -454,7 +405,7 @@ describe('buildLD0Edits — kind: default', () => {
 // Function path
 // ---------------------------------------------------------------------------
 
-describe('buildLD0Edits — kind: function', () => {
+describe('GIVEN buildLD0Edits is called with kind "function"', () => {
 	const lln0Template: FunctionTemplate = {
 		uuid: 'func-uuid-1',
 		name: 'LD0Func',
@@ -464,11 +415,11 @@ describe('buildLD0Edits — kind: function', () => {
 		]
 	}
 
-	beforeEach(() => {
-		vi.clearAllMocks()
+	afterEach(() => {
+		vi.restoreAllMocks()
 	})
 
-	it('creates LDevice[inst="LD0"] Insert targeting server', () => {
+	it('WHEN LDevice does not yet exist THEN it creates LDevice[inst="LD0Func"] targeting server', () => {
 		const doc = makeDoc()
 		const { server, dataTypeTemplates } = makeServerAndDTT(doc)
 
@@ -485,7 +436,7 @@ describe('buildLD0Edits — kind: function', () => {
 		expect(lDeviceEdit.parent).toBe(server)
 	})
 
-	it('creates LN0 for LLN0 lnode and LN for others', () => {
+	it('WHEN the template has LLN0 and LPHD lnodes THEN it creates LN0 for LLN0 and LN for other lnClasses', () => {
 		const doc = makeDoc()
 		const { server, dataTypeTemplates } = makeServerAndDTT(doc)
 
@@ -505,7 +456,7 @@ describe('buildLD0Edits — kind: function', () => {
 		)
 	})
 
-	it('calls buildEditsForDataTypeTemplates with the function lnodes', async () => {
+	it('WHEN called THEN it delegates data type building to buildEditsForDataTypeTemplates', async () => {
 		const { buildEditsForDataTypeTemplates } = await import(
 			'@/headless/matching/scd-edits/data-types'
 		)
@@ -527,7 +478,7 @@ describe('buildLD0Edits — kind: function', () => {
 		)
 	})
 
-	it('returns empty array when LDevice[inst="LD0"] already exists (idempotent)', () => {
+	it('WHEN LDevice[inst="LD0"] already exists THEN it returns an empty array (idempotent)', () => {
 		const doc = makeDoc()
 		const { server, dataTypeTemplates } = makeServerAndDTT(doc)
 		const existing = doc.createElement('LDevice')
