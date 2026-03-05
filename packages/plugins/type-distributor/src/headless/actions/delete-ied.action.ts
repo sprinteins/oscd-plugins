@@ -1,8 +1,8 @@
-import { buildEditForDeleteEmptyIed } from "../scl/edits"
-import { getEditor } from "../utils"
+import { buildEditForDeleteEmptyIed } from '../scl/edits'
+import { getEditor } from '../utils'
 
 export function deleteEmptyIed(iedName: string): void {
-  const editor = getEditor()
+	const editor = getEditor()
 
 	const edit = buildEditForDeleteEmptyIed(iedName)
 	if (edit) {

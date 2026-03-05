@@ -10,7 +10,7 @@ export function createAccessPoint(
 	accessPoints: AccessPointData[]
 ): void {
 	const editor = getEditor()
-	
+
 	const accessPointEdits = buildEditsForCreateAccessPoint(
 		ied.name,
 		accessPoints
