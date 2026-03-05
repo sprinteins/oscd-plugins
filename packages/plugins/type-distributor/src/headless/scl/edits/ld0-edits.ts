@@ -181,7 +181,9 @@ export function buildLD0Edits({
 }: BuildLD0EditsParams): Insert[] {
 	// Guard: LD0 already present
 	if (server.querySelector('LDevice[inst="LD0"]')) {
-		console.warn('[buildLD0Edits] LDevice[inst="LD0"] already exists in Server — skipping')
+		console.warn(
+			'[buildLD0Edits] LDevice[inst="LD0"] already exists in Server — skipping'
+		)
 		return []
 	}
 
@@ -204,7 +206,10 @@ function buildLD0EditsFromFunction(
 ): Insert[] {
 	const edits: Insert[] = []
 
-	const lDevice = createElement(doc, 'LDevice', { inst: 'LD0' })
+	const lDevice = createElement(doc, 'LDevice', {
+		inst: source.functionTemplate.name,
+		ldName: source.functionTemplate.name
+	})
 
 	for (const lnode of source.functionTemplate.lnodes) {
 		lDevice.appendChild(buildLNElement(doc, lnode))
@@ -247,9 +252,17 @@ function buildLD0EditsFromDefault(
 	const edits: Insert[] = []
 
 	// --- LDevice with LN0 + LPHD built in-memory ---
-	const lln0TypeId = source.onlyMandatoryDOs ? LLN0_TYPE_ID_MANDATORY : LLN0_TYPE_ID_FULL
-	const lphdTypeId = source.onlyMandatoryDOs ? LPHD_TYPE_ID_MANDATORY : LPHD_TYPE_ID_FULL
-	console.log('[buildLD0Edits:default]', { onlyMandatoryDOs: source.onlyMandatoryDOs, lln0TypeId, lphdTypeId })
+	const lln0TypeId = source.onlyMandatoryDOs
+		? LLN0_TYPE_ID_MANDATORY
+		: LLN0_TYPE_ID_FULL
+	const lphdTypeId = source.onlyMandatoryDOs
+		? LPHD_TYPE_ID_MANDATORY
+		: LPHD_TYPE_ID_FULL
+	console.log('[buildLD0Edits:default]', {
+		onlyMandatoryDOs: source.onlyMandatoryDOs,
+		lln0TypeId,
+		lphdTypeId
+	})
 
 	const lDevice = createElement(doc, 'LDevice', {
 		inst: 'LD0',
@@ -289,25 +302,33 @@ function buildLD0EditsFromDefault(
 	const queuedDOTypeIds = new Set<string>()
 
 	if (!dataTypeTemplates.querySelector(`LNodeType[id="${lln0TypeId}"]`)) {
-		console.log(`[buildLD0Edits:default] creating LNodeType id="${lln0TypeId}" with ${lln0Dos.length} DOs`)
+		console.log(
+			`[buildLD0Edits:default] creating LNodeType id="${lln0TypeId}" with ${lln0Dos.length} DOs`
+		)
 		edits.push({
 			node: buildLNodeTypeElement(doc, lln0TypeId, 'LLN0', lln0Dos),
 			parent: dataTypeTemplates,
 			reference: lnTypeRef
 		})
 	} else {
-		console.warn(`[buildLD0Edits:default] LNodeType id="${lln0TypeId}" already exists — skipping`)
+		console.warn(
+			`[buildLD0Edits:default] LNodeType id="${lln0TypeId}" already exists — skipping`
+		)
 	}
 
 	if (!dataTypeTemplates.querySelector(`LNodeType[id="${lphdTypeId}"]`)) {
-		console.log(`[buildLD0Edits:default] creating LNodeType id="${lphdTypeId}" with ${lphdDos.length} DOs`)
+		console.log(
+			`[buildLD0Edits:default] creating LNodeType id="${lphdTypeId}" with ${lphdDos.length} DOs`
+		)
 		edits.push({
 			node: buildLNodeTypeElement(doc, lphdTypeId, 'LPHD', lphdDos),
 			parent: dataTypeTemplates,
 			reference: lnTypeRef
 		})
 	} else {
-		console.warn(`[buildLD0Edits:default] LNodeType id="${lphdTypeId}" already exists — skipping`)
+		console.warn(
+			`[buildLD0Edits:default] LNodeType id="${lphdTypeId}" already exists — skipping`
+		)
 	}
 
 	// --- DOType stubs for all DO types referenced by the chosen set of DOs ---
