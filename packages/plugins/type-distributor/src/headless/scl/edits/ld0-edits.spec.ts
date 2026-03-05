@@ -155,7 +155,7 @@ describe('buildLD0Edits — kind: default', () => {
 	})
 
 	describe('WHEN onlyMandatoryDOs is false', () => {
-		it('creates 13 DOs in LLN0_Default (4 mandatory + 9 optional)', () => {
+		it('LN0 lnType is LLN0_Default_Full', () => {
 			const doc = makeDoc()
 			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
 
@@ -166,13 +166,29 @@ describe('buildLD0Edits — kind: default', () => {
 				source: { kind: 'default', onlyMandatoryDOs: false }
 			})
 
-			const lln0Inserts = edits.find(
-				(e) => nodeOf(e as Insert).getAttribute?.('id') === 'LLN0_Default'
-			) as Insert
-			expect(nodeOf(lln0Inserts).querySelectorAll('DO')).toHaveLength(13)
+			const lDevice = nodeOf(edits[0] as Insert)
+			expect(lDevice.querySelector('LN0')?.getAttribute('lnType')).toBe('LLN0_Default_Full')
+			expect(lDevice.querySelector('LN[lnClass="LPHD"]')?.getAttribute('lnType')).toBe('LPHD_Default_Full')
 		})
 
-		it('creates 16 DOs in LPHD_Default (5 mandatory + 11 optional)', () => {
+		it('creates 13 DOs in LLN0_Default_Full (4 mandatory + 9 optional)', () => {
+			const doc = makeDoc()
+			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
+
+			const edits = buildLD0Edits({
+				doc,
+				server,
+				dataTypeTemplates,
+				source: { kind: 'default', onlyMandatoryDOs: false }
+			})
+
+			const lln0Insert = edits.find(
+				(e) => nodeOf(e as Insert).getAttribute?.('id') === 'LLN0_Default_Full'
+			) as Insert
+			expect(nodeOf(lln0Insert).querySelectorAll('DO')).toHaveLength(13)
+		})
+
+		it('creates 16 DOs in LPHD_Default_Full (5 mandatory + 11 optional)', () => {
 			const doc = makeDoc()
 			const { server, dataTypeTemplates } = makeServerAndDTT(doc)
 
@@ -184,7 +200,7 @@ describe('buildLD0Edits — kind: default', () => {
 			})
 
 			const lphdInsert = edits.find(
-				(e) => nodeOf(e as Insert).getAttribute?.('id') === 'LPHD_Default'
+				(e) => nodeOf(e as Insert).getAttribute?.('id') === 'LPHD_Default_Full'
 			) as Insert
 			expect(nodeOf(lphdInsert).querySelectorAll('DO')).toHaveLength(16)
 		})
@@ -353,6 +369,37 @@ describe('buildLD0Edits — kind: default', () => {
 			const lastLNodeType = tags.lastIndexOf('LNodeType')
 
 			// Every LNodeType must appear before every DOType
+			expect(lastLNodeType).toBeLessThan(firstDOType)
+		})
+	})
+
+	describe('WHEN DataTypeTemplates is freshly created (not yet committed, empty)', () => {
+		it('all type inserts have reference null and LNodeTypes appear before DOTypes', () => {
+			const doc = makeDoc()
+			const server = doc.createElement('Server')
+			// Simulate ensureDataTypeTemplates: element created but NOT appended to doc yet
+			const dataTypeTemplates = doc.createElement('DataTypeTemplates')
+
+			const edits = buildLD0Edits({
+				doc,
+				server,
+				dataTypeTemplates,
+				source: { kind: 'default', onlyMandatoryDOs: true }
+			})
+
+			const typeEdits = edits
+				.slice(1) // skip LDevice
+				.map((e) => e as Insert)
+
+			// All inserts must reference null (append-order), since DTT is empty
+			for (const edit of typeEdits) {
+				expect(edit.reference).toBeNull()
+			}
+
+			// LNodeType inserts must come before DOType inserts
+			const tags = typeEdits.map((e) => nodeOf(e).tagName)
+			const firstDOType = tags.indexOf('DOType')
+			const lastLNodeType = tags.lastIndexOf('LNodeType')
 			expect(lastLNodeType).toBeLessThan(firstDOType)
 		})
 	})

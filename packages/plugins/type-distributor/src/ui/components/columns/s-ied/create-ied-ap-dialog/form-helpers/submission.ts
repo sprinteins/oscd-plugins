@@ -17,6 +17,9 @@ export function submitForm(
 	}
 	if (ied.isNew && accessPoints.length > 0) {
 		createIedWithAccessPoints(ied, accessPoints)
+		for (const ap of accessPoints) {
+			createLD0({ iedName: ied.name, apName: ap.name, source: ld0Source })
+		}
 		return
 	}
 

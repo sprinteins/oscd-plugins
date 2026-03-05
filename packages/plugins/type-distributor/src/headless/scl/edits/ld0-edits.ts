@@ -93,6 +93,19 @@ const DEFAULT_DO_TYPE_CDCS: Record<string, string> = {
 }
 
 // ---------------------------------------------------------------------------
+// LNodeType IDs for the default path
+// ---------------------------------------------------------------------------
+
+/** LNodeType id used when only mandatory DOs are included. */
+const LLN0_TYPE_ID_MANDATORY = 'LLN0_Default'
+/** LNodeType id used when all DOs (mandatory + optional) are included. */
+const LLN0_TYPE_ID_FULL = 'LLN0_Default_Full'
+/** LNodeType id used when only mandatory DOs are included. */
+const LPHD_TYPE_ID_MANDATORY = 'LPHD_Default'
+/** LNodeType id used when all DOs (mandatory + optional) are included. */
+const LPHD_TYPE_ID_FULL = 'LPHD_Default_Full'
+
+// ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 
@@ -168,6 +181,7 @@ export function buildLD0Edits({
 }: BuildLD0EditsParams): Insert[] {
 	// Guard: LD0 already present
 	if (server.querySelector('LDevice[inst="LD0"]')) {
+		console.warn('[buildLD0Edits] LDevice[inst="LD0"] already exists in Server — skipping')
 		return []
 	}
 
@@ -233,6 +247,10 @@ function buildLD0EditsFromDefault(
 	const edits: Insert[] = []
 
 	// --- LDevice with LN0 + LPHD built in-memory ---
+	const lln0TypeId = source.onlyMandatoryDOs ? LLN0_TYPE_ID_MANDATORY : LLN0_TYPE_ID_FULL
+	const lphdTypeId = source.onlyMandatoryDOs ? LPHD_TYPE_ID_MANDATORY : LPHD_TYPE_ID_FULL
+	console.log('[buildLD0Edits:default]', { onlyMandatoryDOs: source.onlyMandatoryDOs, lln0TypeId, lphdTypeId })
+
 	const lDevice = createElement(doc, 'LDevice', {
 		inst: 'LD0',
 		ldName: 'LD0'
@@ -241,14 +259,14 @@ function buildLD0EditsFromDefault(
 	const ln0 = createElement(doc, 'LN0', {
 		lnClass: 'LLN0',
 		inst: '',
-		lnType: 'LLN0_Default'
+		lnType: lln0TypeId
 	})
 	lDevice.appendChild(ln0)
 
 	const lphd = createElement(doc, 'LN', {
 		lnClass: 'LPHD',
 		inst: '1',
-		lnType: 'LPHD_Default'
+		lnType: lphdTypeId
 	})
 	lDevice.appendChild(lphd)
 
@@ -270,20 +288,26 @@ function buildLD0EditsFromDefault(
 	// Track IDs queued in this batch to prevent cross-call duplicates before commit
 	const queuedDOTypeIds = new Set<string>()
 
-	if (!dataTypeTemplates.querySelector('LNodeType[id="LLN0_Default"]')) {
+	if (!dataTypeTemplates.querySelector(`LNodeType[id="${lln0TypeId}"]`)) {
+		console.log(`[buildLD0Edits:default] creating LNodeType id="${lln0TypeId}" with ${lln0Dos.length} DOs`)
 		edits.push({
-			node: buildLNodeTypeElement(doc, 'LLN0_Default', 'LLN0', lln0Dos),
+			node: buildLNodeTypeElement(doc, lln0TypeId, 'LLN0', lln0Dos),
 			parent: dataTypeTemplates,
 			reference: lnTypeRef
 		})
+	} else {
+		console.warn(`[buildLD0Edits:default] LNodeType id="${lln0TypeId}" already exists — skipping`)
 	}
 
-	if (!dataTypeTemplates.querySelector('LNodeType[id="LPHD_Default"]')) {
+	if (!dataTypeTemplates.querySelector(`LNodeType[id="${lphdTypeId}"]`)) {
+		console.log(`[buildLD0Edits:default] creating LNodeType id="${lphdTypeId}" with ${lphdDos.length} DOs`)
 		edits.push({
-			node: buildLNodeTypeElement(doc, 'LPHD_Default', 'LPHD', lphdDos),
+			node: buildLNodeTypeElement(doc, lphdTypeId, 'LPHD', lphdDos),
 			parent: dataTypeTemplates,
 			reference: lnTypeRef
 		})
+	} else {
+		console.warn(`[buildLD0Edits:default] LNodeType id="${lphdTypeId}" already exists — skipping`)
 	}
 
 	// --- DOType stubs for all DO types referenced by the chosen set of DOs ---
