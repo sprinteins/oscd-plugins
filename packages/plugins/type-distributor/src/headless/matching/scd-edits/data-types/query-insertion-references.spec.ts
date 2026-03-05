@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { findInsertionReference, TYPE_INSERTION_PRIORITY } from './query-insertion-references'
+import {
+	findInsertionReference,
+	TYPE_INSERTION_PRIORITY
+} from './query-insertion-references'
 
 describe('insertion-references', () => {
 	let mockDocument: Document
@@ -214,8 +217,7 @@ describe('insertion-references', () => {
 
 				it('THEN should return correct reference for DOType', () => {
 					// GIVEN
-					const doType =
-						dataTypeTemplates.querySelector('DOType')
+					const doType = dataTypeTemplates.querySelector('DOType')
 
 					// WHEN
 					const result = findInsertionReference(
@@ -229,8 +231,7 @@ describe('insertion-references', () => {
 
 				it('THEN should return correct reference for DAType', () => {
 					// GIVEN
-					const daType =
-						dataTypeTemplates.querySelector('DAType')
+					const daType = dataTypeTemplates.querySelector('DAType')
 
 					// WHEN
 					const result = findInsertionReference(
@@ -244,8 +245,7 @@ describe('insertion-references', () => {
 
 				it('THEN should return correct reference for EnumType', () => {
 					// GIVEN
-					const enumType =
-						dataTypeTemplates.querySelector('EnumType')
+					const enumType = dataTypeTemplates.querySelector('EnumType')
 
 					// WHEN
 					const result = findInsertionReference(

@@ -86,7 +86,9 @@ describe('type-creation-helpers', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1'])
 					const mockReference = mockDataTypeTemplates.firstChild
-					vi.mocked(findInsertionReference).mockReturnValue(mockReference)
+					vi.mocked(findInsertionReference).mockReturnValue(
+						mockReference
+					)
 
 					// WHEN
 					const result = buildEditsForType(
@@ -182,7 +184,9 @@ describe('type-creation-helpers', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1'])
 					const mockReference = { nodeType: 1 } as Node
-					vi.mocked(findInsertionReference).mockReturnValue(mockReference)
+					vi.mocked(findInsertionReference).mockReturnValue(
+						mockReference
+					)
 
 					// WHEN
 					const result = buildEditsForType(
@@ -239,7 +243,9 @@ describe('type-creation-helpers', () => {
 					// GIVEN
 					const typeIds = new Set(['TestLN1', 'TestLN2'])
 					const mockReference = { nodeType: 1 } as Node
-					vi.mocked(findInsertionReference).mockReturnValue(mockReference)
+					vi.mocked(findInsertionReference).mockReturnValue(
+						mockReference
+					)
 
 					// WHEN
 					const result = buildEditsForType(

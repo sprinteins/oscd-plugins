@@ -3,6 +3,18 @@ import { createElement } from '@oscd-plugins/core'
 import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
 import { buildEditsForDataTypeTemplates } from '@/headless/matching/scd-edits/data-types'
 import { findInsertionReference } from '@/headless/matching/scd-edits/data-types/query-insertion-references'
+import {
+	type DODefinition,
+	LLN0_MANDATORY_DOS,
+	LLN0_OPTIONAL_DOS,
+	LPHD_MANDATORY_DOS,
+	LPHD_OPTIONAL_DOS,
+	DEFAULT_DO_TYPE_CDCS,
+	LLN0_TYPE_ID_MANDATORY,
+	LLN0_TYPE_ID_FULL,
+	LPHD_TYPE_ID_MANDATORY,
+	LPHD_TYPE_ID_FULL
+} from './ld0-defaults'
 
 export type LD0SourceFromFunction = {
 	kind: 'function'
@@ -15,68 +27,6 @@ export type LD0SourceDefault = {
 }
 
 export type LD0Source = LD0SourceFromFunction | LD0SourceDefault
-
-type DODefinition = { name: string; type: string }
-
-const LLN0_MANDATORY_DOS: DODefinition[] = [
-	{ name: 'NamPlt', type: 'LPL' },
-	{ name: 'Beh', type: 'ENS' },
-	{ name: 'Health', type: 'ENS_Health' },
-	{ name: 'Mod', type: 'ENC' }
-]
-
-const LLN0_OPTIONAL_DOS: DODefinition[] = [
-	{ name: 'LocKey', type: 'SPS' },
-	{ name: 'Loc', type: 'SPS' },
-	{ name: 'LocSta', type: 'SPC' },
-	{ name: 'Diag', type: 'SPC' },
-	{ name: 'LEDRs', type: 'SPC' },
-	{ name: 'SwModKey', type: 'SPC' },
-	{ name: 'InRef', type: 'ORG' },
-	{ name: 'GrRef', type: 'ORG' },
-	{ name: 'MltLev', type: 'SPG' }
-]
-
-const LPHD_MANDATORY_DOS: DODefinition[] = [
-	{ name: 'NamPlt', type: 'LPL' },
-	{ name: 'PhyNam', type: 'DPL' },
-	{ name: 'PhyHealth', type: 'ENS_Health' },
-	{ name: 'Proxy', type: 'SPS' },
-	{ name: 'MaxDl', type: 'ING' }
-]
-
-const LPHD_OPTIONAL_DOS: DODefinition[] = [
-	{ name: 'OutOv', type: 'SPS' },
-	{ name: 'InOv', type: 'SPS' },
-	{ name: 'OpTmh', type: 'INS' },
-	{ name: 'NumPwrUp', type: 'INS' },
-	{ name: 'WrmStr', type: 'INS' },
-	{ name: 'WacTrg', type: 'INS' },
-	{ name: 'PwrUp', type: 'SPS' },
-	{ name: 'PwrDn', type: 'SPS' },
-	{ name: 'PwrSupAlm', type: 'SPS' },
-	{ name: 'RsStat', type: 'SPC' },
-	{ name: 'Sim', type: 'SPC' }
-]
-
-const DEFAULT_DO_TYPE_CDCS: Record<string, string> = {
-	ENC: 'ENC',
-	ENS: 'ENS',
-	ENS_Health: 'ENS',
-	LPL: 'LPL',
-	SPS: 'SPS',
-	DPL: 'DPL',
-	SPC: 'SPC',
-	ORG: 'ORG',
-	SPG: 'SPG',
-	INS: 'INS',
-	ING: 'ING'
-}
-
-const LLN0_TYPE_ID_MANDATORY = 'LLN0_Default'
-const LLN0_TYPE_ID_FULL = 'LLN0_Default_Full'
-const LPHD_TYPE_ID_MANDATORY = 'LPHD_Default'
-const LPHD_TYPE_ID_FULL = 'LPHD_Default_Full'
 
 interface BuildLNodeTypeElementParams {
 	doc: XMLDocument
@@ -130,15 +80,18 @@ function buildDOTypeStubs({
 	return edits
 }
 
-function collectDOTypeIds(dos: DODefinition[]): Set<string> {
-	return new Set(dos.map((d) => d.type))
-}
-
 type BuildLD0EditsParams = {
 	doc: XMLDocument
 	server: Element
 	dataTypeTemplates: Element
 	source: LD0Source
+}
+
+type BuildLD0EditsFromFunctionParams = Omit<BuildLD0EditsParams, 'source'> & {
+	source: LD0SourceFromFunction
+}
+type BuildLD0EditsFromDefaultParams = Omit<BuildLD0EditsParams, 'source'> & {
+	source: LD0SourceDefault
 }
 
 export function buildLD0Edits({
@@ -163,13 +116,6 @@ export function buildLD0Edits({
 		})
 	}
 	return buildLD0EditsFromDefault({ doc, server, dataTypeTemplates, source })
-}
-
-interface BuildLD0EditsFromFunctionParams {
-	doc: XMLDocument
-	server: Element
-	dataTypeTemplates: Element
-	source: LD0SourceFromFunction
 }
 
 function buildLD0EditsFromFunction({
@@ -208,13 +154,6 @@ function buildLNElement(doc: XMLDocument, lnode: LNodeTemplate): Element {
 		lnType: lnode.lnType,
 		inst: lnode.lnInst
 	})
-}
-
-interface BuildLD0EditsFromDefaultParams {
-	doc: XMLDocument
-	server: Element
-	dataTypeTemplates: Element
-	source: LD0SourceDefault
 }
 
 function buildLD0EditsFromDefault({
@@ -292,7 +231,9 @@ function buildLD0EditsFromDefault({
 		})
 	}
 
-	const referencedDOTypeIds = collectDOTypeIds([...lln0Dos, ...lphdDos])
+	const referencedDOTypeIds = new Set(
+		[...lln0Dos, ...lphdDos].map((d) => d.type)
+	)
 	edits.push(
 		...buildDOTypeStubs({
 			doc,

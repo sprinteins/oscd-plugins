@@ -1,3 +1,4 @@
+import type { Insert } from '@openscd/oscd-api'
 import { getDocumentAndEditor } from '@/headless/utils'
 import { buildLD0Edits } from './ld0-edits'
 import type { LD0Source } from './ld0-edits'
@@ -11,7 +12,7 @@ type CreateLD0Params = {
 
 export function createLD0({ iedName, apName, source }: CreateLD0Params): void {
 	const { doc, editor } = getDocumentAndEditor()
-	const edits = []
+	const edits: Insert[] = []
 
 	const server = doc.querySelector(
 		`IED[name="${iedName}"] AccessPoint[name="${apName}"] Server`

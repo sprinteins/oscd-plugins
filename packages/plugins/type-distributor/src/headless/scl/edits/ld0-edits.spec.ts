@@ -92,7 +92,8 @@ describe('buildLD0Edits — kind: default', () => {
 			})
 
 			const lln0TypeInsert = edits.find(
-				(e) => nodeOf(e as Insert).getAttribute?.('id') === 'LLN0_Default'
+				(e) =>
+					nodeOf(e as Insert).getAttribute?.('id') === 'LLN0_Default'
 			) as Insert
 			const dos = nodeOf(lln0TypeInsert).querySelectorAll('DO')
 			expect(dos).toHaveLength(4)
@@ -116,7 +117,8 @@ describe('buildLD0Edits — kind: default', () => {
 			})
 
 			const lphdTypeInsert = edits.find(
-				(e) => nodeOf(e as Insert).getAttribute?.('id') === 'LPHD_Default'
+				(e) =>
+					nodeOf(e as Insert).getAttribute?.('id') === 'LPHD_Default'
 			) as Insert
 			const dos = nodeOf(lphdTypeInsert).querySelectorAll('DO')
 			expect(dos).toHaveLength(5)
@@ -167,8 +169,14 @@ describe('buildLD0Edits — kind: default', () => {
 			})
 
 			const lDevice = nodeOf(edits[0] as Insert)
-			expect(lDevice.querySelector('LN0')?.getAttribute('lnType')).toBe('LLN0_Default_Full')
-			expect(lDevice.querySelector('LN[lnClass="LPHD"]')?.getAttribute('lnType')).toBe('LPHD_Default_Full')
+			expect(lDevice.querySelector('LN0')?.getAttribute('lnType')).toBe(
+				'LLN0_Default_Full'
+			)
+			expect(
+				lDevice
+					.querySelector('LN[lnClass="LPHD"]')
+					?.getAttribute('lnType')
+			).toBe('LPHD_Default_Full')
 		})
 
 		it('creates 13 DOs in LLN0_Default_Full (4 mandatory + 9 optional)', () => {
@@ -183,7 +191,9 @@ describe('buildLD0Edits — kind: default', () => {
 			})
 
 			const lln0Insert = edits.find(
-				(e) => nodeOf(e as Insert).getAttribute?.('id') === 'LLN0_Default_Full'
+				(e) =>
+					nodeOf(e as Insert).getAttribute?.('id') ===
+					'LLN0_Default_Full'
 			) as Insert
 			expect(nodeOf(lln0Insert).querySelectorAll('DO')).toHaveLength(13)
 		})
@@ -200,7 +210,9 @@ describe('buildLD0Edits — kind: default', () => {
 			})
 
 			const lphdInsert = edits.find(
-				(e) => nodeOf(e as Insert).getAttribute?.('id') === 'LPHD_Default_Full'
+				(e) =>
+					nodeOf(e as Insert).getAttribute?.('id') ===
+					'LPHD_Default_Full'
 			) as Insert
 			expect(nodeOf(lphdInsert).querySelectorAll('DO')).toHaveLength(16)
 		})
@@ -242,7 +254,8 @@ describe('buildLD0Edits — kind: default', () => {
 			})
 
 			const lln0Inserts = edits.filter(
-				(e) => nodeOf(e as Insert).getAttribute?.('id') === 'LLN0_Default'
+				(e) =>
+					nodeOf(e as Insert).getAttribute?.('id') === 'LLN0_Default'
 			)
 			expect(lln0Inserts).toHaveLength(0)
 		})
@@ -468,7 +481,7 @@ describe('buildLD0Edits — kind: function', () => {
 
 		const lDeviceEdit = edits[0] as Insert
 		expect(nodeOf(lDeviceEdit).tagName).toBe('LDevice')
-		expect(nodeOf(lDeviceEdit).getAttribute('inst')).toBe('LD0')
+		expect(nodeOf(lDeviceEdit).getAttribute('inst')).toBe('LD0Func')
 		expect(lDeviceEdit.parent).toBe(server)
 	})
 
@@ -484,8 +497,12 @@ describe('buildLD0Edits — kind: function', () => {
 		})
 
 		const lDevice = nodeOf(edits[0] as Insert)
-		expect(lDevice.querySelector('LN0')?.getAttribute('lnClass')).toBe('LLN0')
-		expect(lDevice.querySelector('LN')?.getAttribute('lnClass')).toBe('LPHD')
+		expect(lDevice.querySelector('LN0')?.getAttribute('lnClass')).toBe(
+			'LLN0'
+		)
+		expect(lDevice.querySelector('LN')?.getAttribute('lnClass')).toBe(
+			'LPHD'
+		)
 	})
 
 	it('calls buildEditsForDataTypeTemplates with the function lnodes', async () => {

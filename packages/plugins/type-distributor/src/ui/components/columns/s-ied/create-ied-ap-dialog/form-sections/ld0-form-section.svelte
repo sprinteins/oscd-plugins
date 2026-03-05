@@ -14,7 +14,9 @@ let {
 const DEFAULT_VALUE = '__default__'
 
 const hasSingleTemplate = $derived(ld0FunctionTemplates.length === 1)
-const singleTemplate = $derived(hasSingleTemplate ? ld0FunctionTemplates[0] : null)
+const singleTemplate = $derived(
+	hasSingleTemplate ? ld0FunctionTemplates[0] : null
+)
 const isDefaultSelected = $derived(source.kind === 'default')
 
 const selectOptions = $derived.by(() => {
@@ -39,7 +41,8 @@ const onlyMandatoryChecked = $derived(
 function handleChange(event: Event) {
 	const value = (event.target as HTMLSelectElement).value
 	if (value === DEFAULT_VALUE) {
-		const keepMandatory = source.kind === 'default' ? source.onlyMandatoryDOs : false
+		const keepMandatory =
+			source.kind === 'default' ? source.onlyMandatoryDOs : false
 		source = { kind: 'default', onlyMandatoryDOs: keepMandatory }
 	} else {
 		const template = ld0FunctionTemplates.find((t) => t.uuid === value)

@@ -1,16 +1,20 @@
-import type { LNodeTemplate } from "../common-types"
-import { buildEditsForDeleteLNodeFromAccessPoint } from "../scl/edits"
-import { bayStore } from "../stores"
-import { getEditor } from "../utils"
+import type { LNodeTemplate } from '../common-types'
+import { buildEditsForDeleteLNodeFromAccessPoint } from '../scl/edits'
+import { bayStore } from '../stores'
+import { getEditor } from '../utils'
 
 type deleteLnodeFromAccessPointParams = {
-  lnode: LNodeTemplate
+	lnode: LNodeTemplate
 	iedName: string
 	accessPoint: Element
 }
 
-export function deleteLnodeFromAccessPoint({iedName, accessPoint, lnode}: deleteLnodeFromAccessPointParams): void {
-  const editor = getEditor()
+export function deleteLnodeFromAccessPoint({
+	iedName,
+	accessPoint,
+	lnode
+}: deleteLnodeFromAccessPointParams): void {
+	const editor = getEditor()
 	const edits = buildEditsForDeleteLNodeFromAccessPoint({
 		iedName,
 		accessPoint,
