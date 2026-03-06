@@ -6,34 +6,33 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 
 // https://vite.dev/config/
 export default defineConfig({
-    plugins: [
-        svelte({
-            compilerOptions: {
-                customElement: true
-            }
-        })
-    ],
-    resolve: {
-        alias: {
-            '@': resolve(__dirname, 'src')
-        }
-    },
-    build: {
-        target: 'esnext',
-        lib: {
-            entry: resolve(__dirname, 'src/plugin.ts'),
-            formats: ['es'],
-            fileName: 'index'
-        },
-        sourcemap: isDevelopment ? 'inline' : false
-    },
-    server: {
-        port: 4127,
-        cors: true
-    },
-    preview: {
-        port: 41127,
-        cors: true
-    }
+	plugins: [
+		svelte({
+			compilerOptions: {
+				customElement: true
+			}
+		})
+	],
+	resolve: {
+		alias: {
+			'@': resolve(__dirname, 'src')
+		}
+	},
+	build: {
+		target: 'esnext',
+		lib: {
+			entry: resolve(__dirname, 'src/plugin.ts'),
+			formats: ['es'],
+			fileName: 'index'
+		},
+		sourcemap: isDevelopment ? 'inline' : false
+	},
+	server: {
+		port: 4127,
+		cors: true
+	},
+	preview: {
+		port: 41127,
+		cors: true
+	}
 })
- 

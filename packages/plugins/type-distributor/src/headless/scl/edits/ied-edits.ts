@@ -2,7 +2,11 @@ import { createElement } from '@oscd-plugins/core'
 import type { Insert } from '@openscd/oscd-api'
 import { getDocument } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
-import { queryIEDInsertionReference, queryAccessPointsFromIed, queryIedElement } from '../queries'
+import {
+	queryIEDInsertionReference,
+	queryAccessPointsFromIed,
+	queryIedElement
+} from '../queries'
 import type { Remove } from '@openscd/oscd-api'
 
 export function buildEditForCreateIed(
