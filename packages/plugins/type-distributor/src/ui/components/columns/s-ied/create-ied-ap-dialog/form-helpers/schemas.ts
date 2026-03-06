@@ -94,7 +94,11 @@ export function createFormSchema(
 ) {
 	return z.object({
 		ied: createIedSchema(xmlDocument, isNew),
-		ap: createAccessPointsCollectionSchema({ isNew, existingNames, iedName })
+		ap: createAccessPointsCollectionSchema({
+			isNew,
+			existingNames,
+			iedName
+		})
 	})
 }
 
