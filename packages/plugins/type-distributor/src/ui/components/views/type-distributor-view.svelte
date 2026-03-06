@@ -123,7 +123,7 @@ function handleBayTypeChange() {
 				<IedSearch bind:searchTerm bind:searchType />
 			</div>
 		</Card.Header>
-		<Card.Content class="flex-1 overflow-y-auto pt-0 pb-0">
+		<Card.Content class="flex-1 overflow-y-auto py-0">
 			<IedDetails {iedItems} {searchTerm} {searchType} />
 		</Card.Content>
 		<Card.Footer>
