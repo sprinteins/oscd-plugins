@@ -4,8 +4,8 @@ import type {
 	EqFunctionTemplate,
 	FunctionTemplate
 } from '@/headless/common-types'
-import type { EquipmentMatch } from '@/headless/matching/types'
-import { applyBayTypeSelection } from '@/headless/matching'
+import type { EquipmentMatch } from '@/headless/domain/matching'
+import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 import { ssdImportStore } from '../ssd-import.store.svelte'
 import { getBayTypeWithTemplates } from '../bay-types.utils'
 import { bayStore } from '../bay.store.svelte'
@@ -59,7 +59,7 @@ export function applyBayType(state: BayTypeApplicationState): EquipmentMatch[] {
 		throw new Error('[DnD] No bay type selected to apply to bay')
 	}
 
-	const matches = applyBayTypeSelection(bayStore.selectedBay)
+	const matches = applyBayTypeAction(bayStore.selectedBay)
 	bayStore.pendingBayTypeApply = null
 	equipmentMatchingStore.reset()
 

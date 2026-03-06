@@ -3,14 +3,21 @@ import type {
 	ConductingEquipmentTemplate,
 	ConductingEquipmentType
 } from '@/headless/common-types'
-import { ssdImportStore } from '@/headless/stores'
-import { groupEquipmentByType } from '../equipment-grouping'
-import type { AmbiguousTypeInfo, ValidationResult } from './types'
+import { groupEquipmentByType } from './equipment-grouping'
+import { getConductingEquipmentTemplate } from './template-lookup'
+import type { AmbiguousTypeInfo, ValidationResult } from './validation-types'
 
-export function validateEquipmentMatch(
-	scdBay: Element,
+interface ValidateEquipmentMatchParams {
+	scdBay: Element
 	bayType: BayType
-): ValidationResult {
+	conductingEquipmentTemplates: ConductingEquipmentTemplate[]
+}
+
+export function validateEquipmentMatch({
+	scdBay,
+	bayType,
+	conductingEquipmentTemplates
+}: ValidateEquipmentMatchParams): ValidationResult {
 	const scdConductingEquipment = Array.from(
 		scdBay.querySelectorAll(':scope > ConductingEquipment')
 	)
@@ -19,7 +26,8 @@ export function validateEquipmentMatch(
 
 	const bayTypeCEWithTemplates = bayType.conductingEquipments
 		.map((ce) => {
-			const template = ssdImportStore.getConductingEquipmentTemplate(
+			const template = getConductingEquipmentTemplate(
+				conductingEquipmentTemplates,
 				ce.templateUuid
 			)
 			return template ? { bayTypeEquipment: ce, template } : null

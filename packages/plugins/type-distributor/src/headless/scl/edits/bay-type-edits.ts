@@ -1,8 +1,25 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { Insert, SetAttributes } from '@openscd/oscd-api'
-import type { EquipmentMatch } from '@/headless/matching/types'
+import type { SetAttributes, Insert } from '@openscd/oscd-api'
+import type { BayType } from '@/headless/common-types'
+import type { EquipmentMatch } from '@/headless/domain/matching'
 
-export function buildEditsForEquipmentUpdates(matches: EquipmentMatch[]) {
+export function buildEditForBayUpdate(
+	scdBay: Element,
+	bayType: BayType
+): SetAttributes {
+	return {
+		element: scdBay,
+		attributes: {
+			uuid: scdBay.getAttribute('uuid') || uuidv4(),
+			templateUuid: bayType.uuid
+		},
+		attributesNS: {}
+	}
+}
+
+export function buildEditsForEquipmentUpdates(
+	matches: EquipmentMatch[]
+): (SetAttributes | Insert)[] {
 	const updates: (SetAttributes | Insert)[] = []
 
 	for (const match of matches) {

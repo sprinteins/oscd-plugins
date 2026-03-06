@@ -10,7 +10,7 @@ import type {
 	LNodeTemplate
 } from '@/headless/common-types'
 import type { Insert } from '@openscd/oscd-api'
-import type { EquipmentMatch } from '@/headless/matching'
+import type { EquipmentMatch } from '@/headless/domain/matching'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -87,7 +87,6 @@ const equipmentTemplate: ConductingEquipmentTemplate = {
 }
 
 describe('createMultipleLNodesInAccessPoint', () => {
-	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document
 	let accessPoint: Element
 

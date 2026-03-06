@@ -1,6 +1,6 @@
 import { getDocumentAndEditor } from '@/headless/utils'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { matchEquipmentForPersistedBay } from '@/headless/matching/matching'
+import { matchEquipmentForPersistedBay } from '@/headless/domain/matching'
 import { ssdImportStore } from './ssd-import.store.svelte'
 
 class UseBayStore {
@@ -18,7 +18,12 @@ class UseBayStore {
 			(bt) => bt.uuid === this.assignedBayTypeUuid
 		)
 		if (!bayType) return []
-		return matchEquipmentForPersistedBay(this.scdBay, bayType)
+		return matchEquipmentForPersistedBay({
+			scdBay: this.scdBay,
+			bayType,
+			conductingEquipmentTemplates:
+				ssdImportStore.conductingEquipmentTemplates
+		})
 	})
 
 	scdBay = $derived.by(() => {

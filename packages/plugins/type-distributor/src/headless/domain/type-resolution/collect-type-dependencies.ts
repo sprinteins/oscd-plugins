@@ -1,27 +1,21 @@
 import type { LNodeTemplate } from '@/headless/common-types'
-import type { Insert } from '@openscd/oscd-editor'
-import { ssdImportStore } from '@/headless/stores'
 import {
 	queryDOTypesFromLNodeType,
 	queryTypesFromDOType,
 	queryTypesFromDAType
 } from './query-types'
-import { TYPE_ORDER, type TypeName } from './query-insertion-references'
-import { buildEditsForType } from './type-creation-helpers'
 
-interface TypeCollections {
+export interface TypeCollections {
 	lnodeTypeIds: Set<string>
 	doTypeIds: Set<string>
 	daTypeIds: Set<string>
 	enumTypeIds: Set<string>
 }
 
-function queryAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
-	const ssdDoc = ssdImportStore.loadedSSDDocument
-	if (!ssdDoc) {
-		throw new Error('No SSD document loaded in store')
-	}
-
+function collectTypeIdsForTemplate(
+	lnodeTemplate: LNodeTemplate,
+	ssdDoc: XMLDocument
+): TypeCollections {
 	const collections: TypeCollections = {
 		lnodeTypeIds: new Set([lnodeTemplate.lnType]),
 		doTypeIds: new Set(),
@@ -84,38 +78,9 @@ function queryAllTypeIds(lnodeTemplate: LNodeTemplate): TypeCollections {
 	return collections
 }
 
-function filterMissingIds(
-	doc: Document,
-	ids: Set<string>,
-	typeName: TypeName
-): Set<string> {
-	const missing = new Set<string>()
-	for (const id of ids) {
-		if (!doc.querySelector(`${typeName}[id="${id}"]`)) {
-			missing.add(id)
-		}
-	}
-	return missing
-}
-
-function filterExistingTypes(
-	doc: Document,
-	collections: TypeCollections
-): TypeCollections {
-	return {
-		lnodeTypeIds: filterMissingIds(
-			doc,
-			collections.lnodeTypeIds,
-			'LNodeType'
-		),
-		doTypeIds: filterMissingIds(doc, collections.doTypeIds, 'DOType'),
-		daTypeIds: filterMissingIds(doc, collections.daTypeIds, 'DAType'),
-		enumTypeIds: filterMissingIds(doc, collections.enumTypeIds, 'EnumType')
-	}
-}
-
-export function queryAllTypesFromLNodeTemplates(
-	lnodeTemplates: LNodeTemplate[]
+export function collectTypeDependencies(
+	lnodeTemplates: LNodeTemplate[],
+	ssdDoc: XMLDocument
 ): TypeCollections {
 	const allCollections: TypeCollections = {
 		lnodeTypeIds: new Set(),
@@ -125,7 +90,7 @@ export function queryAllTypesFromLNodeTemplates(
 	}
 
 	for (const lnodeTemplate of lnodeTemplates) {
-		const collections = queryAllTypeIds(lnodeTemplate)
+		const collections = collectTypeIdsForTemplate(lnodeTemplate, ssdDoc)
 
 		for (const id of collections.lnodeTypeIds) {
 			allCollections.lnodeTypeIds.add(id)
@@ -142,33 +107,4 @@ export function queryAllTypesFromLNodeTemplates(
 	}
 
 	return allCollections
-}
-
-const TYPE_TO_COLLECTION_KEY: Record<TypeName, keyof TypeCollections> = {
-	LNodeType: 'lnodeTypeIds',
-	DOType: 'doTypeIds',
-	DAType: 'daTypeIds',
-	EnumType: 'enumTypeIds'
-}
-
-export function buildEditsForDataTypeTemplates(
-	doc: Document,
-	dataTypeTemplates: Element,
-	lnodeTemplates: LNodeTemplate[]
-): Insert[] {
-	const allCollections = queryAllTypesFromLNodeTemplates(lnodeTemplates)
-	const missingCollections = filterExistingTypes(doc, allCollections)
-	const edits = []
-
-	for (const typeName of TYPE_ORDER) {
-		const collectionKey = TYPE_TO_COLLECTION_KEY[typeName]
-		const typeIds = missingCollections[collectionKey]
-
-		if (typeIds.size > 0) {
-			edits.push(
-				...buildEditsForType(dataTypeTemplates, typeIds, typeName)
-			)
-		}
-	}
-	return edits
 }

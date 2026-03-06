@@ -1,0 +1,165 @@
+import type { Insert } from '@openscd/oscd-api'
+import type { LNodeTemplate } from '@/headless/common-types'
+import { createElement } from '@oscd-plugins/core'
+import {
+	collectTypeDependencies,
+	type TypeCollections
+} from '@/headless/domain/type-resolution'
+
+//TODO - Refactor this
+
+// ─── Type ordering ───────────────────────────────────────────────────────────
+
+const TYPE_ORDER = ['LNodeType', 'DOType', 'DAType', 'EnumType'] as const
+type TypeName = (typeof TYPE_ORDER)[number]
+
+const TYPE_TO_COLLECTION_KEY: Record<TypeName, keyof TypeCollections> = {
+	LNodeType: 'lnodeTypeIds',
+	DOType: 'doTypeIds',
+	DAType: 'daTypeIds',
+	EnumType: 'enumTypeIds'
+}
+
+// ─── Insertion reference ─────────────────────────────────────────────────────
+
+function queryLastOfTypes(
+	dataTypeTemplates: Element,
+	typeNames: readonly string[]
+): Node | null {
+	for (const typeName of typeNames) {
+		const elements = Array.from(
+			dataTypeTemplates.querySelectorAll(typeName)
+		)
+		if (elements.length > 0) {
+			return elements[elements.length - 1].nextSibling
+		}
+	}
+	return dataTypeTemplates.firstChild
+}
+
+function queryTypeReference(
+	dataTypeTemplates: Element,
+	typeName: TypeName
+): Node | null {
+	const typeIndex = TYPE_ORDER.indexOf(typeName)
+	const precedingTypes = TYPE_ORDER.slice(0, typeIndex + 1)
+	return queryLastOfTypes(dataTypeTemplates, precedingTypes)
+}
+
+// ─── DataTypeTemplates element ───────────────────────────────────────────────
+
+export function ensureDataTypeTemplates(doc: XMLDocument): {
+	element: Element
+	edit: Insert | null
+} {
+	let dataTypeTemplates = doc.querySelector('DataTypeTemplates')
+	if (!dataTypeTemplates) {
+		dataTypeTemplates = createElement(doc, 'DataTypeTemplates', {})
+		const root = doc.documentElement
+
+		const edit: Insert = {
+			node: dataTypeTemplates,
+			parent: root,
+			reference: null
+		}
+		return { element: dataTypeTemplates, edit }
+	}
+	return { element: dataTypeTemplates, edit: null }
+}
+
+// ─── Filter out already-present type ids ─────────────────────────────────────
+
+function filterMissingIds(
+	doc: Document,
+	ids: Set<string>,
+	typeName: TypeName
+): Set<string> {
+	const missing = new Set<string>()
+	for (const id of ids) {
+		if (!doc.querySelector(`${typeName}[id="${id}"]`)) {
+			missing.add(id)
+		}
+	}
+	return missing
+}
+
+function filterExistingTypes(
+	doc: Document,
+	collections: TypeCollections
+): TypeCollections {
+	return {
+		lnodeTypeIds: filterMissingIds(
+			doc,
+			collections.lnodeTypeIds,
+			'LNodeType'
+		),
+		doTypeIds: filterMissingIds(doc, collections.doTypeIds, 'DOType'),
+		daTypeIds: filterMissingIds(doc, collections.daTypeIds, 'DAType'),
+		enumTypeIds: filterMissingIds(doc, collections.enumTypeIds, 'EnumType')
+	}
+}
+
+// ─── Clone-and-insert helpers ─────────────────────────────────────────────────
+
+function cloneTypeFromSSD(
+	typeId: string,
+	typeName: TypeName,
+	ssdDoc: XMLDocument
+): Element | null {
+	const sourceElement = ssdDoc.querySelector(`${typeName}[id="${typeId}"]`)
+	if (!sourceElement) return null
+	return sourceElement.cloneNode(true) as Element
+}
+
+function buildEditsForType(
+	dataTypeTemplates: Element,
+	typeIds: Set<string>,
+	typeName: TypeName,
+	ssdDoc: XMLDocument
+): Insert[] {
+	const edits: Insert[] = []
+	const reference = queryTypeReference(dataTypeTemplates, typeName)
+
+	for (const id of typeIds) {
+		const clonedElement = cloneTypeFromSSD(id, typeName, ssdDoc)
+		if (clonedElement) {
+			edits.push({
+				parent: dataTypeTemplates,
+				reference,
+				node: clonedElement
+			})
+		}
+	}
+
+	return edits
+}
+
+// ─── Public API ───────────────────────────────────────────────────────────────
+
+export function buildEditsForDataTypeTemplates(
+	doc: Document,
+	dataTypeTemplates: Element,
+	lnodeTemplates: LNodeTemplate[],
+	ssdDoc: XMLDocument
+): Insert[] {
+	const allCollections = collectTypeDependencies(lnodeTemplates, ssdDoc)
+	const missingCollections = filterExistingTypes(doc, allCollections)
+	const edits: Insert[] = []
+
+	for (const typeName of TYPE_ORDER) {
+		const collectionKey = TYPE_TO_COLLECTION_KEY[typeName]
+		const typeIds = missingCollections[collectionKey]
+
+		if (typeIds.size > 0) {
+			edits.push(
+				...buildEditsForType(
+					dataTypeTemplates,
+					typeIds,
+					typeName,
+					ssdDoc
+				)
+			)
+		}
+	}
+	return edits
+}

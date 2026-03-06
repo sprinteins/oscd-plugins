@@ -4,16 +4,18 @@ import {
 	bayStore,
 	assignedLNodesStore
 } from '@/headless/stores'
-import { resolveMatchingContext } from '../resolve-matching-context'
-import type { ValidationResult } from './types'
-import { validateEquipmentMatch } from './validation'
+import {
+	resolveMatchingContext,
+	validateEquipmentMatch
+} from '@/headless/domain/matching'
+import type { ValidationResult } from '@/headless/domain/matching'
 
-export function validateBayTypeSelection(bayName: string): ValidationResult {
-	const { scdBay, bayType } = resolveMatchingContext(
-		ssdImportStore.selectedBayType,
-		ssdImportStore.bayTypes,
-		bayStore.scdBay
-	)
+export function validateBayType(): ValidationResult {
+	const { scdBay, bayType } = resolveMatchingContext({
+		selectedBayTypeUuid: ssdImportStore.selectedBayType,
+		bayTypes: ssdImportStore.bayTypes,
+		scdBay: bayStore.scdBay
+	})
 
 	if (
 		assignedLNodesStore.hasConnections &&
@@ -30,7 +32,12 @@ export function validateBayTypeSelection(bayName: string): ValidationResult {
 		return result
 	}
 
-	const validation = validateEquipmentMatch(scdBay, bayType)
+	const validation = validateEquipmentMatch({
+		scdBay,
+		bayType,
+		conductingEquipmentTemplates:
+			ssdImportStore.conductingEquipmentTemplates
+	})
 
 	equipmentMatchingStore.setValidationResult(validation, true)
 

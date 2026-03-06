@@ -1,6 +1,9 @@
-import type { BayType } from '../common-types'
-import { ssdImportStore } from '../stores'
+import type {
+	BayType,
+	ConductingEquipmentTemplate
+} from '@/headless/common-types'
 import { groupEquipmentByType } from './equipment-grouping'
+import { getConductingEquipmentTemplate } from './template-lookup'
 import type { EquipmentLookupItem, EquipmentMatch } from './types'
 
 export function getScdEquipmentMatchKey(
@@ -19,18 +22,23 @@ export function getScdEquipmentMatchKey(
 interface MatchEquipmentForInitialApplyParams {
 	scdBay: Element
 	bayType: BayType
+	conductingEquipmentTemplates: ConductingEquipmentTemplate[]
 	manualMatches?: Map<string, string>
 }
 
 export function matchEquipmentForInitialApply({
 	scdBay,
 	bayType,
+	conductingEquipmentTemplates,
 	manualMatches
 }: MatchEquipmentForInitialApplyParams): EquipmentMatch[] {
 	const scdEquipment = Array.from(
 		scdBay.querySelectorAll(':scope > ConductingEquipment')
 	)
-	const equipmentList = createEquipmentLookup(bayType)
+	const equipmentList = createEquipmentLookup(
+		bayType,
+		conductingEquipmentTemplates
+	)
 	const usedUuids = new Set<string>()
 	const matched = new Set<Element>()
 	const matches: EquipmentMatch[] = []
@@ -63,8 +71,10 @@ export function matchEquipmentForInitialApply({
 			const manualTemplateUuid = manualMatches.get(equipmentKey)
 			if (!manualTemplateUuid) continue
 
-			const mapping = findMatchingEquipment(equipmentList, usedUuids, {
-				templateUuid: manualTemplateUuid
+			const mapping = findMatchingEquipment({
+				equipmentList,
+				usedUuids,
+				matchBy: { templateUuid: manualTemplateUuid }
 			})
 			if (!mapping) {
 				const scdName = scdElement.getAttribute('name') ?? equipmentKey
@@ -88,8 +98,10 @@ export function matchEquipmentForInitialApply({
 		groupEquipmentByType(remaining)
 	)) {
 		for (const scdElement of elements) {
-			const mapping = findMatchingEquipment(equipmentList, usedUuids, {
-				type
+			const mapping = findMatchingEquipment({
+				equipmentList,
+				usedUuids,
+				matchBy: { type }
 			})
 			if (!mapping) {
 				const scdName = scdElement.getAttribute('name') || 'unknown'
@@ -110,14 +122,24 @@ export function matchEquipmentForInitialApply({
 	return matches
 }
 
-export function matchEquipmentForPersistedBay(
-	scdBay: Element,
+interface MatchEquipmentForApplyBayTypeParams {
+	scdBay: Element
 	bayType: BayType
-): EquipmentMatch[] {
+	conductingEquipmentTemplates: ConductingEquipmentTemplate[]
+}
+
+export function matchEquipmentForPersistedBay({
+	scdBay,
+	bayType,
+	conductingEquipmentTemplates
+}: MatchEquipmentForApplyBayTypeParams): EquipmentMatch[] {
 	const scdEquipment = Array.from(
 		scdBay.querySelectorAll(':scope > ConductingEquipment')
 	)
-	const equipmentList = createEquipmentLookup(bayType)
+	const equipmentList = createEquipmentLookup(
+		bayType,
+		conductingEquipmentTemplates
+	)
 	const usedUuids = new Set<string>()
 	const matches: EquipmentMatch[] = []
 
@@ -153,11 +175,15 @@ export function matchEquipmentForPersistedBay(
 	return matches
 }
 
-function createEquipmentLookup(bayType: BayType): EquipmentLookupItem[] {
+function createEquipmentLookup(
+	bayType: BayType,
+	conductingEquipmentTemplates: ConductingEquipmentTemplate[]
+): EquipmentLookupItem[] {
 	const equipmentList: EquipmentLookupItem[] = []
 
 	for (const bayTypeEquipment of bayType.conductingEquipments) {
-		const template = ssdImportStore.getConductingEquipmentTemplate(
+		const template = getConductingEquipmentTemplate(
+			conductingEquipmentTemplates,
 			bayTypeEquipment.templateUuid
 		)
 		if (template) {
@@ -168,11 +194,17 @@ function createEquipmentLookup(bayType: BayType): EquipmentLookupItem[] {
 	return equipmentList
 }
 
-function findMatchingEquipment(
-	equipmentList: EquipmentLookupItem[],
-	usedUuids: Set<string>,
+interface FindMatchingEquipmentParams {
+	equipmentList: EquipmentLookupItem[]
+	usedUuids: Set<string>
 	matchBy: { templateUuid: string } | { type: string }
-): EquipmentLookupItem | undefined {
+}
+
+function findMatchingEquipment({
+	equipmentList,
+	usedUuids,
+	matchBy
+}: FindMatchingEquipmentParams): EquipmentLookupItem | undefined {
 	const isAvailable = (item: EquipmentLookupItem) =>
 		!usedUuids.has(item.bayTypeEquipment.uuid)
 

@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { buildEditsForDeleteLNodeFromAccessPoint } from './ied-lnode-edits'
-import { bayStore } from '@/headless/stores'
 import {
 	isRemoveEdit,
 	isSetAttributesEdit
