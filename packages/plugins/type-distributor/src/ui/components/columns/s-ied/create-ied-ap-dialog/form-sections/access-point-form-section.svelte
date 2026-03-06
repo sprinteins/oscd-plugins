@@ -29,7 +29,7 @@ let {
         placeholder="Enter Access Point name"
         {disabled}
       />
-      <FieldError messages={errors?.name} />
+      <FieldError messages={errors?.name?._errors ?? errors?._errors} />
     </div>
     <div class="space-y-2">
       <Label.Root for="ap-desc">Description</Label.Root>
@@ -39,7 +39,7 @@ let {
         placeholder="Enter Access Point description (optional)"
         disabled={disabled || !accessPoint.name}
       />
-      <FieldError messages={errors?.description} />
+      <FieldError messages={errors?.description?._errors} />
     </div>
   </div>
 </section>

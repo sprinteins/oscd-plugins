@@ -9,7 +9,13 @@ export type IedData = {
 	isNew: boolean
 }
 
-export type FieldErrors = Partial<Record<'name' | 'description', string[]>>
+type FormattedField = { _errors: string[] }
+
+export type FieldErrors = {
+	_errors: string[]
+	name?: FormattedField
+	description?: FormattedField
+}
 
 export type FormErrors = {
 	ied?: FieldErrors

@@ -86,6 +86,18 @@ export function createAccessPointSchema(context: AccessPointContext) {
 	})
 }
 
+export function createFormSchema(
+	xmlDocument: XMLDocument | null | undefined,
+	isNew: boolean,
+	existingNames: string[],
+	iedName: string
+) {
+	return z.object({
+		ied: createIedSchema(xmlDocument, isNew),
+		ap: createAccessPointsCollectionSchema({ isNew, existingNames, iedName })
+	})
+}
+
 export function createIedSchema(
 	xmlDocument: XMLDocument | null | undefined,
 	isNew = true

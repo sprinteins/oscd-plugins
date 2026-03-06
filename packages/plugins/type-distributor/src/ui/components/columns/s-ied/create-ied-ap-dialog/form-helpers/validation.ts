@@ -8,7 +8,7 @@ import type {
 import { queryAccessPointsFromIed } from '@/headless/scl'
 import {
 	createAccessPointSchema,
-	createAccessPointsCollectionSchema,
+	createFormSchema,
 	createIedSchema
 } from './schemas'
 
@@ -19,7 +19,7 @@ export function validateIedFields(
 ): FieldErrors | null {
 	const schema = createIedSchema(xmlDocument, isNew)
 	const result = schema.safeParse(ied)
-	return result.success ? null : result.error.flatten().fieldErrors
+	return result.success ? null : result.error.format()
 }
 
 export function validateAccessPointFields(
@@ -28,7 +28,7 @@ export function validateAccessPointFields(
 ): FieldErrors | null {
 	const schema = createAccessPointSchema(context)
 	const result = schema.safeParse(accessPointData)
-	return result.success ? null : result.error.flatten().fieldErrors
+	return result.success ? null : result.error.format()
 }
 
 type ValidateSubmissionParams = {
@@ -42,25 +42,23 @@ export function validateSubmission({
 	accessPoints,
 	xmlDocument
 }: ValidateSubmissionParams): FormErrors | null {
-	const errors: FormErrors = {}
-
-	const iedErrors = validateIedFields(ied, xmlDocument, ied.isNew)
-	if (iedErrors) errors.ied = iedErrors
-
 	const existingNames = ied.isNew
 		? []
 		: queryAccessPointsFromIed(xmlDocument, ied.name.trim())
 
-	const apSchema = createAccessPointsCollectionSchema({
-		isNew: ied.isNew,
+	const result = createFormSchema(
+		xmlDocument,
+		ied.isNew,
 		existingNames,
-		iedName: ied.name
-	})
-	const apResult = apSchema.safeParse(accessPoints)
-	if (!apResult.success) {
-		const message = apResult.error.errors[0]?.message
-		if (message) errors.ap = { name: [message] }
-	}
+		ied.name
+	).safeParse({ ied, ap: accessPoints })
 
-	return Object.keys(errors).length > 0 ? errors : null
+	if (result.success) return null
+
+	const fmt = result.error.format()
+	const apFmt = fmt.ap
+	return {
+		ied: fmt.ied,
+		ap: apFmt ? (apFmt[0] ?? { _errors: apFmt._errors }) : undefined
+	}
 }
