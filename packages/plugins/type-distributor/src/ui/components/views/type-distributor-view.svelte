@@ -120,17 +120,17 @@ function handleBayTypeChange() {
 		<Card.Header>
 			<Card.Title>S-IEDs</Card.Title>
 		</Card.Header>
-		<Card.Content class="flex-1 flex flex-col gap-y-4 overflow-hidden">
-			<div>
-				<IedSearch bind:searchTerm bind:searchType />
-			</div>
-			<div class="flex-1 overflow-y-auto">
+		<Card.Header>
+			<IedSearch bind:searchTerm bind:searchType />
+		</Card.Header>
+		<Card.Content class="flex-1 flex flex-col gap-y-4 overflow-y-auto">
+			<div class="flex-1">
 				<IedDetails {iedItems} {searchTerm} {searchType} />
 			</div>
-			<div>
-				<AddIedApDialogTrigger />
-			</div>
 		</Card.Content>
+		<Card.Footer>
+				<AddIedApDialogTrigger />
+		</Card.Footer>
 	</Card.Root>
 	<Card.Root class="flex-1 flex flex-col min-h-full">
 		<Card.Header>
