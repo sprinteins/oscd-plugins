@@ -361,6 +361,102 @@ describe('assignedLNodesStore', () => {
 
 			consoleSpy.mockRestore()
 		})
+
+		it('should track duplicate EqFunctions (same name, different templateUuid) independently', () => {
+			// GIVEN two EqFunctions with the same name but different templateUuids
+			const eqFuncTemplateUuid1 = 'eq-func-template-dup-1'
+			const eqFuncTemplateUuid2 = 'eq-func-template-dup-2'
+			const ceUuid = 'ce-dup-uuid'
+
+			const docWithDuplicateEqFunctions = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation name="Sub1">
+						<VoltageLevel name="VL1">
+							<Bay name="Bay1">
+								<ConductingEquipment name="DIS1" type="DIS" templateUuid="${ceUuid}">
+									<EqFunction name="DisconnectorFunction" templateUuid="${eqFuncTemplateUuid1}">
+										<LNode lnClass="XSWI" lnType="XSWI_Type" lnInst="1" iedName="IED1" />
+									</EqFunction>
+									<EqFunction name="DisconnectorFunction" templateUuid="${eqFuncTemplateUuid2}">
+										<LNode lnClass="XSWI" lnType="XSWI_Type" lnInst="1" />
+									</EqFunction>
+								</ConductingEquipment>
+							</Bay>
+						</VoltageLevel>
+					</Substation>
+				</SCL>`,
+				'application/xml'
+			)
+
+			pluginGlobalStore.xmlDocument = docWithDuplicateEqFunctions
+			const bayElement = docWithDuplicateEqFunctions.querySelector('Bay')
+			bayStore.scdBay = bayElement as Element
+
+			const ceElement = docWithDuplicateEqFunctions.querySelector(
+				'ConductingEquipment'
+			)!
+			bayStore.equipmentMatches = [
+				{
+					scdElement: ceElement,
+					bayTypeEquipment: {
+						uuid: ceUuid,
+						templateUuid: 'template-ce-dup',
+						virtual: false
+					},
+					templateEquipment: {
+						uuid: 'template-ce-dup',
+						name: 'DIS1 Template',
+						type: 'DIS',
+						terminals: [],
+						eqFunctions: [
+							{
+								uuid: eqFuncTemplateUuid1,
+								name: 'DisconnectorFunction',
+								lnodes: [
+									{
+										lnClass: 'XSWI',
+										lnType: 'XSWI_Type',
+										lnInst: '1'
+									}
+								]
+							},
+							{
+								uuid: eqFuncTemplateUuid2,
+								name: 'DisconnectorFunction',
+								lnodes: [
+									{
+										lnClass: 'XSWI',
+										lnType: 'XSWI_Type',
+										lnInst: '1'
+									}
+								]
+							}
+						]
+					}
+				}
+			]
+
+			// WHEN rebuild is called
+			assignedLNodesStore.rebuild()
+
+			// THEN only the first EqFunction (with iedName) is marked as assigned
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: ceUuid,
+					lnode: { lnClass: 'XSWI', lnType: 'XSWI_Type', lnInst: '1' },
+					functionScopeUuid: eqFuncTemplateUuid1
+				})
+			).toBe(true)
+
+			// AND the second EqFunction (without iedName) is NOT marked as assigned
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: ceUuid,
+					lnode: { lnClass: 'XSWI', lnType: 'XSWI_Type', lnInst: '1' },
+					functionScopeUuid: eqFuncTemplateUuid2
+				})
+			).toBe(false)
+		})
 	})
 
 	describe('markAsAssigned', () => {

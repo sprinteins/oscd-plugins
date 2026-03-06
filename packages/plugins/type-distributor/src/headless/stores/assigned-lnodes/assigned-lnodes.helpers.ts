@@ -26,6 +26,7 @@ function processLNodesFromElement({
 		if (lnClass && lnType) {
 			const key =
 				`${parentUuid}:${functionScopeUuid}:${lnClass}:${lnType}:${lnInst}` as LNodeKey
+			console.log(`[AssignedLNodes] Found assigned LNode with key: ${key}`)
 			assignedIndex.add(key)
 		}
 	}
@@ -127,10 +128,13 @@ export function processEqFunctions({
 		}
 
 		const parentUuid = equipmentMatch.bayTypeEquipment.uuid
+		const eqFuncTemplateUuid = eqFunc.getAttribute('templateUuid')
 		const functionScopeUuid =
 			equipmentMatch.templateEquipment.eqFunctions.find(
 				(templateEqFunction: EqFunctionTemplate) =>
-					templateEqFunction.name === eqFuncName
+					eqFuncTemplateUuid
+						? templateEqFunction.uuid === eqFuncTemplateUuid
+						: templateEqFunction.name === eqFuncName
 			)?.uuid ?? null
 
 		if (!functionScopeUuid) {

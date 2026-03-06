@@ -57,6 +57,14 @@ function queryFunctionElements({
 			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
 		if (matchFromStore) {
+			const byTemplateUuid = Array.from(
+				matchFromStore.scdElement.querySelectorAll(
+					`EqFunction[templateUuid="${sourceFunction.uuid}"]`
+				)
+			)
+			if (byTemplateUuid.length > 0) return byTemplateUuid
+
+			// Fallback for SCD files written before templateUuid was persisted
 			return Array.from(
 				matchFromStore.scdElement.querySelectorAll(
 					`EqFunction[name="${sourceFunction.name}"]`

@@ -16,7 +16,8 @@ export function buildInsertEditsForEqFunction(
 		for (const eqFunctionTemplate of templateEquipment.eqFunctions) {
 			const eqFunctionElement = createElement(doc, 'EqFunction', {
 				name: eqFunctionTemplate.name,
-				uuid: uuidv4()
+				uuid: uuidv4(),
+				templateUuid: eqFunctionTemplate.uuid
 			})
 
 			for (const lnodeTemplate of eqFunctionTemplate.lnodes) {
