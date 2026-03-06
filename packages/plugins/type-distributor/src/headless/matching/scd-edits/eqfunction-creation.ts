@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { Insert } from '@openscd/oscd-api'
 import type { EquipmentMatch } from '../types'
 import { createLNodeElement } from './lnode-creation'
+import { createElement } from '@oscd-plugins/core'
 
 export function buildInsertEditsForEqFunction(
 	doc: Document,
@@ -13,9 +14,10 @@ export function buildInsertEditsForEqFunction(
 		const templateEquipment = match.templateEquipment
 
 		for (const eqFunctionTemplate of templateEquipment.eqFunctions) {
-			const eqFunctionElement = doc.createElement('EqFunction')
-			eqFunctionElement.setAttribute('name', eqFunctionTemplate.name)
-			eqFunctionElement.setAttribute('uuid', uuidv4())
+			const eqFunctionElement = createElement(doc, 'EqFunction', {
+				name: eqFunctionTemplate.name,
+				uuid: uuidv4()
+			})
 
 			for (const lnodeTemplate of eqFunctionTemplate.lnodes) {
 				const lnodeElement = createLNodeElement(doc, lnodeTemplate)

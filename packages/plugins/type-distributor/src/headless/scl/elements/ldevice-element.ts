@@ -4,6 +4,7 @@ import type {
 } from '@/headless/common-types'
 import { queryServer } from './server-element'
 import type { EquipmentMatch } from '@/headless/matching'
+import { createElement } from '@oscd-plugins/core'
 
 interface SourceFunctionParams {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
@@ -110,7 +111,6 @@ export function createLDeviceElement(
 		functionName,
 		conductingEquipmentName
 	)
-	const lDevice = doc.createElement('LDevice')
-	lDevice.setAttribute('inst', lDeviceInst)
+	const lDevice = createElement(doc, 'LDevice', { inst: lDeviceInst })
 	return lDevice
 }
