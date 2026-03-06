@@ -1,9 +1,7 @@
 <script lang="ts">
 import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import type { LNodeTemplate } from '@/headless/common-types'
-import { getEditor } from '@/headless/utils'
-import { bayStore } from '@/headless/stores'
-import { buildEditsForDeleteLNodeFromAccessPoint } from '@/headless/scl/edits/delete-elements'
+import { deleteLnodeFromAccessPoint } from '@/headless/actions'
 
 interface Props {
 	lnode: LNodeTemplate
@@ -12,30 +10,6 @@ interface Props {
 }
 
 const { lnode, iedName, accessPoint }: Props = $props()
-
-function handleDelete() {
-	const editor = getEditor()
-	const edits = buildEditsForDeleteLNodeFromAccessPoint({
-		iedName,
-		accessPoint,
-		lNodeTemplate: {
-			lnClass: lnode.lnClass,
-			lnType: lnode.lnType,
-			lnInst: lnode.lnInst,
-			ldInst: lnode.ldInst
-		},
-		selectedBay: bayStore.scdBay
-	})
-	if (!(edits.length > 0)) {
-		console.warn(
-			'[IedLnode] No edits generated for deleting LNode - check if LNode still exists'
-		)
-		return
-	}
-	editor.commit(edits, {
-		title: `Delete LNode ${lnode.lnClass}`
-	})
-}
 </script>
 
 <Card.Root class="hover:bg-gray-50 cursor-pointer transition-opacity">
@@ -50,7 +24,7 @@ function handleDelete() {
 					{
 						label: "Delete",
 						disabled: false,
-						callback: handleDelete,
+						callback: () => deleteLnodeFromAccessPoint({iedName, accessPoint, lnode})
 					},
 				]}
 			/>

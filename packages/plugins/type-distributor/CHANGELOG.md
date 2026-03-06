@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- Resolved an issue where using the wrong function for element creation could lead to `xmlns=""` attributes being added. See [code style decision #3](docs/code-style-decisions/0003-why-use-createElement.md) for details.
+
+## [0.5.1]
+### Added
+- Allow user to delete empty ieds
+
 ## [0.5.0]
 ### Added
 - Creation of multiple Access Point for one IED in the create-dialog

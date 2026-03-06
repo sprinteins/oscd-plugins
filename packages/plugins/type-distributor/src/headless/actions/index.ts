@@ -1,3 +1,6 @@
 export * from './create-access-point.action'
 export * from './create-ied.action'
 export * from './create-ied-with-access-points.action'
+export * from './delete-ied.action'
+export * from './delete-lnode.action'
+export * from './delete-access-point.action'

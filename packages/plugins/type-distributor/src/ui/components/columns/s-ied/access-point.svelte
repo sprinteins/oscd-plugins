@@ -1,11 +1,10 @@
 <script lang="ts">
 import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
-import { dndStore, bayStore } from '@/headless/stores'
+import { dndStore } from '@/headless/stores'
 import type { LNodeTemplate } from '@/headless/common-types'
 import IedLnode from './ied-lnode.svelte'
-import { getEditor } from '@/headless/utils'
-import { buildEditsForDeleteAccessPoint } from '@/headless/scl/edits/delete-elements'
+import { deleteAccessPointFromIed } from '@/headless/actions'
 
 interface Props {
 	accessPoint: Element
@@ -43,34 +42,6 @@ function handleDrop(event: DragEvent) {
 	}
 
 	dndStore.handleDrop(accessPoint, iedName)
-}
-
-function handleDelete() {
-	const editor = getEditor()
-
-	if (hasLNodes && !bayStore.scdBay) {
-		console.error(
-			'[AccessPoint] No bay selected - required to clear LNode references'
-		)
-		return
-	}
-
-	const edits = buildEditsForDeleteAccessPoint({
-		accessPoint,
-		iedName,
-		selectedBay: bayStore.scdBay
-	})
-
-	if (!(edits.length > 0)) {
-		console.warn(
-			'[AccessPoint] No edits generated for deleting AccessPoint - check if it still exists'
-		)
-		return
-	}
-
-	editor.commit(edits, {
-		title: `Delete AccessPoint ${accessPoint.getAttribute('name') ?? '(unnamed)'} from ${iedName}`
-	})
 }
 </script>
 
@@ -117,7 +88,7 @@ function handleDelete() {
               <DropdownMenuWorkaround
                 size="sm"
                 actions={[
-                  { label: "Delete", disabled: false, callback: handleDelete },
+                  { label: "Delete", disabled: false, callback: () => deleteAccessPointFromIed({iedName, accessPoint, hasLNodes}) },
                 ]}
               />
             </span>

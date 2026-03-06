@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { buildEditsForDeleteAccessPoint } from './build-edits-for-delete-access-point'
+import { buildEditsForDeleteAccessPoint } from './accesspoint-edits'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
 import { bayStore } from '@/headless/stores'
 import {
