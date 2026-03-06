@@ -8,6 +8,10 @@ export function createInitialIedData(): IedData {
 	}
 }
 
-export function createInitialAccessPointForm(): AccessPointData {
+export function createInitialAccessPoint(): AccessPointData {
 	return { name: '', description: '' }
+}
+
+export function createInitialAccessPoints(): AccessPointData[] {
+	return [createInitialAccessPoint()]
 }

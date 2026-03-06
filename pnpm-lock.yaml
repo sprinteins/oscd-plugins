@@ -814,6 +814,9 @@ importers:
       vitest:
         specifier: ^4.0.17
         version: 4.0.17(@types/node@22.19.3)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.97.0)
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
 
   packages/plugins/type-switcher:
     dependencies:
@@ -7973,8 +7976,8 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.2.1:
-    resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
+  zod@4.3.6:
+    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
 snapshots:
 
@@ -15426,8 +15429,8 @@ snapshots:
       typebox: 1.0.63
       valibot: 1.2.0(typescript@5.9.3)
       yup: 1.7.1
-      zod: 4.2.1
-      zod-v3-to-json-schema: 4.0.0(zod@4.2.1)
+      zod: 4.3.6
+      zod-v3-to-json-schema: 4.0.0(zod@4.3.6)
     transitivePeerDependencies:
       - '@types/json-schema'
       - typescript
@@ -16380,12 +16383,11 @@ snapshots:
       jszip: 3.10.1
       lodash.escape: 4.0.1
 
-  zod-v3-to-json-schema@4.0.0(zod@4.2.1):
+  zod-v3-to-json-schema@4.0.0(zod@4.3.6):
     dependencies:
-      zod: 4.2.1
+      zod: 4.3.6
     optional: true
 
   zod@3.25.76: {}
 
-  zod@4.2.1:
-    optional: true
+  zod@4.3.6: {}
