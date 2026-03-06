@@ -17,8 +17,7 @@ export function validateIedFields(
 	xmlDocument: XMLDocument | null | undefined,
 	isNew = true
 ): FieldErrors | null {
-	const schema = createIedSchema(xmlDocument, isNew)
-	const result = schema.safeParse(ied)
+	const result = createIedSchema(xmlDocument, isNew).safeParse(ied)
 	return result.success ? null : z.treeifyError(result.error)
 }
 
@@ -26,8 +25,7 @@ export function validateAccessPointFields(
 	accessPointData: AccessPointData,
 	context: AccessPointContext
 ): FieldErrors | null {
-	const schema = createAccessPointSchema(context)
-	const result = schema.safeParse(accessPointData)
+	const result = createAccessPointSchema(context).safeParse(accessPointData)
 	return result.success ? null : z.treeifyError(result.error)
 }
 
@@ -55,5 +53,5 @@ export function validateSubmission({
 
 	if (result.success) return null
 
-	return z.treeifyError(result.error);
+	return z.treeifyError(result.error)
 }
