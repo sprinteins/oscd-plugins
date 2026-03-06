@@ -92,7 +92,8 @@ function confirmActiveAp(): boolean {
 	})
 
 	if (apErrors) {
-			formErrors = { properties: { ap: apErrors } }
+		formErrors = { properties: { ap: apErrors } }
+		return false
 	}
 
 	accessPoints = [
