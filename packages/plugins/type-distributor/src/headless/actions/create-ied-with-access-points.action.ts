@@ -10,7 +10,6 @@ export function createIedWithAccessPoints(
 	accessPoints: AccessPointData[]
 ): void {
 	const editor = getEditor()
-
 	const edits = buildEditsForCreateIedWithAccessPoints({
 		name: ied.name,
 		description: ied.description,

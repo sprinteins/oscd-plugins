@@ -12,17 +12,6 @@ import {
 	createIedSchema
 } from './schemas'
 
-function flattenZodErrors(
-	result: ReturnType<ReturnType<typeof createIedSchema>['safeParse']>
-): FieldErrors | null {
-	if (result.success) return null
-	const flat = result.error.flatten().fieldErrors
-	const errors: FieldErrors = {}
-	if (flat.name?.[0]) errors.name = flat.name[0]
-	if (flat.description?.[0]) errors.description = flat.description[0]
-	return Object.keys(errors).length > 0 ? errors : null
-}
-
 export function validateIedFields(
 	ied: Pick<IedData, 'name' | 'description'>,
 	xmlDocument: XMLDocument | null | undefined,
@@ -30,7 +19,7 @@ export function validateIedFields(
 ): FieldErrors | null {
 	const schema = createIedSchema(xmlDocument, isNew)
 	const result = schema.safeParse(ied)
-	return flattenZodErrors(result)
+	return result.success ? null : result.error.flatten().fieldErrors
 }
 
 export function validateAccessPointFields(
@@ -39,7 +28,7 @@ export function validateAccessPointFields(
 ): FieldErrors | null {
 	const schema = createAccessPointSchema(context)
 	const result = schema.safeParse(accessPointData)
-	return flattenZodErrors(result)
+	return result.success ? null : result.error.flatten().fieldErrors
 }
 
 type ValidateSubmissionParams = {
@@ -70,7 +59,7 @@ export function validateSubmission({
 	const apResult = apSchema.safeParse(accessPoints)
 	if (!apResult.success) {
 		const message = apResult.error.errors[0]?.message
-		if (message) errors.ap = { name: message }
+		if (message) errors.ap = { name: [message] }
 	}
 
 	return Object.keys(errors).length > 0 ? errors : null
