@@ -9,17 +9,23 @@ export type IedData = {
 	isNew: boolean
 }
 
-type FormattedField = { _errors: string[] }
-
 export type FieldErrors = {
-	_errors: string[]
-	name?: FormattedField
-	description?: FormattedField
+	errors?: string[]
+	properties?: {
+		name?: { errors?: string[] }
+		description?: { errors?: string[] }
+	}
 }
 
 export type FormErrors = {
-	ied?: FieldErrors
-	ap?: FieldErrors
+	errors?: string[]
+	properties?: {
+		ied?: FieldErrors
+		ap?: {
+			errors?: string[]
+			items?: (FieldErrors | undefined)[]
+		}
+	}
 }
 
 export type AccessPointContext = {

@@ -59,7 +59,7 @@ function enterMultiApMode() {
 	if (ied.isNew) {
 		const iedErrors = validateIedFields(ied, pluginGlobalStore.xmlDocument)
 		if (iedErrors) {
-			formErrors = { ied: iedErrors }
+			formErrors = { properties: { ied: iedErrors } }
 			return
 		}
 		ied = {
@@ -92,8 +92,7 @@ function confirmActiveAp(): boolean {
 	})
 
 	if (apErrors) {
-		formErrors = { ap: apErrors }
-		return false
+			formErrors = { properties: { ap: apErrors } }
 	}
 
 	accessPoints = [
@@ -153,14 +152,14 @@ async function handleCancel() {
   {:else}
     <IedSelectorSection bind:ied />
     {#if ied.isNew}
-      <IedFormSection bind:ied errors={formErrors.ied} />
+      <IedFormSection bind:ied errors={formErrors.properties?.ied} />
     {/if}
   {/if}
 
   <AccessPointFormSection
     bind:accessPoint={accessPoints[accessPoints.length - 1]}
     isRequired={!ied.isNew}
-    errors={formErrors.ap}
+    errors={formErrors.properties?.ap?.items?.[0] ?? formErrors.properties?.ap}
   />
 
   <MultiApButton

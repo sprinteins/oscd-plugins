@@ -23,7 +23,7 @@ let {
         placeholder="Enter IED name"
         {disabled}
       />
-      <FieldError messages={errors?.name?._errors} />
+      <FieldError errors={errors?.properties?.name?.errors} />
     </div>
     <div class="space-y-2">
       <Label.Root for="ied-desc">Description</Label.Root>
@@ -33,7 +33,7 @@ let {
         placeholder="Enter IED description (optional)"
         {disabled}
       />
-      <FieldError messages={errors?.description?._errors} />
+      <FieldError errors={errors?.properties?.description?.errors} />
     </div>
   </div>
 </section>

@@ -1,7 +1,7 @@
 <script lang="ts">
-const { messages }: { messages?: string[] } = $props()
+const { errors }: { errors?: string[] } = $props()
 </script>
 
-{#if messages?.[0]}
-  <p class="text-sm text-red-600">{messages[0]}</p>
+{#if errors?.[0]}
+  <p class="text-sm text-red-600">{errors[0]}</p>
 {/if}

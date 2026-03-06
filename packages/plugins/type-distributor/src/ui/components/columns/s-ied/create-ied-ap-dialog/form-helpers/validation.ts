@@ -1,8 +1,8 @@
+import { z } from 'zod'
 import type {
 	AccessPointContext,
 	AccessPointData,
 	FieldErrors,
-	FormErrors,
 	IedData
 } from './types'
 import { queryAccessPointsFromIed } from '@/headless/scl'
@@ -19,7 +19,7 @@ export function validateIedFields(
 ): FieldErrors | null {
 	const schema = createIedSchema(xmlDocument, isNew)
 	const result = schema.safeParse(ied)
-	return result.success ? null : result.error.format()
+	return result.success ? null : z.treeifyError(result.error)
 }
 
 export function validateAccessPointFields(
@@ -28,7 +28,7 @@ export function validateAccessPointFields(
 ): FieldErrors | null {
 	const schema = createAccessPointSchema(context)
 	const result = schema.safeParse(accessPointData)
-	return result.success ? null : result.error.format()
+	return result.success ? null : z.treeifyError(result.error)
 }
 
 type ValidateSubmissionParams = {
@@ -41,7 +41,7 @@ export function validateSubmission({
 	ied,
 	accessPoints,
 	xmlDocument
-}: ValidateSubmissionParams): FormErrors | null {
+}: ValidateSubmissionParams) {
 	const existingNames = ied.isNew
 		? []
 		: queryAccessPointsFromIed(xmlDocument, ied.name.trim())
@@ -55,10 +55,5 @@ export function validateSubmission({
 
 	if (result.success) return null
 
-	const fmt = result.error.format()
-	const apFmt = fmt.ap
-	return {
-		ied: fmt.ied,
-		ap: apFmt ? (apFmt[0] ?? { _errors: apFmt._errors }) : undefined
-	}
+	return z.treeifyError(result.error);
 }
