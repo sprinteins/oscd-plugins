@@ -54,7 +54,7 @@ const sIedData = $derived.by(() => {
 })
 </script>
 {#if sIedData && sIedData.length > 0}
-  <div class="space-y-2 mb-2">
+  <div class="space-y-2 my-2">
     {#each sIedData as { name: iedName, accessPoints }}
       {#if accessPoints.length === 0}
 				<IedEmptyItem {iedName} />
