@@ -9,10 +9,27 @@ export type IedData = {
 	isNew: boolean
 }
 
-export type DialogFormState = {
-	ied: IedData
-	currentAp: AccessPointData
-	accessPoints: AccessPointData[]
-	isMultiApMode: boolean
-	error: string | null
+export type FieldErrors = {
+	errors?: string[]
+	properties?: {
+		name?: { errors?: string[] }
+		description?: { errors?: string[] }
+	}
+}
+
+export type FormErrors = {
+	errors?: string[]
+	properties?: {
+		ied?: FieldErrors
+		ap?: {
+			errors?: string[]
+			items?: (FieldErrors | undefined)[]
+		}
+	}
+}
+
+export type AccessPointContext = {
+	pendingNames: string[]
+	existingNames: string[]
+	iedName: string
 }

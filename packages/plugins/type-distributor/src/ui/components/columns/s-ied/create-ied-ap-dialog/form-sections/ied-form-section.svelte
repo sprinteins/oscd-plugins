@@ -1,11 +1,13 @@
 <script lang="ts">
 import { Label, Input } from '@oscd-plugins/core-ui-svelte'
-import type { IedData } from '../form-helpers'
+import type { FieldErrors, IedData } from '../form-helpers'
+import { FieldError } from '../form-elements'
 
 let {
 	ied = $bindable({ name: '', description: '', isNew: true }),
-	disabled = false
-}: { ied: IedData; disabled?: boolean } = $props()
+	disabled = false,
+	errors = undefined
+}: { ied: IedData; disabled?: boolean; errors?: FieldErrors } = $props()
 </script>
 
 <section>
@@ -21,6 +23,7 @@ let {
         placeholder="Enter IED name"
         {disabled}
       />
+      <FieldError errors={errors?.properties?.name?.errors} />
     </div>
     <div class="space-y-2">
       <Label.Root for="ied-desc">Description</Label.Root>
@@ -30,6 +33,7 @@ let {
         placeholder="Enter IED description (optional)"
         {disabled}
       />
+      <FieldError errors={errors?.properties?.description?.errors} />
     </div>
   </div>
 </section>

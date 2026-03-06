@@ -1,15 +1,18 @@
 <script lang="ts">
 import { Label, Input } from '@oscd-plugins/core-ui-svelte'
-import type { AccessPointData } from '../form-helpers'
+import type { AccessPointData, FieldErrors } from '../form-helpers'
+import { FieldError } from '../form-elements'
 
 let {
 	accessPoint = $bindable({ name: '', description: '' }),
 	isRequired,
-	disabled = false
+	disabled = false,
+	errors = undefined
 }: {
 	accessPoint: AccessPointData
 	isRequired: boolean
 	disabled?: boolean
+	errors?: FieldErrors
 } = $props()
 </script>
 
@@ -26,6 +29,7 @@ let {
         placeholder="Enter Access Point name"
         {disabled}
       />
+      <FieldError errors={errors?.properties?.name?.errors ?? errors?.errors} />
     </div>
     <div class="space-y-2">
       <Label.Root for="ap-desc">Description</Label.Root>
@@ -35,6 +39,7 @@ let {
         placeholder="Enter Access Point description (optional)"
         disabled={disabled || !accessPoint.name}
       />
+      <FieldError errors={errors?.properties?.description?.errors} />
     </div>
   </div>
 </section>

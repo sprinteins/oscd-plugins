@@ -1,8 +1,12 @@
-export type { AccessPointData, IedData } from './types'
+export type { AccessPointData, IedData, FieldErrors, FormErrors } from './types'
 export {
 	validateSubmission,
-	validateIedBeforeMultiAp,
-	validateAccessPoint
+	validateIedFields,
+	validateAccessPointFields
 } from './validation'
-export { submitForm, buildAccessPoint } from './submission'
-export { createInitialIedData, createInitialAccessPointForm } from './reset'
+export { submitForm } from './submission'
+export {
+	createInitialIedData,
+	createInitialAccessPoint,
+	createInitialAccessPoints
+} from './reset'

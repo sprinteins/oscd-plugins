@@ -12,23 +12,24 @@ import { MultiApButton, FormActions } from './form-elements'
 import {
 	type AccessPointData,
 	type IedData,
+	type FormErrors,
 	validateSubmission,
-	validateIedBeforeMultiAp,
-	validateAccessPoint,
+	validateIedFields,
+	validateAccessPointFields,
 	submitForm,
-	buildAccessPoint,
 	createInitialIedData,
-	createInitialAccessPointForm
+	createInitialAccessPoint,
+	createInitialAccessPoints
 } from './form-helpers'
 import IedAndAccessPointOverview from './form-sections/ied-and-access-point-overview-section.svelte'
 import { ssdImportStore } from '@/headless/stores'
 
 let ied = $state<IedData>(createInitialIedData())
-let currentAccessPoint = $state(createInitialAccessPointForm())
-let accessPoints = $state<AccessPointData[]>([])
+let accessPoints = $state<AccessPointData[]>(createInitialAccessPoints())
 let isMultiApMode = $state(false)
-let error = $state<string | null>(null)
+let formErrors = $state<FormErrors>({})
 
+//TODO: Update LD0
 const ld0FunctionTemplates = $derived(ssdImportStore.ld0FunctionTemplates)
 
 function computeInitialLD0Source(): LD0Source {
@@ -38,10 +39,11 @@ function computeInitialLD0Source(): LD0Source {
 	}
 	return { kind: 'default', onlyMandatoryDOs: false }
 }
-
 let selectedLD0Source = $state<LD0Source>(computeInitialLD0Source())
 
-const hasCurrentAp = $derived(currentAccessPoint.name.trim().length > 0)
+const activeAp = $derived(accessPoints[accessPoints.length - 1])
+const confirmedAps = $derived(accessPoints.slice(0, -1))
+const hasActiveAp = $derived(activeAp?.name.trim().length > 0)
 const hasValidIed = $derived(ied.name.trim().length > 0)
 
 const submitLabel = $derived(
@@ -54,48 +56,44 @@ const submitLabel = $derived(
 
 const isSubmitDisabled = $derived.by(() => {
 	if (isMultiApMode) {
-		return !ied.isNew && accessPoints.length === 0
+		return !ied.isNew && confirmedAps.length === 0
 	}
-	return ied.isNew ? !hasValidIed : !hasCurrentAp
+	return ied.isNew ? !hasValidIed : !hasActiveAp
 })
 
 function resetForm() {
 	ied = createInitialIedData()
-	currentAccessPoint = createInitialAccessPointForm()
-	accessPoints = []
+	accessPoints = createInitialAccessPoints()
 	isMultiApMode = false
-	error = null
 	selectedLD0Source = computeInitialLD0Source()
+	formErrors = {}
 }
 
 function enterMultiApMode() {
-	error = null
+	formErrors = {}
 
-	const validationError = validateIedBeforeMultiAp(
-		pluginGlobalStore.xmlDocument,
-		ied
-	)
-	if (validationError) {
-		error = validationError
-		return
+	if (ied.isNew) {
+		const iedErrors = validateIedFields(ied, pluginGlobalStore.xmlDocument)
+		if (iedErrors) {
+			formErrors = { properties: { ied: iedErrors } }
+			return
+		}
+		ied = {
+			...ied,
+			name: ied.name.trim(),
+			description: ied.description.trim()
+		}
 	}
 
-	ied = {
-		...ied,
-		name: ied.name.trim(),
-		description: ied.description.trim()
+	if (hasActiveAp) {
+		const committed = confirmActiveAp()
+		if (!committed) return
 	}
 
 	isMultiApMode = true
-
-	if (hasCurrentAp) {
-		addAccessPoint()
-	}
 }
 
-function addAccessPoint() {
-	error = null
-
+function confirmActiveAp(): boolean {
 	const existingApNames = ied.isNew
 		? []
 		: queryAccessPointsFromIed(
@@ -103,61 +101,59 @@ function addAccessPoint() {
 				ied.name.trim()
 			)
 
-	const validationError = validateAccessPoint({
-		apName: currentAccessPoint.name,
-		pendingApNames: accessPoints.map((ap) => ap.name),
-		existingApNames,
+	const apErrors = validateAccessPointFields(activeAp, {
+		pendingNames: confirmedAps.map((ap) => ap.name),
+		existingNames: existingApNames,
 		iedName: ied.name
 	})
 
-	if (validationError) {
-		error = validationError
-		return
+	if (apErrors) {
+		formErrors = { properties: { ap: apErrors } }
+		return false
 	}
 
 	accessPoints = [
-		...accessPoints,
+		...confirmedAps,
 		{
-			name: currentAccessPoint.name.trim(),
-			description: currentAccessPoint.description.trim()
-		}
+			name: activeAp.name.trim(),
+			description: activeAp.description.trim()
+		},
+		createInitialAccessPoint()
 	]
+	return true
+}
 
-	currentAccessPoint = createInitialAccessPointForm()
+function addAccessPoint() {
+	formErrors = {}
+	confirmActiveAp()
 }
 
 function removeAccessPoint(apName: string) {
-	accessPoints = accessPoints.filter((ap) => ap.name !== apName)
-}
-
-function getAccessPointsForSubmission(): AccessPointData[] {
-	if (isMultiApMode) {
-		return accessPoints
-	}
-	const ap = buildAccessPoint(
-		currentAccessPoint.name,
-		currentAccessPoint.description
-	)
-	return ap ? [ap] : []
+	accessPoints = [
+		...confirmedAps.filter((ap) => ap.name !== apName),
+		activeAp
+	]
 }
 
 function handleSubmit() {
-	error = null
+	formErrors = {}
 
-	const accessPointsToSubmit = getAccessPointsForSubmission()
-	const validationError = validateSubmission({
+	const submittableAps = isMultiApMode
+		? confirmedAps
+		: accessPoints.filter((ap) => ap.name.trim())
+
+	const errors = validateSubmission({
 		ied,
-		accessPoints: accessPointsToSubmit,
+		accessPoints: submittableAps,
 		xmlDocument: pluginGlobalStore.xmlDocument
 	})
 
-	if (validationError) {
-		error = validationError
+	if (errors) {
+		formErrors = errors
 		return
 	}
 
-	//TODO: Params
-	submitForm(ied, accessPointsToSubmit, selectedLD0Source)
+	submitForm(ied, submittableAps, selectedLD0Source)
 	resetForm()
 	dialogStore.closeDialog('success')
 }
@@ -167,40 +163,46 @@ async function handleCancel() {
 }
 </script>
 
-<div class="flex flex-col gap-4">
-  {#if isMultiApMode}
-    <IedAndAccessPointOverview {ied} {accessPoints} {removeAccessPoint} />
-  {:else}
-    <IedSelectorSection bind:ied />
-    {#if ied.isNew}
-      <IedFormSection bind:ied />
-    {/if}
-  {/if}
+<form class="flex flex-col gap-4">
+	{#if isMultiApMode}
+		<IedAndAccessPointOverview
+			{ied}
+			accessPoints={confirmedAps}
+			{removeAccessPoint}
+		/>
+	{:else}
+		<IedSelectorSection bind:ied />
+		{#if ied.isNew}
+			<IedFormSection bind:ied errors={formErrors.properties?.ied} />
+		{/if}
+	{/if}
 
-  <AccessPointFormSection bind:accessPoint={currentAccessPoint} isRequired={!ied.isNew} />
+	<AccessPointFormSection
+		bind:accessPoint={accessPoints[accessPoints.length - 1]}
+		isRequired={!ied.isNew}
+		errors={formErrors.properties?.ap?.items?.[0] ??
+			formErrors.properties?.ap}
+	/>
 
-  <Ld0FormSection {ld0FunctionTemplates} bind:source={selectedLD0Source} />
+	<Ld0FormSection {ld0FunctionTemplates} bind:source={selectedLD0Source} />
 
-  <MultiApButton
-    {isMultiApMode}
-    hasValidInput={isMultiApMode ? hasCurrentAp : hasValidIed}
-    onEnterMultiApMode={enterMultiApMode}
-    onAddAccessPoint={addAccessPoint}
-  />
+	<MultiApButton
+		{isMultiApMode}
+		hasValidInput={isMultiApMode ? hasActiveAp : hasValidIed}
+		onEnterMultiApMode={enterMultiApMode}
+		onAddAccessPoint={addAccessPoint}
+	/>
 
-  {#if error}
-    <p class="text-sm text-red-600">{error}</p>
-  {/if}
-
-  <FormActions
-    onCancel={handleCancel}
-    onSubmit={handleSubmit}
-    {submitLabel}
-    {isMultiApMode}
-    onGoBackToIedSelection={() => {
-      isMultiApMode = false;
-      accessPoints = [];
-    }}
-    disabled={isSubmitDisabled}
-  />
-</div>
+	<FormActions
+		onCancel={handleCancel}
+		onSubmit={handleSubmit}
+		{submitLabel}
+		{isMultiApMode}
+		onGoBackToIedSelection={() => {
+			isMultiApMode = false;
+			accessPoints = [createInitialAccessPoint()];
+			formErrors = {};
+		}}
+		disabled={isSubmitDisabled}
+	/>
+</form>
