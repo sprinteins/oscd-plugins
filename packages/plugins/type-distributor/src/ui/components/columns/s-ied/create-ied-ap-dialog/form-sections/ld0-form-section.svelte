@@ -60,10 +60,6 @@ function handleMandatoryChange(checked: boolean | 'indeterminate') {
 </script>
 
 <section>
-  <header class="pb-4">
-    <h1 class="text-xl font-bold">LD0</h1>
-  </header>
-
   <div class="space-y-3">
     {#if hasSingleTemplate && singleTemplate}
       <p class="text-muted-foreground text-sm">
@@ -73,7 +69,7 @@ function handleMandatoryChange(checked: boolean | 'indeterminate') {
     {/if}
 
     <div class="space-y-2">
-      <Label.Root for="ld0-source">Source</Label.Root>
+      <Label.Root for="ld0-source">LDO, Select Source</Label.Root>
       <SelectWorkaround
         value={selectValue}
         options={selectOptions}
