@@ -145,7 +145,11 @@ describe('buildInsertEditsForEqFunction', () => {
 			const scdElement = doc.querySelector('ConductingEquipment')!
 			const match: EquipmentMatch = {
 				scdElement,
-				bayTypeEquipment: { uuid: 'ce-bt-uuid', templateUuid: 'tmpl-uuid', virtual: false },
+				bayTypeEquipment: {
+					uuid: 'ce-bt-uuid',
+					templateUuid: 'tmpl-uuid',
+					virtual: false
+				},
 				templateEquipment: ceTemplate
 			}
 
@@ -172,7 +176,11 @@ describe('buildInsertEditsForEqFunction', () => {
 			const scdElement = doc.querySelector('ConductingEquipment')!
 			const match: EquipmentMatch = {
 				scdElement,
-				bayTypeEquipment: { uuid: 'ce-bt-uuid', templateUuid: 'tmpl-uuid', virtual: false },
+				bayTypeEquipment: {
+					uuid: 'ce-bt-uuid',
+					templateUuid: 'tmpl-uuid',
+					virtual: false
+				},
 				templateEquipment: { ...ceTemplate, eqFunctions: [] }
 			}
 

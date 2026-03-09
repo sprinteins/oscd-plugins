@@ -3,7 +3,10 @@ import {
 	buildEditForBayUpdate,
 	buildEditsForEquipmentUpdates
 } from './bay-type-edits'
-import type { BayType, ConductingEquipmentTemplate } from '@/headless/common-types'
+import type {
+	BayType,
+	ConductingEquipmentTemplate
+} from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { createTestDocument } from '@/headless/test-helpers'
 
@@ -36,7 +39,11 @@ function makeEquipmentMatch(xml: string): EquipmentMatch {
 	const scdElement = doc.querySelector('ConductingEquipment')!
 	return {
 		scdElement,
-		bayTypeEquipment: { uuid: 'ce-bt-uuid', templateUuid: 'tmpl-uuid', virtual: false },
+		bayTypeEquipment: {
+			uuid: 'ce-bt-uuid',
+			templateUuid: 'tmpl-uuid',
+			virtual: false
+		},
 		templateEquipment: ceTemplate
 	}
 }
@@ -90,7 +97,9 @@ describe('buildEditsForEquipmentUpdates', () => {
 
 	describe('GIVEN a match with an existing uuid', () => {
 		it('WHEN called THEN it preserves the existing uuid', () => {
-			const match = makeEquipmentMatch('name="Q1" type="CBR" uuid="existing-eq-uuid"')
+			const match = makeEquipmentMatch(
+				'name="Q1" type="CBR" uuid="existing-eq-uuid"'
+			)
 
 			const edits = buildEditsForEquipmentUpdates([match])
 
@@ -113,7 +122,11 @@ describe('buildEditsForEquipmentUpdates', () => {
 			const scdElement = doc.querySelector('ConductingEquipment')!
 			const match: EquipmentMatch = {
 				scdElement,
-				bayTypeEquipment: { uuid: 'ce-bt-uuid', templateUuid: 'tmpl-uuid', virtual: false },
+				bayTypeEquipment: {
+					uuid: 'ce-bt-uuid',
+					templateUuid: 'tmpl-uuid',
+					virtual: false
+				},
 				templateEquipment: ceTemplate
 			}
 
@@ -137,7 +150,11 @@ describe('buildEditsForEquipmentUpdates', () => {
 			const scdElement = doc.querySelector('ConductingEquipment')!
 			const match: EquipmentMatch = {
 				scdElement,
-				bayTypeEquipment: { uuid: 'ce-bt-uuid', templateUuid: 'tmpl-uuid', virtual: false },
+				bayTypeEquipment: {
+					uuid: 'ce-bt-uuid',
+					templateUuid: 'tmpl-uuid',
+					virtual: false
+				},
 				templateEquipment: ceTemplate
 			}
 
