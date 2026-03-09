@@ -5,8 +5,7 @@ import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import {
 	IedSelectorSection,
 	IedFormSection,
-	AccessPointFormSection,
-	Ld0FormSection
+	AccessPointFormSection
 } from './form-sections'
 import { MultiApButton, FormActions } from './form-elements'
 import {
@@ -25,7 +24,7 @@ import IedAndAccessPointOverview from './form-sections/ied-and-access-point-over
 import { ssdImportStore } from '@/headless/stores'
 
 let ied = $state<IedData>(createInitialIedData())
-let accessPoints = $state<AccessPointData[]>(createInitialAccessPoints())
+let accessPoints = $state<AccessPointData[]>(createInitialAccessPoints(computeInitialLD0Source()))
 let isMultiApMode = $state(false)
 let formErrors = $state<FormErrors>({})
 
@@ -39,7 +38,6 @@ function computeInitialLD0Source(): LD0Source {
 	}
 	return { kind: 'default', onlyMandatoryDOs: false }
 }
-let selectedLD0Source = $state<LD0Source>(computeInitialLD0Source())
 
 const activeAp = $derived(accessPoints[accessPoints.length - 1])
 const confirmedAps = $derived(accessPoints.slice(0, -1))
@@ -63,9 +61,8 @@ const isSubmitDisabled = $derived.by(() => {
 
 function resetForm() {
 	ied = createInitialIedData()
-	accessPoints = createInitialAccessPoints()
+	accessPoints = createInitialAccessPoints(computeInitialLD0Source())
 	isMultiApMode = false
-	selectedLD0Source = computeInitialLD0Source()
 	formErrors = {}
 }
 
@@ -116,9 +113,10 @@ function confirmActiveAp(): boolean {
 		...confirmedAps,
 		{
 			name: activeAp.name.trim(),
-			description: activeAp.description.trim()
+			description: activeAp.description.trim(),
+			ld0Source: activeAp.ld0Source
 		},
-		createInitialAccessPoint()
+		createInitialAccessPoint(computeInitialLD0Source())
 	]
 	return true
 }
@@ -153,7 +151,7 @@ function handleSubmit() {
 		return
 	}
 
-	submitForm(ied, submittableAps, selectedLD0Source)
+	submitForm(ied, submittableAps)
 	resetForm()
 	dialogStore.closeDialog('success')
 }
@@ -179,12 +177,11 @@ async function handleCancel() {
 
 	<AccessPointFormSection
 		bind:accessPoint={accessPoints[accessPoints.length - 1]}
+		{ld0FunctionTemplates}
 		isRequired={!ied.isNew}
 		errors={formErrors.properties?.ap?.items?.[0] ??
 			formErrors.properties?.ap}
 	/>
-
-	<Ld0FormSection {ld0FunctionTemplates} bind:source={selectedLD0Source} />
 
 	<MultiApButton
 		{isMultiApMode}
@@ -200,7 +197,7 @@ async function handleCancel() {
 		{isMultiApMode}
 		onGoBackToIedSelection={() => {
 			isMultiApMode = false;
-			accessPoints = [createInitialAccessPoint()];
+			accessPoints = [createInitialAccessPoint(computeInitialLD0Source())];
 			formErrors = {};
 		}}
 		disabled={isSubmitDisabled}

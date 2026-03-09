@@ -1,10 +1,21 @@
 import { z } from 'zod'
 import { queryIedExists } from '@/headless/scl'
+import type { LD0Source } from '@/headless/scl'
 import type { AccessPointContext } from './types'
+
+const ld0SourceSchema = z.custom<LD0Source>(
+	(val) => {
+		if (typeof val !== 'object' || val === null) return false
+		const kind = (val as { kind: unknown }).kind
+		return kind === 'default' || kind === 'function'
+	},
+	{ message: 'LD0 source must be selected' }
+)
 
 export const accessPointBaseSchema = z.object({
 	name: z.string().trim().min(1, 'Access Point name is required'),
-	description: z.string().trim()
+	description: z.string().trim(),
+	ld0Source: ld0SourceSchema
 })
 
 export const iedBaseSchema = z.object({
@@ -38,7 +49,7 @@ export function createAccessPointsCollectionSchema({
 	existingNames,
 	iedName
 }: AccessPointsCollectionContext) {
-	return z.array(z.object({ name: z.string() })).superRefine((aps, ctx) => {
+	return z.array(z.object({ name: z.string(), ld0Source: ld0SourceSchema })).superRefine((aps, ctx) => {
 		const submittable = aps.filter((ap) => ap.name.trim())
 
 		if (!isNew && submittable.length === 0) {

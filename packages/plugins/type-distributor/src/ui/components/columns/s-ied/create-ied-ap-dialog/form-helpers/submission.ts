@@ -1,4 +1,3 @@
-import type { LD0Source } from '@/headless/scl'
 import type { AccessPointData, IedData } from './types'
 import {
 	createAccessPoints,
@@ -8,11 +7,10 @@ import {
 
 export function submitForm(
 	ied: IedData,
-	accessPoints: AccessPointData[],
-	ld0Source: LD0Source
+	accessPoints: AccessPointData[]
 ): void {
 	if (ied.isNew && accessPoints.length > 0) {
-		createIedWithAccessPoints(ied, accessPoints, ld0Source)
+		createIedWithAccessPoints(ied, accessPoints)
 		return
 	}
 
@@ -21,5 +19,5 @@ export function submitForm(
 		return
 	}
 
-	createAccessPoints(ied, accessPoints, ld0Source)
+	createAccessPoints(ied, accessPoints)
 }

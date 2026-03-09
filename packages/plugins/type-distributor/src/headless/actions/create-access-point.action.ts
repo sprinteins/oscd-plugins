@@ -24,11 +24,11 @@ export function createAccessPoint(
 	const edits = [...apEdits, ...ld0Edits]
 	if (accessPoints.length === 1) {
 		editor.commit(edits, {
-			title: `Add Access Point "${accessPoints[0].name}" to IED "${ied.name}"`
+			title: `Add Access Point "${accessPoints[0].name}" with LD0 to IED "${ied.name}"`
 		})
 	} else {
 		editor.commit(edits, {
-			title: `Add ${accessPoints.length} Access Points to IED "${ied.name}"`
+			title: `Add ${accessPoints.length} Access Points with LD0 to IED "${ied.name}"`
 		})
 	}
 }

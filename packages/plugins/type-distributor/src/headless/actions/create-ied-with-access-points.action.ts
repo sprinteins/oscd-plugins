@@ -6,13 +6,11 @@ import {
 	buildEditsForCreateIedWithAccessPoints,
 	buildLD0EditsForServer
 } from '../scl'
-import type { LD0Source } from '../scl'
 import { getDocumentAndEditor } from '../utils'
 
 export function createIedWithAccessPoints(
 	ied: IedData,
-	accessPoints: AccessPointData[],
-	ld0Source: LD0Source
+	accessPoints: AccessPointData[]
 ): void {
 	const { doc, editor } = getDocumentAndEditor()
 	const iedAndApEdits = buildEditsForCreateIedWithAccessPoints({
@@ -22,10 +20,10 @@ export function createIedWithAccessPoints(
 	})
 
 	const apEdits = iedAndApEdits.slice(1)
-	const ld0Edits = apEdits.flatMap((edit) => {
+	const ld0Edits = apEdits.flatMap((edit, i) => {
 		const server = (edit.node as Element).querySelector('Server')
 		if (!server) throw new Error('AccessPoint edit is missing Server element')
-		return buildLD0EditsForServer({ doc, server, source: ld0Source })
+		return buildLD0EditsForServer({ doc, server, source: accessPoints[i].ld0Source })
 	})
 
 	const edits = [...iedAndApEdits, ...ld0Edits]

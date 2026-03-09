@@ -1,15 +1,19 @@
 <script lang="ts">
 import { Label, Input } from '@oscd-plugins/core-ui-svelte'
 import type { AccessPointData, FieldErrors } from '../form-helpers'
+import type { FunctionTemplate } from '@/headless/common-types'
 import { FieldError } from '../form-elements'
+import Ld0FormSection from './ld0-form-section.svelte'
 
 let {
-	accessPoint = $bindable({ name: '', description: '' }),
+	accessPoint = $bindable({ name: '', description: '', ld0Source: { kind: 'default', onlyMandatoryDOs: false } }),
+	ld0FunctionTemplates,
 	isRequired,
 	disabled = false,
 	errors = undefined
 }: {
 	accessPoint: AccessPointData
+	ld0FunctionTemplates: FunctionTemplate[]
 	isRequired: boolean
 	disabled?: boolean
 	errors?: FieldErrors
@@ -41,5 +45,6 @@ let {
       />
       <FieldError errors={errors?.properties?.description?.errors} />
     </div>
+    <Ld0FormSection {ld0FunctionTemplates} bind:source={accessPoint.ld0Source} />
   </div>
 </section>

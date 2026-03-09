@@ -1,6 +1,9 @@
+import type { LD0Source } from '@/headless/scl'
+
 export type AccessPointData = {
 	name: string
 	description: string
+	ld0Source: LD0Source
 }
 
 export type IedData = {
