@@ -84,3 +84,13 @@ export function queryAccessPointsFromIed(
 		.map((ap) => ap.getAttribute('name'))
 		.filter((name): name is string => name !== null)
 }
+
+export function queryServerElement(
+	doc: XMLDocument,
+	iedName: string,
+	apName: string
+): Element | null {
+	return doc.querySelector(
+		`IED[name="${iedName}"] AccessPoint[name="${apName}"] Server`
+	)
+}
