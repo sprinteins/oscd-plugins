@@ -1,23 +1,25 @@
 <script lang="ts">
-import { SelectWorkaround, Checkbox, Label } from '@oscd-plugins/core-ui-svelte'
+import { SelectWorkaround, Label } from '@oscd-plugins/core-ui-svelte'
 import type { LD0Source } from '@/headless/scl'
 import type { FunctionTemplate } from '@/headless/common-types'
 
 let {
 	ld0FunctionTemplates,
-	source = $bindable()
+	source = $bindable(),
+	disabled = false
 }: {
 	ld0FunctionTemplates: FunctionTemplate[]
 	source: LD0Source
+	disabled?: boolean
 } = $props()
 
-const DEFAULT_VALUE = '__default__'
+const DEFAULT_ALL = '__default_all__'
+const DEFAULT_MANDATORY = '__default_mandatory__'
 
 const hasSingleTemplate = $derived(ld0FunctionTemplates.length === 1)
 const singleTemplate = $derived(
 	hasSingleTemplate ? ld0FunctionTemplates[0] : null
 )
-const isDefaultSelected = $derived(source.kind === 'default')
 
 const selectOptions = $derived.by(() => {
 	const functionOptions = ld0FunctionTemplates.map((t) => ({
@@ -26,35 +28,27 @@ const selectOptions = $derived.by(() => {
 	}))
 	return [
 		...functionOptions,
-		{ value: DEFAULT_VALUE, label: 'Default (IEC 61850-7-4)' }
+		{ value: DEFAULT_ALL, label: 'Default (IEC 61850-7-4)' },
+		{ value: DEFAULT_MANDATORY, label: 'Default – Mandatory DOs only (IEC 61850-7-4)' }
 	]
 })
 
-const selectValue = $derived(
-	source.kind === 'default' ? DEFAULT_VALUE : source.functionTemplate.uuid
-)
-
-const onlyMandatoryChecked = $derived(
-	source.kind === 'default' ? source.onlyMandatoryDOs : false
-)
+const selectValue = $derived.by(() => {
+	if (source.kind === 'function') return source.functionTemplate.uuid
+	return source.onlyMandatoryDOs ? DEFAULT_MANDATORY : DEFAULT_ALL
+})
 
 function handleChange(event: Event) {
 	const value = (event.target as HTMLSelectElement).value
-	if (value === DEFAULT_VALUE) {
-		const keepMandatory =
-			source.kind === 'default' ? source.onlyMandatoryDOs : false
-		source = { kind: 'default', onlyMandatoryDOs: keepMandatory }
+	if (value === DEFAULT_ALL) {
+		source = { kind: 'default', onlyMandatoryDOs: false }
+	} else if (value === DEFAULT_MANDATORY) {
+		source = { kind: 'default', onlyMandatoryDOs: true }
 	} else {
 		const template = ld0FunctionTemplates.find((t) => t.uuid === value)
 		if (template) {
 			source = { kind: 'function', functionTemplate: template }
 		}
-	}
-}
-
-function handleMandatoryChange(checked: boolean | 'indeterminate') {
-	if (source.kind === 'default') {
-		source = { ...source, onlyMandatoryDOs: checked === true }
 	}
 }
 </script>
@@ -76,20 +70,8 @@ function handleMandatoryChange(checked: boolean | 'indeterminate') {
         handleChange={handleChange}
         placeholder="Select LD0 source"
         class="w-full"
+        {disabled}
       />
     </div>
-
-    {#if isDefaultSelected}
-      <div class="flex items-center gap-2">
-        <Checkbox.Root
-          id="ld0-mandatory"
-          checked={onlyMandatoryChecked}
-          onCheckedChange={handleMandatoryChange}
-        />
-        <Label.Root for="ld0-mandatory" class="cursor-pointer font-normal">
-          Only Mandatory DOs
-        </Label.Root>
-      </div>
-    {/if}
   </div>
 </section>

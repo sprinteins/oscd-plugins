@@ -45,6 +45,6 @@ let {
       />
       <FieldError errors={errors?.properties?.description?.errors} />
     </div>
-    <Ld0FormSection {ld0FunctionTemplates} bind:source={accessPoint.ld0Source} />
+    <Ld0FormSection {ld0FunctionTemplates} bind:source={accessPoint.ld0Source} disabled={!accessPoint.name} />
   </div>
 </section>
