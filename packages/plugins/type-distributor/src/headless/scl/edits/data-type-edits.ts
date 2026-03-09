@@ -6,10 +6,6 @@ import {
 	type TypeCollections
 } from '@/headless/domain/type-resolution'
 
-//TODO - Refactor this
-
-// ─── Type ordering ───────────────────────────────────────────────────────────
-
 const TYPE_ORDER = ['LNodeType', 'DOType', 'DAType', 'EnumType'] as const
 type TypeName = (typeof TYPE_ORDER)[number]
 
@@ -19,8 +15,6 @@ const TYPE_TO_COLLECTION_KEY: Record<TypeName, keyof TypeCollections> = {
 	DAType: 'daTypeIds',
 	EnumType: 'enumTypeIds'
 }
-
-// ─── Insertion reference ─────────────────────────────────────────────────────
 
 function queryLastOfTypes(
 	dataTypeTemplates: Element,
@@ -46,8 +40,6 @@ function queryTypeReference(
 	return queryLastOfTypes(dataTypeTemplates, precedingTypes)
 }
 
-// ─── DataTypeTemplates element ───────────────────────────────────────────────
-
 export function ensureDataTypeTemplates(doc: XMLDocument): {
 	element: Element
 	edit: Insert | null
@@ -66,8 +58,6 @@ export function ensureDataTypeTemplates(doc: XMLDocument): {
 	}
 	return { element: dataTypeTemplates, edit: null }
 }
-
-// ─── Filter out already-present type ids ─────────────────────────────────────
 
 function filterMissingIds(
 	doc: Document,
@@ -98,8 +88,6 @@ function filterExistingTypes(
 		enumTypeIds: filterMissingIds(doc, collections.enumTypeIds, 'EnumType')
 	}
 }
-
-// ─── Clone-and-insert helpers ─────────────────────────────────────────────────
 
 function cloneTypeFromSSD(
 	typeId: string,
@@ -133,8 +121,6 @@ function buildEditsForType(
 
 	return edits
 }
-
-// ─── Public API ───────────────────────────────────────────────────────────────
 
 export function buildEditsForDataTypeTemplates(
 	doc: Document,
