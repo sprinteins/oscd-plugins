@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, vi, afterEach, beforeAll } from 'vitest'
+import {
+	describe,
+	it,
+	expect,
+	beforeEach,
+	vi,
+	afterEach,
+	beforeAll
+} from 'vitest'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
