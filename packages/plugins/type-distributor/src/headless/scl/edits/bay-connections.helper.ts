@@ -83,28 +83,32 @@ function queryMatchingBayLNode(
 
 	const { equipmentName, functionName } = parsed
 
-	let targetFunction: Element | null = null
+	const lNodeSelector = `:scope > LNode[lnClass="${lNodeTemplate.lnClass}"][lnType="${lNodeTemplate.lnType}"][lnInst="${lNodeTemplate.lnInst}"][iedName="${iedName}"]`
 
 	if (equipmentName) {
 		const equipment = bay.querySelector(
 			`ConductingEquipment[name="${equipmentName}"]`
 		)
-		if (equipment) {
-			targetFunction = equipment.querySelector(
+		if (!equipment) return null
+
+		const functionElements = Array.from(
+			equipment.querySelectorAll(
 				`:scope > EqFunction[name="${functionName}"]`
 			)
-		}
-	} else {
-		targetFunction = bay.querySelector(
-			`:scope > Function[name="${functionName}"]`
 		)
+		for (const fn of functionElements) {
+			const lNode = fn.querySelector(lNodeSelector)
+			if (lNode) return lNode
+		}
+		return null
 	}
 
-	if (!targetFunction) return null
-
-	const matchingLNode = targetFunction.querySelector(
-		`:scope > LNode[lnClass="${lNodeTemplate.lnClass}"][lnType="${lNodeTemplate.lnType}"][lnInst="${lNodeTemplate.lnInst}"][iedName="${iedName}"]`
+	const functionElements = Array.from(
+		bay.querySelectorAll(`:scope > Function[name="${functionName}"]`)
 	)
-
-	return matchingLNode
+	for (const fn of functionElements) {
+		const lNode = fn.querySelector(lNodeSelector)
+		if (lNode) return lNode
+	}
+	return null
 }

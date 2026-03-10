@@ -407,6 +407,254 @@ describe('buildEditsForBayLNode', () => {
 		})
 	})
 
+	describe('with duplicate EqFunction names', () => {
+		const eqFuncTemplate1Uuid = 'eq-func-template-uuid-1'
+		const eqFuncTemplate2Uuid = 'eq-func-template-uuid-2'
+
+		it('GIVEN two same-named EqFunctions and functionScopeUuid matching index-0 WHEN buildEditsForBayLNode is called THEN targets the first EqFunction LNode', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation>
+						<VoltageLevel>
+							<Bay name="TestBay">
+								<ConductingEquipment name="EarthSwitch">
+									<EqFunction name="DisconnectorFunction">
+										<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
+									</EqFunction>
+									<EqFunction name="DisconnectorFunction">
+										<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
+									</EqFunction>
+								</ConductingEquipment>
+							</Bay>
+						</VoltageLevel>
+					</Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
+
+			const earthSwitch = doc.querySelector(
+				'ConductingEquipment[name="EarthSwitch"]'
+			) as Element
+			const lNodes: LNodeTemplate[] = [
+				{ lnClass: 'XSWI', lnType: 'XSWI_Type1', lnInst: '1' }
+			]
+
+			const edits = buildEditsForBayLNode({
+				lNodes,
+				iedName: 'AP1',
+				sourceFunction: {
+					uuid: eqFuncTemplate1Uuid,
+					name: 'DisconnectorFunction',
+					lnodes: lNodes
+				},
+				equipmentUuid: 'eq-instance-uuid',
+				equipmentMatches: [
+					{
+						scdElement: earthSwitch,
+						bayTypeEquipment: {
+							uuid: 'eq-instance-uuid',
+							templateUuid: 'eq-template-uuid',
+							virtual: false
+						},
+						templateEquipment: {
+							uuid: 'eq-template-uuid',
+							name: 'EarthSwitch',
+							type: 'DIS',
+							terminals: [],
+							eqFunctions: [
+								{
+									uuid: eqFuncTemplate1Uuid,
+									name: 'DisconnectorFunction',
+									lnodes: lNodes
+								},
+								{
+									uuid: eqFuncTemplate2Uuid,
+									name: 'DisconnectorFunction',
+									lnodes: lNodes
+								}
+							]
+						}
+					}
+				],
+				functionScopeUuid: eqFuncTemplate1Uuid
+			})
+
+			expect(edits).toHaveLength(1)
+			const targetEqFunc = edits[0].element.closest('EqFunction')
+			const allEqFuncs = Array.from(
+				earthSwitch.querySelectorAll(
+					'EqFunction[name="DisconnectorFunction"]'
+				)
+			)
+			if (!targetEqFunc) {
+				throw new Error('Edit element is not within an EqFunction')
+			}
+			expect(allEqFuncs.indexOf(targetEqFunc)).toBe(0)
+		})
+
+		it('GIVEN two same-named EqFunctions with first already assigned and functionScopeUuid matching index-1 WHEN buildEditsForBayLNode is called THEN targets the second EqFunction LNode', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation>
+						<VoltageLevel>
+							<Bay name="TestBay">
+								<ConductingEquipment name="EarthSwitch">
+									<EqFunction name="DisconnectorFunction">
+										<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1" iedName="AP1"/>
+									</EqFunction>
+									<EqFunction name="DisconnectorFunction">
+										<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
+									</EqFunction>
+								</ConductingEquipment>
+							</Bay>
+						</VoltageLevel>
+					</Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
+
+			const earthSwitch = doc.querySelector(
+				'ConductingEquipment[name="EarthSwitch"]'
+			) as Element
+			const lNodes: LNodeTemplate[] = [
+				{ lnClass: 'XSWI', lnType: 'XSWI_Type1', lnInst: '1' }
+			]
+
+			const edits = buildEditsForBayLNode({
+				lNodes,
+				iedName: 'AP2',
+				sourceFunction: {
+					uuid: eqFuncTemplate2Uuid,
+					name: 'DisconnectorFunction',
+					lnodes: lNodes
+				},
+				equipmentUuid: 'eq-instance-uuid',
+				equipmentMatches: [
+					{
+						scdElement: earthSwitch,
+						bayTypeEquipment: {
+							uuid: 'eq-instance-uuid',
+							templateUuid: 'eq-template-uuid',
+							virtual: false
+						},
+						templateEquipment: {
+							uuid: 'eq-template-uuid',
+							name: 'EarthSwitch',
+							type: 'DIS',
+							terminals: [],
+							eqFunctions: [
+								{
+									uuid: eqFuncTemplate1Uuid,
+									name: 'DisconnectorFunction',
+									lnodes: lNodes
+								},
+								{
+									uuid: eqFuncTemplate2Uuid,
+									name: 'DisconnectorFunction',
+									lnodes: lNodes
+								}
+							]
+						}
+					}
+				],
+				functionScopeUuid: eqFuncTemplate2Uuid
+			})
+
+			expect(edits).toHaveLength(1)
+			const targetEqFunc = edits[0].element.closest('EqFunction')
+			const allEqFuncs = Array.from(
+				earthSwitch.querySelectorAll(
+					'EqFunction[name="DisconnectorFunction"]'
+				)
+			)
+			if (!targetEqFunc) {
+				throw new Error('Edit element is not within an EqFunction')
+			}
+			expect(allEqFuncs.indexOf(targetEqFunc)).toBe(1)
+			expect(edits[0].attributes).toEqual({ iedName: 'AP2' })
+		})
+
+		it('GIVEN functionScopeUuid not matching any template entry WHEN buildEditsForBayLNode is called THEN returns empty array', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation>
+						<VoltageLevel>
+							<Bay name="TestBay">
+								<ConductingEquipment name="EarthSwitch">
+									<EqFunction name="DisconnectorFunction">
+										<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
+									</EqFunction>
+									<EqFunction name="DisconnectorFunction">
+										<LNode lnClass="XSWI" lnType="XSWI_Type1" lnInst="1"/>
+									</EqFunction>
+								</ConductingEquipment>
+							</Bay>
+						</VoltageLevel>
+					</Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
+
+			const earthSwitch = doc.querySelector(
+				'ConductingEquipment[name="EarthSwitch"]'
+			) as Element
+			const lNodes: LNodeTemplate[] = [
+				{ lnClass: 'XSWI', lnType: 'XSWI_Type1', lnInst: '1' }
+			]
+
+			const edits = buildEditsForBayLNode({
+				lNodes,
+				iedName: 'AP1',
+				sourceFunction: {
+					uuid: eqFuncTemplate1Uuid,
+					name: 'DisconnectorFunction',
+					lnodes: lNodes
+				},
+				equipmentUuid: 'eq-instance-uuid',
+				equipmentMatches: [
+					{
+						scdElement: earthSwitch,
+						bayTypeEquipment: {
+							uuid: 'eq-instance-uuid',
+							templateUuid: 'eq-template-uuid',
+							virtual: false
+						},
+						templateEquipment: {
+							uuid: 'eq-template-uuid',
+							name: 'EarthSwitch',
+							type: 'DIS',
+							terminals: [],
+							eqFunctions: [
+								{
+									uuid: eqFuncTemplate1Uuid,
+									name: 'DisconnectorFunction',
+									lnodes: lNodes
+								},
+								{
+									uuid: eqFuncTemplate2Uuid,
+									name: 'DisconnectorFunction',
+									lnodes: lNodes
+								}
+							]
+						}
+					}
+				],
+				functionScopeUuid: 'non-existent-uuid'
+			})
+
+			expect(edits).toEqual([])
+		})
+	})
+
 	describe('edge cases', () => {
 		it('GIVEN empty lNodes array WHEN buildEditsForBayLNode is called THEN should return empty array', () => {
 			// GIVEN empty lNodes array

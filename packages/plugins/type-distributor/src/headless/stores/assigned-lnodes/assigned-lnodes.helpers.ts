@@ -127,15 +127,22 @@ export function processEqFunctions({
 		}
 
 		const parentUuid = equipmentMatch.bayTypeEquipment.uuid
-		const functionScopeUuid =
-			equipmentMatch.templateEquipment.eqFunctions.find(
-				(templateEqFunction: EqFunctionTemplate) =>
-					templateEqFunction.name === eqFuncName
-			)?.uuid ?? null
+
+		const sameNamedSiblings = Array.from(
+			equipment.querySelectorAll(
+				`:scope > EqFunction[name="${eqFuncName}"]`
+			)
+		)
+		const eqFuncIndex = sameNamedSiblings.indexOf(eqFunc)
+		const sameNamedTemplates =
+			equipmentMatch.templateEquipment.eqFunctions.filter(
+				(ef) => ef.name === eqFuncName
+			)
+		const functionScopeUuid = sameNamedTemplates[eqFuncIndex]?.uuid ?? null
 
 		if (!functionScopeUuid) {
 			console.warn(
-				`[AssignedLNodes] Could not resolve EqFunction template UUID for "${eqFuncName}" in equipment "${equipmentName}"`
+				`[AssignedLNodes] Could not resolve EqFunction template UUID for "${eqFuncName}" (index ${eqFuncIndex}) in equipment "${equipmentName}"`
 			)
 			continue
 		}

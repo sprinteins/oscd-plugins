@@ -190,6 +190,24 @@ After matching, a series of edit operations are collected and committed atomical
 | `ensureDataTypeTemplates`        | Creates a `<DataTypeTemplates>` section in the document if one does not already exist                                                                                                                                                               |
 | `buildEditsForDataTypeTemplates` | Walks all `LNodeTemplate` references across matched equipment functions and bay functions, resolves `LNodeType → DOType → DAType / EnumType` dependency trees, and inserts all required type elements (deduplicating against already-present types) |
 
+### Assigning LNodes to AccessPoints
+
+`buildEditsForBayLNode` (in `bay-edits.ts`) sets `iedName` on the correct `<LNode>` inside the bay when the user drags a function to an AccessPoint.
+
+**Handling duplicate EqFunction names:** A `ConductingEquipment` may have multiple `<EqFunction>` children with the **same name** (e.g., two `DisconnectorFunction` instances on an Earth Switch). `queryFunctionElements` resolves which element to target by **positional index**:
+
+1. Collect all `EqFunction` siblings in the SCD element that share the target name.
+2. Collect all same-name template entries from `templateEquipment.eqFunctions`.
+3. Use the index of the dragged EqFunction's template uuid inside those same-named templates to select the matching SCD element.
+
+`functionScopeUuid` (the EqFunction template UUID) is passed through the entire call chain so that each positional instance is updated independently, allowing two identical-named EqFunctions to be assigned to **different** AccessPoints.
+
+### Clearing Bay LNode Connections on Deletion
+
+`buildEditsForClearingBayLNodeConnections` (in `bay-connections.helper.ts`) sets `iedName` and `ldInst` back to `null` on the corresponding `<LNode>` in the bay when an LNode is removed from an AccessPoint.
+
+`queryMatchingBayLNode` locates the exact bay LNode to clear. When multiple `EqFunction` or `Function` elements share the same name, the helper iterates **all** matching elements and returns the first one whose `<LNode>` matches the `iedName` being cleared. This ensures that deleting the second of two same-named EqFunction assignments does not silently no-op because only the first element was examined.
+
 ---
 
 ## Data Model Summary
