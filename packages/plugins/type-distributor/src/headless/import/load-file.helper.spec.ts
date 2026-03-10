@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { loadFromLocal } from './load-file.helper'
 import { ssdImportStore } from '@/headless/stores/ssd-import.store.svelte'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'

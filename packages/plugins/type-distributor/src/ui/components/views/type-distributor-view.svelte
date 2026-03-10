@@ -18,7 +18,7 @@ import {
 } from '@/ui/components/columns/bay-type'
 import { IedDetails, IedSearch } from '@/ui/components/columns/s-ied'
 import { AddIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
-import { validateBayTypeSelection } from '@/headless/matching'
+import { validateBayType } from '@/headless/actions'
 import { queryIEDs, type SearchType } from '@/headless/scl'
 
 let searchTerm = $state('')
@@ -98,7 +98,7 @@ function handleBayTypeChange() {
 	}
 
 	try {
-		const validation = validateBayTypeSelection(bayStore.selectedBay)
+		const validation = validateBayType()
 
 		if (validation.isValid && !validation.requiresManualMatching) {
 			bayStore.pendingBayTypeApply = ssdImportStore.selectedBayType

@@ -5,7 +5,7 @@ import {
 	equipmentMatchingStore,
 	ssdImportStore
 } from '@/headless/stores'
-import { getScdEquipmentMatchKey } from '@/headless/matching/matching'
+import { getScdEquipmentMatchKey } from '@/headless/domain/matching'
 import EquipmentMatchingHeader from './equipment-matching-header.svelte'
 import EquipmentMatchingRow from './equipment-matching-row.svelte'
 import TemplateCountMismatchPanel from './template-count-mismatch-panel.svelte'

@@ -27,12 +27,92 @@ Write and update `*.spec.ts` files that match the current implementation, follow
 ### 3. Write Tests — Naming & Structure Rules
 - Use `describe / it / expect` from Vitest.
 - **Name every test** with GIVEN / WHEN / THEN phrasing.
-- **Single test for a condition** → use a flat `it('WHEN … THEN …')` — no wrapping `describe` needed.
+- **Single test for a condition** → use a flat `it('GIVEN … WHEN … THEN …')` — no wrapping `describe` needed.
+
+  ```ts
+  // ❌ Unnecessary nesting — one describe, one it
+  describe('GIVEN no input', () => {
+    it('WHEN called THEN throws', () => { … })
+  })
+
+  // ✅ Flat — GIVEN moves into the it() label
+  it('GIVEN no input WHEN called THEN throws', () => { … })
+  ```
 - **Multiple tests share a GIVEN or WHEN** → group under `describe('GIVEN …')` or `describe('WHEN …')` with shared setup in `beforeEach`; individual `it`s use `THEN …`.
 - Reset mocks after each test: `vi.restoreAllMocks()` in `afterEach`.
 - Only `vi.mock` external modules/stores when truly needed; avoid mocking the module under test.
 
-See [example pattern](./assets/pattern.ts) for a concrete template.
+#### ❌ Anti-pattern — duplicated setup (NEVER do this)
+```ts
+it('WHEN x THEN returns foo', () => {
+  const doc = makeSsdDoc(SSD_XML)  // ← duplicated in every test
+  const result = fn(doc)
+  expect(result).toBe('foo')
+})
+it('WHEN y THEN returns bar', () => {
+  const doc = makeSsdDoc(SSD_XML)  // ← duplicated in every test
+  const result = fn2(doc)
+  expect(result).toBe('bar')
+})
+```
+
+#### ✅ Correct pattern — shared setup in `beforeEach`
+```ts
+describe('GIVEN a valid SSD document', () => {
+  let doc: XMLDocument
+
+  beforeEach(() => {
+    doc = makeSsdDoc(SSD_XML)  // ← created once per test, not duplicated
+  })
+
+  it('WHEN x THEN returns foo', () => {
+    expect(fn(doc)).toBe('foo')
+  })
+  it('WHEN y THEN returns bar', () => {
+    expect(fn2(doc)).toBe('bar')
+  })
+})
+```
+
+> **Rule:** if two or more `it` blocks inside the same `describe` open with identical setup lines, extract those lines into `beforeEach`. This applies at every nesting level.
+
+#### Nested GIVEN/WHEN — both levels share state
+```ts
+describe('GIVEN a valid document', () => {
+  let doc: Document
+
+  beforeEach(() => {
+    doc = parse(MY_XML)  // runs before every it() in this block
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  describe('WHEN valid input is provided', () => {
+    let result: string
+
+    beforeEach(() => {
+      result = fn(doc, 'valid')  // runs before every it() in this nested block
+    })
+
+    it('THEN it returns the expected value', () => {
+      expect(result).toBe('expected')
+    })
+
+    it('THEN it does not throw', () => {
+      expect(() => fn(doc, 'valid')).not.toThrow()
+    })
+  })
+})
+```
+
+#### Flat single-case — no shared setup needed
+```ts
+it('GIVEN no input WHEN the function is called with undefined THEN it throws', () => {
+  expect(() => fn(undefined)).toThrow()
+})
+```
 
 ### 4. Run Tests & Iterate
 - Use the **Vitest extension** in VS Code (sidebar) to run the spec.

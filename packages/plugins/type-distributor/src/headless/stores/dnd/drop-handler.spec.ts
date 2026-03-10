@@ -6,10 +6,9 @@ import {
 	shouldApplyBayType
 } from './drop-handler'
 import { ssdImportStore } from '../ssd-import.store.svelte'
-import { getBayTypeWithTemplates } from '../bay-types.utils'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
-import { applyBayTypeSelection } from '@/headless/matching'
+import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 
 vi.mock('../ssd-import.store.svelte', () => ({
 	ssdImportStore: {
@@ -46,8 +45,8 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-vi.mock('@/headless/matching', () => ({
-	applyBayTypeSelection: vi.fn().mockReturnValue([])
+vi.mock('@/headless/actions', () => ({
+	applyBayType: vi.fn().mockReturnValue([])
 }))
 
 vi.mock('@/headless/utils/get-document-and-Editor', () => ({
@@ -239,7 +238,7 @@ describe('drop-handler', () => {
 			// THEN
 			expect(matches).toEqual(expect.any(Array))
 			expect(ssdImportStore.selectedBayType).toBe('bt-3')
-			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-3')
+			expect(applyBayTypeAction).toHaveBeenCalledWith('Bay-3')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 			expect(equipmentMatchingStore.reset).toHaveBeenCalled()
 		})
@@ -261,7 +260,7 @@ describe('drop-handler', () => {
 
 			// THEN
 			expect(matches).toEqual(expect.any(Array))
-			expect(applyBayTypeSelection).toHaveBeenCalledWith('Bay-4')
+			expect(applyBayTypeAction).toHaveBeenCalledWith('Bay-4')
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 		})
 	})

@@ -3,7 +3,7 @@ import type {
 	FunctionTemplate
 } from '@/headless/common-types'
 import { queryServer } from './server-element'
-import type { EquipmentMatch } from '@/headless/matching'
+import type { EquipmentMatch } from '@/headless/domain/matching'
 import { createElement } from '@oscd-plugins/core'
 
 interface SourceFunctionParams {

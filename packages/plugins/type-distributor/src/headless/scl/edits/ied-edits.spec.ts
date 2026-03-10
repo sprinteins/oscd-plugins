@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import {
+	describe,
+	it,
+	expect,
+	beforeEach,
+	vi,
+	afterEach,
+	beforeAll
+} from 'vitest'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
@@ -18,12 +26,14 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 describe('buildEditForCreateIed', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document
+	let baseDoc: Document
+
+	beforeAll(() => {
+		baseDoc = new DOMParser().parseFromString(sclMockA, 'application/xml')
+	})
 
 	beforeEach(() => {
-		mockDocument = new DOMParser().parseFromString(
-			sclMockA,
-			'application/xml'
-		)
+		mockDocument = baseDoc.cloneNode(true) as Document
 		mockEditor = {
 			commit: vi.fn()
 		}
@@ -247,12 +257,14 @@ describe('buildEditForCreateIed', () => {
 describe('buildEditsForCreateIedWithAccessPoints', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document
+	let baseDoc: Document
+
+	beforeAll(() => {
+		baseDoc = new DOMParser().parseFromString(sclMockA, 'application/xml')
+	})
 
 	beforeEach(() => {
-		mockDocument = new DOMParser().parseFromString(
-			sclMockA,
-			'application/xml'
-		)
+		mockDocument = baseDoc.cloneNode(true) as Document
 		mockEditor = {
 			commit: vi.fn()
 		}
