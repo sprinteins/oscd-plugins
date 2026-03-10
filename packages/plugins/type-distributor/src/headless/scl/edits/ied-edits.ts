@@ -2,6 +2,12 @@ import { createElement } from '@oscd-plugins/core'
 import type { Insert } from '@openscd/oscd-api'
 import { getDocument } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
+import { createLD0Element, createLD0LNodeTemplates } from '../elements'
+import { ssdImportStore } from '@/headless/stores'
+import {
+	buildEditsForDataTypeTemplates,
+	ensureDataTypeTemplates
+} from './data-type-edits'
 import {
 	queryIEDInsertionReference,
 	queryAccessPointsFromIed,
@@ -41,6 +47,8 @@ export function buildEditsForCreateIedWithAccessPoints({
 	accessPoints
 }: buildEditsForCreateIedWithAccessPointsParams): Insert[] {
 	const doc = getDocument()
+	//TODO: Refactor this
+	const lnodeTypes = ssdImportStore.lnodeTypes
 
 	const iedElement = createBasicIEDElement(name, doc, description)
 	const sclRoot = doc.documentElement
@@ -62,6 +70,7 @@ export function buildEditsForCreateIedWithAccessPoints({
 			none: 'true'
 		})
 		serverElement.appendChild(authElement)
+		serverElement.appendChild(createLD0Element(doc, lnodeTypes))
 		apElement.appendChild(serverElement)
 
 		return {
@@ -71,7 +80,25 @@ export function buildEditsForCreateIedWithAccessPoints({
 		}
 	})
 
-	return [iedEdit, ...apEdits]
+	const allEdits: Insert[] = [iedEdit, ...apEdits]
+
+	const ssdDoc = ssdImportStore.loadedSSDDocument
+	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
+	if (ssdDoc && ld0LNodeTemplates.length > 0) {
+		const { element: dataTypeTemplates, edit: dttEdit } =
+			ensureDataTypeTemplates(doc)
+		if (dttEdit) allEdits.push(dttEdit)
+		allEdits.push(
+			...buildEditsForDataTypeTemplates(
+				doc,
+				dataTypeTemplates,
+				ld0LNodeTemplates,
+				ssdDoc
+			)
+		)
+	}
+
+	return allEdits
 }
 
 export function buildEditForDeleteEmptyIed(iedName: string): Remove | null {

@@ -9,6 +9,8 @@ import type {
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { getDocumentAndEditor } from '../../utils'
 import {
+	createLD0Element,
+	createLD0LNodeTemplates,
 	createLDeviceElement,
 	createLNodeElementInIED,
 	createServerElementWithAuth,
@@ -19,6 +21,11 @@ import {
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
 import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
 import { queryLNodesFromAccessPoint, queryIedElement } from '../queries'
+import { ssdImportStore } from '@/headless/stores'
+import {
+	buildEditsForDataTypeTemplates,
+	ensureDataTypeTemplates
+} from './data-type-edits'
 
 function ensureServer(
 	accessPoint: Element,
@@ -167,6 +174,8 @@ export function buildEditsForCreateAccessPoint(
 	accessPoints: { name: string; description?: string }[]
 ): Insert[] {
 	const { doc } = getDocumentAndEditor()
+	//TODO: Refactor this
+	const lnodeTypes = ssdImportStore.lnodeTypes
 	const allEdits: Insert[] = []
 
 	const iedElement = queryIedElement(doc, iedName)
@@ -187,6 +196,8 @@ export function buildEditsForCreateAccessPoint(
 		})
 
 		serverElement.appendChild(authElement)
+		const ld0Element = createLD0Element(doc, lnodeTypes)
+		serverElement.appendChild(ld0Element)
 		apElement.appendChild(serverElement)
 
 		const edit: Insert = {
@@ -196,6 +207,22 @@ export function buildEditsForCreateAccessPoint(
 		}
 
 		allEdits.push(edit)
+	}
+
+	const ssdDoc = ssdImportStore.loadedSSDDocument
+	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
+	if (ssdDoc && ld0LNodeTemplates.length > 0) {
+		const { element: dataTypeTemplates, edit: dttEdit } =
+			ensureDataTypeTemplates(doc)
+		if (dttEdit) allEdits.push(dttEdit)
+		allEdits.push(
+			...buildEditsForDataTypeTemplates(
+				doc,
+				dataTypeTemplates,
+				ld0LNodeTemplates,
+				ssdDoc
+			)
+		)
 	}
 
 	return allEdits
