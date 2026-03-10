@@ -1,7 +1,6 @@
 ---
 name: vitest-test
 description: 'Create or update Vitest spec files for TypeScript. Use when: writing tests, updating tests, fixing failing tests, adding test coverage, generating spec files, GIVEN/WHEN/THEN test format, vitest, coverage. DO NOT USE FOR: e2e tests (use Playwright), non-TypeScript test files.'
-argument-hint: 'Optional: path to implementation file to test'
 ---
 
 # Vitest Test Authoring
