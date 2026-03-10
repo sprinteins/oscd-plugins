@@ -57,18 +57,18 @@ function queryFunctionElements({
 		)
 		if (!matchFromStore) return []
 
-		const allSameNamed = Array.from(
+		const duplicateNames = Array.from(
 			matchFromStore.scdElement.querySelectorAll(
 				`EqFunction[name="${sourceFunction.name}"]`
 			)
 		)
 
 		if (functionScopeUuid) {
-			const sameNamedTemplates =
+			const duplicateNameTemplates =
 				matchFromStore.templateEquipment.eqFunctions.filter(
 					(ef) => ef.name === sourceFunction.name
 				)
-			const index = sameNamedTemplates.findIndex(
+			const index = duplicateNameTemplates.findIndex(
 				(ef) => ef.uuid === functionScopeUuid
 			)
 			if (index === -1) {
@@ -77,11 +77,11 @@ function queryFunctionElements({
 				)
 				return []
 			}
-			const element = allSameNamed[index]
+			const element = duplicateNames[index]
 			return element ? [element] : []
 		}
 
-		return allSameNamed
+		return duplicateNames
 	}
 
 	const scdBay = bayStore.scdBay

@@ -189,8 +189,8 @@ Because both instances resolve to the same template, a naive key using only `tem
 `processEqFunctions` in `assigned-lnodes.helpers.ts` resolves the `functionScopeUuid` by **index** rather than by UUID lookup:
 
 1. Collect all `EqFunction` siblings in the SCD element that share the same name (`sameNamedSiblings`).
-2. Collect all template `EqFunction` entries that share the same name from `templateEquipment.eqFunctions` (`sameNamedTemplates`).
-3. Use the positional index of the current element inside `sameNamedSiblings` to look up the corresponding entry in `sameNamedTemplates` and read its `uuid` as `functionScopeUuid`.
+2. Collect all template `EqFunction` entries that share the same name from `templateEquipment.eqFunctions` (`duplicateNameTemplates`).
+3. Use the positional index of the current element inside `sameNamedSiblings` to look up the corresponding entry in `duplicateNameTemplates` and read its `uuid` as `functionScopeUuid`.
 
 This makes each positional instance's key unique even when names and `templateUuid` values are identical:
 

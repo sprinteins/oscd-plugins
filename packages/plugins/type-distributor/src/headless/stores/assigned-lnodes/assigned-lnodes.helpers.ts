@@ -134,11 +134,11 @@ export function processEqFunctions({
 			)
 		)
 		const eqFuncIndex = sameNamedSiblings.indexOf(eqFunc)
-		const sameNamedTemplates =
+		const duplicateNameTemplates =
 			equipmentMatch.templateEquipment.eqFunctions.filter(
 				(ef) => ef.name === eqFuncName
 			)
-		const functionScopeUuid = sameNamedTemplates[eqFuncIndex]?.uuid ?? null
+		const functionScopeUuid = duplicateNameTemplates[eqFuncIndex]?.uuid ?? null
 
 		if (!functionScopeUuid) {
 			console.warn(
