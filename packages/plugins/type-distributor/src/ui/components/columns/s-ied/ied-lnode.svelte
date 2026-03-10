@@ -14,8 +14,10 @@ const { lnode, iedName, accessPoint }: Props = $props()
 
 <Card.Root class="hover:bg-gray-50 cursor-pointer transition-opacity">
 	<Card.Content class="p-2">
-		<div class="flex items-center justify-between">
-			<span class="text-sm text-left"
+		<div class="flex items-center justify-between gap-2 min-w-0">
+			<span
+				class="text-sm text-left line-clamp-2 break-all min-w-0"
+				title="{lnode.ldInst} - {lnode.lnType}"
 				>{lnode.ldInst} - {lnode.lnType}</span
 			>
 			<DropdownMenuWorkaround
