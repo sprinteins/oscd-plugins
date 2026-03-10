@@ -2,7 +2,8 @@
 import {
 	bayStore,
 	equipmentMatchingStore,
-	ssdImportStore
+	ssdImportStore,
+	assignedLNodesStore
 } from '@/headless/stores'
 import { Button } from '@oscd-plugins/core-ui-svelte'
 import EquipmentMatching from '@/ui/components/columns/bay-type/equipment-matching.svelte'
@@ -50,6 +51,18 @@ const ambiguousEquipmentCount = $derived.by(() => {
 		return type && ambiguousTypeCodes.includes(type)
 	}).length
 })
+
+const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
+
+const canReopenMatching = $derived(
+	!!equipmentMatchingStore.validationResult?.requiresManualMatching &&
+		!!bayStore.pendingBayTypeApply &&
+		!isBayTypeLocked
+)
+
+function handleReopenMatching() {
+	bayStore.pendingBayTypeApply = null
+}
 
 const canApply = $derived.by(() => {
 	if (
@@ -109,6 +122,16 @@ const canApply = $derived.by(() => {
     </div>
 {:else if equipmentMatchingStore.validationResult?.requiresManualMatching && !bayStore.pendingBayTypeApply}
     <EquipmentMatching />
+{/if}
+
+{#if canReopenMatching}
+    <Button.Root
+        variant="outline"
+        onclick={handleReopenMatching}
+        class="w-full"
+    >
+        Edit Matching
+    </Button.Root>
 {/if}
 
 {#if equipmentMatchingStore.validationResult?.requiresManualMatching && !bayStore.pendingBayTypeApply && !hasCountMismatches}
