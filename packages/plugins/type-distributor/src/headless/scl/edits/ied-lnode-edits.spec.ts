@@ -430,6 +430,88 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 		expect(functionRemoves.length).toBe(2)
 	})
 
+	it('GIVEN Bay with a pre-existing LNode directly on ConductingEquipment (not inside EqFunction) WHEN deleting last bay-type-assigned LNode THEN should still trigger full cleanup', () => {
+		// GIVEN - mirrors complex.scd where -QB91 has a direct LNode child with iedName
+		// set by an external tool (not by this plugin). This LNode must NOT block cleanup.
+		const complexSCD = `<?xml version="1.0" encoding="UTF-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+  <IED name="IED1">
+    <AccessPoint name="P1">
+      <Server>
+        <LDevice inst="-QA1_CBFunction">
+          <LN lnClass="XCBR" lnInst="1" lnType="XCBR$type"/>
+        </LDevice>
+      </Server>
+    </AccessPoint>
+  </IED>
+  <Substation>
+    <VoltageLevel>
+      <Bay name="Q01A_" uuid="bay-uuid" templateUuid="baytype-uuid">
+        <!-- Pre-existing LNode directly on ConductingEquipment, iedName set externally -->
+        <ConductingEquipment name="-QB91" type="DIS" uuid="equip-uuid-1" templateUuid="tpl-uuid-1" originUuid="orig-uuid-1">
+          <LNode iedName="EXTERNAL_IED" ldInst="SWEQ" lnClass="XSWI" lnInst="1"/>
+          <EqFunction name="DisconnectorFunction">
+            <LNode lnClass="XSWI" lnInst="2" lnType="XSWI$type"/>
+          </EqFunction>
+        </ConductingEquipment>
+        <!-- Equipment with the bay-type-assigned LNode -->
+        <ConductingEquipment name="-QA1" type="CBR" uuid="equip-uuid-2" templateUuid="tpl-uuid-2" originUuid="orig-uuid-2">
+          <EqFunction name="CBFunction">
+            <LNode lnClass="XCBR" lnInst="1" lnType="XCBR$type" iedName="IED1" ldInst="-QA1_CBFunction"/>
+          </EqFunction>
+        </ConductingEquipment>
+      </Bay>
+    </VoltageLevel>
+  </Substation>
+</SCL>`
+
+		const complexDoc = createTestDocument(complexSCD)
+		const complexBay = complexDoc.querySelector('Bay[name="Q01A_"]')
+		expect(complexBay).not.toBeNull()
+
+		// WHEN - delete the last bay-type-assigned LNode
+		const accessPoint = complexDoc.querySelector(
+			'IED[name="IED1"] AccessPoint[name="P1"]'
+		) as Element
+		const edits = buildEditsForDeleteLNodeFromAccessPoint({
+			iedName: 'IED1',
+			accessPoint,
+			lNodeTemplate: {
+				lnClass: 'XCBR',
+				lnType: 'XCBR$type',
+				lnInst: '1',
+				ldInst: '-QA1_CBFunction'
+			},
+			selectedBay: complexBay
+		})
+
+		// THEN - the pre-existing direct LNode must NOT block cleanup
+		// Bay uuid and templateUuid must be cleared
+		const bayEdit = edits.find(
+			(edit) => isSetAttributesEdit(edit) && edit.element.tagName === 'Bay'
+		)
+		expect(bayEdit).toBeDefined()
+		if (bayEdit && isSetAttributesEdit(bayEdit)) {
+			expect(bayEdit.attributes?.uuid).toBeNull()
+			expect(bayEdit.attributes?.templateUuid).toBeNull()
+		}
+
+		// Both ConductingEquipments must have type-assignment attributes cleared
+		const equipEdits = edits.filter(
+			(edit) =>
+				isSetAttributesEdit(edit) &&
+				edit.element.tagName === 'ConductingEquipment'
+		)
+		expect(equipEdits.length).toBe(2)
+
+		// EqFunction elements must be removed
+		const removeEdits = edits.filter(isRemoveEdit)
+		const eqFunctionRemoves = removeEdits.filter(
+			(edit) => (edit.node as Element).tagName === 'EqFunction'
+		)
+		expect(eqFunctionRemoves.length).toBe(2)
+	})
+
 	it('GIVEN invalid inputs WHEN LNode does not exist in AccessPoint THEN should throw error', () => {
 		// WHEN / THEN
 		const accessPoint = doc.querySelector(
