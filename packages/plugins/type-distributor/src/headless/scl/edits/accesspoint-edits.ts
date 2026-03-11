@@ -7,7 +7,6 @@ import type {
 	LNodeType
 } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
-import { getDocumentAndEditor } from '../../utils'
 import {
 	createLD0Element,
 	createLDeviceElement,
