@@ -54,10 +54,10 @@ export function buildEditsForClearingBayLNodeConnections(
 		clearedBayLNodes
 	)
 
-	const shouldClearTemplateUuid =
+	const shouldClearReferences =
 		clearedBayLNodes.size > 0 && !hasRemainingConnections
 
-	if (shouldClearTemplateUuid) {
+	if (shouldClearReferences) {
 		edits.push({
 			element: selectedBay,
 			attributes: {
