@@ -61,8 +61,6 @@ export function applyBayType(state: BayTypeApplicationState): EquipmentMatch[] {
 	return matches
 }
 
-
-
 type GenerateCommitTitleParams = {
 	lNodes: LNodeTemplate[]
 	functionName: string

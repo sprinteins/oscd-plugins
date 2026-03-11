@@ -12,7 +12,10 @@ import {
 	commitEdits
 } from './drop-handler'
 import { assignedLNodesStore, bayStore } from '@/headless/stores'
-import { buildEditsForBayLNode, createMultipleLNodesInAccessPoint } from '@/headless/scl'
+import {
+	buildEditsForBayLNode,
+	createMultipleLNodesInAccessPoint
+} from '@/headless/scl'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 
 type DraggedItem = {

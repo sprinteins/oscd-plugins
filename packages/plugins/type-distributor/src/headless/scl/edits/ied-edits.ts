@@ -64,7 +64,7 @@ export function buildEditsForCreateIedWithAccessPoints({
 	]
 
 	if (ssdDoc) {
-		allEdits.push(...buildEditsForLd0DataTypes(doc, lnodeTypes, ssdDoc))
+		allEdits.push(...buildEditsForLd0DataTypes({ doc, lnodeTypes, ssdDoc }))
 	}
 
 	return allEdits

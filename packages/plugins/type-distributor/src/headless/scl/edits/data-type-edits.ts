@@ -151,11 +151,17 @@ export function buildEditsForDataTypeTemplates(
 	return edits
 }
 
-export function buildEditsForLd0DataTypes(
-	doc: XMLDocument,
-	lnodeTypes: LNodeType[],
+interface BuildEditsForBayLNodeParams {
+	doc: XMLDocument
+	lnodeTypes: LNodeType[]
 	ssdDoc: XMLDocument
-): Insert[] {
+}
+
+export function buildEditsForLd0DataTypes({
+	doc,
+	lnodeTypes,
+	ssdDoc
+}: BuildEditsForBayLNodeParams): Insert[] {
 	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
 	if (ld0LNodeTemplates.length === 0) return []
 
