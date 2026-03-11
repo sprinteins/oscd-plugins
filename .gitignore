@@ -114,7 +114,3 @@ dist
 _build_
 
 .local*
-
-# GitHub Copilot
-.github/instructions/AGENTS.instructions.md
-.github/copilot-instructions.md
