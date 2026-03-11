@@ -139,6 +139,44 @@ describe('dndStore', () => {
 	})
 
 	describe('handleDrop', () => {
+		it('GIVEN dragged item with missing parentUuid WHEN handleDrop is called THEN should exit early and reset state', () => {
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: '',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
+			}
+
+			dndStore.handleDrop(mockAccessPoint, 'TestIED')
+
+			expect(
+				dropHandler.getBayTypeApplicationState
+			).not.toHaveBeenCalled()
+			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
+			expect(dndStore.draggedItem).toBeNull()
+		})
+
+		it('GIVEN dragged item with missing functionScopeUuid WHEN handleDrop is called THEN should exit early and reset state', () => {
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: '',
+				equipmentUuid: 'eq-uuid'
+			}
+
+			dndStore.handleDrop(mockAccessPoint, 'TestIED')
+
+			expect(
+				dropHandler.getBayTypeApplicationState
+			).not.toHaveBeenCalled()
+			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
+			expect(dndStore.draggedItem).toBeNull()
+		})
+
 		it('GIVEN dragged item with empty lNodes WHEN handleDrop is called THEN should exit early and reset state', () => {
 			// GIVEN dragged item with empty lNodes
 			dndStore.draggedItem = {
@@ -173,7 +211,11 @@ describe('dndStore', () => {
 			}
 
 			const mockIedEdits = [
-				{ element: mockAccessPoint, attributes: {}, attributesNS: {} }
+				{
+					node: document.createElement('LNode'),
+					parent: mockAccessPoint,
+					reference: null
+				}
 			]
 			vi.mocked(dropHandler.getBayTypeApplicationState).mockReturnValue({
 				hasAssignedBayType: false,
@@ -223,13 +265,17 @@ describe('dndStore', () => {
 			}
 
 			const mockIedEdits = [
-				{ element: mockAccessPoint, attributes: {}, attributesNS: {} }
+				{
+					node: document.createElement('LNode'),
+					parent: mockAccessPoint,
+					reference: null
+				}
 			]
 			const mockBayEdits = [
 				{
 					element: document.createElement('LNode'),
-					attributes: { iedName: 'TestIED' },
-					attributesNS: {}
+					parent: document.createElement('Bay'),
+					reference: null
 				}
 			]
 
@@ -287,13 +333,17 @@ describe('dndStore', () => {
 			}
 
 			const mockIedEdits = [
-				{ element: mockAccessPoint, attributes: {}, attributesNS: {} }
+				{
+					node: document.createElement('LNode'),
+					parent: mockAccessPoint,
+					reference: null
+				}
 			]
 			const mockBayEdits = [
 				{
 					element: document.createElement('LNode'),
-					attributes: { iedName: 'TestIED' },
-					attributesNS: {}
+					parent: document.createElement('Bay'),
+					reference: null
 				}
 			]
 
@@ -389,6 +439,97 @@ describe('dndStore', () => {
 			expect(dndStore.isDragging).toBe(false)
 
 			consoleErrorSpy.mockRestore()
+		})
+	})
+
+	describe('isDraggingItem', () => {
+		it('GIVEN no active drag WHEN isDraggingItem is called THEN should return false', () => {
+			dndStore.isDragging = false
+			dndStore.draggedItem = null
+
+			expect(
+				dndStore.isDraggingItem(
+					'equipmentFunction',
+					'func-uuid',
+					'eq-uuid'
+				)
+			).toBe(false)
+		})
+
+		it('GIVEN active drag with matching type, sourceFunctionUuid, and parentUuid WHEN isDraggingItem is called THEN should return true', () => {
+			dndStore.isDragging = true
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
+			}
+
+			expect(
+				dndStore.isDraggingItem(
+					'equipmentFunction',
+					mockFunction.uuid,
+					'eq-uuid'
+				)
+			).toBe(true)
+		})
+
+		it('GIVEN active drag with mismatched type WHEN isDraggingItem is called THEN should return false', () => {
+			dndStore.isDragging = true
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
+			}
+
+			expect(
+				dndStore.isDraggingItem('lNode', mockFunction.uuid, 'eq-uuid')
+			).toBe(false)
+		})
+
+		it('GIVEN active drag with mismatched sourceFunctionUuid WHEN isDraggingItem is called THEN should return false', () => {
+			dndStore.isDragging = true
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
+			}
+
+			expect(
+				dndStore.isDraggingItem(
+					'equipmentFunction',
+					'other-uuid',
+					'eq-uuid'
+				)
+			).toBe(false)
+		})
+
+		it('GIVEN active drag with mismatched parentUuid WHEN isDraggingItem is called THEN should return false', () => {
+			dndStore.isDragging = true
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
+			}
+
+			expect(
+				dndStore.isDraggingItem(
+					'equipmentFunction',
+					mockFunction.uuid,
+					'other-uuid'
+				)
+			).toBe(false)
 		})
 	})
 
