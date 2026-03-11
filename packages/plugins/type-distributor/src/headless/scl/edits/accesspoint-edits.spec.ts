@@ -517,6 +517,80 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			}
 		})
 	})
+
+	describe('GIVEN lnodeTypes containing LLN0', () => {
+		const lln0LnodeTypes = [
+			{
+				id: 'LLN0Type',
+				lnClass: 'LLN0',
+				dataObjects: []
+			}
+		]
+
+		it('WHEN creating lNodes THEN created LDevice contains an LN0 element', () => {
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				doc: mockDocument,
+				equipmentMatches: [],
+				lnodeTypes: lln0LnodeTypes
+			})
+
+			const [lDeviceEl] = collectEditsByTag(edits, 'LDevice')
+			expect(lDeviceEl.querySelector('LN0')).not.toBeNull()
+		})
+
+		it('WHEN creating lNodes THEN LN0 in LDevice has correct lnType', () => {
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				doc: mockDocument,
+				equipmentMatches: [],
+				lnodeTypes: lln0LnodeTypes
+			})
+
+			const [lDeviceEl] = collectEditsByTag(edits, 'LDevice')
+			expect(lDeviceEl.querySelector('LN0')?.getAttribute('lnType')).toBe('LLN0Type')
+		})
+
+		it('WHEN LDevice already exists THEN does not add a second LN0', () => {
+			const { lDevice } = appendServerWithLDevice(mockDocument, accessPoint, 'CBFunction')
+			const existingLN0 = mockDocument.createElement('LN0')
+			existingLN0.setAttribute('lnClass', 'LLN0')
+			existingLN0.setAttribute('lnType', 'LLN0Type')
+			existingLN0.setAttribute('lnInst', '')
+			lDevice.appendChild(existingLN0)
+
+			const edits = createMultipleLNodesInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				doc: mockDocument,
+				equipmentMatches: [],
+				lnodeTypes: lln0LnodeTypes
+			})
+
+			// No LDevice should be created (it already exists), so no duplicate LN0 appended
+			expect(collectEditsByTag(edits, 'LDevice')).toHaveLength(0)
+			expect(lDevice.querySelectorAll('LN0')).toHaveLength(1)
+		})
+	})
+
+	it('GIVEN lnodeTypes is undefined WHEN creating lNodes THEN LDevice has no LN0 child', () => {
+		const edits = createMultipleLNodesInAccessPoint({
+			sourceFunction: functionTemplate,
+			lNodes: [lnodeTemplate],
+			accessPoint,
+			doc: mockDocument,
+			equipmentMatches: [],
+			lnodeTypes: undefined
+		})
+
+		const [lDeviceEl] = collectEditsByTag(edits, 'LDevice')
+		expect(lDeviceEl.querySelector('LN0')).toBeNull()
+	})
 })
 
 describe('buildEditsForCreateAccessPoint', () => {

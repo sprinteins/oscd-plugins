@@ -11,7 +11,7 @@ import {
 	generateCommitTitle,
 	commitEdits
 } from './drop-handler'
-import { assignedLNodesStore, bayStore } from '@/headless/stores'
+import { assignedLNodesStore, bayStore, ssdImportStore } from '@/headless/stores'
 import {
 	buildEditsForBayLNode,
 	createMultipleLNodesInAccessPoint
@@ -90,6 +90,7 @@ class UseDndStore {
 			const equipmentMatches = freshMatches ?? bayStore.equipmentMatches
 
 			const { doc } = getDocumentAndEditor()
+			const lnodeTypes = ssdImportStore.lnodeTypes
 			const allEdits: (Insert | SetAttributes)[] = [
 				...createMultipleLNodesInAccessPoint({
 					sourceFunction: functionFromSSD,
@@ -97,7 +98,8 @@ class UseDndStore {
 					accessPoint: targetAccessPoint,
 					equipmentMatches,
 					equipmentUuid,
-					doc
+					doc,
+					lnodeTypes
 				})
 			]
 
