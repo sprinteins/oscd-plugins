@@ -3,17 +3,22 @@ import type {
 	IedData
 } from '@/ui/components/columns/s-ied/create-ied-ap-dialog/form-helpers'
 import { buildEditsForCreateAccessPoint } from '../scl'
-import { getEditor } from '../utils'
+import { getDocumentAndEditor, getEditor } from '../utils'
+import { ssdImportStore } from '../stores'
 
 export function createAccessPoint(
 	ied: IedData,
 	accessPoints: AccessPointData[]
 ): void {
-	const editor = getEditor()
-	const accessPointEdits = buildEditsForCreateAccessPoint(
-		ied.name,
-		accessPoints
-	)
+	const { editor, doc } = getDocumentAndEditor()
+	const { lnodeTypes, loadedSSDDocument } = ssdImportStore
+	const accessPointEdits = buildEditsForCreateAccessPoint({
+		iedName: ied.name,
+		accessPoints,
+		lnodeTypes,
+		doc,
+		ssdDoc: loadedSSDDocument
+	})
 	if (accessPoints.length === 1) {
 		editor.commit(accessPointEdits, {
 			title: `Add Access Point "${accessPoints[0].name}" to IED "${ied.name}"`

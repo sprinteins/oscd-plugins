@@ -1,9 +1,5 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
-import type {
-	LNodeTemplate,
-	EqFunctionTemplate,
-	FunctionTemplate
-} from '@/headless/common-types'
+import type { LNodeTemplate } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 import { ssdImportStore } from '../ssd-import.store.svelte'
@@ -11,7 +7,6 @@ import { getBayTypeWithTemplates } from '../bay-types.utils'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
-import { createMultipleLNodesInAccessPoint } from '@/headless/scl'
 
 type BayTypeApplicationState = {
 	hasAssignedBayType: boolean
@@ -66,29 +61,7 @@ export function applyBayType(state: BayTypeApplicationState): EquipmentMatch[] {
 	return matches
 }
 
-type BuildEditsForIedParams = {
-	sourceFunction: EqFunctionTemplate | FunctionTemplate
-	lNodes: LNodeTemplate[]
-	targetAccessPoint: Element
-	equipmentMatches: EquipmentMatch[]
-	equipmentUuid?: string
-}
 
-export function buildEditsForIed({
-	sourceFunction,
-	lNodes,
-	targetAccessPoint,
-	equipmentMatches,
-	equipmentUuid
-}: BuildEditsForIedParams): (Insert | SetAttributes)[] {
-	return createMultipleLNodesInAccessPoint({
-		sourceFunction,
-		lNodes,
-		accessPoint: targetAccessPoint,
-		equipmentUuid,
-		equipmentMatches
-	})
-}
 
 type GenerateCommitTitleParams = {
 	lNodes: LNodeTemplate[]

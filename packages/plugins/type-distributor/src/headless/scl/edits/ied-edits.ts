@@ -1,19 +1,15 @@
-import { createElement } from '@oscd-plugins/core'
 import type { Insert } from '@openscd/oscd-api'
 import { getDocument } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
-import { createLD0Element, createLD0LNodeTemplates } from '../elements'
-import { ssdImportStore } from '@/headless/stores'
-import {
-	buildEditsForDataTypeTemplates,
-	ensureDataTypeTemplates
-} from './data-type-edits'
+import { buildEditsForLd0DataTypes } from './data-type-edits'
+import { buildAccessPointInserts } from './accesspoint-edits'
 import {
 	queryIEDInsertionReference,
 	queryAccessPointsFromIed,
 	queryIedElement
 } from '../queries'
 import type { Remove } from '@openscd/oscd-api'
+import type { LNodeType } from '@/headless/common-types'
 
 export function buildEditForCreateIed(
 	name: string,
@@ -39,16 +35,18 @@ type buildEditsForCreateIedWithAccessPointsParams = {
 	name: string
 	description?: string
 	accessPoints: { name: string; description?: string }[]
+	lnodeTypes: LNodeType[]
+	ssdDoc?: XMLDocument | null
 }
 
 export function buildEditsForCreateIedWithAccessPoints({
 	name,
 	description,
-	accessPoints
+	accessPoints,
+	lnodeTypes,
+	ssdDoc
 }: buildEditsForCreateIedWithAccessPointsParams): Insert[] {
 	const doc = getDocument()
-	//TODO: Refactor this
-	const lnodeTypes = ssdImportStore.lnodeTypes
 
 	const iedElement = createBasicIEDElement(name, doc, description)
 	const sclRoot = doc.documentElement
@@ -60,42 +58,13 @@ export function buildEditsForCreateIedWithAccessPoints({
 		reference
 	}
 
-	const apEdits: Insert[] = accessPoints.map((ap) => {
-		const apElement = createElement(doc, 'AccessPoint', {
-			name: ap.name,
-			desc: ap.description ?? null
-		})
-		const serverElement = createElement(doc, 'Server', {})
-		const authElement = createElement(doc, 'Authentication', {
-			none: 'true'
-		})
-		serverElement.appendChild(authElement)
-		serverElement.appendChild(createLD0Element(doc, lnodeTypes))
-		apElement.appendChild(serverElement)
+	const allEdits: Insert[] = [
+		iedEdit,
+		...buildAccessPointInserts(doc, iedElement, accessPoints, lnodeTypes)
+	]
 
-		return {
-			node: apElement,
-			parent: iedElement,
-			reference: null
-		}
-	})
-
-	const allEdits: Insert[] = [iedEdit, ...apEdits]
-
-	const ssdDoc = ssdImportStore.loadedSSDDocument
-	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
-	if (ssdDoc && ld0LNodeTemplates.length > 0) {
-		const { element: dataTypeTemplates, edit: dttEdit } =
-			ensureDataTypeTemplates(doc)
-		if (dttEdit) allEdits.push(dttEdit)
-		allEdits.push(
-			...buildEditsForDataTypeTemplates(
-				doc,
-				dataTypeTemplates,
-				ld0LNodeTemplates,
-				ssdDoc
-			)
-		)
+	if (ssdDoc) {
+		allEdits.push(...buildEditsForLd0DataTypes(doc, lnodeTypes, ssdDoc))
 	}
 
 	return allEdits

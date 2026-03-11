@@ -1,19 +1,18 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { dndStore } from './dnd.store.svelte'
 import * as dropHandler from './drop-handler'
-import { buildEditsForBayLNode } from '@/headless/scl'
+import { buildEditsForBayLNode, createMultipleLNodesInAccessPoint } from '@/headless/scl'
 
 vi.mock('./drop-handler', () => ({
 	getBayTypeApplicationState: vi.fn(),
 	shouldApplyBayType: vi.fn(),
 	applyBayType: vi.fn(() => []),
-	buildEditsForIed: vi.fn(),
 	generateCommitTitle: vi.fn(),
 	commitEdits: vi.fn()
 }))
 
 vi.mock('@/headless/utils/get-document-and-Editor', () => ({
-	getDocumentAndEditor: vi.fn()
+	getDocumentAndEditor: vi.fn(() => ({ doc: {}, editor: {} }))
 }))
 
 vi.mock('@/headless/scl', () => ({
@@ -181,7 +180,7 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
+			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
 			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue(
@@ -192,12 +191,13 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should build IED edits only and commit
-			expect(dropHandler.buildEditsForIed).toHaveBeenCalledWith({
+			expect(createMultipleLNodesInAccessPoint).toHaveBeenCalledWith({
 				sourceFunction: mockFunction,
 				lNodes: mockLNodes,
-				targetAccessPoint: mockAccessPoint,
+				accessPoint: mockAccessPoint,
 				equipmentMatches: [],
-				equipmentUuid: 'eq-uuid'
+				equipmentUuid: 'eq-uuid',
+				doc: expect.anything()
 			})
 			expect(buildEditsForBayLNode).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
@@ -238,7 +238,7 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
+			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
 			vi.mocked(buildEditsForBayLNode).mockReturnValue(mockBayEdits)
@@ -250,12 +250,13 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should build both IED and bay edits
-			expect(dropHandler.buildEditsForIed).toHaveBeenCalledWith({
+			expect(createMultipleLNodesInAccessPoint).toHaveBeenCalledWith({
 				sourceFunction: mockFunction,
 				lNodes: mockLNodes,
-				targetAccessPoint: mockAccessPoint,
+				accessPoint: mockAccessPoint,
 				equipmentMatches: [],
-				equipmentUuid: 'eq-uuid'
+				equipmentUuid: 'eq-uuid',
+				doc: expect.anything()
 			})
 			expect(buildEditsForBayLNode).toHaveBeenCalledWith({
 				lNodes: mockLNodes,
@@ -301,7 +302,7 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(true)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
+			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
 			vi.mocked(buildEditsForBayLNode).mockReturnValue(mockBayEdits)
@@ -342,7 +343,7 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue([])
+			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue([])
 
 			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')

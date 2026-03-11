@@ -7,7 +7,7 @@ import type {
 	BayTypeWithTemplates
 } from '@/headless/common-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
-import { buildEditsForIed } from '@/headless/stores/dnd/drop-handler'
+import { createMultipleLNodesInAccessPoint } from '@/headless/scl'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { bayStore } from '@/headless/stores/bay.store.svelte'
 
@@ -17,6 +17,14 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 		xmlDocument: null,
 		editor: null
 	}
+}))
+
+vi.mock('@/headless/utils/get-document-and-Editor', () => ({
+	getDocumentAndEditor: vi.fn(() => ({ doc: {}, editor: {} }))
+}))
+
+vi.mock('@/headless/scl', () => ({
+	createMultipleLNodesInAccessPoint: vi.fn(() => [])
 }))
 
 // Mock the entire drop-handler module to avoid real execution
@@ -30,7 +38,6 @@ vi.mock('@/headless/stores/dnd/drop-handler', () => ({
 	})),
 	shouldApplyBayType: vi.fn(() => false),
 	applyBayType: vi.fn(() => []),
-	buildEditsForIed: vi.fn(() => []),
 	createBayEdits: vi.fn(() => []),
 	generateCommitTitle: vi.fn(() => 'Test Commit'),
 	commitEdits: vi.fn()
@@ -286,8 +293,8 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 	describe('GIVEN a drag-and-drop flow with edits produced', () => {
 		beforeEach(() => {
-			// Mock buildEditsForIed to return a non-empty array so commitEdits is called
-			vi.mocked(buildEditsForIed).mockReturnValue([
+			// Mock createMultipleLNodesInAccessPoint to return a non-empty array so commitEdits is called
+			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue([
 				{
 					type: 'insert',
 					node: {},

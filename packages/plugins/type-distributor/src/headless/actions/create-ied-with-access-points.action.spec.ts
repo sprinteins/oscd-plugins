@@ -12,6 +12,13 @@ vi.mock('../utils', () => ({
 	getEditor: vi.fn()
 }))
 
+vi.mock('../stores', () => ({
+	ssdImportStore: {
+		lnodeTypes: [],
+		loadedSSDDocument: null
+	}
+}))
+
 describe('createIedWithAccessPoints', () => {
 	const mockEditor = { commit: vi.fn() } as unknown as XMLEditor
 	const ied = { name: 'TestIED', description: 'Test', isNew: true }
