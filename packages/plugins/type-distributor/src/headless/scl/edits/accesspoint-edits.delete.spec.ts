@@ -131,7 +131,12 @@ describe('buildEditsForDeleteAccessPoint', () => {
 			})
 
 			it('THEN should return Remove edit for AccessPoint element', () => {
-				const removeEdit = edits.find(isRemoveEdit)
+				const removeEdit = edits
+					.filter(isRemoveEdit)
+					.find(
+						(edit) =>
+							(edit.node as Element).tagName === 'AccessPoint'
+					)
 				expect(removeEdit).toBeDefined()
 				if (removeEdit) {
 					const node = removeEdit.node as Element
@@ -463,65 +468,81 @@ describe('buildEditsForDeleteAccessPoint', () => {
 			}
 		})
 
-		it('WHEN deleting removes all connections THEN should include templateUuid clear edit', () => {
-			const simpleSCD = `<?xml version="1.0" encoding="UTF-8"?>
+		it('WHEN deleting removes all connections THEN should also clear bay uuid, equipment attributes, and remove EqFunctions', () => {
+			const assignedSCD = `<?xml version="1.0" encoding="UTF-8"?>
 <SCL xmlns="http://www.iec.ch/61850/2003/SCL">
   <IED name="IED1">
     <AccessPoint name="P1">
       <Server>
-        <LDevice inst="CBFunction">
-          <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
+        <LDevice inst="-CEQ2_DisconnectorFunction">
+          <LN lnClass="XSWI" lnInst="1" lnType="XSWI$type"/>
         </LDevice>
       </Server>
     </AccessPoint>
   </IED>
   <Substation>
     <VoltageLevel>
-      <Bay name="Bay1" templateUuid="baytype-uuid-1">
-        <Function name="CBFunction">
-          <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1"/>
-        </Function>
+      <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
+        <ConductingEquipment name="-CEQ2" type="DIS" uuid="equip-uuid-2" templateUuid="tpl-uuid-2" originUuid="orig-uuid-2">
+          <EqFunction name="DisconnectorFunction">
+            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction"/>
+          </EqFunction>
+        </ConductingEquipment>
+        <ConductingEquipment name="-CEQ3" type="CBR" uuid="equip-uuid-3" templateUuid="tpl-uuid-3" originUuid="orig-uuid-3">
+          <EqFunction name="CircuitBreakerFunction">
+            <LNode lnClass="XCBR" lnInst="1" lnType="XCBR$type"/>
+          </EqFunction>
+        </ConductingEquipment>
       </Bay>
     </VoltageLevel>
   </Substation>
 </SCL>`
 
-			const simpleDoc = createTestDocument(simpleSCD)
-			const simpleBay = simpleDoc.querySelector('Bay[name="Bay1"]')
-			expect(simpleBay).not.toBeNull()
+			const assignedDoc = createTestDocument(assignedSCD)
+			const assignedBay = assignedDoc.querySelector('Bay[name="Bay1"]')
+			expect(assignedBay).not.toBeNull()
 
-			const accessPoint = simpleDoc.querySelector(
+			const accessPoint = assignedDoc.querySelector(
 				'IED[name="IED1"] AccessPoint[name="P1"]'
 			) as Element
 			const edits = buildEditsForDeleteAccessPoint({
 				accessPoint,
 				iedName: 'IED1',
-				selectedBay: simpleBay
+				selectedBay: assignedBay
 			})
 
-			// Apply attribute clears to simulate
-			const setAttributesEdits = edits.filter(isSetAttributesEdit)
-
-			for (const edit of setAttributesEdits) {
-				if (edit.element.tagName === 'LNode' && edit.attributes) {
-					for (const [key, value] of Object.entries(
-						edit.attributes
-					)) {
-						if (value === null) {
-							edit.element.removeAttribute(key)
-						}
-					}
-				}
-			}
-
-			const templateUuidEdit = edits.find(
+			// Bay uuid and templateUuid must be cleared
+			const bayEdit = edits.find(
 				(edit) =>
 					isSetAttributesEdit(edit) && edit.element.tagName === 'Bay'
 			)
-			expect(templateUuidEdit).toBeDefined()
-			if (templateUuidEdit && isSetAttributesEdit(templateUuidEdit)) {
-				expect(templateUuidEdit.attributes?.templateUuid).toBeNull()
+			expect(bayEdit).toBeDefined()
+			if (bayEdit && isSetAttributesEdit(bayEdit)) {
+				expect(bayEdit.attributes?.uuid).toBeNull()
+				expect(bayEdit.attributes?.templateUuid).toBeNull()
 			}
+
+			// Both ConductingEquipments must have type-assignment attributes cleared
+			const equipEdits = edits.filter(
+				(edit) =>
+					isSetAttributesEdit(edit) &&
+					edit.element.tagName === 'ConductingEquipment'
+			)
+			expect(equipEdits.length).toBe(2)
+			for (const edit of equipEdits) {
+				if (isSetAttributesEdit(edit)) {
+					expect(edit.attributes?.uuid).toBeNull()
+					expect(edit.attributes?.templateUuid).toBeNull()
+					expect(edit.attributes?.originUuid).toBeNull()
+				}
+			}
+
+			// EqFunction elements from both ConductingEquipments must be removed
+			const removeEdits = edits.filter(isRemoveEdit)
+			const eqFunctionRemoves = removeEdits.filter(
+				(edit) => (edit.node as Element).tagName === 'EqFunction'
+			)
+			expect(eqFunctionRemoves.length).toBe(2)
 		})
 	})
 })
