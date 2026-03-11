@@ -95,6 +95,13 @@ export function buildEditsForClearingBayLNodeConnections(
 				edits.push({ node: eqFunction } as Remove)
 			}
 		}
+
+		const functions = Array.from(
+			selectedBay.querySelectorAll(':scope > Function')
+		)
+		for (const func of functions) {
+			edits.push({ node: func } as Remove)
+		}
 	}
 
 	return edits

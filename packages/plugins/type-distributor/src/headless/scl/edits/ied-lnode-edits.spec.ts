@@ -365,6 +365,71 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 		expect(eqFunctionRemoves.length).toBe(2)
 	})
 
+	it('GIVEN Bay with Function elements WHEN deleting last LNode removes all connections THEN should remove Function elements', () => {
+		// GIVEN - Bay with direct Function children (not EqFunction inside ConductingEquipment)
+		const functionSCD = `<?xml version="1.0" encoding="UTF-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+  <IED name="IED1">
+    <AccessPoint name="P1">
+      <Server>
+        <LDevice inst="ProtectionFunction">
+          <LN lnClass="PTRC" lnInst="1" lnType="PTRC$type"/>
+        </LDevice>
+      </Server>
+    </AccessPoint>
+  </IED>
+  <Substation>
+    <VoltageLevel>
+      <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
+        <Function name="ProtectionFunction" uuid="func-uuid-1" templateUuid="tpl-func-1" originUuid="orig-func-1">
+          <LNode lnClass="PTRC" lnInst="1" lnType="PTRC$type" iedName="IED1" ldInst="ProtectionFunction"/>
+        </Function>
+        <Function name="MeasurementFunction" uuid="func-uuid-2" templateUuid="tpl-func-2" originUuid="orig-func-2">
+          <LNode lnClass="MMXU" lnInst="1" lnType="MMXU$type"/>
+        </Function>
+      </Bay>
+    </VoltageLevel>
+  </Substation>
+</SCL>`
+
+		const functionDoc = createTestDocument(functionSCD)
+		const functionBay = functionDoc.querySelector('Bay[name="Bay1"]')
+		expect(functionBay).not.toBeNull()
+
+		// WHEN - delete the last IED-assigned LNode
+		const accessPoint = functionDoc.querySelector(
+			'IED[name="IED1"] AccessPoint[name="P1"]'
+		) as Element
+		const edits = buildEditsForDeleteLNodeFromAccessPoint({
+			iedName: 'IED1',
+			accessPoint,
+			lNodeTemplate: {
+				lnClass: 'PTRC',
+				lnType: 'PTRC$type',
+				lnInst: '1',
+				ldInst: 'ProtectionFunction'
+			},
+			selectedBay: functionBay
+		})
+
+		// THEN - bay uuid and templateUuid must be cleared
+		const bayEdit = edits.find(
+			(edit) => isSetAttributesEdit(edit) && edit.element.tagName === 'Bay'
+		)
+		expect(bayEdit).toBeDefined()
+		if (bayEdit && isSetAttributesEdit(bayEdit)) {
+			expect(bayEdit.attributes?.uuid).toBeNull()
+			expect(bayEdit.attributes?.templateUuid).toBeNull()
+		}
+
+		// THEN - both Function elements must be removed
+		const removeEdits = edits.filter(isRemoveEdit)
+		const functionRemoves = removeEdits.filter(
+			(edit) => (edit.node as Element).tagName === 'Function'
+		)
+		expect(functionRemoves.length).toBe(2)
+	})
+
 	it('GIVEN invalid inputs WHEN LNode does not exist in AccessPoint THEN should throw error', () => {
 		// WHEN / THEN
 		const accessPoint = doc.querySelector(
