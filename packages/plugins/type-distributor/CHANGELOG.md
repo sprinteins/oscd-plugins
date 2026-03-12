@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Better form handling for the creation of IEDs and AccessPoints. Show dedicated errors below the input fields.
 ### Fixed
+- Resolved scd still referencing bayType if the last lNode has been deleted. Now removes all references.
 - Resolved overflowing text in lNode card of the ied column.
 - Resolved an issue where using the wrong function for element creation could lead to `xmlns=""` attributes being added. See [code style decision #3](docs/code-style-decisions/0003-why-use-createElement.md) for details.
 
