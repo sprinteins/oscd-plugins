@@ -10,20 +10,23 @@ import { bayStore } from '@/headless/stores'
 type FindMatchingLNodeElementParams = {
 	lNode: LNodeTemplate
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
-	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	equipmentUuid?: string
+	functionScopeUuid?: string
 }
 
 function findMatchingLNodeElement({
 	lNode,
 	sourceFunction,
+	equipmentMatches,
 	equipmentUuid,
-	equipmentMatches
+	functionScopeUuid
 }: FindMatchingLNodeElementParams): Element | null {
 	const functionElements = queryFunctionElements({
 		sourceFunction,
+		equipmentMatches,
 		equipmentUuid,
-		equipmentMatches
+		functionScopeUuid
 	})
 
 	for (const functionElement of functionElements) {
@@ -37,33 +40,53 @@ function findMatchingLNodeElement({
 
 type QueryFunctionElementsParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
-	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	equipmentUuid?: string
+	functionScopeUuid?: string
 }
 
 function queryFunctionElements({
 	sourceFunction,
 	equipmentUuid,
-	equipmentMatches
+	equipmentMatches,
+	functionScopeUuid
 }: QueryFunctionElementsParams): Element[] {
-	const scdBay = bayStore.scdBay
-	if (!scdBay) {
-		console.warn('No bay selected or bay not found in document')
-		return []
-	}
-
 	if (equipmentUuid) {
 		const matchFromStore = equipmentMatches.find(
 			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
-		if (matchFromStore) {
-			return Array.from(
-				matchFromStore.scdElement.querySelectorAll(
-					`EqFunction[name="${sourceFunction.name}"]`
-				)
+		if (!matchFromStore) return []
+
+		const duplicateNames = Array.from(
+			matchFromStore.scdElement.querySelectorAll(
+				`EqFunction[name="${sourceFunction.name}"]`
 			)
+		)
+
+		if (functionScopeUuid) {
+			const duplicateNameTemplates =
+				matchFromStore.templateEquipment.eqFunctions.filter(
+					(ef) => ef.name === sourceFunction.name
+				)
+			const index = duplicateNameTemplates.findIndex(
+				(ef) => ef.uuid === functionScopeUuid
+			)
+			if (index === -1) {
+				console.warn(
+					`[buildEditsForBayLNode] EqFunction template uuid "${functionScopeUuid}" not found for name "${sourceFunction.name}"`
+				)
+				return []
+			}
+			const element = duplicateNames[index]
+			return element ? [element] : []
 		}
 
+		return duplicateNames
+	}
+
+	const scdBay = bayStore.scdBay
+	if (!scdBay) {
+		console.warn('No bay selected or bay not found in document')
 		return []
 	}
 
@@ -107,6 +130,7 @@ type UpdateBayLNodesParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	functionScopeUuid?: string
 }
 
 export function buildEditsForBayLNode({
@@ -114,7 +138,8 @@ export function buildEditsForBayLNode({
 	iedName,
 	sourceFunction,
 	equipmentUuid,
-	equipmentMatches
+	equipmentMatches,
+	functionScopeUuid
 }: UpdateBayLNodesParams): SetAttributes[] {
 	const edits: SetAttributes[] = []
 
@@ -123,7 +148,8 @@ export function buildEditsForBayLNode({
 			lNode,
 			sourceFunction,
 			equipmentUuid,
-			equipmentMatches
+			equipmentMatches,
+			functionScopeUuid
 		})
 		if (!lnodeElement) {
 			continue

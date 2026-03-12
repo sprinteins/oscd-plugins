@@ -328,6 +328,91 @@ describe('assignedLNodesStore', () => {
 			).toBe(false)
 		})
 
+		it('GIVEN equipment with two same-named EqFunctions both assigned WHEN rebuild THEN produces distinct keys for each', () => {
+			const eqUuid = 'eq-dup-uuid'
+			const tmplUuid1 = 'eq-func-dup-template-1'
+			const tmplUuid2 = 'eq-func-dup-template-2'
+
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation>
+						<VoltageLevel>
+							<Bay name="DupBay">
+								<ConductingEquipment name="EarthSwitch">
+									<EqFunction name="DisconnectorFunction">
+										<LNode lnClass="XSWI" lnType="XSWI_T" lnInst="1" iedName="AP1"/>
+									</EqFunction>
+									<EqFunction name="DisconnectorFunction">
+										<LNode lnClass="XSWI" lnType="XSWI_T" lnInst="1" iedName="AP2"/>
+									</EqFunction>
+								</ConductingEquipment>
+							</Bay>
+						</VoltageLevel>
+					</Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			const bayElement = doc.querySelector('Bay') as Element
+			bayStore.scdBay = bayElement
+
+			const earthSwitch = doc.querySelector(
+				'ConductingEquipment'
+			) as Element
+			const lnode: LNodeTemplate = {
+				lnClass: 'XSWI',
+				lnType: 'XSWI_T',
+				lnInst: '1'
+			}
+			bayStore.equipmentMatches = [
+				{
+					scdElement: earthSwitch,
+					bayTypeEquipment: {
+						uuid: eqUuid,
+						templateUuid: 'tmpl-uuid',
+						virtual: false
+					},
+					templateEquipment: {
+						uuid: 'tmpl-uuid',
+						name: 'EarthSwitch',
+						type: 'DIS',
+						terminals: [],
+						eqFunctions: [
+							{
+								uuid: tmplUuid1,
+								name: 'DisconnectorFunction',
+								lnodes: [lnode]
+							},
+							{
+								uuid: tmplUuid2,
+								name: 'DisconnectorFunction',
+								lnodes: [lnode]
+							}
+						]
+					}
+				}
+			]
+
+			assignedLNodesStore.rebuild()
+
+			// Both EqFunctions are assigned but to different scopes — they must be independently tracked
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: eqUuid,
+					lnode,
+					functionScopeUuid: tmplUuid1
+				})
+			).toBe(true)
+
+			expect(
+				assignedLNodesStore.isAssigned({
+					parentUuid: eqUuid,
+					lnode,
+					functionScopeUuid: tmplUuid2
+				})
+			).toBe(true)
+		})
+
 		it('should skip Functions without templateUuid', () => {
 			const docWithoutUuid = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">

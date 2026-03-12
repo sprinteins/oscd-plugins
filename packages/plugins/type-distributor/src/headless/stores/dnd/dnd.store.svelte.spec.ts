@@ -262,7 +262,8 @@ describe('dndStore', () => {
 				iedName: 'TestIED',
 				sourceFunction: mockFunction,
 				equipmentUuid: 'eq-uuid',
-				equipmentMatches: []
+				equipmentMatches: [],
+				functionScopeUuid: mockFunction.uuid
 			})
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
 				edits: [...mockIedEdits, ...mockBayEdits],

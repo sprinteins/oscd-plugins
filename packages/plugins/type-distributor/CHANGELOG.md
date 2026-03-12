@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolved scd still referencing bayType if the last lNode has been deleted. Now removes all references.
 - Resolved overflowing text in lNode card of the ied column.
 - Resolved an issue where using the wrong function for element creation could lead to `xmlns=""` attributes being added. See [code style decision #3](docs/code-style-decisions/0003-why-use-createElement.md) for details.
+- Fixed duplicate `EqFunction` assignment: when a `ConductingEquipment` has multiple `EqFunction` children sharing the same name (and `templateUuid`), each instance is now resolved by positional index so they can be independently assigned to different AccessPoints.
 
 ## [0.5.1]
 ### Added

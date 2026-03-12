@@ -105,7 +105,8 @@ class UseDndStore {
 						iedName: targetSIedName,
 						sourceFunction: functionFromSSD,
 						equipmentUuid,
-						equipmentMatches
+						equipmentMatches,
+						functionScopeUuid
 					})
 				)
 			}

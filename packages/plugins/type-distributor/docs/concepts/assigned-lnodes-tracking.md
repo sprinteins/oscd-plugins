@@ -161,7 +161,7 @@ For equipment-based LNodes, the parent UUID is the matched bay-type equipment in
 </ConductingEquipment>
 ```
 
-For EqFunction-based LNodes, `parentUuid` is the bay-type equipment instance UUID and `functionScopeUuid` is the EqFunction template UUID.
+For EqFunction-based LNodes, `parentUuid` is the bay-type equipment instance UUID and `functionScopeUuid` is the EqFunction **template** UUID.
 
 **EqFunction key**: `eq-instance-1:eq-function-template-1:PTRC:TestPTRC:1`
 
@@ -171,15 +171,56 @@ For bay-level Function LNodes, `parentUuid` is the Function instance UUID and `f
 
 The store resolves equipment assignment state from current bay context and resolved equipment matches.
 
+### Duplicate EqFunction Names
+
+A `ConductingEquipment` can legitimately have multiple `EqFunction` elements that share the **same name** (and the same `templateUuid`). A concrete example is an Earth Switch that controls two independent switching functions both derived from the same `DisconnectorFunction` template:
+
+```xml
+<!-- SSD template bay -->
+<ConductingEquipment name="Earth Switch" type="DIS" uuid="0aece9bd-...">
+  <EqFunction name="DisconnectorFunction" uuid="9570da2d-..." templateUuid="13346776-..."/>
+  <EqFunction name="DisconnectorFunction" uuid="d5dfc088-..." templateUuid="13346776-..."/>
+</ConductingEquipment>
+```
+
+Because both instances resolve to the same template, a naive key using only `templateUuid` would treat them as identical and allow only one assignment.
+
+**Solution — position-stable index matching:**
+`processEqFunctions` in `assigned-lnodes.helpers.ts` resolves the `functionScopeUuid` by **index** rather than by UUID lookup:
+
+1. Collect all `EqFunction` siblings in the SCD element that share the same name (`sameNamedSiblings`).
+2. Collect all template `EqFunction` entries that share the same name from `templateEquipment.eqFunctions` (`duplicateNameTemplates`).
+3. Use the positional index of the current element inside `sameNamedSiblings` to look up the corresponding entry in `duplicateNameTemplates` and read its `uuid` as `functionScopeUuid`.
+
+This makes each positional instance's key unique even when names and `templateUuid` values are identical:
+
+```
+Instance 0: eq-instance:9570da2d-...:XSWI:TestXSWI:1  → can be assigned to AP-A
+Instance 1: eq-instance:d5dfc088-...:XSWI:TestXSWI:1  → can be assigned to AP-B
+```
+
+The same positional index approach is used in `queryFunctionElements` inside `bay-edits.ts` when resolving which SCD `EqFunction` element to update during assignment.
+
 ## Edge Cases
 
-### Missing templateUuid
+### Missing templateUuid / functionScopeUuid
 
 Functions/Equipment without `templateUuid` attributes are skipped with a warning:
 
 ```typescript
 if (!parentUuid) {
   console.warn(`[AssignedLNodes] Function "${functionName}" has no templateUuid, skipping`)
+  continue
+}
+```
+
+Similarly, if the positional index lookup for a duplicate EqFunction name fails to resolve a template UUID, the element is skipped with a warning:
+
+```typescript
+if (!functionScopeUuid) {
+  console.warn(
+    `[AssignedLNodes] Could not resolve EqFunction template UUID for "${eqFuncName}" (index ${eqFuncIndex}) in equipment "${equipmentName}"`
+  )
   continue
 }
 ```

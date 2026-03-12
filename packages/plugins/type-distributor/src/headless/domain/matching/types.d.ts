@@ -1,3 +1,8 @@
+import type {
+	ConductingEquipmentTemplate,
+	ConductingEquipmentType
+} from '@/headless/common-types'
+
 export type EquipmentMatch = {
 	scdElement: Element
 	bayTypeEquipment: ConductingEquipmentType
