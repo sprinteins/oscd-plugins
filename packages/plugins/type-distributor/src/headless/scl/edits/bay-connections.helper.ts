@@ -6,12 +6,8 @@ export function hasRemainingConnectionsAfterClearing(
 	bay: Element,
 	clearedLNodes: Set<Element>
 ): boolean {
-		const managedLNodes = Array.from(
-		bay.querySelectorAll(
-			':scope > Function > LNode[iedName], :scope > ConductingEquipment > EqFunction > LNode[iedName]'
-		)
-	)
-	const remainingLNodes = managedLNodes.filter(
+	const allLNodes = Array.from(bay.querySelectorAll('LNode[iedName]'))
+	const remainingLNodes = allLNodes.filter(
 		(lnode) => !clearedLNodes.has(lnode)
 	)
 	return remainingLNodes.length > 0
