@@ -334,7 +334,8 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 
 		// THEN - bay uuid and templateUuid must be cleared
 		const bayEdit = edits.find(
-			(edit) => isSetAttributesEdit(edit) && edit.element.tagName === 'Bay'
+			(edit) =>
+				isSetAttributesEdit(edit) && edit.element.tagName === 'Bay'
 		)
 		expect(bayEdit).toBeDefined()
 		if (bayEdit && isSetAttributesEdit(bayEdit)) {
@@ -414,7 +415,8 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 
 		// THEN - bay uuid and templateUuid must be cleared
 		const bayEdit = edits.find(
-			(edit) => isSetAttributesEdit(edit) && edit.element.tagName === 'Bay'
+			(edit) =>
+				isSetAttributesEdit(edit) && edit.element.tagName === 'Bay'
 		)
 		expect(bayEdit).toBeDefined()
 		if (bayEdit && isSetAttributesEdit(bayEdit)) {
