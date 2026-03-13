@@ -60,7 +60,7 @@ export function buildInsertsForCreateIedWithAccessPoints({
 
 	const allEdits: Insert[] = [
 		iedEdit,
-		...buildInsertsForAccessPoints(doc, iedElement, accessPoints, lnodeTypes)
+		...buildInsertsForAccessPoints({doc, parent: iedElement, accessPoints, lnodeTypes})
 	]
 
 	if (ssdDoc) {

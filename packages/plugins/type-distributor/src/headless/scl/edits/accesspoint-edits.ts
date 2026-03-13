@@ -83,7 +83,7 @@ function ensureLDevice({
 	return { lDevice, edit }
 }
 
-type CreateLNodeParams = {
+type createLNodeInAccessPointParams = {
 	lNode: LNodeTemplate
 	lDevice: Element
 	doc: XMLDocument
@@ -93,7 +93,7 @@ function createLNodeInAccessPoint({
 	lNode,
 	lDevice,
 	doc
-}: CreateLNodeParams): Insert {
+}: createLNodeInAccessPointParams): Insert {
 	const lNodeElement = createLNodeElementInIED(lNode, doc)
 
 	const edit: Insert = {
@@ -105,7 +105,7 @@ function createLNodeInAccessPoint({
 	return edit
 }
 
-type CreateMultipleLNodesParams = {
+type createMultipleLNodesInAccessPointParams = {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	lNodes: LNodeTemplate[]
 	accessPoint: Element
@@ -123,7 +123,7 @@ export function createMultipleLNodesInAccessPoint({
 	equipmentMatches,
 	doc,
 	lnodeTypes
-}: CreateMultipleLNodesParams): Insert[] {
+}: createMultipleLNodesInAccessPointParams): Insert[] {
 	const edits: Insert[] = []
 
 	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
@@ -165,12 +165,19 @@ export function createMultipleLNodesInAccessPoint({
 	return edits
 }
 
-export function buildInsertsForAccessPoints(
-	doc: XMLDocument,
-	parent: Element,
-	accessPoints: { name: string; description?: string }[],
+type BuildInsertsForAccessPointsParams = {
+	doc: XMLDocument
+	parent: Element
+	accessPoints: { name: string; description?: string }[]
 	lnodeTypes: LNodeType[]
-): Insert[] {
+}
+
+export function buildInsertsForAccessPoints({
+	doc,
+	parent,
+	accessPoints,
+	lnodeTypes
+}: BuildInsertsForAccessPointsParams): Insert[] {
 	return accessPoints.map((ap) => {
 		const apElement = createElement(doc, 'AccessPoint', {
 			name: ap.name,
@@ -207,15 +214,17 @@ export function buildInsertsForCreateAccessPoint({
 		throw new Error(`IED with name "${iedName}" not found`)
 	}
 
-	const allEdits: Insert[] = buildInsertsForAccessPoints(
+	const allEdits: Insert[] = buildInsertsForAccessPoints({
 		doc,
-		iedElement,
+		parent: iedElement,
 		accessPoints,
 		lnodeTypes
-	)
+	})
 
 	if (ssdDoc) {
-		allEdits.push(...buildInsertsForLd0DataTypes({ doc, lnodeTypes, ssdDoc }))
+		allEdits.push(
+			...buildInsertsForLd0DataTypes({ doc, lnodeTypes, ssdDoc })
+		)
 	}
 
 	return allEdits
