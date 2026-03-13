@@ -101,7 +101,7 @@ function createSetIedNameEdit(
 	}
 }
 
-type UpdateBayLNodesParams = {
+type buildUpdatesForBayLNodeParams = {
 	lNodes: LNodeTemplate[]
 	iedName: string
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
@@ -115,7 +115,7 @@ export function buildUpdatesForBayLNode({
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches
-}: UpdateBayLNodesParams): SetAttributes[] {
+}: buildUpdatesForBayLNodeParams): SetAttributes[] {
 	const edits: SetAttributes[] = []
 
 	for (const lNode of lNodes) {
