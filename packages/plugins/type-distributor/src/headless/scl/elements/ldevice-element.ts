@@ -14,31 +14,31 @@ const EXCLUDED_LNODE_CLASSES = new Set(['LGOS', 'LSVS'])
 export function createLD0LNodeTemplates(
 	lnodeTypes: LNodeType[]
 ): LNodeTemplate[] {
-	const relevantLnodeTypes = lnodeTypes.filter(
-		(lnodeType) =>
-			lnodeType.lnClass.startsWith('L') &&
-			!EXCLUDED_LNODE_CLASSES.has(lnodeType.lnClass)
+	const relevantLNodes = lnodeTypes.filter(
+		(lnode) =>
+			lnode.lnClass.startsWith('L') &&
+			!EXCLUDED_LNODE_CLASSES.has(lnode.lnClass)
 	)
 
-	const seenClasses = new Set<string>()
-	const uniqueByClass = relevantLnodeTypes.filter((lnodeType) => {
-		if (seenClasses.has(lnodeType.lnClass)) {
-			return false
+	const uniqueLNodeMap = new Map<string, LNodeType>()
+	for (const lnode of relevantLNodes) {
+		if (!uniqueLNodeMap.has(lnode.lnClass)) {
+			uniqueLNodeMap.set(lnode.lnClass, lnode)
 		}
-		seenClasses.add(lnodeType.lnClass)
-		return true
-	})
+	}
 
-	const orderedByClass = uniqueByClass.sort((a, b) => {
+	const distinctLNodeArray = Array.from(uniqueLNodeMap.values())
+
+	distinctLNodeArray.sort((a, b) => {
 		if (a.lnClass === 'LLN0') return -1
 		if (b.lnClass === 'LLN0') return 1
 		return 0
 	})
 
-	return orderedByClass.map((lnodeType) => ({
-		lnClass: lnodeType.lnClass,
-		lnType: lnodeType.id,
-		lnInst: lnodeType.lnClass === 'LLN0' ? '' : '1'
+	return distinctLNodeArray.map((lnode) => ({
+		lnClass: lnode.lnClass,
+		lnType: lnode.id,
+		lnInst: lnode.lnClass === 'LLN0' ? '' : '1'
 	}))
 }
 
