@@ -14,12 +14,15 @@ export function createLNodeElementInBay(
 	})
 }
 
+function getLNTagName(lnode: LNodeTemplate): string {
+	return lnode.lnClass === 'LLN0' ? 'LN0' : 'LN'
+}
+
 export function createLNodeElementInIED(
 	lNode: LNodeTemplate,
 	doc: XMLDocument
 ): Element {
-	const tag = lNode.lnClass === 'LLN0' ? 'LN0' : 'LN'
-	const lnElement = createElement(doc, tag, {
+	const lnElement = createElement(doc, getLNTagName(lNode), {
 		lnClass: lNode.lnClass,
 		lnType: lNode.lnType,
 		lnInst: lNode.lnInst

@@ -7,6 +7,7 @@ import type {
 import { queryServer } from './server-element'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { createElement } from '@oscd-plugins/core'
+import { createLNodeElementInIED } from './lnode-element'
 
 const LD0_INSTANCE = 'LD0'
 const EXCLUDED_LNODE_CLASSES = new Set(['LGOS', 'LSVS'])
@@ -163,15 +164,7 @@ export function createLD0Element(
 	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
 
 	for (const lnodeTemplate of ld0LNodeTemplates) {
-		const isLln0 = lnodeTemplate.lnClass === 'LLN0'
-		const tagName = isLln0 ? 'LN0' : 'LN'
-
-		const lnElement = createElement(doc, tagName, {
-			lnClass: lnodeTemplate.lnClass,
-			lnType: lnodeTemplate.lnType,
-			lnInst: lnodeTemplate.lnInst
-		})
-
+		const lnElement = createLNodeElementInIED(lnodeTemplate, doc)
 		ld0.appendChild(lnElement)
 	}
 
