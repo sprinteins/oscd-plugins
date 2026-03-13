@@ -1,10 +1,11 @@
 import type { Insert } from '@openscd/oscd-api'
-import type { LNodeTemplate } from '@/headless/common-types'
+import type { LNodeTemplate, LNodeType } from '@/headless/common-types'
 import { createElement } from '@oscd-plugins/core'
 import {
 	collectTypeDependencies,
 	type TypeCollections
 } from '@/headless/domain/type-resolution'
+import { createLD0LNodeTemplates } from '../elements'
 
 const TYPE_ORDER = ['LNodeType', 'DOType', 'DAType', 'EnumType'] as const
 type TypeName = (typeof TYPE_ORDER)[number]
@@ -147,5 +148,34 @@ export function buildEditsForDataTypeTemplates(
 			)
 		}
 	}
+	return edits
+}
+
+interface BuildEditsForBayLNodeParams {
+	doc: XMLDocument
+	lnodeTypes: LNodeType[]
+	ssdDoc: XMLDocument
+}
+
+export function buildEditsForLd0DataTypes({
+	doc,
+	lnodeTypes,
+	ssdDoc
+}: BuildEditsForBayLNodeParams): Insert[] {
+	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
+	if (ld0LNodeTemplates.length === 0) return []
+
+	const { element: dataTypeTemplates, edit: dttEdit } =
+		ensureDataTypeTemplates(doc)
+	const edits: Insert[] = []
+	if (dttEdit) edits.push(dttEdit)
+	edits.push(
+		...buildEditsForDataTypeTemplates(
+			doc,
+			dataTypeTemplates,
+			ld0LNodeTemplates,
+			ssdDoc
+		)
+	)
 	return edits
 }

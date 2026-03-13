@@ -1,10 +1,47 @@
 import type {
 	ConductingEquipmentTemplate,
-	FunctionTemplate
+	FunctionTemplate,
+	LNodeTemplate,
+	LNodeType
 } from '@/headless/common-types'
 import { queryServer } from './server-element'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { createElement } from '@oscd-plugins/core'
+import { createLNodeElementInIED } from './lnode-element'
+
+const LD0_INSTANCE = 'LD0'
+const EXCLUDED_LNODE_CLASSES = new Set(['LGOS', 'LSVS'])
+
+export function createLD0LNodeTemplates(
+	lnodeTypes: LNodeType[]
+): LNodeTemplate[] {
+	const relevantLNodes = lnodeTypes.filter(
+		(lnode) =>
+			lnode.lnClass.startsWith('L') &&
+			!EXCLUDED_LNODE_CLASSES.has(lnode.lnClass)
+	)
+
+	const uniqueLNodeMap = new Map<string, LNodeType>()
+	for (const lnode of relevantLNodes) {
+		if (!uniqueLNodeMap.has(lnode.lnClass)) {
+			uniqueLNodeMap.set(lnode.lnClass, lnode)
+		}
+	}
+
+	const distinctLNodeArray = Array.from(uniqueLNodeMap.values())
+
+	distinctLNodeArray.sort((a, b) => {
+		if (a.lnClass === 'LLN0') return -1
+		if (b.lnClass === 'LLN0') return 1
+		return 0
+	})
+
+	return distinctLNodeArray.map((lnode) => ({
+		lnClass: lnode.lnClass,
+		lnType: lnode.id,
+		lnInst: lnode.lnClass === 'LLN0' ? '' : '1'
+	}))
+}
 
 interface SourceFunctionParams {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
@@ -113,4 +150,23 @@ export function createLDeviceElement(
 	)
 	const lDevice = createElement(doc, 'LDevice', { inst: lDeviceInst })
 	return lDevice
+}
+
+export function createLD0Element(
+	doc: XMLDocument,
+	lnodeTypes: LNodeType[]
+): Element {
+	const ld0 = createElement(doc, 'LDevice', {
+		inst: LD0_INSTANCE,
+		ldName: LD0_INSTANCE
+	})
+
+	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
+
+	for (const lnodeTemplate of ld0LNodeTemplates) {
+		const lnElement = createLNodeElementInIED(lnodeTemplate, doc)
+		ld0.appendChild(lnElement)
+	}
+
+	return ld0
 }

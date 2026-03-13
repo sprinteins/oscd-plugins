@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { createAccessPoint } from './create-access-point.action'
 import { buildEditsForCreateAccessPoint } from '../scl'
-import { getEditor } from '../utils'
+import { getDocumentAndEditor } from '../utils'
 import type { XMLEditor } from '@openscd/oscd-editor'
 
 vi.mock('../scl', () => ({
@@ -9,15 +9,26 @@ vi.mock('../scl', () => ({
 }))
 
 vi.mock('../utils', () => ({
-	getEditor: vi.fn()
+	getDocumentAndEditor: vi.fn()
+}))
+
+vi.mock('../stores', () => ({
+	ssdImportStore: {
+		lnodeTypes: [],
+		loadedSSDDocument: null
+	}
 }))
 
 describe('createAccessPoint', () => {
 	const mockEditor = { commit: vi.fn() } as unknown as XMLEditor
+	const mockDocument = {} as unknown as XMLDocument
 	const ied = { name: 'TestIED', description: '', isNew: false }
 
 	beforeEach(() => {
-		vi.mocked(getEditor).mockReturnValue(mockEditor)
+		vi.mocked(getDocumentAndEditor).mockReturnValue({
+			editor: mockEditor,
+			doc: mockDocument as unknown as XMLDocument
+		})
 		vi.mocked(buildEditsForCreateAccessPoint).mockReturnValue([])
 	})
 

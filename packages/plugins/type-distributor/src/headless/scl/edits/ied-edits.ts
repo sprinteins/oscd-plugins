@@ -1,13 +1,15 @@
-import { createElement } from '@oscd-plugins/core'
 import type { Insert } from '@openscd/oscd-api'
 import { getDocument } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
+import { buildEditsForLd0DataTypes } from './data-type-edits'
+import { buildAccessPointInserts } from './accesspoint-edits'
 import {
 	queryIEDInsertionReference,
 	queryAccessPointsFromIed,
 	queryIedElement
 } from '../queries'
 import type { Remove } from '@openscd/oscd-api'
+import type { LNodeType } from '@/headless/common-types'
 
 export function buildEditForCreateIed(
 	name: string,
@@ -33,12 +35,16 @@ type buildEditsForCreateIedWithAccessPointsParams = {
 	name: string
 	description?: string
 	accessPoints: { name: string; description?: string }[]
+	lnodeTypes: LNodeType[]
+	ssdDoc?: XMLDocument | null
 }
 
 export function buildEditsForCreateIedWithAccessPoints({
 	name,
 	description,
-	accessPoints
+	accessPoints,
+	lnodeTypes,
+	ssdDoc
 }: buildEditsForCreateIedWithAccessPointsParams): Insert[] {
 	const doc = getDocument()
 
@@ -52,26 +58,16 @@ export function buildEditsForCreateIedWithAccessPoints({
 		reference
 	}
 
-	const apEdits: Insert[] = accessPoints.map((ap) => {
-		const apElement = createElement(doc, 'AccessPoint', {
-			name: ap.name,
-			desc: ap.description ?? null
-		})
-		const serverElement = createElement(doc, 'Server', {})
-		const authElement = createElement(doc, 'Authentication', {
-			none: 'true'
-		})
-		serverElement.appendChild(authElement)
-		apElement.appendChild(serverElement)
+	const allEdits: Insert[] = [
+		iedEdit,
+		...buildAccessPointInserts(doc, iedElement, accessPoints, lnodeTypes)
+	]
 
-		return {
-			node: apElement,
-			parent: iedElement,
-			reference: null
-		}
-	})
+	if (ssdDoc) {
+		allEdits.push(...buildEditsForLd0DataTypes({ doc, lnodeTypes, ssdDoc }))
+	}
 
-	return [iedEdit, ...apEdits]
+	return allEdits
 }
 
 export function buildEditForDeleteEmptyIed(iedName: string): Remove | null {

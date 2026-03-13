@@ -1,14 +1,14 @@
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { createElement } from '@oscd-plugins/core'
 import type { Insert } from '@openscd/oscd-api'
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate,
-	LNodeTemplate
+	LNodeTemplate,
+	LNodeType
 } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
-import { getDocumentAndEditor } from '../../utils'
 import {
+	createLD0Element,
 	createLDeviceElement,
 	createLNodeElementInIED,
 	createServerElementWithAuth,
@@ -19,6 +19,7 @@ import {
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
 import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
 import { queryLNodesFromAccessPoint, queryIedElement } from '../queries'
+import { buildEditsForLd0DataTypes } from './data-type-edits'
 
 function ensureServer(
 	accessPoint: Element,
@@ -107,6 +108,7 @@ type CreateMultipleLNodesParams = {
 	accessPoint: Element
 	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	doc: XMLDocument
 }
 
 export function createMultipleLNodesInAccessPoint({
@@ -114,15 +116,10 @@ export function createMultipleLNodesInAccessPoint({
 	lNodes,
 	accessPoint,
 	equipmentUuid,
-	equipmentMatches
+	equipmentMatches,
+	doc
 }: CreateMultipleLNodesParams): Insert[] {
 	const edits: Insert[] = []
-
-	if (!pluginGlobalStore.xmlDocument) {
-		throw new Error('No XML document found')
-	}
-
-	const doc = pluginGlobalStore.xmlDocument
 
 	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
 	const { lDevice, edit: lDeviceEdit } = ensureLDevice({
@@ -162,40 +159,57 @@ export function createMultipleLNodesInAccessPoint({
 	return edits
 }
 
-export function buildEditsForCreateAccessPoint(
-	iedName: string,
-	accessPoints: { name: string; description?: string }[]
+export function buildAccessPointInserts(
+	doc: XMLDocument,
+	parent: Element,
+	accessPoints: { name: string; description?: string }[],
+	lnodeTypes: LNodeType[]
 ): Insert[] {
-	const { doc } = getDocumentAndEditor()
-	const allEdits: Insert[] = []
+	return accessPoints.map((ap) => {
+		const apElement = createElement(doc, 'AccessPoint', {
+			name: ap.name,
+			desc: ap.description ?? null
+		})
+		const serverElement = createElement(doc, 'Server', {})
+		const authElement = createElement(doc, 'Authentication', {
+			none: 'true'
+		})
+		serverElement.appendChild(authElement)
+		serverElement.appendChild(createLD0Element(doc, lnodeTypes))
+		apElement.appendChild(serverElement)
+		return { node: apElement, parent, reference: null } as Insert
+	})
+}
 
+interface BuildEditsForCreateAccessPointParams {
+	iedName: string
+	accessPoints: { name: string; description?: string }[]
+	lnodeTypes: LNodeType[]
+	doc: XMLDocument
+	ssdDoc?: XMLDocument | null
+}
+
+export function buildEditsForCreateAccessPoint({
+	iedName,
+	accessPoints,
+	lnodeTypes,
+	doc,
+	ssdDoc
+}: BuildEditsForCreateAccessPointParams): Insert[] {
 	const iedElement = queryIedElement(doc, iedName)
 	if (!iedElement) {
 		throw new Error(`IED with name "${iedName}" not found`)
 	}
 
-	for (const ap of accessPoints) {
-		const apElement = createElement(doc, 'AccessPoint', {
-			name: ap.name,
-			desc: ap.description ?? null
-		})
+	const allEdits: Insert[] = buildAccessPointInserts(
+		doc,
+		iedElement,
+		accessPoints,
+		lnodeTypes
+	)
 
-		const serverElement = createElement(doc, 'Server', {})
-
-		const authElement = createElement(doc, 'Authentication', {
-			none: 'true'
-		})
-
-		serverElement.appendChild(authElement)
-		apElement.appendChild(serverElement)
-
-		const edit: Insert = {
-			node: apElement,
-			parent: iedElement,
-			reference: null
-		}
-
-		allEdits.push(edit)
+	if (ssdDoc) {
+		allEdits.push(...buildEditsForLd0DataTypes({ doc, lnodeTypes, ssdDoc }))
 	}
 
 	return allEdits

@@ -103,27 +103,13 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		vi.restoreAllMocks()
 	})
 
-	it('GIVEN xmlDocument is not set WHEN creating lNodes THEN throws "No XML document found"', () => {
-		// GIVEN
-		pluginGlobalStore.xmlDocument = undefined
-
-		// WHEN / THEN
-		expect(() =>
-			createMultipleLNodesInAccessPoint({
-				sourceFunction: functionTemplate,
-				lNodes: [lnodeTemplate],
-				accessPoint,
-				equipmentMatches: []
-			})
-		).toThrow('No XML document found')
-	})
-
 	it('GIVEN an empty lNodes array WHEN creating lNodes THEN returns empty array', () => {
 		// WHEN
 		const edits = createMultipleLNodesInAccessPoint({
 			sourceFunction: functionTemplate,
 			lNodes: [],
 			accessPoint,
+			doc: mockDocument,
 			equipmentMatches: []
 		})
 
@@ -137,6 +123,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -155,6 +142,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -169,6 +157,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -182,6 +171,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: equipmentTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -209,6 +199,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				lNodes: [lnodeTemplate],
 				accessPoint,
 				equipmentUuid: 'eq-template-uuid',
+				doc: mockDocument,
 				equipmentMatches: [match]
 			})
 
@@ -234,6 +225,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2, lnode3],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -246,6 +238,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -266,6 +259,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -287,6 +281,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lln0],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -309,6 +304,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			sourceFunction: functionTemplate,
 			lNodes: [lnodeTemplate],
 			accessPoint,
+			doc: mockDocument,
 			equipmentMatches: []
 		})
 
@@ -325,6 +321,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -337,6 +334,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -363,6 +361,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -393,6 +392,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -406,6 +406,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -440,6 +441,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -483,6 +485,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -497,6 +500,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
+				doc: mockDocument,
 				equipmentMatches: []
 			})
 
@@ -539,10 +543,12 @@ describe('buildEditsForCreateAccessPoint', () => {
 	describe('Functionality Tests', () => {
 		it('should create an AccessPoint element with correct structure', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			const edits = buildEditsForCreateAccessPoint(
-				'TestIED',
-				accessPoints
-			)
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints,
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
 			expect(edits.length).toBe(1)
 			const edit = edits[0]
@@ -555,10 +561,12 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should set the name attribute of AccessPoint', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			const edits = buildEditsForCreateAccessPoint(
-				'TestIED',
-				accessPoints
-			)
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints,
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
 			const edit = edits[0]
 			const accessPointElement = edit.node as Element
@@ -570,10 +578,12 @@ describe('buildEditsForCreateAccessPoint', () => {
 			const accessPoints = [
 				{ name: 'AP1', description: 'Access Point 1' }
 			]
-			const edits = buildEditsForCreateAccessPoint(
-				'TestIED',
-				accessPoints
-			)
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints,
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
 			const edit = edits[0]
 			const accessPointElement = edit.node as Element
@@ -585,10 +595,12 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should not set desc attribute when description is not provided', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			const edits = buildEditsForCreateAccessPoint(
-				'TestIED',
-				accessPoints
-			)
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints,
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
 			const edit = edits[0]
 			const accessPointElement = edit.node as Element
@@ -598,10 +610,12 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should create multiple AccessPoint elements when multiple accessPoints are provided', () => {
 			const accessPoints = [{ name: 'AP1' }, { name: 'AP2' }]
-			const edits = buildEditsForCreateAccessPoint(
-				'TestIED',
-				accessPoints
-			)
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints,
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
 			expect(edits.length).toBe(2)
 
@@ -617,10 +631,12 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should have a Server child element within AccessPoint', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			const edits = buildEditsForCreateAccessPoint(
-				'TestIED',
-				accessPoints
-			)
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints,
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
 			const edit = edits[0]
 			const accessPointElement = edit.node as Element
@@ -632,10 +648,12 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should have an Authentication child element within Server with the attribut none="true"', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			const edits = buildEditsForCreateAccessPoint(
-				'TestIED',
-				accessPoints
-			)
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints,
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
 			const edit = edits[0]
 			const accessPointElement = edit.node as Element
@@ -650,45 +668,45 @@ describe('buildEditsForCreateAccessPoint', () => {
 	})
 
 	describe('error handling', () => {
-		it('should throw error when xmlDocument is not available', () => {
-			pluginGlobalStore.xmlDocument = undefined
-
-			expect(() =>
-				buildEditsForCreateAccessPoint('TestIED', [{ name: 'AP1' }])
-			).toThrow('No XML document loaded')
-		})
-
-		it('should throw error when editor is not available', () => {
-			pluginGlobalStore.editor = undefined
-
-			expect(() =>
-				buildEditsForCreateAccessPoint('TestIED', [{ name: 'AP1' }])
-			).toThrow('No editor available')
-		})
-
 		it('should throw error when IED with given name is not found', () => {
 			expect(() =>
-				buildEditsForCreateAccessPoint('NonExistentIED', [
-					{ name: 'AP1' }
-				])
+				buildEditsForCreateAccessPoint({
+					iedName: 'NonExistentIED',
+					accessPoints: [{ name: 'AP1' }],
+					lnodeTypes: [],
+					doc: mockDocument
+				})
 			).toThrow('IED with name "NonExistentIED" not found')
 		})
 	})
 
 	describe('edge cases', () => {
 		it('should handle empty accessPoints array', () => {
-			buildEditsForCreateAccessPoint('TestIED', [])
+			buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints: [],
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
 			expect(mockEditor.commit).not.toHaveBeenCalled()
 		})
 
 		it('should handle special characters in access point name', () => {
 			const specialName = 'AP-1_test.abc'
-			buildEditsForCreateAccessPoint('TestIED', [{ name: specialName }])
+			buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints: [{ name: specialName }],
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
-			const edits = buildEditsForCreateAccessPoint('TestIED', [
-				{ name: specialName }
-			])
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints: [{ name: specialName }],
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
 			const edit = edits[0]
 			const accessPointElement = edit.node as Element
@@ -698,9 +716,12 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should handle special characters in description', () => {
 			const specialDesc = 'Access <>&" Point'
-			const edits = buildEditsForCreateAccessPoint('TestIED', [
-				{ name: 'AP1', description: specialDesc }
-			])
+			const edits = buildEditsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints: [{ name: 'AP1', description: specialDesc }],
+				lnodeTypes: [],
+				doc: mockDocument
+			})
 
 			const edit = edits[0]
 			const accessPointElement = edit.node as Element

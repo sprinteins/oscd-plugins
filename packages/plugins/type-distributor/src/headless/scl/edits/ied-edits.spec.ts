@@ -282,7 +282,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }]
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -297,7 +298,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }]
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -312,7 +314,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 					{ name: 'AP1' },
 					{ name: 'AP2' },
 					{ name: 'AP3' }
-				]
+				],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -323,7 +326,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: []
+				accessPoints: [],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -338,7 +342,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				description: 'My IED',
-				accessPoints: [{ name: 'AP1' }]
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -351,7 +356,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }]
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -363,7 +369,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }]
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -374,7 +381,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }]
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -387,7 +395,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }]
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -400,7 +409,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1', description: 'First AP' }]
+				accessPoints: [{ name: 'AP1', description: 'First AP' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -412,7 +422,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }]
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -424,7 +435,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }, { name: 'AP2' }]
+				accessPoints: [{ name: 'AP1' }, { name: 'AP2' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -437,7 +449,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }, { name: 'AP2' }]
+				accessPoints: [{ name: 'AP1' }, { name: 'AP2' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -449,7 +462,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }]
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -462,7 +476,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			// WHEN
 			const edits = buildEditsForCreateIedWithAccessPoints({
 				name: 'TestIED',
-				accessPoints: [{ name: 'AP1' }]
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -480,7 +495,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 					{ name: 'AP1' },
 					{ name: 'AP2' },
 					{ name: 'AP3' }
-				]
+				],
+				lnodeTypes: []
 			})
 
 			// THEN
@@ -499,7 +515,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			expect(() =>
 				buildEditsForCreateIedWithAccessPoints({
 					name: 'TestIED',
-					accessPoints: [{ name: 'AP1' }]
+					accessPoints: [{ name: 'AP1' }],
+					lnodeTypes: []
 				})
 			).toThrow('No XML document loaded')
 		})
@@ -512,7 +529,8 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 			expect(() =>
 				buildEditsForCreateIedWithAccessPoints({
 					name: 'TestIED',
-					accessPoints: [{ name: 'AP1' }]
+					accessPoints: [{ name: 'AP1' }],
+					lnodeTypes: []
 				})
 			).toThrow('No editor available')
 		})

@@ -1,3 +1,4 @@
+import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import type {
 	LNodeTemplate,
 	EqFunctionTemplate,
@@ -7,12 +8,15 @@ import {
 	getBayTypeApplicationState,
 	shouldApplyBayType,
 	applyBayType,
-	buildEditsForIed,
 	generateCommitTitle,
 	commitEdits
 } from './drop-handler'
 import { assignedLNodesStore, bayStore } from '@/headless/stores'
-import { buildEditsForBayLNode } from '@/headless/scl'
+import {
+	buildEditsForBayLNode,
+	createMultipleLNodesInAccessPoint
+} from '@/headless/scl'
+import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 
 type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'
@@ -63,7 +67,7 @@ class UseDndStore {
 		this.draggedItem = null
 	}
 
-	handleDrop(targetAccessPoint: Element, targetSIedName: string) {
+	handleDrop(accessPoint: Element, targetSIedName: string) {
 		if (!validateDraggedItem(this.draggedItem)) {
 			this.handleDragEnd()
 			return
@@ -85,13 +89,15 @@ class UseDndStore {
 				: null
 			const equipmentMatches = freshMatches ?? bayStore.equipmentMatches
 
-			const allEdits = [
-				...buildEditsForIed({
+			const { doc } = getDocumentAndEditor()
+			const allEdits: (Insert | SetAttributes)[] = [
+				...createMultipleLNodesInAccessPoint({
 					sourceFunction: functionFromSSD,
 					lNodes,
-					targetAccessPoint,
+					accessPoint,
 					equipmentMatches,
-					equipmentUuid
+					equipmentUuid,
+					doc
 				})
 			]
 
