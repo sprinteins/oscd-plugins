@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow user to reopen equipment matching panel before the first lnode assignment
 ### Changed
 - Better form handling for the creation of IEDs and AccessPoints. Show dedicated errors below the input fields.
+- Do not allow deleting of LD0 and LLN0. These will be deleted when the AP gets deleted or the last LNode of that LDevice gets deleted.
 ### Fixed
 - Resolved scd still referencing bayType if the last lNode has been deleted. Now removes all references.
 - Resolved overflowing text in lNode card of the ied column.
