@@ -60,11 +60,17 @@ export function ensureDataTypeTemplates(doc: XMLDocument): {
 	return { element: dataTypeTemplates, edit: null }
 }
 
-function filterMissingIds(
-	doc: Document,
-	ids: Set<string>,
+type FilterMissingIdsParams = {
+	doc: Document
+	ids: Set<string>
 	typeName: TypeName
-): Set<string> {
+}
+
+function filterMissingIds({
+	doc,
+	ids,
+	typeName
+}: FilterMissingIdsParams): Set<string> {
 	const missing = new Set<string>()
 	for (const id of ids) {
 		if (!doc.querySelector(`${typeName}[id="${id}"]`)) {
@@ -79,22 +85,40 @@ function filterExistingTypes(
 	collections: TypeCollections
 ): TypeCollections {
 	return {
-		lnodeTypeIds: filterMissingIds(
+		lnodeTypeIds: filterMissingIds({
 			doc,
-			collections.lnodeTypeIds,
-			'LNodeType'
-		),
-		doTypeIds: filterMissingIds(doc, collections.doTypeIds, 'DOType'),
-		daTypeIds: filterMissingIds(doc, collections.daTypeIds, 'DAType'),
-		enumTypeIds: filterMissingIds(doc, collections.enumTypeIds, 'EnumType')
+			ids: collections.lnodeTypeIds,
+			typeName: 'LNodeType'
+		}),
+		doTypeIds: filterMissingIds({
+			doc,
+			ids: collections.doTypeIds,
+			typeName: 'DOType'
+		}),
+		daTypeIds: filterMissingIds({
+			doc,
+			ids: collections.daTypeIds,
+			typeName: 'DAType'
+		}),
+		enumTypeIds: filterMissingIds({
+			doc,
+			ids: collections.enumTypeIds,
+			typeName: 'EnumType'
+		})
 	}
 }
 
-function cloneTypeFromSSD(
-	typeId: string,
-	typeName: TypeName,
+type CloneTypeFromSSDParams = {
+	typeId: string
+	typeName: TypeName
 	ssdDoc: XMLDocument
-): Element | null {
+}
+
+function cloneTypeFromSSD({
+	typeId,
+	typeName,
+	ssdDoc
+}: CloneTypeFromSSDParams): Element | null {
 	const sourceElement = ssdDoc.querySelector(`${typeName}[id="${typeId}"]`)
 	if (!sourceElement) return null
 	return sourceElement.cloneNode(true) as Element
@@ -117,7 +141,7 @@ function buildInsertsForType({
 	const reference = queryTypeReference(dataTypeTemplates, typeName)
 
 	for (const id of typeIds) {
-		const clonedElement = cloneTypeFromSSD(id, typeName, ssdDoc)
+		const clonedElement = cloneTypeFromSSD({ typeId: id, typeName, ssdDoc })
 		if (clonedElement) {
 			edits.push({
 				parent: dataTypeTemplates,
@@ -187,7 +211,7 @@ export function buildInsertsForLd0DataTypes({
 		...buildInsertsForDataTypeTemplates({
 			doc,
 			dataTypeTemplates,
-			lnodeTemplates:ld0LNodeTemplates,
+			lnodeTemplates: ld0LNodeTemplates,
 			ssdDoc
 		})
 	)

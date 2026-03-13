@@ -13,11 +13,20 @@ export function hasRemainingConnectionsAfterClearing(
 	return remainingLNodes.length > 0
 }
 
-export function buildUpdatesForClearingBayLNodeConnections(
-	selectedBay: Element,
-	lNodeTemplates: LNodeTemplate[],
+type BuildUpdatesForClearingBayLNodeConnectionsParams = {
+	selectedBay: Element
+	lNodeTemplates: LNodeTemplate[]
 	iedName: string
-): (Remove | SetAttributes)[] {
+}
+
+export function buildUpdatesForClearingBayLNodeConnections({
+	selectedBay,
+	lNodeTemplates,
+	iedName
+}: BuildUpdatesForClearingBayLNodeConnectionsParams): (
+	| Remove
+	| SetAttributes
+)[] {
 	const edits: (Remove | SetAttributes)[] = []
 	const clearedBayLNodes = new Set<Element>()
 

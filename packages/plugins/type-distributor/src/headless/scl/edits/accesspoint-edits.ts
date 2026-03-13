@@ -247,9 +247,11 @@ export function buildEditsForDeleteAccessPoint({
 		const apLNodes = queryLNodesFromAccessPoint(accessPoint)
 
 		const bayEdits = buildUpdatesForClearingBayLNodeConnections(
-			selectedBay,
-			apLNodes,
-			iedName
+			{
+				selectedBay,
+				lNodeTemplates: apLNodes,
+				iedName
+			}
 		)
 		edits.push(...bayEdits)
 	}

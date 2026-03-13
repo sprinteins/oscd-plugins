@@ -44,18 +44,20 @@ export function buildEditsForDeleteLNodeFromAccessPoint({
 		)
 	}
 
-	const bayEdits = buildUpdatesForClearingBayLNodeConnections(
+	const lNodeTemplates = [
+		{
+			lnClass: lNodeTemplate.lnClass,
+			lnType: lNodeTemplate.lnType,
+			lnInst: lNodeTemplate.lnInst,
+			ldInst
+		}
+	]
+
+	const bayEdits = buildUpdatesForClearingBayLNodeConnections({
 		selectedBay,
-		[
-			{
-				lnClass: lNodeTemplate.lnClass,
-				lnType: lNodeTemplate.lnType,
-				lnInst: lNodeTemplate.lnInst,
-				ldInst
-			}
-		],
+		lNodeTemplates,
 		iedName
-	)
+	})
 	edits.push(...bayEdits)
 
 	const allLNs = Array.from(lDevice.querySelectorAll(':scope > LN'))
