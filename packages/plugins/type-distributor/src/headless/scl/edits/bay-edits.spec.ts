@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { buildUpdatesForBayLNode as buildEditsForBayLNode } from './bay-edits'
+import { buildUpdatesForBayLNode } from './bay-edits'
 import { bayStore } from '@/headless/stores'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
@@ -12,7 +12,7 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	}
 }))
 
-describe('buildEditsForBayLNode', () => {
+describe('buildUpdatesForBayLNode', () => {
 	let mockDocument: Document
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 
@@ -61,7 +61,7 @@ describe('buildEditsForBayLNode', () => {
 	})
 
 	describe('with equipment UUID', () => {
-		it('GIVEN equipment UUID and matching LNode WHEN buildEditsForBayLNode is called THEN should create edit for EqFunction LNode', () => {
+		it('GIVEN equipment UUID and matching LNode WHEN buildUpdatesForBayLNode is called THEN should create edit for EqFunction LNode', () => {
 			// GIVEN equipment UUID and matching LNode
 			const breaker = mockDocument.querySelector(
 				'ConductingEquipment[name="Breaker1"]'
@@ -86,8 +86,8 @@ describe('buildEditsForBayLNode', () => {
 				lnodes: lNodes
 			}
 
-			// WHEN buildEditsForBayLNode is called
-			const edits = buildEditsForBayLNode({
+			// WHEN buildUpdatesForBayLNode is called
+			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
@@ -119,7 +119,7 @@ describe('buildEditsForBayLNode', () => {
 			expect(edits[0].element.getAttribute('lnInst')).toBe('1')
 		})
 
-		it('GIVEN equipment UUID not in matches WHEN buildEditsForBayLNode is called THEN should return empty array', () => {
+		it('GIVEN equipment UUID not in matches WHEN buildUpdatesForBayLNode is called THEN should return empty array', () => {
 			// GIVEN equipment UUID not in matches (derived returns [] when no bay type is assigned)
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -135,8 +135,8 @@ describe('buildEditsForBayLNode', () => {
 				lnodes: lNodes
 			}
 
-			// WHEN buildEditsForBayLNode is called
-			const edits = buildEditsForBayLNode({
+			// WHEN buildUpdatesForBayLNode is called
+			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
@@ -150,7 +150,7 @@ describe('buildEditsForBayLNode', () => {
 	})
 
 	describe('without equipment UUID', () => {
-		it('GIVEN no equipment UUID and matching Function LNode WHEN buildEditsForBayLNode is called THEN should create edit for top-level Function', () => {
+		it('GIVEN no equipment UUID and matching Function LNode WHEN buildUpdatesForBayLNode is called THEN should create edit for top-level Function', () => {
 			// GIVEN no equipment UUID and matching Function LNode
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -166,8 +166,8 @@ describe('buildEditsForBayLNode', () => {
 				lnodes: lNodes
 			}
 
-			// WHEN buildEditsForBayLNode is called
-			const edits = buildEditsForBayLNode({
+			// WHEN buildUpdatesForBayLNode is called
+			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
@@ -181,7 +181,7 @@ describe('buildEditsForBayLNode', () => {
 			expect(edits[0].element.getAttribute('lnType')).toBe('XSWI_Type1')
 		})
 
-		it('GIVEN no equipment UUID and Function not found WHEN buildEditsForBayLNode is called THEN should return empty array', () => {
+		it('GIVEN no equipment UUID and Function not found WHEN buildUpdatesForBayLNode is called THEN should return empty array', () => {
 			// GIVEN no equipment UUID and Function not found
 			const lNodes: LNodeTemplate[] = [
 				{
@@ -197,8 +197,8 @@ describe('buildEditsForBayLNode', () => {
 				lnodes: lNodes
 			}
 
-			// WHEN buildEditsForBayLNode is called
-			const edits = buildEditsForBayLNode({
+			// WHEN buildUpdatesForBayLNode is called
+			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
@@ -211,7 +211,7 @@ describe('buildEditsForBayLNode', () => {
 	})
 
 	describe('LNode matching preferences', () => {
-		it('GIVEN multiple LNode matches with one unassigned WHEN buildEditsForBayLNode is called THEN should prefer unassigned LNode', () => {
+		it('GIVEN multiple LNode matches with one unassigned WHEN buildUpdatesForBayLNode is called THEN should prefer unassigned LNode', () => {
 			// GIVEN multiple LNode matches with one unassigned
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
@@ -242,8 +242,8 @@ describe('buildEditsForBayLNode', () => {
 				lnodes: lNodes
 			}
 
-			// WHEN buildEditsForBayLNode is called
-			const edits = buildEditsForBayLNode({
+			// WHEN buildUpdatesForBayLNode is called
+			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
@@ -255,7 +255,7 @@ describe('buildEditsForBayLNode', () => {
 			expect(edits[0].element.getAttribute('iedName')).toBeNull()
 		})
 
-		it('GIVEN all LNode matches already assigned WHEN buildEditsForBayLNode is called THEN should return empty array', () => {
+		it('GIVEN all LNode matches already assigned WHEN buildUpdatesForBayLNode is called THEN should return empty array', () => {
 			// GIVEN all LNode matches already assigned
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
@@ -286,8 +286,8 @@ describe('buildEditsForBayLNode', () => {
 				lnodes: lNodes
 			}
 
-			// WHEN buildEditsForBayLNode is called
-			const edits = buildEditsForBayLNode({
+			// WHEN buildUpdatesForBayLNode is called
+			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
@@ -300,7 +300,7 @@ describe('buildEditsForBayLNode', () => {
 	})
 
 	describe('multiple LNodes', () => {
-		it('GIVEN multiple LNodes in template WHEN buildEditsForBayLNode is called THEN should create edit for each unassigned match', () => {
+		it('GIVEN multiple LNodes in template WHEN buildUpdatesForBayLNode is called THEN should create edit for each unassigned match', () => {
 			// GIVEN multiple LNodes in template
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
@@ -342,8 +342,8 @@ describe('buildEditsForBayLNode', () => {
 				lnodes: lNodes
 			}
 
-			// WHEN buildEditsForBayLNode is called
-			const edits = buildEditsForBayLNode({
+			// WHEN buildUpdatesForBayLNode is called
+			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
@@ -357,7 +357,7 @@ describe('buildEditsForBayLNode', () => {
 			expect(edits[2].element.getAttribute('lnType')).toBe('CSWI_Type1')
 		})
 
-		it('GIVEN some LNodes with no match WHEN buildEditsForBayLNode is called THEN should create edits only for matching LNodes', () => {
+		it('GIVEN some LNodes with no match WHEN buildUpdatesForBayLNode is called THEN should create edits only for matching LNodes', () => {
 			// GIVEN some LNodes with no match
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
@@ -392,8 +392,8 @@ describe('buildEditsForBayLNode', () => {
 				lnodes: lNodes
 			}
 
-			// WHEN buildEditsForBayLNode is called
-			const edits = buildEditsForBayLNode({
+			// WHEN buildUpdatesForBayLNode is called
+			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
@@ -407,7 +407,7 @@ describe('buildEditsForBayLNode', () => {
 	})
 
 	describe('edge cases', () => {
-		it('GIVEN empty lNodes array WHEN buildEditsForBayLNode is called THEN should return empty array', () => {
+		it('GIVEN empty lNodes array WHEN buildUpdatesForBayLNode is called THEN should return empty array', () => {
 			// GIVEN empty lNodes array
 			const sourceFunction: FunctionTemplate = {
 				uuid: 'func-uuid',
@@ -415,8 +415,8 @@ describe('buildEditsForBayLNode', () => {
 				lnodes: []
 			}
 
-			// WHEN buildEditsForBayLNode is called
-			const edits = buildEditsForBayLNode({
+			// WHEN buildUpdatesForBayLNode is called
+			const edits = buildUpdatesForBayLNode({
 				lNodes: [],
 				iedName: 'IED1',
 				sourceFunction,
@@ -427,7 +427,7 @@ describe('buildEditsForBayLNode', () => {
 			expect(edits).toEqual([])
 		})
 
-		it('GIVEN no document loaded WHEN buildEditsForBayLNode is called without equipmentUuid THEN should return empty array', () => {
+		it('GIVEN no document loaded WHEN buildUpdatesForBayLNode is called without equipmentUuid THEN should return empty array', () => {
 			// GIVEN no document loaded
 			pluginGlobalStore.xmlDocument = undefined
 			bayStore.selectedBay = null
@@ -446,8 +446,8 @@ describe('buildEditsForBayLNode', () => {
 				lnodes: lNodes
 			}
 
-			// WHEN buildEditsForBayLNode is called without equipmentUuid
-			const edits = buildEditsForBayLNode({
+			// WHEN buildUpdatesForBayLNode is called without equipmentUuid
+			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
 				sourceFunction,
