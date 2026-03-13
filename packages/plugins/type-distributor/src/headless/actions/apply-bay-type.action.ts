@@ -80,12 +80,12 @@ export function applyBayType(bayName: string): EquipmentMatch[] {
 	}
 
 	edits.push(
-		...buildInsertsForDataTypeTemplates(
+		...buildInsertsForDataTypeTemplates({
 			doc,
 			dataTypeTemplates,
-			allLNodeTemplates,
+			lnodeTemplates: allLNodeTemplates,
 			ssdDoc
-		)
+		})
 	)
 
 	editor.commit(edits, {

@@ -91,10 +91,12 @@ describe('buildInsertsForDataTypeTemplates', () => {
 
 		it('WHEN called THEN it returns Insert edits for every missing type', () => {
 			const edits = buildInsertsForDataTypeTemplates(
-				scdDoc,
-				dataTypeTemplates,
-				[lnodeTemplate],
-				ssdDoc
+				{
+					doc: scdDoc,
+					dataTypeTemplates,
+					lnodeTemplates: [lnodeTemplate],
+					ssdDoc
+				}
 			)
 
 			// Expect 5 types: XCBR1, ENC_Mod, Originator, CtlModels, OriginatorKind
@@ -107,12 +109,12 @@ describe('buildInsertsForDataTypeTemplates', () => {
 		})
 
 		it('WHEN called THEN types are inserted in LNodeType → DOType → DAType → EnumType order', () => {
-			const edits = buildInsertsForDataTypeTemplates(
-				scdDoc,
+			const edits = buildInsertsForDataTypeTemplates({
+				doc: scdDoc,
 				dataTypeTemplates,
-				[lnodeTemplate],
+				lnodeTemplates: [lnodeTemplate],
 				ssdDoc
-			)
+			})
 
 			const tagNames = edits.map((e) => (e.node as Element).tagName)
 			expect(tagNames.indexOf('LNodeType')).toBeLessThan(
@@ -143,12 +145,12 @@ describe('buildInsertsForDataTypeTemplates', () => {
 		// biome-ignore lint/style/noNonNullAssertion: test fixture
 		const dataTypeTemplates = scdDoc.querySelector('DataTypeTemplates')!
 
-		const edits = buildInsertsForDataTypeTemplates(
-			scdDoc,
+		const edits = buildInsertsForDataTypeTemplates({
+			doc: scdDoc,
 			dataTypeTemplates,
-			[lnodeTemplate],
+			lnodeTemplates: [lnodeTemplate],
 			ssdDoc
-		)
+		})
 
 		expect(edits).toHaveLength(0)
 	})
@@ -167,12 +169,12 @@ describe('buildInsertsForDataTypeTemplates', () => {
 		// biome-ignore lint/style/noNonNullAssertion: test fixture
 		const dataTypeTemplates = scdDoc.querySelector('DataTypeTemplates')!
 
-		const edits = buildInsertsForDataTypeTemplates(
-			scdDoc,
+		const edits = buildInsertsForDataTypeTemplates({
+			doc: scdDoc,
 			dataTypeTemplates,
-			[lnodeTemplate],
+			lnodeTemplates: [lnodeTemplate],
 			ssdDoc
-		)
+		})
 
 		// Only DAType[Originator], EnumType[CtlModels], EnumType[OriginatorKind]
 		expect(edits).toHaveLength(3)
@@ -188,12 +190,12 @@ describe('buildInsertsForDataTypeTemplates', () => {
 		const dataTypeTemplates = scdDoc.createElement('DataTypeTemplates')
 		scdDoc.documentElement.appendChild(dataTypeTemplates)
 
-		const edits = buildInsertsForDataTypeTemplates(
-			scdDoc,
+		const edits = buildInsertsForDataTypeTemplates({
+			doc: scdDoc,
 			dataTypeTemplates,
-			[],
+			lnodeTemplates: [],
 			ssdDoc
-		)
+		})
 
 		expect(edits).toHaveLength(0)
 	})
