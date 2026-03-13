@@ -34,6 +34,9 @@ vi.mock('@/headless/stores', () => ({
 	},
 	bayStore: {
 		equipmentMatches: []
+	},
+	ssdImportStore: {
+		lnodeTypes: []
 	}
 }))
 
@@ -242,7 +245,8 @@ describe('dndStore', () => {
 				accessPoint: mockAccessPoint,
 				equipmentMatches: [],
 				equipmentUuid: 'eq-uuid',
-				doc: expect.anything()
+				doc: expect.anything(),
+				lnodeTypes: expect.anything()
 			})
 			expect(buildEditsForBayLNode).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
@@ -305,7 +309,8 @@ describe('dndStore', () => {
 				accessPoint: mockAccessPoint,
 				equipmentMatches: [],
 				equipmentUuid: 'eq-uuid',
-				doc: expect.anything()
+				doc: expect.anything(),
+				lnodeTypes: expect.anything()
 			})
 			expect(buildEditsForBayLNode).toHaveBeenCalledWith({
 				lNodes: mockLNodes,

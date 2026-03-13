@@ -135,9 +135,36 @@ export function queryLDeviceFromAccessPoint(
 	return queryLDeviceByInst(server, lDeviceInst)
 }
 
+interface CreateLDeviceElementParams extends SourceFunctionParams {
+	lnodeTypes?: LNodeType[]
+}
+
+function createLln0Element(
+	doc: XMLDocument,
+	lnodeTypes: LNodeType[]
+): Element | null {
+	const lln0Type = lnodeTypes.find((t) => t.lnClass === 'LLN0')
+	if (!lln0Type) {
+		console.warn(
+			'[createLDeviceElement] No LLN0 type found in lnodeTypes — LDevice will be created without LN0'
+		)
+		return null
+	}
+	return createElement(doc, 'LN0', {
+		lnClass: 'LLN0',
+		lnType: lln0Type.id,
+		lnInst: ''
+	})
+}
+
 export function createLDeviceElement(
 	doc: XMLDocument,
-	{ sourceFunction, equipmentUuid, equipmentMatches }: SourceFunctionParams
+	{
+		sourceFunction,
+		equipmentUuid,
+		equipmentMatches,
+		lnodeTypes
+	}: CreateLDeviceElementParams
 ): Element {
 	const { functionName, conductingEquipmentName } = extractFunctionNames({
 		sourceFunction,
@@ -149,6 +176,12 @@ export function createLDeviceElement(
 		conductingEquipmentName
 	)
 	const lDevice = createElement(doc, 'LDevice', { inst: lDeviceInst })
+
+	if (lnodeTypes) {
+		const ln0 = createLln0Element(doc, lnodeTypes)
+		if (ln0) lDevice.appendChild(ln0)
+	}
+
 	return lDevice
 }
 

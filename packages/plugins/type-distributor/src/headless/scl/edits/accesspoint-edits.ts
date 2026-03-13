@@ -47,6 +47,7 @@ type EnsureLDeviceParams = {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	lnodeTypes?: LNodeType[]
 }
 
 function ensureLDevice({
@@ -54,7 +55,8 @@ function ensureLDevice({
 	doc,
 	sourceFunction,
 	equipmentUuid,
-	equipmentMatches
+	equipmentMatches,
+	lnodeTypes
 }: EnsureLDeviceParams): { lDevice: Element; edit: Insert | undefined } {
 	const existingLDevice = queryLDevice(server, {
 		sourceFunction,
@@ -68,7 +70,8 @@ function ensureLDevice({
 	const lDevice = createLDeviceElement(doc, {
 		sourceFunction,
 		equipmentUuid,
-		equipmentMatches
+		equipmentMatches,
+		lnodeTypes
 	})
 
 	const edit: Insert = {
@@ -109,6 +112,7 @@ type CreateMultipleLNodesParams = {
 	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
 	doc: XMLDocument
+	lnodeTypes?: LNodeType[]
 }
 
 export function createMultipleLNodesInAccessPoint({
@@ -117,7 +121,8 @@ export function createMultipleLNodesInAccessPoint({
 	accessPoint,
 	equipmentUuid,
 	equipmentMatches,
-	doc
+	doc,
+	lnodeTypes
 }: CreateMultipleLNodesParams): Insert[] {
 	const edits: Insert[] = []
 
@@ -127,7 +132,8 @@ export function createMultipleLNodesInAccessPoint({
 		doc,
 		sourceFunction,
 		equipmentUuid,
-		equipmentMatches
+		equipmentMatches,
+		lnodeTypes
 	})
 
 	const lNodesToAdd = lNodes.filter((lNode) => {
