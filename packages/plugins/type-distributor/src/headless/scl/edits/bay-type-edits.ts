@@ -3,7 +3,7 @@ import type { SetAttributes, Insert } from '@openscd/oscd-api'
 import type { BayType } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 
-export function buildEditForBayUpdate(
+export function buildUpdateForBay(
 	scdBay: Element,
 	bayType: BayType
 ): SetAttributes {

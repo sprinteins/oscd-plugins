@@ -9,16 +9,16 @@ import { resolveMatchingContext } from '@/headless/domain/matching'
 import { matchEquipmentForInitialApply } from '@/headless/domain/matching'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import {
-	buildEditForBayUpdate,
+	buildUpdateForBay,
 	buildEditsForEquipmentUpdates
 } from '@/headless/scl/edits/bay-type-edits'
 import {
-	buildInsertEditsForEqFunction,
-	buildInsertEditsForFunction
+	buildInsertsForEqFunction,
+	buildInsertsForFunction
 } from '@/headless/scl/edits/function-edits'
 import {
 	ensureDataTypeTemplates,
-	buildEditsForDataTypeTemplates
+	buildInsertsForDataTypeTemplates
 } from '@/headless/scl/edits/data-type-edits'
 import { getDocumentAndEditor } from '@/headless/utils'
 
@@ -40,11 +40,11 @@ export function applyBayType(bayName: string): EquipmentMatch[] {
 
 	const edits: (Insert | SetAttributes)[] = []
 
-	edits.push(buildEditForBayUpdate(scdBay, bayType))
+	edits.push(buildUpdateForBay(scdBay, bayType))
 	edits.push(...buildEditsForEquipmentUpdates(matches))
-	edits.push(...buildInsertEditsForEqFunction(doc, matches))
+	edits.push(...buildInsertsForEqFunction(doc, matches))
 	edits.push(
-		...buildInsertEditsForFunction({
+		...buildInsertsForFunction({
 			doc,
 			bayType,
 			scdBay,
@@ -80,12 +80,12 @@ export function applyBayType(bayName: string): EquipmentMatch[] {
 	}
 
 	edits.push(
-		...buildEditsForDataTypeTemplates(
+		...buildInsertsForDataTypeTemplates({
 			doc,
 			dataTypeTemplates,
-			allLNodeTemplates,
+			lnodeTemplates: allLNodeTemplates,
 			ssdDoc
-		)
+		})
 	)
 
 	editor.commit(edits, {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import {
-	buildEditsForCreateAccessPoint,
+	buildInsertsForCreateAccessPoint,
 	createMultipleLNodesInAccessPoint
 } from './accesspoint-edits'
 import type { XMLEditor } from '@openscd/oscd-editor'
@@ -593,7 +593,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 	})
 })
 
-describe('buildEditsForCreateAccessPoint', () => {
+describe('buildInsertsForCreateAccessPoint', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document
 
@@ -617,7 +617,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 	describe('Functionality Tests', () => {
 		it('should create an AccessPoint element with correct structure', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			const edits = buildEditsForCreateAccessPoint({
+			const edits = buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints,
 				lnodeTypes: [],
@@ -635,7 +635,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should set the name attribute of AccessPoint', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			const edits = buildEditsForCreateAccessPoint({
+			const edits = buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints,
 				lnodeTypes: [],
@@ -652,7 +652,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 			const accessPoints = [
 				{ name: 'AP1', description: 'Access Point 1' }
 			]
-			const edits = buildEditsForCreateAccessPoint({
+			const edits = buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints,
 				lnodeTypes: [],
@@ -669,7 +669,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should not set desc attribute when description is not provided', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			const edits = buildEditsForCreateAccessPoint({
+			const edits = buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints,
 				lnodeTypes: [],
@@ -684,7 +684,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should create multiple AccessPoint elements when multiple accessPoints are provided', () => {
 			const accessPoints = [{ name: 'AP1' }, { name: 'AP2' }]
-			const edits = buildEditsForCreateAccessPoint({
+			const edits = buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints,
 				lnodeTypes: [],
@@ -705,7 +705,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should have a Server child element within AccessPoint', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			const edits = buildEditsForCreateAccessPoint({
+			const edits = buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints,
 				lnodeTypes: [],
@@ -722,7 +722,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should have an Authentication child element within Server with the attribut none="true"', () => {
 			const accessPoints = [{ name: 'AP1' }]
-			const edits = buildEditsForCreateAccessPoint({
+			const edits = buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints,
 				lnodeTypes: [],
@@ -744,7 +744,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 	describe('error handling', () => {
 		it('should throw error when IED with given name is not found', () => {
 			expect(() =>
-				buildEditsForCreateAccessPoint({
+				buildInsertsForCreateAccessPoint({
 					iedName: 'NonExistentIED',
 					accessPoints: [{ name: 'AP1' }],
 					lnodeTypes: [],
@@ -756,7 +756,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 	describe('edge cases', () => {
 		it('should handle empty accessPoints array', () => {
-			buildEditsForCreateAccessPoint({
+			buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints: [],
 				lnodeTypes: [],
@@ -768,14 +768,14 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should handle special characters in access point name', () => {
 			const specialName = 'AP-1_test.abc'
-			buildEditsForCreateAccessPoint({
+			buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints: [{ name: specialName }],
 				lnodeTypes: [],
 				doc: mockDocument
 			})
 
-			const edits = buildEditsForCreateAccessPoint({
+			const edits = buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints: [{ name: specialName }],
 				lnodeTypes: [],
@@ -790,7 +790,7 @@ describe('buildEditsForCreateAccessPoint', () => {
 
 		it('should handle special characters in description', () => {
 			const specialDesc = 'Access <>&" Point'
-			const edits = buildEditsForCreateAccessPoint({
+			const edits = buildInsertsForCreateAccessPoint({
 				iedName: 'TestIED',
 				accessPoints: [{ name: 'AP1', description: specialDesc }],
 				lnodeTypes: [],

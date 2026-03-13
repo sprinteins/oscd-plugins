@@ -60,11 +60,17 @@ export function ensureDataTypeTemplates(doc: XMLDocument): {
 	return { element: dataTypeTemplates, edit: null }
 }
 
-function filterMissingIds(
-	doc: Document,
-	ids: Set<string>,
+type FilterMissingIdsParams = {
+	doc: Document
+	ids: Set<string>
 	typeName: TypeName
-): Set<string> {
+}
+
+function filterMissingIds({
+	doc,
+	ids,
+	typeName
+}: FilterMissingIdsParams): Set<string> {
 	const missing = new Set<string>()
 	for (const id of ids) {
 		if (!doc.querySelector(`${typeName}[id="${id}"]`)) {
@@ -79,38 +85,63 @@ function filterExistingTypes(
 	collections: TypeCollections
 ): TypeCollections {
 	return {
-		lnodeTypeIds: filterMissingIds(
+		lnodeTypeIds: filterMissingIds({
 			doc,
-			collections.lnodeTypeIds,
-			'LNodeType'
-		),
-		doTypeIds: filterMissingIds(doc, collections.doTypeIds, 'DOType'),
-		daTypeIds: filterMissingIds(doc, collections.daTypeIds, 'DAType'),
-		enumTypeIds: filterMissingIds(doc, collections.enumTypeIds, 'EnumType')
+			ids: collections.lnodeTypeIds,
+			typeName: 'LNodeType'
+		}),
+		doTypeIds: filterMissingIds({
+			doc,
+			ids: collections.doTypeIds,
+			typeName: 'DOType'
+		}),
+		daTypeIds: filterMissingIds({
+			doc,
+			ids: collections.daTypeIds,
+			typeName: 'DAType'
+		}),
+		enumTypeIds: filterMissingIds({
+			doc,
+			ids: collections.enumTypeIds,
+			typeName: 'EnumType'
+		})
 	}
 }
 
-function cloneTypeFromSSD(
-	typeId: string,
-	typeName: TypeName,
+type CloneTypeFromSSDParams = {
+	typeId: string
+	typeName: TypeName
 	ssdDoc: XMLDocument
-): Element | null {
+}
+
+function cloneTypeFromSSD({
+	typeId,
+	typeName,
+	ssdDoc
+}: CloneTypeFromSSDParams): Element | null {
 	const sourceElement = ssdDoc.querySelector(`${typeName}[id="${typeId}"]`)
 	if (!sourceElement) return null
 	return sourceElement.cloneNode(true) as Element
 }
 
-function buildEditsForType(
-	dataTypeTemplates: Element,
-	typeIds: Set<string>,
-	typeName: TypeName,
+type BuldInserstsForTypeParams = {
+	typeIds: Set<string>
+	typeName: TypeName
+	dataTypeTemplates: Element
 	ssdDoc: XMLDocument
-): Insert[] {
+}
+
+function buildInsertsForType({
+	dataTypeTemplates,
+	typeIds,
+	typeName,
+	ssdDoc
+}: BuldInserstsForTypeParams): Insert[] {
 	const edits: Insert[] = []
 	const reference = queryTypeReference(dataTypeTemplates, typeName)
 
 	for (const id of typeIds) {
-		const clonedElement = cloneTypeFromSSD(id, typeName, ssdDoc)
+		const clonedElement = cloneTypeFromSSD({ typeId: id, typeName, ssdDoc })
 		if (clonedElement) {
 			edits.push({
 				parent: dataTypeTemplates,
@@ -123,12 +154,19 @@ function buildEditsForType(
 	return edits
 }
 
-export function buildEditsForDataTypeTemplates(
-	doc: Document,
-	dataTypeTemplates: Element,
-	lnodeTemplates: LNodeTemplate[],
+type BuildInsertsForDataTypeTemplatesParams = {
+	doc: Document
+	dataTypeTemplates: Element
+	lnodeTemplates: LNodeTemplate[]
 	ssdDoc: XMLDocument
-): Insert[] {
+}
+
+export function buildInsertsForDataTypeTemplates({
+	doc,
+	dataTypeTemplates,
+	lnodeTemplates,
+	ssdDoc
+}: BuildInsertsForDataTypeTemplatesParams): Insert[] {
 	const allCollections = collectTypeDependencies(lnodeTemplates, ssdDoc)
 	const missingCollections = filterExistingTypes(doc, allCollections)
 	const edits: Insert[] = []
@@ -139,29 +177,29 @@ export function buildEditsForDataTypeTemplates(
 
 		if (typeIds.size > 0) {
 			edits.push(
-				...buildEditsForType(
+				...buildInsertsForType({
 					dataTypeTemplates,
 					typeIds,
 					typeName,
 					ssdDoc
-				)
+				})
 			)
 		}
 	}
 	return edits
 }
 
-interface BuildEditsForBayLNodeParams {
+interface BuildInsertsForLd0DataTypesParams {
 	doc: XMLDocument
 	lnodeTypes: LNodeType[]
 	ssdDoc: XMLDocument
 }
 
-export function buildEditsForLd0DataTypes({
+export function buildInsertsForLd0DataTypes({
 	doc,
 	lnodeTypes,
 	ssdDoc
-}: BuildEditsForBayLNodeParams): Insert[] {
+}: BuildInsertsForLd0DataTypesParams): Insert[] {
 	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
 	if (ld0LNodeTemplates.length === 0) return []
 
@@ -170,12 +208,12 @@ export function buildEditsForLd0DataTypes({
 	const edits: Insert[] = []
 	if (dttEdit) edits.push(dttEdit)
 	edits.push(
-		...buildEditsForDataTypeTemplates(
+		...buildInsertsForDataTypeTemplates({
 			doc,
 			dataTypeTemplates,
-			ld0LNodeTemplates,
+			lnodeTemplates: ld0LNodeTemplates,
 			ssdDoc
-		)
+		})
 	)
 	return edits
 }

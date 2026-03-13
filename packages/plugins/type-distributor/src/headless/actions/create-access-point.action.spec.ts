@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { createAccessPoint } from './create-access-point.action'
-import { buildEditsForCreateAccessPoint } from '../scl'
+import { buildInsertsForCreateAccessPoint } from '../scl'
 import { getDocumentAndEditor } from '../utils'
 import type { XMLEditor } from '@openscd/oscd-editor'
 
 vi.mock('../scl', () => ({
-	buildEditsForCreateAccessPoint: vi.fn()
+	buildInsertsForCreateAccessPoint: vi.fn()
 }))
 
 vi.mock('../utils', () => ({
@@ -29,7 +29,7 @@ describe('createAccessPoint', () => {
 			editor: mockEditor,
 			doc: mockDocument as unknown as XMLDocument
 		})
-		vi.mocked(buildEditsForCreateAccessPoint).mockReturnValue([])
+		vi.mocked(buildInsertsForCreateAccessPoint).mockReturnValue([])
 	})
 
 	afterEach(() => {

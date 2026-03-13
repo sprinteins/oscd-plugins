@@ -17,9 +17,9 @@ import {
 	isLNodePresentInDevice
 } from '../elements'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
+import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
 import { queryLNodesFromAccessPoint, queryIedElement } from '../queries'
-import { buildEditsForLd0DataTypes } from './data-type-edits'
+import { buildInsertsForLd0DataTypes } from './data-type-edits'
 
 function ensureServer(
 	accessPoint: Element,
@@ -83,7 +83,7 @@ function ensureLDevice({
 	return { lDevice, edit }
 }
 
-type CreateLNodeParams = {
+type createLNodeInAccessPointParams = {
 	lNode: LNodeTemplate
 	lDevice: Element
 	doc: XMLDocument
@@ -93,7 +93,7 @@ function createLNodeInAccessPoint({
 	lNode,
 	lDevice,
 	doc
-}: CreateLNodeParams): Insert {
+}: createLNodeInAccessPointParams): Insert {
 	const lNodeElement = createLNodeElementInIED(lNode, doc)
 
 	const edit: Insert = {
@@ -105,7 +105,7 @@ function createLNodeInAccessPoint({
 	return edit
 }
 
-type CreateMultipleLNodesParams = {
+type createMultipleLNodesInAccessPointParams = {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	lNodes: LNodeTemplate[]
 	accessPoint: Element
@@ -123,7 +123,7 @@ export function createMultipleLNodesInAccessPoint({
 	equipmentMatches,
 	doc,
 	lnodeTypes
-}: CreateMultipleLNodesParams): Insert[] {
+}: createMultipleLNodesInAccessPointParams): Insert[] {
 	const edits: Insert[] = []
 
 	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
@@ -165,12 +165,19 @@ export function createMultipleLNodesInAccessPoint({
 	return edits
 }
 
-export function buildAccessPointInserts(
-	doc: XMLDocument,
-	parent: Element,
-	accessPoints: { name: string; description?: string }[],
+type BuildInsertsForAccessPointsParams = {
+	doc: XMLDocument
+	parent: Element
+	accessPoints: { name: string; description?: string }[]
 	lnodeTypes: LNodeType[]
-): Insert[] {
+}
+
+export function buildInsertsForAccessPoints({
+	doc,
+	parent,
+	accessPoints,
+	lnodeTypes
+}: BuildInsertsForAccessPointsParams): Insert[] {
 	return accessPoints.map((ap) => {
 		const apElement = createElement(doc, 'AccessPoint', {
 			name: ap.name,
@@ -187,7 +194,7 @@ export function buildAccessPointInserts(
 	})
 }
 
-interface BuildEditsForCreateAccessPointParams {
+interface BuildInsertsForCreateAccessPointParams {
 	iedName: string
 	accessPoints: { name: string; description?: string }[]
 	lnodeTypes: LNodeType[]
@@ -195,27 +202,29 @@ interface BuildEditsForCreateAccessPointParams {
 	ssdDoc?: XMLDocument | null
 }
 
-export function buildEditsForCreateAccessPoint({
+export function buildInsertsForCreateAccessPoint({
 	iedName,
 	accessPoints,
 	lnodeTypes,
 	doc,
 	ssdDoc
-}: BuildEditsForCreateAccessPointParams): Insert[] {
+}: BuildInsertsForCreateAccessPointParams): Insert[] {
 	const iedElement = queryIedElement(doc, iedName)
 	if (!iedElement) {
 		throw new Error(`IED with name "${iedName}" not found`)
 	}
 
-	const allEdits: Insert[] = buildAccessPointInserts(
+	const allEdits: Insert[] = buildInsertsForAccessPoints({
 		doc,
-		iedElement,
+		parent: iedElement,
 		accessPoints,
 		lnodeTypes
-	)
+	})
 
 	if (ssdDoc) {
-		allEdits.push(...buildEditsForLd0DataTypes({ doc, lnodeTypes, ssdDoc }))
+		allEdits.push(
+			...buildInsertsForLd0DataTypes({ doc, lnodeTypes, ssdDoc })
+		)
 	}
 
 	return allEdits
@@ -237,10 +246,12 @@ export function buildEditsForDeleteAccessPoint({
 	if (selectedBay) {
 		const apLNodes = queryLNodesFromAccessPoint(accessPoint)
 
-		const bayEdits = buildEditsForClearingBayLNodeConnections(
-			selectedBay,
-			apLNodes,
-			iedName
+		const bayEdits = buildUpdatesForClearingBayLNodeConnections(
+			{
+				selectedBay,
+				lNodeTemplates: apLNodes,
+				iedName
+			}
 		)
 		edits.push(...bayEdits)
 	}

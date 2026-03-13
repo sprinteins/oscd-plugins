@@ -12,7 +12,7 @@ import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import {
 	buildEditForCreateIed,
-	buildEditsForCreateIedWithAccessPoints
+	buildInsertsForCreateIedWithAccessPoints
 } from './ied-edits'
 
 // Mock the pluginGlobalStore module
@@ -254,7 +254,7 @@ describe('buildEditForCreateIed', () => {
 	})
 })
 
-describe('buildEditsForCreateIedWithAccessPoints', () => {
+describe('buildInsertsForCreateIedWithAccessPoints', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 	let mockDocument: Document
 	let baseDoc: Document
@@ -280,7 +280,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 	describe('returned array structure', () => {
 		it('GIVEN a name and access points WHEN building edits THEN IED edit is the first element in the array', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }],
 				lnodeTypes: []
@@ -296,7 +296,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN one access point WHEN building edits THEN returns 2 edits', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }],
 				lnodeTypes: []
@@ -308,7 +308,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN three access points WHEN building edits THEN returns 4 edits', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [
 					{ name: 'AP1' },
@@ -324,7 +324,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN empty accessPoints WHEN building edits THEN returns only the IED edit', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [],
 				lnodeTypes: []
@@ -339,7 +339,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 	describe('IED edit', () => {
 		it('GIVEN a name and description WHEN building edits THEN IED element has both name and desc attributes', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				description: 'My IED',
 				accessPoints: [{ name: 'AP1' }],
@@ -354,7 +354,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN no description WHEN building edits THEN IED element does not have desc attribute', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }],
 				lnodeTypes: []
@@ -367,7 +367,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN a valid document WHEN building edits THEN IED edit parent is the SCL root', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }],
 				lnodeTypes: []
@@ -379,7 +379,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN DataTypeTemplates exists in document WHEN building edits THEN IED edit reference points to DataTypeTemplates', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }],
 				lnodeTypes: []
@@ -393,7 +393,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 	describe('AccessPoint edits', () => {
 		it('GIVEN one access point WHEN building edits THEN AP edit has correct name attribute', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }],
 				lnodeTypes: []
@@ -407,7 +407,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN an access point with description WHEN building edits THEN sets desc attribute on AP element', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1', description: 'First AP' }],
 				lnodeTypes: []
@@ -420,7 +420,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN an access point without description WHEN building edits THEN desc attribute is null on AP element', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }],
 				lnodeTypes: []
@@ -433,7 +433,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN multiple access points WHEN building edits THEN all AP edits use the IED element as parent', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }, { name: 'AP2' }],
 				lnodeTypes: []
@@ -447,7 +447,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN multiple access points WHEN building edits THEN all AP edits have null reference', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }, { name: 'AP2' }],
 				lnodeTypes: []
@@ -460,7 +460,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN one access point WHEN building edits THEN AP element contains a Server child', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }],
 				lnodeTypes: []
@@ -474,7 +474,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN one access point WHEN building edits THEN Server contains Authentication with none="true"', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [{ name: 'AP1' }],
 				lnodeTypes: []
@@ -489,7 +489,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 		it('GIVEN three access points WHEN building edits THEN AP edits preserve input order', () => {
 			// WHEN
-			const edits = buildEditsForCreateIedWithAccessPoints({
+			const edits = buildInsertsForCreateIedWithAccessPoints({
 				name: 'TestIED',
 				accessPoints: [
 					{ name: 'AP1' },
@@ -513,7 +513,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 			// WHEN / THEN
 			expect(() =>
-				buildEditsForCreateIedWithAccessPoints({
+				buildInsertsForCreateIedWithAccessPoints({
 					name: 'TestIED',
 					accessPoints: [{ name: 'AP1' }],
 					lnodeTypes: []
@@ -527,7 +527,7 @@ describe('buildEditsForCreateIedWithAccessPoints', () => {
 
 			// WHEN / THEN
 			expect(() =>
-				buildEditsForCreateIedWithAccessPoints({
+				buildInsertsForCreateIedWithAccessPoints({
 					name: 'TestIED',
 					accessPoints: [{ name: 'AP1' }],
 					lnodeTypes: []

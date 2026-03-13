@@ -6,19 +6,19 @@ import { getFunctionTemplate } from '@/headless/domain/matching'
 import { createLNodeElementInBay } from '@/headless/scl/elements/lnode-element'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 
-interface BuildInsertEditsForFunctionParams {
+interface BuildInsertsForFunctionParams {
 	doc: Document
 	bayType: BayType
 	scdBay: Element
 	functionTemplates: FunctionTemplate[]
 }
 
-export function buildInsertEditsForFunction({
+export function buildInsertsForFunction({
 	doc,
 	bayType,
 	scdBay,
 	functionTemplates
-}: BuildInsertEditsForFunctionParams): Insert[] {
+}: BuildInsertsForFunctionParams): Insert[] {
 	const inserts: Insert[] = []
 
 	for (const functionType of bayType.functions) {
@@ -59,7 +59,7 @@ export function buildInsertEditsForFunction({
 	return inserts
 }
 
-export function buildInsertEditsForEqFunction(
+export function buildInsertsForEqFunction(
 	doc: Document,
 	matches: EquipmentMatch[]
 ): Insert[] {

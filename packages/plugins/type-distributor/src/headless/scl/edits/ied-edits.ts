@@ -1,8 +1,8 @@
 import type { Insert } from '@openscd/oscd-api'
 import { getDocument } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
-import { buildEditsForLd0DataTypes } from './data-type-edits'
-import { buildAccessPointInserts } from './accesspoint-edits'
+import { buildInsertsForLd0DataTypes } from './data-type-edits'
+import { buildInsertsForAccessPoints } from './accesspoint-edits'
 import {
 	queryIEDInsertionReference,
 	queryAccessPointsFromIed,
@@ -31,7 +31,7 @@ export function buildEditForCreateIed(
 	return edit
 }
 
-type buildEditsForCreateIedWithAccessPointsParams = {
+type buildInsertsForCreateIedWithAccessPointsParams = {
 	name: string
 	description?: string
 	accessPoints: { name: string; description?: string }[]
@@ -39,13 +39,13 @@ type buildEditsForCreateIedWithAccessPointsParams = {
 	ssdDoc?: XMLDocument | null
 }
 
-export function buildEditsForCreateIedWithAccessPoints({
+export function buildInsertsForCreateIedWithAccessPoints({
 	name,
 	description,
 	accessPoints,
 	lnodeTypes,
 	ssdDoc
-}: buildEditsForCreateIedWithAccessPointsParams): Insert[] {
+}: buildInsertsForCreateIedWithAccessPointsParams): Insert[] {
 	const doc = getDocument()
 
 	const iedElement = createBasicIEDElement(name, doc, description)
@@ -60,11 +60,11 @@ export function buildEditsForCreateIedWithAccessPoints({
 
 	const allEdits: Insert[] = [
 		iedEdit,
-		...buildAccessPointInserts(doc, iedElement, accessPoints, lnodeTypes)
+		...buildInsertsForAccessPoints({doc, parent: iedElement, accessPoints, lnodeTypes})
 	]
 
 	if (ssdDoc) {
-		allEdits.push(...buildEditsForLd0DataTypes({ doc, lnodeTypes, ssdDoc }))
+		allEdits.push(...buildInsertsForLd0DataTypes({ doc, lnodeTypes, ssdDoc }))
 	}
 
 	return allEdits

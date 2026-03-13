@@ -1,6 +1,6 @@
 import type { LNodeTemplate } from '@/headless/common-types'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
+import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
 import { queryLDeviceFromAccessPoint, queryLNodeInLDevice } from '../elements'
 
 interface BuildEditsForDeleteLNodeFromAccessPointParams {
@@ -44,18 +44,20 @@ export function buildEditsForDeleteLNodeFromAccessPoint({
 		)
 	}
 
-	const bayEdits = buildEditsForClearingBayLNodeConnections(
+	const lNodeTemplates = [
+		{
+			lnClass: lNodeTemplate.lnClass,
+			lnType: lNodeTemplate.lnType,
+			lnInst: lNodeTemplate.lnInst,
+			ldInst
+		}
+	]
+
+	const bayEdits = buildUpdatesForClearingBayLNodeConnections({
 		selectedBay,
-		[
-			{
-				lnClass: lNodeTemplate.lnClass,
-				lnType: lNodeTemplate.lnType,
-				lnInst: lNodeTemplate.lnInst,
-				ldInst
-			}
-		],
+		lNodeTemplates,
 		iedName
-	)
+	})
 	edits.push(...bayEdits)
 
 	const allLNs = Array.from(lDevice.querySelectorAll(':scope > LN'))

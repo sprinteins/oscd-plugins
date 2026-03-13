@@ -8,16 +8,16 @@ import {
 	type EquipmentMatch
 } from '@/headless/domain/matching'
 import {
-	buildEditForBayUpdate,
+	buildUpdateForBay,
 	buildEditsForEquipmentUpdates
 } from '@/headless/scl/edits/bay-type-edits'
 import {
-	buildInsertEditsForEqFunction,
-	buildInsertEditsForFunction
+	buildInsertsForEqFunction,
+	buildInsertsForFunction
 } from '@/headless/scl/edits/function-edits'
 import {
 	ensureDataTypeTemplates,
-	buildEditsForDataTypeTemplates
+	buildInsertsForDataTypeTemplates
 } from '@/headless/scl/edits/data-type-edits'
 import type { Insert, SetAttributes, XMLEditor } from '@openscd/oscd-editor'
 import type { BayType } from '../common-types'
@@ -48,18 +48,18 @@ vi.mock('@/headless/domain/matching', () => ({
 }))
 
 vi.mock('@/headless/scl/edits/bay-type-edits', () => ({
-	buildEditForBayUpdate: vi.fn(),
+	buildUpdateForBay: vi.fn(),
 	buildEditsForEquipmentUpdates: vi.fn()
 }))
 
 vi.mock('@/headless/scl/edits/function-edits', () => ({
-	buildInsertEditsForEqFunction: vi.fn(),
-	buildInsertEditsForFunction: vi.fn()
+	buildInsertsForEqFunction: vi.fn(),
+	buildInsertsForFunction: vi.fn()
 }))
 
 vi.mock('@/headless/scl/edits/data-type-edits', () => ({
 	ensureDataTypeTemplates: vi.fn(),
-	buildEditsForDataTypeTemplates: vi.fn()
+	buildInsertsForDataTypeTemplates: vi.fn()
 }))
 
 describe('applyBayType', () => {
@@ -103,13 +103,13 @@ describe('applyBayType', () => {
 		vi.mocked(matchEquipmentForInitialApply).mockReturnValue(
 			mockMatches as EquipmentMatch[]
 		)
-		vi.mocked(buildEditForBayUpdate).mockReturnValue({
+		vi.mocked(buildUpdateForBay).mockReturnValue({
 			element: document.createElement('Bay')
 		} as SetAttributes)
 		vi.mocked(buildEditsForEquipmentUpdates).mockReturnValue([])
-		vi.mocked(buildInsertEditsForEqFunction).mockReturnValue([])
-		vi.mocked(buildInsertEditsForFunction).mockReturnValue([])
-		vi.mocked(buildEditsForDataTypeTemplates).mockReturnValue([])
+		vi.mocked(buildInsertsForEqFunction).mockReturnValue([])
+		vi.mocked(buildInsertsForFunction).mockReturnValue([])
+		vi.mocked(buildInsertsForDataTypeTemplates).mockReturnValue([])
 		vi.mocked(ensureDataTypeTemplates).mockReturnValue({
 			element: document.createElement('DataTypeTemplates'),
 			edit: null

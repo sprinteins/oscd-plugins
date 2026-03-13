@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import {
 	ensureDataTypeTemplates,
-	buildEditsForDataTypeTemplates
+	buildInsertsForDataTypeTemplates
 } from './data-type-edits'
 import type { LNodeTemplate } from '@/headless/common-types'
 
@@ -72,7 +72,7 @@ const lnodeTemplate: LNodeTemplate = {
 	lnInst: '1'
 }
 
-describe('buildEditsForDataTypeTemplates', () => {
+describe('buildInsertsForDataTypeTemplates', () => {
 	let ssdDoc: XMLDocument
 
 	beforeEach(() => {
@@ -90,11 +90,13 @@ describe('buildEditsForDataTypeTemplates', () => {
 		})
 
 		it('WHEN called THEN it returns Insert edits for every missing type', () => {
-			const edits = buildEditsForDataTypeTemplates(
-				scdDoc,
-				dataTypeTemplates,
-				[lnodeTemplate],
-				ssdDoc
+			const edits = buildInsertsForDataTypeTemplates(
+				{
+					doc: scdDoc,
+					dataTypeTemplates,
+					lnodeTemplates: [lnodeTemplate],
+					ssdDoc
+				}
 			)
 
 			// Expect 5 types: XCBR1, ENC_Mod, Originator, CtlModels, OriginatorKind
@@ -107,12 +109,12 @@ describe('buildEditsForDataTypeTemplates', () => {
 		})
 
 		it('WHEN called THEN types are inserted in LNodeType → DOType → DAType → EnumType order', () => {
-			const edits = buildEditsForDataTypeTemplates(
-				scdDoc,
+			const edits = buildInsertsForDataTypeTemplates({
+				doc: scdDoc,
 				dataTypeTemplates,
-				[lnodeTemplate],
+				lnodeTemplates: [lnodeTemplate],
 				ssdDoc
-			)
+			})
 
 			const tagNames = edits.map((e) => (e.node as Element).tagName)
 			expect(tagNames.indexOf('LNodeType')).toBeLessThan(
@@ -143,12 +145,12 @@ describe('buildEditsForDataTypeTemplates', () => {
 		// biome-ignore lint/style/noNonNullAssertion: test fixture
 		const dataTypeTemplates = scdDoc.querySelector('DataTypeTemplates')!
 
-		const edits = buildEditsForDataTypeTemplates(
-			scdDoc,
+		const edits = buildInsertsForDataTypeTemplates({
+			doc: scdDoc,
 			dataTypeTemplates,
-			[lnodeTemplate],
+			lnodeTemplates: [lnodeTemplate],
 			ssdDoc
-		)
+		})
 
 		expect(edits).toHaveLength(0)
 	})
@@ -167,12 +169,12 @@ describe('buildEditsForDataTypeTemplates', () => {
 		// biome-ignore lint/style/noNonNullAssertion: test fixture
 		const dataTypeTemplates = scdDoc.querySelector('DataTypeTemplates')!
 
-		const edits = buildEditsForDataTypeTemplates(
-			scdDoc,
+		const edits = buildInsertsForDataTypeTemplates({
+			doc: scdDoc,
 			dataTypeTemplates,
-			[lnodeTemplate],
+			lnodeTemplates: [lnodeTemplate],
 			ssdDoc
-		)
+		})
 
 		// Only DAType[Originator], EnumType[CtlModels], EnumType[OriginatorKind]
 		expect(edits).toHaveLength(3)
@@ -188,12 +190,12 @@ describe('buildEditsForDataTypeTemplates', () => {
 		const dataTypeTemplates = scdDoc.createElement('DataTypeTemplates')
 		scdDoc.documentElement.appendChild(dataTypeTemplates)
 
-		const edits = buildEditsForDataTypeTemplates(
-			scdDoc,
+		const edits = buildInsertsForDataTypeTemplates({
+			doc: scdDoc,
 			dataTypeTemplates,
-			[],
+			lnodeTemplates: [],
 			ssdDoc
-		)
+		})
 
 		expect(edits).toHaveLength(0)
 	})
