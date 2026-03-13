@@ -1,19 +1,21 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { dndStore } from './dnd.store.svelte'
 import * as dropHandler from './drop-handler'
-import { buildEditsForBayLNode } from '@/headless/scl'
+import {
+	buildEditsForBayLNode,
+	createMultipleLNodesInAccessPoint
+} from '@/headless/scl'
 
 vi.mock('./drop-handler', () => ({
 	getBayTypeApplicationState: vi.fn(),
 	shouldApplyBayType: vi.fn(),
 	applyBayType: vi.fn(() => []),
-	buildEditsForIed: vi.fn(),
 	generateCommitTitle: vi.fn(),
 	commitEdits: vi.fn()
 }))
 
 vi.mock('@/headless/utils/get-document-and-Editor', () => ({
-	getDocumentAndEditor: vi.fn()
+	getDocumentAndEditor: vi.fn(() => ({ doc: {}, editor: {} }))
 }))
 
 vi.mock('@/headless/scl', () => ({
@@ -32,6 +34,9 @@ vi.mock('@/headless/stores', () => ({
 	},
 	bayStore: {
 		equipmentMatches: []
+	},
+	ssdImportStore: {
+		lnodeTypes: []
 	}
 }))
 
@@ -137,6 +142,44 @@ describe('dndStore', () => {
 	})
 
 	describe('handleDrop', () => {
+		it('GIVEN dragged item with missing parentUuid WHEN handleDrop is called THEN should exit early and reset state', () => {
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: '',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
+			}
+
+			dndStore.handleDrop(mockAccessPoint, 'TestIED')
+
+			expect(
+				dropHandler.getBayTypeApplicationState
+			).not.toHaveBeenCalled()
+			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
+			expect(dndStore.draggedItem).toBeNull()
+		})
+
+		it('GIVEN dragged item with missing functionScopeUuid WHEN handleDrop is called THEN should exit early and reset state', () => {
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: '',
+				equipmentUuid: 'eq-uuid'
+			}
+
+			dndStore.handleDrop(mockAccessPoint, 'TestIED')
+
+			expect(
+				dropHandler.getBayTypeApplicationState
+			).not.toHaveBeenCalled()
+			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
+			expect(dndStore.draggedItem).toBeNull()
+		})
+
 		it('GIVEN dragged item with empty lNodes WHEN handleDrop is called THEN should exit early and reset state', () => {
 			// GIVEN dragged item with empty lNodes
 			dndStore.draggedItem = {
@@ -171,7 +214,11 @@ describe('dndStore', () => {
 			}
 
 			const mockIedEdits = [
-				{ element: mockAccessPoint, attributes: {}, attributesNS: {} }
+				{
+					node: document.createElement('LNode'),
+					parent: mockAccessPoint,
+					reference: null
+				}
 			]
 			vi.mocked(dropHandler.getBayTypeApplicationState).mockReturnValue({
 				hasAssignedBayType: false,
@@ -181,7 +228,7 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
+			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
 			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue(
@@ -192,12 +239,14 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should build IED edits only and commit
-			expect(dropHandler.buildEditsForIed).toHaveBeenCalledWith({
+			expect(createMultipleLNodesInAccessPoint).toHaveBeenCalledWith({
 				sourceFunction: mockFunction,
 				lNodes: mockLNodes,
-				targetAccessPoint: mockAccessPoint,
+				accessPoint: mockAccessPoint,
 				equipmentMatches: [],
-				equipmentUuid: 'eq-uuid'
+				equipmentUuid: 'eq-uuid',
+				doc: expect.anything(),
+				lnodeTypes: expect.anything()
 			})
 			expect(buildEditsForBayLNode).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
@@ -220,13 +269,17 @@ describe('dndStore', () => {
 			}
 
 			const mockIedEdits = [
-				{ element: mockAccessPoint, attributes: {}, attributesNS: {} }
+				{
+					node: document.createElement('LNode'),
+					parent: mockAccessPoint,
+					reference: null
+				}
 			]
 			const mockBayEdits = [
 				{
 					element: document.createElement('LNode'),
-					attributes: { iedName: 'TestIED' },
-					attributesNS: {}
+					parent: document.createElement('Bay'),
+					reference: null
 				}
 			]
 
@@ -238,7 +291,7 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
+			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
 			vi.mocked(buildEditsForBayLNode).mockReturnValue(mockBayEdits)
@@ -250,12 +303,14 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should build both IED and bay edits
-			expect(dropHandler.buildEditsForIed).toHaveBeenCalledWith({
+			expect(createMultipleLNodesInAccessPoint).toHaveBeenCalledWith({
 				sourceFunction: mockFunction,
 				lNodes: mockLNodes,
-				targetAccessPoint: mockAccessPoint,
+				accessPoint: mockAccessPoint,
 				equipmentMatches: [],
-				equipmentUuid: 'eq-uuid'
+				equipmentUuid: 'eq-uuid',
+				doc: expect.anything(),
+				lnodeTypes: expect.anything()
 			})
 			expect(buildEditsForBayLNode).toHaveBeenCalledWith({
 				lNodes: mockLNodes,
@@ -283,13 +338,17 @@ describe('dndStore', () => {
 			}
 
 			const mockIedEdits = [
-				{ element: mockAccessPoint, attributes: {}, attributesNS: {} }
+				{
+					node: document.createElement('LNode'),
+					parent: mockAccessPoint,
+					reference: null
+				}
 			]
 			const mockBayEdits = [
 				{
 					element: document.createElement('LNode'),
-					attributes: { iedName: 'TestIED' },
-					attributesNS: {}
+					parent: document.createElement('Bay'),
+					reference: null
 				}
 			]
 
@@ -301,7 +360,7 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(true)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue(
+			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
 			vi.mocked(buildEditsForBayLNode).mockReturnValue(mockBayEdits)
@@ -342,7 +401,7 @@ describe('dndStore', () => {
 				hasPendingManualSelection: false
 			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
-			vi.mocked(dropHandler.buildEditsForIed).mockReturnValue([])
+			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue([])
 
 			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
@@ -385,6 +444,97 @@ describe('dndStore', () => {
 			expect(dndStore.isDragging).toBe(false)
 
 			consoleErrorSpy.mockRestore()
+		})
+	})
+
+	describe('isDraggingItem', () => {
+		it('GIVEN no active drag WHEN isDraggingItem is called THEN should return false', () => {
+			dndStore.isDragging = false
+			dndStore.draggedItem = null
+
+			expect(
+				dndStore.isDraggingItem(
+					'equipmentFunction',
+					'func-uuid',
+					'eq-uuid'
+				)
+			).toBe(false)
+		})
+
+		it('GIVEN active drag with matching type, sourceFunctionUuid, and parentUuid WHEN isDraggingItem is called THEN should return true', () => {
+			dndStore.isDragging = true
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
+			}
+
+			expect(
+				dndStore.isDraggingItem(
+					'equipmentFunction',
+					mockFunction.uuid,
+					'eq-uuid'
+				)
+			).toBe(true)
+		})
+
+		it('GIVEN active drag with mismatched type WHEN isDraggingItem is called THEN should return false', () => {
+			dndStore.isDragging = true
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
+			}
+
+			expect(
+				dndStore.isDraggingItem('lNode', mockFunction.uuid, 'eq-uuid')
+			).toBe(false)
+		})
+
+		it('GIVEN active drag with mismatched sourceFunctionUuid WHEN isDraggingItem is called THEN should return false', () => {
+			dndStore.isDragging = true
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
+			}
+
+			expect(
+				dndStore.isDraggingItem(
+					'equipmentFunction',
+					'other-uuid',
+					'eq-uuid'
+				)
+			).toBe(false)
+		})
+
+		it('GIVEN active drag with mismatched parentUuid WHEN isDraggingItem is called THEN should return false', () => {
+			dndStore.isDragging = true
+			dndStore.draggedItem = {
+				type: 'equipmentFunction' as const,
+				lNodes: mockLNodes,
+				sourceFunction: mockFunction,
+				parentUuid: 'eq-uuid',
+				functionScopeUuid: mockFunction.uuid,
+				equipmentUuid: 'eq-uuid'
+			}
+
+			expect(
+				dndStore.isDraggingItem(
+					'equipmentFunction',
+					mockFunction.uuid,
+					'other-uuid'
+				)
+			).toBe(false)
 		})
 	})
 

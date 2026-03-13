@@ -4,16 +4,20 @@ import type {
 } from '@/ui/components/columns/s-ied/create-ied-ap-dialog/form-helpers'
 import { buildEditsForCreateIedWithAccessPoints } from '../scl'
 import { getEditor } from '../utils'
+import { ssdImportStore } from '../stores'
 
 export function createIedWithAccessPoints(
 	ied: IedData,
 	accessPoints: AccessPointData[]
 ): void {
 	const editor = getEditor()
+	const { lnodeTypes, loadedSSDDocument } = ssdImportStore
 	const edits = buildEditsForCreateIedWithAccessPoints({
 		name: ied.name,
 		description: ied.description,
-		accessPoints
+		accessPoints,
+		lnodeTypes,
+		ssdDoc: loadedSSDDocument
 	})
 
 	const title =

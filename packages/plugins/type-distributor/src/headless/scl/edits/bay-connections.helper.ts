@@ -1,5 +1,5 @@
 import type { LNodeTemplate } from '@/headless/common-types'
-import type { SetAttributes } from '@openscd/oscd-api'
+import type { Remove, SetAttributes } from '@openscd/oscd-api'
 import { parseLDeviceInst } from '../elements'
 
 export function hasRemainingConnectionsAfterClearing(
@@ -17,8 +17,8 @@ export function buildEditsForClearingBayLNodeConnections(
 	selectedBay: Element,
 	lNodeTemplates: LNodeTemplate[],
 	iedName: string
-): SetAttributes[] {
-	const edits: SetAttributes[] = []
+): (Remove | SetAttributes)[] {
+	const edits: (Remove | SetAttributes)[] = []
 	const clearedBayLNodes = new Set<Element>()
 
 	for (const template of lNodeTemplates) {
@@ -54,17 +54,54 @@ export function buildEditsForClearingBayLNodeConnections(
 		clearedBayLNodes
 	)
 
-	const shouldClearTemplateUuid =
+	const shouldClearReferences =
 		clearedBayLNodes.size > 0 && !hasRemainingConnections
 
-	if (shouldClearTemplateUuid) {
+	if (shouldClearReferences) {
 		edits.push({
 			element: selectedBay,
 			attributes: {
+				uuid: null,
 				templateUuid: null
 			},
 			attributesNS: {}
 		} as SetAttributes)
+
+		const conductingEquipments = Array.from(
+			selectedBay.querySelectorAll(':scope > ConductingEquipment')
+		)
+
+		for (const equipment of conductingEquipments) {
+			if (
+				equipment.hasAttribute('uuid') ||
+				equipment.hasAttribute('templateUuid') ||
+				equipment.hasAttribute('originUuid')
+			) {
+				edits.push({
+					element: equipment,
+					attributes: {
+						uuid: null,
+						templateUuid: null,
+						originUuid: null
+					},
+					attributesNS: {}
+				} as SetAttributes)
+			}
+
+			const eqFunctions = Array.from(
+				equipment.querySelectorAll(':scope > EqFunction')
+			)
+			for (const eqFunction of eqFunctions) {
+				edits.push({ node: eqFunction } as Remove)
+			}
+		}
+
+		const functions = Array.from(
+			selectedBay.querySelectorAll(':scope > Function')
+		)
+		for (const func of functions) {
+			edits.push({ node: func } as Remove)
+		}
 	}
 
 	return edits

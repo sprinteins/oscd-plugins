@@ -281,6 +281,157 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 		expect(templateUuidEdit).toBeDefined()
 	})
 
+	it('GIVEN Bay with uuid and ConductingEquipment with type-assignment attributes WHEN deleting last LNode removes all connections THEN should also clear bay uuid, equipment attributes, and remove EqFunctions', () => {
+		// GIVEN - mirrors the real assigned-ap.scd structure
+		const assignedSCD = `<?xml version="1.0" encoding="UTF-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+  <IED name="IED1">
+    <AccessPoint name="P1">
+      <Server>
+        <LDevice inst="-CEQ2_DisconnectorFunction">
+          <LN lnClass="XSWI" lnInst="1" lnType="XSWI$type"/>
+        </LDevice>
+      </Server>
+    </AccessPoint>
+  </IED>
+  <Substation>
+    <VoltageLevel>
+      <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
+        <ConductingEquipment name="-CEQ2" type="DIS" uuid="equip-uuid-2" templateUuid="tpl-uuid-2" originUuid="orig-uuid-2">
+          <EqFunction name="DisconnectorFunction">
+            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction"/>
+          </EqFunction>
+        </ConductingEquipment>
+        <ConductingEquipment name="-CEQ3" type="CBR" uuid="equip-uuid-3" templateUuid="tpl-uuid-3" originUuid="orig-uuid-3">
+          <EqFunction name="CircuitBreakerFunction">
+            <LNode lnClass="XCBR" lnInst="1" lnType="XCBR$type"/>
+          </EqFunction>
+        </ConductingEquipment>
+      </Bay>
+    </VoltageLevel>
+  </Substation>
+</SCL>`
+
+		const assignedDoc = createTestDocument(assignedSCD)
+		const assignedBay = assignedDoc.querySelector('Bay[name="Bay1"]')
+		expect(assignedBay).not.toBeNull()
+
+		// WHEN - delete the last IED-assigned LNode
+		const accessPoint = assignedDoc.querySelector(
+			'IED[name="IED1"] AccessPoint[name="P1"]'
+		) as Element
+		const edits = buildEditsForDeleteLNodeFromAccessPoint({
+			iedName: 'IED1',
+			accessPoint,
+			lNodeTemplate: {
+				lnClass: 'XSWI',
+				lnType: 'XSWI$type',
+				lnInst: '1',
+				ldInst: '-CEQ2_DisconnectorFunction'
+			},
+			selectedBay: assignedBay
+		})
+
+		// THEN - bay uuid and templateUuid must be cleared
+		const bayEdit = edits.find(
+			(edit) =>
+				isSetAttributesEdit(edit) && edit.element.tagName === 'Bay'
+		)
+		expect(bayEdit).toBeDefined()
+		if (bayEdit && isSetAttributesEdit(bayEdit)) {
+			expect(bayEdit.attributes?.uuid).toBeNull()
+			expect(bayEdit.attributes?.templateUuid).toBeNull()
+		}
+
+		// THEN - both ConductingEquipments must have their type-assignment attributes cleared
+		const equipEdits = edits.filter(
+			(edit) =>
+				isSetAttributesEdit(edit) &&
+				edit.element.tagName === 'ConductingEquipment'
+		)
+		expect(equipEdits.length).toBe(2)
+		for (const edit of equipEdits) {
+			if (isSetAttributesEdit(edit)) {
+				expect(edit.attributes?.uuid).toBeNull()
+				expect(edit.attributes?.templateUuid).toBeNull()
+				expect(edit.attributes?.originUuid).toBeNull()
+			}
+		}
+
+		// THEN - EqFunction elements from both ConductingEquipments must be removed
+		const removeEdits = edits.filter(isRemoveEdit)
+		const eqFunctionRemoves = removeEdits.filter(
+			(edit) => (edit.node as Element).tagName === 'EqFunction'
+		)
+		expect(eqFunctionRemoves.length).toBe(2)
+	})
+
+	it('GIVEN Bay with Function elements WHEN deleting last LNode removes all connections THEN should remove Function elements', () => {
+		// GIVEN - Bay with direct Function children (not EqFunction inside ConductingEquipment)
+		const functionSCD = `<?xml version="1.0" encoding="UTF-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+  <IED name="IED1">
+    <AccessPoint name="P1">
+      <Server>
+        <LDevice inst="ProtectionFunction">
+          <LN lnClass="PTRC" lnInst="1" lnType="PTRC$type"/>
+        </LDevice>
+      </Server>
+    </AccessPoint>
+  </IED>
+  <Substation>
+    <VoltageLevel>
+      <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
+        <Function name="ProtectionFunction" uuid="func-uuid-1" templateUuid="tpl-func-1" originUuid="orig-func-1">
+          <LNode lnClass="PTRC" lnInst="1" lnType="PTRC$type" iedName="IED1" ldInst="ProtectionFunction"/>
+        </Function>
+        <Function name="MeasurementFunction" uuid="func-uuid-2" templateUuid="tpl-func-2" originUuid="orig-func-2">
+          <LNode lnClass="MMXU" lnInst="1" lnType="MMXU$type"/>
+        </Function>
+      </Bay>
+    </VoltageLevel>
+  </Substation>
+</SCL>`
+
+		const functionDoc = createTestDocument(functionSCD)
+		const functionBay = functionDoc.querySelector('Bay[name="Bay1"]')
+		expect(functionBay).not.toBeNull()
+
+		// WHEN - delete the last IED-assigned LNode
+		const accessPoint = functionDoc.querySelector(
+			'IED[name="IED1"] AccessPoint[name="P1"]'
+		) as Element
+		const edits = buildEditsForDeleteLNodeFromAccessPoint({
+			iedName: 'IED1',
+			accessPoint,
+			lNodeTemplate: {
+				lnClass: 'PTRC',
+				lnType: 'PTRC$type',
+				lnInst: '1',
+				ldInst: 'ProtectionFunction'
+			},
+			selectedBay: functionBay
+		})
+
+		// THEN - bay uuid and templateUuid must be cleared
+		const bayEdit = edits.find(
+			(edit) =>
+				isSetAttributesEdit(edit) && edit.element.tagName === 'Bay'
+		)
+		expect(bayEdit).toBeDefined()
+		if (bayEdit && isSetAttributesEdit(bayEdit)) {
+			expect(bayEdit.attributes?.uuid).toBeNull()
+			expect(bayEdit.attributes?.templateUuid).toBeNull()
+		}
+
+		// THEN - both Function elements must be removed
+		const removeEdits = edits.filter(isRemoveEdit)
+		const functionRemoves = removeEdits.filter(
+			(edit) => (edit.node as Element).tagName === 'Function'
+		)
+		expect(functionRemoves.length).toBe(2)
+	})
+
 	it('GIVEN invalid inputs WHEN LNode does not exist in AccessPoint THEN should throw error', () => {
 		// WHEN / THEN
 		const accessPoint = doc.querySelector(

@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Added automatic ld0 creation to the accespoints. It will include all l-class lnodes except LGOS and LSVS.
+- Added automatic lln0 creation to the ldevice when it is created.
 - Allow user to reopen equipment matching panel before the first lnode assignment
 ### Changed
 - Better form handling for the creation of IEDs and AccessPoints. Show dedicated errors below the input fields.
 ### Fixed
+- Resolved scd still referencing bayType if the last lNode has been deleted. Now removes all references.
 - Resolved overflowing text in lNode card of the ied column.
 - Resolved an issue where using the wrong function for element creation could lead to `xmlns=""` attributes being added. See [code style decision #3](docs/code-style-decisions/0003-why-use-createElement.md) for details.
 
