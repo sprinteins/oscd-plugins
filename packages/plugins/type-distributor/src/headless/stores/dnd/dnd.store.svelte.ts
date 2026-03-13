@@ -67,7 +67,7 @@ class UseDndStore {
 		this.draggedItem = null
 	}
 
-	handleDrop(targetAccessPoint: Element, targetSIedName: string) {
+	handleDrop(accessPoint: Element, targetSIedName: string) {
 		if (!validateDraggedItem(this.draggedItem)) {
 			this.handleDragEnd()
 			return
@@ -95,7 +95,7 @@ class UseDndStore {
 				...createMultipleLNodesInAccessPoint({
 					sourceFunction: functionFromSSD,
 					lNodes,
-					accessPoint: targetAccessPoint,
+					accessPoint,
 					equipmentMatches,
 					equipmentUuid,
 					doc,

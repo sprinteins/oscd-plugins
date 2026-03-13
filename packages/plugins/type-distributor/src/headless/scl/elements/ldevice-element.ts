@@ -7,6 +7,7 @@ import type {
 import { queryServer } from './server-element'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { createElement } from '@oscd-plugins/core'
+import { createLNodeElementInIED } from './lnode-element'
 
 const LD0_INSTANCE = 'LD0'
 const EXCLUDED_LNODE_CLASSES = new Set(['LGOS', 'LSVS'])
@@ -14,31 +15,31 @@ const EXCLUDED_LNODE_CLASSES = new Set(['LGOS', 'LSVS'])
 export function createLD0LNodeTemplates(
 	lnodeTypes: LNodeType[]
 ): LNodeTemplate[] {
-	const relevantLnodeTypes = lnodeTypes.filter(
-		(lnodeType) =>
-			lnodeType.lnClass.startsWith('L') &&
-			!EXCLUDED_LNODE_CLASSES.has(lnodeType.lnClass)
+	const relevantLNodes = lnodeTypes.filter(
+		(lnode) =>
+			lnode.lnClass.startsWith('L') &&
+			!EXCLUDED_LNODE_CLASSES.has(lnode.lnClass)
 	)
 
-	const seenClasses = new Set<string>()
-	const uniqueByClass = relevantLnodeTypes.filter((lnodeType) => {
-		if (seenClasses.has(lnodeType.lnClass)) {
-			return false
+	const uniqueLNodeMap = new Map<string, LNodeType>()
+	for (const lnode of relevantLNodes) {
+		if (!uniqueLNodeMap.has(lnode.lnClass)) {
+			uniqueLNodeMap.set(lnode.lnClass, lnode)
 		}
-		seenClasses.add(lnodeType.lnClass)
-		return true
-	})
+	}
 
-	const orderedByClass = uniqueByClass.sort((a, b) => {
+	const distinctLNodeArray = Array.from(uniqueLNodeMap.values())
+
+	distinctLNodeArray.sort((a, b) => {
 		if (a.lnClass === 'LLN0') return -1
 		if (b.lnClass === 'LLN0') return 1
 		return 0
 	})
 
-	return orderedByClass.map((lnodeType) => ({
-		lnClass: lnodeType.lnClass,
-		lnType: lnodeType.id,
-		lnInst: lnodeType.lnClass === 'LLN0' ? '' : '1'
+	return distinctLNodeArray.map((lnode) => ({
+		lnClass: lnode.lnClass,
+		lnType: lnode.id,
+		lnInst: lnode.lnClass === 'LLN0' ? '' : '1'
 	}))
 }
 
@@ -196,15 +197,7 @@ export function createLD0Element(
 	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
 
 	for (const lnodeTemplate of ld0LNodeTemplates) {
-		const isLln0 = lnodeTemplate.lnClass === 'LLN0'
-		const tagName = isLln0 ? 'LN0' : 'LN'
-
-		const lnElement = createElement(doc, tagName, {
-			lnClass: lnodeTemplate.lnClass,
-			lnType: lnodeTemplate.lnType,
-			lnInst: lnodeTemplate.lnInst
-		})
-
+		const lnElement = createLNodeElementInIED(lnodeTemplate, doc)
 		ld0.appendChild(lnElement)
 	}
 
