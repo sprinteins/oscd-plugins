@@ -12,7 +12,7 @@ import { sclMockA } from '@oscd-plugins/core-api/mocks/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import {
 	buildEditForCreateIed,
-	buildEditsForCreateIedWithAccessPoints
+	buildInsertsForCreateIedWithAccessPoints as buildEditsForCreateIedWithAccessPoints
 } from './ied-edits'
 
 // Mock the pluginGlobalStore module

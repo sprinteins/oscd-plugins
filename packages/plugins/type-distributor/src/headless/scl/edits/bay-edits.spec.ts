@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { buildEditsForBayLNode } from './bay-edits'
+import { buildUpdatesForBayLNode as buildEditsForBayLNode } from './bay-edits'
 import { bayStore } from '@/headless/stores'
 import type { XMLEditor } from '@openscd/oscd-editor'
 import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
@@ -63,7 +63,6 @@ describe('buildEditsForBayLNode', () => {
 	describe('with equipment UUID', () => {
 		it('GIVEN equipment UUID and matching LNode WHEN buildEditsForBayLNode is called THEN should create edit for EqFunction LNode', () => {
 			// GIVEN equipment UUID and matching LNode
-			// biome-ignore lint/style/noNonNullAssertion: <explanation>
 			const breaker = mockDocument.querySelector(
 				'ConductingEquipment[name="Breaker1"]'
 			)

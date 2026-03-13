@@ -100,7 +100,7 @@ function cloneTypeFromSSD(
 	return sourceElement.cloneNode(true) as Element
 }
 
-function buildEditsForType(
+function buildInsertsForType(
 	dataTypeTemplates: Element,
 	typeIds: Set<string>,
 	typeName: TypeName,
@@ -123,7 +123,7 @@ function buildEditsForType(
 	return edits
 }
 
-export function buildEditsForDataTypeTemplates(
+export function buildInsertsForDataTypeTemplates(
 	doc: Document,
 	dataTypeTemplates: Element,
 	lnodeTemplates: LNodeTemplate[],
@@ -139,7 +139,7 @@ export function buildEditsForDataTypeTemplates(
 
 		if (typeIds.size > 0) {
 			edits.push(
-				...buildEditsForType(
+				...buildInsertsForType(
 					dataTypeTemplates,
 					typeIds,
 					typeName,
@@ -151,17 +151,17 @@ export function buildEditsForDataTypeTemplates(
 	return edits
 }
 
-interface BuildEditsForBayLNodeParams {
+interface BuildInsertsForLd0DataTypesParams {
 	doc: XMLDocument
 	lnodeTypes: LNodeType[]
 	ssdDoc: XMLDocument
 }
 
-export function buildEditsForLd0DataTypes({
+export function buildInsertsForLd0DataTypes({
 	doc,
 	lnodeTypes,
 	ssdDoc
-}: BuildEditsForBayLNodeParams): Insert[] {
+}: BuildInsertsForLd0DataTypesParams): Insert[] {
 	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
 	if (ld0LNodeTemplates.length === 0) return []
 
@@ -170,7 +170,7 @@ export function buildEditsForLd0DataTypes({
 	const edits: Insert[] = []
 	if (dttEdit) edits.push(dttEdit)
 	edits.push(
-		...buildEditsForDataTypeTemplates(
+		...buildInsertsForDataTypeTemplates(
 			doc,
 			dataTypeTemplates,
 			ld0LNodeTemplates,

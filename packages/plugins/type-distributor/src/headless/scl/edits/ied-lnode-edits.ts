@@ -1,6 +1,6 @@
 import type { LNodeTemplate } from '@/headless/common-types'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
+import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
 import { queryLDeviceFromAccessPoint, queryLNodeInLDevice } from '../elements'
 
 interface BuildEditsForDeleteLNodeFromAccessPointParams {
@@ -44,7 +44,7 @@ export function buildEditsForDeleteLNodeFromAccessPoint({
 		)
 	}
 
-	const bayEdits = buildEditsForClearingBayLNodeConnections(
+	const bayEdits = buildUpdatesForClearingBayLNodeConnections(
 		selectedBay,
 		[
 			{

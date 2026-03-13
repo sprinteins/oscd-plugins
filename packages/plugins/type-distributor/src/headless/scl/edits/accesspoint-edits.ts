@@ -17,9 +17,9 @@ import {
 	isLNodePresentInDevice
 } from '../elements'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
+import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
 import { queryLNodesFromAccessPoint, queryIedElement } from '../queries'
-import { buildEditsForLd0DataTypes } from './data-type-edits'
+import { buildInsertsForLd0DataTypes } from './data-type-edits'
 
 function ensureServer(
 	accessPoint: Element,
@@ -165,7 +165,7 @@ export function createMultipleLNodesInAccessPoint({
 	return edits
 }
 
-export function buildAccessPointInserts(
+export function buildInsertsForAccessPoints(
 	doc: XMLDocument,
 	parent: Element,
 	accessPoints: { name: string; description?: string }[],
@@ -187,7 +187,7 @@ export function buildAccessPointInserts(
 	})
 }
 
-interface BuildEditsForCreateAccessPointParams {
+interface BuildInsertsForCreateAccessPointParams {
 	iedName: string
 	accessPoints: { name: string; description?: string }[]
 	lnodeTypes: LNodeType[]
@@ -195,19 +195,19 @@ interface BuildEditsForCreateAccessPointParams {
 	ssdDoc?: XMLDocument | null
 }
 
-export function buildEditsForCreateAccessPoint({
+export function buildInsertsForCreateAccessPoint({
 	iedName,
 	accessPoints,
 	lnodeTypes,
 	doc,
 	ssdDoc
-}: BuildEditsForCreateAccessPointParams): Insert[] {
+}: BuildInsertsForCreateAccessPointParams): Insert[] {
 	const iedElement = queryIedElement(doc, iedName)
 	if (!iedElement) {
 		throw new Error(`IED with name "${iedName}" not found`)
 	}
 
-	const allEdits: Insert[] = buildAccessPointInserts(
+	const allEdits: Insert[] = buildInsertsForAccessPoints(
 		doc,
 		iedElement,
 		accessPoints,
@@ -215,7 +215,7 @@ export function buildEditsForCreateAccessPoint({
 	)
 
 	if (ssdDoc) {
-		allEdits.push(...buildEditsForLd0DataTypes({ doc, lnodeTypes, ssdDoc }))
+		allEdits.push(...buildInsertsForLd0DataTypes({ doc, lnodeTypes, ssdDoc }))
 	}
 
 	return allEdits
@@ -237,7 +237,7 @@ export function buildEditsForDeleteAccessPoint({
 	if (selectedBay) {
 		const apLNodes = queryLNodesFromAccessPoint(accessPoint)
 
-		const bayEdits = buildEditsForClearingBayLNodeConnections(
+		const bayEdits = buildUpdatesForClearingBayLNodeConnections(
 			selectedBay,
 			apLNodes,
 			iedName

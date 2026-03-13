@@ -109,7 +109,7 @@ type UpdateBayLNodesParams = {
 	equipmentMatches: EquipmentMatch[]
 }
 
-export function buildEditsForBayLNode({
+export function buildUpdatesForBayLNode({
 	lNodes,
 	iedName,
 	sourceFunction,

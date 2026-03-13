@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
-	buildEditForBayUpdate,
+	buildUpdateForBay,
 	buildEditsForEquipmentUpdates
 } from './bay-type-edits'
 import type {
@@ -48,7 +48,7 @@ function makeEquipmentMatch(xml: string): EquipmentMatch {
 	}
 }
 
-describe('buildEditForBayUpdate', () => {
+describe('buildUpdateForBay', () => {
 	describe('GIVEN a Bay element without an existing uuid', () => {
 		it('WHEN called THEN it returns a SetAttributes edit with a new uuid and the bayType uuid', () => {
 			const doc = createTestDocument(
@@ -57,7 +57,7 @@ describe('buildEditForBayUpdate', () => {
 			// biome-ignore lint/style/noNonNullAssertion: test fixture
 			const scdBay = doc.querySelector('Bay')!
 
-			const edit = buildEditForBayUpdate(scdBay, bayType)
+			const edit = buildUpdateForBay(scdBay, bayType)
 
 			expect(edit.element).toBe(scdBay)
 			expect(edit.attributes?.templateUuid).toBe('bt-uuid')
@@ -73,7 +73,7 @@ describe('buildEditForBayUpdate', () => {
 			// biome-ignore lint/style/noNonNullAssertion: test fixture
 			const scdBay = doc.querySelector('Bay')!
 
-			const edit = buildEditForBayUpdate(scdBay, bayType)
+			const edit = buildUpdateForBay(scdBay, bayType)
 
 			expect(edit.attributes?.uuid).toBe('existing-uuid')
 		})

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
-	buildInsertEditsForFunction,
-	buildInsertEditsForEqFunction
+	buildInsertsForFunction,
+	buildInsertsForEqFunction
 } from './function-edits'
 import type {
 	BayType,
@@ -61,14 +61,14 @@ function makeScdBay(inner = ''): { doc: Document; scdBay: Element } {
 	return { doc, scdBay }
 }
 
-// ─── buildInsertEditsForFunction ──────────────────────────────────────────────
+// ─── buildInsertsForFunction ──────────────────────────────────────────────────
 
-describe('buildInsertEditsForFunction', () => {
+describe('buildInsertsForFunction', () => {
 	describe('GIVEN a bayType with one function whose template is found', () => {
 		it('WHEN called THEN it returns one Insert edit for the Function element containing LNode children', () => {
 			const { doc, scdBay } = makeScdBay()
 
-			const edits = buildInsertEditsForFunction({
+			const edits = buildInsertsForFunction({
 				doc,
 				bayType,
 				scdBay,
@@ -89,7 +89,7 @@ describe('buildInsertEditsForFunction', () => {
 		it('WHEN the bay has a ConnectivityNode THEN Insert uses it as reference', () => {
 			const { doc, scdBay } = makeScdBay('<ConnectivityNode name="CN1"/>')
 
-			const edits = buildInsertEditsForFunction({
+			const edits = buildInsertsForFunction({
 				doc,
 				bayType,
 				scdBay,
@@ -104,7 +104,7 @@ describe('buildInsertEditsForFunction', () => {
 		it('WHEN called THEN it skips that function and returns no edits', () => {
 			const { doc, scdBay } = makeScdBay()
 
-			const edits = buildInsertEditsForFunction({
+			const edits = buildInsertsForFunction({
 				doc,
 				bayType,
 				scdBay,
@@ -119,7 +119,7 @@ describe('buildInsertEditsForFunction', () => {
 		it('WHEN called THEN it returns an empty array', () => {
 			const { doc, scdBay } = makeScdBay()
 
-			const edits = buildInsertEditsForFunction({
+			const edits = buildInsertsForFunction({
 				doc,
 				bayType: { ...bayType, functions: [] },
 				scdBay,
@@ -131,9 +131,9 @@ describe('buildInsertEditsForFunction', () => {
 	})
 })
 
-// ─── buildInsertEditsForEqFunction ────────────────────────────────────────────
+// ─── buildInsertsForEqFunction ────────────────────────────────────────────────
 
-describe('buildInsertEditsForEqFunction', () => {
+describe('buildInsertsForEqFunction', () => {
 	describe('GIVEN a match with one eqFunction containing a lnode', () => {
 		it('WHEN called THEN it creates an EqFunction element with an LNode child', () => {
 			const doc = createTestDocument(
@@ -153,7 +153,7 @@ describe('buildInsertEditsForEqFunction', () => {
 				templateEquipment: ceTemplate
 			}
 
-			const edits = buildInsertEditsForEqFunction(doc, [match])
+			const edits = buildInsertsForEqFunction(doc, [match])
 
 			expect(edits).toHaveLength(1)
 			const insert = edits[0]
@@ -184,7 +184,7 @@ describe('buildInsertEditsForEqFunction', () => {
 				templateEquipment: { ...ceTemplate, eqFunctions: [] }
 			}
 
-			const edits = buildInsertEditsForEqFunction(doc, [match])
+			const edits = buildInsertsForEqFunction(doc, [match])
 
 			expect(edits).toHaveLength(0)
 		})
@@ -193,7 +193,7 @@ describe('buildInsertEditsForEqFunction', () => {
 	describe('GIVEN an empty matches list', () => {
 		it('WHEN called THEN it returns an empty array', () => {
 			const doc = createTestDocument('<SCL/>')
-			expect(buildInsertEditsForEqFunction(doc, [])).toHaveLength(0)
+			expect(buildInsertsForEqFunction(doc, [])).toHaveLength(0)
 		})
 	})
 })

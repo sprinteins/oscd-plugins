@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import {
-	buildEditsForCreateAccessPoint,
+	buildInsertsForCreateAccessPoint as buildEditsForCreateAccessPoint,
 	createMultipleLNodesInAccessPoint
 } from './accesspoint-edits'
 import type { XMLEditor } from '@openscd/oscd-editor'

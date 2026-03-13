@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import {
 	ensureDataTypeTemplates,
-	buildEditsForDataTypeTemplates
+	buildInsertsForDataTypeTemplates
 } from './data-type-edits'
 import type { LNodeTemplate } from '@/headless/common-types'
 
@@ -72,7 +72,7 @@ const lnodeTemplate: LNodeTemplate = {
 	lnInst: '1'
 }
 
-describe('buildEditsForDataTypeTemplates', () => {
+describe('buildInsertsForDataTypeTemplates', () => {
 	let ssdDoc: XMLDocument
 
 	beforeEach(() => {
@@ -90,7 +90,7 @@ describe('buildEditsForDataTypeTemplates', () => {
 		})
 
 		it('WHEN called THEN it returns Insert edits for every missing type', () => {
-			const edits = buildEditsForDataTypeTemplates(
+			const edits = buildInsertsForDataTypeTemplates(
 				scdDoc,
 				dataTypeTemplates,
 				[lnodeTemplate],
@@ -107,7 +107,7 @@ describe('buildEditsForDataTypeTemplates', () => {
 		})
 
 		it('WHEN called THEN types are inserted in LNodeType → DOType → DAType → EnumType order', () => {
-			const edits = buildEditsForDataTypeTemplates(
+			const edits = buildInsertsForDataTypeTemplates(
 				scdDoc,
 				dataTypeTemplates,
 				[lnodeTemplate],
@@ -143,7 +143,7 @@ describe('buildEditsForDataTypeTemplates', () => {
 		// biome-ignore lint/style/noNonNullAssertion: test fixture
 		const dataTypeTemplates = scdDoc.querySelector('DataTypeTemplates')!
 
-		const edits = buildEditsForDataTypeTemplates(
+		const edits = buildInsertsForDataTypeTemplates(
 			scdDoc,
 			dataTypeTemplates,
 			[lnodeTemplate],
@@ -167,7 +167,7 @@ describe('buildEditsForDataTypeTemplates', () => {
 		// biome-ignore lint/style/noNonNullAssertion: test fixture
 		const dataTypeTemplates = scdDoc.querySelector('DataTypeTemplates')!
 
-		const edits = buildEditsForDataTypeTemplates(
+		const edits = buildInsertsForDataTypeTemplates(
 			scdDoc,
 			dataTypeTemplates,
 			[lnodeTemplate],
@@ -188,7 +188,7 @@ describe('buildEditsForDataTypeTemplates', () => {
 		const dataTypeTemplates = scdDoc.createElement('DataTypeTemplates')
 		scdDoc.documentElement.appendChild(dataTypeTemplates)
 
-		const edits = buildEditsForDataTypeTemplates(
+		const edits = buildInsertsForDataTypeTemplates(
 			scdDoc,
 			dataTypeTemplates,
 			[],

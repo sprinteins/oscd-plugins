@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { dndStore } from './dnd.store.svelte'
 import * as dropHandler from './drop-handler'
 import {
-	buildEditsForBayLNode,
+	buildUpdatesForBayLNode,
 	createMultipleLNodesInAccessPoint
 } from '@/headless/scl'
 
@@ -20,7 +20,7 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 
 vi.mock('@/headless/scl', () => ({
 	createMultipleLNodesInAccessPoint: vi.fn(),
-	buildEditsForBayLNode: vi.fn()
+	buildUpdatesForBayLNode: vi.fn()
 }))
 
 vi.mock('@/headless/stores', () => ({
@@ -248,7 +248,7 @@ describe('dndStore', () => {
 				doc: expect.anything(),
 				lnodeTypes: expect.anything()
 			})
-			expect(buildEditsForBayLNode).not.toHaveBeenCalled()
+			expect(buildUpdatesForBayLNode).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
 				edits: mockIedEdits,
 				title: 'Test Commit',
@@ -294,7 +294,7 @@ describe('dndStore', () => {
 			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
-			vi.mocked(buildEditsForBayLNode).mockReturnValue(mockBayEdits)
+			vi.mocked(buildUpdatesForBayLNode).mockReturnValue(mockBayEdits)
 			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue(
 				'Test Commit with Bay'
 			)
@@ -312,7 +312,7 @@ describe('dndStore', () => {
 				doc: expect.anything(),
 				lnodeTypes: expect.anything()
 			})
-			expect(buildEditsForBayLNode).toHaveBeenCalledWith({
+			expect(buildUpdatesForBayLNode).toHaveBeenCalledWith({
 				lNodes: mockLNodes,
 				iedName: 'TestIED',
 				sourceFunction: mockFunction,
@@ -363,7 +363,7 @@ describe('dndStore', () => {
 			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
-			vi.mocked(buildEditsForBayLNode).mockReturnValue(mockBayEdits)
+			vi.mocked(buildUpdatesForBayLNode).mockReturnValue(mockBayEdits)
 			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue(
 				'Apply Bay Type'
 			)
@@ -374,7 +374,7 @@ describe('dndStore', () => {
 			// THEN should apply bay type and use squash flag
 			expect(dropHandler.shouldApplyBayType).toHaveBeenCalled()
 			expect(dropHandler.applyBayType).toHaveBeenCalled()
-			expect(buildEditsForBayLNode).toHaveBeenCalled()
+			expect(buildUpdatesForBayLNode).toHaveBeenCalled()
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
 				edits: [...mockIedEdits, ...mockBayEdits],
 				title: 'Apply Bay Type',

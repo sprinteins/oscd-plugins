@@ -13,7 +13,7 @@ export function hasRemainingConnectionsAfterClearing(
 	return remainingLNodes.length > 0
 }
 
-export function buildEditsForClearingBayLNodeConnections(
+export function buildUpdatesForClearingBayLNodeConnections(
 	selectedBay: Element,
 	lNodeTemplates: LNodeTemplate[],
 	iedName: string

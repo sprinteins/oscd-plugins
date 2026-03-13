@@ -13,7 +13,7 @@ import {
 } from './drop-handler'
 import { assignedLNodesStore, bayStore, ssdImportStore } from '@/headless/stores'
 import {
-	buildEditsForBayLNode,
+	buildUpdatesForBayLNode,
 	createMultipleLNodesInAccessPoint
 } from '@/headless/scl'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
@@ -108,7 +108,7 @@ class UseDndStore {
 
 			if (shouldUpdateBay) {
 				allEdits.push(
-					...buildEditsForBayLNode({
+					...buildUpdatesForBayLNode({
 						lNodes,
 						iedName: targetSIedName,
 						sourceFunction: functionFromSSD,
