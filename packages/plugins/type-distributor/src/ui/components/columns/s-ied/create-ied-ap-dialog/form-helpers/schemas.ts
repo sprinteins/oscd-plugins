@@ -11,6 +11,11 @@ const iedNameBaseSchema = z
 	.string()
 	.trim()
 	.max(64, 'IED name cannot exceed 64 characters')
+	.refine((val) => val !== 'None', 'IED name cannot be "None"')
+	.refine(
+		(val) => /^[a-zA-Z]/.test(val),
+		'IED name must start with a letter'
+	)
 	.regex(
 		/^[a-zA-Z0-9_]+$/,
 		'IED name can only contain alphanumeric characters and underscores'
