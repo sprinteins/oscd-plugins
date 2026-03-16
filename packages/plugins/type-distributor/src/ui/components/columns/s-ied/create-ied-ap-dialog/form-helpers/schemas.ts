@@ -52,7 +52,7 @@ export function createAccessPointsCollectionSchema({
 
 		if (!isNew && submittable.length === 0) {
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 				message:
 					'Access Point name is required when adding to existing IED'
 			})
@@ -69,7 +69,7 @@ export function createAccessPointsCollectionSchema({
 				{ pendingNames, existingNames, iedName },
 				(msg) =>
 					ctx.addIssue({
-						code: z.ZodIssueCode.custom,
+						code: 'custom',
 						message: msg,
 						path: [i, 'name']
 					})
@@ -87,7 +87,7 @@ export function createAccessPointSchema(context: AccessPointContext) {
 
 		addAccessPointNameIssues(trimmedName, context, (msg) =>
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 				message: msg,
 				path: ['name']
 			})
@@ -134,7 +134,7 @@ export function createIedSchema(
 
 			if (queryIedExists(xmlDocument, trimmedName)) {
 				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
+					code: 'custom',
 					message: `IED "${trimmedName}" already exists`,
 					path: ['name']
 				})
