@@ -51,42 +51,49 @@ const iedItems = $derived.by(() => {
 	return queryIEDs(bayStore.selectedBay ?? '')
 })
 
+function syncSelectedBayTypeWithAssigned() {
+	if (bayStore.assignedBayTypeUuid) {
+		ssdImportStore.selectedBayType = bayStore.assignedBayTypeUuid
+	}
+}
+
+function validateAndUpdatePendingBayType() {
+	if (!bayStore.selectedBay || !ssdImportStore.selectedBayType) {
+		bayStore.pendingBayTypeApply = null
+		return
+	}
+
+	bayTypeError = null
+
+	if (bayStore.assignedBayTypeUuid === ssdImportStore.selectedBayType) {
+		bayStore.pendingBayTypeApply = null
+		return
+	}
+
+	try {
+		const validation = validateBayType()
+		bayStore.pendingBayTypeApply =
+			validation.isValid && !validation.requiresManualMatching
+				? ssdImportStore.selectedBayType
+				: null
+	} catch (error) {
+		console.error('[validateAndUpdatePendingBayType] Error:', error)
+		bayStore.pendingBayTypeApply = null
+	}
+}
+
 $effect(() => {
 	pluginGlobalStore.editCount
 	assignedLNodesStore.rebuild()
 })
 
 $effect(() => {
-	if (bayStore.assignedBayTypeUuid) {
-		ssdImportStore.selectedBayType = bayStore.assignedBayTypeUuid
-	}
+	syncSelectedBayTypeWithAssigned()
 })
 
 $effect(() => {
 	pluginGlobalStore.editCount
-	
-	if (bayStore.selectedBay && ssdImportStore.selectedBayType) {
-		bayTypeError = null
-		
-		if (bayStore.assignedBayTypeUuid === ssdImportStore.selectedBayType) {
-			bayStore.pendingBayTypeApply = null
-			return
-		}
-		
-		try {
-			const validation = validateBayType()
-			if (validation.isValid && !validation.requiresManualMatching) {
-				bayStore.pendingBayTypeApply = ssdImportStore.selectedBayType
-			} else {
-				bayStore.pendingBayTypeApply = null
-			}
-		} catch (error) {
-			console.error('[validation effect] Error:', error)
-			bayStore.pendingBayTypeApply = null
-		}
-	} else {
-		bayStore.pendingBayTypeApply = null
-	}
+	validateAndUpdatePendingBayType()
 })
 
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
