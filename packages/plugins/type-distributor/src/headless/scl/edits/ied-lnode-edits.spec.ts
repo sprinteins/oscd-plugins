@@ -288,7 +288,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
   <IED name="IED1">
     <AccessPoint name="P1">
       <Server>
-        <LDevice inst="-CEQ2_DisconnectorFunction">
+        <LDevice inst="-CEQ2_DisconnectorFunction_ceq2-fn-uuid">
           <LN lnClass="XSWI" lnInst="1" lnType="XSWI$type"/>
         </LDevice>
       </Server>
@@ -298,8 +298,8 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
     <VoltageLevel>
       <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
         <ConductingEquipment name="-CEQ2" type="DIS" uuid="equip-uuid-2" templateUuid="tpl-uuid-2" originUuid="orig-uuid-2">
-          <EqFunction name="DisconnectorFunction">
-            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction"/>
+          <EqFunction name="DisconnectorFunction" uuid="ceq2-fn-uuid">
+            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction_ceq2-fn-uuid"/>
           </EqFunction>
         </ConductingEquipment>
         <ConductingEquipment name="-CEQ3" type="CBR" uuid="equip-uuid-3" templateUuid="tpl-uuid-3" originUuid="orig-uuid-3">
@@ -327,7 +327,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 				lnClass: 'XSWI',
 				lnType: 'XSWI$type',
 				lnInst: '1',
-				ldInst: '-CEQ2_DisconnectorFunction'
+				ldInst: '-CEQ2_DisconnectorFunction_ceq2-fn-uuid'
 			},
 			selectedBay: assignedBay
 		})

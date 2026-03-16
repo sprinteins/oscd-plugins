@@ -127,7 +127,7 @@ function queryMatchingBayLNode(
 	const parsed = parseLDeviceInst(ldInst)
 	if (!parsed) return null
 
-	const { equipmentName, functionName } = parsed
+	const { equipmentName, functionName, functionUuid } = parsed
 
 	let targetFunction: Element | null = null
 
@@ -136,9 +136,15 @@ function queryMatchingBayLNode(
 			`ConductingEquipment[name="${equipmentName}"]`
 		)
 		if (equipment) {
-			targetFunction = equipment.querySelector(
-				`:scope > EqFunction[name="${functionName}"]`
-			)
+			if (functionUuid) {
+				targetFunction = equipment.querySelector(
+					`:scope > EqFunction[uuid="${functionUuid}"]`
+				)
+			} else {
+				targetFunction = equipment.querySelector(
+					`:scope > EqFunction[name="${functionName}"]`
+				)
+			}
 		}
 	} else {
 		targetFunction = bay.querySelector(

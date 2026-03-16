@@ -41,7 +41,7 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
           <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
           <LN lnClass="CSWI" lnInst="1" lnType="TestCSWI"/>
         </LDevice>
-        <LDevice inst="QA1_Protection">
+        <LDevice inst="QA1_Protection_eq-func-uuid-1">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
           <LN lnClass="PTRC" lnInst="1" lnType="TestPTRC"/>
         </LDevice>
@@ -78,8 +78,8 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
         </Function>
         <!-- Equipment with EqFunction -->
         <ConductingEquipment name="QA1" type="CBR" templateUuid="eq-uuid-1">
-          <EqFunction name="Protection">
-            <LNode lnClass="PTRC" lnType="TestPTRC" lnInst="1" iedName="IED1" ldInst="QA1_Protection"/>
+          <EqFunction name="Protection" uuid="eq-func-uuid-1">
+            <LNode lnClass="PTRC" lnType="TestPTRC" lnInst="1" iedName="IED1" ldInst="QA1_Protection_eq-func-uuid-1"/>
           </EqFunction>
         </ConductingEquipment>
       </Bay>
@@ -356,10 +356,10 @@ describe('buildEditsForDeleteAccessPoint', () => {
   <IED name="BCU">
     <AccessPoint name="AP1">
       <Server>
-        <LDevice inst="-QC2_DisconnectorFunction">
+        <LDevice inst="-QC2_DisconnectorFunction_7e3d9a4f-6b8c-4a1f-9e5d-3c7b8f2d4e9a">
           <LN lnClass="XSWI" lnInst="1" lnType="XSWI$oscd$_5114e81752706b92"/>
         </LDevice>
-        <LDevice inst="-QB92_DisconnectorFunction">
+        <LDevice inst="-QB92_DisconnectorFunction_3d7b8f2c-4e9a-4d6e-9a1f-5a9d7c8b4f3e">
           <LN lnClass="XSWI" lnInst="1" lnType="XSWI$oscd$_5114e81752706b92"/>
         </LDevice>
       </Server>
@@ -474,7 +474,7 @@ describe('buildEditsForDeleteAccessPoint', () => {
   <IED name="IED1">
     <AccessPoint name="P1">
       <Server>
-        <LDevice inst="-CEQ2_DisconnectorFunction">
+        <LDevice inst="-CEQ2_DisconnectorFunction_ceq2-fn-uuid">
           <LN lnClass="XSWI" lnInst="1" lnType="XSWI$type"/>
         </LDevice>
       </Server>
@@ -484,8 +484,8 @@ describe('buildEditsForDeleteAccessPoint', () => {
     <VoltageLevel>
       <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
         <ConductingEquipment name="-CEQ2" type="DIS" uuid="equip-uuid-2" templateUuid="tpl-uuid-2" originUuid="orig-uuid-2">
-          <EqFunction name="DisconnectorFunction">
-            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction"/>
+          <EqFunction name="DisconnectorFunction" uuid="ceq2-fn-uuid">
+            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction_ceq2-fn-uuid"/>
           </EqFunction>
         </ConductingEquipment>
         <ConductingEquipment name="-CEQ3" type="CBR" uuid="equip-uuid-3" templateUuid="tpl-uuid-3" originUuid="orig-uuid-3">

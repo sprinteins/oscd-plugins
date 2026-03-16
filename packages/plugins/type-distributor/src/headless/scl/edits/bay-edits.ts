@@ -7,23 +7,52 @@ import type {
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { bayStore } from '@/headless/stores'
 
+export function resolveScdEqFunctionUuid(
+	sourceFunction: EqFunctionTemplate | FunctionTemplate,
+	equipmentUuid: string | undefined,
+	equipmentMatches: EquipmentMatch[]
+): string | undefined {
+	if (!equipmentUuid) return undefined
+
+	const match = equipmentMatches.find(
+		(m) => m.bayTypeEquipment.uuid === equipmentUuid
+	)
+	if (!match) return undefined
+
+	const templateIndex = match.templateEquipment.eqFunctions.findIndex(
+		(f: EqFunctionTemplate) => f.uuid === sourceFunction.uuid
+	)
+	if (templateIndex < 0) return undefined
+
+	const eqFuncName = sourceFunction.name
+	const scdEqFunctions = Array.from(
+		match.scdElement.querySelectorAll(
+			`:scope > EqFunction[name="${eqFuncName}"]`
+		)
+	)
+	return scdEqFunctions[templateIndex]?.getAttribute('uuid') ?? undefined
+}
+
 type FindMatchingLNodeElementParams = {
 	lNode: LNodeTemplate
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	scdEqFunctionUuid?: string
 }
 
 function findMatchingLNodeElement({
 	lNode,
 	sourceFunction,
 	equipmentUuid,
-	equipmentMatches
+	equipmentMatches,
+	scdEqFunctionUuid
 }: FindMatchingLNodeElementParams): Element | null {
 	const functionElements = queryFunctionElements({
 		sourceFunction,
 		equipmentUuid,
-		equipmentMatches
+		equipmentMatches,
+		scdEqFunctionUuid
 	})
 
 	for (const functionElement of functionElements) {
@@ -39,12 +68,14 @@ type QueryFunctionElementsParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	scdEqFunctionUuid?: string
 }
 
 function queryFunctionElements({
 	sourceFunction,
 	equipmentUuid,
-	equipmentMatches
+	equipmentMatches,
+	scdEqFunctionUuid
 }: QueryFunctionElementsParams): Element[] {
 	const scdBay = bayStore.scdBay
 	if (!scdBay) {
@@ -57,6 +88,12 @@ function queryFunctionElements({
 			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
 		if (matchFromStore) {
+			if (scdEqFunctionUuid) {
+				const specific = matchFromStore.scdElement.querySelector(
+					`EqFunction[uuid="${scdEqFunctionUuid}"]`
+				)
+				return specific ? [specific] : []
+			}
 			return Array.from(
 				matchFromStore.scdElement.querySelectorAll(
 					`EqFunction[name="${sourceFunction.name}"]`
@@ -107,6 +144,7 @@ type BuildUpdatesForBayLNodeParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	scdEqFunctionUuid?: string
 }
 
 export function buildUpdatesForBayLNode({
@@ -114,7 +152,8 @@ export function buildUpdatesForBayLNode({
 	iedName,
 	sourceFunction,
 	equipmentUuid,
-	equipmentMatches
+	equipmentMatches,
+	scdEqFunctionUuid
 }: BuildUpdatesForBayLNodeParams): SetAttributes[] {
 	const edits: SetAttributes[] = []
 
@@ -123,7 +162,8 @@ export function buildUpdatesForBayLNode({
 			lNode,
 			sourceFunction,
 			equipmentUuid,
-			equipmentMatches
+			equipmentMatches,
+			scdEqFunctionUuid
 		})
 		if (!lnodeElement) {
 			continue

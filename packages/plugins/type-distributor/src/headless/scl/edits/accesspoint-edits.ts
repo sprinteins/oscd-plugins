@@ -48,6 +48,8 @@ type EnsureLDeviceParams = {
 	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
 	lnodeTypes?: LNodeType[]
+	iedName: string
+	functionUuidOverride?: string
 }
 
 function ensureLDevice({
@@ -56,12 +58,15 @@ function ensureLDevice({
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches,
-	lnodeTypes
+	lnodeTypes,
+	iedName,
+	functionUuidOverride
 }: EnsureLDeviceParams): { lDevice: Element; edit: Insert | undefined } {
 	const existingLDevice = queryLDevice(server, {
 		sourceFunction,
 		equipmentUuid,
-		equipmentMatches
+		equipmentMatches,
+		functionUuidOverride
 	})
 	if (existingLDevice) {
 		return { lDevice: existingLDevice, edit: undefined }
@@ -71,7 +76,9 @@ function ensureLDevice({
 		sourceFunction,
 		equipmentUuid,
 		equipmentMatches,
-		lnodeTypes
+		lnodeTypes,
+		iedName,
+		functionUuidOverride
 	})
 
 	const edit: Insert = {
@@ -113,6 +120,7 @@ type createMultipleLNodesInAccessPointParams = {
 	equipmentMatches: EquipmentMatch[]
 	doc: XMLDocument
 	lnodeTypes?: LNodeType[]
+	functionUuidOverride?: string
 }
 
 export function createMultipleLNodesInAccessPoint({
@@ -122,9 +130,11 @@ export function createMultipleLNodesInAccessPoint({
 	equipmentUuid,
 	equipmentMatches,
 	doc,
-	lnodeTypes
+	lnodeTypes,
+	functionUuidOverride
 }: createMultipleLNodesInAccessPointParams): Insert[] {
 	const edits: Insert[] = []
+	const iedName = accessPoint.parentElement?.getAttribute('name') ?? ''
 
 	const { serverElement, edit: serverEdit } = ensureServer(accessPoint, doc)
 	const { lDevice, edit: lDeviceEdit } = ensureLDevice({
@@ -133,7 +143,9 @@ export function createMultipleLNodesInAccessPoint({
 		sourceFunction,
 		equipmentUuid,
 		equipmentMatches,
-		lnodeTypes
+		lnodeTypes,
+		iedName,
+		functionUuidOverride
 	})
 
 	const lNodesToAdd = lNodes.filter((lNode) => {
@@ -178,6 +190,7 @@ export function buildInsertsForAccessPoints({
 	accessPoints,
 	lnodeTypes
 }: BuildInsertsForAccessPointsParams): Insert[] {
+	const iedName = parent.getAttribute('name') ?? ''
 	return accessPoints.map((ap) => {
 		const apElement = createElement(doc, 'AccessPoint', {
 			name: ap.name,
@@ -188,7 +201,9 @@ export function buildInsertsForAccessPoints({
 			none: 'true'
 		})
 		serverElement.appendChild(authElement)
-		serverElement.appendChild(createLD0Element(doc, lnodeTypes))
+		serverElement.appendChild(
+			createLD0Element(doc, lnodeTypes, ap.name, iedName)
+		)
 		apElement.appendChild(serverElement)
 		return { node: apElement, parent, reference: null } as Insert
 	})
@@ -246,13 +261,11 @@ export function buildEditsForDeleteAccessPoint({
 	if (selectedBay) {
 		const apLNodes = queryLNodesFromAccessPoint(accessPoint)
 
-		const bayEdits = buildUpdatesForClearingBayLNodeConnections(
-			{
-				selectedBay,
-				lNodeTemplates: apLNodes,
-				iedName
-			}
-		)
+		const bayEdits = buildUpdatesForClearingBayLNodeConnections({
+			selectedBay,
+			lNodeTemplates: apLNodes,
+			iedName
+		})
 		edits.push(...bayEdits)
 	}
 
