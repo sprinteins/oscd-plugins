@@ -13,7 +13,7 @@ const iedNameBaseSchema = z
 	.max(64, 'IED name cannot exceed 64 characters')
 	.regex(
 		/^[a-zA-Z0-9_]+$/,
-		'IED name may only contain alphanumeric characters and underscores'
+		'IED name can only contain alphanumeric characters and underscores'
 	)
 
 export const iedBaseSchema = z.object({
