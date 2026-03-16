@@ -7,8 +7,17 @@ export const accessPointBaseSchema = z.object({
 	description: z.string().trim()
 })
 
+const iedNameBaseSchema = z
+	.string()
+	.trim()
+	.max(64, 'IED name cannot exceed 64 characters')
+	.regex(
+		/^[a-zA-Z0-9_]+$/,
+		'IED name may only contain alphanumeric characters and underscores'
+	)
+
 export const iedBaseSchema = z.object({
-	name: z.string().trim().min(1, 'IED name is required'),
+	name: iedNameBaseSchema.pipe(z.string().min(1, 'IED name is required')),
 	description: z.string().trim()
 })
 
@@ -106,12 +115,11 @@ export function createIedSchema(
 	xmlDocument: XMLDocument | null | undefined,
 	isNew = true
 ) {
-	const nameValidation = isNew
-		? z.string().trim().min(1, 'IED name is required')
-		: z
-				.string()
-				.trim()
-				.min(1, 'Please select an existing IED or create a new one')
+	const nameValidation = iedNameBaseSchema.pipe(
+		isNew
+			? z.string().min(1, 'IED name is required')
+			: z.string().min(1, 'Please select an existing IED or create a new one')
+	)
 
 	return z
 		.object({
