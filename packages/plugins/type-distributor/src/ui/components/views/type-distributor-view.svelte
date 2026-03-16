@@ -59,8 +59,33 @@ $effect(() => {
 $effect(() => {
 	if (bayStore.assignedBayTypeUuid) {
 		ssdImportStore.selectedBayType = bayStore.assignedBayTypeUuid
+	}
+})
+
+$effect(() => {
+	pluginGlobalStore.editCount
+	
+	if (bayStore.selectedBay && ssdImportStore.selectedBayType) {
+		bayTypeError = null
+		
+		if (bayStore.assignedBayTypeUuid === ssdImportStore.selectedBayType) {
+			bayStore.pendingBayTypeApply = null
+			return
+		}
+		
+		try {
+			const validation = validateBayType()
+			if (validation.isValid && !validation.requiresManualMatching) {
+				bayStore.pendingBayTypeApply = ssdImportStore.selectedBayType
+			} else {
+				bayStore.pendingBayTypeApply = null
+			}
+		} catch (error) {
+			console.error('[validation effect] Error:', error)
+			bayStore.pendingBayTypeApply = null
+		}
 	} else {
-		ssdImportStore.selectedBayType = null
+		bayStore.pendingBayTypeApply = null
 	}
 })
 
@@ -72,7 +97,6 @@ const shouldShowBayTypeDetails = $derived.by(() => {
 	if (!bayTypeWithTemplates) return false
 
 	const validation = equipmentMatchingStore.validationResult
-
 	if (
 		validation &&
 		!validation.isValid &&
@@ -80,33 +104,12 @@ const shouldShowBayTypeDetails = $derived.by(() => {
 	) {
 		return false
 	}
-
-	if (bayStore.assignedBayTypeUuid === ssdImportStore.selectedBayType) {
-		return true
-	}
-
-	return !!bayStore.pendingBayTypeApply
+	return !!ssdImportStore.selectedBayType
 })
 
 function handleBayTypeChange() {
-	bayTypeError = null
 	equipmentMatchingStore.reset()
-
-	if (!bayStore.selectedBay) {
-		bayTypeError = 'No Bay selected'
-		return
-	}
-
-	try {
-		const validation = validateBayType()
-
-		if (validation.isValid && !validation.requiresManualMatching) {
-			bayStore.pendingBayTypeApply = ssdImportStore.selectedBayType
-		}
-		assignedLNodesStore.rebuild()
-	} catch (error) {
-		console.error('[handleBayTypeChange] Error:', error)
-	}
+	assignedLNodesStore.rebuild()
 }
 </script>
 
@@ -145,7 +148,8 @@ function handleBayTypeChange() {
 			<div class="flex-1 flex flex-col gap-y-4 overflow-y-auto">
 				<BayTypeValidation {bayTypeError} />
 				{#if shouldShowBayTypeDetails}
-					<BayTypeDetails
+									<BayTypeDetails
+
 						{functionTemplates}
 						{conductingEquipmentTemplates}
 						{bayTypeWithTemplates}
