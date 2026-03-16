@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added automatic ld0 creation to the accespoints. It will include all l-class lnodes except LGOS and LSVS.
 - Added automatic lln0 creation to the ldevice when it is created.
 - Allow user to reopen equipment matching panel before the first lnode assignment
+- Added validation for IedName: min-max 1-64 chars, start with letter, only alphanumeric, can not be "None"
 ### Changed
 - Better form handling for the creation of IEDs and AccessPoints. Show dedicated errors below the input fields.
 - Do not allow deleting of LD0 and LLN0. These will be deleted when the AP gets deleted or the last LNode of that LDevice gets deleted.
