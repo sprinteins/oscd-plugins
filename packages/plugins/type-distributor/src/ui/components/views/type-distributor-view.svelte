@@ -111,12 +111,33 @@ const shouldShowBayTypeDetails = $derived.by(() => {
 	) {
 		return false
 	}
-	return !!ssdImportStore.selectedBayType
+
+	if (bayStore.assignedBayTypeUuid === ssdImportStore.selectedBayType) {
+		return true
+	}
+
+	return !!bayStore.pendingBayTypeApply
 })
 
 function handleBayTypeChange() {
+	bayTypeError = null
 	equipmentMatchingStore.reset()
-	assignedLNodesStore.rebuild()
+
+	if (!bayStore.selectedBay) {
+		bayTypeError = 'No Bay selected'
+		return
+	}
+
+	try {
+		const validation = validateBayType()
+
+		if (validation.isValid && !validation.requiresManualMatching) {
+			bayStore.pendingBayTypeApply = ssdImportStore.selectedBayType
+		}
+		assignedLNodesStore.rebuild()
+	} catch (error) {
+		console.error('[handleBayTypeChange] Error:', error)
+	}
 }
 </script>
 
