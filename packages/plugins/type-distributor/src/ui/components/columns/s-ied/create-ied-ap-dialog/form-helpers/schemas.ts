@@ -7,8 +7,22 @@ export const accessPointBaseSchema = z.object({
 	description: z.string().trim()
 })
 
+const iedNameBaseSchema = z
+	.string()
+	.trim()
+	.max(64, 'IED name cannot exceed 64 characters')
+	.refine((val) => val !== 'None', 'IED name cannot be "None"')
+	.refine(
+		(val) => /^[a-zA-Z]/.test(val),
+		'IED name must start with a letter'
+	)
+	.regex(
+		/^[a-zA-Z0-9_]+$/,
+		'IED name can only contain alphanumeric characters and underscores'
+	)
+
 export const iedBaseSchema = z.object({
-	name: z.string().trim().min(1, 'IED name is required'),
+	name: iedNameBaseSchema.pipe(z.string().min(1, 'IED name is required')),
 	description: z.string().trim()
 })
 
@@ -43,7 +57,7 @@ export function createAccessPointsCollectionSchema({
 
 		if (!isNew && submittable.length === 0) {
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 				message:
 					'Access Point name is required when adding to existing IED'
 			})
@@ -60,7 +74,7 @@ export function createAccessPointsCollectionSchema({
 				{ pendingNames, existingNames, iedName },
 				(msg) =>
 					ctx.addIssue({
-						code: z.ZodIssueCode.custom,
+						code: 'custom',
 						message: msg,
 						path: [i, 'name']
 					})
@@ -78,7 +92,7 @@ export function createAccessPointSchema(context: AccessPointContext) {
 
 		addAccessPointNameIssues(trimmedName, context, (msg) =>
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 				message: msg,
 				path: ['name']
 			})
@@ -106,12 +120,11 @@ export function createIedSchema(
 	xmlDocument: XMLDocument | null | undefined,
 	isNew = true
 ) {
-	const nameValidation = isNew
-		? z.string().trim().min(1, 'IED name is required')
-		: z
-				.string()
-				.trim()
-				.min(1, 'Please select an existing IED or create a new one')
+	const nameValidation = iedNameBaseSchema.pipe(
+		isNew
+			? z.string().min(1, 'IED name is required')
+			: z.string().min(1, 'Please select an existing IED or create a new one')
+	)
 
 	return z
 		.object({
@@ -126,7 +139,7 @@ export function createIedSchema(
 
 			if (queryIedExists(xmlDocument, trimmedName)) {
 				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
+					code: 'custom',
 					message: `IED "${trimmedName}" already exists`,
 					path: ['name']
 				})
