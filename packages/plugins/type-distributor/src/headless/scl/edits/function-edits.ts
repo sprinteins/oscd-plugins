@@ -8,17 +8,11 @@ import type { EquipmentMatch } from '@/headless/domain/matching'
 import { uuidToPrefix } from '@/headless/scl/elements'
 
 function generateUniquePrefixUuid(existingPrefixes: Set<string>): string {
-	let uuid: string
-	let i = 0
-	do {
-		uuid = uuidv4()
-		i++
-	} while (existingPrefixes.has(uuidToPrefix(uuid)) || i > 1000)
-
-	if (i > 1000) {
-		throw new Error('Unable to generate unique UUID after 1000 attempts')
+	for (let i = 0; i < 1000; i++) {
+		const uuid = uuidv4()
+		if (!existingPrefixes.has(uuidToPrefix(uuid))) return uuid
 	}
-	return uuid
+	throw new Error('Unable to generate unique UUID after 1000 attempts')
 }
 
 export function collectExistingPrefixes(
@@ -49,8 +43,6 @@ export function buildInsertsForFunction({
 }: BuildInsertsForFunctionParams): Insert[] {
 	const inserts: Insert[] = []
 
-	const prefixes = existingPrefixes
-
 	for (const functionType of bayType.functions) {
 		const functionTemplate = getFunctionTemplate(
 			functionTemplates,
@@ -64,8 +56,8 @@ export function buildInsertsForFunction({
 			continue
 		}
 
-		const functionUuid = generateUniquePrefixUuid(prefixes)
-		prefixes.add(uuidToPrefix(functionUuid))
+		const functionUuid = generateUniquePrefixUuid(existingPrefixes)
+		existingPrefixes.add(uuidToPrefix(functionUuid))
 
 		const functionElement = createElement(doc, 'Function', {
 			name: functionTemplate.name,

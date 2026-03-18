@@ -70,9 +70,7 @@ function extractFunctionNames({
 		const firstEqFunction = sourceFunction.eqFunctions[0]
 		if (firstEqFunction) {
 			functionName = firstEqFunction.name
-			if (!functionUuidOverride) {
-				functionUuid = firstEqFunction.uuid
-			}
+			functionUuid = firstEqFunction.uuid
 		}
 	}
 

@@ -122,9 +122,9 @@ function queryMatchingBayLNode(
 	iedName: string
 ): Element | null {
 	const ldInst = lNodeTemplate.ldInst
-	let parsed: ReturnType<typeof parseLDeviceInst>
 	if (!ldInst) return null
 
+	let parsed: ReturnType<typeof parseLDeviceInst>
 	try {
 		parsed = parseLDeviceInst(ldInst)
 	} catch (error) {
@@ -138,7 +138,7 @@ function queryMatchingBayLNode(
 
 	let targetFunction: Element | null = null
 
-	if (equipmentName && functionPrefixUuid) {
+	if (equipmentName) {
 		const equipment = bay.querySelector(
 			`ConductingEquipment[name="${equipmentName}"]`
 		)
@@ -147,13 +147,9 @@ function queryMatchingBayLNode(
 				`:scope > EqFunction[uuid^="${functionPrefixUuid}"]`
 			)
 		}
-	} else if (functionPrefixUuid) {
-		targetFunction = bay.querySelector(
-			`Function[uuid^="${functionPrefixUuid}"]`
-		)
 	} else {
 		targetFunction = bay.querySelector(
-			`:scope > Function[name="${functionName}"]`
+			`Function[uuid^="${functionPrefixUuid}"]`
 		)
 	}
 
