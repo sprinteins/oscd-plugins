@@ -36,8 +36,8 @@ export function resolveScdEqFunctionUuid(
 type FindMatchingLNodeElementParams = {
 	lNode: LNodeTemplate
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
-	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	equipmentUuid?: string
 	scdEqFunctionUuid?: string
 }
 
@@ -66,8 +66,8 @@ function findMatchingLNodeElement({
 
 type QueryFunctionElementsParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
-	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	equipmentUuid?: string
 	scdEqFunctionUuid?: string
 }
 
@@ -142,8 +142,8 @@ type BuildUpdatesForBayLNodeParams = {
 	lNodes: LNodeTemplate[]
 	iedName: string
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
-	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
+	equipmentUuid?: string
 	scdEqFunctionUuid?: string
 }
 

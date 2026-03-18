@@ -190,8 +190,8 @@ export function queryLDeviceFromAccessPoint(
 }
 
 interface CreateLDeviceElementParams extends SourceFunctionParams {
-	lnodeTypes?: LNodeType[]
 	iedName: string
+	lnodeTypes?: LNodeType[]
 }
 
 function createLln0Element(

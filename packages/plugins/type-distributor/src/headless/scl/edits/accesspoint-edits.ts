@@ -42,24 +42,24 @@ function ensureServer(
 }
 
 type EnsureLDeviceParams = {
-	server: Element
 	doc: XMLDocument
-	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
-	equipmentUuid?: string
-	equipmentMatches: EquipmentMatch[]
-	lnodeTypes?: LNodeType[]
+	server: Element
 	iedName: string
+	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
+	equipmentMatches: EquipmentMatch[]
+	equipmentUuid?: string
+	lnodeTypes?: LNodeType[]
 	functionUuidOverride?: string
 }
 
 function ensureLDevice({
-	server,
 	doc,
-	sourceFunction,
-	equipmentUuid,
-	equipmentMatches,
-	lnodeTypes,
+	server,
 	iedName,
+	sourceFunction,
+	equipmentMatches,
+	equipmentUuid,
+	lnodeTypes,
 	functionUuidOverride
 }: EnsureLDeviceParams): { lDevice: Element; edit: Insert | undefined } {
 	const existingLDevice = queryLDevice(server, {
@@ -113,12 +113,12 @@ function createLNodeInAccessPoint({
 }
 
 type createMultipleLNodesInAccessPointParams = {
+	doc: XMLDocument
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	lNodes: LNodeTemplate[]
 	accessPoint: Element
-	equipmentUuid?: string
 	equipmentMatches: EquipmentMatch[]
-	doc: XMLDocument
+	equipmentUuid?: string
 	lnodeTypes?: LNodeType[]
 	functionUuidOverride?: string
 }

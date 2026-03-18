@@ -29,17 +29,21 @@ Equipment matching uses two explicit APIs with different behavior:
 
 ## LDevice inst and ldName Schema
 
-LDevice elements created by the plugin follow a deterministic naming schema that embeds the source EqFunction/Function UUID to guarantee uniqueness across duplicate-named functions:
+LDevice elements created by the plugin follow a deterministic naming schema that embeds the source EqFunction/Function UUID to guarantee uniqueness across duplicate-named functions.
 
-| Scenario | `inst` | `ldName` |
-|---|---|---|
-| Bay-level `Function` | `FunctionName_functionUuid` | `IedName_FunctionName_functionUuid` |
-| Equipment `EqFunction` | `EquipmentName_FunctionName_eqFunctionUuid` | `IedName_EquipmentName_FunctionName_eqFunctionUuid` |
-| LD0 (per access point) | `LD0_APname` | `IedName_LD0_APname` |
+Because the SCL standard forbids hyphens in `inst`, the full UUID is not written directly. Instead, `uuidToPrefix(uuid)` strips all hyphens and takes the first 8 characters, producing an 8-character lowercase hex string (e.g., `a1b2c3d4`).
 
-The UUID embedded in `inst` comes from the **SCD-side** `EqFunction[uuid]` (written by `buildInsertsForEqFunction` during `applyBayType`), not the template UUID. This ensures `inst` values remain unique even when two `EqFunction` elements share the same `name` on the same equipment.
+| Scenario               | `inst`                                | `ldName`                                      |
+| ---------------------- | ------------------------------------- | --------------------------------------------- |
+| Bay-level `Function`   | `FunctionName_XXXXXXXX`               | `IedName_FunctionName_XXXXXXXX`               |
+| Equipment `EqFunction` | `EquipmentName_FunctionName_XXXXXXXX` | `IedName_EquipmentName_FunctionName_XXXXXXXX` |
+| LD0 (per access point) | `LD0_APname`                          | `IedName_LD0_APname`                          |
 
-`parseLDeviceInst(inst)` decodes this schema and returns `{ equipmentName, functionName, functionUuid }`.
+(`XXXXXXXX` = 8-char hex prefix derived from the source element's UUID via `uuidToPrefix`.)
+
+The UUID prefix embedded in `inst` comes from the **SCD-side** `EqFunction[uuid]` attribute (written by `buildInsertsForEqFunction` during `applyBayType`), not the template UUID. This ensures `inst` values remain unique even when two `EqFunction` elements share the same `name` on the same equipment.
+
+`parseLDeviceInst(inst)` decodes this schema and returns `{ equipmentName, functionName, functionPrefixUuid }`. It throws if `inst` does not match the expected format (i.e. the last segment is not exactly 8 hex characters).
 
 ## Position-Based Duplicate EqFunction Resolution
 

@@ -52,9 +52,11 @@ If the validation indicates ambiguous matches:
 Drag a `Function` or `EqFunction` card from the SSD panel onto an IED access point:
 
 1. The plugin creates an `LDevice` in the target access point with a deterministic `inst`:
-   - Equipment function: `EquipmentName_FunctionName_eqFunctionUuid`
-   - Bay function: `FunctionName_functionUuid`
+   - Equipment function: `EquipmentName_FunctionName_XXXXXXXX`
+   - Bay function: `FunctionName_XXXXXXXX`
    - LD0: `LD0_AccessPointName`
+
+   `XXXXXXXX` is an 8-character lowercase hex prefix derived from the source `EqFunction` or `Function` element's `uuid` attribute by stripping hyphens and taking the first 8 characters (e.g., UUID `a1b2c3d4-…` → prefix `a1b2c3d4`).
 2. The `ldName` attribute is set to `IedName_inst`.
 3. The `LNode` elements in the SSD bay receive `iedName` and `ldInst` attributes pointing to the new `LDevice`.
 4. The assigned card is greyed out in the SSD panel.
@@ -69,7 +71,7 @@ Check that:
 - Bay attributes are updated correctly
 - Conducting equipment has proper function assignments
 - Data type templates section contains all required types
-- LDevice `inst` values are unique and follow the naming schema (e.g., `-CEQ1_DisconnectorFunction_<uuid>`)
+- LDevice `inst` values are unique and follow the naming schema (e.g., `CEQ1_DisconnectorFunction_a1b2c3d4`)
 - Each assigned `LNode` in the SSD bay has `iedName` and `ldInst` set
 
 ## Troubleshooting

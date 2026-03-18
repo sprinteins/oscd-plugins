@@ -31,7 +31,7 @@ interface BuildInsertsForFunctionParams {
 	bayType: BayType
 	scdBay: Element
 	functionTemplates: FunctionTemplate[]
-	existingPrefixes?: Set<string>
+	existingPrefixes: Set<string>
 }
 
 export function buildInsertsForFunction({
@@ -43,9 +43,7 @@ export function buildInsertsForFunction({
 }: BuildInsertsForFunctionParams): Insert[] {
 	const inserts: Insert[] = []
 
-	const prefixes =
-		existingPrefixes ??
-		collectExistingPrefixes(scdBay.querySelectorAll('Function'))
+	const prefixes = existingPrefixes
 
 	for (const functionType of bayType.functions) {
 		const functionTemplate = getFunctionTemplate(
@@ -91,14 +89,9 @@ export function buildInsertsForFunction({
 export function buildInsertsForEqFunction(
 	doc: Document,
 	matches: EquipmentMatch[],
-	existingPrefixes?: Set<string>
+	prefixes: Set<string>
 ): Insert[] {
 	const inserts: Insert[] = []
-
-	const allEqFunctions = matches.flatMap((m) => [
-		...m.scdElement.querySelectorAll('EqFunction')
-	])
-	const prefixes = existingPrefixes ?? collectExistingPrefixes(allEqFunctions)
 
 	for (const match of matches) {
 		const templateEquipment = match.templateEquipment
