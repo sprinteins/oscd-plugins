@@ -119,11 +119,32 @@ function generateLDeviceInst(
 	return `${functionName}_${prefix}`
 }
 
-export function parseLDeviceInst(lDeviceInst: string): {
+type ParsedLD0Inst = {
+	isLD0: true
+	equipmentName: null
+	functionName: string
+	functionPrefixUuid: null
+}
+
+type ParsedRegularInst = {
+	isLD0: false
 	equipmentName: string | null
 	functionName: string
 	functionPrefixUuid: string
-} {
+}
+
+export type ParsedLDeviceInst = ParsedLD0Inst | ParsedRegularInst
+
+export function parseLDeviceInst(lDeviceInst: string): ParsedLDeviceInst {
+	if (lDeviceInst.startsWith(LD0_INSTANCE)) {
+		return {
+			isLD0: true,
+			equipmentName: null,
+			functionName: lDeviceInst,
+			functionPrefixUuid: null
+		}
+	}
+
 	const parts = lDeviceInst.split('_')
 	const lastPart = parts[parts.length - 1]
 
@@ -142,6 +163,7 @@ export function parseLDeviceInst(lDeviceInst: string): {
 	const equipmentName =
 		parts.length >= 3 ? parts.slice(0, parts.length - 2).join('_') : null
 	return {
+		isLD0: false,
 		equipmentName,
 		functionName,
 		functionPrefixUuid

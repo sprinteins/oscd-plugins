@@ -122,10 +122,17 @@ function queryMatchingBayLNode(
 	iedName: string
 ): Element | null {
 	const ldInst = lNodeTemplate.ldInst
+	let parsed: ReturnType<typeof parseLDeviceInst>
 	if (!ldInst) return null
 
-	const parsed = parseLDeviceInst(ldInst)
-	if (!parsed) return null
+	try {
+		parsed = parseLDeviceInst(ldInst)
+	} catch (error) {
+		console.error(`Failed to parse LDevice inst "${ldInst}":`, error)
+		return null
+	}
+
+	if (parsed.isLD0) return null
 
 	const { equipmentName, functionName, functionPrefixUuid } = parsed
 

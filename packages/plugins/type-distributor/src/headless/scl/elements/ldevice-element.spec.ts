@@ -179,38 +179,52 @@ describe('parseLDeviceInst', () => {
 		)
 	})
 
-	it('GIVEN FunctionName_UuidPrefix schema WHEN called THEN returns functionName and uuid prefix with no equipmentName', () => {
+	it('GIVEN FunctionName_UuidPrefix schema WHEN called THEN returns isLD0 false with functionName and uuid prefix and no equipmentName', () => {
 		const result = parseLDeviceInst('Protection_550e8400')
+		expect(result.isLD0).toBe(false)
 		expect(result.equipmentName).toBeNull()
 		expect(result.functionName).toBe('Protection')
 		expect(result.functionPrefixUuid).toBe('550e8400')
 	})
 
-	it('GIVEN Eq_Function_UuidPrefix schema WHEN called THEN returns equipmentName and functionName', () => {
+	it('GIVEN Eq_Function_UuidPrefix schema WHEN called THEN returns isLD0 false with equipmentName and functionName', () => {
 		const result = parseLDeviceInst('CB1_CBFunction_b4e3f901')
+		expect(result.isLD0).toBe(false)
 		expect(result.equipmentName).toBe('CB1')
 		expect(result.functionName).toBe('CBFunction')
 		expect(result.functionPrefixUuid).toBe('b4e3f901')
 	})
 
-	it('GIVEN equipment name with underscore WHEN called THEN joins extra segments into equipmentName', () => {
+	it('GIVEN equipment name with underscore WHEN called THEN returns isLD0 false and joins extra segments into equipmentName', () => {
 		const result = parseLDeviceInst('CB_1_CBFunction_b4e3f901')
+		expect(result.isLD0).toBe(false)
 		expect(result.equipmentName).toBe('CB_1')
 		expect(result.functionName).toBe('CBFunction')
 		expect(result.functionPrefixUuid).toBe('b4e3f901')
 	})
 
-	it('GIVEN function name with underscore WHEN called THEN treats leading part as equipmentName for later runtime disambiguation', () => {
+	it('GIVEN function name with underscore WHEN called THEN returns isLD0 false and treats leading part as equipmentName for later runtime disambiguation', () => {
 		const result = parseLDeviceInst('Pro_tection_c0ffee01')
+		expect(result.isLD0).toBe(false)
 		expect(result.equipmentName).toBe('Pro')
 		expect(result.functionName).toBe('tection')
 		expect(result.functionPrefixUuid).toBe('c0ffee01')
 	})
 
-	it('GIVEN LD0_APname schema WHEN called THEN throws invalid format error', () => {
-		expect(() => parseLDeviceInst('LD0_S1-AP')).toThrow(
-			'Invalid LDevice inst format: LD0_S1-AP'
-		)
+	it('GIVEN plain LD0 inst WHEN called THEN returns isLD0 true with null uuid and equipment fields', () => {
+		const result = parseLDeviceInst('LD0')
+		expect(result.isLD0).toBe(true)
+		expect(result.equipmentName).toBeNull()
+		expect(result.functionName).toBe('LD0')
+		expect(result.functionPrefixUuid).toBeNull()
+	})
+
+	it('GIVEN LD0_APname schema WHEN called THEN returns isLD0 true with full inst as functionName', () => {
+		const result = parseLDeviceInst('LD0_S1-AP')
+		expect(result.isLD0).toBe(true)
+		expect(result.equipmentName).toBeNull()
+		expect(result.functionName).toBe('LD0_S1-AP')
+		expect(result.functionPrefixUuid).toBeNull()
 	})
 })
 

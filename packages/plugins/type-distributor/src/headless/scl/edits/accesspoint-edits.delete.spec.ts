@@ -545,4 +545,68 @@ describe('buildEditsForDeleteAccessPoint', () => {
 			expect(eqFunctionRemoves.length).toBe(2)
 		})
 	})
+
+	it('GIVEN an AccessPoint with a LD0 LDevice WHEN deleting the AccessPoint THEN should not throw and should remove the AccessPoint', () => {
+		// GIVEN - AccessPoint contains a LD0 LDevice alongside a regular function LDevice
+		const ld0SCD = `<?xml version="1.0" encoding="UTF-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+  <IED name="IED1">
+    <AccessPoint name="P1">
+      <Server>
+        <LDevice inst="LD0">
+          <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
+          <LN lnClass="LPHD" lnInst="1" lnType="TestLPHD"/>
+        </LDevice>
+        <LDevice inst="CBFunction_aa11bb22">
+          <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
+        </LDevice>
+      </Server>
+    </AccessPoint>
+  </IED>
+  <Substation>
+    <VoltageLevel>
+      <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
+        <Function name="CBFunction" uuid="aa11bb22-0000-0000-0000-000000000000" templateUuid="tpl-func-1">
+          <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1" ldInst="CBFunction_aa11bb22"/>
+        </Function>
+      </Bay>
+    </VoltageLevel>
+  </Substation>
+</SCL>`
+
+		const ld0Doc = createTestDocument(ld0SCD)
+		const bay = ld0Doc.querySelector('Bay[name="Bay1"]')
+		expect(bay).not.toBeNull()
+
+		const accessPoint = ld0Doc.querySelector(
+			'IED[name="IED1"] AccessPoint[name="P1"]'
+		) as Element
+
+		// WHEN - must not throw despite LD0 LDevice being present
+		expect(() => {
+			buildEditsForDeleteAccessPoint({
+				accessPoint,
+				iedName: 'IED1',
+				selectedBay: bay
+			})
+		}).not.toThrow()
+
+		const edits = buildEditsForDeleteAccessPoint({
+			accessPoint,
+			iedName: 'IED1',
+			selectedBay: bay
+		})
+
+		// THEN - AccessPoint Remove edit is included
+		const apRemove = edits
+			.filter(isRemoveEdit)
+			.find((e) => (e.node as Element).tagName === 'AccessPoint')
+		expect(apRemove).toBeDefined()
+
+		// THEN - bay LNode connection for CBFunction is cleared
+		const lnodeEdits = edits.filter(
+			(e) => isSetAttributesEdit(e) && e.element.tagName === 'LNode'
+		)
+		expect(lnodeEdits.length).toBeGreaterThanOrEqual(1)
+	})
 })
