@@ -1,5 +1,5 @@
-import type { LNodeTemplate } from '@/headless/common-types'
 import type { SetAttributes } from '@openscd/oscd-api'
+import type { LNodeTemplate } from '@/headless/common-types'
 import { parseLDeviceInst } from '../elements'
 
 export function hasRemainingConnectionsAfterClearing(

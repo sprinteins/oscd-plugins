@@ -1,26 +1,26 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { applyBayType } from './apply-bay-type.action'
-import { getDocumentAndEditor } from '@/headless/utils'
-import { ssdImportStore } from '@/headless/stores'
+import type { Insert, SetAttributes, XMLEditor } from '@openscd/oscd-editor'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-	resolveMatchingContext,
+	type EquipmentMatch,
 	matchEquipmentForInitialApply,
-	type EquipmentMatch
+	resolveMatchingContext
 } from '@/headless/domain/matching'
 import {
 	buildEditForBayUpdate,
 	buildEditsForEquipmentUpdates
 } from '@/headless/scl/edits/bay-type-edits'
 import {
+	buildEditsForDataTypeTemplates,
+	ensureDataTypeTemplates
+} from '@/headless/scl/edits/data-type-edits'
+import {
 	buildInsertEditsForEqFunction,
 	buildInsertEditsForFunction
 } from '@/headless/scl/edits/function-edits'
-import {
-	ensureDataTypeTemplates,
-	buildEditsForDataTypeTemplates
-} from '@/headless/scl/edits/data-type-edits'
-import type { Insert, SetAttributes, XMLEditor } from '@openscd/oscd-editor'
+import { ssdImportStore } from '@/headless/stores'
+import { getDocumentAndEditor } from '@/headless/utils'
 import type { BayType } from '../common-types'
+import { applyBayType } from './apply-bay-type.action'
 
 vi.mock('@/headless/utils', () => ({
 	getDocumentAndEditor: vi.fn()

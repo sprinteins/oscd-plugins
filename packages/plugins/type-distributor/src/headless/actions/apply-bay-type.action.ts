@@ -1,25 +1,27 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '@/headless/common-types'
-import {
-	equipmentMatchingStore,
-	ssdImportStore,
-	bayStore
-} from '@/headless/stores'
-import { resolveMatchingContext } from '@/headless/domain/matching'
-import { matchEquipmentForInitialApply } from '@/headless/domain/matching'
 import type { EquipmentMatch } from '@/headless/domain/matching'
+import {
+	matchEquipmentForInitialApply,
+	resolveMatchingContext
+} from '@/headless/domain/matching'
 import {
 	buildEditForBayUpdate,
 	buildEditsForEquipmentUpdates
 } from '@/headless/scl/edits/bay-type-edits'
 import {
+	buildEditsForDataTypeTemplates,
+	ensureDataTypeTemplates
+} from '@/headless/scl/edits/data-type-edits'
+import {
 	buildInsertEditsForEqFunction,
 	buildInsertEditsForFunction
 } from '@/headless/scl/edits/function-edits'
 import {
-	ensureDataTypeTemplates,
-	buildEditsForDataTypeTemplates
-} from '@/headless/scl/edits/data-type-edits'
+	bayStore,
+	equipmentMatchingStore,
+	ssdImportStore
+} from '@/headless/stores'
 import { getDocumentAndEditor } from '@/headless/utils'
 
 export function applyBayType(bayName: string): EquipmentMatch[] {

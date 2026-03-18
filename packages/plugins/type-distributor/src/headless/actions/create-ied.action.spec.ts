@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { createIed } from './create-ied.action'
+import type { Insert, XMLEditor } from '@openscd/oscd-editor'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildEditForCreateIed } from '../scl'
 import { getEditor } from '../utils'
-import type { Insert, XMLEditor } from '@openscd/oscd-editor'
+import { createIed } from './create-ied.action'
 
 vi.mock('../scl', () => ({
 	buildEditForCreateIed: vi.fn()

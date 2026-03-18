@@ -1,7 +1,7 @@
-import type { LNodeTemplate } from '@/headless/common-types'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
+import type { LNodeTemplate } from '@/headless/common-types'
 import { queryLDeviceFromAccessPoint, queryLNodeInLDevice } from '../elements'
+import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
 
 interface BuildEditsForDeleteLNodeFromAccessPointParams {
 	iedName: string

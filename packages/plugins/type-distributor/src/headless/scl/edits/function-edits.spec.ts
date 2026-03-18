@@ -1,8 +1,4 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
-import {
-	buildInsertEditsForFunction,
-	buildInsertEditsForEqFunction
-} from './function-edits'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import type {
 	BayType,
 	ConductingEquipmentTemplate,
@@ -10,6 +6,10 @@ import type {
 } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { createTestDocument } from '@/headless/test-helpers'
+import {
+	buildInsertEditsForEqFunction,
+	buildInsertEditsForFunction
+} from './function-edits'
 
 vi.mock('uuid', () => ({ v4: () => 'mocked-uuid' }))
 

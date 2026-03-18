@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { parseBayTypes } from './parse-bay-types'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { parseBayTypes } from './parse-bay-types'
 
 describe('parseBayTypes', () => {
 	let doc: XMLDocument

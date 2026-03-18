@@ -1,10 +1,10 @@
+import { createElement } from '@oscd-plugins/core'
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate
 } from '@/headless/common-types'
-import { queryServer } from './server-element'
 import type { EquipmentMatch } from '@/headless/domain/matching'
-import { createElement } from '@oscd-plugins/core'
+import { queryServer } from './server-element'
 
 interface SourceFunctionParams {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate

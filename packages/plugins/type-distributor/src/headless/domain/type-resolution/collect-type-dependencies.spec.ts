@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { collectTypeDependencies } from './collect-type-dependencies'
+import { beforeEach, describe, expect, it } from 'vitest'
 import type { LNodeTemplate } from '@/headless/common-types'
+import { collectTypeDependencies } from './collect-type-dependencies'
 
 function makeSsdDoc(xml: string): XMLDocument {
 	return new DOMParser().parseFromString(

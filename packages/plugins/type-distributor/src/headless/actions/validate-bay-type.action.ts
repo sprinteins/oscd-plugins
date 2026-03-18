@@ -1,14 +1,14 @@
-import {
-	ssdImportStore,
-	equipmentMatchingStore,
-	bayStore,
-	assignedLNodesStore
-} from '@/headless/stores'
+import type { ValidationResult } from '@/headless/domain/matching'
 import {
 	resolveMatchingContext,
 	validateEquipmentMatch
 } from '@/headless/domain/matching'
-import type { ValidationResult } from '@/headless/domain/matching'
+import {
+	assignedLNodesStore,
+	bayStore,
+	equipmentMatchingStore,
+	ssdImportStore
+} from '@/headless/stores'
 
 export function validateBayType(): ValidationResult {
 	const { scdBay, bayType } = resolveMatchingContext({

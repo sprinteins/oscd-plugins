@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { isRemoveEdit } from '@/headless/test-helpers/type-guards'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createTestDocument } from '@/headless/test-helpers'
-import { buildEditForDeleteEmptyIed } from './ied-edits'
+import { isRemoveEdit } from '@/headless/test-helpers/type-guards'
 import { getDocument } from '@/headless/utils'
+import { buildEditForDeleteEmptyIed } from './ied-edits'
 
 // Mock dependencies
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({

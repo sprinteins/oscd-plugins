@@ -1,7 +1,7 @@
 <script lang="ts">
-import { Label, Input } from '@oscd-plugins/core-ui-svelte'
-import type { AccessPointData, FieldErrors } from '../form-helpers'
+import { Input, Label } from '@oscd-plugins/core-ui-svelte'
 import { FieldError } from '../form-elements'
+import type { AccessPointData, FieldErrors } from '../form-helpers'
 
 let {
 	accessPoint = $bindable({ name: '', description: '' }),

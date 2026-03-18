@@ -1,18 +1,18 @@
 import type {
-	LNodeTemplate,
 	EqFunctionTemplate,
-	FunctionTemplate
+	FunctionTemplate,
+	LNodeTemplate
 } from '@/headless/common-types'
+import { buildEditsForBayLNode } from '@/headless/scl'
+import { assignedLNodesStore, bayStore } from '@/headless/stores'
 import {
-	getBayTypeApplicationState,
-	shouldApplyBayType,
 	applyBayType,
 	buildEditsForIed,
+	commitEdits,
 	generateCommitTitle,
-	commitEdits
+	getBayTypeApplicationState,
+	shouldApplyBayType
 } from './drop-handler'
-import { assignedLNodesStore, bayStore } from '@/headless/stores'
-import { buildEditsForBayLNode } from '@/headless/scl'
 
 type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'

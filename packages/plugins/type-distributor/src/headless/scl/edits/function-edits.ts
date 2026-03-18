@@ -1,10 +1,10 @@
-import { v4 as uuidv4 } from 'uuid'
 import type { Insert } from '@openscd/oscd-api'
-import type { BayType, FunctionTemplate } from '@/headless/common-types'
 import { createElement } from '@oscd-plugins/core'
+import { v4 as uuidv4 } from 'uuid'
+import type { BayType, FunctionTemplate } from '@/headless/common-types'
+import type { EquipmentMatch } from '@/headless/domain/matching'
 import { getFunctionTemplate } from '@/headless/domain/matching'
 import { createLNodeElementInBay } from '@/headless/scl/elements/lnode-element'
-import type { EquipmentMatch } from '@/headless/domain/matching'
 
 interface BuildInsertEditsForFunctionParams {
 	doc: Document

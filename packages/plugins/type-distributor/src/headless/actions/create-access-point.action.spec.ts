@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { createAccessPoint } from './create-access-point.action'
+import type { XMLEditor } from '@openscd/oscd-editor'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildEditsForCreateAccessPoint } from '../scl'
 import { getEditor } from '../utils'
-import type { XMLEditor } from '@openscd/oscd-editor'
+import { createAccessPoint } from './create-access-point.action'
 
 vi.mock('../scl', () => ({
 	buildEditsForCreateAccessPoint: vi.fn()

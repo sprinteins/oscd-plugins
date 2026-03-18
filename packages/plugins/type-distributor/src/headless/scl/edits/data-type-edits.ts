@@ -1,6 +1,6 @@
 import type { Insert } from '@openscd/oscd-api'
-import type { LNodeTemplate } from '@/headless/common-types'
 import { createElement } from '@oscd-plugins/core'
+import type { LNodeTemplate } from '@/headless/common-types'
 import {
 	collectTypeDependencies,
 	type TypeCollections

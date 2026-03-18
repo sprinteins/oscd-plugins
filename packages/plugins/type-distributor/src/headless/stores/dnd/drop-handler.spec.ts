@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { applyBayType as applyBayTypeAction } from '@/headless/actions'
+import { bayStore } from '../bay.store.svelte'
+import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
+import { ssdImportStore } from '../ssd-import.store.svelte'
 import {
 	applyBayType,
 	generateCommitTitle,
 	getBayTypeApplicationState,
 	shouldApplyBayType
 } from './drop-handler'
-import { ssdImportStore } from '../ssd-import.store.svelte'
-import { bayStore } from '../bay.store.svelte'
-import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
-import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 
 vi.mock('../ssd-import.store.svelte', () => ({
 	ssdImportStore: {

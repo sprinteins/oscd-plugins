@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { resolveMatchingContext } from './resolve-matching-context'
+import { describe, expect, it } from 'vitest'
 import type { BayType } from '@/headless/common-types'
+import { resolveMatchingContext } from './resolve-matching-context'
 
 const bayTypeA: BayType = {
 	uuid: 'bt-uuid-A',

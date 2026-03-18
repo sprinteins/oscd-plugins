@@ -1,15 +1,14 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { validateBayType } from './validate-bay-type.action'
-import {
-	ssdImportStore,
-	equipmentMatchingStore,
-	bayStore,
-	assignedLNodesStore
-} from '@/headless/stores'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
 	resolveMatchingContext,
 	validateEquipmentMatch
 } from '@/headless/domain/matching'
+import {
+	bayStore,
+	equipmentMatchingStore,
+	ssdImportStore
+} from '@/headless/stores'
+import { validateBayType } from './validate-bay-type.action'
 
 const mockAssignedLNodesStore = vi.hoisted(() => ({
 	hasConnections: false

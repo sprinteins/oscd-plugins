@@ -1,17 +1,17 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
+import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 import type {
-	LNodeTemplate,
 	EqFunctionTemplate,
-	FunctionTemplate
+	FunctionTemplate,
+	LNodeTemplate
 } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
-import { applyBayType as applyBayTypeAction } from '@/headless/actions'
-import { ssdImportStore } from '../ssd-import.store.svelte'
-import { getBayTypeWithTemplates } from '../bay-types.utils'
-import { bayStore } from '../bay.store.svelte'
-import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
-import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 import { createMultipleLNodesInAccessPoint } from '@/headless/scl'
+import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
+import { bayStore } from '../bay.store.svelte'
+import { getBayTypeWithTemplates } from '../bay-types.utils'
+import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
+import { ssdImportStore } from '../ssd-import.store.svelte'
 
 type BayTypeApplicationState = {
 	hasAssignedBayType: boolean

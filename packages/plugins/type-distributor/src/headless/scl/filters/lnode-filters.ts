@@ -1,5 +1,5 @@
 import type { LNodeTemplate } from '@/headless/common-types'
-import type { IEDData, FilteredIED, FilteredAccessPoint } from './types'
+import type { FilteredAccessPoint, FilteredIED, IEDData } from './types'
 
 function matchesLNode(lNode: LNodeTemplate, term: string): boolean {
 	return (

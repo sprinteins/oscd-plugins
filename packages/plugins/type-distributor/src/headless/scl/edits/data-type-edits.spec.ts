@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
-import {
-	ensureDataTypeTemplates,
-	buildEditsForDataTypeTemplates
-} from './data-type-edits'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { LNodeTemplate } from '@/headless/common-types'
+import {
+	buildEditsForDataTypeTemplates,
+	ensureDataTypeTemplates
+} from './data-type-edits'
 
 vi.mock('uuid', () => ({ v4: () => 'mocked-uuid' }))
 

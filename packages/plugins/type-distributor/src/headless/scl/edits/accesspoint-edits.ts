@@ -1,6 +1,6 @@
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import type { Insert, Remove, SetAttributes } from '@openscd/oscd-api'
 import { createElement } from '@oscd-plugins/core'
-import type { Insert } from '@openscd/oscd-api'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate,
@@ -12,13 +12,12 @@ import {
 	createLDeviceElement,
 	createLNodeElementInIED,
 	createServerElementWithAuth,
+	isLNodePresentInDevice,
 	queryLDevice,
-	queryServer,
-	isLNodePresentInDevice
+	queryServer
 } from '../elements'
-import type { Remove, SetAttributes } from '@openscd/oscd-api'
+import { queryIedElement, queryLNodesFromAccessPoint } from '../queries'
 import { buildEditsForClearingBayLNodeConnections } from './bay-connections.helper'
-import { queryLNodesFromAccessPoint, queryIedElement } from '../queries'
 
 function ensureServer(
 	accessPoint: Element,
