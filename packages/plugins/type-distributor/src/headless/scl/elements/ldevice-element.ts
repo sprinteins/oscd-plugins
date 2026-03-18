@@ -11,6 +11,7 @@ import { createLNodeElementInIED } from './lnode-element'
 
 const LD0_INSTANCE = 'LD0'
 const EXCLUDED_LNODE_CLASSES = new Set(['LGOS', 'LSVS'])
+const UUID_PREFIX_REGEX = /^[0-9a-f]{8}$/i
 
 export function createLD0LNodeTemplates(
 	lnodeTypes: LNodeType[]
@@ -95,50 +96,55 @@ function extractFunctionNames({
 	return { functionName, functionUuid, conductingEquipmentName }
 }
 
+export function uuidToPrefix(uuid: string): string {
+	return uuid.replace(/-/g, '').substring(0, 8)
+}
+
 function generateLDeviceInst(
 	functionName: string,
 	functionUuid: string,
 	conductingEquipmentName?: string
 ): string {
-	if (conductingEquipmentName) {
-		return `${conductingEquipmentName}_${functionName}_${functionUuid}`
+	const prefix = uuidToPrefix(functionUuid)
+
+	if (conductingEquipmentName?.includes('_') || functionName.includes('_')) {
+		console.warn(
+			`Generated LDevice inst for function "${functionName}" with conducting equipment "${conductingEquipmentName}" contains underscores. This may lead to parsing issues later on. Consider renaming the function or equipment to avoid underscores.`
+		)
 	}
-	return `${functionName}_${functionUuid}`
+
+	if (conductingEquipmentName) {
+		return `${conductingEquipmentName}_${functionName}_${prefix}`
+	}
+	return `${functionName}_${prefix}`
 }
 
 export function parseLDeviceInst(lDeviceInst: string): {
 	equipmentName: string | null
 	functionName: string
-	functionUuid: string | null
+	functionPrefixUuid: string
 } {
 	const parts = lDeviceInst.split('_')
+	const lastPart = parts[parts.length - 1]
 
-	if (parts.length >= 3) {
-		// Schema: Eq.Name_EqFunction.Name_EqFunction.Uuid
-		const functionUuid = parts[parts.length - 1]
-		const functionName = parts[parts.length - 2]
-		const equipmentName = parts.slice(0, parts.length - 2).join('_')
-		return {
-			equipmentName: equipmentName || null,
-			functionName,
-			functionUuid
-		}
+	if (parts.length < 2 || !UUID_PREFIX_REGEX.test(lastPart)) {
+		throw new Error(`Invalid LDevice inst format: ${lDeviceInst}`)
 	}
 
-	if (parts.length === 2) {
-		// Schema: EqFunction.Name_EqFunction.Uuid
-		return {
-			equipmentName: null,
-			functionName: parts[0],
-			functionUuid: parts[1]
-		}
+	if (parts.length > 3) {
+		console.warn(
+			`Unexpected format for LDevice inst "${lDeviceInst}". Expected format is either FunctionName_UUID or EquipmentName_FunctionName_UUID. Equipment name will be parsed as everything before the last two segments.`
+		)
 	}
 
-	// No underscore – bare name (legacy fallback)
+	const functionPrefixUuid = lastPart
+	const functionName = parts[parts.length - 2]
+	const equipmentName =
+		parts.length >= 3 ? parts.slice(0, parts.length - 2).join('_') : null
 	return {
-		equipmentName: null,
-		functionName: lDeviceInst,
-		functionUuid: null
+		equipmentName,
+		functionName,
+		functionPrefixUuid
 	}
 }
 

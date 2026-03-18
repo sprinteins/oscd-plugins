@@ -173,137 +173,56 @@ describe('createLD0Element', () => {
 })
 
 describe('parseLDeviceInst', () => {
-	it('GIVEN no underscore WHEN called THEN returns bare name as functionName with no equipmentName', () => {
-		const result = parseLDeviceInst('FunctionOnly')
-		expect(result.equipmentName).toBeNull()
-		expect(result.functionName).toBe('FunctionOnly')
-		expect(result.functionUuid).toBeNull()
+	it('GIVEN no underscore WHEN called THEN throws invalid format error', () => {
+		expect(() => parseLDeviceInst('FunctionOnly')).toThrow(
+			'Invalid LDevice inst format: FunctionOnly'
+		)
 	})
 
-	it('GIVEN FunctionName_UUID schema WHEN called THEN returns functionName and no equipmentName', () => {
-		const result = parseLDeviceInst(
-			'Protection_550e8400-e29b-41d4-a716-446655440000'
-		)
+	it('GIVEN FunctionName_UuidPrefix schema WHEN called THEN returns functionName and uuid prefix with no equipmentName', () => {
+		const result = parseLDeviceInst('Protection_550e8400')
 		expect(result.equipmentName).toBeNull()
 		expect(result.functionName).toBe('Protection')
-		expect(result.functionUuid).toBe('550e8400-e29b-41d4-a716-446655440000')
+		expect(result.functionPrefixUuid).toBe('550e8400')
 	})
 
-	it('GIVEN Eq_Function_UUID schema WHEN called THEN returns equipmentName and functionName', () => {
-		const result = parseLDeviceInst(
-			'CB1_CBFunction_550e8400-e29b-41d4-a716-446655440000'
-		)
+	it('GIVEN Eq_Function_UuidPrefix schema WHEN called THEN returns equipmentName and functionName', () => {
+		const result = parseLDeviceInst('CB1_CBFunction_b4e3f901')
 		expect(result.equipmentName).toBe('CB1')
 		expect(result.functionName).toBe('CBFunction')
-		expect(result.functionUuid).toBe('550e8400-e29b-41d4-a716-446655440000')
+		expect(result.functionPrefixUuid).toBe('b4e3f901')
 	})
 
 	it('GIVEN equipment name with underscore WHEN called THEN joins extra segments into equipmentName', () => {
-		const result = parseLDeviceInst(
-			'CB_1_CBFunction_550e8400-e29b-41d4-a716-446655440000'
-		)
+		const result = parseLDeviceInst('CB_1_CBFunction_b4e3f901')
 		expect(result.equipmentName).toBe('CB_1')
 		expect(result.functionName).toBe('CBFunction')
-		expect(result.functionUuid).toBe('550e8400-e29b-41d4-a716-446655440000')
+		expect(result.functionPrefixUuid).toBe('b4e3f901')
 	})
 
-	it('GIVEN LD0_APname schema WHEN called THEN returns null equipmentName and LD0 as functionName', () => {
-		const result = parseLDeviceInst('LD0_S1-AP')
-		expect(result.equipmentName).toBeNull()
-		expect(result.functionName).toBe('LD0')
-		expect(result.functionUuid).toBe('S1-AP')
-	})
-})
-
-describe('createLDeviceElement', () => {
-	const sourceFunction = { uuid: 'fn-uuid', name: 'TestFunction', lnodes: [] }
-	const params = {
-		sourceFunction,
-		equipmentUuid: undefined,
-		equipmentMatches: [],
-		iedName: 'TestIED'
-	}
-
-	afterEach(() => {
-		vi.restoreAllMocks()
+	it('GIVEN function name with underscore WHEN called THEN treats leading part as equipmentName for later runtime disambiguation', () => {
+		const result = parseLDeviceInst('Pro_tection_c0ffee01')
+		expect(result.equipmentName).toBe('Pro')
+		expect(result.functionName).toBe('tection')
+		expect(result.functionPrefixUuid).toBe('c0ffee01')
 	})
 
-	it('GIVEN no lnodeTypes WHEN called THEN creates LDevice with correct inst and ldName and no children', () => {
-		const lDevice = createLDeviceElement(DOC, params)
-
-		expect(lDevice.getAttribute('inst')).toBe('TestFunction_fn-uuid')
-		expect(lDevice.getAttribute('ldName')).toBe(
-			'TestIED_TestFunction_fn-uuid'
+	it('GIVEN LD0_APname schema WHEN called THEN throws invalid format error', () => {
+		expect(() => parseLDeviceInst('LD0_S1-AP')).toThrow(
+			'Invalid LDevice inst format: LD0_S1-AP'
 		)
-		expect(lDevice.children).toHaveLength(0)
-	})
-
-	describe('GIVEN lnodeTypes containing LLN0', () => {
-		const lnodeTypes: LNodeType[] = [makeLNodeType('LLN0', LLN0_TYPE_ID)]
-
-		it('WHEN called THEN LDevice has an LN0 child', () => {
-			const lDevice = createLDeviceElement(DOC, { ...params, lnodeTypes })
-
-			expect(lDevice.querySelector('LN0')).not.toBeNull()
-		})
-
-		it('WHEN called THEN LN0 has lnClass="LLN0"', () => {
-			const lDevice = createLDeviceElement(DOC, { ...params, lnodeTypes })
-
-			expect(lDevice.querySelector('LN0')?.getAttribute('lnClass')).toBe(
-				'LLN0'
-			)
-		})
-
-		it('WHEN called THEN LN0 has lnType from the LLN0 type id', () => {
-			const lDevice = createLDeviceElement(DOC, { ...params, lnodeTypes })
-
-			expect(lDevice.querySelector('LN0')?.getAttribute('lnType')).toBe(
-				LLN0_TYPE_ID
-			)
-		})
-
-		it('WHEN called THEN LN0 has lnInst as empty string', () => {
-			const lDevice = createLDeviceElement(DOC, { ...params, lnodeTypes })
-
-			expect(lDevice.querySelector('LN0')?.getAttribute('lnInst')).toBe(
-				''
-			)
-		})
-	})
-
-	describe('GIVEN lnodeTypes without LLN0', () => {
-		const lnodeTypes: LNodeType[] = [makeLNodeType('LPHD')]
-
-		it('WHEN called THEN LDevice has no LN0 child', () => {
-			const lDevice = createLDeviceElement(DOC, { ...params, lnodeTypes })
-
-			expect(lDevice.querySelector('LN0')).toBeNull()
-		})
-
-		it('WHEN called THEN emits a console.warn', () => {
-			const warnSpy = vi
-				.spyOn(console, 'warn')
-				.mockImplementation(() => {})
-
-			createLDeviceElement(DOC, { ...params, lnodeTypes })
-
-			expect(warnSpy).toHaveBeenCalledOnce()
-		})
-	})
-
-	it('GIVEN lnodeTypes is undefined WHEN called THEN LDevice has no children', () => {
-		const lDevice = createLDeviceElement(DOC, {
-			...params,
-			lnodeTypes: undefined
-		})
-
-		expect(lDevice.children).toHaveLength(0)
 	})
 })
 
 describe('createLDeviceElement', () => {
-	const sourceFunction = { uuid: 'fn-uuid', name: 'TestFunction', lnodes: [] }
+	// UUID: 550e8400-e29b-41d4-a716-446655440000 → prefix: 550e8400
+	const FUNCTION_UUID = '550e8400-e29b-41d4-a716-446655440000'
+	const FUNCTION_UUID_PREFIX = '550e8400'
+	const sourceFunction = {
+		uuid: FUNCTION_UUID,
+		name: 'TestFunction',
+		lnodes: []
+	}
 	const params = {
 		sourceFunction,
 		equipmentUuid: undefined,
@@ -315,12 +234,14 @@ describe('createLDeviceElement', () => {
 		vi.restoreAllMocks()
 	})
 
-	it('GIVEN no lnodeTypes WHEN called THEN creates LDevice with correct inst and ldName and no children', () => {
+	it('GIVEN no lnodeTypes WHEN called THEN creates LDevice with 8-char uuid prefix inst and ldName and no children', () => {
 		const lDevice = createLDeviceElement(DOC, params)
 
-		expect(lDevice.getAttribute('inst')).toBe('TestFunction_fn-uuid')
+		expect(lDevice.getAttribute('inst')).toBe(
+			`TestFunction_${FUNCTION_UUID_PREFIX}`
+		)
 		expect(lDevice.getAttribute('ldName')).toBe(
-			'TestIED_TestFunction_fn-uuid'
+			`TestIED_TestFunction_${FUNCTION_UUID_PREFIX}`
 		)
 		expect(lDevice.children).toHaveLength(0)
 	})

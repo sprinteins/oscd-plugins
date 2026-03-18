@@ -63,8 +63,9 @@ const lnodeTemplate: LNodeTemplate = {
 	lnInst: '1'
 }
 
+// UUID prefix: 550e8400 (first 8 hex chars after stripping hyphens)
 const functionTemplate: FunctionTemplate = {
-	uuid: 'func-template-uuid',
+	uuid: '550e8400-e29b-41d4-a716-446655440000',
 	name: 'CBFunction',
 	desc: 'Circuit Breaker Function',
 	lnodes: [lnodeTemplate]
@@ -163,9 +164,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 
 			const [lDeviceEl] = collectEditsByTag(edits, 'LDevice')
 			expect(lDeviceEl).toBeDefined()
-			expect(lDeviceEl.getAttribute('inst')).toBe(
-				'CBFunction_func-template-uuid'
-			)
+			expect(lDeviceEl.getAttribute('inst')).toBe('CBFunction_550e8400')
 		})
 
 		it('WHEN creating lNodes with ConductingEquipmentTemplate THEN LDevice inst is equipmentName_functionName_uuid', () => {
@@ -179,7 +178,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 
 			const [lDeviceEl] = collectEditsByTag(edits, 'LDevice')
 			expect(lDeviceEl.getAttribute('inst')).toBe(
-				'CircuitBreaker1_CBFunction_func-template-uuid'
+				'CircuitBreaker1_CBFunction_550e8400'
 			)
 		})
 
@@ -207,7 +206,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 
 			const [lDeviceEl] = collectEditsByTag(edits, 'LDevice')
 			expect(lDeviceEl.getAttribute('inst')).toBe(
-				'ScdBreaker42_CBFunction_func-template-uuid'
+				'ScdBreaker42_CBFunction_550e8400'
 			)
 		})
 
@@ -318,7 +317,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			appendServerWithLDevice(
 				mockDocument,
 				accessPoint,
-				'CBFunction_func-template-uuid'
+				'CBFunction_550e8400'
 			)
 		})
 
@@ -353,7 +352,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const { lDevice } = appendServerWithLDevice(
 				mockDocument,
 				accessPoint,
-				'CBFunction_func-template-uuid'
+				'CBFunction_550e8400'
 			)
 			const ln = mockDocument.createElement('LN')
 			ln.setAttribute('lnClass', 'XCBR')
@@ -384,7 +383,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const { lDevice } = appendServerWithLDevice(
 				mockDocument,
 				accessPoint,
-				'CBFunction_func-template-uuid'
+				'CBFunction_550e8400'
 			)
 			const existingLN = mockDocument.createElement('LN')
 			existingLN.setAttribute('lnClass', 'XCBR')
@@ -478,7 +477,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			accessPoint.appendChild(server)
 
 			const lDevice = mockDocument.createElement('LDevice')
-			lDevice.setAttribute('inst', 'CBFunction_func-template-uuid')
+			lDevice.setAttribute('inst', 'CBFunction_550e8400')
 			server.appendChild(lDevice)
 
 			const existingLN = mockDocument.createElement('LN')
@@ -567,7 +566,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const { lDevice } = appendServerWithLDevice(
 				mockDocument,
 				accessPoint,
-				'CBFunction_func-template-uuid'
+				'CBFunction_550e8400'
 			)
 			const existingLN0 = mockDocument.createElement('LN0')
 			existingLN0.setAttribute('lnClass', 'LLN0')

@@ -36,12 +36,12 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
     <AccessPoint name="P1">
       <Server>
         <Authentication none="true"/>
-        <LDevice inst="CBFunction">
+        <LDevice inst="CBFunction_aa11bb22">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
           <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
           <LN lnClass="CSWI" lnInst="1" lnType="TestCSWI"/>
         </LDevice>
-        <LDevice inst="QA1_Protection_eq-func-uuid-1">
+        <LDevice inst="QA1_Protection_a7f3b2c1">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
           <LN lnClass="PTRC" lnInst="1" lnType="TestPTRC"/>
         </LDevice>
@@ -72,14 +72,14 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
     <VoltageLevel name="VL1">
       <Bay name="Bay1" templateUuid="baytype-uuid-1">
         <!-- Function with LNodes -->
-        <Function name="CBFunction" templateUuid="func-uuid-1">
-          <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1" ldInst="CBFunction"/>
-          <LNode lnClass="CSWI" lnType="TestCSWI" lnInst="1" iedName="IED1" ldInst="CBFunction"/>
+        <Function name="CBFunction" uuid="aa11bb22-0000-0000-0000-000000000000" templateUuid="func-uuid-1">
+          <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1" ldInst="CBFunction_aa11bb22"/>
+          <LNode lnClass="CSWI" lnType="TestCSWI" lnInst="1" iedName="IED1" ldInst="CBFunction_aa11bb22"/>
         </Function>
         <!-- Equipment with EqFunction -->
         <ConductingEquipment name="QA1" type="CBR" templateUuid="eq-uuid-1">
-          <EqFunction name="Protection" uuid="eq-func-uuid-1">
-            <LNode lnClass="PTRC" lnType="TestPTRC" lnInst="1" iedName="IED1" ldInst="QA1_Protection_eq-func-uuid-1"/>
+          <EqFunction name="Protection" uuid="a7f3b2c1-9d8e-4f5a-b6c7-3d8e9f1a2b3c">
+            <LNode lnClass="PTRC" lnType="TestPTRC" lnInst="1" iedName="IED1" ldInst="QA1_Protection_a7f3b2c1"/>
           </EqFunction>
         </ConductingEquipment>
       </Bay>
@@ -356,10 +356,10 @@ describe('buildEditsForDeleteAccessPoint', () => {
   <IED name="BCU">
     <AccessPoint name="AP1">
       <Server>
-        <LDevice inst="-QC2_DisconnectorFunction_7e3d9a4f-6b8c-4a1f-9e5d-3c7b8f2d4e9a">
+        <LDevice inst="-QC2_DisconnectorFunction_7e3d9a4f">
           <LN lnClass="XSWI" lnInst="1" lnType="XSWI$oscd$_5114e81752706b92"/>
         </LDevice>
-        <LDevice inst="-QB92_DisconnectorFunction_3d7b8f2c-4e9a-4d6e-9a1f-5a9d7c8b4f3e">
+        <LDevice inst="-QB92_DisconnectorFunction_3d7b8f2c">
           <LN lnClass="XSWI" lnInst="1" lnType="XSWI$oscd$_5114e81752706b92"/>
         </LDevice>
       </Server>
@@ -474,7 +474,7 @@ describe('buildEditsForDeleteAccessPoint', () => {
   <IED name="IED1">
     <AccessPoint name="P1">
       <Server>
-        <LDevice inst="-CEQ2_DisconnectorFunction_ceq2-fn-uuid">
+        <LDevice inst="-CEQ2_DisconnectorFunction_a1b2c3d4">
           <LN lnClass="XSWI" lnInst="1" lnType="XSWI$type"/>
         </LDevice>
       </Server>
@@ -484,8 +484,8 @@ describe('buildEditsForDeleteAccessPoint', () => {
     <VoltageLevel>
       <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
         <ConductingEquipment name="-CEQ2" type="DIS" uuid="equip-uuid-2" templateUuid="tpl-uuid-2" originUuid="orig-uuid-2">
-          <EqFunction name="DisconnectorFunction" uuid="ceq2-fn-uuid">
-            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction_ceq2-fn-uuid"/>
+          <EqFunction name="DisconnectorFunction" uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
+            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction_a1b2c3d4"/>
           </EqFunction>
         </ConductingEquipment>
         <ConductingEquipment name="-CEQ3" type="CBR" uuid="equip-uuid-3" templateUuid="tpl-uuid-3" originUuid="orig-uuid-3">
