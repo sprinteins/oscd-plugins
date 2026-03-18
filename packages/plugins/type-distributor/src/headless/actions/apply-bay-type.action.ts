@@ -47,7 +47,13 @@ export function applyBayType(bayName: string): EquipmentMatch[] {
 		doc.querySelectorAll('Function, EqFunction')
 	)
 
-	edits.push(...buildInsertsForEqFunction(doc, matches, existingPrefixes))
+	edits.push(
+		...buildInsertsForEqFunction({
+			doc,
+			matches,
+			prefixes: existingPrefixes
+		})
+	)
 	edits.push(
 		...buildInsertsForFunction({
 			doc,

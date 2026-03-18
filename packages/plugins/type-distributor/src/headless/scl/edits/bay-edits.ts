@@ -7,11 +7,17 @@ import type {
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { bayStore } from '@/headless/stores'
 
-export function resolveScdEqFunctionUuid(
-	sourceFunction: EqFunctionTemplate | FunctionTemplate,
-	equipmentUuid: string | undefined,
+interface ResolveScdEqFunctionUuidParams {
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
+	equipmentUuid: string | undefined
 	equipmentMatches: EquipmentMatch[]
-): string | undefined {
+}
+
+export function resolveScdEqFunctionUuid({
+	sourceFunction,
+	equipmentUuid,
+	equipmentMatches
+}: ResolveScdEqFunctionUuidParams): string | undefined {
 	if (!equipmentUuid) return undefined
 
 	const match = equipmentMatches.find(
@@ -31,6 +37,18 @@ export function resolveScdEqFunctionUuid(
 		)
 	)
 	return scdEqFunctions[templateIndex]?.getAttribute('uuid') ?? undefined
+}
+
+export function resolveScdFunctionUuid(
+	sourceFunction: FunctionTemplate
+): string | undefined {
+	const scdBay = bayStore.scdBay
+	if (!scdBay) return undefined
+
+	const funcEl = scdBay.querySelector(
+		`:scope > Function[originUuid="${sourceFunction.uuid}"]`
+	)
+	return funcEl?.getAttribute('uuid') ?? undefined
 }
 
 type FindMatchingLNodeElementParams = {

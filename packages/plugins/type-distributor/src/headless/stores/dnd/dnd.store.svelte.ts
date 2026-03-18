@@ -19,7 +19,8 @@ import {
 import {
 	buildUpdatesForBayLNode,
 	createMultipleLNodesInAccessPoint,
-	resolveScdEqFunctionUuid
+	resolveScdEqFunctionUuid,
+	resolveScdFunctionUuid
 } from '@/headless/scl'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 
@@ -96,11 +97,13 @@ class UseDndStore {
 
 			const { doc } = getDocumentAndEditor()
 			const lnodeTypes = ssdImportStore.lnodeTypes
-			const functionUuidOverride = resolveScdEqFunctionUuid(
-				functionFromSSD,
-				equipmentUuid,
-				equipmentMatches
-			)
+			const functionUuidOverride = equipmentUuid
+				? resolveScdEqFunctionUuid({
+						sourceFunction: functionFromSSD,
+						equipmentUuid,
+						equipmentMatches
+					})
+				: resolveScdFunctionUuid(functionFromSSD as FunctionTemplate)
 			const allEdits: (Insert | SetAttributes)[] = [
 				...createMultipleLNodesInAccessPoint({
 					sourceFunction: functionFromSSD,

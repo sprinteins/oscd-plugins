@@ -8,9 +8,15 @@ import type { EquipmentMatch } from '@/headless/domain/matching'
 import { uuidToPrefix } from '@/headless/scl/elements'
 
 function generateUniquePrefixUuid(existingPrefixes: Set<string>): string {
-	let uuid = uuidv4()
-	while (existingPrefixes.has(uuidToPrefix(uuid))) {
+	let uuid: string
+	let i = 0
+	do {
 		uuid = uuidv4()
+		i++
+	} while (existingPrefixes.has(uuidToPrefix(uuid)) || i > 1000)
+
+	if (i > 1000) {
+		throw new Error('Unable to generate unique UUID after 1000 attempts')
 	}
 	return uuid
 }
@@ -86,11 +92,17 @@ export function buildInsertsForFunction({
 	return inserts
 }
 
-export function buildInsertsForEqFunction(
-	doc: Document,
-	matches: EquipmentMatch[],
+interface BuildInsertsForEqFunctionParams {
+	doc: Document
+	matches: EquipmentMatch[]
 	prefixes: Set<string>
-): Insert[] {
+}
+
+export function buildInsertsForEqFunction({
+	doc,
+	matches,
+	prefixes
+}: BuildInsertsForEqFunctionParams): Insert[] {
 	const inserts: Insert[] = []
 
 	for (const match of matches) {

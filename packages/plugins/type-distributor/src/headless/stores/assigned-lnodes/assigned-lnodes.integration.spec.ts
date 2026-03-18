@@ -25,7 +25,8 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 
 vi.mock('@/headless/scl', () => ({
 	createMultipleLNodesInAccessPoint: vi.fn(() => []),
-	resolveScdEqFunctionUuid: vi.fn(() => undefined)
+	resolveScdEqFunctionUuid: vi.fn(() => undefined),
+	resolveScdFunctionUuid: vi.fn(() => undefined)
 }))
 
 // Mock the entire drop-handler module to avoid real execution

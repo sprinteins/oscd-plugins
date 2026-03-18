@@ -157,7 +157,11 @@ describe('buildInsertsForEqFunction', () => {
 				templateEquipment: ceTemplate
 			}
 
-			const edits = buildInsertsForEqFunction(doc, [match], new Set())
+			const edits = buildInsertsForEqFunction({
+				doc,
+				matches: [match],
+				prefixes: new Set()
+			})
 
 			expect(edits).toHaveLength(1)
 			const insert = edits[0]
@@ -188,7 +192,11 @@ describe('buildInsertsForEqFunction', () => {
 				templateEquipment: { ...ceTemplate, eqFunctions: [] }
 			}
 
-			const edits = buildInsertsForEqFunction(doc, [match], new Set())
+			const edits = buildInsertsForEqFunction({
+				doc,
+				matches: [match],
+				prefixes: new Set()
+			})
 
 			expect(edits).toHaveLength(0)
 		})
@@ -197,9 +205,13 @@ describe('buildInsertsForEqFunction', () => {
 	describe('GIVEN an empty matches list', () => {
 		it('WHEN called THEN it returns an empty array', () => {
 			const doc = createTestDocument('<SCL/>')
-			expect(buildInsertsForEqFunction(doc, [], new Set())).toHaveLength(
-				0
-			)
+			expect(
+				buildInsertsForEqFunction({
+					doc,
+					matches: [],
+					prefixes: new Set()
+				})
+			).toHaveLength(0)
 		})
 	})
 })
