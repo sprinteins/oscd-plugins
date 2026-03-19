@@ -11,6 +11,7 @@ import inlineShadCnAdaptation from '$lib/theme/styles/shadcn-adaptation-to-insta
 import { Toaster } from '$lib/ui/shadcn/sonner/index.js'
 // UTILS
 import { setInlineStylesVariables } from '$lib/utils/style.js'
+import { buildOscdShadcnThemeVars } from '$lib/theme/oscd-to-shadcn.theme.js'
 // HEADLESS
 import { pluginGlobalStore } from '$lib/headless/stores/index.js'
 // TYPES
@@ -245,12 +246,18 @@ export function initPlugin(
 			inlineShadCnAdaptation &&
 			cssVariables
 		) {
+			const oscdVarsOverride =
+				params.theme === 'legacy-oscd-instance'
+					? buildOscdShadcnThemeVars()
+					: ''
+
 			style = document.createElement('style')
 			style.setAttribute('id', 'plugin-style')
 			node.insertAdjacentElement('beforebegin', style)
 
 			style.innerHTML = `
 				${selectedTheme}
+				${oscdVarsOverride}
 				${inlineCssFonts}
 				${inlineShadCnAdaptation}
 				main {
