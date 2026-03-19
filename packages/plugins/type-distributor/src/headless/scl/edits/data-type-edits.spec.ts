@@ -90,14 +90,12 @@ describe('buildInsertsForDataTypeTemplates', () => {
 		})
 
 		it('WHEN called THEN it returns Insert edits for every missing type', () => {
-			const edits = buildInsertsForDataTypeTemplates(
-				{
-					doc: scdDoc,
-					dataTypeTemplates,
-					lnodeTemplates: [lnodeTemplate],
-					ssdDoc
-				}
-			)
+			const edits = buildInsertsForDataTypeTemplates({
+				doc: scdDoc,
+				dataTypeTemplates,
+				lnodeTemplates: [lnodeTemplate],
+				ssdDoc
+			})
 
 			// Expect 5 types: XCBR1, ENC_Mod, Originator, CtlModels, OriginatorKind
 			expect(edits.length).toBe(5)

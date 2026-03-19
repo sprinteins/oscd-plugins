@@ -72,7 +72,8 @@ describe('buildInsertsForFunction', () => {
 				doc,
 				bayType,
 				scdBay,
-				functionTemplates: [funcTemplate]
+				functionTemplates: [funcTemplate],
+				existingPrefixes: new Set()
 			})
 
 			expect(edits).toHaveLength(1)
@@ -93,7 +94,8 @@ describe('buildInsertsForFunction', () => {
 				doc,
 				bayType,
 				scdBay,
-				functionTemplates: [funcTemplate]
+				functionTemplates: [funcTemplate],
+				existingPrefixes: new Set()
 			})
 
 			expect(edits[0].reference).not.toBeNull()
@@ -108,7 +110,8 @@ describe('buildInsertsForFunction', () => {
 				doc,
 				bayType,
 				scdBay,
-				functionTemplates: []
+				functionTemplates: [],
+				existingPrefixes: new Set()
 			})
 
 			expect(edits).toHaveLength(0)
@@ -123,7 +126,8 @@ describe('buildInsertsForFunction', () => {
 				doc,
 				bayType: { ...bayType, functions: [] },
 				scdBay,
-				functionTemplates: [funcTemplate]
+				functionTemplates: [funcTemplate],
+				existingPrefixes: new Set()
 			})
 
 			expect(edits).toHaveLength(0)
@@ -153,7 +157,11 @@ describe('buildInsertsForEqFunction', () => {
 				templateEquipment: ceTemplate
 			}
 
-			const edits = buildInsertsForEqFunction(doc, [match])
+			const edits = buildInsertsForEqFunction({
+				doc,
+				matches: [match],
+				prefixes: new Set()
+			})
 
 			expect(edits).toHaveLength(1)
 			const insert = edits[0]
@@ -184,7 +192,11 @@ describe('buildInsertsForEqFunction', () => {
 				templateEquipment: { ...ceTemplate, eqFunctions: [] }
 			}
 
-			const edits = buildInsertsForEqFunction(doc, [match])
+			const edits = buildInsertsForEqFunction({
+				doc,
+				matches: [match],
+				prefixes: new Set()
+			})
 
 			expect(edits).toHaveLength(0)
 		})
@@ -193,7 +205,13 @@ describe('buildInsertsForEqFunction', () => {
 	describe('GIVEN an empty matches list', () => {
 		it('WHEN called THEN it returns an empty array', () => {
 			const doc = createTestDocument('<SCL/>')
-			expect(buildInsertsForEqFunction(doc, [])).toHaveLength(0)
+			expect(
+				buildInsertsForEqFunction({
+					doc,
+					matches: [],
+					prefixes: new Set()
+				})
+			).toHaveLength(0)
 		})
 	})
 })

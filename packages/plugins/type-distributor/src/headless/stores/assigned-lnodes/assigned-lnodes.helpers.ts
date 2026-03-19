@@ -127,11 +127,17 @@ export function processEqFunctions({
 		}
 
 		const parentUuid = equipmentMatch.bayTypeEquipment.uuid
-		const functionScopeUuid =
-			equipmentMatch.templateEquipment.eqFunctions.find(
-				(templateEqFunction: EqFunctionTemplate) =>
-					templateEqFunction.name === eqFuncName
-			)?.uuid ?? null
+		const allScdEqFunctionsWithName = Array.from(
+			equipment.querySelectorAll(
+				`:scope > EqFunction[name="${eqFuncName}"]`
+			)
+		)
+		const indexInScd = allScdEqFunctionsWithName.indexOf(eqFunc)
+		const sameNameTemplates =
+			equipmentMatch.templateEquipment.eqFunctions.filter(
+				(f: EqFunctionTemplate) => f.name === eqFuncName
+			)
+		const functionScopeUuid = sameNameTemplates[indexInScd]?.uuid ?? null
 
 		if (!functionScopeUuid) {
 			console.warn(

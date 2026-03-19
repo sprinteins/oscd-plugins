@@ -5,19 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-03-19
 ### Added
 - Added automatic ld0 creation to the accespoints. It will include all l-class lnodes except LGOS and LSVS.
 - Added automatic lln0 creation to the ldevice when it is created.
 - Allow user to reopen equipment matching panel before the first lnode assignment
 - Added validation for IedName: min-max 1-64 chars, start with letter, only alphanumeric, can not be "None"
+- `LDevice` elements now receive a `ldName` attribute set to `IedName_inst` on creation.
+- `LD0` inst and ldName now encode the access point name: `LD0_APname` / `IedName_LD0_APname`.
 ### Changed
 - Better form handling for the creation of IEDs and AccessPoints. Show dedicated errors below the input fields.
 - Do not allow deleting of LD0 and LLN0. These will be deleted when the AP gets deleted or the last LNode of that LDevice gets deleted.
+- `LDevice inst` now embeds an 8-character hex UUID prefix derived from the source `EqFunction`/`Function` element's `uuid` attribute (e.g. `ProtectionFunction_a1b2c3d4`, `QA1_ProtectionFunction_a1b2c3d4`). Full UUIDs are not written because the SCL standard forbids hyphens in `inst`.
+- `parseLDeviceInst` now requires the new `FunctionName_XXXXXXXX` format and throws on unrecognised formats; returns `functionPrefixUuid` instead of `functionUuid`.
+- UUID prefix collision avoidance is now enforced document-wide: `collectExistingPrefixes` scans all `Function` and `EqFunction` elements before inserting new ones.
 ### Fixed
 - Resolved scd still referencing bayType if the last lNode has been deleted. Now removes all references.
 - Resolved overflowing text in lNode card of the ied column.
 - Resolved an issue where using the wrong function for element creation could lead to `xmlns=""` attributes being added. See [code style decision #3](docs/code-style-decisions/0003-why-use-createElement.md) for details.
+- Fixed delete button incorrectly appearing on LD0 lnode cards when the ldInst started with `LD0` but was not an exact match.
 
 ## [0.5.1]
 ### Added

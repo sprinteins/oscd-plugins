@@ -5,19 +5,41 @@ import { createElement } from '@oscd-plugins/core'
 import { getFunctionTemplate } from '@/headless/domain/matching'
 import { createLNodeElementInBay } from '@/headless/scl/elements/lnode-element'
 import type { EquipmentMatch } from '@/headless/domain/matching'
+import { uuidToPrefix } from '@/headless/scl/elements'
+
+function generateUniquePrefixUuid(existingPrefixes: Set<string>): string {
+	for (let i = 0; i < 1000; i++) {
+		const uuid = uuidv4()
+		if (!existingPrefixes.has(uuidToPrefix(uuid))) return uuid
+	}
+	throw new Error('Unable to generate unique UUID after 1000 attempts')
+}
+
+export function collectExistingPrefixes(
+	elements: Iterable<Element>
+): Set<string> {
+	const prefixes = new Set<string>()
+	for (const el of elements) {
+		const uuid = el.getAttribute('uuid')
+		if (uuid) prefixes.add(uuidToPrefix(uuid))
+	}
+	return prefixes
+}
 
 interface BuildInsertsForFunctionParams {
 	doc: Document
 	bayType: BayType
 	scdBay: Element
 	functionTemplates: FunctionTemplate[]
+	existingPrefixes: Set<string>
 }
 
 export function buildInsertsForFunction({
 	doc,
 	bayType,
 	scdBay,
-	functionTemplates
+	functionTemplates,
+	existingPrefixes
 }: BuildInsertsForFunctionParams): Insert[] {
 	const inserts: Insert[] = []
 
@@ -34,9 +56,12 @@ export function buildInsertsForFunction({
 			continue
 		}
 
+		const functionUuid = generateUniquePrefixUuid(existingPrefixes)
+		existingPrefixes.add(uuidToPrefix(functionUuid))
+
 		const functionElement = createElement(doc, 'Function', {
 			name: functionTemplate.name,
-			uuid: uuidv4(),
+			uuid: functionUuid,
 			templateUuid: functionType.uuid,
 			originUuid: functionTemplate.uuid,
 			desc: functionTemplate.desc ?? null
@@ -59,19 +84,29 @@ export function buildInsertsForFunction({
 	return inserts
 }
 
-export function buildInsertsForEqFunction(
-	doc: Document,
+interface BuildInsertsForEqFunctionParams {
+	doc: Document
 	matches: EquipmentMatch[]
-): Insert[] {
+	prefixes: Set<string>
+}
+
+export function buildInsertsForEqFunction({
+	doc,
+	matches,
+	prefixes
+}: BuildInsertsForEqFunctionParams): Insert[] {
 	const inserts: Insert[] = []
 
 	for (const match of matches) {
 		const templateEquipment = match.templateEquipment
 
 		for (const eqFunctionTemplate of templateEquipment.eqFunctions) {
+			const eqFunctionUuid = generateUniquePrefixUuid(prefixes)
+			prefixes.add(uuidToPrefix(eqFunctionUuid))
+
 			const eqFunctionElement = createElement(doc, 'EqFunction', {
 				name: eqFunctionTemplate.name,
-				uuid: uuidv4()
+				uuid: eqFunctionUuid
 			})
 
 			for (const lnodeTemplate of eqFunctionTemplate.lnodes) {

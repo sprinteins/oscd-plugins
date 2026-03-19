@@ -14,7 +14,8 @@ import {
 } from '@/headless/scl/edits/bay-type-edits'
 import {
 	buildInsertsForEqFunction,
-	buildInsertsForFunction
+	buildInsertsForFunction,
+	collectExistingPrefixes
 } from '@/headless/scl/edits/function-edits'
 import {
 	ensureDataTypeTemplates,
@@ -42,13 +43,24 @@ export function applyBayType(bayName: string): EquipmentMatch[] {
 
 	edits.push(buildUpdateForBay(scdBay, bayType))
 	edits.push(...buildEditsForEquipmentUpdates(matches))
-	edits.push(...buildInsertsForEqFunction(doc, matches))
+	const existingPrefixes = collectExistingPrefixes(
+		doc.querySelectorAll('Function, EqFunction')
+	)
+
+	edits.push(
+		...buildInsertsForEqFunction({
+			doc,
+			matches,
+			prefixes: existingPrefixes
+		})
+	)
 	edits.push(
 		...buildInsertsForFunction({
 			doc,
 			bayType,
 			scdBay,
-			functionTemplates: ssdImportStore.functionTemplates
+			functionTemplates: ssdImportStore.functionTemplates,
+			existingPrefixes
 		})
 	)
 
