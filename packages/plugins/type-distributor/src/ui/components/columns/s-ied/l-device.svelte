@@ -16,7 +16,7 @@ const { ldInst, lNodes, iedName, accessPoint }: Props = $props()
 
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
-let isLD0 = $derived(ldInst === 'LD0')
+let isLD0 = $derived(ldInst.startsWith('LD0'))
 </script>
 
 <div class="space-y-1">

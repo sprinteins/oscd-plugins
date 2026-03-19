@@ -42,6 +42,7 @@ const bayTypeWithTemplates = $derived(
 const functionTemplates = $derived(
 	bayTypeWithTemplates?.functionTemplates ?? []
 )
+
 const conductingEquipmentTemplates = $derived(
 	bayTypeWithTemplates?.conductingEquipmentTemplates ?? []
 )
@@ -72,6 +73,7 @@ const shouldShowBayTypeDetails = $derived.by(() => {
 	if (!bayTypeWithTemplates) return false
 
 	const validation = equipmentMatchingStore.validationResult
+
 	if (
 		validation &&
 		!validation.isValid &&

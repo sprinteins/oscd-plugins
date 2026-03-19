@@ -11,29 +11,30 @@ interface Props {
 }
 
 const { lnode, iedName, accessPoint, isLD0 = false }: Props = $props()
-
-// Display lnClass and lnInst (e.g., "ZREA 1" or "LLN0")
-const displayName = $derived(
-	lnode.lnInst ? `${lnode.lnClass} ${lnode.lnInst}` : lnode.lnClass
-)
 </script>
 
-<Card.Root class="hover:bg-gray-50 cursor-pointer transition-opacity">
+<Card.Root
+	class="hover:bg-gray-50 cursor-pointer transition-opacity"
+	title="{lnode.lnClass} {lnode.lnInst} ({lnode.lnType})"
+>
 	<Card.Content class="p-2">
 		<div class="flex items-center justify-between gap-2 min-w-0">
-			<span
-				class="text-sm text-left line-clamp-2 break-all min-w-0"
-				title="{displayName} ({lnode.lnType})"
-				>{displayName}</span
+			<span class="text-sm text-left line-clamp-2 break-all min-w-0"
+				>{lnode.lnClass} {lnode.lnInst}</span
 			>
-			{#if lnode.lnClass !== 'LLN0' && !isLD0}
+			{#if lnode.lnClass !== "LLN0" && !isLD0}
 				<DropdownMenuWorkaround
 					size="sm"
 					actions={[
 						{
 							label: "Delete",
 							disabled: false,
-							callback: () => deleteLnodeFromAccessPoint({iedName, accessPoint, lnode})
+							callback: () =>
+								deleteLnodeFromAccessPoint({
+									iedName,
+									accessPoint,
+									lnode,
+								}),
 						},
 					]}
 				/>

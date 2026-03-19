@@ -102,7 +102,16 @@ function handleDrop(event: DragEvent) {
               <DropdownMenuWorkaround
                 size="sm"
                 actions={[
-                  { label: "Delete", disabled: false, callback: () => deleteAccessPointFromIed({iedName, accessPoint, hasLNodes}) },
+                  {
+                    label: "Delete",
+                    disabled: false,
+                    callback: () =>
+                      deleteAccessPointFromIed({
+                        iedName,
+                        accessPoint,
+                        hasLNodes,
+                      }),
+                  },
                 ]}
               />
             </span>
@@ -114,12 +123,7 @@ function handleDrop(event: DragEvent) {
   {#if isOpen && hasLNodes}
     <div class="ml-4 space-y-1">
       {#each [...lDevicesMap.entries()] as [ldInst, ldLNodes]}
-        <LDevice
-          {ldInst}
-          lNodes={ldLNodes}
-          {iedName}
-          {accessPoint}
-        />
+        <LDevice {ldInst} lNodes={ldLNodes} {iedName} {accessPoint} />
       {/each}
     </div>
   {/if}
