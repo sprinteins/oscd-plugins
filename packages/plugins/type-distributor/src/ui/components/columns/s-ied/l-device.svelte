@@ -45,7 +45,8 @@ let isLD0 = $derived(ldInst.startsWith('LD0'))
 						</span>
 					</div>
 					{#if !isLD0}
-						<span
+						<div
+							class="h-5 shrink-0 flex items-center"
 							onclick={(e) => e.stopPropagation()}
 							role="button"
 							tabindex="0"
@@ -61,7 +62,7 @@ let isLD0 = $derived(ldInst.startsWith('LD0'))
 									},
 								]}
 							/>
-						</span>
+						</div>
 					{/if}
 				</div>
 			</Card.Content>

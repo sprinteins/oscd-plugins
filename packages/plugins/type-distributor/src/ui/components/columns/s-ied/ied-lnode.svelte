@@ -23,21 +23,23 @@ const { lnode, iedName, accessPoint, isLD0 = false }: Props = $props()
 				>{lnode.lnClass} {lnode.lnInst}</span
 			>
 			{#if lnode.lnClass !== "LLN0" && !isLD0}
-				<DropdownMenuWorkaround
-					size="sm"
-					actions={[
-						{
-							label: "Delete",
-							disabled: false,
-							callback: () =>
-								deleteLnodeFromAccessPoint({
-									iedName,
-									accessPoint,
-									lnode,
-								}),
-						},
-					]}
-				/>
+				<div class="h-5 shrink-0 flex items-center">
+					<DropdownMenuWorkaround
+						size="sm"
+						actions={[
+							{
+								label: "Delete",
+								disabled: false,
+								callback: () =>
+									deleteLnodeFromAccessPoint({
+										iedName,
+										accessPoint,
+										lnode,
+									}),
+							},
+						]}
+					/>
+				</div>
 			{/if}
 		</div>
 	</Card.Content>
