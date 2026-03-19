@@ -1,15 +1,15 @@
+import { SvelteSet } from 'svelte/reactivity'
 import type {
 	BayTypeWithTemplates,
 	LNodeTemplate
 } from '@/headless/common-types'
-import { SvelteSet } from 'svelte/reactivity'
+import { bayStore } from '../bay.store.svelte'
 import { getAllLNodesWithParent } from '../bay-types.utils'
 import { ssdImportStore } from '../ssd-import.store.svelte'
-import { bayStore } from '../bay.store.svelte'
 import {
+	type LNodeKey,
 	processEqFunctions,
-	processFunctions,
-	type LNodeKey
+	processFunctions
 } from './assigned-lnodes.helpers'
 
 interface BuildKeyParams {

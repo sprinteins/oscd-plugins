@@ -1,4 +1,4 @@
-import type { IEDData, FilteredIED } from './types'
+import type { FilteredIED, IEDData } from './types'
 
 function matchesIED(iedName: string, term: string): boolean {
 	return iedName.toLowerCase().includes(term)

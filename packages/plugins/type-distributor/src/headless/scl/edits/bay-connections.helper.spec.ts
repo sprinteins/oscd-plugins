@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import {
-	hasRemainingConnectionsAfterClearing,
-	buildUpdatesForClearingBayLNodeConnections
-} from './bay-connections.helper'
-import type { LNodeTemplate } from '@/headless/common-types'
 import type { SetAttributes } from '@openscd/oscd-api'
+import { beforeEach, describe, expect, it } from 'vitest'
+import type { LNodeTemplate } from '@/headless/common-types'
+import {
+	buildUpdatesForClearingBayLNodeConnections,
+	hasRemainingConnectionsAfterClearing
+} from './bay-connections.helper'
 
 const IED_NAME = 'IED1'
 

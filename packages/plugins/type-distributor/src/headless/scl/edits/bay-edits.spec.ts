@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { buildUpdatesForBayLNode } from './bay-edits'
-import { bayStore } from '@/headless/stores'
 import type { XMLEditor } from '@openscd/oscd-editor'
-import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
+import { bayStore } from '@/headless/stores'
+import { buildUpdatesForBayLNode } from './bay-edits'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {

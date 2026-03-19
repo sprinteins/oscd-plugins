@@ -1,6 +1,6 @@
 import type {
-	FunctionTemplate,
 	ConductingEquipmentTemplate,
+	FunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
 

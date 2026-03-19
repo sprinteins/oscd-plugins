@@ -1,5 +1,5 @@
 import type { LNodeTemplate } from '@/headless/common-types'
-import type { IEDData, FilteredIED, FilteredAccessPoint } from './types'
+import type { FilteredAccessPoint, FilteredIED, IEDData } from './types'
 
 function matchesLDevice(ldInst: string | undefined, term: string): boolean {
 	return ldInst?.toLowerCase().includes(term) ?? false

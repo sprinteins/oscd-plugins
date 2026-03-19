@@ -1,12 +1,12 @@
 <script lang="ts">
-import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
+import { Card } from '@oscd-plugins/core-ui-svelte'
 import type {
 	ConductingEquipmentTemplate,
 	EqFunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
-import { dndStore, assignedLNodesStore } from '@/headless/stores'
+import { assignedLNodesStore, dndStore } from '@/headless/stores'
 import LNode from './lnode.svelte'
 
 interface Props {

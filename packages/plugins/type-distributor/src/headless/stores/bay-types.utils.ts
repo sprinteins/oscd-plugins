@@ -1,10 +1,10 @@
 import type {
 	BayType,
 	BayTypeWithTemplates,
-	ConductingEquipmentType,
 	ConductingEquipmentTemplate,
-	FunctionType,
+	ConductingEquipmentType,
 	FunctionTemplate,
+	FunctionType,
 	LNodeTemplate
 } from '../common-types'
 import { ssdImportStore } from './ssd-import.store.svelte'

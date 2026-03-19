@@ -1,11 +1,11 @@
 <script lang="ts">
+import { Button } from '@oscd-plugins/core-ui-svelte'
 import {
+	assignedLNodesStore,
 	bayStore,
 	equipmentMatchingStore,
-	ssdImportStore,
-	assignedLNodesStore
+	ssdImportStore
 } from '@/headless/stores'
-import { Button } from '@oscd-plugins/core-ui-svelte'
 import EquipmentMatching from '@/ui/components/columns/bay-type/equipment-matching.svelte'
 
 const {

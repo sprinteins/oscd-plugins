@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest'
-import {
-	getConductingEquipmentTemplate,
-	getFunctionTemplate
-} from './template-lookup'
+import { describe, expect, it } from 'vitest'
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate
 } from '@/headless/common-types'
+import {
+	getConductingEquipmentTemplate,
+	getFunctionTemplate
+} from './template-lookup'
 
 const ceTemplate1: ConductingEquipmentTemplate = {
 	uuid: 'ce-uuid-1',

@@ -1,28 +1,28 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import type {
-	LNodeTemplate,
 	EqFunctionTemplate,
-	FunctionTemplate
+	FunctionTemplate,
+	LNodeTemplate
 } from '@/headless/common-types'
-import {
-	getBayTypeApplicationState,
-	shouldApplyBayType,
-	applyBayType,
-	generateCommitTitle,
-	commitEdits
-} from './drop-handler'
-import {
-	assignedLNodesStore,
-	bayStore,
-	ssdImportStore
-} from '@/headless/stores'
 import {
 	buildUpdatesForBayLNode,
 	createMultipleLNodesInAccessPoint,
 	resolveScdEqFunctionUuid,
 	resolveScdFunctionUuid
 } from '@/headless/scl'
+import {
+	assignedLNodesStore,
+	bayStore,
+	ssdImportStore
+} from '@/headless/stores'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
+import {
+	applyBayType,
+	commitEdits,
+	generateCommitTitle,
+	getBayTypeApplicationState,
+	shouldApplyBayType
+} from './drop-handler'
 
 type DraggedItem = {
 	type: 'equipmentFunction' | 'functionTemplate' | 'lNode'

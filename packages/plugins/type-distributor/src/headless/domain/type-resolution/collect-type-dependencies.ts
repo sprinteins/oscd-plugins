@@ -1,8 +1,8 @@
 import type { LNodeTemplate } from '@/headless/common-types'
 import {
 	queryDOTypesFromLNodeType,
-	queryTypesFromDOType,
-	queryTypesFromDAType
+	queryTypesFromDAType,
+	queryTypesFromDOType
 } from './query-types'
 
 export interface TypeCollections {

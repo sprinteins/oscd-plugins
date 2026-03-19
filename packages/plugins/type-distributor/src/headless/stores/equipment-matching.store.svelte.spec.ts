@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest'
 import { flushSync } from 'svelte'
+import { beforeEach, describe, expect, it } from 'vitest'
+import type { ConductingEquipmentTemplate } from '@/headless/common-types'
+import type { ValidationResult } from '@/headless/domain/matching'
+import { resetSSDImportStore } from '@/headless/test-helpers'
 import { equipmentMatchingStore } from './equipment-matching.store.svelte'
 import { ssdImportStore } from './ssd-import.store.svelte'
-import { resetSSDImportStore } from '@/headless/test-helpers'
-import type { ValidationResult } from '@/headless/domain/matching'
-import type { ConductingEquipmentTemplate } from '@/headless/common-types'
 
 const createTemplate = (
 	uuid: string,

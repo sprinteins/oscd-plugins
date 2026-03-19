@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import {
-	parseTemplates,
-	parseFunctionTemplate,
-	parseConductingEquipmentTemplate
-} from './parse-templates'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
+import { beforeEach, describe, expect, it } from 'vitest'
+import {
+	parseConductingEquipmentTemplate,
+	parseFunctionTemplate,
+	parseTemplates
+} from './parse-templates'
 
 describe('parseTemplates', () => {
 	let doc: XMLDocument

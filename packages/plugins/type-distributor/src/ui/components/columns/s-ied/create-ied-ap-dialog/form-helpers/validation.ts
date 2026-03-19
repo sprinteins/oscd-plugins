@@ -1,16 +1,16 @@
 import { z } from 'zod'
-import type {
-	AccessPointContext,
-	AccessPointData,
-	FieldErrors,
-	IedData
-} from './types'
 import { queryAccessPointsFromIed } from '@/headless/scl'
 import {
 	createAccessPointSchema,
 	createFormSchema,
 	createIedSchema
 } from './schemas'
+import type {
+	AccessPointContext,
+	AccessPointData,
+	FieldErrors,
+	IedData
+} from './types'
 
 export function validateIedFields(
 	ied: Pick<IedData, 'name' | 'description'>,

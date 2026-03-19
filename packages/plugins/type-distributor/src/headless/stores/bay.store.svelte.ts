@@ -1,6 +1,6 @@
-import { getDocumentAndEditor } from '@/headless/utils'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { matchEquipmentForPersistedBay } from '@/headless/domain/matching'
+import { getDocumentAndEditor } from '@/headless/utils'
 import { ssdImportStore } from './ssd-import.store.svelte'
 
 class UseBayStore {

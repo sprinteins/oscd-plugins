@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
 	queryAccessPointsFromIed,
 	queryIEDs,

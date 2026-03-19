@@ -1,17 +1,17 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import {
-	buildInsertsForCreateAccessPoint,
-	createMultipleLNodesInAccessPoint
-} from './accesspoint-edits'
+import type { Insert } from '@openscd/oscd-api'
 import type { XMLEditor } from '@openscd/oscd-editor'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
-import type { Insert } from '@openscd/oscd-api'
 import type { EquipmentMatch } from '@/headless/domain/matching'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import {
+	buildInsertsForCreateAccessPoint,
+	createMultipleLNodesInAccessPoint
+} from './accesspoint-edits'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {

@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest'
-import {
-	getScdEquipmentMatchKey,
-	matchEquipmentForInitialApply,
-	matchEquipmentForPersistedBay
-} from './match-equipment'
+import { describe, expect, it } from 'vitest'
 import type {
 	BayType,
 	ConductingEquipmentTemplate
 } from '@/headless/common-types'
 import { createTestDocument } from '@/headless/test-helpers'
+import {
+	getScdEquipmentMatchKey,
+	matchEquipmentForInitialApply,
+	matchEquipmentForPersistedBay
+} from './match-equipment'
 
 const ceTemplate1: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid-1',

@@ -1,15 +1,15 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { assignedLNodesStore } from '@/headless/stores/assigned-lnodes'
-import { dndStore } from '@/headless/stores/dnd'
-import type {
-	LNodeTemplate,
-	FunctionTemplate,
-	BayTypeWithTemplates
-} from '@/headless/common-types'
 import type { XMLEditor } from '@openscd/oscd-editor'
-import { createMultipleLNodesInAccessPoint } from '@/headless/scl'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type {
+	BayTypeWithTemplates,
+	FunctionTemplate,
+	LNodeTemplate
+} from '@/headless/common-types'
+import { createMultipleLNodesInAccessPoint } from '@/headless/scl'
+import { assignedLNodesStore } from '@/headless/stores/assigned-lnodes'
 import { bayStore } from '@/headless/stores/bay.store.svelte'
+import { dndStore } from '@/headless/stores/dnd'
 
 // Mock modules
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({

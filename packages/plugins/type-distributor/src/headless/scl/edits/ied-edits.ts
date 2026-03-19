@@ -1,15 +1,14 @@
-import type { Insert } from '@openscd/oscd-api'
+import type { Insert, Remove } from '@openscd/oscd-api'
+import type { LNodeType } from '@/headless/common-types'
 import { getDocument } from '../../utils'
 import { createBasicIEDElement } from '../elements/ied-element'
-import { buildInsertsForLd0DataTypes } from './data-type-edits'
-import { buildInsertsForAccessPoints } from './accesspoint-edits'
 import {
-	queryIEDInsertionReference,
 	queryAccessPointsFromIed,
+	queryIEDInsertionReference,
 	queryIedElement
 } from '../queries'
-import type { Remove } from '@openscd/oscd-api'
-import type { LNodeType } from '@/headless/common-types'
+import { buildInsertsForAccessPoints } from './accesspoint-edits'
+import { buildInsertsForLd0DataTypes } from './data-type-edits'
 
 export function buildEditForCreateIed(
 	name: string,
