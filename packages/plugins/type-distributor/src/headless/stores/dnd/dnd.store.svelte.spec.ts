@@ -20,7 +20,9 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 
 vi.mock('@/headless/scl', () => ({
 	createMultipleLNodesInAccessPoint: vi.fn(),
-	buildUpdatesForBayLNode: vi.fn()
+	buildUpdatesForBayLNode: vi.fn(),
+	resolveScdEqFunctionUuid: vi.fn(() => undefined),
+	resolveScdFunctionUuid: vi.fn(() => undefined)
 }))
 
 vi.mock('@/headless/stores', () => ({
@@ -246,7 +248,8 @@ describe('dndStore', () => {
 				equipmentMatches: [],
 				equipmentUuid: 'eq-uuid',
 				doc: expect.anything(),
-				lnodeTypes: expect.anything()
+				lnodeTypes: expect.anything(),
+				functionUuidOverride: undefined
 			})
 			expect(buildUpdatesForBayLNode).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
@@ -310,14 +313,16 @@ describe('dndStore', () => {
 				equipmentMatches: [],
 				equipmentUuid: 'eq-uuid',
 				doc: expect.anything(),
-				lnodeTypes: expect.anything()
+				lnodeTypes: expect.anything(),
+				functionUuidOverride: undefined
 			})
 			expect(buildUpdatesForBayLNode).toHaveBeenCalledWith({
 				lNodes: mockLNodes,
 				iedName: 'TestIED',
 				sourceFunction: mockFunction,
 				equipmentUuid: 'eq-uuid',
-				equipmentMatches: []
+				equipmentMatches: [],
+				scdEqFunctionUuid: undefined
 			})
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
 				edits: [...mockIedEdits, ...mockBayEdits],

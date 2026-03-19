@@ -20,7 +20,7 @@ const { lnode, iedName, accessPoint }: Props = $props()
 				title="{lnode.ldInst} - {lnode.lnType}"
 				>{lnode.ldInst} - {lnode.lnType}</span
 			>
-			{#if lnode.lnClass !== 'LLN0' && lnode.ldInst !== 'LD0'}
+			{#if lnode.lnClass !== 'LLN0' && !lnode.ldInst?.startsWith('LD0')}
 				<DropdownMenuWorkaround
 					size="sm"
 					actions={[

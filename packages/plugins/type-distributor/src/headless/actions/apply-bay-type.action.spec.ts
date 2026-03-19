@@ -1,25 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { applyBayType } from './apply-bay-type.action'
 import { getDocumentAndEditor } from '@/headless/utils'
-import { ssdImportStore } from '@/headless/stores'
 import {
-	resolveMatchingContext,
-	matchEquipmentForInitialApply,
-	type EquipmentMatch
-} from '@/headless/domain/matching'
-import {
-	buildUpdateForBay,
-	buildEditsForEquipmentUpdates
-} from '@/headless/scl/edits/bay-type-edits'
-import {
-	buildInsertsForEqFunction,
-	buildInsertsForFunction
-} from '@/headless/scl/edits/function-edits'
-import {
-	ensureDataTypeTemplates,
-	buildInsertsForDataTypeTemplates
-} from '@/headless/scl/edits/data-type-edits'
-import type { Insert, SetAttributes, XMLEditor } from '@openscd/oscd-editor'
+	ssdImportStore,
+	bayStore,
+	equipmentMatchingStore
+} from '@/headless/stores'
+import type { XMLEditor } from '@openscd/oscd-editor'
 import type { BayType } from '../common-types'
 
 vi.mock('@/headless/utils', () => ({
@@ -42,80 +29,35 @@ vi.mock('@/headless/stores', () => ({
 	}
 }))
 
-vi.mock('@/headless/domain/matching', () => ({
-	resolveMatchingContext: vi.fn(),
-	matchEquipmentForInitialApply: vi.fn()
-}))
-
-vi.mock('@/headless/scl/edits/bay-type-edits', () => ({
-	buildUpdateForBay: vi.fn(),
-	buildEditsForEquipmentUpdates: vi.fn()
-}))
-
-vi.mock('@/headless/scl/edits/function-edits', () => ({
-	buildInsertsForEqFunction: vi.fn(),
-	buildInsertsForFunction: vi.fn()
-}))
-
-vi.mock('@/headless/scl/edits/data-type-edits', () => ({
-	ensureDataTypeTemplates: vi.fn(),
-	buildInsertsForDataTypeTemplates: vi.fn()
-}))
+const mockBayType: BayType = {
+	uuid: 'bt-1',
+	name: 'TestBayType',
+	conductingEquipments: [],
+	functions: []
+}
 
 describe('applyBayType', () => {
-	const mockScdBay = document.createElement('Bay')
-	const mockBayType = {
-		uuid: 'bt-1',
-		name: 'TestBayType',
-		conductingEquipments: [],
-		functions: []
-	}
-	const mockDoc = new DOMParser().parseFromString('<SCL/>', 'application/xml')
+	let mockDoc: XMLDocument
+	let mockScdBay: Element
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
-	const mockMatches = [
-		{
-			scdElement: document.createElement('ConductingEquipment'),
-			bayTypeEquipment: {
-				uuid: 'ce-1',
-				templateUuid: 'tmpl-1',
-				virtual: false
-			},
-			templateEquipment: {
-				uuid: 'tmpl-1',
-				name: 'CB1',
-				type: 'CBR',
-				terminals: [],
-				eqFunctions: []
-			}
-		}
-	]
 
 	beforeEach(() => {
+		mockDoc = new DOMParser().parseFromString('<SCL/>', 'application/xml')
+		mockScdBay = document.createElement('Bay')
 		mockEditor = { commit: vi.fn() }
+
 		vi.mocked(getDocumentAndEditor).mockReturnValue({
 			doc: mockDoc as XMLDocument,
 			editor: mockEditor as unknown as XMLEditor
 		})
-		vi.mocked(resolveMatchingContext).mockReturnValue({
-			scdBay: mockScdBay,
-			bayType: mockBayType as BayType
-		})
-		vi.mocked(matchEquipmentForInitialApply).mockReturnValue(
-			mockMatches as EquipmentMatch[]
-		)
-		vi.mocked(buildUpdateForBay).mockReturnValue({
-			element: document.createElement('Bay')
-		} as SetAttributes)
-		vi.mocked(buildEditsForEquipmentUpdates).mockReturnValue([])
-		vi.mocked(buildInsertsForEqFunction).mockReturnValue([])
-		vi.mocked(buildInsertsForFunction).mockReturnValue([])
-		vi.mocked(buildInsertsForDataTypeTemplates).mockReturnValue([])
-		vi.mocked(ensureDataTypeTemplates).mockReturnValue({
-			element: document.createElement('DataTypeTemplates'),
-			edit: null
-		})
-		ssdImportStore.loadedSSDDocument = mockDoc as XMLDocument
+
+		ssdImportStore.selectedBayType = 'bt-1'
+		ssdImportStore.bayTypes = [mockBayType]
+		ssdImportStore.conductingEquipmentTemplates = []
 		ssdImportStore.functionTemplates = []
+		ssdImportStore.loadedSSDDocument = mockDoc as XMLDocument
+		bayStore.scdBay = mockScdBay
+		equipmentMatchingStore.manualMatches.clear()
 	})
 
 	afterEach(() => {
@@ -140,38 +82,47 @@ describe('applyBayType', () => {
 		it('WHEN applyBayType is called THEN returns the equipment matches', () => {
 			const result = applyBayType('Bay1')
 
-			expect(result).toBe(mockMatches)
+			expect(result).toEqual([])
 		})
 
-		it('WHEN applyBayType is called THEN the dtsCreationEdit is NOT included when absent', () => {
-			vi.mocked(ensureDataTypeTemplates).mockReturnValue({
-				element: document.createElement('DataTypeTemplates'),
-				edit: null
+		it('WHEN the document already has DataTypeTemplates THEN no DataTypeTemplates creation edit is committed', () => {
+			const docWithDts = new DOMParser().parseFromString(
+				'<SCL><DataTypeTemplates/></SCL>',
+				'application/xml'
+			)
+			vi.mocked(getDocumentAndEditor).mockReturnValue({
+				doc: docWithDts as XMLDocument,
+				editor: mockEditor as unknown as XMLEditor
 			})
+			ssdImportStore.loadedSSDDocument = docWithDts as XMLDocument
 
 			applyBayType('Bay1')
 
-			expect(mockEditor.commit).toHaveBeenCalledWith(
-				expect.not.arrayContaining([null]),
-				expect.anything()
+			const [committedEdits] = vi.mocked(mockEditor.commit).mock.calls[0]
+			const hasDtsInsert = committedEdits.some(
+				(edit: unknown) =>
+					edit !== null &&
+					typeof edit === 'object' &&
+					'node' in (edit as object) &&
+					(edit as { node: Element }).node?.tagName ===
+						'DataTypeTemplates'
 			)
+			expect(hasDtsInsert).toBe(false)
 		})
 
-		it('WHEN applyBayType is called AND dtsCreationEdit exists THEN includes it in committed edits', () => {
-			const dtsCreationEdit = {
-				node: document.createElement('DataTypeTemplates')
-			}
-			vi.mocked(ensureDataTypeTemplates).mockReturnValue({
-				element: document.createElement('DataTypeTemplates'),
-				edit: dtsCreationEdit as unknown as Insert
-			})
-
+		it('WHEN the document is missing DataTypeTemplates THEN a DataTypeTemplates creation edit is committed', () => {
 			applyBayType('Bay1')
 
-			expect(mockEditor.commit).toHaveBeenCalledWith(
-				expect.arrayContaining([dtsCreationEdit]),
-				expect.anything()
+			const [committedEdits] = vi.mocked(mockEditor.commit).mock.calls[0]
+			const hasDtsInsert = committedEdits.some(
+				(edit: unknown) =>
+					edit !== null &&
+					typeof edit === 'object' &&
+					'node' in (edit as object) &&
+					(edit as { node: Element }).node?.tagName ===
+						'DataTypeTemplates'
 			)
+			expect(hasDtsInsert).toBe(true)
 		})
 	})
 })

@@ -11,6 +11,8 @@ When distributing types from BayTypes to IEDs, LNodes can be assigned multiple t
 - **Duplicate configurations**: Same LNode assigned to multiple IEDs or within the same IED
 - **User confusion**: No visual feedback about which LNodes are already assigned
 
+An additional complication arises when a single `ConductingEquipment` element has **multiple `EqFunction` children with the same `name`** (e.g., two `DisconnectorFunction` entries). A naive name-only lookup always resolves to the first match, causing the second one to never be marked as assigned.
+
 ## Solution Architecture
 
 ### AssignedLNodesStore
@@ -44,30 +46,48 @@ LNodes are uniquely identified by combining:
 
 ### Rebuild Mechanism
 
-The store scans the SCD document to identify assigned LNodes:
+The store scans the SCD document to identify assigned LNodes.
+
+#### Duplicate EqFunction handling
+
+When multiple `EqFunction` elements on the same `ConductingEquipment` share the same `name`, the rebuild uses **position-based matching** to correctly resolve each one to the right template:
+
+```typescript
+// processEqFunctions (assigned-lnodes.helpers.ts)
+const allScdEqFunctionsWithName = equipment.querySelectorAll(
+    `:scope > EqFunction[name="${eqFuncName}"]`
+)
+const indexInScd = allScdEqFunctionsWithName.indexOf(eqFunc)  // position of this EqFunction
+
+const sameNameTemplates = equipmentMatch.templateEquipment.eqFunctions
+    .filter(f => f.name === eqFuncName)                        // same-name templates
+const functionScopeUuid = sameNameTemplates[indexInScd]?.uuid  // nth template = nth SCD EqFunction
+```
+
+This works because `buildInsertsForEqFunction` inserts EqFunction elements in template array order, making the positional correspondence stable.
 
 ```typescript
 rebuild() {
   // 1. Query all Bay Function elements
   const functions = doc.querySelectorAll('Bay > Function')
-  
+
   // 2. For each Function with templateUuid
   for (const func of functions) {
     const parentUuid = func.getAttribute('templateUuid')
-    
+
     // 3. Find LNodes with iedName attribute (indicates assignment)
     const lnodes = func.querySelectorAll('LNode[iedName]')
-    
+
     // 4. Index each LNode
     for (const lnode of lnodes) {
       const key = `${parentUuid}:${functionScopeUuid}:${lnClass}:${lnType}:${lnInst}`
       this.assignedIndex.add(key)
     }
   }
-  
-  // 5. Repeat for Equipment EqFunction elements
+
+  // 5. Repeat for Equipment EqFunction elements (with position-based resolution)
   const eqFunctions = doc.querySelectorAll('Bay ConductingEquipment EqFunction')
-  // ... similar logic
+  // ... position-based logic as above
 }
 ```
 

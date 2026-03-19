@@ -11,10 +11,16 @@ import {
 	generateCommitTitle,
 	commitEdits
 } from './drop-handler'
-import { assignedLNodesStore, bayStore, ssdImportStore } from '@/headless/stores'
+import {
+	assignedLNodesStore,
+	bayStore,
+	ssdImportStore
+} from '@/headless/stores'
 import {
 	buildUpdatesForBayLNode,
-	createMultipleLNodesInAccessPoint
+	createMultipleLNodesInAccessPoint,
+	resolveScdEqFunctionUuid,
+	resolveScdFunctionUuid
 } from '@/headless/scl'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 
@@ -91,6 +97,13 @@ class UseDndStore {
 
 			const { doc } = getDocumentAndEditor()
 			const lnodeTypes = ssdImportStore.lnodeTypes
+			const functionUuidOverride = equipmentUuid
+				? resolveScdEqFunctionUuid({
+						sourceFunction: functionFromSSD,
+						equipmentUuid,
+						equipmentMatches
+					})
+				: resolveScdFunctionUuid(functionFromSSD as FunctionTemplate)
 			const allEdits: (Insert | SetAttributes)[] = [
 				...createMultipleLNodesInAccessPoint({
 					sourceFunction: functionFromSSD,
@@ -99,7 +112,8 @@ class UseDndStore {
 					equipmentMatches,
 					equipmentUuid,
 					doc,
-					lnodeTypes
+					lnodeTypes,
+					functionUuidOverride
 				})
 			]
 
@@ -113,7 +127,8 @@ class UseDndStore {
 						iedName: targetSIedName,
 						sourceFunction: functionFromSSD,
 						equipmentUuid,
-						equipmentMatches
+						equipmentMatches,
+						scdEqFunctionUuid: functionUuidOverride
 					})
 				)
 			}

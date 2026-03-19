@@ -27,6 +27,36 @@ Equipment matching uses two explicit APIs with different behavior:
 
 **Rationale**: Preserves equipment identity after assignment while still supporting manual disambiguation and first-time auto-matching.
 
+## LDevice inst and ldName Schema
+
+LDevice elements created by the plugin follow a deterministic naming schema that embeds the source EqFunction/Function UUID to guarantee uniqueness across duplicate-named functions.
+
+Because the SCL standard forbids hyphens in `inst`, the full UUID is not written directly. Instead, `uuidToPrefix(uuid)` strips all hyphens and takes the first 8 characters, producing an 8-character lowercase hex string (e.g., `a1b2c3d4`).
+
+| Scenario               | `inst`                                | `ldName`                                      |
+| ---------------------- | ------------------------------------- | --------------------------------------------- |
+| Bay-level `Function`   | `FunctionName_XXXXXXXX`               | `IedName_FunctionName_XXXXXXXX`               |
+| Equipment `EqFunction` | `EquipmentName_FunctionName_XXXXXXXX` | `IedName_EquipmentName_FunctionName_XXXXXXXX` |
+| LD0 (per access point) | `LD0_APname`                          | `IedName_LD0_APname`                          |
+
+(`XXXXXXXX` = 8-char hex prefix derived from the source element's UUID via `uuidToPrefix`.)
+
+The UUID prefix embedded in `inst` comes from the **SCD-side** `EqFunction[uuid]` attribute (written by `buildInsertsForEqFunction` during `applyBayType`), not the template UUID. This ensures `inst` values remain unique even when two `EqFunction` elements share the same `name` on the same equipment.
+
+`parseLDeviceInst(inst)` decodes this schema and returns `{ equipmentName, functionName, functionPrefixUuid }`. It throws if `inst` does not match the expected format (i.e. the last segment is not exactly 8 hex characters).
+
+## Position-Based Duplicate EqFunction Resolution
+
+When a `ConductingEquipment` has multiple `EqFunction` elements with the same `name` (e.g., two `DisconnectorFunction` entries), the plugin uses **position-based matching** to correctly target each one:
+
+- `buildInsertsForEqFunction` iterates `templateEquipment.eqFunctions` in order and inserts them into the SCD in that same order.
+- `resolveScdEqFunctionUuid` finds the index of the dragged template EqFunction within the template list (`findIndex(f => f.uuid === sourceFunction.uuid)`), then picks the nth SCD `EqFunction[name="..."]` at that position. Its `uuid` becomes `functionUuidOverride`.
+- `functionUuidOverride` is threaded through `createMultipleLNodesInAccessPoint` → `ensureLDevice` → `createLDeviceElement` so the LDevice `inst` encodes the correct SCD EqFunction UUID.
+- `buildUpdatesForBayLNode` receives the same uuid as `scdEqFunctionUuid` and queries `EqFunction[uuid="..."]` directly, bypassing name-only ambiguity.
+- When clearing connections on delete, `queryMatchingBayLNode` extracts `functionUuid` from `parseLDeviceInst(ldInst)` and queries `EqFunction[uuid="..."]` instead of `EqFunction[name="..."]`.
+
+**Invariant**: insertion order in `buildInsertsForEqFunction` is stable and matches template array order, making positional lookup safe.
+
 ## Staged Data Type Insertion
 
 Data types are inserted in multiple stages with dependency resolution:
