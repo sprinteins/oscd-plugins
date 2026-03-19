@@ -2,6 +2,10 @@
 
 All notable changes to the monorepo and its configuration including the workflows will be documented here
 
+## 2026-03-18
+### Changed
+- Updated Biome to 2.4.6
+
 ## 2025-12-18
 ### Changed
 - Updated workspace scripts and dependency versions related to the type-distributor plugin
