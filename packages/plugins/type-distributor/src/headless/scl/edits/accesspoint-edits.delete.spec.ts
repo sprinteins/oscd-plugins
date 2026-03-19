@@ -103,14 +103,14 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
 describe('buildEditsForDeleteAccessPoint', () => {
 	let doc: Document
 	let bay1: Element | null
-	let bay2: Element | null
-	let bay3: Element | null
+	let _bay2: Element | null
+	let _bay3: Element | null
 
 	beforeEach(() => {
 		doc = createTestDocument(sampleSCD)
 		bay1 = doc.querySelector('Bay[name="Bay1"]')
-		bay2 = doc.querySelector('Bay[name="Bay2"]')
-		bay3 = doc.querySelector('Bay[name="Bay3"]')
+		_bay2 = doc.querySelector('Bay[name="Bay2"]')
+		_bay3 = doc.querySelector('Bay[name="Bay3"]')
 	})
 
 	describe('GIVEN an AccessPoint with LNodes', () => {

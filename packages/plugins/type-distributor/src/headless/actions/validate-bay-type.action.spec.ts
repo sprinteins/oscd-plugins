@@ -4,7 +4,6 @@ import {
 	validateEquipmentMatch
 } from '@/headless/domain/matching'
 import {
-	assignedLNodesStore,
 	bayStore,
 	equipmentMatchingStore,
 	ssdImportStore

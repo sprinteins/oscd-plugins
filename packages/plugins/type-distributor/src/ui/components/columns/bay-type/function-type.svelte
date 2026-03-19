@@ -33,7 +33,7 @@ let allAssigned = $derived(
 	func.lnodes.length > 0 && assignedStatuses.every((status) => status)
 )
 
-function handleDragStart(event: DragEvent) {
+function handleDragStart(_event: DragEvent) {
 	dndStore.handleDragStart({
 		type: 'functionTemplate',
 		sourceFunction: func,
@@ -47,7 +47,7 @@ function handleDragEnd() {
 	dndStore.handleDragEnd()
 }
 
-function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
+function handleLNodeDragStart(_event: DragEvent, lnode: LNodeTemplate) {
 	dndStore.handleDragStart({
 		type: 'lNode',
 		sourceFunction: func,

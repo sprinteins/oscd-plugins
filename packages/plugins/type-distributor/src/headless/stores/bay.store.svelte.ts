@@ -34,7 +34,7 @@ class UseBayStore {
 			const { doc } = getDocumentAndEditor()
 			const bay = getBayElement(doc, this.selectedBay)
 			return bay
-		} catch (error) {
+		} catch (_error) {
 			return null
 		}
 	})

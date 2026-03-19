@@ -134,7 +134,7 @@ function queryMatchingBayLNode(
 
 	if (parsed.isLD0) return null
 
-	const { equipmentName, functionName, functionPrefixUuid } = parsed
+	const { equipmentName, functionPrefixUuid } = parsed
 
 	let targetFunction: Element | null = null
 
