@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { assignedLNodesStore } from './assigned-lnodes.store.svelte'
-import type { LNodeTemplate } from '@/headless/common-types'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { LNodeTemplate } from '@/headless/common-types'
 import { bayStore } from '../bay.store.svelte'
+import { assignedLNodesStore } from './assigned-lnodes.store.svelte'
 
 // Mock pluginGlobalStore
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({

@@ -1,10 +1,10 @@
 <script lang="ts">
-import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
-import { dndStore } from '@/headless/stores'
-import type { LNodeTemplate } from '@/headless/common-types'
-import LDevice from './l-device.svelte'
+import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
+import type { LNodeTemplate } from '@/headless/common-types'
+import { dndStore } from '@/headless/stores'
+import LDevice from './l-device.svelte'
 
 interface Props {
 	accessPoint: Element
@@ -17,6 +17,7 @@ const { accessPoint, lNodes, iedName }: Props = $props()
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
 let isDropTarget = $state(false)
+let isInUse = $derived(lNodes.some((lnode) => !lnode.ldInst?.startsWith('LD0')))
 
 const lDevicesMap = $derived.by(() => {
 	const map = new Map<string, LNodeTemplate[]>()
@@ -68,7 +69,7 @@ function handleDrop(event: DragEvent) {
     ondrop={handleDrop}
   >
     <Card.Root
-      class="{hasLNodes
+      class="{isInUse
         ? 'hover:bg-gray-50 cursor-pointer'
         : 'border border-dashed'} 
 		{isDropTarget ? 'border-primary ring-2 ring-primary ring-offset-2' : ''} 

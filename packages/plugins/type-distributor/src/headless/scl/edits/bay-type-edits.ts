@@ -1,5 +1,5 @@
+import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import { v4 as uuidv4 } from 'uuid'
-import type { SetAttributes, Insert } from '@openscd/oscd-api'
 import type { BayType } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 

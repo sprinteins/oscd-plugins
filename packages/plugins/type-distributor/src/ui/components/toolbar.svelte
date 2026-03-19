@@ -4,6 +4,7 @@ import {
 	pluginGlobalStore,
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
+import { loadFromLocal } from '@/headless/import'
 import {
 	assignedLNodesStore,
 	bayStore,
@@ -11,7 +12,6 @@ import {
 	getBayTypeWithTemplates,
 	ssdImportStore
 } from '@/headless/stores'
-import { loadFromLocal } from '@/headless/import'
 
 const bays = $derived(
 	pluginGlobalStore.xmlDocument?.querySelectorAll(

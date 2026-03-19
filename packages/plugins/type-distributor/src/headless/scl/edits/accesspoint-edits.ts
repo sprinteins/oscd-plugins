@@ -1,5 +1,5 @@
+import type { Insert, Remove, SetAttributes } from '@openscd/oscd-api'
 import { createElement } from '@oscd-plugins/core'
-import type { Insert } from '@openscd/oscd-api'
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate,
@@ -12,13 +12,12 @@ import {
 	createLDeviceElement,
 	createLNodeElementInIED,
 	createServerElementWithAuth,
+	isLNodePresentInDevice,
 	queryLDevice,
-	queryServer,
-	isLNodePresentInDevice
+	queryServer
 } from '../elements'
-import type { Remove, SetAttributes } from '@openscd/oscd-api'
+import { queryIedElement, queryLNodesFromAccessPoint } from '../queries'
 import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
-import { queryLNodesFromAccessPoint, queryIedElement } from '../queries'
 import { buildInsertsForLd0DataTypes } from './data-type-edits'
 
 function ensureServer(

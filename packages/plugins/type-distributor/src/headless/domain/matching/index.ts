@@ -1,14 +1,14 @@
 export {
+	getScdEquipmentMatchKey,
 	matchEquipmentForInitialApply,
-	matchEquipmentForPersistedBay,
-	getScdEquipmentMatchKey
+	matchEquipmentForPersistedBay
 } from './match-equipment'
-export { validateEquipmentMatch } from './validate-equipment-match'
-export { getFunctionTemplate } from './template-lookup'
 export { resolveMatchingContext } from './resolve-matching-context'
+export { getFunctionTemplate } from './template-lookup'
 export type {
-	EquipmentMatch,
 	EquipmentLookupItem,
+	EquipmentMatch,
 	TemplateCountMismatch
 } from './types'
-export type { ValidationResult, AmbiguousTypeInfo } from './validation-types'
+export { validateEquipmentMatch } from './validate-equipment-match'
+export type { AmbiguousTypeInfo, ValidationResult } from './validation-types'

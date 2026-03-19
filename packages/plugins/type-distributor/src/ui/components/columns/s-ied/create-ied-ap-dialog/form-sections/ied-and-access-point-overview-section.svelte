@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { AccessPointData, IedData } from '../form-helpers'
 import { IedChip, PendingAccessPoints } from '../form-elements'
+import type { AccessPointData, IedData } from '../form-helpers'
 
 let {
 	ied,

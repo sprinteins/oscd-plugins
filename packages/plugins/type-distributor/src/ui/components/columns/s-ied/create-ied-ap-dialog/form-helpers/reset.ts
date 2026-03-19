@@ -1,4 +1,4 @@
-import type { IedData, AccessPointData } from './types'
+import type { AccessPointData, IedData } from './types'
 
 export function createInitialIedData(): IedData {
 	return {

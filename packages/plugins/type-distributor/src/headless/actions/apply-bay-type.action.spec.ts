@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { applyBayType } from './apply-bay-type.action'
-import { getDocumentAndEditor } from '@/headless/utils'
-import {
-	ssdImportStore,
-	bayStore,
-	equipmentMatchingStore
-} from '@/headless/stores'
 import type { XMLEditor } from '@openscd/oscd-editor'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+	bayStore,
+	equipmentMatchingStore,
+	ssdImportStore
+} from '@/headless/stores'
+import { getDocumentAndEditor } from '@/headless/utils'
 import type { BayType } from '../common-types'
+import { applyBayType } from './apply-bay-type.action'
 
 vi.mock('@/headless/utils', () => ({
 	getDocumentAndEditor: vi.fn()

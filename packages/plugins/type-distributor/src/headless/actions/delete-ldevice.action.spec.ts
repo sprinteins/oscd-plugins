@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { deleteLDevice } from './delete-ldevice.action'
+import type { XMLEditor } from '@openscd/oscd-editor'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildEditsForDeleteLDevice } from '../scl/edits'
 import { bayStore } from '../stores'
 import { getEditor } from '../utils'
-import type { XMLEditor } from '@openscd/oscd-editor'
+import { deleteLDevice } from './delete-ldevice.action'
 
 vi.mock('../scl/edits', () => ({
 	buildEditsForDeleteLDevice: vi.fn()

@@ -1,9 +1,9 @@
 <script lang="ts">
-import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
+import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
+import { deleteLDevice } from '@/headless/actions'
 import type { LNodeTemplate } from '@/headless/common-types'
 import IedLnode from './ied-lnode.svelte'
-import { deleteLDevice } from '@/headless/actions'
 
 interface Props {
 	ldInst: string

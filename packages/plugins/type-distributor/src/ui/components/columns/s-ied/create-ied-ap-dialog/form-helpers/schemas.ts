@@ -12,10 +12,7 @@ const iedNameBaseSchema = z
 	.trim()
 	.max(64, 'IED name cannot exceed 64 characters')
 	.refine((val) => val !== 'None', 'IED name cannot be "None"')
-	.refine(
-		(val) => /^[a-zA-Z]/.test(val),
-		'IED name must start with a letter'
-	)
+	.refine((val) => /^[a-zA-Z]/.test(val), 'IED name must start with a letter')
 	.regex(
 		/^[a-zA-Z0-9_]+$/,
 		'IED name can only contain alphanumeric characters and underscores'
@@ -123,7 +120,9 @@ export function createIedSchema(
 	const nameValidation = iedNameBaseSchema.pipe(
 		isNew
 			? z.string().min(1, 'IED name is required')
-			: z.string().min(1, 'Please select an existing IED or create a new one')
+			: z
+					.string()
+					.min(1, 'Please select an existing IED or create a new one')
 	)
 
 	return z

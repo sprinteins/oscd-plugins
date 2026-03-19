@@ -1,6 +1,6 @@
-import type { LNodeTemplate } from '@/headless/common-types'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import { parseLDeviceInst, type ParsedLDeviceInst } from '../elements'
+import type { LNodeTemplate } from '@/headless/common-types'
+import { type ParsedLDeviceInst, parseLDeviceInst } from '../elements'
 
 export function hasRemainingConnectionsAfterClearing(
 	bay: Element,
@@ -134,7 +134,7 @@ function queryMatchingBayLNode(
 
 	if (parsed.isLD0) return null
 
-	const { equipmentName, functionName, functionPrefixUuid } = parsed
+	const { equipmentName, functionPrefixUuid } = parsed
 
 	let targetFunction: Element | null = null
 

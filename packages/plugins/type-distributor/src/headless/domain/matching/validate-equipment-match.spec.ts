@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest'
-import { validateEquipmentMatch } from './validate-equipment-match'
+import { describe, expect, it } from 'vitest'
 import type {
 	BayType,
 	ConductingEquipmentTemplate
 } from '@/headless/common-types'
 import { createTestDocument } from '@/headless/test-helpers'
+import { validateEquipmentMatch } from './validate-equipment-match'
 
 const ceTemplate1: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid-1',

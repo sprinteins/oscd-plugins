@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { loadFromLocal } from './load-file.helper'
-import { ssdImportStore } from '@/headless/stores/ssd-import.store.svelte'
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { ssdImportStore } from '@/headless/stores/ssd-import.store.svelte'
 import { resetSSDImportStore } from '@/headless/test-helpers'
+import { loadFromLocal } from './load-file.helper'
 
 function createMockFile(
 	content: string,

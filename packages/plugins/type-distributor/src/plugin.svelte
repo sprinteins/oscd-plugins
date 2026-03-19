@@ -13,18 +13,19 @@
 
 <script lang="ts">
 // PACKAGE
-import jsonPackage from '../package.json'
-// CORE
-import {
-	initPlugin,
-	initScdTemplate,
-	DialogWorkaround
-} from '@oscd-plugins/core-ui-svelte'
+
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
+// CORE
+import {
+	DialogWorkaround,
+	initPlugin,
+	initScdTemplate
+} from '@oscd-plugins/core-ui-svelte'
+import { Toolbar } from '@/ui/components'
 // COMPONENTS
 import { TypeDistributorView } from '@/ui/components/views'
-import { Toolbar } from '@/ui/components'
+import jsonPackage from '../package.json'
 
 // props
 const {

@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
-import type { LNodeTemplate } from '@/headless/common-types'
 import { deleteLnodeFromAccessPoint } from '@/headless/actions'
+import type { LNodeTemplate } from '@/headless/common-types'
 
 interface Props {
 	lnode: LNodeTemplate
