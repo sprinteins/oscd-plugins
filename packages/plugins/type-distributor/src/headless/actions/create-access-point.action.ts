@@ -3,8 +3,8 @@ import type {
 	IedData
 } from '@/ui/components/columns/s-ied/create-ied-ap-dialog/form-helpers'
 import { buildInsertsForCreateAccessPoint } from '../scl'
-import { getDocumentAndEditor } from '../utils'
 import { ssdImportStore } from '../stores'
+import { getDocumentAndEditor } from '../utils'
 
 export function createAccessPoint(
 	ied: IedData,

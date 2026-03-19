@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { deleteLnodeFromAccessPoint } from './delete-lnode.action'
+import type { XMLEditor } from '@openscd/oscd-editor'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildEditsForDeleteLNodeFromAccessPoint } from '../scl/edits'
 import { bayStore } from '../stores'
 import { getEditor } from '../utils'
-import type { XMLEditor } from '@openscd/oscd-editor'
+import { deleteLnodeFromAccessPoint } from './delete-lnode.action'
 
 vi.mock('../scl/edits', () => ({
 	buildEditsForDeleteLNodeFromAccessPoint: vi.fn()

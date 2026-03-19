@@ -1,24 +1,24 @@
 <script lang="ts">
-import { queryAccessPointsFromIed } from '@/headless/scl'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import {
-	IedSelectorSection,
-	IedFormSection,
-	AccessPointFormSection
-} from './form-sections'
-import { MultiApButton, FormActions } from './form-elements'
+import { queryAccessPointsFromIed } from '@/headless/scl'
+import { FormActions, MultiApButton } from './form-elements'
 import {
 	type AccessPointData,
-	type IedData,
-	type FormErrors,
-	validateSubmission,
-	validateIedFields,
-	validateAccessPointFields,
-	submitForm,
-	createInitialIedData,
 	createInitialAccessPoint,
-	createInitialAccessPoints
+	createInitialAccessPoints,
+	createInitialIedData,
+	type FormErrors,
+	type IedData,
+	submitForm,
+	validateAccessPointFields,
+	validateIedFields,
+	validateSubmission
 } from './form-helpers'
+import {
+	AccessPointFormSection,
+	IedFormSection,
+	IedSelectorSection
+} from './form-sections'
 import IedAndAccessPointOverview from './form-sections/ied-and-access-point-overview-section.svelte'
 
 let ied = $state<IedData>(createInitialIedData())

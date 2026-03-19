@@ -1,4 +1,4 @@
-import type { IEDData, FilteredIED, FilteredAccessPoint } from './types'
+import type { FilteredAccessPoint, FilteredIED, IEDData } from './types'
 
 function matchesAccessPoint(apName: string | null, term: string): boolean {
 	return apName?.toLowerCase().includes(term) ?? false

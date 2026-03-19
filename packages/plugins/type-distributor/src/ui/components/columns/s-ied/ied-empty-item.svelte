@@ -1,6 +1,6 @@
 <script lang="ts">
-import { deleteEmptyIed } from '@/headless/actions'
 import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
+import { deleteEmptyIed } from '@/headless/actions'
 
 interface Props {
 	iedName: string

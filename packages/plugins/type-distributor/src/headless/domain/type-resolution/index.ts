@@ -1,7 +1,7 @@
-export { collectTypeDependencies } from './collect-type-dependencies'
 export type { TypeCollections } from './collect-type-dependencies'
+export { collectTypeDependencies } from './collect-type-dependencies'
 export {
 	queryDOTypesFromLNodeType,
-	queryTypesFromDOType,
-	queryTypesFromDAType
+	queryTypesFromDAType,
+	queryTypesFromDOType
 } from './query-types'

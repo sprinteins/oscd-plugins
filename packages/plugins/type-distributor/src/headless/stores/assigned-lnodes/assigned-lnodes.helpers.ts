@@ -1,5 +1,5 @@
-import type { EquipmentMatch } from '@/headless/domain/matching'
 import type { EqFunctionTemplate } from '@/headless/common-types'
+import type { EquipmentMatch } from '@/headless/domain/matching'
 
 export type LNodeKey = `${string}:${string}:${string}:${string}:${string}` // parentUuid:functionScopeUuid:lnClass:lnType:lnInst
 

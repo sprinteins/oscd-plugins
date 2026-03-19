@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { createIedWithAccessPoints } from './create-ied-with-access-points.action'
+import type { XMLEditor } from '@openscd/oscd-editor'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildInsertsForCreateIedWithAccessPoints } from '../scl'
 import { getEditor } from '../utils'
-import type { XMLEditor } from '@openscd/oscd-editor'
+import { createIedWithAccessPoints } from './create-ied-with-access-points.action'
 
 vi.mock('../scl', () => ({
 	buildInsertsForCreateIedWithAccessPoints: vi.fn()

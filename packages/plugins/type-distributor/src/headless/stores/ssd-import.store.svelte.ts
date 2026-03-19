@@ -10,8 +10,8 @@ import type {
 
 import {
 	parseBayTypes,
-	parseTemplates,
-	parseDataTypeTemplates
+	parseDataTypeTemplates,
+	parseTemplates
 } from '@/headless/ssd-parsing'
 
 class UseImportSSDStore {

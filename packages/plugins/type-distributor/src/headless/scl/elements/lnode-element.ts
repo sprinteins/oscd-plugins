@@ -1,6 +1,6 @@
-import type { LNodeTemplate } from '../../common-types'
-import { v4 as uuidv4 } from 'uuid'
 import { createElement } from '@oscd-plugins/core'
+import { v4 as uuidv4 } from 'uuid'
+import type { LNodeTemplate } from '../../common-types'
 
 export function createLNodeElementInBay(
 	doc: Document,

@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { deleteEmptyIed } from './delete-ied.action'
+import type { XMLEditor } from '@openscd/oscd-editor/dist/XMLEditor'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildEditForDeleteEmptyIed } from '../scl/edits'
 import { getEditor } from '../utils'
-import type { XMLEditor } from '@openscd/oscd-editor/dist/XMLEditor'
+import { deleteEmptyIed } from './delete-ied.action'
 
 vi.mock('../scl/edits', () => ({
 	buildEditForDeleteEmptyIed: vi.fn()

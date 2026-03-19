@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { buildEditsForDeleteAccessPoint } from './accesspoint-edits'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { bayStore } from '@/headless/stores'
+import { createTestDocument } from '@/headless/test-helpers'
 import {
 	isRemoveEdit,
 	isSetAttributesEdit
 } from '@/headless/test-helpers/type-guards'
-import { createTestDocument } from '@/headless/test-helpers'
+import { buildEditsForDeleteAccessPoint } from './accesspoint-edits'
 
 // Mock dependencies
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -103,14 +103,14 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
 describe('buildEditsForDeleteAccessPoint', () => {
 	let doc: Document
 	let bay1: Element | null
-	let bay2: Element | null
-	let bay3: Element | null
+	let _bay2: Element | null
+	let _bay3: Element | null
 
 	beforeEach(() => {
 		doc = createTestDocument(sampleSCD)
 		bay1 = doc.querySelector('Bay[name="Bay1"]')
-		bay2 = doc.querySelector('Bay[name="Bay2"]')
-		bay3 = doc.querySelector('Bay[name="Bay3"]')
+		_bay2 = doc.querySelector('Bay[name="Bay2"]')
+		_bay3 = doc.querySelector('Bay[name="Bay3"]')
 	})
 
 	describe('GIVEN an AccessPoint with LNodes', () => {

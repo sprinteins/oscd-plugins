@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { resetSSDImportStore } from '@/headless/test-helpers'
+import type { BayTypeWithTemplates } from '../common-types'
 import {
-	getBayTypeWithTemplates,
-	getAllLNodesWithParent
+	getAllLNodesWithParent,
+	getBayTypeWithTemplates
 } from './bay-types.utils'
 import { ssdImportStore } from './ssd-import.store.svelte'
-import { resetSSDImportStore } from '@/headless/test-helpers'
-import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
-import type { BayTypeWithTemplates } from '../common-types'
 
 describe('bay-types.utils', () => {
 	let doc: XMLDocument

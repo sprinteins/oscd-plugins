@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { dndStore } from './dnd.store.svelte'
-import * as dropHandler from './drop-handler'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
 	buildUpdatesForBayLNode,
 	createMultipleLNodesInAccessPoint
 } from '@/headless/scl'
+import { dndStore } from './dnd.store.svelte'
+import * as dropHandler from './drop-handler'
 
 vi.mock('./drop-handler', () => ({
 	getBayTypeApplicationState: vi.fn(),

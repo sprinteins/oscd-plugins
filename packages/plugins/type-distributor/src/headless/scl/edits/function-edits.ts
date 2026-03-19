@@ -1,11 +1,11 @@
-import { v4 as uuidv4 } from 'uuid'
 import type { Insert } from '@openscd/oscd-api'
-import type { BayType, FunctionTemplate } from '@/headless/common-types'
 import { createElement } from '@oscd-plugins/core'
-import { getFunctionTemplate } from '@/headless/domain/matching'
-import { createLNodeElementInBay } from '@/headless/scl/elements/lnode-element'
+import { v4 as uuidv4 } from 'uuid'
+import type { BayType, FunctionTemplate } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
+import { getFunctionTemplate } from '@/headless/domain/matching'
 import { uuidToPrefix } from '@/headless/scl/elements'
+import { createLNodeElementInBay } from '@/headless/scl/elements/lnode-element'
 
 function generateUniquePrefixUuid(existingPrefixes: Set<string>): string {
 	for (let i = 0; i < 1000; i++) {
