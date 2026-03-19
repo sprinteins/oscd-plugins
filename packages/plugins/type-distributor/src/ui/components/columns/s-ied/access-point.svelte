@@ -17,6 +17,7 @@ const { accessPoint, lNodes, iedName }: Props = $props()
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
 let isDropTarget = $state(false)
+let isInUse = $derived(lNodes.some(lnode => !lnode.ldInst?.startsWith('LD0')))
 
 function handleDragOver(event: DragEvent) {
 	event.preventDefault()
@@ -54,7 +55,7 @@ function handleDrop(event: DragEvent) {
     ondrop={handleDrop}
   >
     <Card.Root
-      class="{hasLNodes
+      class="{isInUse
         ? 'hover:bg-gray-50 cursor-pointer'
         : 'border border-dashed'} 
 		{isDropTarget ? 'border-primary ring-2 ring-primary ring-offset-2' : ''} 
