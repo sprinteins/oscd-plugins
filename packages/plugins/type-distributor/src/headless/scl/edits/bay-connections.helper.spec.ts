@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import {
 	hasRemainingConnectionsAfterClearing,
-	buildUpdatesForClearingBayLNodeConnections,
+	buildUpdatesForClearingBayLNodeConnections
 } from './bay-connections.helper'
 import type { LNodeTemplate } from '@/headless/common-types'
+import type { SetAttributes } from '@openscd/oscd-api'
 
 const IED_NAME = 'IED1'
 
@@ -13,12 +14,24 @@ function makeElement(xml: string): Element {
 }
 
 // Helpers to discriminate edit shapes without type-casting noise
-function hasAttributes(edit: unknown): edit is { element: Element; attributes: Record<string, unknown> } {
-	return typeof edit === 'object' && edit !== null && 'attributes' in edit && 'element' in edit
+function hasAttributes(
+	edit: unknown
+): edit is { element: Element; attributes: Record<string, unknown> } {
+	return (
+		typeof edit === 'object' &&
+		edit !== null &&
+		'attributes' in edit &&
+		'element' in edit
+	)
 }
 
 function hasNode(edit: unknown): edit is { node: Node } {
-	return typeof edit === 'object' && edit !== null && 'node' in edit && !('element' in edit)
+	return (
+		typeof edit === 'object' &&
+		edit !== null &&
+		'node' in edit &&
+		!('element' in edit)
+	)
 }
 
 describe('hasRemainingConnectionsAfterClearing', () => {
@@ -29,15 +42,20 @@ describe('hasRemainingConnectionsAfterClearing', () => {
 
 	it('GIVEN a bay with one LNode with iedName AND that LNode is in clearedLNodes WHEN called THEN returns false', () => {
 		const bay = makeElement('<Bay><LNode iedName="IED1"/></Bay>')
-		const lnode = bay.querySelector('LNode')!
-		expect(hasRemainingConnectionsAfterClearing(bay, new Set([lnode]))).toBe(false)
+		const lnode = bay.querySelector('LNode')
+		if (!lnode) throw new Error('Test setup failure: LNode not found')
+		expect(
+			hasRemainingConnectionsAfterClearing(bay, new Set([lnode]))
+		).toBe(false)
 	})
 
 	it('GIVEN a bay with two LNodes with iedName AND only one is cleared WHEN called THEN returns true', () => {
 		const bay = makeElement(
 			'<Bay><LNode iedName="IED1"/><LNode iedName="IED2"/></Bay>'
 		)
-		const firstLNode = bay.querySelector('LNode')!
+		const firstLNode = bay.querySelector('LNode')
+		if (!firstLNode)
+			throw new Error('Test setup failure: first LNode not found')
 		expect(
 			hasRemainingConnectionsAfterClearing(bay, new Set([firstLNode]))
 		).toBe(true)
@@ -51,18 +69,22 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			expect(edits).toHaveLength(0)
 		})
 
 		it('WHEN template has no ldInst THEN returns an empty array', () => {
 			const bay = makeElement('<Bay/>')
-			const template: LNodeTemplate = { lnClass: 'XCBR', lnType: 'XCBR1', lnInst: '1' }
+			const template: LNodeTemplate = {
+				lnClass: 'XCBR',
+				lnType: 'XCBR1',
+				lnInst: '1'
+			}
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			expect(edits).toHaveLength(0)
 		})
@@ -74,12 +96,12 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 				lnClass: 'XCBR',
 				lnType: 'XCBR1',
 				lnInst: '1',
-				ldInst: 'SingleWord',
+				ldInst: 'SingleWord'
 			}
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			expect(edits).toHaveLength(0)
 		})
@@ -90,12 +112,12 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 				lnClass: 'LLN0',
 				lnType: 'LLN0Type',
 				lnInst: '',
-				ldInst: 'LD0',
+				ldInst: 'LD0'
 			}
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			expect(edits).toHaveLength(0)
 		})
@@ -106,12 +128,12 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 				lnClass: 'PDIS',
 				lnType: 'PDIS1',
 				lnInst: '1',
-				ldInst: 'Protection_550e8400',
+				ldInst: 'Protection_550e8400'
 			}
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			expect(edits).toHaveLength(0)
 		})
@@ -128,12 +150,12 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 				lnClass: 'PDIS',
 				lnType: 'PDIS1',
 				lnInst: '1',
-				ldInst: 'Protection_550e8400',
+				ldInst: 'Protection_550e8400'
 			}
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			expect(edits).toHaveLength(0)
 		})
@@ -150,12 +172,12 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 				lnClass: 'PDIS',
 				lnType: 'PDIS1',
 				lnInst: '1',
-				ldInst: 'Protection_550e8400',
+				ldInst: 'Protection_550e8400'
 			}
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			expect(edits).toHaveLength(0)
 		})
@@ -169,7 +191,7 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 			lnClass: 'PDIS',
 			lnType: 'PDIS1',
 			lnInst: '1',
-			ldInst: 'Protection_550e8400',
+			ldInst: 'Protection_550e8400'
 		}
 
 		beforeEach(() => {
@@ -180,23 +202,29 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 					</Function>
 				</Bay>
 			`)
-			func = bay.querySelector('Function')!
-			lnode = bay.querySelector('LNode')!
+			const _func = bay.querySelector('Function')
+			const _lnode = bay.querySelector('LNode')
+			if (!_func || !_lnode)
+				throw new Error(
+					'Test setup failure: Function or LNode not found'
+				)
+			func = _func
+			lnode = _lnode
 		})
 
 		it('THEN includes a SetAttributes edit clearing iedName and ldInst on the LNode', () => {
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const lnodeEdit = edits.find(
 				(e) => hasAttributes(e) && e.element === lnode
 			)
 			expect(lnodeEdit).toBeDefined()
-			expect((lnodeEdit as any).attributes).toEqual({
+			expect((lnodeEdit as SetAttributes).attributes).toEqual({
 				iedName: null,
-				ldInst: null,
+				ldInst: null
 			})
 		})
 
@@ -204,15 +232,15 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const bayEdit = edits.find(
 				(e) => hasAttributes(e) && e.element === bay
 			)
 			expect(bayEdit).toBeDefined()
-			expect((bayEdit as any).attributes).toEqual({
+			expect((bayEdit as SetAttributes).attributes).toEqual({
 				uuid: null,
-				templateUuid: null,
+				templateUuid: null
 			})
 		})
 
@@ -220,7 +248,7 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const removeEdit = edits.find((e) => hasNode(e) && e.node === func)
 			expect(removeEdit).toBeDefined()
@@ -236,7 +264,7 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 			lnClass: 'XCBR',
 			lnType: 'XCBR1',
 			lnInst: '1',
-			ldInst: 'CB1_CBFunction_b4e3f901',
+			ldInst: 'CB1_CBFunction_b4e3f901'
 		}
 
 		beforeEach(() => {
@@ -249,24 +277,33 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 					</ConductingEquipment>
 				</Bay>
 			`)
-			conductingEquipment = bay.querySelector('ConductingEquipment')!
-			eqFunction = bay.querySelector('EqFunction')!
-			lnode = bay.querySelector('LNode')!
+			const _conductingEquipment = bay.querySelector(
+				'ConductingEquipment'
+			)
+			const _eqFunction = bay.querySelector('EqFunction')
+			const _lnode = bay.querySelector('LNode')
+			if (!_conductingEquipment || !_eqFunction || !_lnode)
+				throw new Error(
+					'Test setup failure: ConductingEquipment, EqFunction, or LNode not found'
+				)
+			conductingEquipment = _conductingEquipment
+			eqFunction = _eqFunction
+			lnode = _lnode
 		})
 
 		it('THEN includes a SetAttributes edit clearing iedName and ldInst on the LNode', () => {
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const lnodeEdit = edits.find(
 				(e) => hasAttributes(e) && e.element === lnode
 			)
 			expect(lnodeEdit).toBeDefined()
-			expect((lnodeEdit as any).attributes).toEqual({
+			expect((lnodeEdit as SetAttributes).attributes).toEqual({
 				iedName: null,
-				ldInst: null,
+				ldInst: null
 			})
 		})
 
@@ -274,16 +311,16 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const ceEdit = edits.find(
 				(e) => hasAttributes(e) && e.element === conductingEquipment
 			)
 			expect(ceEdit).toBeDefined()
-			expect((ceEdit as any).attributes).toEqual({
+			expect((ceEdit as SetAttributes).attributes).toEqual({
 				uuid: null,
 				templateUuid: null,
-				originUuid: null,
+				originUuid: null
 			})
 		})
 
@@ -291,7 +328,7 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const removeEdit = edits.find(
 				(e) => hasNode(e) && e.node === eqFunction
@@ -311,17 +348,17 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 					</EqFunction>
 				</Bay>
 			`)
-			const lnode = bay.querySelector('LNode')!
+			const lnode = bay.querySelector('LNode')
 			const template: LNodeTemplate = {
 				lnClass: 'XCBR',
 				lnType: 'XCBR1',
 				lnInst: '1',
-				ldInst: 'NOEQUIP_CBFunction_b4e3f901',
+				ldInst: 'NOEQUIP_CBFunction_b4e3f901'
 			}
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [template],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const lnodeEdit = edits.find(
 				(e) => hasAttributes(e) && e.element === lnode
@@ -341,7 +378,7 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 					</ConductingEquipment>
 				</Bay>
 			`)
-			const conductingEquipment = bay.querySelector('ConductingEquipment')!
+			const conductingEquipment = bay.querySelector('ConductingEquipment')
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [
@@ -349,10 +386,10 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 						lnClass: 'XCBR',
 						lnType: 'XCBR1',
 						lnInst: '1',
-						ldInst: 'CB1_CBFunction_b4e3f901',
-					},
+						ldInst: 'CB1_CBFunction_b4e3f901'
+					}
 				],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const ceEdit = edits.find(
 				(e) => hasAttributes(e) && e.element === conductingEquipment
@@ -370,7 +407,7 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 					</ConductingEquipment>
 				</Bay>
 			`)
-			const eqFunction = bay.querySelector('EqFunction')!
+			const eqFunction = bay.querySelector('EqFunction')
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [
@@ -378,10 +415,10 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 						lnClass: 'XCBR',
 						lnType: 'XCBR1',
 						lnInst: '1',
-						ldInst: 'CB1_CBFunction_b4e3f901',
-					},
+						ldInst: 'CB1_CBFunction_b4e3f901'
+					}
 				],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const removeEdit = edits.find(
 				(e) => hasNode(e) && e.node === eqFunction
@@ -411,10 +448,10 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 						lnClass: 'PDIS',
 						lnType: 'PDIS1',
 						lnInst: '1',
-						ldInst: 'Protection_550e8400',
-					},
+						ldInst: 'Protection_550e8400'
+					}
 				],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const bayEdit = edits.find(
 				(e) => hasAttributes(e) && e.element === bay
@@ -433,7 +470,9 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 					</Function>
 				</Bay>
 			`)
-			const pdisLNode = bay.querySelector('Function LNode[lnClass="PDIS"]')!
+			const pdisLNode = bay.querySelector(
+				'Function LNode[lnClass="PDIS"]'
+			)
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,
 				lNodeTemplates: [
@@ -441,10 +480,10 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 						lnClass: 'PDIS',
 						lnType: 'PDIS1',
 						lnInst: '1',
-						ldInst: 'Protection_550e8400',
-					},
+						ldInst: 'Protection_550e8400'
+					}
 				],
-				iedName: IED_NAME,
+				iedName: IED_NAME
 			})
 			const lnodeEdit = edits.find(
 				(e) => hasAttributes(e) && e.element === pdisLNode
