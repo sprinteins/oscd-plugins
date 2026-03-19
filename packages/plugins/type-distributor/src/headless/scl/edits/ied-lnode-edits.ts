@@ -102,12 +102,10 @@ export function buildEditsForDeleteLDevice({
 		)
 	}
 
-	// Get all LN and LN0 elements from the LDevice
 	const lnElements = Array.from(
 		lDevice.querySelectorAll(':scope > LN, :scope > LN0')
 	)
 
-	// Build LNodeTemplates for all LNodes in this LDevice
 	const lNodeTemplates: LNodeTemplate[] = lnElements.map((lnElement) => ({
 		lnClass: lnElement.getAttribute('lnClass') ?? '',
 		lnType: lnElement.getAttribute('lnType') ?? '',
@@ -115,7 +113,6 @@ export function buildEditsForDeleteLDevice({
 		ldInst
 	}))
 
-	// Clear bay connections for all LNodes in this LDevice
 	const bayEdits = buildUpdatesForClearingBayLNodeConnections({
 		selectedBay,
 		lNodeTemplates,
@@ -123,7 +120,6 @@ export function buildEditsForDeleteLDevice({
 	})
 	edits.push(...bayEdits)
 
-	// Remove the entire LDevice
 	edits.push({
 		node: lDevice
 	} as Remove)
