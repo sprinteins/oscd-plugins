@@ -146,6 +146,10 @@ function queryMatchingBayLNode(
 			targetFunction = equipment.querySelector(
 				`:scope > EqFunction[uuid^="${functionPrefixUuid}"]`
 			)
+		} else {
+			targetFunction = bay.querySelector(
+				`EqFunction[uuid^="${functionPrefixUuid}"]`
+			)
 		}
 	} else {
 		targetFunction = bay.querySelector(
