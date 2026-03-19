@@ -29,6 +29,7 @@ const bayOptions = $derived(
 function handleBayChange() {
 	equipmentMatchingStore.reset()
 	assignedLNodesStore.rebuild()
+	ssdImportStore.selectedBayType = null
 }
 
 const assignedBayTypeWithTemplates = $derived(
