@@ -42,6 +42,7 @@ const bayTypeWithTemplates = $derived(
 const functionTemplates = $derived(
 	bayTypeWithTemplates?.functionTemplates ?? []
 )
+
 const conductingEquipmentTemplates = $derived(
 	bayTypeWithTemplates?.conductingEquipmentTemplates ?? []
 )
@@ -127,7 +128,7 @@ function handleBayTypeChange() {
 			<IedDetails {iedItems} {searchTerm} {searchType} />
 		</Card.Content>
 		<Card.Footer>
-				<AddIedApDialogTrigger />
+			<AddIedApDialogTrigger />
 		</Card.Footer>
 	</Card.Root>
 	<Card.Root class="flex-1 flex flex-col min-h-full">

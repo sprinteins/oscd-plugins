@@ -4,7 +4,7 @@ import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
 import type { LNodeTemplate } from '@/headless/common-types'
 import { dndStore } from '@/headless/stores'
-import IedLnode from './ied-lnode.svelte'
+import LDevice from './l-device.svelte'
 
 interface Props {
 	accessPoint: Element
@@ -18,6 +18,20 @@ let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
 let isDropTarget = $state(false)
 let isInUse = $derived(lNodes.some((lnode) => !lnode.ldInst?.startsWith('LD0')))
+
+const lDevicesMap = $derived.by(() => {
+	const map = new Map<string, LNodeTemplate[]>()
+	for (const lNode of lNodes) {
+		const ldInst = lNode.ldInst ?? 'Unknown'
+		const existing = map.get(ldInst)
+		if (existing) {
+			existing.push(lNode)
+		} else {
+			map.set(ldInst, [lNode])
+		}
+	}
+	return map
+})
 
 function handleDragOver(event: DragEvent) {
 	event.preventDefault()
@@ -89,7 +103,16 @@ function handleDrop(event: DragEvent) {
               <DropdownMenuWorkaround
                 size="sm"
                 actions={[
-                  { label: "Delete", disabled: false, callback: () => deleteAccessPointFromIed({iedName, accessPoint, hasLNodes}) },
+                  {
+                    label: "Delete",
+                    disabled: false,
+                    callback: () =>
+                      deleteAccessPointFromIed({
+                        iedName,
+                        accessPoint,
+                        hasLNodes,
+                      }),
+                  },
                 ]}
               />
             </span>
@@ -100,12 +123,8 @@ function handleDrop(event: DragEvent) {
   </button>
   {#if isOpen && hasLNodes}
     <div class="ml-4 space-y-1">
-      {#each lNodes as lnode}
-        <IedLnode
-          {lnode}
-          {iedName}
-          {accessPoint}
-        />
+      {#each [...lDevicesMap.entries()] as [ldInst, ldLNodes]}
+        <LDevice {ldInst} lNodes={ldLNodes} {iedName} {accessPoint} />
       {/each}
     </div>
   {/if}
