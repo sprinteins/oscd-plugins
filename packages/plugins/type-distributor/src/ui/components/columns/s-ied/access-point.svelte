@@ -17,7 +17,7 @@ const { accessPoint, lNodes, iedName }: Props = $props()
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
 let isDropTarget = $state(false)
-let isInUse = $derived(lNodes.some(lnode => !lnode.ldInst?.startsWith('LD0')))
+let isInUse = $derived(lNodes.some((lnode) => !lnode.ldInst?.startsWith('LD0')))
 
 function handleDragOver(event: DragEvent) {
 	event.preventDefault()
