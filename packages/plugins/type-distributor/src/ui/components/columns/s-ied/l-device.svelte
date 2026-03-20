@@ -31,16 +31,16 @@ let isLD0 = $derived(ldInst.startsWith('LD0'))
 			transition-all"
 		>
 			<Card.Content class="p-2 relative">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center gap-2">
+				<div class="flex items-center justify-between gap-2 min-w-0">
+					<div class="flex items-center gap-2 min-w-0">
 						{#if hasLNodes}
 							<ChevronRight
-								class="size-4 transition-transform duration-200 {isOpen
+								class="size-4 shrink-0 transition-transform duration-200 {isOpen
 									? 'rotate-90'
 									: ''}"
 							/>
 						{/if}
-						<span class="text-sm font-medium text-left">
+						<span class="text-sm font-medium text-left line-clamp-2 break-all" title={ldInst}>
 							{ldInst}
 						</span>
 					</div>

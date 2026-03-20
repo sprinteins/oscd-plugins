@@ -19,6 +19,10 @@ let hasLDevices = $derived(lDevices.length > 0)
 let isDropTarget = $state(false)
 let isInUse = $derived(lDevices.some((ld) => !ld.ldInst?.startsWith('LD0')))
 
+const apLabel = $derived(
+	`${iedName} - Access Point ${accessPoint.getAttribute('name')}`
+)
+
 function handleDragOver(event: DragEvent) {
 	event.preventDefault()
 	if (!dndStore.isDragging) return
@@ -62,21 +66,23 @@ function handleDrop(event: DragEvent) {
 		transition-all"
     >
       <Card.Content class="p-2 relative">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
+        <div class="flex items-center justify-between gap-2 min-w-0">
+          <div class="flex items-center gap-2 min-w-0">
             {#if hasLDevices}
               <ChevronRight
-                class="size-4 transition-transform duration-200 {isOpen
+                class="size-4 shrink-0 transition-transform duration-200 {isOpen
                   ? 'rotate-90'
                   : ''}"
               />
             {/if}
-            <span class="text-sm font-medium text-left">
-              {iedName} - Access Point {accessPoint.getAttribute("name") ??
-                "(unnamed)"}
+            <span
+              class="text-sm font-medium text-left line-clamp-2 break-all"
+              title={apLabel}
+            >
+              {apLabel}
             </span>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 shrink-0">
             {#if isDropTarget}
               <CirclePlus class="size-5 text-primary animate-pulse" />
             {/if}
