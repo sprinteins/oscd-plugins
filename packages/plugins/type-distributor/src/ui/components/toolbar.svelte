@@ -48,32 +48,32 @@ const isBaySwitchLocked = $derived(
 </script>
 
 <div class="flex items-center justify-end space-x-5 px-4 pt-4 h-fit">
-    {#if bayOptions.length > 0}
-        <div
-            class="ml-4"
-            title={isBaySwitchLocked
-                ? "Finish assigning all LNodes to IEDs before switching bays."
-                : ""}
-        >
-            <SelectWorkaround
-                bind:value={bayStore.selectedBay}
-                handleChange={handleBayChange}
-                options={bayOptions}
-                placeholder="Select a bay"
-                class="w-64"
-                disabled={isBaySwitchLocked}
-            />
-        </div>
-    {/if}
-    <Button.Root onclick={() => ssdImportStore.fileInput?.click()}>
-        Import SSD File
-    </Button.Root>
+  {#if bayOptions.length > 0}
+    <div
+      class="ml-4"
+      title={isBaySwitchLocked
+        ? "Finish assigning all LNodes to IEDs before switching bays."
+        : ""}
+    >
+      <SelectWorkaround
+        bind:value={bayStore.selectedBay}
+        handleChange={handleBayChange}
+        options={bayOptions}
+        placeholder="Select a bay"
+        class="w-64"
+        disabled={isBaySwitchLocked}
+      />
+    </div>
+  {/if}
+  <Button.Root onclick={() => ssdImportStore.fileInput?.click()}>
+    Import SSD File
+  </Button.Root>
 </div>
 
 <input
-    type="file"
-    accept=".ssd"
-    bind:this={ssdImportStore.fileInput}
-    onchange={() => loadFromLocal()}
-    class="hidden"
+  type="file"
+  accept=".ssd"
+  bind:this={ssdImportStore.fileInput}
+  onchange={() => loadFromLocal()}
+  class="hidden"
 />

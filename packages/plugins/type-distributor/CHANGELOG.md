@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [UNRELEASED]
 ### Added
 - Mark AccessPoints as unused if they do only hav LD0 lnodes
+- Add another deeper tree so it is now:
+```
+IED - AP
+  > LD
+    > LNode
+```
 
 ## [1.0.0] - 2026-03-19
 ### Added
