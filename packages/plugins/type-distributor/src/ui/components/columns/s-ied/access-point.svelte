@@ -2,36 +2,22 @@
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
 import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
-import type { LNodeTemplate } from '@/headless/common-types'
+import type { LDeviceData } from '@/headless/common-types'
 import { dndStore } from '@/headless/stores'
 import LDevice from './l-device.svelte'
 
 interface Props {
 	accessPoint: Element
-	lNodes: LNodeTemplate[]
+	lDevices: LDeviceData[]
 	iedName: string
 }
 
-const { accessPoint, lNodes, iedName }: Props = $props()
+const { accessPoint, lDevices, iedName }: Props = $props()
 
 let isOpen = $state(false)
-let hasLNodes = $derived(lNodes.length > 0)
+let hasLDevices = $derived(lDevices.length > 0)
 let isDropTarget = $state(false)
-let isInUse = $derived(lNodes.some((lnode) => !lnode.ldInst?.startsWith('LD0')))
-
-const lDevicesMap = $derived.by(() => {
-	const map = new Map<string, LNodeTemplate[]>()
-	for (const lNode of lNodes) {
-		const ldInst = lNode.ldInst ?? 'Unknown'
-		const existing = map.get(ldInst)
-		if (existing) {
-			existing.push(lNode)
-		} else {
-			map.set(ldInst, [lNode])
-		}
-	}
-	return map
-})
+let isInUse = $derived(lDevices.some((ld) => !ld.ldInst?.startsWith('LD0')))
 
 function handleDragOver(event: DragEvent) {
 	event.preventDefault()
@@ -63,7 +49,7 @@ function handleDrop(event: DragEvent) {
 <div class="space-y-1">
   <button
     class="w-full"
-    onclick={() => hasLNodes && (isOpen = !isOpen)}
+    onclick={() => hasLDevices && (isOpen = !isOpen)}
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
     ondrop={handleDrop}
@@ -78,7 +64,7 @@ function handleDrop(event: DragEvent) {
       <Card.Content class="p-2 relative">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            {#if hasLNodes}
+            {#if hasLDevices}
               <ChevronRight
                 class="size-4 transition-transform duration-200 {isOpen
                   ? 'rotate-90'
@@ -110,7 +96,7 @@ function handleDrop(event: DragEvent) {
                       deleteAccessPointFromIed({
                         iedName,
                         accessPoint,
-                        hasLNodes,
+                        hasLDevices,
                       }),
                   },
                 ]}
@@ -121,9 +107,9 @@ function handleDrop(event: DragEvent) {
       </Card.Content>
     </Card.Root>
   </button>
-  {#if isOpen && hasLNodes}
+  {#if isOpen && hasLDevices}
     <div class="ml-4 space-y-1">
-      {#each [...lDevicesMap.entries()] as [ldInst, ldLNodes]}
+      {#each lDevices as { ldInst, lNodes: ldLNodes }}
         <LDevice {ldInst} lNodes={ldLNodes} {iedName} {accessPoint} />
       {/each}
     </div>

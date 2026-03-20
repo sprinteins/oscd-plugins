@@ -1,2 +1,2 @@
 export * from './ied-queries'
-export * from './lnode-queries'
+export * from './ldevice-queries'
