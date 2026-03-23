@@ -150,6 +150,10 @@ function handleBayTypeChange() {
 						{conductingEquipmentTemplates}
 						{bayTypeWithTemplates}
 					/>
+				{:else if ssdImportStore.bayTypes.length === 0}
+					<p class="text-gray-500 text-sm">
+						Import a ssd file.
+					</p>
 				{:else if !ssdImportStore.selectedBayType && bayStore.selectedBay !== null}
 					<p class="text-gray-500 text-sm">
 						Select a bay type to see details.
