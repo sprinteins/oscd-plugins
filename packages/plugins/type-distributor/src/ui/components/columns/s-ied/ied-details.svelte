@@ -5,7 +5,7 @@ import {
 	filterByLDevice,
 	filterByLNode,
 	type IEDData,
-	queryLNodesFromAccessPoint,
+	queryLDevicesFromAccessPoint,
 	type SearchType
 } from '@/headless/scl'
 import AccessPoint from './access-point.svelte'
@@ -27,11 +27,11 @@ const sIedData = $derived.by(() => {
 		const accessPoints = Array.from(
 			iedItem.querySelectorAll(':scope > AccessPoint')
 		).map((ap) => {
-			const lNodes = queryLNodesFromAccessPoint(ap)
+			const lDevices = queryLDevicesFromAccessPoint(ap)
 			return {
 				element: ap,
 				name: ap.getAttribute('name'),
-				lNodes
+				lDevices
 			}
 		})
 		return { name, accessPoints, element: iedItem }
@@ -59,10 +59,10 @@ const sIedData = $derived.by(() => {
       {#if accessPoints.length === 0}
 				<IedEmptyItem {iedName} />
       {:else}
-        {#each accessPoints as { element: accessPoint, lNodes }}
+        {#each accessPoints as { element: accessPoint, lDevices }}
           <AccessPoint
             {accessPoint}
-            {lNodes}
+            {lDevices}
             {iedName}
           />
         {/each}

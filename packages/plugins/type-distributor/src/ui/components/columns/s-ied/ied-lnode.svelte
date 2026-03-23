@@ -19,8 +19,8 @@ const { lnode, iedName, accessPoint, isLD0 = false }: Props = $props()
 >
 	<Card.Content class="p-2">
 		<div class="flex items-center justify-between gap-2 min-w-0">
-			<span class="text-sm text-left line-clamp-2 break-all min-w-0"
-				>{lnode.lnClass} {lnode.lnInst}</span
+			<span class="text-sm text-left line-clamp-2 break-all min-w-0">
+				{lnode.lnClass} {lnode.lnInst}</span
 			>
 			{#if lnode.lnClass !== "LLN0" && !isLD0}
 				<div class="h-5 shrink-0 flex items-center">

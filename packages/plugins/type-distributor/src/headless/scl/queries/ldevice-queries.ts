@@ -1,21 +1,22 @@
-import type { LNodeTemplate } from '../../common-types'
+import type { LDeviceData, LNodeTemplate } from '../../common-types'
 
-export function queryLNodesFromAccessPoint(
+export function queryLDevicesFromAccessPoint(
 	accessPoint: Element
-): LNodeTemplate[] {
-	const lNodes: LNodeTemplate[] = []
+): LDeviceData[] {
+	const lDevices: LDeviceData[] = []
 
 	const servers = accessPoint.querySelectorAll(':scope > Server')
 
 	for (const server of servers) {
-		const lDevices = server.querySelectorAll(':scope > LDevice')
+		const lDeviceElements = server.querySelectorAll(':scope > LDevice')
 
-		for (const lDevice of lDevices) {
+		for (const lDevice of lDeviceElements) {
 			const ldInst = lDevice.getAttribute('inst') ?? undefined
 			const lnElements = lDevice.querySelectorAll(
 				':scope > LN, :scope > LN0'
 			)
 
+			const lNodes: LNodeTemplate[] = []
 			for (const lnode of lnElements) {
 				lNodes.push({
 					lnClass: lnode.getAttribute('lnClass') ?? '',
@@ -25,7 +26,10 @@ export function queryLNodesFromAccessPoint(
 					ldInst
 				})
 			}
+			if (lNodes.length > 0 && ldInst) {
+				lDevices.push({ ldInst, lNodes })
+			}
 		}
 	}
-	return lNodes
+	return lDevices
 }

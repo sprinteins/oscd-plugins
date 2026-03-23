@@ -71,6 +71,8 @@ function handleLNodeDragStart(_event: DragEvent, lnode: LNodeTemplate) {
 function handleLNodeDragEnd() {
 	dndStore.handleDragEnd()
 }
+
+const eqLabel = $derived(`${eqFunction.name} (${equipment.name})`)
 </script>
 
 <div class="space-y-1">
@@ -94,18 +96,19 @@ function handleLNodeDragEnd() {
                   : 'cursor-pointer'}"
         >
             <Card.Content class="p-2">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 min-w-0">
                     <ChevronRight
-                        class="size-4 transition-transform duration-200 {isOpen
+                        class="size-4 shrink-0 transition-transform duration-200 {isOpen
                             ? 'rotate-90'
                             : ''}"
                     />
                     <span
-                        class="text-sm font-medium text-left {allAssigned
+                        class="text-sm font-medium text-left line-clamp-2 break-all {allAssigned
                             ? 'text-gray-400'
                             : ''}"
+                        title={eqLabel}
                     >
-                        {eqFunction.name} ({equipment.name})
+                        {eqLabel}
                     </span>
                 </div>
             </Card.Content>

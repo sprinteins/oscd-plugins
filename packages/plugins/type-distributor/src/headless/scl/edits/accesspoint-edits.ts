@@ -16,7 +16,7 @@ import {
 	queryLDevice,
 	queryServer
 } from '../elements'
-import { queryIedElement, queryLNodesFromAccessPoint } from '../queries'
+import { queryIedElement, queryLDevicesFromAccessPoint } from '../queries'
 import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
 import { buildInsertsForLd0DataTypes } from './data-type-edits'
 
@@ -258,7 +258,9 @@ export function buildEditsForDeleteAccessPoint({
 	const edits: (Remove | SetAttributes)[] = []
 
 	if (selectedBay) {
-		const apLNodes = queryLNodesFromAccessPoint(accessPoint)
+		const apLNodes = queryLDevicesFromAccessPoint(accessPoint).flatMap(
+			(ld) => ld.lNodes
+		)
 
 		const bayEdits = buildUpdatesForClearingBayLNodeConnections({
 			selectedBay,
