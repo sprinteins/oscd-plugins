@@ -1,7 +1,7 @@
 {
 	"name": "@oscd-plugins/type-distributor",
 	"private": true,
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"type": "module",
 	"scripts": {
 		"//====== DEV ======//": "",
@@ -17,7 +17,14 @@
 		"test:ui": "vitest --ui",
 		"test:ui:open": "vitest --ui --open",
 		"//====== SVELTE ======//": "",
-		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json --noEmit"
+		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json --noEmit",
+		"//====== BIOME ======//": "",
+		"biome:check": "biome check src",
+		"biome:check:write": "biome check --write src",
+		"biome:format": "biome format src",
+		"biome:format:write": "biome format --write src",
+		"biome:lint": "biome lint src",
+		"biome:lint:write": "biome lint --write src"
 	},
 	"files": [
 		"dist"

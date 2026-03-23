@@ -22,7 +22,7 @@ const { lnode, draggable = false, onDragStart, onDragEnd }: Props = $props()
   title={draggable ? "" : "Already assigned to an IED"}
 >
   <Card.Content class="p-2">
-    <span class="text-sm text-left {draggable ? '' : 'text-gray-400'}">
+    <span class="text-sm text-left line-clamp-2 break-all {draggable ? '' : 'text-gray-400'}" title={lnode.lnType}>
       {lnode.lnType}
     </span>
   </Card.Content>
