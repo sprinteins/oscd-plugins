@@ -367,7 +367,6 @@ describe('createLDeviceElement', () => {
 	})
 
 	describe('GIVEN equipment match with illegal chars in CE name', () => {
-		const CE_UUID = 'eq-uuid-1'
 		const EQUIPMENT_UUID = 'equipment-uuid-1'
 		let doc: XMLDocument
 		let scdEquipment: Element
