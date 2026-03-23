@@ -152,11 +152,11 @@ function handleBayTypeChange() {
 					/>
 				{:else if !ssdImportStore.selectedBayType && bayStore.selectedBay !== null}
 					<p class="text-gray-500 text-sm">
-						Select a bay type to see details
+						Select a bay type to see details.
 					</p>
 				{:else if bayStore.selectedBay === null}
 					<p class="text-gray-500 text-sm">
-						Select a bay in the SLD to assign a bay type
+						Select a bay to assign a bay type.
 					</p>
 				{/if}
 			</div>
