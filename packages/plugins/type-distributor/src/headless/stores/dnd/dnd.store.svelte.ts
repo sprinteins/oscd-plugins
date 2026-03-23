@@ -103,7 +103,7 @@ class UseDndStore {
 						equipmentUuid,
 						equipmentMatches
 					})
-				: resolveScdFunctionUuid(functionFromSSD as FunctionTemplate)
+				: resolveScdFunctionUuid(parentUuid)
 			const allEdits: (Insert | SetAttributes)[] = [
 				...createMultipleLNodesInAccessPoint({
 					sourceFunction: functionFromSSD,
