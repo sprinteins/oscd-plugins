@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [UNRELEASED]
 ### Added
 - Mark AccessPoints as unused if they do only hav LD0 lnodes
+### Changed
+- Strip characters illegal in `tLDInst` (`[^A-Za-z0-9_]`) from function names and conducting-equipment names when generating `LDevice inst`. Uniqueness is ensured solely by the 8-character UUID prefix.
+- `queryMatchingBayLNode` now locates `EqFunction` elements by UUID prefix only, removing the previous `ConductingEquipment[name=…]` scoping that broke when bay names contained illegal characters.
 
 ## [1.0.0] - 2026-03-19
 ### Added

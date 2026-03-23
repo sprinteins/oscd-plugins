@@ -337,10 +337,10 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 		})
 	})
 
-	describe('GIVEN an EqFunction-based LNode with the ConductingEquipment NOT found (fallback path)', () => {
-		it('WHEN called THEN finds the LNode via EqFunction fallback and returns a SetAttributes edit for it', () => {
-			// Bay has no ConductingEquipment named "NOEQUIP", but has an EqFunction
-			// directly accessible — the fallback path queries for EqFunction in bay
+	describe('GIVEN an EqFunction-based LNode located by UUID prefix (equipment name not used for scoping)', () => {
+		it('WHEN ldInst has an equipment name segment THEN finds EqFunction by UUID prefix bay-wide', () => {
+			// equipmentName in parsed ldInst is non-null (signals EqFunction type)
+			// but the lookup is purely UUID-prefix based, so CE name is irrelevant
 			const bay = makeElement(`
 				<Bay>
 					<EqFunction uuid="b4e3f901abc">
@@ -353,7 +353,37 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 				lnClass: 'XCBR',
 				lnType: 'XCBR1',
 				lnInst: '1',
-				ldInst: 'NOEQUIP_CBFunction_b4e3f901'
+				ldInst: 'AnyEquipName_CBFunction_b4e3f901'
+			}
+			const edits = buildUpdatesForClearingBayLNodeConnections({
+				selectedBay: bay,
+				lNodeTemplates: [template],
+				iedName: IED_NAME
+			})
+			const lnodeEdit = edits.find(
+				(e) => hasAttributes(e) && e.element === lnode
+			)
+			expect(lnodeEdit).toBeDefined()
+		})
+
+		it('GIVEN CE name with illegal chars that were stripped in inst WHEN called THEN still finds LNode by UUID prefix', () => {
+			// Bay CE name is "CB-1"; inst was generated with sanitized name "CB1"
+			// queryMatchingBayLNode must find the EqFunction by UUID prefix, not by CE name
+			const bay = makeElement(`
+				<Bay>
+					<ConductingEquipment name="CB-1" uuid="eq-uuid" templateUuid="tpl-uuid" originUuid="orig-uuid">
+						<EqFunction uuid="b4e3f901abc">
+							<LNode lnClass="XCBR" lnType="XCBR1" lnInst="1" iedName="IED1"/>
+						</EqFunction>
+					</ConductingEquipment>
+				</Bay>
+			`)
+			const lnode = bay.querySelector('LNode')
+			const template: LNodeTemplate = {
+				lnClass: 'XCBR',
+				lnType: 'XCBR1',
+				lnInst: '1',
+				ldInst: 'CB1_CBFunction_b4e3f901'
 			}
 			const edits = buildUpdatesForClearingBayLNodeConnections({
 				selectedBay: bay,

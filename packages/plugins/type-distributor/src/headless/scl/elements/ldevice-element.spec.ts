@@ -1,10 +1,11 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { LNodeType } from '@/headless/common-types'
 import {
 	createLD0Element,
 	createLD0LNodeTemplates,
 	createLDeviceElement,
-	parseLDeviceInst
+	parseLDeviceInst,
+	sanitizeLDeviceInstSegment
 } from './ldevice-element'
 
 const LLN0_TYPE_ID = 'LLN0Type'
@@ -17,6 +18,36 @@ const DOC = new DOMParser().parseFromString(
 function makeLNodeType(lnClass: string, id = `${lnClass}Type`): LNodeType {
 	return { id, lnClass, dataObjects: [] } as LNodeType
 }
+
+describe('sanitizeLDeviceInstSegment', () => {
+	it('GIVEN a name with hyphens WHEN called THEN strips hyphens', () => {
+		expect(sanitizeLDeviceInstSegment('Bay-1')).toBe('Bay1')
+	})
+
+	it('GIVEN a name with spaces WHEN called THEN strips spaces', () => {
+		expect(sanitizeLDeviceInstSegment('Bay 1')).toBe('Bay1')
+	})
+
+	it('GIVEN a name with dots WHEN called THEN strips dots', () => {
+		expect(sanitizeLDeviceInstSegment('Bay.1')).toBe('Bay1')
+	})
+
+	it('GIVEN a name with underscores WHEN called THEN preserves underscores', () => {
+		expect(sanitizeLDeviceInstSegment('Bay_1')).toBe('Bay_1')
+	})
+
+	it('GIVEN an alphanumeric-only name WHEN called THEN returns unchanged', () => {
+		expect(sanitizeLDeviceInstSegment('CBR1')).toBe('CBR1')
+	})
+
+	it('GIVEN an empty string WHEN called THEN returns empty string', () => {
+		expect(sanitizeLDeviceInstSegment('')).toBe('')
+	})
+
+	it('GIVEN a name with multiple illegal char types WHEN called THEN strips all of them', () => {
+		expect(sanitizeLDeviceInstSegment('Bay-1.A B')).toBe('Bay1AB')
+	})
+})
 
 describe('createLD0LNodeTemplates', () => {
 	it('GIVEN empty lnodeTypes WHEN called THEN returns empty array', () => {
@@ -321,5 +352,56 @@ describe('createLDeviceElement', () => {
 		})
 
 		expect(lDevice.children).toHaveLength(0)
+	})
+
+	it('GIVEN sourceFunction with hyphens in name WHEN called THEN inst uses sanitized name', () => {
+		const illegalParams = {
+			...params,
+			sourceFunction: { ...sourceFunction, name: 'Bay-Protection' }
+		}
+		const lDevice = createLDeviceElement(DOC, illegalParams)
+
+		expect(lDevice.getAttribute('inst')).toBe(
+			`BayProtection_${FUNCTION_UUID_PREFIX}`
+		)
+	})
+
+	describe('GIVEN equipment match with illegal chars in CE name', () => {
+		const CE_UUID = 'eq-uuid-1'
+		const EQUIPMENT_UUID = 'equipment-uuid-1'
+		let doc: XMLDocument
+		let scdEquipment: Element
+
+		beforeEach(() => {
+			doc = new DOMParser().parseFromString(
+				'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"/>',
+				'application/xml'
+			) as XMLDocument
+			scdEquipment = new DOMParser().parseFromString(
+				'<ConductingEquipment name="CB-1" type="CBR"/>',
+				'application/xml'
+			).documentElement
+		})
+
+		it('WHEN called THEN inst strips illegal chars from the equipment name', () => {
+			const equipmentMatch = {
+				bayTypeEquipment: {
+					uuid: EQUIPMENT_UUID
+				} as unknown as import('@/headless/common-types').ConductingEquipmentTemplate,
+				templateEquipment: {
+					eqFunctions: []
+				} as unknown as import('@/headless/common-types').ConductingEquipmentTemplate,
+				scdElement: scdEquipment
+			}
+			const lDevice = createLDeviceElement(doc, {
+				...params,
+				equipmentUuid: EQUIPMENT_UUID,
+				equipmentMatches: [equipmentMatch]
+			})
+
+			expect(lDevice.getAttribute('inst')).toBe(
+				`CB1_TestFunction_${FUNCTION_UUID_PREFIX}`
+			)
+		})
 	})
 })

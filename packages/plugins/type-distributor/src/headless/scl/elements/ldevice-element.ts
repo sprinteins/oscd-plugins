@@ -98,23 +98,25 @@ export function uuidToPrefix(uuid: string): string {
 	return uuid.replace(/-/g, '').substring(0, 8)
 }
 
+export function sanitizeLDeviceInstSegment(name: string): string {
+	return name.replace(/[^A-Za-z0-9_]/g, '')
+}
+
 function generateLDeviceInst(
 	functionName: string,
 	functionUuid: string,
 	conductingEquipmentName?: string
 ): string {
 	const prefix = uuidToPrefix(functionUuid)
+	const sanitizedFunctionName = sanitizeLDeviceInstSegment(functionName)
+	const sanitizedEquipmentName = conductingEquipmentName
+		? sanitizeLDeviceInstSegment(conductingEquipmentName)
+		: undefined
 
-	if (conductingEquipmentName?.includes('_') || functionName.includes('_')) {
-		console.warn(
-			`Generated LDevice inst for function "${functionName}" with conducting equipment "${conductingEquipmentName}" contains underscores. This may lead to parsing issues later on. Consider renaming the function or equipment to avoid underscores.`
-		)
+	if (sanitizedEquipmentName) {
+		return `${sanitizedEquipmentName}_${sanitizedFunctionName}_${prefix}`
 	}
-
-	if (conductingEquipmentName) {
-		return `${conductingEquipmentName}_${functionName}_${prefix}`
-	}
-	return `${functionName}_${prefix}`
+	return `${sanitizedFunctionName}_${prefix}`
 }
 
 type ParsedLD0Inst = {
