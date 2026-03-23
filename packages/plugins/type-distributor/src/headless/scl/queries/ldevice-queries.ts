@@ -1,7 +1,41 @@
 import type { LDeviceData, LNodeTemplate } from '../../common-types'
+import { parseLDeviceInst } from '../elements'
+
+export function queryLDeviceDisplayLabel(
+	doc: XMLDocument,
+	ldInst: string
+): string | undefined {
+	let parsed: ReturnType<typeof parseLDeviceInst>
+	try {
+		parsed = parseLDeviceInst(ldInst)
+	} catch {
+		return undefined
+	}
+
+	if (parsed.isLD0) return undefined
+
+	const { functionPrefixUuid } = parsed
+
+	const el = doc.querySelector(
+		`EqFunction[uuid^="${functionPrefixUuid}"], Function[uuid^="${functionPrefixUuid}"]`
+	)
+
+	if (!el) return undefined
+
+	const fnName = el.getAttribute('name')
+	if (!fnName) return undefined
+
+	if (el.tagName === 'EqFunction') {
+		const ceName = el.parentElement?.getAttribute('name')
+		if (ceName) return `${ceName}_${fnName}`
+	}
+
+	return fnName
+}
 
 export function queryLDevicesFromAccessPoint(
-	accessPoint: Element
+	accessPoint: Element,
+	doc?: XMLDocument
 ): LDeviceData[] {
 	const lDevices: LDeviceData[] = []
 
@@ -27,7 +61,10 @@ export function queryLDevicesFromAccessPoint(
 				})
 			}
 			if (lNodes.length > 0 && ldInst) {
-				lDevices.push({ ldInst, lNodes })
+				const displayLabel = doc
+					? queryLDeviceDisplayLabel(doc, ldInst)
+					: undefined
+				lDevices.push({ ldInst, lNodes, displayLabel })
 			}
 		}
 	}

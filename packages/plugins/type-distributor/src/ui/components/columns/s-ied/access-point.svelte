@@ -116,8 +116,8 @@ function handleDrop(event: DragEvent) {
   </button>
   {#if isOpen && hasLDevices}
     <div class="ml-4 space-y-1">
-      {#each lDevices as { ldInst, lNodes: ldLNodes }}
-        <LDevice {ldInst} lNodes={ldLNodes} {iedName} {accessPoint} />
+      {#each lDevices as { ldInst, lNodes: ldLNodes, displayLabel }}
+        <LDevice {ldInst} {displayLabel} lNodes={ldLNodes} {iedName} {accessPoint} />
       {/each}
     </div>
   {/if}

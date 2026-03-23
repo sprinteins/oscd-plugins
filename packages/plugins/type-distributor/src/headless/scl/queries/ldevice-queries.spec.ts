@@ -1,5 +1,8 @@
-import { describe, expect, it } from 'vitest'
-import { queryLDevicesFromAccessPoint } from './ldevice-queries'
+import { beforeEach, describe, expect, it } from 'vitest'
+import {
+	queryLDeviceDisplayLabel,
+	queryLDevicesFromAccessPoint
+} from './ldevice-queries'
 
 describe('queryLDevicesFromAccessPoint', () => {
 	describe('basic functionality', () => {
@@ -324,5 +327,189 @@ describe('queryLDevicesFromAccessPoint', () => {
 			// THEN should return empty array
 			expect(result).toEqual([])
 		})
+	})
+})
+
+describe('queryLDeviceDisplayLabel', () => {
+	function makeDoc(innerXml: string): XMLDocument {
+		return new DOMParser().parseFromString(
+			`<SCL>${innerXml}</SCL>`,
+			'application/xml'
+		) as XMLDocument
+	}
+
+	// UUID: 550e8400-... → 8-char prefix: 550e8400
+	const UUID = '550e8400-e29b-41d4-a716-446655440000'
+	const PREFIX = '550e8400'
+
+	it('GIVEN Function element matching the UUID prefix WHEN called THEN returns the function name', () => {
+		const doc = makeDoc(
+			`<Bay><Function name="Protection" uuid="${UUID}"/></Bay>`
+		)
+
+		const result = queryLDeviceDisplayLabel(doc, `Protection_${PREFIX}`)
+
+		expect(result).toBe('Protection')
+	})
+
+	it('GIVEN Function element with illegal chars in name WHEN called THEN returns the name unchanged', () => {
+		const doc = makeDoc(
+			`<Bay><Function name="Bay-Protection" uuid="${UUID}"/></Bay>`
+		)
+
+		const result = queryLDeviceDisplayLabel(doc, `BayProtection_${PREFIX}`)
+
+		expect(result).toBe('Bay-Protection')
+	})
+
+	describe('GIVEN EqFunction matching the UUID prefix inside a ConductingEquipment', () => {
+		let doc: XMLDocument
+
+		beforeEach(() => {
+			doc = makeDoc(
+				`<Bay>
+					<ConductingEquipment name="CB-1">
+						<EqFunction name="Bay-Protection" uuid="${UUID}"/>
+					</ConductingEquipment>
+				</Bay>`
+			)
+		})
+
+		it('WHEN called THEN returns conductingEquipment_functionName', () => {
+			const result = queryLDeviceDisplayLabel(
+				doc,
+				`CB1_BayProtection_${PREFIX}`
+			)
+
+			expect(result).toBe('CB-1_Bay-Protection')
+		})
+
+		it('WHEN ConductingEquipment has no name attribute THEN returns function name only', () => {
+			const docNoName = makeDoc(
+				`<Bay>
+					<ConductingEquipment>
+						<EqFunction name="Bay-Protection" uuid="${UUID}"/>
+					</ConductingEquipment>
+				</Bay>`
+			)
+
+			const result = queryLDeviceDisplayLabel(
+				docNoName,
+				`BayProtection_${PREFIX}`
+			)
+
+			expect(result).toBe('Bay-Protection')
+		})
+	})
+
+	it('GIVEN LD0 ldInst WHEN called THEN returns undefined', () => {
+		const doc = makeDoc('')
+
+		expect(queryLDeviceDisplayLabel(doc, 'LD0')).toBeUndefined()
+	})
+
+	it('GIVEN LD0_APname ldInst WHEN called THEN returns undefined', () => {
+		const doc = makeDoc('')
+
+		expect(queryLDeviceDisplayLabel(doc, 'LD0_S1-AP')).toBeUndefined()
+	})
+
+	it('GIVEN ldInst whose prefix matches nothing in the doc WHEN called THEN returns undefined', () => {
+		const doc = makeDoc(
+			`<Bay><Function name="Other" uuid="aaaabbbb-0000-0000-0000-000000000000"/></Bay>`
+		)
+
+		const result = queryLDeviceDisplayLabel(doc, `Protection_${PREFIX}`)
+
+		expect(result).toBeUndefined()
+	})
+
+	it('GIVEN invalid ldInst format (no underscore, no UUID suffix) WHEN called THEN returns undefined without throwing', () => {
+		const doc = makeDoc('')
+
+		expect(() => queryLDeviceDisplayLabel(doc, 'BadFormat')).not.toThrow()
+		expect(queryLDeviceDisplayLabel(doc, 'BadFormat')).toBeUndefined()
+	})
+})
+
+describe('queryLDevicesFromAccessPoint with doc', () => {
+	const UUID = '550e8400-e29b-41d4-a716-446655440000'
+	const PREFIX = '550e8400'
+
+	it('GIVEN doc with matching Function WHEN queryLDevicesFromAccessPoint is called THEN LDeviceData includes displayLabel', () => {
+		// GIVEN
+		const parser = new DOMParser()
+		const apDoc = parser.parseFromString(
+			`<AccessPoint name="AP1">
+				<Server>
+					<LDevice inst="Bay-Protection_${PREFIX}">
+						<LN lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
+					</LDevice>
+				</Server>
+			</AccessPoint>`,
+			'application/xml'
+		)
+		const scdDoc = parser.parseFromString(
+			`<SCL><Bay><Function name="Bay-Protection" uuid="${UUID}"/></Bay></SCL>`,
+			'application/xml'
+		) as XMLDocument
+
+		// WHEN
+		const result = queryLDevicesFromAccessPoint(
+			apDoc.documentElement,
+			scdDoc
+		)
+
+		// THEN
+		expect(result[0].displayLabel).toBe('Bay-Protection')
+	})
+
+	it('GIVEN doc with no matching Function WHEN queryLDevicesFromAccessPoint is called THEN displayLabel is undefined', () => {
+		// GIVEN
+		const parser = new DOMParser()
+		const apDoc = parser.parseFromString(
+			`<AccessPoint name="AP1">
+				<Server>
+					<LDevice inst="Protection_${PREFIX}">
+						<LN lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
+					</LDevice>
+				</Server>
+			</AccessPoint>`,
+			'application/xml'
+		)
+		const scdDoc = parser.parseFromString(
+			'<SCL/>',
+			'application/xml'
+		) as XMLDocument
+
+		// WHEN
+		const result = queryLDevicesFromAccessPoint(
+			apDoc.documentElement,
+			scdDoc
+		)
+
+		// THEN
+		expect(result[0].displayLabel).toBeUndefined()
+	})
+
+	it('GIVEN no doc argument WHEN queryLDevicesFromAccessPoint is called THEN displayLabel is undefined', () => {
+		// GIVEN
+		const parser = new DOMParser()
+		const apDoc = parser.parseFromString(
+			`<AccessPoint name="AP1">
+				<Server>
+					<LDevice inst="Protection_${PREFIX}">
+						<LN lnClass="XCBR" lnType="XCBR_Type1" lnInst="1"/>
+					</LDevice>
+				</Server>
+			</AccessPoint>`,
+			'application/xml'
+		)
+
+		// WHEN
+		const result = queryLDevicesFromAccessPoint(apDoc.documentElement)
+
+		// THEN
+		expect(result[0].displayLabel).toBeUndefined()
 	})
 })

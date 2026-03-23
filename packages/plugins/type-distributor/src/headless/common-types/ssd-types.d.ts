@@ -68,6 +68,7 @@ export type LNodeTemplate = {
 export type LDeviceData = {
 	ldInst: string
 	lNodes: LNodeTemplate[]
+	displayLabel?: string
 }
 
 export type AssignableTemplates =

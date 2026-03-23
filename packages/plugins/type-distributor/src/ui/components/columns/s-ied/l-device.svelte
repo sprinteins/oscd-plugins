@@ -7,12 +7,13 @@ import IedLnode from './ied-lnode.svelte'
 
 interface Props {
 	ldInst: string
+	displayLabel?: string
 	lNodes: LNodeTemplate[]
 	iedName: string
 	accessPoint: Element
 }
 
-const { ldInst, lNodes, iedName, accessPoint }: Props = $props()
+const { ldInst, displayLabel, lNodes, iedName, accessPoint }: Props = $props()
 
 let isOpen = $state(false)
 let hasLNodes = $derived(lNodes.length > 0)
@@ -40,8 +41,8 @@ let isLD0 = $derived(ldInst.startsWith('LD0'))
 									: ''}"
 							/>
 						{/if}
-						<span class="text-sm font-medium text-left line-clamp-2 break-all" title={ldInst}>
-							{ldInst}
+						<span class="text-sm font-medium text-left line-clamp-2 break-all" title={displayLabel ?? ldInst}>
+							{displayLabel ?? ldInst}
 						</span>
 					</div>
 					{#if !isLD0}
