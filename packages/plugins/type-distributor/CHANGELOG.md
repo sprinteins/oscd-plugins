@@ -10,8 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BayType Select only enabled if bay selection has been made to guide the user through the two selects.
 
 ## [1.0.1] - 2026-03-23
-### Added
-- Mark AccessPoints as unused if they do only hav LD0 lnodes
 ### Changed
 - Mark AccessPoints as unused if they do only have LD0 lnodes
 - Add another deeper tree so it is now:
