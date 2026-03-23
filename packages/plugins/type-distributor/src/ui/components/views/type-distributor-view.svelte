@@ -133,7 +133,7 @@ function handleBayTypeChange() {
 	<Card.Root class="flex-1 flex flex-col min-h-full">
 		<Card.Header>
 			<SelectWorkaround
-				disabled={bayTypeOptions.length === 0 || isBayTypeLocked}
+				disabled={bayTypeOptions.length === 0 || isBayTypeLocked || bayStore.selectedBay === null}
 				bind:value={ssdImportStore.selectedBayType}
 				handleChange={handleBayTypeChange}
 				options={bayTypeOptions}
@@ -150,9 +150,13 @@ function handleBayTypeChange() {
 						{conductingEquipmentTemplates}
 						{bayTypeWithTemplates}
 					/>
-				{:else if !ssdImportStore.selectedBayType}
+				{:else if !ssdImportStore.selectedBayType && bayStore.selectedBay !== null}
 					<p class="text-gray-500 text-sm">
 						Select a bay type to see details
+					</p>
+				{:else if bayStore.selectedBay === null}
+					<p class="text-gray-500 text-sm">
+						Select a bay in the SLD to assign a bay type
 					</p>
 				{/if}
 			</div>
