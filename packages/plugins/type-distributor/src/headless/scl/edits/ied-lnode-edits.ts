@@ -75,3 +75,54 @@ export function buildEditsForDeleteLNodeFromAccessPoint({
 
 	return edits
 }
+
+interface BuildEditsForDeleteLDeviceParams {
+	iedName: string
+	accessPoint: Element
+	ldInst: string
+	selectedBay: Element | null
+}
+
+export function buildEditsForDeleteLDevice({
+	iedName,
+	accessPoint,
+	ldInst,
+	selectedBay
+}: BuildEditsForDeleteLDeviceParams): (Remove | SetAttributes)[] {
+	const edits: (Remove | SetAttributes)[] = []
+
+	if (!selectedBay) {
+		throw new Error('No bay selected')
+	}
+
+	const lDevice = queryLDeviceFromAccessPoint(accessPoint, ldInst)
+	if (!lDevice) {
+		throw new Error(
+			`LDevice with inst "${ldInst}" not found in AccessPoint "${accessPoint.getAttribute('name')}" of IED "${iedName}"`
+		)
+	}
+
+	const lnElements = Array.from(
+		lDevice.querySelectorAll(':scope > LN, :scope > LN0')
+	)
+
+	const lNodeTemplates: LNodeTemplate[] = lnElements.map((lnElement) => ({
+		lnClass: lnElement.getAttribute('lnClass') ?? '',
+		lnType: lnElement.getAttribute('lnType') ?? '',
+		lnInst: lnElement.getAttribute('lnInst') ?? '',
+		ldInst
+	}))
+
+	const bayEdits = buildUpdatesForClearingBayLNodeConnections({
+		selectedBay,
+		lNodeTemplates,
+		iedName
+	})
+	edits.push(...bayEdits)
+
+	edits.push({
+		node: lDevice
+	} as Remove)
+
+	return edits
+}
