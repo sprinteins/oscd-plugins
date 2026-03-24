@@ -134,28 +134,11 @@ function queryMatchingBayLNode(
 
 	if (parsed.isLD0) return null
 
-	const { equipmentName, functionPrefixUuid } = parsed
+	const { functionPrefixUuid } = parsed
 
-	let targetFunction: Element | null = null
-
-	if (equipmentName) {
-		const equipment = bay.querySelector(
-			`ConductingEquipment[name="${equipmentName}"]`
-		)
-		if (equipment) {
-			targetFunction = equipment.querySelector(
-				`:scope > EqFunction[uuid^="${functionPrefixUuid}"]`
-			)
-		} else {
-			targetFunction = bay.querySelector(
-				`EqFunction[uuid^="${functionPrefixUuid}"]`
-			)
-		}
-	} else {
-		targetFunction = bay.querySelector(
-			`Function[uuid^="${functionPrefixUuid}"]`
-		)
-	}
+	const targetFunction = bay.querySelector(
+		`EqFunction[uuid^="${functionPrefixUuid}"], Function[uuid^="${functionPrefixUuid}"]`
+	)
 
 	if (!targetFunction) return null
 

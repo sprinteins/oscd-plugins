@@ -40,13 +40,13 @@ export function resolveScdEqFunctionUuid({
 }
 
 export function resolveScdFunctionUuid(
-	sourceFunction: FunctionTemplate
+	functionInstanceUuid: string
 ): string | undefined {
 	const scdBay = bayStore.scdBay
 	if (!scdBay) return undefined
 
 	const funcEl = scdBay.querySelector(
-		`:scope > Function[originUuid="${sourceFunction.uuid}"]`
+		`:scope > Function[templateUuid="${functionInstanceUuid}"]`
 	)
 	return funcEl?.getAttribute('uuid') ?? undefined
 }

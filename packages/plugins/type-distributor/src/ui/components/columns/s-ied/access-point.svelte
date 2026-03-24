@@ -17,6 +17,7 @@ const { accessPoint, lDevices, iedName }: Props = $props()
 let isOpen = $state(false)
 let hasLDevices = $derived(lDevices.length > 0)
 let isDropTarget = $state(false)
+
 let isInUse = $derived(lDevices.some((ld) => !ld.ldInst?.startsWith('LD0')))
 
 const apLabel = $derived(
