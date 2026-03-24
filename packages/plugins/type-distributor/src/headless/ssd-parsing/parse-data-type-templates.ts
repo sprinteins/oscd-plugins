@@ -1,8 +1,8 @@
 import type {
-	LNodeType,
-	DOType,
 	DAType,
-	EnumType
+	DOType,
+	EnumType,
+	LNodeType
 } from '@/headless/common-types'
 
 export function parseDataTypeTemplates(doc: XMLDocument) {

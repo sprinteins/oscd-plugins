@@ -1,22 +1,28 @@
 <script lang="ts">
-import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
-import { dndStore } from '@/headless/stores'
-import type { LNodeTemplate } from '@/headless/common-types'
-import IedLnode from './ied-lnode.svelte'
+import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
+import type { LDeviceData } from '@/headless/common-types'
+import { dndStore } from '@/headless/stores'
+import LDevice from './l-device.svelte'
 
 interface Props {
 	accessPoint: Element
-	lNodes: LNodeTemplate[]
+	lDevices: LDeviceData[]
 	iedName: string
 }
 
-const { accessPoint, lNodes, iedName }: Props = $props()
+const { accessPoint, lDevices, iedName }: Props = $props()
 
 let isOpen = $state(false)
-let hasLNodes = $derived(lNodes.length > 0)
+let hasLDevices = $derived(lDevices.length > 0)
 let isDropTarget = $state(false)
+
+let isInUse = $derived(lDevices.some((ld) => !ld.ldInst?.startsWith('LD0')))
+
+const apLabel = $derived(
+	`${iedName} - Access Point ${accessPoint.getAttribute('name')}`
+)
 
 function handleDragOver(event: DragEvent) {
 	event.preventDefault()
@@ -48,34 +54,36 @@ function handleDrop(event: DragEvent) {
 <div class="space-y-1">
   <button
     class="w-full"
-    onclick={() => hasLNodes && (isOpen = !isOpen)}
+    onclick={() => hasLDevices && (isOpen = !isOpen)}
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
     ondrop={handleDrop}
   >
     <Card.Root
-      class="{hasLNodes
+      class="{isInUse
         ? 'hover:bg-gray-50 cursor-pointer'
         : 'border border-dashed'} 
 		{isDropTarget ? 'border-primary ring-2 ring-primary ring-offset-2' : ''} 
 		transition-all"
     >
       <Card.Content class="p-2 relative">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            {#if hasLNodes}
+        <div class="flex items-center justify-between gap-2 min-w-0">
+          <div class="flex items-center gap-2 min-w-0">
+            {#if hasLDevices}
               <ChevronRight
-                class="size-4 transition-transform duration-200 {isOpen
+                class="size-4 shrink-0 transition-transform duration-200 {isOpen
                   ? 'rotate-90'
                   : ''}"
               />
             {/if}
-            <span class="text-sm font-medium text-left">
-              {iedName} - Access Point {accessPoint.getAttribute("name") ??
-                "(unnamed)"}
+            <span
+              class="text-sm font-medium text-left line-clamp-2 break-all"
+              title={apLabel}
+            >
+              {apLabel}
             </span>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 shrink-0">
             {#if isDropTarget}
               <CirclePlus class="size-5 text-primary animate-pulse" />
             {/if}
@@ -88,7 +96,16 @@ function handleDrop(event: DragEvent) {
               <DropdownMenuWorkaround
                 size="sm"
                 actions={[
-                  { label: "Delete", disabled: false, callback: () => deleteAccessPointFromIed({iedName, accessPoint, hasLNodes}) },
+                  {
+                    label: "Delete",
+                    disabled: false,
+                    callback: () =>
+                      deleteAccessPointFromIed({
+                        iedName,
+                        accessPoint,
+                        hasLDevices,
+                      }),
+                  },
                 ]}
               />
             </span>
@@ -97,14 +114,10 @@ function handleDrop(event: DragEvent) {
       </Card.Content>
     </Card.Root>
   </button>
-  {#if isOpen && hasLNodes}
+  {#if isOpen && hasLDevices}
     <div class="ml-4 space-y-1">
-      {#each lNodes as lnode}
-        <IedLnode
-          {lnode}
-          {iedName}
-          {accessPoint}
-        />
+      {#each lDevices as { ldInst, lNodes: ldLNodes }}
+        <LDevice {ldInst} lNodes={ldLNodes} {iedName} {accessPoint} />
       {/each}
     </div>
   {/if}

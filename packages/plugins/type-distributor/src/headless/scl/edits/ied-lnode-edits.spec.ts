@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { buildEditsForDeleteLNodeFromAccessPoint } from './ied-lnode-edits'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createTestDocument } from '@/headless/test-helpers'
 import {
 	isRemoveEdit,
 	isSetAttributesEdit
 } from '@/headless/test-helpers/type-guards'
-import { createTestDocument } from '@/headless/test-helpers'
+import { buildEditsForDeleteLNodeFromAccessPoint } from './ied-lnode-edits'
 
 // Mock dependencies
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -34,12 +34,12 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
     <AccessPoint name="P1">
       <Server>
         <Authentication none="true"/>
-        <LDevice inst="CBFunction">
+        <LDevice inst="CBFunction_aa11bb22">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
           <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
           <LN lnClass="CSWI" lnInst="1" lnType="TestCSWI"/>
         </LDevice>
-        <LDevice inst="QA1_Protection">
+        <LDevice inst="QA1_Protection_cc33dd44">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
           <LN lnClass="PTRC" lnInst="1" lnType="TestPTRC"/>
         </LDevice>
@@ -70,14 +70,14 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
     <VoltageLevel name="VL1">
       <Bay name="Bay1" templateUuid="baytype-uuid-1">
         <!-- Function with LNodes -->
-        <Function name="CBFunction" templateUuid="func-uuid-1">
-          <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1" ldInst="CBFunction"/>
-          <LNode lnClass="CSWI" lnType="TestCSWI" lnInst="1" iedName="IED1" ldInst="CBFunction"/>
+        <Function name="CBFunction" uuid="aa11bb22-0000-0000-0000-000000000000" templateUuid="func-uuid-1">
+          <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1" ldInst="CBFunction_aa11bb22"/>
+          <LNode lnClass="CSWI" lnType="TestCSWI" lnInst="1" iedName="IED1" ldInst="CBFunction_aa11bb22"/>
         </Function>
         <!-- Equipment with EqFunction -->
         <ConductingEquipment name="QA1" type="CBR" templateUuid="eq-uuid-1">
-          <EqFunction name="Protection">
-            <LNode lnClass="PTRC" lnType="TestPTRC" lnInst="1" iedName="IED1" ldInst="QA1_Protection"/>
+          <EqFunction name="Protection" uuid="cc33dd44-0000-0000-0000-000000000000">
+            <LNode lnClass="PTRC" lnType="TestPTRC" lnInst="1" iedName="IED1" ldInst="QA1_Protection_cc33dd44"/>
           </EqFunction>
         </ConductingEquipment>
       </Bay>
@@ -126,7 +126,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 						lnClass: 'XCBR',
 						lnType: 'TestXCBR',
 						lnInst: '1',
-						ldInst: 'CBFunction'
+						ldInst: 'CBFunction_aa11bb22'
 					},
 					selectedBay: bay1
 				})
@@ -168,7 +168,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 					lnClass: 'XCBR',
 					lnType: 'TestXCBR',
 					lnInst: '1',
-					ldInst: 'CBFunction'
+					ldInst: 'CBFunction_aa11bb22'
 				},
 				selectedBay: bay1
 			})
@@ -199,7 +199,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 					lnClass: 'PTRC',
 					lnType: 'TestPTRC',
 					lnInst: '1',
-					ldInst: 'QA1_Protection'
+					ldInst: 'QA1_Protection_cc33dd44'
 				},
 				selectedBay: bay1
 			})
@@ -211,7 +211,9 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 				const node = removeEdit.node as Element
 				// Should remove LDevice, not just LN
 				expect(node.tagName).toBe('LDevice')
-				expect(node.getAttribute('inst')).toBe('QA1_Protection')
+				expect(node.getAttribute('inst')).toBe(
+					'QA1_Protection_cc33dd44'
+				)
 			}
 		})
 	})
@@ -223,7 +225,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
   <IED name="IED1">
     <AccessPoint name="P1">
       <Server>
-        <LDevice inst="CBFunction">
+        <LDevice inst="CBFunction_aa11bb22">
           <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
         </LDevice>
       </Server>
@@ -232,7 +234,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
   <Substation>
     <VoltageLevel>
       <Bay name="Bay1" templateUuid="baytype-uuid-1">
-        <Function name="CBFunction">
+        <Function name="CBFunction" uuid="aa11bb22-0000-0000-0000-000000000000">
           <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1"/>
         </Function>
       </Bay>
@@ -255,7 +257,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 				lnClass: 'XCBR',
 				lnType: 'TestXCBR',
 				lnInst: '1',
-				ldInst: 'CBFunction'
+				ldInst: 'CBFunction_aa11bb22'
 			},
 			selectedBay: simpleBay
 		})
@@ -288,7 +290,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
   <IED name="IED1">
     <AccessPoint name="P1">
       <Server>
-        <LDevice inst="-CEQ2_DisconnectorFunction">
+        <LDevice inst="-CEQ2_DisconnectorFunction_a1b2c3d4">
           <LN lnClass="XSWI" lnInst="1" lnType="XSWI$type"/>
         </LDevice>
       </Server>
@@ -298,8 +300,8 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
     <VoltageLevel>
       <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
         <ConductingEquipment name="-CEQ2" type="DIS" uuid="equip-uuid-2" templateUuid="tpl-uuid-2" originUuid="orig-uuid-2">
-          <EqFunction name="DisconnectorFunction">
-            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction"/>
+          <EqFunction name="DisconnectorFunction" uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
+            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction_a1b2c3d4"/>
           </EqFunction>
         </ConductingEquipment>
         <ConductingEquipment name="-CEQ3" type="CBR" uuid="equip-uuid-3" templateUuid="tpl-uuid-3" originUuid="orig-uuid-3">
@@ -327,7 +329,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 				lnClass: 'XSWI',
 				lnType: 'XSWI$type',
 				lnInst: '1',
-				ldInst: '-CEQ2_DisconnectorFunction'
+				ldInst: '-CEQ2_DisconnectorFunction_a1b2c3d4'
 			},
 			selectedBay: assignedBay
 		})
@@ -373,7 +375,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
   <IED name="IED1">
     <AccessPoint name="P1">
       <Server>
-        <LDevice inst="ProtectionFunction">
+        <LDevice inst="ProtectionFunction_bb22cc33">
           <LN lnClass="PTRC" lnInst="1" lnType="PTRC$type"/>
         </LDevice>
       </Server>
@@ -382,8 +384,8 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
   <Substation>
     <VoltageLevel>
       <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
-        <Function name="ProtectionFunction" uuid="func-uuid-1" templateUuid="tpl-func-1" originUuid="orig-func-1">
-          <LNode lnClass="PTRC" lnInst="1" lnType="PTRC$type" iedName="IED1" ldInst="ProtectionFunction"/>
+        <Function name="ProtectionFunction" uuid="bb22cc33-0000-0000-0000-000000000000" templateUuid="tpl-func-1" originUuid="orig-func-1">
+          <LNode lnClass="PTRC" lnInst="1" lnType="PTRC$type" iedName="IED1" ldInst="ProtectionFunction_bb22cc33"/>
         </Function>
         <Function name="MeasurementFunction" uuid="func-uuid-2" templateUuid="tpl-func-2" originUuid="orig-func-2">
           <LNode lnClass="MMXU" lnInst="1" lnType="MMXU$type"/>
@@ -408,7 +410,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 				lnClass: 'PTRC',
 				lnType: 'PTRC$type',
 				lnInst: '1',
-				ldInst: 'ProtectionFunction'
+				ldInst: 'ProtectionFunction_bb22cc33'
 			},
 			selectedBay: functionBay
 		})

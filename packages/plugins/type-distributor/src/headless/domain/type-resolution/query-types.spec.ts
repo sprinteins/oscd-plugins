@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
-	queryTypesFromDOType,
+	queryDOTypesFromLNodeType,
 	queryTypesFromDAType,
-	queryDOTypesFromLNodeType
+	queryTypesFromDOType
 } from './query-types'
 
 function makeElement(xml: string): Element {

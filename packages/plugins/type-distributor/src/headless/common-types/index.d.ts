@@ -1,1 +1,1 @@
-export type * from './ssd-types.js'
+export * from './ssd-types'

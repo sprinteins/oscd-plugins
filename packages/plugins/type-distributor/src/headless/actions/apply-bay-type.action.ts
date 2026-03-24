@@ -1,25 +1,28 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '@/headless/common-types'
-import {
-	equipmentMatchingStore,
-	ssdImportStore,
-	bayStore
-} from '@/headless/stores'
-import { resolveMatchingContext } from '@/headless/domain/matching'
-import { matchEquipmentForInitialApply } from '@/headless/domain/matching'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import {
-	buildUpdateForBay,
-	buildEditsForEquipmentUpdates
+	matchEquipmentForInitialApply,
+	resolveMatchingContext
+} from '@/headless/domain/matching'
+import {
+	buildEditsForEquipmentUpdates,
+	buildUpdateForBay
 } from '@/headless/scl/edits/bay-type-edits'
 import {
+	buildInsertsForDataTypeTemplates,
+	ensureDataTypeTemplates
+} from '@/headless/scl/edits/data-type-edits'
+import {
 	buildInsertsForEqFunction,
-	buildInsertsForFunction
+	buildInsertsForFunction,
+	collectExistingPrefixes
 } from '@/headless/scl/edits/function-edits'
 import {
-	ensureDataTypeTemplates,
-	buildInsertsForDataTypeTemplates
-} from '@/headless/scl/edits/data-type-edits'
+	bayStore,
+	equipmentMatchingStore,
+	ssdImportStore
+} from '@/headless/stores'
 import { getDocumentAndEditor } from '@/headless/utils'
 
 export function applyBayType(bayName: string): EquipmentMatch[] {
@@ -42,13 +45,24 @@ export function applyBayType(bayName: string): EquipmentMatch[] {
 
 	edits.push(buildUpdateForBay(scdBay, bayType))
 	edits.push(...buildEditsForEquipmentUpdates(matches))
-	edits.push(...buildInsertsForEqFunction(doc, matches))
+	const existingPrefixes = collectExistingPrefixes(
+		doc.querySelectorAll('Function, EqFunction')
+	)
+
+	edits.push(
+		...buildInsertsForEqFunction({
+			doc,
+			matches,
+			prefixes: existingPrefixes
+		})
+	)
 	edits.push(
 		...buildInsertsForFunction({
 			doc,
 			bayType,
 			scdBay,
-			functionTemplates: ssdImportStore.functionTemplates
+			functionTemplates: ssdImportStore.functionTemplates,
+			existingPrefixes
 		})
 	)
 

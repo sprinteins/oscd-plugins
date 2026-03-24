@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { filterByIED } from './ied-filters'
 import type { IEDData } from './types'
 
@@ -11,12 +11,17 @@ describe('filterByIED', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
-					lNodes: [
+					lDevices: [
 						{
-							lnClass: 'XCBR',
-							lnType: 'XCBR_Type1',
-							lnInst: '1',
-							ldInst: 'LD0'
+							ldInst: 'LD0',
+							lNodes: [
+								{
+									lnClass: 'XCBR',
+									lnType: 'XCBR_Type1',
+									lnInst: '1',
+									ldInst: 'LD0'
+								}
+							]
 						}
 					]
 				}
@@ -29,12 +34,17 @@ describe('filterByIED', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
-					lNodes: [
+					lDevices: [
 						{
-							lnClass: 'CSWI',
-							lnType: 'CSWI_Type1',
-							lnInst: '1',
-							ldInst: 'LD0'
+							ldInst: 'LD0',
+							lNodes: [
+								{
+									lnClass: 'CSWI',
+									lnType: 'CSWI_Type1',
+									lnInst: '1',
+									ldInst: 'LD0'
+								}
+							]
 						}
 					]
 				}
@@ -55,7 +65,7 @@ describe('filterByIED', () => {
 		expect(result).toHaveLength(1)
 		expect(result[0].name).toBe('IED_Bay1_Protection')
 		expect(result[0].accessPoints).toHaveLength(1)
-		expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
+		expect(result[0].accessPoints[0].lDevices).toHaveLength(1)
 	})
 
 	it('GIVEN IEDs with partial matching names WHEN filtering with lowercase term THEN should match case-insensitively', () => {

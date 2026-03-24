@@ -1,7 +1,7 @@
-import type { LNodeTemplate } from '@/headless/common-types'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
+import type { LNodeTemplate } from '@/headless/common-types'
 import { queryLDeviceFromAccessPoint, queryLNodeInLDevice } from '../elements'
+import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
 
 interface BuildEditsForDeleteLNodeFromAccessPointParams {
 	iedName: string
@@ -72,6 +72,57 @@ export function buildEditsForDeleteLNodeFromAccessPoint({
 			node: lnElement
 		} as Remove)
 	}
+
+	return edits
+}
+
+interface BuildEditsForDeleteLDeviceParams {
+	iedName: string
+	accessPoint: Element
+	ldInst: string
+	selectedBay: Element | null
+}
+
+export function buildEditsForDeleteLDevice({
+	iedName,
+	accessPoint,
+	ldInst,
+	selectedBay
+}: BuildEditsForDeleteLDeviceParams): (Remove | SetAttributes)[] {
+	const edits: (Remove | SetAttributes)[] = []
+
+	if (!selectedBay) {
+		throw new Error('No bay selected')
+	}
+
+	const lDevice = queryLDeviceFromAccessPoint(accessPoint, ldInst)
+	if (!lDevice) {
+		throw new Error(
+			`LDevice with inst "${ldInst}" not found in AccessPoint "${accessPoint.getAttribute('name')}" of IED "${iedName}"`
+		)
+	}
+
+	const lnElements = Array.from(
+		lDevice.querySelectorAll(':scope > LN, :scope > LN0')
+	)
+
+	const lNodeTemplates: LNodeTemplate[] = lnElements.map((lnElement) => ({
+		lnClass: lnElement.getAttribute('lnClass') ?? '',
+		lnType: lnElement.getAttribute('lnType') ?? '',
+		lnInst: lnElement.getAttribute('lnInst') ?? '',
+		ldInst
+	}))
+
+	const bayEdits = buildUpdatesForClearingBayLNodeConnections({
+		selectedBay,
+		lNodeTemplates,
+		iedName
+	})
+	edits.push(...bayEdits)
+
+	edits.push({
+		node: lDevice
+	} as Remove)
 
 	return edits
 }

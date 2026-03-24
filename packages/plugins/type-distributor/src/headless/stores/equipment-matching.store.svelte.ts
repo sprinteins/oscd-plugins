@@ -1,7 +1,9 @@
 import { SvelteMap } from 'svelte/reactivity'
-import type { ValidationResult } from '@/headless/domain/matching'
 import type { ConductingEquipmentTemplate } from '@/headless/common-types'
-import type { TemplateCountMismatch } from '@/headless/domain/matching'
+import type {
+	TemplateCountMismatch,
+	ValidationResult
+} from '@/headless/domain/matching'
 import { ssdImportStore } from './ssd-import.store.svelte'
 
 class UseEquipmentMatchingStore {

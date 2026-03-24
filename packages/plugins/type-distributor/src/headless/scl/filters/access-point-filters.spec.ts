@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { filterByAccessPoint } from './access-point-filters'
 import type { IEDData } from './types'
 
@@ -11,24 +11,34 @@ describe('filterByAccessPoint', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Primary',
-					lNodes: [
+					lDevices: [
 						{
-							lnClass: 'XCBR',
-							lnType: 'XCBR_Type1',
-							lnInst: '1',
-							ldInst: 'LD0'
+							ldInst: 'LD0',
+							lNodes: [
+								{
+									lnClass: 'XCBR',
+									lnType: 'XCBR_Type1',
+									lnInst: '1',
+									ldInst: 'LD0'
+								}
+							]
 						}
 					]
 				},
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Secondary',
-					lNodes: [
+					lDevices: [
 						{
-							lnClass: 'XSWI',
-							lnType: 'XSWI_Type1',
-							lnInst: '1',
-							ldInst: 'LD1'
+							ldInst: 'LD1',
+							lNodes: [
+								{
+									lnClass: 'XSWI',
+									lnType: 'XSWI_Type1',
+									lnInst: '1',
+									ldInst: 'LD1'
+								}
+							]
 						}
 					]
 				}
@@ -41,12 +51,17 @@ describe('filterByAccessPoint', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Main',
-					lNodes: [
+					lDevices: [
 						{
-							lnClass: 'CSWI',
-							lnType: 'CSWI_Type1',
-							lnInst: '1',
-							ldInst: 'LD0'
+							ldInst: 'LD0',
+							lNodes: [
+								{
+									lnClass: 'CSWI',
+									lnType: 'CSWI_Type1',
+									lnInst: '1',
+									ldInst: 'LD0'
+								}
+							]
 						}
 					]
 				}
@@ -59,7 +74,7 @@ describe('filterByAccessPoint', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_NonMatch',
-					lNodes: []
+					lDevices: []
 				}
 			]
 		}
@@ -74,7 +89,7 @@ describe('filterByAccessPoint', () => {
 		expect(result[0].name).toBe('IED_Protection')
 		expect(result[0].accessPoints).toHaveLength(1)
 		expect(result[0].accessPoints[0].name).toBe('AP_Primary')
-		expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
+		expect(result[0].accessPoints[0].lDevices).toHaveLength(1)
 	})
 
 	it('GIVEN IED with multiple AccessPoints WHEN filtering matches multiple THEN should return IED with all matching AccessPoints', () => {
@@ -140,7 +155,7 @@ describe('filterByAccessPoint', () => {
 					{
 						element: document.createElement('AccessPoint'),
 						name: null,
-						lNodes: []
+						lDevices: []
 					}
 				]
 			}

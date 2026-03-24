@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.2/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
@@ -7,11 +7,12 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": [
-			"packages/core/src/scd-events-v1/edit.scd-events-v1.ts",
-			"packages/core/src/scd-events-v1/open.scd-events-v1.ts",
-			"packages/core/src/scd-xml/foundation.ts",
-			"package/create-plugin/template/src/**/*.ts"
+		"includes": [
+			"**",
+			"!**/packages/core/src/scd-events-v1/edit.scd-events-v1.ts",
+			"!**/packages/core/src/scd-events-v1/open.scd-events-v1.ts",
+			"!**/packages/core/src/scd-xml/foundation.ts",
+			"!**/package/create-plugin/template/src/**/*.ts"
 		]
 	},
 	"formatter": {
@@ -19,25 +20,24 @@
 		"indentStyle": "tab",
 		"indentWidth": 4
 	},
-	"organizeImports": {
-		"enabled": true
-	},
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true
 		},
-		"ignore": [
-			"**/*.cjs",
-			"**/dist",
-			"**/.DS_Store",
-			"**/node_modules",
-			"**/.svelte-kit",
-			"**/.env",
-			"**/.env.*",
-			"**/pnpm-lock.yaml",
-			"**/package-lock.json",
-			"**/yarn.lock"
+		"includes": [
+			"**",
+			"!**/*.cjs",
+			"!**/dist",
+			"!**/.DS_Store",
+			"!**/node_modules",
+			"!**/.svelte-kit",
+			"!**/.env",
+			"!**/.env.*",
+			"!**/pnpm-lock.yaml",
+			"!**/package-lock.json",
+			"!**/yarn.lock"
 		]
 	},
 	"javascript": {
@@ -54,9 +54,13 @@
 	},
 	"overrides": [
 		{
-			"include": ["*.svelte"],
+			"includes": ["**/*.svelte"],
 			"linter": {
 				"rules": {
+					"correctness": {
+						"noUnusedImports": "off",
+						"noUnusedVariables": "off"
+					},
 					"style": {
 						"useConst": "off",
 						"useImportType": "off"

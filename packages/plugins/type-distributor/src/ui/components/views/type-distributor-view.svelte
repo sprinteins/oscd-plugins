@@ -4,22 +4,22 @@ import {
 	pluginGlobalStore,
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
+import { validateBayType } from '@/headless/actions'
+import type { BayType } from '@/headless/common-types'
+import { queryIEDs, type SearchType } from '@/headless/scl'
 import {
+	assignedLNodesStore,
 	bayStore,
 	equipmentMatchingStore,
-	assignedLNodesStore,
 	getBayTypeWithTemplates,
 	ssdImportStore
 } from '@/headless/stores'
-import type { BayType } from '@/headless/common-types'
 import {
 	BayTypeDetails,
 	BayTypeValidation
 } from '@/ui/components/columns/bay-type'
 import { IedDetails, IedSearch } from '@/ui/components/columns/s-ied'
 import { AddIedApDialogTrigger } from '@/ui/components/columns/s-ied/create-ied-ap-dialog'
-import { validateBayType } from '@/headless/actions'
-import { queryIEDs, type SearchType } from '@/headless/scl'
 
 let searchTerm = $state('')
 let searchType = $state<SearchType>('IED')
@@ -42,6 +42,7 @@ const bayTypeWithTemplates = $derived(
 const functionTemplates = $derived(
 	bayTypeWithTemplates?.functionTemplates ?? []
 )
+
 const conductingEquipmentTemplates = $derived(
 	bayTypeWithTemplates?.conductingEquipmentTemplates ?? []
 )
@@ -127,13 +128,13 @@ function handleBayTypeChange() {
 			<IedDetails {iedItems} {searchTerm} {searchType} />
 		</Card.Content>
 		<Card.Footer>
-				<AddIedApDialogTrigger />
+			<AddIedApDialogTrigger />
 		</Card.Footer>
 	</Card.Root>
 	<Card.Root class="flex-1 flex flex-col min-h-full">
 		<Card.Header>
 			<SelectWorkaround
-				disabled={bayTypeOptions.length === 0 || isBayTypeLocked}
+				disabled={bayTypeOptions.length === 0 || isBayTypeLocked || bayStore.selectedBay === null}
 				bind:value={ssdImportStore.selectedBayType}
 				handleChange={handleBayTypeChange}
 				options={bayTypeOptions}
@@ -150,9 +151,17 @@ function handleBayTypeChange() {
 						{conductingEquipmentTemplates}
 						{bayTypeWithTemplates}
 					/>
-				{:else if !ssdImportStore.selectedBayType}
+				{:else if ssdImportStore.bayTypes.length === 0}
 					<p class="text-gray-500 text-sm">
-						Select a bay type to see details
+						Import a ssd file.
+					</p>
+				{:else if !ssdImportStore.selectedBayType && bayStore.selectedBay !== null}
+					<p class="text-gray-500 text-sm">
+						Select a bay type to see details.
+					</p>
+				{:else if bayStore.selectedBay === null}
+					<p class="text-gray-500 text-sm">
+						Select a bay to assign a bay type.
 					</p>
 				{/if}
 			</div>

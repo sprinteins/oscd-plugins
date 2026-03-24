@@ -1,11 +1,11 @@
 <script lang="ts">
-import {
-	InputGroup,
-	DropdownMenuWorkaround,
-	Badge
-} from '@oscd-plugins/core-ui-svelte'
-import Search from '@lucide/svelte/icons/search'
 import ChevronDown from '@lucide/svelte/icons/chevron-down'
+import Search from '@lucide/svelte/icons/search'
+import {
+	Badge,
+	DropdownMenuWorkaround,
+	InputGroup
+} from '@oscd-plugins/core-ui-svelte'
 import type { SearchType } from '@/headless/scl'
 
 let {

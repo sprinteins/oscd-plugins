@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
-import {
-	ensureDataTypeTemplates,
-	buildInsertsForDataTypeTemplates
-} from './data-type-edits'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { LNodeTemplate } from '@/headless/common-types'
+import {
+	buildInsertsForDataTypeTemplates,
+	ensureDataTypeTemplates
+} from './data-type-edits'
 
 vi.mock('uuid', () => ({ v4: () => 'mocked-uuid' }))
 
@@ -90,14 +90,12 @@ describe('buildInsertsForDataTypeTemplates', () => {
 		})
 
 		it('WHEN called THEN it returns Insert edits for every missing type', () => {
-			const edits = buildInsertsForDataTypeTemplates(
-				{
-					doc: scdDoc,
-					dataTypeTemplates,
-					lnodeTemplates: [lnodeTemplate],
-					ssdDoc
-				}
-			)
+			const edits = buildInsertsForDataTypeTemplates({
+				doc: scdDoc,
+				dataTypeTemplates,
+				lnodeTemplates: [lnodeTemplate],
+				ssdDoc
+			})
 
 			// Expect 5 types: XCBR1, ENC_Mod, Originator, CtlModels, OriginatorKind
 			expect(edits.length).toBe(5)

@@ -1,6 +1,6 @@
-import type { LNodeTemplate } from '@/headless/common-types'
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import { parseLDeviceInst } from '../elements'
+import type { LNodeTemplate } from '@/headless/common-types'
+import { type ParsedLDeviceInst, parseLDeviceInst } from '../elements'
 
 export function hasRemainingConnectionsAfterClearing(
 	bay: Element,
@@ -124,27 +124,21 @@ function queryMatchingBayLNode(
 	const ldInst = lNodeTemplate.ldInst
 	if (!ldInst) return null
 
-	const parsed = parseLDeviceInst(ldInst)
-	if (!parsed) return null
-
-	const { equipmentName, functionName } = parsed
-
-	let targetFunction: Element | null = null
-
-	if (equipmentName) {
-		const equipment = bay.querySelector(
-			`ConductingEquipment[name="${equipmentName}"]`
-		)
-		if (equipment) {
-			targetFunction = equipment.querySelector(
-				`:scope > EqFunction[name="${functionName}"]`
-			)
-		}
-	} else {
-		targetFunction = bay.querySelector(
-			`:scope > Function[name="${functionName}"]`
-		)
+	let parsed: ParsedLDeviceInst
+	try {
+		parsed = parseLDeviceInst(ldInst)
+	} catch (error) {
+		console.error(`Failed to parse LDevice inst "${ldInst}":`, error)
+		return null
 	}
+
+	if (parsed.isLD0) return null
+
+	const { functionPrefixUuid } = parsed
+
+	const targetFunction = bay.querySelector(
+		`EqFunction[uuid^="${functionPrefixUuid}"], Function[uuid^="${functionPrefixUuid}"]`
+	)
 
 	if (!targetFunction) return null
 

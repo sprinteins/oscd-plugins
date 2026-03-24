@@ -1,16 +1,17 @@
+import { createElement } from '@oscd-plugins/core'
 import type {
 	ConductingEquipmentTemplate,
 	FunctionTemplate,
 	LNodeTemplate,
 	LNodeType
 } from '@/headless/common-types'
-import { queryServer } from './server-element'
 import type { EquipmentMatch } from '@/headless/domain/matching'
-import { createElement } from '@oscd-plugins/core'
 import { createLNodeElementInIED } from './lnode-element'
+import { queryServer } from './server-element'
 
 const LD0_INSTANCE = 'LD0'
 const EXCLUDED_LNODE_CLASSES = new Set(['LGOS', 'LSVS'])
+const UUID_PREFIX_REGEX = /^[0-9a-f]{8}$/i
 
 export function createLD0LNodeTemplates(
 	lnodeTypes: LNodeType[]
@@ -47,22 +48,34 @@ interface SourceFunctionParams {
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	equipmentUuid: string | undefined
 	equipmentMatches: EquipmentMatch[]
+	functionUuidOverride?: string
 }
 
 function extractFunctionNames({
 	sourceFunction,
 	equipmentUuid,
-	equipmentMatches
+	equipmentMatches,
+	functionUuidOverride
 }: SourceFunctionParams): {
 	functionName: string
+	functionUuid: string
 	conductingEquipmentName: string | undefined
 } {
 	let functionName = sourceFunction.name
+	let functionUuid = sourceFunction.uuid
 	let conductingEquipmentName: string | undefined
 
 	if ('eqFunctions' in sourceFunction) {
 		conductingEquipmentName = sourceFunction.name
-		functionName = sourceFunction.eqFunctions[0]?.name || functionName
+		const firstEqFunction = sourceFunction.eqFunctions[0]
+		if (firstEqFunction) {
+			functionName = firstEqFunction.name
+			functionUuid = firstEqFunction.uuid
+		}
+	}
+
+	if (functionUuidOverride) {
+		functionUuid = functionUuidOverride
 	}
 
 	if (equipmentUuid) {
@@ -78,41 +91,104 @@ function extractFunctionNames({
 		}
 	}
 
-	return { functionName, conductingEquipmentName }
+	return { functionName, functionUuid, conductingEquipmentName }
+}
+
+export function uuidToPrefix(uuid: string): string {
+	return uuid.replace(/-/g, '').substring(0, 8)
+}
+
+export function sanitizeLDeviceInstSegment(name: string): string {
+	return name.replace(/[^A-Za-z0-9_]/g, '')
 }
 
 function generateLDeviceInst(
 	functionName: string,
+	functionUuid: string,
 	conductingEquipmentName?: string
 ): string {
-	if (conductingEquipmentName) {
-		return `${conductingEquipmentName}_${functionName}`
+	const prefix = uuidToPrefix(functionUuid)
+	const sanitizedFunctionName = sanitizeLDeviceInstSegment(functionName)
+	const sanitizedEquipmentName = conductingEquipmentName
+		? sanitizeLDeviceInstSegment(conductingEquipmentName)
+		: undefined
+
+	if (sanitizedEquipmentName) {
+		return `${sanitizedEquipmentName}_${sanitizedFunctionName}_${prefix}`
 	}
-	return functionName
+	return `${sanitizedFunctionName}_${prefix}`
 }
 
-export function parseLDeviceInst(lDeviceInst: string): {
+type ParsedLD0Inst = {
+	isLD0: true
+	equipmentName: null
+	functionName: string
+	functionPrefixUuid: null
+}
+
+type ParsedRegularInst = {
+	isLD0: false
 	equipmentName: string | null
 	functionName: string
-} {
-	if (!lDeviceInst.includes('_')) {
-		return { equipmentName: null, functionName: lDeviceInst }
+	functionPrefixUuid: string
+}
+
+export type ParsedLDeviceInst = ParsedLD0Inst | ParsedRegularInst
+
+export function parseLDeviceInst(lDeviceInst: string): ParsedLDeviceInst {
+	if (lDeviceInst.startsWith(LD0_INSTANCE)) {
+		return {
+			isLD0: true,
+			equipmentName: null,
+			functionName: lDeviceInst,
+			functionPrefixUuid: null
+		}
 	}
-	const [equipmentName, functionName] = lDeviceInst.split('_')
-	return { equipmentName, functionName }
+
+	const parts = lDeviceInst.split('_')
+	const lastPart = parts[parts.length - 1]
+
+	if (parts.length < 2 || !UUID_PREFIX_REGEX.test(lastPart)) {
+		throw new Error(`Invalid LDevice inst format: ${lDeviceInst}`)
+	}
+
+	if (parts.length > 3) {
+		console.warn(
+			`Unexpected format for LDevice inst "${lDeviceInst}". Expected format is either FunctionName_UUID or EquipmentName_FunctionName_UUID. Equipment name will be parsed as everything before the last two segments.`
+		)
+	}
+
+	const functionPrefixUuid = lastPart
+	const functionName = parts[parts.length - 2]
+	const equipmentName =
+		parts.length >= 3 ? parts.slice(0, parts.length - 2).join('_') : null
+	return {
+		isLD0: false,
+		equipmentName,
+		functionName,
+		functionPrefixUuid
+	}
 }
 
 export function queryLDevice(
 	server: Element,
-	{ sourceFunction, equipmentUuid, equipmentMatches }: SourceFunctionParams
-): Element | null {
-	const { functionName, conductingEquipmentName } = extractFunctionNames({
+	{
 		sourceFunction,
 		equipmentUuid,
-		equipmentMatches
-	})
+		equipmentMatches,
+		functionUuidOverride
+	}: SourceFunctionParams
+): Element | null {
+	const { functionName, functionUuid, conductingEquipmentName } =
+		extractFunctionNames({
+			sourceFunction,
+			equipmentUuid,
+			equipmentMatches,
+			functionUuidOverride
+		})
 	const lDeviceInst = generateLDeviceInst(
 		functionName,
+		functionUuid,
 		conductingEquipmentName
 	)
 	return server.querySelector(`LDevice[inst="${lDeviceInst}"]`)
@@ -136,6 +212,7 @@ export function queryLDeviceFromAccessPoint(
 }
 
 interface CreateLDeviceElementParams extends SourceFunctionParams {
+	iedName: string
 	lnodeTypes?: LNodeType[]
 }
 
@@ -163,19 +240,25 @@ export function createLDeviceElement(
 		sourceFunction,
 		equipmentUuid,
 		equipmentMatches,
-		lnodeTypes
+		lnodeTypes,
+		iedName,
+		functionUuidOverride
 	}: CreateLDeviceElementParams
 ): Element {
-	const { functionName, conductingEquipmentName } = extractFunctionNames({
-		sourceFunction,
-		equipmentUuid,
-		equipmentMatches
-	})
-	const lDeviceInst = generateLDeviceInst(
+	const { functionName, functionUuid, conductingEquipmentName } =
+		extractFunctionNames({
+			sourceFunction,
+			equipmentUuid,
+			equipmentMatches,
+			functionUuidOverride
+		})
+	const inst = generateLDeviceInst(
 		functionName,
+		functionUuid,
 		conductingEquipmentName
 	)
-	const lDevice = createElement(doc, 'LDevice', { inst: lDeviceInst })
+	const ldName = `${iedName}_${inst}`
+	const lDevice = createElement(doc, 'LDevice', { inst, ldName })
 
 	if (lnodeTypes) {
 		const ln0 = createLln0Element(doc, lnodeTypes)
@@ -187,12 +270,13 @@ export function createLDeviceElement(
 
 export function createLD0Element(
 	doc: XMLDocument,
-	lnodeTypes: LNodeType[]
+	lnodeTypes: LNodeType[],
+	apName: string,
+	iedName: string
 ): Element {
-	const ld0 = createElement(doc, 'LDevice', {
-		inst: LD0_INSTANCE,
-		ldName: LD0_INSTANCE
-	})
+	const inst = `${LD0_INSTANCE}_${apName}`
+	const ldName = `${iedName}_${inst}`
+	const ld0 = createElement(doc, 'LDevice', { inst, ldName })
 
 	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
 

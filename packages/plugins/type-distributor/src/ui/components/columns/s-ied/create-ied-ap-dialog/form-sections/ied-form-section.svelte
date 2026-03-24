@@ -1,7 +1,7 @@
 <script lang="ts">
-import { Label, Input } from '@oscd-plugins/core-ui-svelte'
-import type { FieldErrors, IedData } from '../form-helpers'
+import { Input, Label } from '@oscd-plugins/core-ui-svelte'
 import { FieldError } from '../form-elements'
+import type { FieldErrors, IedData } from '../form-helpers'
 
 let {
 	ied = $bindable({ name: '', description: '', isNew: true }),

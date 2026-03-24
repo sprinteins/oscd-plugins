@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { deleteAccessPointFromIed } from './delete-access-point.action'
+import type { Insert, XMLEditor } from '@openscd/oscd-editor'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildEditsForDeleteAccessPoint } from '../scl/edits/'
 import { bayStore } from '../stores'
 import { getEditor } from '../utils'
-import type { Insert, XMLEditor } from '@openscd/oscd-editor'
+import { deleteAccessPointFromIed } from './delete-access-point.action'
 
 vi.mock('../scl/edits/', () => ({
 	buildEditsForDeleteAccessPoint: vi.fn()
@@ -41,25 +41,25 @@ describe('deleteAccessPointFromIed', () => {
 		vi.restoreAllMocks()
 	})
 
-	it('GIVEN hasLNodes is true AND no bay is selected WHEN deleteAccessPointFromIed is called THEN returns without committing', () => {
+	it('GIVEN hasLDevices is true AND no bay is selected WHEN deleteAccessPointFromIed is called THEN returns without committing', () => {
 		bayStore.scdBay = null
 
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
 			accessPoint: makeAccessPoint('AP1'),
-			hasLNodes: true
+			hasLDevices: true
 		})
 
 		expect(mockEditor.commit).not.toHaveBeenCalled()
 	})
 
-	it('GIVEN hasLNodes is false AND no bay is selected WHEN deleteAccessPointFromIed is called THEN proceeds to commit', () => {
+	it('GIVEN hasLDevices is false AND no bay is selected WHEN deleteAccessPointFromIed is called THEN proceeds to commit', () => {
 		bayStore.scdBay = null
 
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
 			accessPoint: makeAccessPoint('AP1'),
-			hasLNodes: false
+			hasLDevices: false
 		})
 
 		expect(mockEditor.commit).toHaveBeenCalled()
@@ -71,7 +71,7 @@ describe('deleteAccessPointFromIed', () => {
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
 			accessPoint: makeAccessPoint('AP1'),
-			hasLNodes: false
+			hasLDevices: false
 		})
 
 		expect(mockEditor.commit).not.toHaveBeenCalled()
@@ -81,7 +81,7 @@ describe('deleteAccessPointFromIed', () => {
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
 			accessPoint: makeAccessPoint('AP1'),
-			hasLNodes: false
+			hasLDevices: false
 		})
 
 		expect(mockEditor.commit).toHaveBeenCalledWith(expect.anything(), {
@@ -93,7 +93,7 @@ describe('deleteAccessPointFromIed', () => {
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
 			accessPoint: makeAccessPoint(),
-			hasLNodes: false
+			hasLDevices: false
 		})
 
 		expect(mockEditor.commit).toHaveBeenCalledWith(expect.anything(), {

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { filterByLNode } from './lnode-filters'
 import type { IEDData } from './types'
 
@@ -11,36 +11,51 @@ describe('filterByLNode', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
-					lNodes: [
+					lDevices: [
 						{
-							lnClass: 'XCBR',
-							lnType: 'XCBR_Type1',
-							lnInst: '1',
-							ldInst: 'LD0'
+							ldInst: 'LD0',
+							lNodes: [
+								{
+									lnClass: 'XCBR',
+									lnType: 'XCBR_Type1',
+									lnInst: '1',
+									ldInst: 'LD0'
+								},
+								{
+									lnClass: 'XSWI',
+									lnType: 'XSWI_Type1',
+									lnInst: '2',
+									ldInst: 'LD0'
+								}
+							]
 						},
 						{
-							lnClass: 'XSWI',
-							lnType: 'XSWI_Type1',
-							lnInst: '2',
-							ldInst: 'LD0'
-						},
-						{
-							lnClass: 'CSWI',
-							lnType: 'CSWI_Type1',
-							lnInst: '1',
-							ldInst: 'LD1'
+							ldInst: 'LD1',
+							lNodes: [
+								{
+									lnClass: 'CSWI',
+									lnType: 'CSWI_Type1',
+									lnInst: '1',
+									ldInst: 'LD1'
+								}
+							]
 						}
 					]
 				},
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP2',
-					lNodes: [
+					lDevices: [
 						{
-							lnClass: 'MMXU',
-							lnType: 'MMXU_Measurement',
-							lnInst: '1',
-							ldInst: 'LD_Meas'
+							ldInst: 'LD_Meas',
+							lNodes: [
+								{
+									lnClass: 'MMXU',
+									lnType: 'MMXU_Measurement',
+									lnInst: '1',
+									ldInst: 'LD_Meas'
+								}
+							]
 						}
 					]
 				}
@@ -53,18 +68,28 @@ describe('filterByLNode', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Main',
-					lNodes: [
+					lDevices: [
 						{
-							lnClass: 'CSWI',
-							lnType: 'ControlSwitch_Type',
-							lnInst: '10',
-							ldInst: 'LD_Control'
+							ldInst: 'LD_Control',
+							lNodes: [
+								{
+									lnClass: 'CSWI',
+									lnType: 'ControlSwitch_Type',
+									lnInst: '10',
+									ldInst: 'LD_Control'
+								}
+							]
 						},
 						{
-							lnClass: 'CILO',
-							lnType: 'CILO_Type1',
-							lnInst: '1',
-							ldInst: 'LD_Interlock'
+							ldInst: 'LD_Interlock',
+							lNodes: [
+								{
+									lnClass: 'CILO',
+									lnType: 'CILO_Type1',
+									lnInst: '1',
+									ldInst: 'LD_Interlock'
+								}
+							]
 						}
 					]
 				}
@@ -81,8 +106,11 @@ describe('filterByLNode', () => {
 			expect(result).toHaveLength(1)
 			expect(result[0].name).toBe('IED_Protection')
 			expect(result[0].accessPoints).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnClass).toBe('XCBR')
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(allLNodes).toHaveLength(1)
+			expect(allLNodes[0].lnClass).toBe('XCBR')
 		})
 
 		it('GIVEN IEDs with multiple matching lnClass WHEN filtering THEN should return all matching LNodes', () => {
@@ -92,11 +120,17 @@ describe('filterByLNode', () => {
 			// THEN should return both IEDs with matching LNodes
 			expect(result).toHaveLength(2)
 			expect(result[0].name).toBe('IED_Protection')
-			expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnClass).toBe('CSWI')
+			const protection = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(protection).toHaveLength(1)
+			expect(protection[0].lnClass).toBe('CSWI')
 			expect(result[1].name).toBe('IED_Control')
-			expect(result[1].accessPoints[0].lNodes).toHaveLength(1)
-			expect(result[1].accessPoints[0].lNodes[0].lnClass).toBe('CSWI')
+			const control = result[1].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(control).toHaveLength(1)
+			expect(control[0].lnClass).toBe('CSWI')
 		})
 
 		it('GIVEN IEDs WHEN filtering with partial lnClass match THEN should return matching LNodes', () => {
@@ -105,8 +139,11 @@ describe('filterByLNode', () => {
 
 			// THEN should match XSWI
 			expect(result).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnClass).toBe('XSWI')
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(allLNodes).toHaveLength(1)
+			expect(allLNodes[0].lnClass).toBe('XSWI')
 		})
 	})
 
@@ -117,10 +154,11 @@ describe('filterByLNode', () => {
 
 			// THEN should return matching LNode
 			expect(result).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnType).toBe(
-				'XCBR_Type1'
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
 			)
+			expect(allLNodes).toHaveLength(1)
+			expect(allLNodes[0].lnType).toBe('XCBR_Type1')
 		})
 
 		it('GIVEN IEDs WHEN filtering with partial lnType match THEN should return matching LNodes', () => {
@@ -131,9 +169,10 @@ describe('filterByLNode', () => {
 			expect(result).toHaveLength(1)
 			expect(result[0].accessPoints).toHaveLength(1)
 			expect(result[0].accessPoints[0].name).toBe('AP2')
-			expect(result[0].accessPoints[0].lNodes[0].lnType).toBe(
-				'MMXU_Measurement'
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
 			)
+			expect(allLNodes[0].lnType).toBe('MMXU_Measurement')
 		})
 
 		it('GIVEN IEDs WHEN filtering by "Type1" THEN should match multiple LNodes with Type1', () => {
@@ -144,9 +183,10 @@ describe('filterByLNode', () => {
 			expect(result).toHaveLength(2)
 			expect(result[0].name).toBe('IED_Protection')
 			// Should have AP1 with XCBR, XSWI, CSWI
-			expect(
-				result[0].accessPoints[0].lNodes.length
-			).toBeGreaterThanOrEqual(2)
+			const ap1LNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(ap1LNodes.length).toBeGreaterThanOrEqual(2)
 		})
 	})
 
@@ -158,8 +198,11 @@ describe('filterByLNode', () => {
 			// THEN should return LNode with inst "10"
 			expect(result).toHaveLength(1)
 			expect(result[0].name).toBe('IED_Control')
-			expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnInst).toBe('10')
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(allLNodes).toHaveLength(1)
+			expect(allLNodes[0].lnInst).toBe('10')
 		})
 
 		it('GIVEN IEDs with multiple LNodes having matching inst WHEN filtering THEN should return all matches', () => {
@@ -168,11 +211,11 @@ describe('filterByLNode', () => {
 
 			// THEN should return multiple LNodes with inst containing "1"
 			expect(result).toHaveLength(2)
-			// IED_Protection should have multiple matches
-			const protectionLNodes =
-				result[0].accessPoints[0].lNodes.length +
-				result[0].accessPoints[1].lNodes.length
-			expect(protectionLNodes).toBeGreaterThanOrEqual(3)
+			// IED_Protection should have multiple matches across its access points
+			const protectionLNodes = result[0].accessPoints.flatMap((ap) =>
+				ap.lDevices.flatMap((ld) => ld.lNodes)
+			)
+			expect(protectionLNodes.length).toBeGreaterThanOrEqual(3)
 		})
 	})
 
@@ -183,7 +226,10 @@ describe('filterByLNode', () => {
 
 			// THEN should match XCBR
 			expect(result).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnClass).toBe('XCBR')
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(allLNodes[0].lnClass).toBe('XCBR')
 		})
 
 		it('GIVEN IEDs WHEN filtering with mixed case term THEN should match case-insensitively', () => {
@@ -192,9 +238,10 @@ describe('filterByLNode', () => {
 
 			// THEN should match ControlSwitch_Type
 			expect(result).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnType).toContain(
-				'Control'
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
 			)
+			expect(allLNodes[0].lnType).toContain('Control')
 		})
 	})
 
@@ -229,7 +276,10 @@ describe('filterByLNode', () => {
 
 			// THEN should trim and match
 			expect(result).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnClass).toBe('XCBR')
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(allLNodes[0].lnClass).toBe('XCBR')
 		})
 	})
 
@@ -254,7 +304,10 @@ describe('filterByLNode', () => {
 			expect(result).toHaveLength(1)
 			expect(result[0].accessPoints).toHaveLength(1)
 			expect(result[0].accessPoints[0].name).toBe('AP2')
-			expect(result[0].accessPoints[0].lNodes[0].lnClass).toBe('MMXU')
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(allLNodes[0].lnClass).toBe('MMXU')
 		})
 
 		it('GIVEN AccessPoint with mixed LNodes WHEN filtering THEN should only include matching LNodes', () => {
@@ -264,9 +317,12 @@ describe('filterByLNode', () => {
 			// THEN should only include matching LNode from AP1
 			expect(result).toHaveLength(1)
 			expect(result[0].accessPoints[0].name).toBe('AP1')
-			expect(result[0].accessPoints[0].lNodes).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnClass).toBe('XSWI')
-			expect(result[0].accessPoints[0].lNodes[0].lnInst).toBe('2')
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(allLNodes).toHaveLength(1)
+			expect(allLNodes[0].lnClass).toBe('XSWI')
+			expect(allLNodes[0].lnInst).toBe('2')
 		})
 	})
 
@@ -285,7 +341,10 @@ describe('filterByLNode', () => {
 
 			// THEN should match CILO lnClass
 			expect(result).toHaveLength(1)
-			expect(result[0].accessPoints[0].lNodes[0].lnClass).toBe('CILO')
+			const allLNodes = result[0].accessPoints[0].lDevices.flatMap(
+				(ld) => ld.lNodes
+			)
+			expect(allLNodes[0].lnClass).toBe('CILO')
 		})
 	})
 })

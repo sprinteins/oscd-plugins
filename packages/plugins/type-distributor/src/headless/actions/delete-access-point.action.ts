@@ -5,17 +5,17 @@ import { getEditor } from '../utils'
 type deleteAccessPointFromIedParams = {
 	iedName: string
 	accessPoint: Element
-	hasLNodes: boolean
+	hasLDevices: boolean
 }
 
 export function deleteAccessPointFromIed({
 	iedName,
 	accessPoint,
-	hasLNodes
+	hasLDevices
 }: deleteAccessPointFromIedParams): void {
 	const editor = getEditor()
 
-	if (hasLNodes && !bayStore.scdBay) {
+	if (hasLDevices && !bayStore.scdBay) {
 		console.error(
 			'[AccessPoint] No bay selected - required to clear LNode references'
 		)

@@ -1,6 +1,6 @@
 <script lang="ts">
-import { equipmentMatchingStore } from '@/headless/stores'
 import { Label, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
+import { equipmentMatchingStore } from '@/headless/stores'
 
 interface Props {
 	equipment: {

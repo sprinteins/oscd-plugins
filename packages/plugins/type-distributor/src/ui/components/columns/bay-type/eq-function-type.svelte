@@ -1,12 +1,12 @@
 <script lang="ts">
-import { Card } from '@oscd-plugins/core-ui-svelte'
 import { ChevronRight } from '@lucide/svelte'
+import { Card } from '@oscd-plugins/core-ui-svelte'
 import type {
 	ConductingEquipmentTemplate,
 	EqFunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
-import { dndStore, assignedLNodesStore } from '@/headless/stores'
+import { assignedLNodesStore, dndStore } from '@/headless/stores'
 import LNode from './lnode.svelte'
 
 interface Props {
@@ -42,7 +42,7 @@ let allAssigned = $derived(
 	eqFunction.lnodes.length > 0 && assignedStatuses.every((status) => status)
 )
 
-function handleDragStart(event: DragEvent) {
+function handleDragStart(_event: DragEvent) {
 	dndStore.handleDragStart({
 		type: 'equipmentFunction',
 		sourceFunction: eqFunction,
@@ -57,7 +57,7 @@ function handleDragEnd() {
 	dndStore.handleDragEnd()
 }
 
-function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
+function handleLNodeDragStart(_event: DragEvent, lnode: LNodeTemplate) {
 	dndStore.handleDragStart({
 		type: 'lNode',
 		sourceFunction: eqFunction,
@@ -71,6 +71,8 @@ function handleLNodeDragStart(event: DragEvent, lnode: LNodeTemplate) {
 function handleLNodeDragEnd() {
 	dndStore.handleDragEnd()
 }
+
+const eqLabel = $derived(`${eqFunction.name} (${equipment.name})`)
 </script>
 
 <div class="space-y-1">
@@ -94,18 +96,19 @@ function handleLNodeDragEnd() {
                   : 'cursor-pointer'}"
         >
             <Card.Content class="p-2">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 min-w-0">
                     <ChevronRight
-                        class="size-4 transition-transform duration-200 {isOpen
+                        class="size-4 shrink-0 transition-transform duration-200 {isOpen
                             ? 'rotate-90'
                             : ''}"
                     />
                     <span
-                        class="text-sm font-medium text-left {allAssigned
+                        class="text-sm font-medium text-left line-clamp-2 break-all {allAssigned
                             ? 'text-gray-400'
                             : ''}"
+                        title={eqLabel}
                     >
-                        {eqFunction.name} ({equipment.name})
+                        {eqLabel}
                     </span>
                 </div>
             </Card.Content>
