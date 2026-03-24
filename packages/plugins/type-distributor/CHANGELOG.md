@@ -5,13 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+
+## [1.0.2] - 2026-03-23
 ### Changed
 - Strip characters illegal in `tLDInst` (`[^A-Za-z0-9_]`) from function names and conducting-equipment names when generating `LDevice inst`. Uniqueness is ensured solely by the 8-character UUID prefix.
 - `queryMatchingBayLNode` now locates `EqFunction` elements by UUID prefix only, removing the previous `ConductingEquipment[name=…]` scoping that broke when bay names contained illegal characters.
+- BayType Select only enabled if bay selection has been made to guide the user through the two selects.
 
 ## [1.0.1] - 2026-03-23
-### Added
+### Changed
 - Mark AccessPoints as unused if they do only have LD0 lnodes
 - Add another deeper tree so it is now:
 ```
