@@ -8,7 +8,7 @@ import {
 	queryLDevicesFromAccessPoint,
 	type SearchType
 } from '@/headless/scl'
-import { getDocumentAndEditor } from '@/headless/utils'
+import { getDocument } from '@/headless/utils'
 import AccessPoint from './access-point.svelte'
 import IedEmptyItem from './ied-empty-item.svelte'
 
@@ -23,12 +23,7 @@ const {
 } = $props()
 
 const sIedData = $derived.by(() => {
-	let doc: XMLDocument | undefined
-	try {
-		doc = getDocumentAndEditor().doc
-	} catch {
-		doc = undefined
-	}
+	const doc = getDocument()
 
 	const data: IEDData[] = iedItems.map((iedItem) => {
 		const name = iedItem.getAttribute('name') ?? 'Unnamed IED'
