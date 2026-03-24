@@ -86,6 +86,7 @@ flowchart LR
 - [Equipment matching](docs/concepts/equipment-matching.md)
 - [Assigned LNodes tracking](docs/concepts/assigned-lnodes-tracking.md)
 - [Create IED and Access Point dialog](docs/concepts/create-ied-ap-dialog-form.md)
+- [Insert arrays and edit accumulation](docs/concepts/insert-arrays.md)
 
 ### Coding guides
 
