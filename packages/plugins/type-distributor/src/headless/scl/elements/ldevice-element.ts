@@ -119,6 +119,16 @@ function generateLDeviceInst(
 	return `${sanitizedFunctionName}_${prefix}`
 }
 
+export function resolveLDeviceInst(params: SourceFunctionParams): string {
+	const { functionName, functionUuid, conductingEquipmentName } =
+		extractFunctionNames(params)
+	return generateLDeviceInst(
+		functionName,
+		functionUuid,
+		conductingEquipmentName
+	)
+}
+
 type ParsedLD0Inst = {
 	isLD0: true
 	equipmentName: null

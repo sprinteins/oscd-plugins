@@ -147,11 +147,12 @@ function choosePreferredMatch(matches: Element[]): Element | null {
 
 function createSetIedNameEdit(
 	element: Element,
-	iedName: string
+	iedName: string,
+	ldInst: string
 ): SetAttributes {
 	return {
 		element,
-		attributes: { iedName },
+		attributes: { iedName, ldInst },
 		attributesNS: {}
 	}
 }
@@ -159,6 +160,7 @@ function createSetIedNameEdit(
 type BuildUpdatesForBayLNodeParams = {
 	lNodes: LNodeTemplate[]
 	iedName: string
+	ldInst: string
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentMatches: EquipmentMatch[]
 	equipmentUuid?: string
@@ -168,6 +170,7 @@ type BuildUpdatesForBayLNodeParams = {
 export function buildUpdatesForBayLNode({
 	lNodes,
 	iedName,
+	ldInst,
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches,
@@ -191,7 +194,7 @@ export function buildUpdatesForBayLNode({
 		if (currentIedName) {
 			continue
 		}
-		edits.push(createSetIedNameEdit(lnodeElement, iedName))
+		edits.push(createSetIedNameEdit(lnodeElement, iedName, ldInst))
 	}
 
 	return edits

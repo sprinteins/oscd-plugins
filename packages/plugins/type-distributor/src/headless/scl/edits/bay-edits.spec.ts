@@ -90,6 +90,7 @@ describe('buildUpdatesForBayLNode', () => {
 			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
+				ldInst: 'TestLDevice',
 				sourceFunction,
 				equipmentUuid: 'eq-uuid',
 				equipmentMatches: [
@@ -114,7 +115,10 @@ describe('buildUpdatesForBayLNode', () => {
 			// THEN should create edit for EqFunction LNode
 			expect(edits).toHaveLength(1)
 			expect(edits[0].element.tagName).toBe('LNode')
-			expect(edits[0].attributes).toEqual({ iedName: 'IED1' })
+			expect(edits[0].attributes).toEqual({
+				iedName: 'IED1',
+				ldInst: 'TestLDevice'
+			})
 			expect(edits[0].element.getAttribute('lnType')).toBe('XCBR_Type1')
 			expect(edits[0].element.getAttribute('lnInst')).toBe('1')
 		})
@@ -139,6 +143,7 @@ describe('buildUpdatesForBayLNode', () => {
 			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
+				ldInst: 'TestLDevice',
 				sourceFunction,
 				equipmentUuid: 'non-existent-uuid',
 				equipmentMatches: []
@@ -170,6 +175,7 @@ describe('buildUpdatesForBayLNode', () => {
 			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
+				ldInst: 'TestLDevice',
 				sourceFunction,
 				equipmentMatches: []
 			})
@@ -177,7 +183,10 @@ describe('buildUpdatesForBayLNode', () => {
 			// THEN should create edit for top-level Function
 			expect(edits).toHaveLength(1)
 			expect(edits[0].element.tagName).toBe('LNode')
-			expect(edits[0].attributes).toEqual({ iedName: 'IED1' })
+			expect(edits[0].attributes).toEqual({
+				iedName: 'IED1',
+				ldInst: 'TestLDevice'
+			})
 			expect(edits[0].element.getAttribute('lnType')).toBe('XSWI_Type1')
 		})
 
@@ -201,6 +210,7 @@ describe('buildUpdatesForBayLNode', () => {
 			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
+				ldInst: 'TestLDevice',
 				sourceFunction,
 				equipmentMatches: []
 			})
@@ -246,6 +256,7 @@ describe('buildUpdatesForBayLNode', () => {
 			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
+				ldInst: 'TestLDevice',
 				sourceFunction,
 				equipmentMatches: []
 			})
@@ -290,6 +301,7 @@ describe('buildUpdatesForBayLNode', () => {
 			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
+				ldInst: 'TestLDevice',
 				sourceFunction,
 				equipmentMatches: []
 			})
@@ -346,6 +358,7 @@ describe('buildUpdatesForBayLNode', () => {
 			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
+				ldInst: 'TestLDevice',
 				sourceFunction,
 				equipmentMatches: []
 			})
@@ -396,6 +409,7 @@ describe('buildUpdatesForBayLNode', () => {
 			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
+				ldInst: 'TestLDevice',
 				sourceFunction,
 				equipmentMatches: []
 			})
@@ -419,6 +433,7 @@ describe('buildUpdatesForBayLNode', () => {
 			const edits = buildUpdatesForBayLNode({
 				lNodes: [],
 				iedName: 'IED1',
+				ldInst: 'TestLDevice',
 				sourceFunction,
 				equipmentMatches: []
 			})
@@ -450,6 +465,7 @@ describe('buildUpdatesForBayLNode', () => {
 			const edits = buildUpdatesForBayLNode({
 				lNodes,
 				iedName: 'IED1',
+				ldInst: 'TestLDevice',
 				sourceFunction,
 				equipmentMatches: []
 			})

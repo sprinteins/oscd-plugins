@@ -25,6 +25,7 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 
 vi.mock('@/headless/scl', () => ({
 	createMultipleLNodesInAccessPoint: vi.fn(() => []),
+	resolveLDeviceInst: vi.fn(() => 'test-ld-inst'),
 	resolveScdEqFunctionUuid: vi.fn(() => undefined),
 	resolveScdFunctionUuid: vi.fn(() => undefined)
 }))

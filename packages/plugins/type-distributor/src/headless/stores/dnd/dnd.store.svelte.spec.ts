@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
 	buildUpdatesForBayLNode,
-	createMultipleLNodesInAccessPoint
+	createMultipleLNodesInAccessPoint,
+	resolveLDeviceInst
 } from '@/headless/scl'
 import { dndStore } from './dnd.store.svelte'
 import * as dropHandler from './drop-handler'
@@ -21,6 +22,7 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 vi.mock('@/headless/scl', () => ({
 	createMultipleLNodesInAccessPoint: vi.fn(),
 	buildUpdatesForBayLNode: vi.fn(),
+	resolveLDeviceInst: vi.fn(() => 'test-ld-inst'),
 	resolveScdEqFunctionUuid: vi.fn(() => undefined),
 	resolveScdFunctionUuid: vi.fn(() => undefined)
 }))
@@ -319,6 +321,7 @@ describe('dndStore', () => {
 			expect(buildUpdatesForBayLNode).toHaveBeenCalledWith({
 				lNodes: mockLNodes,
 				iedName: 'TestIED',
+				ldInst: 'test-ld-inst',
 				sourceFunction: mockFunction,
 				equipmentUuid: 'eq-uuid',
 				equipmentMatches: [],
