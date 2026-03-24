@@ -23,7 +23,12 @@ const {
 } = $props()
 
 const sIedData = $derived.by(() => {
-	const doc = getDocument()
+	let doc: Document | undefined
+	try {
+		doc = getDocument()
+	} catch (error) {
+		return []
+	}
 
 	const data: IEDData[] = iedItems.map((iedItem) => {
 		const name = iedItem.getAttribute('name') ?? 'Unnamed IED'
