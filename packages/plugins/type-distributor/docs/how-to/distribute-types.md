@@ -41,11 +41,12 @@ If the validation indicates ambiguous matches:
 
 1. Click "Apply" or equivalent action button
 2. The plugin executes the following operations:
-   - Updates bay attributes (name, description)
-   - Updates conducting equipment references
-   - Inserts equipment functions and logical nodes (each `EqFunction` receives a fresh `uuid`)
+   - Updates the target bay with the selected bay-type identity
+   - Updates conducting equipment mappings and persisted template references
+   - Inserts equipment functions and logical nodes
    - Inserts bay-level functions
-   - Collects and inserts required data types in dependency order
+   - Ensures `DataTypeTemplates` exists and inserts the required data types in dependency order
+3. The edits are committed as one OpenSCD transaction
 
 ### 6. Assign LNodes to an IED
 
@@ -68,8 +69,8 @@ When a piece of equipment has multiple `EqFunction` elements with the same `name
 ### 7. Verify Results
 
 Check that:
-- Bay attributes are updated correctly
-- Conducting equipment has proper function assignments
+- The bay now carries the expected bay-type mapping
+- Conducting equipment has the expected function assignments and template references
 - Data type templates section contains all required types
 - LDevice `inst` values are unique and follow the naming schema (e.g., `CEQ1_DisconnectorFunction_a1b2c3d4`)
 - Each assigned `LNode` in the SSD bay has `iedName` and `ldInst` set

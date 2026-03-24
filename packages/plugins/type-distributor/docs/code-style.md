@@ -1,65 +1,90 @@
-# Code Style
+# Code style
 
-## Naming Conventions
+This document keeps the local coding conventions that are still useful for `type-distributor`.
+
+## Naming conventions
 
 ### Functions
-- Use descriptive verb-based names: `matchEquipment`, `validateBayTypeSelection`, `applyBayTypeSelection`
-- Prefix boolean-returning functions with `is`, `has`, `can`: `isValid`, `canAutoMatch`
-- Use `build*` prefix for factory functions returning edits: `buildUpdatesForBayLNode`, `buildInsertsForType`
-- Use `query*` prefix for querying XML structure: `queryConductingEquipment`, `queryLNodeTypes`
-- use `ensure` prefix for functions that guarantee a condition: `ensureDataTypeTemplates`
 
-### Variables
-- Use camelCase for variables: `scdBay`, `bayType`, `manualMatches`
-- Use descriptive names over abbreviations: `conductingEquipment` not `ce`
-- Use plurals for arrays/collections: `matches`, `templates`, `edits`
+- use descriptive verb-based names such as `validateBayType` or `applyBayType`
+- use `is`, `has`, and `can` for boolean-returning helpers
+- use `buildInsert*`, `buildUpdate*`, `buildRemove*`, or `buildEdit*` based on the narrowest edit type a builder returns
+- use `query*` for XML lookups and `ensure*` for helpers that guarantee a required structure exists
 
-### Types
-- Use PascalCase for type names: `BayType`, `EquipmentMatch`, `ValidationResult`
-- Suffix with descriptive noun: `ConductingEquipmentTemplate`, `LNodeTemplate`
+### Variables and types
 
-## File Organization
+- use camelCase for variables and PascalCase for types
+- prefer descriptive names over abbreviations
+- use plural names for collections such as `matches`, `templates`, and `edits`
 
-### Module Structure
-```
-src/
-├── headless/           # Business logic
-│   ├── stores/         # State management
-│   ├── matching/       # Equipment matching logic
-│   │   ├── scd-edits/  # SCD modification functions
-│   │   └── validation/ # Validation logic
-│   ├── ied/            # IED creation
-│   ├── ssd-parsing/    # SSD file parsing
-│   └── common-types/   # Shared type definitions
-└── ui/                 # UI components
-    └── components/
-        └── views/      # Main View
-        └── columns/    # the 3 columns in the Type Distributor UI: SLD, S-IED and BayType
+## Parameter objects for 3+ inputs
+
+When a function needs three or more inputs, prefer a single object parameter typed with a local interface.
+
+```ts
+interface BuildParams {
+	accessPoint: Element
+	iedName: string
+	selectedBay?: Element | null
+}
+
+function buildEditsForDeleteAccessPoint({
+	accessPoint,
+	iedName,
+	selectedBay
+}: BuildParams) {
+	// ...
+}
 ```
 
-### File Naming
-- Use kebab-case for files: `equipment-matching.svelte`, `apply-bay-type-selection.ts`
-- Co-locate tests with source: `matching.ts` → `matching.spec.ts`
-- Use `.d.ts` for type-only files: `ssd-types.d.ts`
+This keeps call sites readable, makes required versus optional inputs obvious, and makes tests easier to write.
 
-## Testing Patterns
+## Write targeted XML queries
 
-### Given-When-Then Structure
-```typescript
-describe('GIVEN matching equipment types', () => {
-  describe('WHEN running auto-matching', () => {
-    it('THEN should match equipment by type', () => {
-      // test implementation
-    })
-  })
-})
+Prefer precise selectors over broad scans followed by filtering in JavaScript or TypeScript.
+
+```ts
+const item = doc.querySelector(`item[id="${id}"]`)
 ```
 
-### Test Utilities
-- Extract mock creation into helper functions: `createBayType`, `createTemplate`, `mockTemplates`
-- Use descriptive mock data: `'template1'`, `'CBR'`, not generic values
+Instead of:
 
-## Parameter object rule (Code Style Decision)
+```ts
+const item = Array.from(doc.getElementsByTagName('item')).find(
+	(node) => node.getAttribute('id') === id
+)
+```
 
-- For functions with three or more parameters, prefer a single object parameter typed via an interface (see decision: `docs/code-style-decisions/0001-parameter-object-params.md`).
-- Pass resolved inputs into functions instead of reading stores inside the function to keep functions simpler and easier to test.
+Also normalize missing query results to `null` rather than `undefined` for DOM-style APIs.
+
+This belongs in code style guidance because it is a local implementation convention for writing XML lookup code. It would only become an ADR if the team wanted to record a broader architectural decision about query strategy across the plugin.
+
+## Prefer the shared `createElement` helper
+
+When constructing SCL elements, prefer the core `createElement` helper instead of direct DOM construction followed by separate `setAttribute(...)` calls.
+
+Why:
+
+- namespace handling stays consistent
+- attributes can be applied at creation time
+- callers avoid repeating low-level XML creation details
+- the codebase keeps one place to improve element construction behavior later
+
+## Edit-builder naming
+
+Use the builder prefix that matches the returned edit contract:
+
+| Return type | Prefix |
+| --- | --- |
+| `Insert[]` only | `buildInserts*` |
+| `SetAttributes[]` only | `buildUpdates*` |
+| `Remove[]` only | `buildRemoves*` |
+| mixed edit arrays | `buildEdits*` |
+| single edit | `buildInsert*`, `buildUpdate*`, `buildRemove*`, or `buildEdit*` |
+
+The point is not style for style's sake. The builder name should tell a reviewer what kind of XML mutation to expect before they open the implementation.
+
+## Related docs
+
+- [Test style](./test-style.md)
+- [Source overview](./structure/source-overview.md)
