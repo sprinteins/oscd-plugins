@@ -1,11 +1,11 @@
 import type { LDeviceData, LNodeTemplate } from '../../common-types'
-import { parseLDeviceInst } from '../elements'
+import { type ParsedLDeviceInst, parseLDeviceInst } from '../elements'
 
 export function queryLDeviceDisplayLabel(
 	doc: XMLDocument,
 	ldInst: string
 ): string | undefined {
-	let parsed: ReturnType<typeof parseLDeviceInst>
+	let parsed: ParsedLDeviceInst
 	try {
 		parsed = parseLDeviceInst(ldInst)
 	} catch {
@@ -16,21 +16,23 @@ export function queryLDeviceDisplayLabel(
 
 	const { functionPrefixUuid } = parsed
 
-	const el = doc.querySelector(
+	const targetFunction = doc.querySelector(
 		`EqFunction[uuid^="${functionPrefixUuid}"], Function[uuid^="${functionPrefixUuid}"]`
 	)
 
-	if (!el) return undefined
+	if (!targetFunction) return undefined
 
-	const fnName = el.getAttribute('name')
-	if (!fnName) return undefined
+	const functionName = targetFunction.getAttribute('name')
+	if (!functionName) return undefined
 
-	if (el.tagName === 'EqFunction') {
-		const ceName = el.parentElement?.getAttribute('name')
-		if (ceName) return `${ceName}_${fnName}`
+	if (targetFunction.tagName === 'EqFunction') {
+		const conductingEquipmentName =
+			targetFunction.parentElement?.getAttribute('name')
+		if (conductingEquipmentName)
+			return `${conductingEquipmentName}_${functionName}`
 	}
 
-	return fnName
+	return functionName
 }
 
 export function queryLDevicesFromAccessPoint(
