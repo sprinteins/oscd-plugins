@@ -18,7 +18,8 @@ vi.mock('@/headless/stores/bay.store.svelte', () => ({
 		selectedBay: null,
 		selectedBayUuid: null,
 		assignedBayTypeUuid: null,
-		pendingBayTypeApply: null,
+		manualMatchingConfirmed: false,
+		isReadyToApply: false,
 		equipmentMatches: [],
 		scdBay: null
 	}

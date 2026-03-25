@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
@@ -6,55 +6,55 @@ import { ssdImportStore } from '../ssd-import.store.svelte'
 import {
 	applyBayType,
 	generateCommitTitle,
-	getBayTypeApplicationState,
 	shouldApplyBayType
 } from './drop-handler'
 
 vi.mock('../ssd-import.store.svelte', () => ({
-	ssdImportStore: {
-		selectedBayType: null as string | null
-	}
+ssdImportStore: {
+selectedBayType: null as string | null
+}
 }))
 
 vi.mock('../bay-types.utils', () => ({
-	getBayTypeWithTemplates: vi.fn()
+getBayTypeWithTemplates: vi.fn()
 }))
 
 vi.mock('../bay.store.svelte', () => ({
-	bayStore: {
-		assignedBayTypeUuid: null as string | null,
-		selectedBay: null as string | null,
-		pendingBayTypeApply: null as string | null
-	}
+bayStore: {
+isReadyToApply: false,
+assignedBayTypeUuid: null as string | null,
+selectedBay: null as string | null,
+manualMatchingConfirmed: false
+}
 }))
 
 vi.mock('../equipment-matching.store.svelte', () => ({
-	equipmentMatchingStore: {
-		validationResult: null as null | {
-			isValid?: boolean
-			requiresManualMatching?: boolean
-		},
-		reset: vi.fn()
+equipmentMatchingStore: {
+validationResult: null as null | {
+isValid?: boolean
+requiresManualMatching?: boolean
+},
+reset: vi.fn()
 	}
 }))
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
-	pluginGlobalStore: {
-		xmlDocument: null,
-		editor: null
-	}
+pluginGlobalStore: {
+xmlDocument: null,
+editor: null
+}
 }))
 
 vi.mock('@/headless/actions', () => ({
-	applyBayType: vi.fn().mockReturnValue([])
+applyBayType: vi.fn().mockReturnValue([])
 }))
 
 vi.mock('@/headless/utils/get-document-and-Editor', () => ({
-	getDocumentAndEditor: vi.fn()
+getDocumentAndEditor: vi.fn()
 }))
 
 vi.mock('@/headless/scl', () => ({
-	createMultipleLNodesInAccessPoint: vi.fn()
+createMultipleLNodesInAccessPoint: vi.fn()
 }))
 
 describe('drop-handler', () => {
@@ -74,205 +74,63 @@ describe('drop-handler', () => {
 	}
 
 	beforeEach(() => {
-		vi.useFakeTimers()
 		ssdImportStore.selectedBayType = null
 		bayStore.assignedBayTypeUuid = null
 		bayStore.selectedBay = null
-		bayStore.pendingBayTypeApply = null
+		bayStore.isReadyToApply = false
+		bayStore.manualMatchingConfirmed = false
 		equipmentMatchingStore.validationResult = null
 		vi.clearAllMocks()
 	})
 
-	afterEach(() => {
-		vi.useRealTimers()
-	})
-
 	describe('shouldApplyBayType', () => {
-		it('GIVEN state with assigned bay type WHEN shouldApplyBayType THEN returns false', () => {
+		it('GIVEN bayStore.isReadyToApply is false WHEN shouldApplyBayType THEN returns false', () => {
 			// GIVEN
-			const state = {
-				hasAssignedBayType: true,
-				hasSelectedBay: true,
-				requiresManualMatching: false,
-				hasValidAutoSelection: true,
-				hasPendingManualSelection: false
-			}
+			bayStore.isReadyToApply = false
 
 			// WHEN
-			const result = shouldApplyBayType(state)
+			const result = shouldApplyBayType()
 
 			// THEN
 			expect(result).toBe(false)
 		})
 
-		it('GIVEN state with no bay selected WHEN shouldApplyBayType THEN returns false', () => {
+		it('GIVEN bayStore.isReadyToApply is true WHEN shouldApplyBayType THEN returns true', () => {
 			// GIVEN
-			const state = {
-				hasAssignedBayType: false,
-				hasSelectedBay: false,
-				requiresManualMatching: false,
-				hasValidAutoSelection: true,
-				hasPendingManualSelection: true
-			}
+			bayStore.isReadyToApply = true
 
 			// WHEN
-			const result = shouldApplyBayType(state)
-
-			// THEN
-			expect(result).toBe(false)
-		})
-
-		it('GIVEN valid auto selection state WHEN shouldApplyBayType THEN returns true', () => {
-			// GIVEN
-			const state = {
-				hasAssignedBayType: false,
-				hasSelectedBay: true,
-				requiresManualMatching: false,
-				hasValidAutoSelection: true,
-				hasPendingManualSelection: false
-			}
-
-			// WHEN
-			const result = shouldApplyBayType(state)
+			const result = shouldApplyBayType()
 
 			// THEN
 			expect(result).toBe(true)
-		})
-
-		it('GIVEN pending manual selection state WHEN shouldApplyBayType THEN returns true', () => {
-			// GIVEN
-			const state = {
-				hasAssignedBayType: false,
-				hasSelectedBay: true,
-				requiresManualMatching: true,
-				hasValidAutoSelection: false,
-				hasPendingManualSelection: true
-			}
-
-			// WHEN
-			const result = shouldApplyBayType(state)
-
-			// THEN
-			expect(result).toBe(true)
-		})
-	})
-
-	describe('getBayTypeApplicationState', () => {
-		it('GIVEN selected bay type with valid auto selection WHEN getBayTypeApplicationState THEN derives correct state', () => {
-			// GIVEN
-			ssdImportStore.selectedBayType = 'bt-1'
-			bayStore.assignedBayTypeUuid = null
-			bayStore.selectedBay = 'Bay-1'
-			equipmentMatchingStore.validationResult = {
-				isValid: true,
-				requiresManualMatching: false,
-				errors: []
-			}
-
-			// WHEN
-			const result = getBayTypeApplicationState()
-
-			// THEN
-			expect(result).toStrictEqual({
-				hasAssignedBayType: false,
-				hasSelectedBay: true,
-				requiresManualMatching: false,
-				hasValidAutoSelection: true,
-				hasPendingManualSelection: false
-			})
-		})
-
-		it('GIVEN pending manual selection requirement WHEN getBayTypeApplicationState THEN derives correct state', () => {
-			// GIVEN
-			bayStore.pendingBayTypeApply = 'bt-2'
-			bayStore.selectedBay = 'Bay-2'
-			equipmentMatchingStore.validationResult = {
-				isValid: false,
-				requiresManualMatching: true,
-				errors: []
-			}
-
-			// WHEN
-			const result = getBayTypeApplicationState()
-
-			// THEN
-			expect(result).toStrictEqual({
-				hasAssignedBayType: false,
-				hasSelectedBay: true,
-				requiresManualMatching: true,
-				hasValidAutoSelection: false,
-				hasPendingManualSelection: true
-			})
 		})
 	})
 
 	describe('applyBayType', () => {
-		it('GIVEN state requires selected bay but store is missing WHEN applyBayType THEN throws error', () => {
+		it('GIVEN no bay selected WHEN applyBayType THEN throws error', () => {
 			// GIVEN
 			bayStore.selectedBay = null
-			bayStore.pendingBayTypeApply = 'bt-3'
-			const state = {
-				hasAssignedBayType: false,
-				hasSelectedBay: true,
-				requiresManualMatching: true,
-				hasValidAutoSelection: false,
-				hasPendingManualSelection: true
-			}
 
 			// WHEN / THEN
-			expect(() => applyBayType(state)).toThrowError(
-				'[DnD] No bay type selected to apply to bay'
-			)
+			expect(() => applyBayType()).toThrowError(
+'[DnD] No bay selected to apply bay type to'
+)
 		})
 
-		it('GIVEN pending manual selection WHEN applyBayType THEN applies and clears validation', () => {
+		it('GIVEN bay is selected WHEN applyBayType THEN calls action and resets state', () => {
 			// GIVEN
-			bayStore.selectedBay = 'Bay-3'
-			bayStore.pendingBayTypeApply = 'bt-3'
-			const state = {
-				hasAssignedBayType: false,
-				hasSelectedBay: true,
-				requiresManualMatching: true,
-				hasValidAutoSelection: false,
-				hasPendingManualSelection: true
-			}
+			bayStore.selectedBay = 'Bay-1'
+			bayStore.manualMatchingConfirmed = true
 
 			// WHEN
-			const matches = applyBayType(state)
+			const matches = applyBayType()
 
 			// THEN
 			expect(matches).toEqual(expect.any(Array))
-			expect(ssdImportStore.selectedBayType).toBe('bt-3')
-			expect(applyBayTypeAction).toHaveBeenCalledWith('Bay-3')
-
-			// Cleanup is deferred to allow Svelte reactivity to process
-			vi.runAllTimers()
-			expect(bayStore.pendingBayTypeApply).toBeNull()
+			expect(applyBayTypeAction).toHaveBeenCalledWith('Bay-1')
+			expect(bayStore.manualMatchingConfirmed).toBe(false)
 			expect(equipmentMatchingStore.reset).toHaveBeenCalled()
-		})
-
-		it('GIVEN valid auto selection WHEN applyBayType THEN applies successfully', () => {
-			// GIVEN
-			bayStore.selectedBay = 'Bay-4'
-			ssdImportStore.selectedBayType = 'bt-4'
-			const state = {
-				hasAssignedBayType: false,
-				hasSelectedBay: true,
-				requiresManualMatching: false,
-				hasValidAutoSelection: true,
-				hasPendingManualSelection: false
-			}
-
-			// WHEN
-			const matches = applyBayType(state)
-
-			// THEN
-			expect(matches).toEqual(expect.any(Array))
-			expect(applyBayTypeAction).toHaveBeenCalledWith('Bay-4')
-
-			// Cleanup is deferred to allow Svelte reactivity to process
-			vi.runAllTimers()
-			expect(bayStore.pendingBayTypeApply).toBeNull()
 		})
 	})
 
@@ -283,16 +141,16 @@ describe('drop-handler', () => {
 
 			// WHEN
 			const commitTitle = generateCommitTitle({
-				lNodes: mockLNodes,
-				functionName: mockFunction.name,
-				targetSIedName: 'targetSied',
-				didApplyBayType
-			})
+lNodes: mockLNodes,
+functionName: mockFunction.name,
+targetSIedName: 'targetSied',
+didApplyBayType
+})
 
 			// THEN
 			expect(commitTitle).toBe(
-				'Assign XCBR from TestFunction to IED targetSied'
-			)
+'Assign XCBR from TestFunction to IED targetSied'
+)
 		})
 
 		it('GIVEN didApplyBayType is true WHEN generateCommitTitle THEN returns title with bay type info', () => {
@@ -301,16 +159,16 @@ describe('drop-handler', () => {
 
 			// WHEN
 			const commitTitle = generateCommitTitle({
-				lNodes: mockLNodes,
-				functionName: mockFunction.name,
-				targetSIedName: 'targetSied',
-				didApplyBayType
-			})
+lNodes: mockLNodes,
+functionName: mockFunction.name,
+targetSIedName: 'targetSied',
+didApplyBayType
+})
 
 			// THEN
 			expect(commitTitle).toBe(
-				'Assign BayType "Unknown" to Bay "Unknown" + Assign XCBR from TestFunction to IED targetSied'
-			)
+'Assign BayType "Unknown" to Bay "Unknown" + Assign XCBR from TestFunction to IED targetSied'
+)
 		})
 	})
 })

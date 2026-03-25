@@ -20,7 +20,6 @@ import {
 	applyBayType,
 	commitEdits,
 	generateCommitTitle,
-	getBayTypeApplicationState,
 	shouldApplyBayType
 } from './drop-handler'
 
@@ -88,11 +87,8 @@ class UseDndStore {
 		} = this.draggedItem
 
 		try {
-			const applicationState = getBayTypeApplicationState()
-			const didApplyBayType = shouldApplyBayType(applicationState)
-			const freshMatches = didApplyBayType
-				? applyBayType(applicationState)
-				: null
+			const didApplyBayType = shouldApplyBayType()
+			const freshMatches = didApplyBayType ? applyBayType() : null
 			const equipmentMatches = freshMatches ?? bayStore.equipmentMatches
 
 			const { doc } = getDocumentAndEditor()
@@ -118,7 +114,7 @@ class UseDndStore {
 			]
 
 			const shouldUpdateBay =
-				applicationState.hasAssignedBayType || didApplyBayType
+				!!bayStore.assignedBayTypeUuid || didApplyBayType
 
 			if (shouldUpdateBay) {
 				allEdits.push(

@@ -60,8 +60,6 @@ $effect(() => {
 $effect(() => {
 	if (bayStore.assignedBayTypeUuid) {
 		ssdImportStore.selectedBayType = bayStore.assignedBayTypeUuid
-	} else {
-		ssdImportStore.selectedBayType = null
 	}
 })
 
@@ -69,29 +67,30 @@ const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
 
 let bayTypeError = $state<string | null>(null)
 
-const shouldShowBayTypeDetails = $derived.by(() => {
-	if (!bayTypeWithTemplates) return false
-
+const hasBlockingValidationError = $derived.by(() => {
 	const validation = equipmentMatchingStore.validationResult
-
-	if (
-		validation &&
+	return (
+		validation !== null &&
 		!validation.isValid &&
 		!validation.requiresManualMatching
-	) {
-		return false
-	}
-
-	if (bayStore.assignedBayTypeUuid === ssdImportStore.selectedBayType) {
-		return true
-	}
-
-	return !!bayStore.pendingBayTypeApply
+	)
 })
+
+const isShowingManualMatchingUI = $derived(
+	equipmentMatchingStore.validationResult?.requiresManualMatching === true &&
+		!bayStore.manualMatchingConfirmed
+)
+
+const shouldShowBayTypeDetails = $derived(
+	bayTypeWithTemplates !== null &&
+		!hasBlockingValidationError &&
+		!isShowingManualMatchingUI
+)
 
 function handleBayTypeChange() {
 	bayTypeError = null
 	equipmentMatchingStore.reset()
+	bayStore.manualMatchingConfirmed = false
 
 	if (!bayStore.selectedBay) {
 		bayTypeError = 'No Bay selected'
@@ -99,11 +98,7 @@ function handleBayTypeChange() {
 	}
 
 	try {
-		const validation = validateBayType()
-
-		if (validation.isValid && !validation.requiresManualMatching) {
-			bayStore.pendingBayTypeApply = ssdImportStore.selectedBayType
-		}
+		validateBayType()
 		assignedLNodesStore.rebuild()
 	} catch (error) {
 		console.error('[handleBayTypeChange] Error:', error)

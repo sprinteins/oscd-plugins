@@ -1,6 +1,7 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { matchEquipmentForPersistedBay } from '@/headless/domain/matching'
 import { getDocumentAndEditor } from '@/headless/utils'
+import { equipmentMatchingStore } from './equipment-matching.store.svelte'
 import { ssdImportStore } from './ssd-import.store.svelte'
 
 class UseBayStore {
@@ -11,7 +12,27 @@ class UseBayStore {
 		pluginGlobalStore.editCount
 		return this.scdBay.getAttribute('templateUuid') ?? null
 	})
-	pendingBayTypeApply = $state<string | null>(null)
+
+	manualMatchingConfirmed = $state(false)
+
+	isReadyToApply = $derived.by(() => {
+		if (this.assignedBayTypeUuid) return false
+		if (!ssdImportStore.selectedBayType) return false
+
+		const validation = equipmentMatchingStore.validationResult
+		if (!validation) return false
+
+		if (validation.isValid && !validation.requiresManualMatching) {
+			return true
+		}
+
+		if (validation.requiresManualMatching && this.manualMatchingConfirmed) {
+			return true
+		}
+
+		return false
+	})
+
 	equipmentMatches = $derived.by(() => {
 		if (!this.scdBay || !this.assignedBayTypeUuid) return []
 		const bayType = ssdImportStore.bayTypes.find(

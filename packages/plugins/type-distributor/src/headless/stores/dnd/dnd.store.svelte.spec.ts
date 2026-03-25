@@ -3,11 +3,11 @@ import {
 	buildUpdatesForBayLNode,
 	createMultipleLNodesInAccessPoint
 } from '@/headless/scl'
+import { bayStore } from '@/headless/stores'
 import { dndStore } from './dnd.store.svelte'
 import * as dropHandler from './drop-handler'
 
 vi.mock('./drop-handler', () => ({
-	getBayTypeApplicationState: vi.fn(),
 	shouldApplyBayType: vi.fn(),
 	applyBayType: vi.fn(() => []),
 	generateCommitTitle: vi.fn(),
@@ -35,7 +35,8 @@ vi.mock('@/headless/stores', () => ({
 		}
 	},
 	bayStore: {
-		equipmentMatches: []
+		equipmentMatches: [],
+		assignedBayTypeUuid: null as string | null
 	},
 	ssdImportStore: {
 		lnodeTypes: []
@@ -63,6 +64,7 @@ describe('dndStore', () => {
 		// Reset store state
 		dndStore.isDragging = false
 		dndStore.draggedItem = null
+		bayStore.assignedBayTypeUuid = null
 
 		// Reset all mocks
 		vi.clearAllMocks()
@@ -124,9 +126,7 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should exit early and call handleDragEnd
-			expect(
-				dropHandler.getBayTypeApplicationState
-			).not.toHaveBeenCalled()
+			expect(dropHandler.shouldApplyBayType).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
 			expect(dndStore.isDragging).toBe(false)
 		})
@@ -156,9 +156,7 @@ describe('dndStore', () => {
 
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
-			expect(
-				dropHandler.getBayTypeApplicationState
-			).not.toHaveBeenCalled()
+			expect(dropHandler.shouldApplyBayType).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
 			expect(dndStore.draggedItem).toBeNull()
 		})
@@ -175,9 +173,7 @@ describe('dndStore', () => {
 
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
-			expect(
-				dropHandler.getBayTypeApplicationState
-			).not.toHaveBeenCalled()
+			expect(dropHandler.shouldApplyBayType).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
 			expect(dndStore.draggedItem).toBeNull()
 		})
@@ -197,9 +193,7 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should exit early and reset state
-			expect(
-				dropHandler.getBayTypeApplicationState
-			).not.toHaveBeenCalled()
+			expect(dropHandler.shouldApplyBayType).not.toHaveBeenCalled()
 			expect(dropHandler.commitEdits).not.toHaveBeenCalled()
 			expect(dndStore.draggedItem).toBeNull()
 		})
@@ -222,13 +216,6 @@ describe('dndStore', () => {
 					reference: null
 				}
 			]
-			vi.mocked(dropHandler.getBayTypeApplicationState).mockReturnValue({
-				hasAssignedBayType: false,
-				hasSelectedBay: false,
-				requiresManualMatching: false,
-				hasValidAutoSelection: false,
-				hasPendingManualSelection: false
-			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
 			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
@@ -262,6 +249,7 @@ describe('dndStore', () => {
 
 		it('GIVEN valid dragged item and bay type applied WHEN handleDrop is called THEN should build both IED and bay edits', () => {
 			// GIVEN valid dragged item and bay type applied
+			bayStore.assignedBayTypeUuid = 'assigned-bt'
 			dndStore.draggedItem = {
 				type: 'equipmentFunction' as const,
 				lNodes: mockLNodes,
@@ -286,13 +274,6 @@ describe('dndStore', () => {
 				}
 			]
 
-			vi.mocked(dropHandler.getBayTypeApplicationState).mockReturnValue({
-				hasAssignedBayType: true,
-				hasSelectedBay: true,
-				requiresManualMatching: false,
-				hasValidAutoSelection: true,
-				hasPendingManualSelection: false
-			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
 			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
@@ -357,13 +338,6 @@ describe('dndStore', () => {
 				}
 			]
 
-			vi.mocked(dropHandler.getBayTypeApplicationState).mockReturnValue({
-				hasAssignedBayType: false,
-				hasSelectedBay: true,
-				requiresManualMatching: false,
-				hasValidAutoSelection: true,
-				hasPendingManualSelection: false
-			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(true)
 			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
 				mockIedEdits
@@ -398,13 +372,6 @@ describe('dndStore', () => {
 				equipmentUuid: 'eq-uuid'
 			}
 
-			vi.mocked(dropHandler.getBayTypeApplicationState).mockReturnValue({
-				hasAssignedBayType: false,
-				hasSelectedBay: false,
-				requiresManualMatching: false,
-				hasValidAutoSelection: false,
-				hasPendingManualSelection: false
-			})
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
 			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue([])
 
@@ -427,9 +394,7 @@ describe('dndStore', () => {
 				equipmentUuid: 'eq-uuid'
 			}
 
-			vi.mocked(
-				dropHandler.getBayTypeApplicationState
-			).mockImplementation(() => {
+			vi.mocked(dropHandler.shouldApplyBayType).mockImplementation(() => {
 				throw new Error('Test error')
 			})
 
