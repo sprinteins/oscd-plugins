@@ -71,5 +71,6 @@ This convention lets a reviewer know what kind of mutation to expect before read
 
 ## Related docs
 
+- [OpenSCD plugin API reference ↗](https://github.com/openscd/oscd-api/blob/main/docs/plugin-api.md)
 - [Code style](../code-style.md)
 - [Workflow and data flow](../structure/workflow-and-data-flow.md)

@@ -86,5 +86,6 @@ The point is not style for style's sake. The builder name should tell a reviewer
 
 ## Related docs
 
+- [OpenSCD plugin API reference ↗](https://github.com/openscd/oscd-api/blob/main/docs/plugin-api.md)
 - [Test style](./test-style.md)
 - [Source overview](./structure/source-overview.md)

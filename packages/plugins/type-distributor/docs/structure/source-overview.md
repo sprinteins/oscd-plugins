@@ -117,6 +117,8 @@ The SCL/XML layer:
 
 This is the layer that turns validated user intent into concrete `Insert`, `SetAttributes`, or related edits.
 
+The edit types (`Insert`, `SetAttributes`, `Remove`) come from `@openscd/oscd-api`. See the [OpenSCD plugin API reference ↗](https://github.com/openscd/oscd-api/blob/main/docs/plugin-api.md) for the full contract. For how this plugin uses and accumulates these types, see [Insert arrays and edit accumulation](../concepts/insert-arrays.md).
+
 ### `headless/ssd-parsing/`
 
 Parses the imported SSD into the in-memory model used by the rest of the plugin:
