@@ -118,28 +118,11 @@ This repository already contains AI-related guidance that is useful when working
 Useful files:
 
 - `.github/copilot-instructions.md` for project structure, commands, and conventions
-- `.github/prompts/pre-review.prompt.md` for pre-review analysis
 - `.github/prompts/critical-branch-review.prompt.md` for critical review of a branch
 - `.github/agents/vitest.agent.md` for Vitest-oriented testing guidance
 - `.github/skills/vitest-test/SKILL.md` for expectations when editing `*.spec.ts`
 
+This one needs to be optimised:
+- `.github/prompts/pre-review.prompt.md` for pre-review analysis
+
 Use AI output as a draft, not as the source of truth.
-
-Before opening a PR:
-
-- run the relevant commands yourself
-- review generated code and docs critically
-- make sure any suggested command really exists in `package.json` or `makefile`
-- do not paste secrets or private credentials into prompts
-
-## Before opening a PR
-
-Use the repository pull request template as the final checklist.
-
-At minimum:
-
-- run lint, type checks, and the relevant tests
-- update documentation when workflow or behavior changes
-- update `packages/plugins/type-distributor/CHANGELOG.md` when the change is notable
-- link the issue or ticket when applicable
-- keep `packages/plugins/type-distributor/README.md` in sync when a new doc should be discoverable from the plugin documentation map
