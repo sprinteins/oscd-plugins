@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 import { bayStore } from '../bay.store.svelte'
 import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
@@ -74,12 +74,17 @@ describe('drop-handler', () => {
 	}
 
 	beforeEach(() => {
+		vi.useFakeTimers()
 		ssdImportStore.selectedBayType = null
 		bayStore.assignedBayTypeUuid = null
 		bayStore.selectedBay = null
 		bayStore.pendingBayTypeApply = null
 		equipmentMatchingStore.validationResult = null
 		vi.clearAllMocks()
+	})
+
+	afterEach(() => {
+		vi.useRealTimers()
 	})
 
 	describe('shouldApplyBayType', () => {
@@ -239,6 +244,9 @@ describe('drop-handler', () => {
 			expect(matches).toEqual(expect.any(Array))
 			expect(ssdImportStore.selectedBayType).toBe('bt-3')
 			expect(applyBayTypeAction).toHaveBeenCalledWith('Bay-3')
+
+			// Cleanup is deferred to allow Svelte reactivity to process
+			vi.runAllTimers()
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 			expect(equipmentMatchingStore.reset).toHaveBeenCalled()
 		})
@@ -261,6 +269,9 @@ describe('drop-handler', () => {
 			// THEN
 			expect(matches).toEqual(expect.any(Array))
 			expect(applyBayTypeAction).toHaveBeenCalledWith('Bay-4')
+
+			// Cleanup is deferred to allow Svelte reactivity to process
+			vi.runAllTimers()
 			expect(bayStore.pendingBayTypeApply).toBeNull()
 		})
 	})

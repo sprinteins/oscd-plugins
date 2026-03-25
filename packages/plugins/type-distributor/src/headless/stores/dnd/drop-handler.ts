@@ -55,8 +55,15 @@ export function applyBayType(state: BayTypeApplicationState): EquipmentMatch[] {
 	}
 
 	const matches = applyBayTypeAction(bayStore.selectedBay)
-	bayStore.pendingBayTypeApply = null
-	equipmentMatchingStore.reset()
+
+	// Defer cleanup to the next event loop tick to ensure Svelte has fully
+	// processed the DOM changes and updated assignedBayTypeUuid before
+	// we clear pendingBayTypeApply. This prevents shouldShowBayTypeDetails
+	// from briefly returning false during the reactivity transition.
+	setTimeout(() => {
+		bayStore.pendingBayTypeApply = null
+		equipmentMatchingStore.reset()
+	}, 0)
 
 	return matches
 }
