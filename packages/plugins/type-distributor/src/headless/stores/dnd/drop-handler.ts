@@ -12,7 +12,6 @@ export function shouldApplyBayType(): boolean {
 	return bayStore.isReadyToApply
 }
 
-
 export function applyBayType(): EquipmentMatch[] {
 	if (!bayStore.selectedBay) {
 		throw new Error('[DnD] No bay selected to apply bay type to')
