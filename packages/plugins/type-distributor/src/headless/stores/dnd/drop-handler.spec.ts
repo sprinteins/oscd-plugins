@@ -10,51 +10,51 @@ import {
 } from './drop-handler'
 
 vi.mock('../ssd-import.store.svelte', () => ({
-ssdImportStore: {
-selectedBayType: null as string | null
-}
+	ssdImportStore: {
+		selectedBayType: null as string | null
+	}
 }))
 
 vi.mock('../bay-types.utils', () => ({
-getBayTypeWithTemplates: vi.fn()
+	getBayTypeWithTemplates: vi.fn()
 }))
 
 vi.mock('../bay.store.svelte', () => ({
-bayStore: {
-isReadyToApply: false,
-assignedBayTypeUuid: null as string | null,
-selectedBay: null as string | null,
-manualMatchingConfirmed: false
-}
+	bayStore: {
+		isReadyToApply: false,
+		assignedBayTypeUuid: null as string | null,
+		selectedBay: null as string | null,
+		manualMatchingConfirmed: false
+	}
 }))
 
 vi.mock('../equipment-matching.store.svelte', () => ({
-equipmentMatchingStore: {
-validationResult: null as null | {
-isValid?: boolean
-requiresManualMatching?: boolean
-},
-reset: vi.fn()
+	equipmentMatchingStore: {
+		validationResult: null as null | {
+			isValid?: boolean
+			requiresManualMatching?: boolean
+		},
+		reset: vi.fn()
 	}
 }))
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
-pluginGlobalStore: {
-xmlDocument: null,
-editor: null
-}
+	pluginGlobalStore: {
+		xmlDocument: null,
+		editor: null
+	}
 }))
 
 vi.mock('@/headless/actions', () => ({
-applyBayType: vi.fn().mockReturnValue([])
+	applyBayType: vi.fn().mockReturnValue([])
 }))
 
 vi.mock('@/headless/utils/get-document-and-Editor', () => ({
-getDocumentAndEditor: vi.fn()
+	getDocumentAndEditor: vi.fn()
 }))
 
 vi.mock('@/headless/scl', () => ({
-createMultipleLNodesInAccessPoint: vi.fn()
+	createMultipleLNodesInAccessPoint: vi.fn()
 }))
 
 describe('drop-handler', () => {
@@ -114,8 +114,8 @@ describe('drop-handler', () => {
 
 			// WHEN / THEN
 			expect(() => applyBayType()).toThrowError(
-'[DnD] No bay selected to apply bay type to'
-)
+				'[DnD] No bay selected to apply bay type to'
+			)
 		})
 
 		it('GIVEN bay is selected WHEN applyBayType THEN calls action and resets state', () => {
@@ -141,16 +141,16 @@ describe('drop-handler', () => {
 
 			// WHEN
 			const commitTitle = generateCommitTitle({
-lNodes: mockLNodes,
-functionName: mockFunction.name,
-targetSIedName: 'targetSied',
-didApplyBayType
-})
+				lNodes: mockLNodes,
+				functionName: mockFunction.name,
+				targetSIedName: 'targetSied',
+				didApplyBayType
+			})
 
 			// THEN
 			expect(commitTitle).toBe(
-'Assign XCBR from TestFunction to IED targetSied'
-)
+				'Assign XCBR from TestFunction to IED targetSied'
+			)
 		})
 
 		it('GIVEN didApplyBayType is true WHEN generateCommitTitle THEN returns title with bay type info', () => {
@@ -159,16 +159,16 @@ didApplyBayType
 
 			// WHEN
 			const commitTitle = generateCommitTitle({
-lNodes: mockLNodes,
-functionName: mockFunction.name,
-targetSIedName: 'targetSied',
-didApplyBayType
-})
+				lNodes: mockLNodes,
+				functionName: mockFunction.name,
+				targetSIedName: 'targetSied',
+				didApplyBayType
+			})
 
 			// THEN
 			expect(commitTitle).toBe(
-'Assign BayType "Unknown" to Bay "Unknown" + Assign XCBR from TestFunction to IED targetSied'
-)
+				'Assign BayType "Unknown" to Bay "Unknown" + Assign XCBR from TestFunction to IED targetSied'
+			)
 		})
 	})
 })
