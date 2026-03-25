@@ -11,9 +11,3 @@ async function handleOpenDialog() {
 </script>
 
 <Button.Root class="w-full" onclick={handleOpenDialog}>Add</Button.Root>
-
-<style lang="scss">
-:global(.dialog-box) {
-	overflow-y: scroll !important;
-}
-</style>

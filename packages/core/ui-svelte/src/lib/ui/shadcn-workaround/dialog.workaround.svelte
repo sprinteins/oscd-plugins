@@ -42,7 +42,7 @@ let {
 .dialog-box {
 	@apply bg-background rounded-sm col-start-1 row-start-1 w-11/12 max-w-lg scale-90 transform p-6 transition duration-200 ease-out;
   box-shadow: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px;
-  overflow-y: hidden;
+  overflow-y: auto;
   overscroll-behavior: contain;
   max-height: calc(100vh - 5em);
 }
