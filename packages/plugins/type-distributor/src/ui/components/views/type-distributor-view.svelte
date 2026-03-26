@@ -4,6 +4,7 @@ import {
 	pluginGlobalStore,
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
+import { untrack } from 'svelte'
 import { validateBayType } from '@/headless/actions'
 import type { BayType } from '@/headless/common-types'
 import { queryIEDs, type SearchType } from '@/headless/scl'
@@ -61,6 +62,29 @@ $effect(() => {
 	if (bayStore.assignedBayTypeUuid) {
 		ssdImportStore.selectedBayType = bayStore.assignedBayTypeUuid
 	}
+})
+
+$effect(() => {
+	const currentBay = bayStore.selectedBay
+	untrack(() => {
+		equipmentMatchingStore.clearValidationResult()
+		equipmentMatchingStore.clearManualMatches()
+		bayStore.manualMatchingConfirmed = false
+
+		if (!currentBay) return
+
+		const bayTypeUuid =
+			bayStore.assignedBayTypeUuid ?? ssdImportStore.selectedBayType
+		if (!bayTypeUuid) return
+
+		try {
+			validateBayType()
+		} catch (_error) {}
+
+		if (assignedLNodesStore.hasConnections) {
+			bayStore.manualMatchingConfirmed = true
+		}
+	})
 })
 
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)

@@ -5,7 +5,6 @@ import type { EquipmentMatch } from '@/headless/domain/matching'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 import { bayStore } from '../bay.store.svelte'
 import { getBayTypeWithTemplates } from '../bay-types.utils'
-import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
 import { ssdImportStore } from '../ssd-import.store.svelte'
 
 export function shouldApplyBayType(): boolean {
@@ -18,9 +17,6 @@ export function applyBayType(): EquipmentMatch[] {
 	}
 
 	const matches = applyBayTypeAction(bayStore.selectedBay)
-
-	bayStore.manualMatchingConfirmed = false
-	equipmentMatchingStore.reset()
 
 	return matches
 }

@@ -39,7 +39,7 @@ export function validateBayType(): ValidationResult {
 			ssdImportStore.conductingEquipmentTemplates
 	})
 
-	equipmentMatchingStore.setValidationResult(validation, true)
+	equipmentMatchingStore.setValidationResult(validation, false)
 
 	return validation
 }
