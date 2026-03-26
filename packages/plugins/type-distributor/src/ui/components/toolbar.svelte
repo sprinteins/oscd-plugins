@@ -26,10 +26,15 @@ const bayOptions = $derived(
 	}))
 )
 
-function handleBayChange() {
+function handleBayChange(event: Event) {
+	const newBayName = (event.target as HTMLSelectElement).value
+	bayStore.selectedBay = newBayName
 	equipmentMatchingStore.reset()
 	assignedLNodesStore.rebuild()
-	ssdImportStore.selectedBayType = null
+	ssdImportStore.selectedBayType =
+		pluginGlobalStore.xmlDocument
+			?.querySelector(`Bay[name="${newBayName}"]`)
+			?.getAttribute('templateUuid') ?? null
 }
 
 const assignedBayTypeWithTemplates = $derived(

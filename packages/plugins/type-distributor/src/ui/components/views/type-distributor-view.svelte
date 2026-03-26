@@ -57,14 +57,6 @@ $effect(() => {
 	assignedLNodesStore.rebuild()
 })
 
-$effect(() => {
-	if (bayStore.assignedBayTypeUuid) {
-		ssdImportStore.selectedBayType = bayStore.assignedBayTypeUuid
-	} else {
-		ssdImportStore.selectedBayType = null
-	}
-})
-
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
 
 let bayTypeError = $state<string | null>(null)
