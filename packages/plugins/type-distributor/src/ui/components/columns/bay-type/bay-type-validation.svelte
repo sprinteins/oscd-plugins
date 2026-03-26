@@ -51,9 +51,7 @@ const ambiguousEquipmentCount = $derived.by(() => {
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
 
 const canReopenMatching = $derived(
-	!!equipmentMatchingStore.validationResult?.requiresManualMatching &&
-		bayStore.manualMatchingConfirmed &&
-		!isBayTypeLocked
+	bayStore.manualMatchingConfirmed && !isBayTypeLocked
 )
 
 function handleReopenMatching() {

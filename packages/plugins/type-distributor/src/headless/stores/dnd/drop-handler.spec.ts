@@ -118,7 +118,7 @@ describe('drop-handler', () => {
 			)
 		})
 
-		it('GIVEN bay is selected WHEN applyBayType THEN calls action and resets state', () => {
+		it('GIVEN bay is selected WHEN applyBayType THEN calls action without resetting matching state', () => {
 			// GIVEN
 			bayStore.selectedBay = 'Bay-1'
 			bayStore.manualMatchingConfirmed = true
@@ -129,8 +129,9 @@ describe('drop-handler', () => {
 			// THEN
 			expect(matches).toEqual(expect.any(Array))
 			expect(applyBayTypeAction).toHaveBeenCalledWith('Bay-1')
-			expect(bayStore.manualMatchingConfirmed).toBe(false)
-			expect(equipmentMatchingStore.reset).toHaveBeenCalled()
+			// State is preserved so an undo can restore the user back to their matching context
+			expect(bayStore.manualMatchingConfirmed).toBe(true)
+			expect(equipmentMatchingStore.reset).not.toHaveBeenCalled()
 		})
 	})
 
