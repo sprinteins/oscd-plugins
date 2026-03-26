@@ -74,7 +74,11 @@ const shouldShowBayTypeDetails = $derived.by(() => {
 		return false
 	}
 
-	if (bayStore.assignedBayTypeUuid === ssdImportStore.selectedBayType) {
+	if (
+		bayStore.assignedBayTypeUuid &&
+		(!ssdImportStore.selectedBayType ||
+			ssdImportStore.selectedBayType === bayStore.assignedBayTypeUuid)
+	) {
 		return true
 	}
 
