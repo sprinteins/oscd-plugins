@@ -57,17 +57,14 @@ $effect(() => {
 	assignedLNodesStore.rebuild()
 })
 
-$effect(() => {
-	if (bayStore.assignedBayTypeUuid) {
-		ssdImportStore.selectedBayType = bayStore.assignedBayTypeUuid
-	} else {
-		ssdImportStore.selectedBayType = null
-	}
-})
-
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
 
 let bayTypeError = $state<string | null>(null)
+
+const isUserSelectingDifferentBayType = $derived(
+	!!ssdImportStore.selectedBayType &&
+		ssdImportStore.selectedBayType !== bayStore.assignedBayTypeUuid
+)
 
 const shouldShowBayTypeDetails = $derived.by(() => {
 	if (!bayTypeWithTemplates) return false
@@ -82,7 +79,7 @@ const shouldShowBayTypeDetails = $derived.by(() => {
 		return false
 	}
 
-	if (bayStore.assignedBayTypeUuid === ssdImportStore.selectedBayType) {
+	if (bayStore.assignedBayTypeUuid && !isUserSelectingDifferentBayType) {
 		return true
 	}
 
