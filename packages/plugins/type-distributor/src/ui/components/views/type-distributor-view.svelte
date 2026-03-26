@@ -58,11 +58,10 @@ $effect(() => {
 	assignedLNodesStore.rebuild()
 })
 
-$effect(() => {
-	if (bayStore.assignedBayTypeUuid) {
-		ssdImportStore.selectedBayType = bayStore.assignedBayTypeUuid
-	}
-})
+const isUserSelectingDifferentBayType = $derived(
+	!!ssdImportStore.selectedBayType &&
+		ssdImportStore.selectedBayType !== bayStore.assignedBayTypeUuid
+)
 
 $effect(() => {
 	const currentBay = bayStore.selectedBay
@@ -108,7 +107,8 @@ const isShowingManualMatchingUI = $derived(
 const shouldShowBayTypeDetails = $derived(
 	bayTypeWithTemplates !== null &&
 		!hasBlockingValidationError &&
-		!isShowingManualMatchingUI
+		!isShowingManualMatchingUI &&
+		isUserSelectingDifferentBayType
 )
 
 function handleBayTypeChange() {
