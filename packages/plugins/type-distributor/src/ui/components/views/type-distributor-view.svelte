@@ -104,12 +104,20 @@ const isShowingManualMatchingUI = $derived(
 		!bayStore.manualMatchingConfirmed
 )
 
-const shouldShowBayTypeDetails = $derived(
-	bayTypeWithTemplates !== null &&
+const shouldShowBayTypeDetails = $derived.by(() => {
+	if (
+		bayStore.assignedBayTypeUuid &&
+		!isUserSelectingDifferentBayType &&
+		!isShowingManualMatchingUI
+	) {
+		return true
+	}
+	return (
+		bayTypeWithTemplates !== null &&
 		!hasBlockingValidationError &&
-		!isShowingManualMatchingUI &&
-		isUserSelectingDifferentBayType
-)
+		!isShowingManualMatchingUI
+	)
+})
 
 function handleBayTypeChange() {
 	bayTypeError = null
