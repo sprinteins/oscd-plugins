@@ -1,25 +1,30 @@
 /**
  * Bridges OpenSCD --oscd-* CSS custom properties to Shadcn/Tailwind HSL triplet variables.
  *
- * OpenSCD core sets --oscd-* on every element in the light DOM via `* { ... }`.
- * These inherit into plugin shadow DOMs. We resolve them to actual rgb() values
- * by using the browser's color computation on a temporary element, then convert
- * to the bare "H S% L%" triplet format that Shadcn's Tailwind config expects.
+ * Resolution priority for each color:
+ *  1. --oscd-theme-* on :root  (explicit host-page override)
+ *  2. --oscd-*      on node    (OpenSCD's computed value, inherited into plugin shadow root)
+ *  3. Hard-coded spec default  (oscd-api defaults, used in standalone / Storybook)
+ *
+ * OpenSCD sets --oscd-* via `* { }` inside its shadow root. CSS custom properties
+ * inherit across shadow boundaries, so node (inside the plugin shadow root) sees them.
  */
 import chroma from 'chroma-js'
 
-// Default palette (matches the OpenSCD light theme)
-const OSCD_DEFAULTS = {
-	'--oscd-primary': '#004552',
+// oscd-api spec defaults (https://github.com/openscd/oscd-api/blob/main/docs/plugin-api.md#theming)
+const OSCD_SPEC_DEFAULTS: Record<string, string> = {
+	'--oscd-primary': '#2aa198',
 	'--oscd-secondary': '#6c71c4',
 	'--oscd-error': '#dc322f',
+	'--oscd-base03': '#002b36',
+	'--oscd-base02': '#073642',
 	'--oscd-base01': '#586e75',
+	'--oscd-base00': '#657b83',
+	'--oscd-base0': '#839496',
 	'--oscd-base1': '#93a1a1',
-	'--oscd-base2': '#EDF1F2',
-	'--oscd-base3': '#DAE3E6'
-} as const
-
-type OscdColorVar = keyof typeof OSCD_DEFAULTS
+	'--oscd-base2': '#eee8d5',
+	'--oscd-base3': '#fdf6e3'
+}
 
 function toHslTriplet(color: chroma.Color): string {
 	const [h, s, l] = color.hsl()
@@ -27,29 +32,49 @@ function toHslTriplet(color: chroma.Color): string {
 }
 
 /**
- * Resolves an --oscd-* CSS custom property to an HSL triplet string.
+ * Resolves an --oscd-* color to an HSL triplet.
  *
- * Uses a hidden element appended to document.body so it inherits the full
- * light-DOM cascade (including OpenSCD's `* { --oscd-primary: ... }` rules).
- * `getComputedStyle(el).color` forces the browser to resolve all var() chains
- * and return the final computed rgb() value.
+ * Checks --oscd-theme-* on :root first (explicit override), then reads
+ * --oscd-* from node (inherited from OpenSCD's shadow root), then falls
+ * back to the spec default.
  */
-function resolveOscdColorAsHsl(varName: OscdColorVar): string {
-	const fallbackHex = OSCD_DEFAULTS[varName]
+function resolveOscdColorAsHsl(oscdVar: string, node: HTMLElement): string {
+	const themeVar = oscdVar.replace('--oscd-', '--oscd-theme-')
+	const fallbackHex = OSCD_SPEC_DEFAULTS[oscdVar] ?? '#000000'
 
-	const temp = document.createElement('div')
-	temp.style.cssText =
-		'position:fixed;top:-9999px;opacity:0;pointer-events:none'
-	temp.style.color = `var(${varName}, ${fallbackHex})`
-	document.body.appendChild(temp)
-	const computed = getComputedStyle(temp).color // e.g. "rgb(42, 161, 152)"
-	document.body.removeChild(temp)
-
-	try {
-		return toHslTriplet(chroma(computed))
-	} catch {
-		return toHslTriplet(chroma(fallbackHex))
+	// 1. Explicit host-page override via --oscd-theme-* on :root
+	const rootOverride = getComputedStyle(document.documentElement)
+		.getPropertyValue(themeVar)
+		.trim()
+	if (rootOverride) {
+		console.debug(
+			`[oscd-theme] ${oscdVar}: ✅ root override via ${themeVar}="${rootOverride}"`
+		)
+		try {
+			return toHslTriplet(chroma(rootOverride))
+		} catch {
+			/* fall through */
+		}
 	}
+
+	// 2. OpenSCD's computed value inherited into plugin shadow root
+	const inherited = getComputedStyle(node).getPropertyValue(oscdVar).trim()
+	if (inherited) {
+		console.debug(
+			`[oscd-theme] ${oscdVar}: ✅ inherited from OpenSCD="${inherited}"`
+		)
+		try {
+			return toHslTriplet(chroma(inherited))
+		} catch {
+			/* fall through */
+		}
+	}
+
+	// 3. Spec default
+	console.debug(
+		`[oscd-theme] ${oscdVar}: ⚠️ not found, using spec default="${fallbackHex}"`
+	)
+	return toHslTriplet(chroma(fallbackHex))
 }
 
 /**
@@ -62,50 +87,63 @@ function resolveOscdColorAsHsl(varName: OscdColorVar): string {
  * Falls back to the default OpenSCD Solarized palette when --oscd-* vars are
  * not present (e.g. in Storybook or standalone dev mode).
  */
-export function buildOscdShadcnThemeVars(): string {
-	const primary = resolveOscdColorAsHsl('--oscd-primary')
-	const secondary = resolveOscdColorAsHsl('--oscd-secondary')
-	const error = resolveOscdColorAsHsl('--oscd-error')
-	const base3 = resolveOscdColorAsHsl('--oscd-base3') // lightest bg
-	const base2 = resolveOscdColorAsHsl('--oscd-base2') // muted bg
-	const base1 = resolveOscdColorAsHsl('--oscd-base1') // subtle fg
-	const base01 = resolveOscdColorAsHsl('--oscd-base01') // main fg text
+export function buildOscdShadcnThemeVars(node: HTMLElement): string {
+	const primary = resolveOscdColorAsHsl('--oscd-primary', node)
+	const secondary = resolveOscdColorAsHsl('--oscd-secondary', node)
+	const error = resolveOscdColorAsHsl('--oscd-error', node)
+	const base01 = resolveOscdColorAsHsl('--oscd-base01', node) // emphasized content / secondary headings
+	const base00 = resolveOscdColorAsHsl('--oscd-base00', node) // body text (mdc-theme-on-background/surface)
+	const base1 = resolveOscdColorAsHsl('--oscd-base1', node) // comments / muted text (mdc-text-secondary)
+	const base2 = resolveOscdColorAsHsl('--oscd-base2', node) // highlighted bg / input fills (mdc-text-field-fill)
+	const base3 = resolveOscdColorAsHsl('--oscd-base3', node) // main background + surfaces (mdc-theme-background/surface)
 
-	// Derive accent from primary hue (same hue, very high lightness)
+	// Primary button foreground: always white for contrast on the teal
+	const primaryForeground = `0 0% 100%`
+
+	// Accent: very light tint of primary for hover/active states
 	const primaryHue = primary.split(' ')[0]
-	const accent = `${primaryHue} 40% 92%`
-	const accentForeground = `${primaryHue} 64% 25%`
+	const accent = `${primaryHue} 35% 92%`
+	const accentForeground = `${primaryHue} 60% 22%`
+
+	console.debug(
+		'[oscd-theme] resolved shadcn vars from --oscd-theme-* properties:',
+		{
+			'--oscd-theme-primary': `hsl(${primary})`,
+			'--oscd-theme-base3 (bg)': `hsl(${base3})`,
+			'--oscd-theme-base00 (fg)': `hsl(${base00})`
+		}
+	)
 
 	return `
 :root,
 :host {
 	--background: ${base3};
-	--foreground: ${base01};
+	--foreground: ${base00};
 	--muted: ${base2};
-	--muted-foreground: ${base1};
+	--muted-foreground: ${base01};
 	--popover: ${base3};
-	--popover-foreground: ${base01};
+	--popover-foreground: ${base00};
 	--card: ${base3};
-	--card-foreground: ${base01};
-	--border: ${base2};
+	--card-foreground: ${base00};
+	--border: ${base1};
 	--input: ${base2};
 	--primary: ${primary};
-	--primary-foreground: ${base3};
+	--primary-foreground: ${primaryForeground};
 	--secondary: ${secondary};
-	--secondary-foreground: ${base3};
+	--secondary-foreground: ${primaryForeground};
 	--accent: ${accent};
 	--accent-foreground: ${accentForeground};
 	--destructive: ${error};
-	--destructive-foreground: ${base3};
+	--destructive-foreground: ${primaryForeground};
 	--ring: ${primary};
 	--radius: 0.5rem;
-	--sidebar-background: ${base3};
-	--sidebar-foreground: ${base01};
+	--sidebar-background: ${base2};
+	--sidebar-foreground: ${base00};
 	--sidebar-primary: ${primary};
-	--sidebar-primary-foreground: ${base3};
-	--sidebar-accent: ${secondary};
-	--sidebar-accent-foreground: ${base3};
-	--sidebar-border: ${base2};
+	--sidebar-primary-foreground: ${primaryForeground};
+	--sidebar-accent: ${accent};
+	--sidebar-accent-foreground: ${accentForeground};
+	--sidebar-border: ${base1};
 	--sidebar-ring: ${primary};
 }
 
