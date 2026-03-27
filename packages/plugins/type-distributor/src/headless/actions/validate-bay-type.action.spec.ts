@@ -137,12 +137,12 @@ describe('validateBayType', () => {
 			expect(result).toEqual(mockValidationResult)
 		})
 
-		it('WHEN validateBayType is called THEN stores the validation result', () => {
+		it('WHEN validateBayType is called THEN stores the validation result without clearing manual matches', () => {
 			validateBayType()
 
 			expect(
 				equipmentMatchingStore.setValidationResult
-			).toHaveBeenCalledWith(mockValidationResult, true)
+			).toHaveBeenCalledWith(mockValidationResult, false)
 		})
 	})
 })

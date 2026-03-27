@@ -11,7 +11,9 @@ class UseBayStore {
 		pluginGlobalStore.editCount
 		return this.scdBay.getAttribute('templateUuid') ?? null
 	})
-	pendingBayTypeApply = $state<string | null>(null)
+
+	manualMatchingConfirmed = $state(false)
+
 	equipmentMatches = $derived.by(() => {
 		if (!this.scdBay || !this.assignedBayTypeUuid) return []
 		const bayType = ssdImportStore.bayTypes.find(
