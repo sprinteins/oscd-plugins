@@ -18,8 +18,7 @@ describe('bayStore', () => {
 		// Reset bay store state
 		bayStore.selectedBay = null
 		bayStore.selectedBayUuid = null
-		bayStore.assignedBayTypeUuid = null
-		bayStore.pendingBayTypeApply = null
+		bayStore.manualMatchingConfirmed = false
 		bayStore.equipmentMatches = []
 
 		mockDocument = new DOMParser().parseFromString(
@@ -57,16 +56,14 @@ describe('bayStore', () => {
 			const {
 				selectedBay,
 				selectedBayUuid,
-				assignedBayTypeUuid,
-				pendingBayTypeApply,
+				manualMatchingConfirmed,
 				equipmentMatches
 			} = store
 
-			// THEN should have null values
+			// THEN should have null/default values
 			expect(selectedBay).toBeNull()
 			expect(selectedBayUuid).toBeNull()
-			expect(assignedBayTypeUuid).toBeNull()
-			expect(pendingBayTypeApply).toBeNull()
+			expect(manualMatchingConfirmed).toBe(false)
 			expect(equipmentMatches).toEqual([])
 		})
 
@@ -103,15 +100,15 @@ describe('bayStore', () => {
 			expect(bayStore.assignedBayTypeUuid).toBe(bayType)
 		})
 
-		it('GIVEN a pending bay type WHEN pendingBayTypeApply is set THEN should update pendingBayTypeApply state', () => {
-			// GIVEN a pending bay type
-			const pendingType = 'pending-bay-type'
+		it('GIVEN manualMatchingConfirmed flag WHEN set to true THEN should update state', () => {
+			// GIVEN manualMatchingConfirmed is false
+			expect(bayStore.manualMatchingConfirmed).toBe(false)
 
-			// WHEN pendingBayTypeApply is set
-			bayStore.pendingBayTypeApply = pendingType
+			// WHEN manualMatchingConfirmed is set to true
+			bayStore.manualMatchingConfirmed = true
 
-			// THEN should update pendingBayTypeApply state
-			expect(bayStore.pendingBayTypeApply).toBe(pendingType)
+			// THEN should update manualMatchingConfirmed state
+			expect(bayStore.manualMatchingConfirmed).toBe(true)
 		})
 
 		it('GIVEN equipment matches WHEN equipmentMatches is set THEN should update equipmentMatches state', () => {

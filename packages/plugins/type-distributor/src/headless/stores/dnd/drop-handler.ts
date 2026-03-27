@@ -1,62 +1,46 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 import type { LNodeTemplate } from '@/headless/common-types'
-import type { EquipmentMatch } from '@/headless/domain/matching'
+import type { EquipmentMatch, ValidationResult } from '@/headless/domain/matching'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 import { bayStore } from '../bay.store.svelte'
 import { getBayTypeWithTemplates } from '../bay-types.utils'
-import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
 import { ssdImportStore } from '../ssd-import.store.svelte'
 
-type BayTypeApplicationState = {
-	hasAssignedBayType: boolean
-	hasSelectedBay: boolean
-	requiresManualMatching: boolean
-	hasValidAutoSelection: boolean
-	hasPendingManualSelection: boolean
+type ShouldApplyBayTypeParams = {
+	assignedBayTypeUuid: string | null
+	selectedBayType: string | null
+	validationResult: ValidationResult | null
+	manualMatchingConfirmed: boolean
 }
 
-export function shouldApplyBayType(state: BayTypeApplicationState): boolean {
-	if (state.hasAssignedBayType || !state.hasSelectedBay) {
-		return false
+export function shouldApplyBayType({
+	assignedBayTypeUuid,
+	selectedBayType,
+	validationResult,
+	manualMatchingConfirmed
+}: ShouldApplyBayTypeParams): boolean {
+	if (assignedBayTypeUuid) return false
+	if (!selectedBayType) return false
+	if (!validationResult) return false
+
+	if (validationResult.isValid && !validationResult.requiresManualMatching) {
+		return true
 	}
 
-	return state.hasValidAutoSelection || state.hasPendingManualSelection
+	if (validationResult.requiresManualMatching && manualMatchingConfirmed) {
+		return true
+	}
+
+	return false
 }
 
-export function getBayTypeApplicationState(): BayTypeApplicationState {
-	const validation = equipmentMatchingStore.validationResult
-	const requiresManualMatching = validation?.requiresManualMatching ?? false
-
-	const hasValidAutoSelection =
-		!!ssdImportStore.selectedBayType &&
-		!!validation?.isValid &&
-		!requiresManualMatching
-
-	const hasPendingManualSelection =
-		!!bayStore.pendingBayTypeApply && requiresManualMatching
-
-	return {
-		hasAssignedBayType: !!bayStore.assignedBayTypeUuid,
-		hasSelectedBay: !!bayStore.selectedBay,
-		requiresManualMatching,
-		hasValidAutoSelection,
-		hasPendingManualSelection
-	}
-}
-
-export function applyBayType(state: BayTypeApplicationState): EquipmentMatch[] {
-	if (state.hasPendingManualSelection) {
-		ssdImportStore.selectedBayType = bayStore.pendingBayTypeApply
-	}
-
+export function applyBayType(): EquipmentMatch[] {
 	if (!bayStore.selectedBay) {
-		throw new Error('[DnD] No bay type selected to apply to bay')
+		throw new Error('[DnD] No bay selected to apply bay type to')
 	}
 
 	const matches = applyBayTypeAction(bayStore.selectedBay)
-	bayStore.pendingBayTypeApply = null
-	equipmentMatchingStore.reset()
 
 	return matches
 }

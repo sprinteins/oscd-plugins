@@ -136,7 +136,7 @@ export function createIedSchema(
 			const trimmedName = ied.name.trim()
 			if (!trimmedName) return
 
-			if (queryIedExists(xmlDocument, trimmedName)) {
+			if (queryIedExists(xmlDocument, CSS.escape(trimmedName))) {
 				ctx.addIssue({
 					code: 'custom',
 					message: `IED "${trimmedName}" already exists`,
