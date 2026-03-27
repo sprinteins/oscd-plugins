@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED]
 ### Fixed
 - Initial dnd of from eq(functions) onto AccessPoint closed opened (eq)functions
+- create IedName character issue
 ### Changed
 - Refactoring of manualMatching logic, removal of complex state.
 
