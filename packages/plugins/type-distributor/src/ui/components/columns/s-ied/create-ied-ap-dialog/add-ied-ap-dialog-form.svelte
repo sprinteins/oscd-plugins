@@ -119,7 +119,7 @@ function removeAccessPoint(apName: string) {
 	]
 }
 
-function handleSubmit() {
+async function handleSubmit() {
 	formErrors = {}
 
 	const submittableAps = isMultiApMode
@@ -139,7 +139,7 @@ function handleSubmit() {
 
 	submitForm(ied, submittableAps)
 	resetForm()
-	dialogStore.closeDialog('success')
+	await dialogStore.closeDialog('success')
 }
 
 async function handleCancel() {

@@ -7,6 +7,7 @@ import type {
 	FunctionTemplate,
 	LNodeType
 } from '@/headless/common-types'
+import { assertCreationPrerequisites } from '@/headless/domain/type-resolution'
 
 import {
 	parseBayTypes,
@@ -33,23 +34,42 @@ class UseImportSSDStore {
 	// Selection state
 	selectedBayType = $state<string | null>(null)
 
-	loadFromSSD(xmlDocument: XMLDocument, filename: string) {
+	reset() {
+		this.currentFilename = null
+		this.loadedSSDDocument = null
+		this.bayTypes = []
+		this.functionTemplates = []
+		this.conductingEquipmentTemplates = []
+		this.lnodeTypes = []
+		this.doTypes = []
+		this.daTypes = []
+		this.enumTypes = []
 		this.selectedBayType = null
-		this.bayTypes = parseBayTypes(xmlDocument)
+	}
 
-		const templates = parseTemplates(xmlDocument)
-		this.functionTemplates = templates.functionTemplates
-		this.conductingEquipmentTemplates =
-			templates.conductingEquipmentTemplates
+	loadFromSSD(xmlDocument: XMLDocument, filename: string) {
+		try {
+			const bayTypes = parseBayTypes(xmlDocument)
 
-		const dts = parseDataTypeTemplates(xmlDocument)
-		this.lnodeTypes = dts.lnodeTypes
-		this.doTypes = dts.doTypes
-		this.daTypes = dts.daTypes
-		this.enumTypes = dts.enumTypes
+			const templates = parseTemplates(xmlDocument)
+			const dts = parseDataTypeTemplates(xmlDocument)
+			assertCreationPrerequisites(xmlDocument)
 
-		this.loadedSSDDocument = xmlDocument
-		this.currentFilename = filename
+			this.selectedBayType = null
+			this.bayTypes = bayTypes
+			this.functionTemplates = templates.functionTemplates
+			this.conductingEquipmentTemplates =
+				templates.conductingEquipmentTemplates
+			this.lnodeTypes = dts.lnodeTypes
+			this.doTypes = dts.doTypes
+			this.daTypes = dts.daTypes
+			this.enumTypes = dts.enumTypes
+			this.loadedSSDDocument = xmlDocument
+			this.currentFilename = filename
+		} catch (error) {
+			this.reset()
+			throw error
+		}
 	}
 
 	// Utility methods for matching templates

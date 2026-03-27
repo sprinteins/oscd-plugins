@@ -4,7 +4,6 @@ import {
 	pluginGlobalStore,
 	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
-import { loadFromLocal } from '@/headless/import'
 import {
 	assignedLNodesStore,
 	bayStore,
@@ -12,6 +11,7 @@ import {
 	getBayTypeWithTemplates,
 	ssdImportStore
 } from '@/headless/stores'
+import { handleImportSSD } from './ssd-validation'
 
 const bays = $derived(
 	pluginGlobalStore.xmlDocument?.querySelectorAll(
@@ -74,6 +74,6 @@ const isBaySwitchLocked = $derived(
   type="file"
   accept=".ssd"
   bind:this={ssdImportStore.fileInput}
-  onchange={() => loadFromLocal()}
+	onchange={() => handleImportSSD()}
   class="hidden"
 />

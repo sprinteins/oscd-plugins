@@ -5,3 +5,9 @@ export {
 	queryTypesFromDAType,
 	queryTypesFromDOType
 } from './query-types'
+export {
+	assertCreationPrerequisites,
+	CreationPrerequisiteError,
+	MISSING_SSD_CREATION_MESSAGE,
+	validateCreationPrerequisites
+} from './validate-creation-prerequisites'
