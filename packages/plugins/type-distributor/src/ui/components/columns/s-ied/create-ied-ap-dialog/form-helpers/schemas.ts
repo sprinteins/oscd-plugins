@@ -2,10 +2,6 @@ import { z } from 'zod'
 import { queryIedExists } from '@/headless/scl'
 import type { AccessPointContext } from './types'
 
-function escapeSelector(str: string): string {
-	return str.replace(/["\\]/g, '\\$&')
-}
-
 export const accessPointBaseSchema = z.object({
 	name: z.string().trim().min(1, 'Access Point name is required'),
 	description: z.string().trim()
@@ -140,7 +136,7 @@ export function createIedSchema(
 			const trimmedName = ied.name.trim()
 			if (!trimmedName) return
 
-			if (queryIedExists(xmlDocument, escapeSelector(trimmedName))) {
+			if (queryIedExists(xmlDocument, CSS.escape(trimmedName))) {
 				ctx.addIssue({
 					code: 'custom',
 					message: `IED "${trimmedName}" already exists`,
