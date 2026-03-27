@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 import { bayStore } from '../bay.store.svelte'
-import { equipmentMatchingStore } from '../equipment-matching.store.svelte'
 import { ssdImportStore } from '../ssd-import.store.svelte'
 import {
 	applyBayType,
@@ -21,20 +20,9 @@ vi.mock('../bay-types.utils', () => ({
 
 vi.mock('../bay.store.svelte', () => ({
 	bayStore: {
-		isReadyToApply: false,
 		assignedBayTypeUuid: null as string | null,
 		selectedBay: null as string | null,
 		manualMatchingConfirmed: false
-	}
-}))
-
-vi.mock('../equipment-matching.store.svelte', () => ({
-	equipmentMatchingStore: {
-		validationResult: null as null | {
-			isValid?: boolean
-			requiresManualMatching?: boolean
-		},
-		reset: vi.fn()
 	}
 }))
 
@@ -77,32 +65,74 @@ describe('drop-handler', () => {
 		ssdImportStore.selectedBayType = null
 		bayStore.assignedBayTypeUuid = null
 		bayStore.selectedBay = null
-		bayStore.isReadyToApply = false
 		bayStore.manualMatchingConfirmed = false
-		equipmentMatchingStore.validationResult = null
 		vi.clearAllMocks()
 	})
 
 	describe('shouldApplyBayType', () => {
-		it('GIVEN bayStore.isReadyToApply is false WHEN shouldApplyBayType THEN returns false', () => {
-			// GIVEN
-			bayStore.isReadyToApply = false
+		it('GIVEN assignedBayTypeUuid exists WHEN shouldApplyBayType THEN returns false', () => {
+			const result = shouldApplyBayType({
+				assignedBayTypeUuid: 'existing-uuid',
+				selectedBayType: 'selected-bay-type',
+				validationResult: { isValid: true, errors: [] },
+				manualMatchingConfirmed: false
+			})
 
-			// WHEN
-			const result = shouldApplyBayType()
-
-			// THEN
 			expect(result).toBe(false)
 		})
 
-		it('GIVEN bayStore.isReadyToApply is true WHEN shouldApplyBayType THEN returns true', () => {
-			// GIVEN
-			bayStore.isReadyToApply = true
+		it('GIVEN no selectedBayType WHEN shouldApplyBayType THEN returns false', () => {
+			const result = shouldApplyBayType({
+				assignedBayTypeUuid: null,
+				selectedBayType: null,
+				validationResult: { isValid: true, errors: [] },
+				manualMatchingConfirmed: false
+			})
 
-			// WHEN
-			const result = shouldApplyBayType()
+			expect(result).toBe(false)
+		})
 
-			// THEN
+		it('GIVEN no validationResult WHEN shouldApplyBayType THEN returns false', () => {
+			const result = shouldApplyBayType({
+				assignedBayTypeUuid: null,
+				selectedBayType: 'selected-bay-type',
+				validationResult: null,
+				manualMatchingConfirmed: false
+			})
+
+			expect(result).toBe(false)
+		})
+
+		it('GIVEN valid result without manual matching required WHEN shouldApplyBayType THEN returns true', () => {
+			const result = shouldApplyBayType({
+				assignedBayTypeUuid: null,
+				selectedBayType: 'selected-bay-type',
+				validationResult: { isValid: true, requiresManualMatching: false, errors: [] },
+				manualMatchingConfirmed: false
+			})
+
+			expect(result).toBe(true)
+		})
+
+		it('GIVEN manual matching required but not confirmed WHEN shouldApplyBayType THEN returns false', () => {
+			const result = shouldApplyBayType({
+				assignedBayTypeUuid: null,
+				selectedBayType: 'selected-bay-type',
+				validationResult: { isValid: true, requiresManualMatching: true, errors: [] },
+				manualMatchingConfirmed: false
+			})
+
+			expect(result).toBe(false)
+		})
+
+		it('GIVEN manual matching required and confirmed WHEN shouldApplyBayType THEN returns true', () => {
+			const result = shouldApplyBayType({
+				assignedBayTypeUuid: null,
+				selectedBayType: 'selected-bay-type',
+				validationResult: { isValid: true, requiresManualMatching: true, errors: [] },
+				manualMatchingConfirmed: true
+			})
+
 			expect(result).toBe(true)
 		})
 	})
@@ -131,7 +161,6 @@ describe('drop-handler', () => {
 			expect(applyBayTypeAction).toHaveBeenCalledWith('Bay-1')
 			// State is preserved so an undo can restore the user back to their matching context
 			expect(bayStore.manualMatchingConfirmed).toBe(true)
-			expect(equipmentMatchingStore.reset).not.toHaveBeenCalled()
 		})
 	})
 

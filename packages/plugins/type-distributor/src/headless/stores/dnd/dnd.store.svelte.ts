@@ -13,6 +13,7 @@ import {
 import {
 	assignedLNodesStore,
 	bayStore,
+	equipmentMatchingStore,
 	ssdImportStore
 } from '@/headless/stores'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
@@ -87,7 +88,12 @@ class UseDndStore {
 		} = this.draggedItem
 
 		try {
-			const didApplyBayType = shouldApplyBayType()
+			const didApplyBayType = shouldApplyBayType({
+				assignedBayTypeUuid: bayStore.assignedBayTypeUuid,
+				selectedBayType: ssdImportStore.selectedBayType,
+				validationResult: equipmentMatchingStore.validationResult,
+				manualMatchingConfirmed: bayStore.manualMatchingConfirmed
+			})
 			const freshMatches = didApplyBayType ? applyBayType() : null
 			const equipmentMatches = freshMatches ?? bayStore.equipmentMatches
 

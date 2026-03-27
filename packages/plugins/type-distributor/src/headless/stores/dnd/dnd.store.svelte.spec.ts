@@ -36,10 +36,15 @@ vi.mock('@/headless/stores', () => ({
 	},
 	bayStore: {
 		equipmentMatches: [],
-		assignedBayTypeUuid: null as string | null
+		assignedBayTypeUuid: null as string | null,
+		manualMatchingConfirmed: false
+	},
+	equipmentMatchingStore: {
+		validationResult: null
 	},
 	ssdImportStore: {
-		lnodeTypes: []
+		lnodeTypes: [],
+		selectedBayType: null
 	}
 }))
 

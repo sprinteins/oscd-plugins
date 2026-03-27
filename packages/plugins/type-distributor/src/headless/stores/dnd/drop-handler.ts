@@ -1,14 +1,38 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 import type { LNodeTemplate } from '@/headless/common-types'
-import type { EquipmentMatch } from '@/headless/domain/matching'
+import type { EquipmentMatch, ValidationResult } from '@/headless/domain/matching'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 import { bayStore } from '../bay.store.svelte'
 import { getBayTypeWithTemplates } from '../bay-types.utils'
 import { ssdImportStore } from '../ssd-import.store.svelte'
 
-export function shouldApplyBayType(): boolean {
-	return bayStore.isReadyToApply
+type ShouldApplyBayTypeParams = {
+	assignedBayTypeUuid: string | null
+	selectedBayType: string | null
+	validationResult: ValidationResult | null
+	manualMatchingConfirmed: boolean
+}
+
+export function shouldApplyBayType({
+	assignedBayTypeUuid,
+	selectedBayType,
+	validationResult,
+	manualMatchingConfirmed
+}: ShouldApplyBayTypeParams): boolean {
+	if (assignedBayTypeUuid) return false
+	if (!selectedBayType) return false
+	if (!validationResult) return false
+
+	if (validationResult.isValid && !validationResult.requiresManualMatching) {
+		return true
+	}
+
+	if (validationResult.requiresManualMatching && manualMatchingConfirmed) {
+		return true
+	}
+
+	return false
 }
 
 export function applyBayType(): EquipmentMatch[] {
