@@ -11,10 +11,10 @@ Manual matching is required when:
 
 ### 1. Identify Ambiguous Equipment
 
-After selecting a bay type, the plugin displays:
+After selecting a bay type, validation can mark some equipment rows as ambiguous. The plugin then displays:
 - A list of equipment requiring manual intervention
 - The equipment type and name for each item
-- Available template options with counts
+- Available template options derived from the selected bay type
 
 ### 2. Review Available Templates
 
@@ -22,8 +22,8 @@ For each ambiguous equipment item:
 - View the dropdown list of compatible templates
 - Templates show: `TemplateName (EquipmentType)`
 - The list is filtered to show only:
-  - Templates matching the equipment type
-  - Templates not already fully consumed by other matches
+   - Templates matching the equipment type
+   - Templates that still have remaining instances available
 
 ### 3. Assign Templates
 
@@ -44,7 +44,7 @@ Selection: CircuitBreaker_A (CBR)
 ### 4. Verify All Matches Are Set
 
 - The "Apply" button remains disabled until all ambiguous equipment is matched
-- A status indicator shows match completion
+- Template-count mismatches must also be resolved before apply is enabled
 
 ### 5. Apply Changes
 
@@ -68,3 +68,7 @@ To modify a manual match:
 1. Select a different template from the dropdown
 2. The previous assignment is automatically cleared
 3. Template availability counts update in real-time
+
+## What happens next
+
+When you apply the bay type, manual matches are used before type-based fallback. This means your explicit choices only affect the ambiguous equipment that needed intervention, while the rest of the bay can still be matched automatically.

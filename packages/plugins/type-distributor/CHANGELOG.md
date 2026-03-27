@@ -52,7 +52,7 @@ IED - AP
 ### Fixed
 - Resolved scd still referencing bayType if the last lNode has been deleted. Now removes all references.
 - Resolved overflowing text in lNode card of the ied column.
-- Resolved an issue where using the wrong function for element creation could lead to `xmlns=""` attributes being added. See [code style decision #3](docs/code-style-decisions/0003-why-use-createElement.md) for details.
+- Resolved an issue where using the wrong function for element creation could lead to `xmlns=""` attributes being added. See [code style](docs/code-style.md) for details.
 - Fixed delete button incorrectly appearing on LD0 lnode cards when the ldInst started with `LD0` but was not an exact match.
 
 ## [0.5.1]
@@ -149,5 +149,4 @@ IED - AP
 
 ### Changed
 - Updated workspace scripts and dependency versions related to the type-distributor plugin
-  
   
