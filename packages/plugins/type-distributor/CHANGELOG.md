@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 ### Fixed
-- Initial dnd of from eq(functions) onto AccessPoint closed opened (eq)functions
-- create IedName character issue
+- Initial dnd of from eq(functions) onto AccessPoint closed opened (eq)functions [#707](https://github.com/sprinteins/oscd-plugins/issues/707)
+- an issue where BayTypeDetails were shown although the BayType did not match with the Bay [#770](https://github.com/sprinteins/oscd-plugins/issues/770)
+- create IedName character issue [#765](https://github.com/sprinteins/oscd-plugins/issues/765)
 ### Changed
 - Refactoring of manualMatching logic, removal of complex state.
 
