@@ -31,11 +31,11 @@ const isSubmitDisabled = $derived(ied.name.trim().length === 0)
 async function handleSubmit() {
 	formErrors = {}
 
-	const errors = validateRenameIedFields(
+	const errors = validateRenameIedFields({
 		ied,
-		pluginGlobalStore.xmlDocument,
+		xmlDocument: pluginGlobalStore.xmlDocument,
 		currentIedName
-	)
+	})
 	if (errors) {
 		formErrors = { properties: { ied: errors } }
 		return

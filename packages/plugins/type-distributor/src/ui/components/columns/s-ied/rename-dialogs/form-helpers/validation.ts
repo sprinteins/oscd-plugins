@@ -12,11 +12,17 @@ import type {
 	RenameFormErrors
 } from './types'
 
-export function validateRenameIedFields(
-	ied: IedRenameData,
-	xmlDocument: XMLDocument | null | undefined,
+type ValidateRenameIedFieldsParams = {
+	ied: IedRenameData
+	xmlDocument: XMLDocument | null | undefined
 	currentIedName: string
-): RenameFieldErrors | null {
+}
+
+export function validateRenameIedFields({
+	ied,
+	xmlDocument,
+	currentIedName
+}: ValidateRenameIedFieldsParams): RenameFieldErrors | null {
 	const result = createRenameIedSchema(
 		xmlDocument,
 		currentIedName
@@ -24,22 +30,29 @@ export function validateRenameIedFields(
 	return result.success ? null : z.treeifyError(result.error)
 }
 
-export function validateRenameAccessPointFields(
-	ap: AccessPointRenameData,
-	xmlDocument: XMLDocument | null | undefined,
-	iedName: string,
+type ValidateRenameAccessPointFieldsParams = {
+	ap: AccessPointRenameData
+	xmlDocument: XMLDocument | null | undefined
+	iedName: string
 	currentApName: string
-): RenameFieldErrors | null {
-	const existingApNames = getExistingApNamesExcludingCurrent(
+}
+
+export function validateRenameAccessPointFields({
+	ap,
+	xmlDocument,
+	iedName,
+	currentApName
+}: ValidateRenameAccessPointFieldsParams): RenameFieldErrors | null {
+	const existingApNames = getExistingApNamesExcludingCurrent({
 		xmlDocument,
 		iedName,
 		currentApName
-	)
-	const result = createRenameAccessPointSchema(
+	})
+	const result = createRenameAccessPointSchema({
 		existingApNames,
 		currentApName,
 		iedName
-	).safeParse(ap)
+	}).safeParse(ap)
 	return result.success ? null : z.treeifyError(result.error)
 }
 
@@ -58,16 +71,16 @@ export function validateRenameCombinedForm({
 	currentIedName,
 	currentApName
 }: ValidateRenameCombinedParams): RenameFormErrors | null {
-	const existingApNames = getExistingApNamesExcludingCurrent(
+	const existingApNames = getExistingApNamesExcludingCurrent({
 		xmlDocument,
-		currentIedName,
+		iedName: currentIedName,
 		currentApName
-	)
-	const result = createRenameCombinedSchema(
+	})
+	const result = createRenameCombinedSchema({
 		xmlDocument,
 		currentIedName,
 		currentApName,
 		existingApNames
-	).safeParse({ ied, ap })
+	}).safeParse({ ied, ap })
 	return result.success ? null : z.treeifyError(result.error)
 }

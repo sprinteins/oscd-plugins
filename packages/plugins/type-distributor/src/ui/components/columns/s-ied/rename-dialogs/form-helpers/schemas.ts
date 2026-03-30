@@ -28,11 +28,17 @@ export function createRenameIedSchema(
 		})
 }
 
-export function createRenameAccessPointSchema(
-	existingApNames: string[],
-	currentApName: string,
+type CreateRenameAccessPointSchemaParams = {
+	existingApNames: string[]
+	currentApName: string
 	iedName: string
-) {
+}
+
+export function createRenameAccessPointSchema({
+	existingApNames,
+	currentApName,
+	iedName
+}: CreateRenameAccessPointSchemaParams) {
 	return z
 		.object({
 			name: z.string().trim().min(1, 'Access Point name is required'),
@@ -53,27 +59,40 @@ export function createRenameAccessPointSchema(
 		})
 }
 
-export function createRenameCombinedSchema(
-	xmlDocument: XMLDocument | null | undefined,
-	currentIedName: string,
-	currentApName: string,
+type CreateRenameCombinedSchemaParams = {
+	xmlDocument: XMLDocument | null | undefined
+	currentIedName: string
+	currentApName: string
 	existingApNames: string[]
-) {
+}
+
+export function createRenameCombinedSchema({
+	xmlDocument,
+	currentIedName,
+	currentApName,
+	existingApNames
+}: CreateRenameCombinedSchemaParams) {
 	return z.object({
 		ied: createRenameIedSchema(xmlDocument, currentIedName),
-		ap: createRenameAccessPointSchema(
+		ap: createRenameAccessPointSchema({
 			existingApNames,
 			currentApName,
-			currentIedName
-		)
+			iedName: currentIedName
+		})
 	})
 }
 
-export function getExistingApNamesExcludingCurrent(
-	xmlDocument: XMLDocument | null | undefined,
-	iedName: string,
+type GetExistingApNamesExcludingCurrentParams = {
+	xmlDocument: XMLDocument | null | undefined
+	iedName: string
 	currentApName: string
-): string[] {
+}
+
+export function getExistingApNamesExcludingCurrent({
+	xmlDocument,
+	iedName,
+	currentApName
+}: GetExistingApNamesExcludingCurrentParams): string[] {
 	return queryAccessPointsFromIed(xmlDocument, iedName).filter(
 		(name) => name !== currentApName
 	)
