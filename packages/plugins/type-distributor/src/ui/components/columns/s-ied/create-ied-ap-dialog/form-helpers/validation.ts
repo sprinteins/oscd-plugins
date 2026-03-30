@@ -33,12 +33,14 @@ type ValidateSubmissionParams = {
 	ied: IedData
 	accessPoints: AccessPointData[]
 	xmlDocument: XMLDocument | null | undefined
+	ssdDocument: XMLDocument | null | undefined
 }
 
 export function validateSubmission({
 	ied,
 	accessPoints,
-	xmlDocument
+	xmlDocument,
+	ssdDocument
 }: ValidateSubmissionParams) {
 	const existingNames = ied.isNew
 		? []
@@ -46,6 +48,7 @@ export function validateSubmission({
 
 	const result = createFormSchema(
 		xmlDocument,
+		ssdDocument,
 		ied.isNew,
 		existingNames,
 		ied.name
