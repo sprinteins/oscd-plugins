@@ -44,7 +44,14 @@ let accessPoint = $state<AccessPointRenameData>(
 let formErrors = $state<RenameFormErrors>({})
 
 const isSubmitDisabled = $derived(
-	ied.name.trim().length === 0 || accessPoint.name.trim().length === 0
+	ied.name.trim().length === 0 ||
+	accessPoint.name.trim().length === 0 ||
+	(
+		ied.name.trim() === currentIedName &&
+		ied.description.trim() === currentIedDescription &&
+		accessPoint.name.trim() === currentApName &&
+		accessPoint.description.trim() === currentApDescription
+	)
 )
 
 async function handleSubmit() {

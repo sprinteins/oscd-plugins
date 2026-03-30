@@ -26,7 +26,11 @@ let ied = $state<IedRenameData>(
 )
 let formErrors = $state<RenameFormErrors>({})
 
-const isSubmitDisabled = $derived(ied.name.trim().length === 0)
+const isSubmitDisabled = $derived(
+	ied.name.trim().length === 0 ||
+		(ied.name.trim() === currentIedName &&
+			ied.description.trim() === currentDescription)
+)
 
 async function handleSubmit() {
 	formErrors = {}
