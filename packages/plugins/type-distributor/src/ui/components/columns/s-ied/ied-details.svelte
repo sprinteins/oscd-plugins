@@ -64,6 +64,7 @@ const sIedData = $derived.by(() => {
             {accessPoint}
             {lDevices}
             {iedName}
+						{iedElement}
           />
         {/each}
       {/if}

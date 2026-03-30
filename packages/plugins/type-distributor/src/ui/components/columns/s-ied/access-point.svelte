@@ -15,9 +15,10 @@ interface Props {
 	accessPoint: Element
 	lDevices: LDeviceData[]
 	iedName: string
+	iedElement: Element
 }
 
-const { accessPoint, lDevices, iedName }: Props = $props()
+const { accessPoint, lDevices, iedName, iedElement }: Props = $props()
 
 let isOpen = $state(false)
 let hasLDevices = $derived(lDevices.length > 0)
@@ -56,7 +57,6 @@ function handleDrop(event: DragEvent) {
 }
 
 async function handleRename() {
-	const iedElement = accessPoint.parentElement as Element
 	dialogStore.mountInnerComponent({
 		innerComponent: RenameCombinedDialogForm,
 		innerComponentProps: {
