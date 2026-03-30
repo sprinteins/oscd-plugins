@@ -1,4 +1,8 @@
 import { z } from 'zod'
+import {
+	MISSING_SSD_CREATION_MESSAGE,
+	validateCreationPrerequisites
+} from '@/headless/domain/type-resolution'
 import { queryIedExists } from '@/headless/scl'
 import type { AccessPointContext } from './types'
 
@@ -97,20 +101,44 @@ export function createAccessPointSchema(context: AccessPointContext) {
 	})
 }
 
-export function createFormSchema(
-	xmlDocument: XMLDocument | null | undefined,
-	isNew: boolean,
-	existingNames: string[],
+type CreateFormSchemaParams = {
+	xmlDocument: XMLDocument | null | undefined
+	ssdDocument: XMLDocument | null | undefined
+	isNew: boolean
+	existingNames: string[]
 	iedName: string
-) {
-	return z.object({
-		ied: createIedSchema(xmlDocument, isNew),
-		ap: createAccessPointsCollectionSchema({
-			isNew,
-			existingNames,
-			iedName
+}
+
+export function createFormSchema({
+	xmlDocument,
+	ssdDocument,
+	isNew,
+	existingNames,
+	iedName
+}: CreateFormSchemaParams) {
+	return z
+		.object({
+			ied: createIedSchema(xmlDocument, isNew),
+			ap: createAccessPointsCollectionSchema({
+				isNew,
+				existingNames,
+				iedName
+			})
 		})
-	})
+		.superRefine((_, ctx) => {
+			const validation = validateCreationPrerequisites(
+				ssdDocument ?? null
+			)
+
+			if (!validation.isValid) {
+				ctx.addIssue({
+					code: 'custom',
+					message:
+						validation.problems[0]?.message ??
+						MISSING_SSD_CREATION_MESSAGE
+				})
+			}
+		})
 }
 
 export function createIedSchema(

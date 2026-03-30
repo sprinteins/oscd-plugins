@@ -1,7 +1,8 @@
 <script lang="ts">
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { queryAccessPointsFromIed } from '@/headless/scl'
-import { FormActions, MultiApButton } from './form-elements'
+import { ssdImportStore } from '@/headless/stores'
+import { FieldError, FormActions, MultiApButton } from './form-elements'
 import {
 	type AccessPointData,
 	createInitialAccessPoint,
@@ -119,7 +120,7 @@ function removeAccessPoint(apName: string) {
 	]
 }
 
-function handleSubmit() {
+async function handleSubmit() {
 	formErrors = {}
 
 	const submittableAps = isMultiApMode
@@ -129,7 +130,8 @@ function handleSubmit() {
 	const errors = validateSubmission({
 		ied,
 		accessPoints: submittableAps,
-		xmlDocument: pluginGlobalStore.xmlDocument
+		xmlDocument: pluginGlobalStore.xmlDocument,
+		ssdDocument: ssdImportStore.loadedSSDDocument
 	})
 
 	if (errors) {
@@ -139,7 +141,7 @@ function handleSubmit() {
 
 	submitForm(ied, submittableAps)
 	resetForm()
-	dialogStore.closeDialog('success')
+	await dialogStore.closeDialog('success')
 }
 
 async function handleCancel() {
@@ -169,6 +171,8 @@ async function handleCancel() {
     onEnterMultiApMode={enterMultiApMode}
     onAddAccessPoint={addAccessPoint}
   />
+
+  <FieldError errors={formErrors.errors} />
 
   <FormActions
     onCancel={handleCancel}

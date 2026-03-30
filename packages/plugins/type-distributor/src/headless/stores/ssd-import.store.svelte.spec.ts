@@ -1,7 +1,19 @@
 import { ssdMockA } from '@oscd-plugins/core-api/mocks/v1'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { CreationPrerequisiteError } from '@/headless/domain/type-resolution'
 import { resetSSDImportStore } from '@/headless/test-helpers'
 import { ssdImportStore } from './ssd-import.store.svelte'
+
+const invalidLln0Ssd = `
+	<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+		<DataTypeTemplates>
+			<LNodeType id="LLN0_Default" lnClass="LLN0">
+				<DO name="NamPlt" type="LPL" />
+			</LNodeType>
+			<DOType id="LPL" cdc="LPL" />
+		</DataTypeTemplates>
+	</SCL>
+`
 
 describe('ssdImportStore', () => {
 	let doc: XMLDocument
@@ -14,6 +26,22 @@ describe('ssdImportStore', () => {
 	})
 
 	describe('loadFromSSD', () => {
+		it('should reject invalid LLN0 prerequisites and clear the store', () => {
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
+			const invalidDoc = new DOMParser().parseFromString(
+				invalidLln0Ssd,
+				'application/xml'
+			)
+
+			expect(() =>
+				ssdImportStore.loadFromSSD(invalidDoc, 'invalid.ssd')
+			).toThrow(CreationPrerequisiteError)
+			expect(ssdImportStore.loadedSSDDocument).toBeNull()
+			expect(ssdImportStore.currentFilename).toBeNull()
+			expect(ssdImportStore.bayTypes).toHaveLength(0)
+			expect(ssdImportStore.lnodeTypes).toHaveLength(0)
+		})
+
 		it('should load and parse SSD document', () => {
 			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 
@@ -126,6 +154,22 @@ describe('ssdImportStore', () => {
 	})
 
 	describe('state management', () => {
+		it('should reset all loaded SSD state', () => {
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
+			ssdImportStore.reset()
+
+			expect(ssdImportStore.currentFilename).toBeNull()
+			expect(ssdImportStore.loadedSSDDocument).toBeNull()
+			expect(ssdImportStore.bayTypes).toHaveLength(0)
+			expect(ssdImportStore.functionTemplates).toHaveLength(0)
+			expect(ssdImportStore.conductingEquipmentTemplates).toHaveLength(0)
+			expect(ssdImportStore.lnodeTypes).toHaveLength(0)
+			expect(ssdImportStore.doTypes).toHaveLength(0)
+			expect(ssdImportStore.daTypes).toHaveLength(0)
+			expect(ssdImportStore.enumTypes).toHaveLength(0)
+			expect(ssdImportStore.selectedBayType).toBeNull()
+		})
+
 		it('should track current filename', () => {
 			expect(ssdImportStore.currentFilename).toBeNull()
 			ssdImportStore.currentFilename = 'test.ssd'
