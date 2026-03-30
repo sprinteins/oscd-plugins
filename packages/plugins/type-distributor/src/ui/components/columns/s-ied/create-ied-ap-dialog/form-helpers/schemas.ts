@@ -101,13 +101,21 @@ export function createAccessPointSchema(context: AccessPointContext) {
 	})
 }
 
-export function createFormSchema(
-	xmlDocument: XMLDocument | null | undefined,
-	ssdDocument: XMLDocument | null | undefined,
-	isNew: boolean,
-	existingNames: string[],
+type CreateFormSchemaParams = {
+	xmlDocument: XMLDocument | null | undefined
+	ssdDocument: XMLDocument | null | undefined
+	isNew: boolean
+	existingNames: string[]
 	iedName: string
-) {
+}
+
+export function createFormSchema({
+	xmlDocument,
+	ssdDocument,
+	isNew,
+	existingNames,
+	iedName
+}: CreateFormSchemaParams) {
 	return z
 		.object({
 			ied: createIedSchema(xmlDocument, isNew),

@@ -46,13 +46,13 @@ export function validateSubmission({
 		? []
 		: queryAccessPointsFromIed(xmlDocument, ied.name.trim())
 
-	const result = createFormSchema(
+	const result = createFormSchema({
 		xmlDocument,
 		ssdDocument,
-		ied.isNew,
+		isNew: ied.isNew,
 		existingNames,
-		ied.name
-	).safeParse({ ied, ap: accessPoints })
+		iedName: ied.name
+	}).safeParse({ ied, ap: accessPoints })
 
 	if (result.success) return null
 

@@ -80,7 +80,7 @@ Each logical entity has its own Zod schema factory:
 | `createIedSchema(xmlDocument, isNew)` | IED name (uniqueness if new) and description |
 | `createAccessPointSchema(context)` | Single AP name (uniqueness within pending and existing) |
 | `createAccessPointsCollectionSchema(context)` | Array of APs (collection-level rules) |
-| `createFormSchema(xmlDocument, isNew, existingNames, iedName)` | Entire form as one object: `{ ied, ap }` |
+| `createFormSchema({xmlDocument, ssdDocument, isNew, existingNames, iedName})` | Entire form as one object: `{ ied, ap }` |
 
 The full-form schema is composed from the individual schemas, so rules are never duplicated.
 
