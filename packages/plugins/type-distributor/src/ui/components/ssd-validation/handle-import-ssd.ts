@@ -1,6 +1,10 @@
 import { dialogStore } from '@oscd-plugins/core-ui-svelte'
 import { CreationPrerequisiteError } from '@/headless/domain/type-resolution'
-import { INVALID_XML_IMPORT_MESSAGE, loadFromLocal } from '@/headless/import'
+import {
+	INVALID_XML_IMPORT_MESSAGE,
+	NO_FILE_SELECTED_MESSAGE,
+	loadFromLocal,
+} from '@/headless/import'
 import {
 	openSsdImportProblemDialog,
 	openSsdImportProblemDialogFromError
@@ -31,7 +35,10 @@ export async function handleImportSSD(): Promise<void> {
 			return
 		}
 
-		if (error instanceof Error && error.message !== 'No file selected') {
+		if (
+			error instanceof Error &&
+			error.message !== NO_FILE_SELECTED_MESSAGE
+		) {
 			await openSsdImportProblemDialog({
 				title: 'Cannot import SSD',
 				description: 'The selected SSD file could not be loaded.',
