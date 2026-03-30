@@ -1,9 +1,14 @@
 <script lang="ts">
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
-import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
+import {
+	Card,
+	DropdownMenuWorkaround,
+	dialogStore
+} from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
 import type { LDeviceData } from '@/headless/common-types'
 import { dndStore } from '@/headless/stores'
+import { RenameCombinedDialogForm } from './rename-dialogs'
 import LDevice from './l-device.svelte'
 
 interface Props {
@@ -48,6 +53,22 @@ function handleDrop(event: DragEvent) {
 	}
 
 	dndStore.handleDrop(accessPoint, iedName)
+}
+
+async function handleRename() {
+	const iedElement = accessPoint.parentElement as Element
+	dialogStore.mountInnerComponent({
+		innerComponent: RenameCombinedDialogForm,
+		innerComponentProps: {
+			currentIedName: iedName,
+			currentIedDescription: iedElement?.getAttribute('desc') ?? '',
+			currentApName: accessPoint.getAttribute('name') ?? '',
+			currentApDescription: accessPoint.getAttribute('desc') ?? '',
+			iedElement,
+			accessPointElement: accessPoint
+		}
+	})
+	await dialogStore.openDialog()
 }
 </script>
 
@@ -96,6 +117,11 @@ function handleDrop(event: DragEvent) {
               <DropdownMenuWorkaround
                 size="sm"
                 actions={[
+                  {
+                    label: "Rename",
+                    disabled: false,
+                    callback: handleRename,
+                  },
                   {
                     label: "Delete",
                     disabled: false,

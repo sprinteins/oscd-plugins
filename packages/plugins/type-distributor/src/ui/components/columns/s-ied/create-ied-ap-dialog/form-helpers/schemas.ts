@@ -11,7 +11,7 @@ export const accessPointBaseSchema = z.object({
 	description: z.string().trim()
 })
 
-const iedNameBaseSchema = z
+export const iedNameBaseSchema = z
 	.string()
 	.trim()
 	.max(64, 'IED name cannot exceed 64 characters')
