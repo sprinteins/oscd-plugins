@@ -45,11 +45,12 @@ export function renameIedAndAccessPoint({
 	})
 
 	const allEdits = [...iedEdits, ...apEdits]
-	if (allEdits.length === 0) return
 
-	editor.commit(allEdits, {
-		title: `Rename S-IED "${oldIedName}" to "${newIedName}" and Access Point "${oldApName}" to "${newApName}"`
-	})
+	if (allEdits.length > 0) {
+		editor.commit(allEdits, {
+			title: `Rename S-IED "${oldIedName}" to "${newIedName}" and Access Point "${oldApName}" to "${newApName}"`
+		})
 
-	assignedLNodesStore.rebuild()
+		assignedLNodesStore.rebuild()
+	}
 }

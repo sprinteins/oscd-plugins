@@ -27,11 +27,11 @@ export function renameAccessPoint({
 		newDescription
 	})
 
-	if (edits.length === 0) return
+	if (edits.length > 0) {
+		editor.commit(edits, {
+			title: `Rename Access Point "${oldName}" to "${newName}" in S-IED "${iedName}"`
+		})
 
-	editor.commit(edits, {
-		title: `Rename Access Point "${oldName}" to "${newName}" in S-IED "${iedName}"`
-	})
-
-	assignedLNodesStore.rebuild()
+		assignedLNodesStore.rebuild()
+	}
 }

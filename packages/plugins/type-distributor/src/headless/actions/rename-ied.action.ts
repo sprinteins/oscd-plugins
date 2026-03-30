@@ -25,11 +25,11 @@ export function renameIed({
 		selectedBay: bayStore.scdBay
 	})
 
-	if (edits.length === 0) return
+	if (edits.length > 0) {
+		editor.commit(edits, {
+			title: `Rename S-IED from "${oldName}" to "${newName}"`
+		})
 
-	editor.commit(edits, {
-		title: `Rename S-IED from "${oldName}" to "${newName}"`
-	})
-
-	assignedLNodesStore.rebuild()
+		assignedLNodesStore.rebuild()
+	}
 }
