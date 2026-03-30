@@ -107,7 +107,11 @@ describe('drop-handler', () => {
 			const result = shouldApplyBayType({
 				assignedBayTypeUuid: null,
 				selectedBayType: 'selected-bay-type',
-				validationResult: { isValid: true, requiresManualMatching: false, errors: [] },
+				validationResult: {
+					isValid: true,
+					requiresManualMatching: false,
+					errors: []
+				},
 				manualMatchingConfirmed: false
 			})
 
@@ -118,7 +122,11 @@ describe('drop-handler', () => {
 			const result = shouldApplyBayType({
 				assignedBayTypeUuid: null,
 				selectedBayType: 'selected-bay-type',
-				validationResult: { isValid: true, requiresManualMatching: true, errors: [] },
+				validationResult: {
+					isValid: true,
+					requiresManualMatching: true,
+					errors: []
+				},
 				manualMatchingConfirmed: false
 			})
 
@@ -129,7 +137,11 @@ describe('drop-handler', () => {
 			const result = shouldApplyBayType({
 				assignedBayTypeUuid: null,
 				selectedBayType: 'selected-bay-type',
-				validationResult: { isValid: true, requiresManualMatching: true, errors: [] },
+				validationResult: {
+					isValid: true,
+					requiresManualMatching: true,
+					errors: []
+				},
 				manualMatchingConfirmed: true
 			})
 

@@ -118,7 +118,9 @@ export function createFormSchema(
 			})
 		})
 		.superRefine((_, ctx) => {
-			const validation = validateCreationPrerequisites(ssdDocument ?? null)
+			const validation = validateCreationPrerequisites(
+				ssdDocument ?? null
+			)
 
 			if (!validation.isValid) {
 				ctx.addIssue({

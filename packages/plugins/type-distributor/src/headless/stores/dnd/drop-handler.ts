@@ -1,7 +1,10 @@
 import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import { applyBayType as applyBayTypeAction } from '@/headless/actions'
 import type { LNodeTemplate } from '@/headless/common-types'
-import type { EquipmentMatch, ValidationResult } from '@/headless/domain/matching'
+import type {
+	EquipmentMatch,
+	ValidationResult
+} from '@/headless/domain/matching'
 import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 import { bayStore } from '../bay.store.svelte'
 import { getBayTypeWithTemplates } from '../bay-types.utils'

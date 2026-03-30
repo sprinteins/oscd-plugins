@@ -2,8 +2,8 @@ import { dialogStore } from '@oscd-plugins/core-ui-svelte'
 import { CreationPrerequisiteError } from '@/headless/domain/type-resolution'
 import {
 	INVALID_XML_IMPORT_MESSAGE,
-	NO_FILE_SELECTED_MESSAGE,
 	loadFromLocal,
+	NO_FILE_SELECTED_MESSAGE
 } from '@/headless/import'
 import {
 	openSsdImportProblemDialog,
