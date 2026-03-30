@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { iedNameBaseSchema } from '@/ui/components/columns/s-ied/create-ied-ap-dialog/form-helpers/schemas'
+import { iedNameBaseSchema } from '@/ui/components/columns/s-ied/create-ied-ap-dialog/form-helpers'
 import { queryIedExists, queryAccessPointsFromIed } from '@/headless/scl'
 
 export function createRenameIedSchema(
