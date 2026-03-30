@@ -1,14 +1,14 @@
 <script lang="ts">
 import { Input, Label } from '@oscd-plugins/core-ui-svelte'
 import { FieldError } from '@/ui/components/columns/s-ied/create-ied-ap-dialog/form-elements'
-import type { IedRenameData, RenameFieldErrors } from '../form-helpers'
+import type { IedRenameData, FieldErrors } from '../form-helpers'
 
 let {
 	ied = $bindable({ name: '', description: '' }),
 	errors = undefined
 }: {
 	ied: IedRenameData
-	errors?: RenameFieldErrors
+	errors?: FieldErrors
 } = $props()
 </script>
 

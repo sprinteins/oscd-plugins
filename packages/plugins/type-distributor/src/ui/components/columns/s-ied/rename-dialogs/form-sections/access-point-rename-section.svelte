@@ -1,14 +1,14 @@
 <script lang="ts">
 import { Input, Label } from '@oscd-plugins/core-ui-svelte'
 import { FieldError } from '@/ui/components/columns/s-ied/create-ied-ap-dialog/form-elements'
-import type { AccessPointRenameData, RenameFieldErrors } from '../form-helpers'
+import type { AccessPointData, FieldErrors } from '../form-helpers'
 
 let {
 	accessPoint = $bindable({ name: '', description: '' }),
 	errors = undefined
 }: {
-	accessPoint: AccessPointRenameData
-	errors?: RenameFieldErrors
+	accessPoint: AccessPointData
+	errors?: FieldErrors
 } = $props()
 </script>
 

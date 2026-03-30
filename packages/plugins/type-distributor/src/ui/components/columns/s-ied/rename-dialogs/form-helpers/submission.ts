@@ -3,7 +3,7 @@ import {
 	renameIed,
 	renameIedAndAccessPoint
 } from '@/headless/actions'
-import type { AccessPointRenameData, IedRenameData } from './types'
+import type { AccessPointData, IedRenameData } from './types'
 
 type SubmitRenameIedParams = {
 	ied: IedRenameData
@@ -33,7 +33,7 @@ export function submitRenameIed({
 
 type SubmitRenameCombinedParams = {
 	ied: IedRenameData
-	ap: AccessPointRenameData
+	ap: AccessPointData
 	iedElement: Element
 	accessPointElement: Element
 	currentIedName: string

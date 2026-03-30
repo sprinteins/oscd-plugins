@@ -6,9 +6,9 @@ import {
 	getExistingApNamesExcludingCurrent
 } from './schemas'
 import type {
-	AccessPointRenameData,
+	AccessPointData,
+	FieldErrors,
 	IedRenameData,
-	RenameFieldErrors,
 	RenameFormErrors
 } from './types'
 
@@ -22,7 +22,7 @@ export function validateRenameIedFields({
 	ied,
 	xmlDocument,
 	currentIedName
-}: ValidateRenameIedFieldsParams): RenameFieldErrors | null {
+}: ValidateRenameIedFieldsParams): FieldErrors | null {
 	const result = createRenameIedSchema(
 		xmlDocument,
 		currentIedName
@@ -31,7 +31,7 @@ export function validateRenameIedFields({
 }
 
 type ValidateRenameAccessPointFieldsParams = {
-	ap: AccessPointRenameData
+	ap: AccessPointData
 	xmlDocument: XMLDocument | null | undefined
 	iedName: string
 	currentApName: string
@@ -42,7 +42,7 @@ export function validateRenameAccessPointFields({
 	xmlDocument,
 	iedName,
 	currentApName
-}: ValidateRenameAccessPointFieldsParams): RenameFieldErrors | null {
+}: ValidateRenameAccessPointFieldsParams): FieldErrors | null {
 	const existingApNames = getExistingApNamesExcludingCurrent({
 		xmlDocument,
 		iedName,
@@ -58,7 +58,7 @@ export function validateRenameAccessPointFields({
 
 type ValidateRenameCombinedParams = {
 	ied: IedRenameData
-	ap: AccessPointRenameData
+	ap: AccessPointData
 	xmlDocument: XMLDocument | null | undefined
 	currentIedName: string
 	currentApName: string

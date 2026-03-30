@@ -1,7 +1,7 @@
 export type {
-	AccessPointRenameData,
+	AccessPointData,
+	FieldErrors,
 	IedRenameData,
-	RenameFieldErrors,
 	RenameFormErrors
 } from './types'
 export { submitRenameCombined, submitRenameIed } from './submission'

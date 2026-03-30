@@ -6,7 +6,7 @@ import {
 	FormActions
 } from '@/ui/components/columns/s-ied/create-ied-ap-dialog/form-elements'
 import {
-	type AccessPointRenameData,
+	type AccessPointData,
 	type IedRenameData,
 	type RenameFormErrors,
 	submitRenameCombined,
@@ -38,20 +38,18 @@ let ied = $state<IedRenameData>(
 		description: currentIedDescription
 	}))
 )
-let accessPoint = $state<AccessPointRenameData>(
+let accessPoint = $state<AccessPointData>(
 	untrack(() => ({ name: currentApName, description: currentApDescription }))
 )
 let formErrors = $state<RenameFormErrors>({})
 
 const isSubmitDisabled = $derived(
 	ied.name.trim().length === 0 ||
-	accessPoint.name.trim().length === 0 ||
-	(
-		ied.name.trim() === currentIedName &&
-		ied.description.trim() === currentIedDescription &&
-		accessPoint.name.trim() === currentApName &&
-		accessPoint.description.trim() === currentApDescription
-	)
+		accessPoint.name.trim().length === 0 ||
+		(ied.name.trim() === currentIedName &&
+			ied.description.trim() === currentIedDescription &&
+			accessPoint.name.trim() === currentApName &&
+			accessPoint.description.trim() === currentApDescription)
 )
 
 async function handleSubmit() {
