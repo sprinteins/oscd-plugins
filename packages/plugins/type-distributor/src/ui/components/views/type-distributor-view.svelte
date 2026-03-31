@@ -80,7 +80,10 @@ $effect(() => {
 			validateBayType()
 		} catch (_error) {}
 
-		if (assignedLNodesStore.hasConnections) {
+		if (
+			assignedLNodesStore.hasConnections &&
+			equipmentMatchingStore.validationResult?.requiresManualMatching
+		) {
 			bayStore.manualMatchingConfirmed = true
 		}
 	})
