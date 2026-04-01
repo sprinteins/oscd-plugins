@@ -1,12 +1,30 @@
 <script lang="ts">
-import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
+import {
+	Card,
+	DropdownMenuWorkaround,
+	dialogStore
+} from '@oscd-plugins/core-ui-svelte'
 import { deleteEmptyIed } from '@/headless/actions'
+import { RenameIedDialogForm } from './rename-dialogs'
 
 interface Props {
 	iedName: string
+	iedElement: Element
 }
 
-const { iedName }: Props = $props()
+const { iedName, iedElement }: Props = $props()
+
+async function handleRename() {
+	dialogStore.mountInnerComponent({
+		innerComponent: RenameIedDialogForm,
+		innerComponentProps: {
+			currentIedName: iedName,
+			currentDescription: iedElement.getAttribute('desc') ?? '',
+			iedElement
+		}
+	})
+	await dialogStore.openDialog()
+}
 </script>
 
 <Card.Root class="border border-dashed text-gray-500">
@@ -16,6 +34,11 @@ const { iedName }: Props = $props()
       <DropdownMenuWorkaround
         size="sm"
         actions={[
+          {
+            label: "Rename",
+            disabled: false,
+            callback: handleRename,
+          },
           {
             label: "Delete",
             disabled: false,
