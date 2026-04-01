@@ -55,7 +55,7 @@ class UseEquipmentMatchingStore {
 		return counts
 	})
 
-	get selectedTemplateCounts() {
+	readonly selectedTemplateCounts = $derived.by(() => {
 		const counts = new Map<string, number>()
 
 		for (const templateUuid of this.manualMatches.values()) {
@@ -63,7 +63,7 @@ class UseEquipmentMatchingStore {
 		}
 
 		return counts
-	}
+	})
 
 	readonly templateCountMismatch = $derived.by(() => {
 		const mismatches: TemplateCountMismatch[] = []
