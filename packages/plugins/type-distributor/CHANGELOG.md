@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Validation of the SSD to include mandatory LLN0 Type and its mandatory DOs [#719](https://github.com/sprinteins/oscd-plugins/issues/719)
 ### Changed
 - IEDs and APs can't be created without a valid SSD [#719](https://github.com/sprinteins/oscd-plugins/issues/719)
+### Fixed
+- Option to Edit Matching falsely appearig after assigning all eq(functions) and switching bay back and forth.
 
 ## [1.0.4] 2026-03-27
 ### Fixed
