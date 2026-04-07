@@ -4,8 +4,7 @@ import { buildUpdatesForRenameAccessPoint } from './access-point-rename-edits'
 function makeAccessPoint(apName: string, ld0Inst?: string): Element {
 	const ldXml = ld0Inst ? `<LDevice inst="${ld0Inst}"/>` : ''
 	const xml = `<AccessPoint name="${apName}"><Server>${ldXml}</Server></AccessPoint>`
-	return new DOMParser()
-		.parseFromString(xml, 'application/xml')
+	return new DOMParser().parseFromString(xml, 'application/xml')
 		.documentElement
 }
 
@@ -116,7 +115,9 @@ describe('buildUpdatesForRenameAccessPoint', () => {
 		})
 
 		it('WHEN renamed THEN the LD0 edit targets the correct element', () => {
-			const ld0 = accessPoint.querySelector('Server > LDevice[inst="LD0_AP1"]')
+			const ld0 = accessPoint.querySelector(
+				'Server > LDevice[inst="LD0_AP1"]'
+			)
 			const edits = buildUpdatesForRenameAccessPoint({
 				accessPoint,
 				iedName: 'IED_A',

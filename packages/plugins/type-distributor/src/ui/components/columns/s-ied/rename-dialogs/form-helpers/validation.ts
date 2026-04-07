@@ -23,10 +23,9 @@ export function validateRenameIedFields({
 	xmlDocument,
 	currentIedName
 }: ValidateRenameIedFieldsParams): FieldErrors | null {
-	const result = createRenameIedSchema(
-		xmlDocument,
-		currentIedName
-	).safeParse(ied)
+	const result = createRenameIedSchema(xmlDocument, currentIedName).safeParse(
+		ied
+	)
 	return result.success ? null : z.treeifyError(result.error)
 }
 

@@ -1,12 +1,12 @@
+export { submitRenameCombined, submitRenameIed } from './submission'
 export type {
 	AccessPointData,
 	FieldErrors,
 	IedRenameData,
 	RenameFormErrors
 } from './types'
-export { submitRenameCombined, submitRenameIed } from './submission'
 export {
 	validateRenameAccessPointFields,
-	validateRenameIedFields,
-	validateRenameCombinedForm
+	validateRenameCombinedForm,
+	validateRenameIedFields
 } from './validation'

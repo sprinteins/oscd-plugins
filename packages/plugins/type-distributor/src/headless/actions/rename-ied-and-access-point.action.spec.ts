@@ -1,6 +1,9 @@
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { buildUpdatesForRenameAccessPoint, buildUpdatesForRenameIed } from '../scl/edits'
+import {
+	buildUpdatesForRenameAccessPoint,
+	buildUpdatesForRenameIed
+} from '../scl/edits'
 import { assignedLNodesStore, bayStore } from '../stores'
 import { getEditor } from '../utils'
 import { renameIedAndAccessPoint } from './rename-ied-and-access-point.action'
@@ -22,8 +25,16 @@ vi.mock('../utils', () => ({
 describe('renameIedAndAccessPoint', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 
-	const iedEdit = { element: document.createElement('IED'), attributes: {}, attributesNS: {} }
-	const apEdit = { element: document.createElement('AccessPoint'), attributes: {}, attributesNS: {} }
+	const iedEdit = {
+		element: document.createElement('IED'),
+		attributes: {},
+		attributesNS: {}
+	}
+	const apEdit = {
+		element: document.createElement('AccessPoint'),
+		attributes: {},
+		attributesNS: {}
+	}
 
 	const defaultParams = () => ({
 		iedElement: document.createElement('IED'),
@@ -40,7 +51,9 @@ describe('renameIedAndAccessPoint', () => {
 		mockEditor = { commit: vi.fn() }
 		vi.mocked(getEditor).mockReturnValue(mockEditor as unknown as XMLEditor)
 		vi.mocked(buildUpdatesForRenameIed).mockReturnValue([iedEdit] as never)
-		vi.mocked(buildUpdatesForRenameAccessPoint).mockReturnValue([apEdit] as never)
+		vi.mocked(buildUpdatesForRenameAccessPoint).mockReturnValue([
+			apEdit
+		] as never)
 		bayStore.scdBay = null
 	})
 
@@ -61,10 +74,9 @@ describe('renameIedAndAccessPoint', () => {
 	it('GIVEN valid params WHEN called THEN commits with a title containing both old and new names', () => {
 		renameIedAndAccessPoint(defaultParams())
 
-		expect(mockEditor.commit).toHaveBeenCalledWith(
-			expect.anything(),
-			{ title: 'Rename S-IED "OLD_IED" to "NEW_IED" and Access Point "AP1" to "AP2"' }
-		)
+		expect(mockEditor.commit).toHaveBeenCalledWith(expect.anything(), {
+			title: 'Rename S-IED "OLD_IED" to "NEW_IED" and Access Point "AP1" to "AP2"'
+		})
 	})
 
 	it('GIVEN valid params WHEN called THEN passes the new IED name as iedName to AP edits builder', () => {

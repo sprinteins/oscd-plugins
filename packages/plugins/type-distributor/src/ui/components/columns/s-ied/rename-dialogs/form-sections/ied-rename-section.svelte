@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Input, Label } from '@oscd-plugins/core-ui-svelte'
 import { FieldError } from '@/ui/components/columns/s-ied/create-ied-ap-dialog/form-elements'
-import type { IedRenameData, FieldErrors } from '../form-helpers'
+import type { FieldErrors, IedRenameData } from '../form-helpers'
 
 let {
 	ied = $bindable({ name: '', description: '' }),

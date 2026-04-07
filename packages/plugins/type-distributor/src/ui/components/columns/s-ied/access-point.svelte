@@ -8,8 +8,8 @@ import {
 import { deleteAccessPointFromIed } from '@/headless/actions'
 import type { LDeviceData } from '@/headless/common-types'
 import { dndStore } from '@/headless/stores'
-import { RenameCombinedDialogForm } from './rename-dialogs'
 import LDevice from './l-device.svelte'
+import { RenameCombinedDialogForm } from './rename-dialogs'
 
 interface Props {
 	accessPoint: Element

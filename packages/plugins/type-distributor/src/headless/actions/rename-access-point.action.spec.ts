@@ -19,12 +19,18 @@ vi.mock('../utils', () => ({
 
 describe('renameAccessPoint', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
-	const mockEdit = { element: document.createElement('AccessPoint'), attributes: {}, attributesNS: {} }
+	const mockEdit = {
+		element: document.createElement('AccessPoint'),
+		attributes: {},
+		attributesNS: {}
+	}
 
 	beforeEach(() => {
 		mockEditor = { commit: vi.fn() }
 		vi.mocked(getEditor).mockReturnValue(mockEditor as unknown as XMLEditor)
-		vi.mocked(buildUpdatesForRenameAccessPoint).mockReturnValue([mockEdit] as never)
+		vi.mocked(buildUpdatesForRenameAccessPoint).mockReturnValue([
+			mockEdit
+		] as never)
 	})
 
 	afterEach(() => {
@@ -43,10 +49,9 @@ describe('renameAccessPoint', () => {
 			newDescription: ''
 		})
 
-		expect(mockEditor.commit).toHaveBeenCalledWith(
-			[mockEdit],
-			{ title: 'Rename Access Point "AP1" to "AP2" in S-IED "IED_A"' }
-		)
+		expect(mockEditor.commit).toHaveBeenCalledWith([mockEdit], {
+			title: 'Rename Access Point "AP1" to "AP2" in S-IED "IED_A"'
+		})
 	})
 
 	it('GIVEN valid params WHEN renameAccessPoint is called THEN passes all params to buildUpdatesForRenameAccessPoint', () => {

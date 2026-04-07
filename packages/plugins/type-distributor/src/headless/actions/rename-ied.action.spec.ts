@@ -20,7 +20,11 @@ vi.mock('../utils', () => ({
 
 describe('renameIed', () => {
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
-	const mockEdit = { element: document.createElement('IED'), attributes: {}, attributesNS: {} }
+	const mockEdit = {
+		element: document.createElement('IED'),
+		attributes: {},
+		attributesNS: {}
+	}
 
 	beforeEach(() => {
 		mockEditor = { commit: vi.fn() }
@@ -37,12 +41,16 @@ describe('renameIed', () => {
 	it('GIVEN valid params WHEN renameIed is called THEN commits with correct title', () => {
 		const iedElement = document.createElement('IED')
 
-		renameIed({ iedElement, oldName: 'OLD', newName: 'NEW', newDescription: '' })
+		renameIed({
+			iedElement,
+			oldName: 'OLD',
+			newName: 'NEW',
+			newDescription: ''
+		})
 
-		expect(mockEditor.commit).toHaveBeenCalledWith(
-			[mockEdit],
-			{ title: 'Rename S-IED from "OLD" to "NEW"' }
-		)
+		expect(mockEditor.commit).toHaveBeenCalledWith([mockEdit], {
+			title: 'Rename S-IED from "OLD" to "NEW"'
+		})
 	})
 
 	it('GIVEN valid params WHEN renameIed is called THEN calls buildUpdatesForRenameIed with the bay from store', () => {
@@ -50,7 +58,12 @@ describe('renameIed', () => {
 		const bay = document.createElement('Bay')
 		bayStore.scdBay = bay
 
-		renameIed({ iedElement, oldName: 'OLD', newName: 'NEW', newDescription: 'Desc' })
+		renameIed({
+			iedElement,
+			oldName: 'OLD',
+			newName: 'NEW',
+			newDescription: 'Desc'
+		})
 
 		expect(buildUpdatesForRenameIed).toHaveBeenCalledWith({
 			iedElement,
@@ -64,7 +77,12 @@ describe('renameIed', () => {
 	it('GIVEN valid params WHEN renameIed is called THEN rebuilds the assignedLNodes store', () => {
 		const iedElement = document.createElement('IED')
 
-		renameIed({ iedElement, oldName: 'OLD', newName: 'NEW', newDescription: '' })
+		renameIed({
+			iedElement,
+			oldName: 'OLD',
+			newName: 'NEW',
+			newDescription: ''
+		})
 
 		expect(assignedLNodesStore.rebuild).toHaveBeenCalled()
 	})
@@ -73,7 +91,12 @@ describe('renameIed', () => {
 		vi.mocked(buildUpdatesForRenameIed).mockReturnValue([])
 		const iedElement = document.createElement('IED')
 
-		renameIed({ iedElement, oldName: 'OLD', newName: 'NEW', newDescription: '' })
+		renameIed({
+			iedElement,
+			oldName: 'OLD',
+			newName: 'NEW',
+			newDescription: ''
+		})
 
 		expect(mockEditor.commit).not.toHaveBeenCalled()
 	})
@@ -82,7 +105,12 @@ describe('renameIed', () => {
 		vi.mocked(buildUpdatesForRenameIed).mockReturnValue([])
 		const iedElement = document.createElement('IED')
 
-		renameIed({ iedElement, oldName: 'OLD', newName: 'NEW', newDescription: '' })
+		renameIed({
+			iedElement,
+			oldName: 'OLD',
+			newName: 'NEW',
+			newDescription: ''
+		})
 
 		expect(assignedLNodesStore.rebuild).not.toHaveBeenCalled()
 	})
