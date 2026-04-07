@@ -29,7 +29,19 @@ flowchart LR
 
 ### 1. Import SSD
 
-`ssdImportStore.loadFromSSD(...)` parses the SSD and stores:
+`handleImportSSD()` (in `ui/components/ssd-validation/`) calls `loadFromLocal()`, which:
+
+1. reads the selected file and parses it as XML
+2. throws `INVALID_XML_IMPORT_MESSAGE` if the file is not valid XML
+3. calls `ssdImportStore.loadFromSSD(...)`, which runs `assertCreationPrerequisites(xmlDocument)` before committing any state
+
+`assertCreationPrerequisites` verifies that the SSD contains:
+- an `LNodeType` with `lnClass="LLN0"`
+- all four mandatory DOs: `NamPlt`, `Beh`, `Health`, `Mod`
+
+If any check fails a `CreationPrerequisiteError` is thrown, `loadFromSSD` resets the store to its empty state, and `handleImportSSD` catches the error and opens `ssd-import-problem-dialog.svelte` via `dialogStore` to surface the problem to the user without loading partial data.
+
+When the import succeeds, `ssdImportStore` stores:
 
 - bay types
 - function templates
@@ -98,12 +110,22 @@ These edits are committed in one transaction through the OpenSCD editor.
 sequenceDiagram
     participant UI as type-distributor-view
     participant SSD as ssdImportStore
+    participant IMP as handleImportSSD
     participant EQ as equipmentMatchingStore
     participant ACT as actions
     participant DOM as domain/matching
     participant SCL as scl/edits
     participant DND as dndStore
 
+    UI->>IMP: import SSD
+    IMP->>SSD: loadFromSSD(xmlDoc)
+    SSD->>DOM: assertCreationPrerequisites(xmlDoc)
+    alt prerequisites not met
+        DOM-->>IMP: throw CreationPrerequisiteError
+        IMP->>UI: open ssd-import-problem-dialog
+    else prerequisites ok
+        SSD-->>IMP: store updated
+    end
     UI->>SSD: select bay type
     UI->>ACT: validateBayType()
     ACT->>DOM: resolveMatchingContext() + validateEquipmentMatch()
