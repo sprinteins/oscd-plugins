@@ -15,7 +15,7 @@ jobs:
       has_change: ${{ steps.compare.outputs.has_change }}
     steps:
       - name: Checkout oscd-plugins/main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Retrieve New Version
         id: new_version
@@ -24,7 +24,7 @@ jobs:
           echo "version=$(npm pkg get version)" >> "$GITHUB_OUTPUT"
           
       - name: Checkout oscd-plugins/gh-pages
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: sprinteins/oscd-plugins
           ref: gh-pages
