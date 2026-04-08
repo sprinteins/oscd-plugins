@@ -2,6 +2,11 @@
 
 All notable changes to the monorepo and its configuration including the workflows will be documented here
 
+## 2026-04-08
+### Changed
+- Node 20 going out of LTS -> Now using Node 24
+- Updated PNPM to use v10
+
 ## 2026-03-18
 ### Changed
 - Updated Biome to 2.4.6
