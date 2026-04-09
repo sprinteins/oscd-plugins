@@ -3,8 +3,14 @@ export {
 	createInitialAccessPoints,
 	createInitialIedData
 } from './reset'
+export { iedNameBaseSchema } from './schemas'
 export { submitForm } from './submission'
-export type { AccessPointData, FieldErrors, FormErrors, IedData } from './types'
+export type {
+	AccessPointData,
+	FieldErrors,
+	FormErrors,
+	IedData
+} from './types'
 export {
 	validateAccessPointFields,
 	validateIedFields,

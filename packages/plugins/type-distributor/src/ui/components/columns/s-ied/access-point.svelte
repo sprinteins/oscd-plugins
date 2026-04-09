@@ -1,18 +1,25 @@
 <script lang="ts">
 import { ChevronRight, CirclePlus } from '@lucide/svelte'
-import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
+import {
+	Card,
+	DropdownMenuWorkaround,
+	dialogStore
+} from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
 import type { LDeviceData } from '@/headless/common-types'
 import { dndStore } from '@/headless/stores'
 import LDevice from './l-device.svelte'
+import { RenameCombinedDialogForm } from './rename-dialogs'
 
 interface Props {
 	accessPoint: Element
+	apName: string | null
 	lDevices: LDeviceData[]
 	iedName: string
+	iedElement: Element
 }
 
-const { accessPoint, lDevices, iedName }: Props = $props()
+const { accessPoint, apName, lDevices, iedName, iedElement }: Props = $props()
 
 let isOpen = $state(false)
 let hasLDevices = $derived(lDevices.length > 0)
@@ -20,9 +27,7 @@ let isDropTarget = $state(false)
 
 let isInUse = $derived(lDevices.some((ld) => !ld.ldInst?.startsWith('LD0')))
 
-const apLabel = $derived(
-	`${iedName} - Access Point ${accessPoint.getAttribute('name')}`
-)
+const apLabel = $derived(`${iedName} - Access Point ${apName}`)
 
 function handleDragOver(event: DragEvent) {
 	event.preventDefault()
@@ -48,6 +53,21 @@ function handleDrop(event: DragEvent) {
 	}
 
 	dndStore.handleDrop(accessPoint, iedName)
+}
+
+async function handleRename() {
+	dialogStore.mountInnerComponent({
+		innerComponent: RenameCombinedDialogForm,
+		innerComponentProps: {
+			currentIedName: iedName,
+			currentIedDescription: iedElement?.getAttribute('desc') ?? '',
+			currentApName: accessPoint.getAttribute('name') ?? '',
+			currentApDescription: accessPoint.getAttribute('desc') ?? '',
+			iedElement,
+			accessPointElement: accessPoint
+		}
+	})
+	await dialogStore.openDialog()
 }
 </script>
 
@@ -96,6 +116,11 @@ function handleDrop(event: DragEvent) {
               <DropdownMenuWorkaround
                 size="sm"
                 actions={[
+                  {
+                    label: "Rename",
+                    disabled: false,
+                    callback: handleRename,
+                  },
                   {
                     label: "Delete",
                     disabled: false,
