@@ -13,12 +13,13 @@ import { RenameCombinedDialogForm } from './rename-dialogs'
 
 interface Props {
 	accessPoint: Element
+	apName: string | null
 	lDevices: LDeviceData[]
 	iedName: string
 	iedElement: Element
 }
 
-const { accessPoint, lDevices, iedName, iedElement }: Props = $props()
+const { accessPoint, apName, lDevices, iedName, iedElement }: Props = $props()
 
 let isOpen = $state(false)
 let hasLDevices = $derived(lDevices.length > 0)
@@ -26,9 +27,7 @@ let isDropTarget = $state(false)
 
 let isInUse = $derived(lDevices.some((ld) => !ld.ldInst?.startsWith('LD0')))
 
-const apLabel = $derived(
-	`${iedName} - Access Point ${accessPoint.getAttribute('name')}`
-)
+const apLabel = $derived(`${iedName} - Access Point ${apName}`)
 
 function handleDragOver(event: DragEvent) {
 	event.preventDefault()

@@ -59,9 +59,10 @@ const sIedData = $derived.by(() => {
       {#if accessPoints.length === 0}
         <IedEmptyItem {iedName} {iedElement} />
       {:else}
-        {#each accessPoints as { element: accessPoint, lDevices }}
+        {#each accessPoints as { element: accessPoint, name: apName, lDevices }}
           <AccessPoint
             {accessPoint}
+            {apName}
             {lDevices}
             {iedName}
 						{iedElement}
