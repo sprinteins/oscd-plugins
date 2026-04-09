@@ -19,16 +19,12 @@ const hasCountMismatches = $derived(
 		0) > 0
 )
 
-function handleApplyBayType() {
-	if (!bayStore.selectedBay || !canApply) {
+function handleConfirmMatching() {
+	if (!bayStore.selectedBay || !canConfirm) {
 		return
 	}
 
-	try {
-		bayStore.pendingBayTypeApply = ssdImportStore.selectedBayType
-	} catch (error) {
-		console.error('[handleApplyBayType] Error:', error)
-	}
+	bayStore.manualMatchingConfirmed = true
 }
 
 const scdBay = $derived(bayStore.scdBay)
@@ -55,16 +51,14 @@ const ambiguousEquipmentCount = $derived.by(() => {
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
 
 const canReopenMatching = $derived(
-	!!equipmentMatchingStore.validationResult?.requiresManualMatching &&
-		!!bayStore.pendingBayTypeApply &&
-		!isBayTypeLocked
+	bayStore.manualMatchingConfirmed && !isBayTypeLocked
 )
 
 function handleReopenMatching() {
-	bayStore.pendingBayTypeApply = null
+	bayStore.manualMatchingConfirmed = false
 }
 
-const canApply = $derived.by(() => {
+const canConfirm = $derived.by(() => {
 	if (
 		!ssdImportStore.selectedBayType ||
 		!equipmentMatchingStore.validationResult
@@ -85,6 +79,12 @@ const canApply = $derived.by(() => {
 		equipmentMatchingStore.templateCountsValid
 	)
 })
+
+const showManualMatchingUI = $derived(
+	equipmentMatchingStore.validationResult?.requiresManualMatching &&
+		!bayStore.manualMatchingConfirmed &&
+		!hasCountMismatches
+)
 </script>
 
 {#if bayTypeError}
@@ -120,7 +120,7 @@ const canApply = $derived.by(() => {
             {/each}
         </ul>
     </div>
-{:else if equipmentMatchingStore.validationResult?.requiresManualMatching && !bayStore.pendingBayTypeApply}
+{:else if equipmentMatchingStore.validationResult?.requiresManualMatching && !bayStore.manualMatchingConfirmed}
     <EquipmentMatching />
 {/if}
 
@@ -134,12 +134,12 @@ const canApply = $derived.by(() => {
     </Button.Root>
 {/if}
 
-{#if equipmentMatchingStore.validationResult?.requiresManualMatching && !bayStore.pendingBayTypeApply && !hasCountMismatches}
+{#if showManualMatchingUI}
     <Button.Root
-        onclick={handleApplyBayType}
-        disabled={!canApply}
+        onclick={handleConfirmMatching}
+        disabled={!canConfirm}
         class="w-full"
     >
-        Apply Bay Type
+        Confirm Matching
     </Button.Root>
 {/if}

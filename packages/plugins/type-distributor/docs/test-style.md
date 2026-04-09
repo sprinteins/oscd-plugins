@@ -34,3 +34,17 @@ Interpret the structure as follows:
 
 ### Mocks
 Place mock variables at the top of the test file so the test setup is easy to scan and consistent across files.
+
+## AI tooling
+
+Two AI-assisted tools are available for writing and maintaining spec files in this plugin.
+
+**Copilot skill — `vitest-test`**
+
+Use the `vitest-test` skill when writing new spec files, fixing failing tests, or adding coverage to an existing file. It follows the GIVEN/WHEN/THEN naming convention used in this codebase and targets ≥ 90 % branch coverage. Reference: `.github/skills/vitest-test/SKILL.md`
+
+**Copilot agent — `vitest`**
+
+Use the `vitest` agent for more open-ended test authoring tasks, reviewing coverage gaps, or generating spec files from scratch. It specialises in `*.spec.ts` files and will not modify implementation files. Reference: `.github/agents/vitest.agent.md`
+
+Both tools treat the GIVEN/WHEN/THEN structure and the naming conventions in this document as their baseline.

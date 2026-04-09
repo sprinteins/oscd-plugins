@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED]
+### Added
+- Validation of the SSD to include mandatory LLN0 Type and its mandatory DOs [#719](https://github.com/sprinteins/oscd-plugins/issues/719)
+### Changed
+- IEDs and APs can't be created without a valid SSD [#719](https://github.com/sprinteins/oscd-plugins/issues/719)
+### Fixed
+- Option to Edit Matching falsely appearig after assigning all eq(functions) and switching bay back and forth.
+
+## [1.0.4] 2026-03-27
+### Fixed
+- Initial dnd of from eq(functions) onto AccessPoint closed opened (eq)functions [#707](https://github.com/sprinteins/oscd-plugins/issues/707)
+- an issue where BayTypeDetails were shown although the BayType did not match with the Bay [#770](https://github.com/sprinteins/oscd-plugins/issues/770)
+- create IedName character issue [#765](https://github.com/sprinteins/oscd-plugins/issues/765)
+### Changed
+- Refactoring of manualMatching logic, removal of complex state.
+
+## [1.0.3] - 2026-03-26
+### Fixed
+- An issue in Chromium based browser that run effects different to firefox. Removed an effect and simplified it to the handleBayChange
+
 ## [1.0.2] - 2026-03-23
 ### Changed
 - Strip characters illegal in `tLDInst` (`[^A-Za-z0-9_]`) from function names and conducting-equipment names when generating `LDevice inst`. Uniqueness is ensured solely by the 8-character UUID prefix.
@@ -40,7 +60,7 @@ IED - AP
 ### Fixed
 - Resolved scd still referencing bayType if the last lNode has been deleted. Now removes all references.
 - Resolved overflowing text in lNode card of the ied column.
-- Resolved an issue where using the wrong function for element creation could lead to `xmlns=""` attributes being added. See [code style decision #3](docs/code-style-decisions/0003-why-use-createElement.md) for details.
+- Resolved an issue where using the wrong function for element creation could lead to `xmlns=""` attributes being added. See [code style](docs/code-style.md) for details.
 - Fixed delete button incorrectly appearing on LD0 lnode cards when the ldInst started with `LD0` but was not an exact match.
 
 ## [0.5.1]
@@ -137,5 +157,4 @@ IED - AP
 
 ### Changed
 - Updated workspace scripts and dependency versions related to the type-distributor plugin
-  
   
