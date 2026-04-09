@@ -32,14 +32,15 @@ const {
 	accessPointElement
 }: Props = $props()
 
-let ied = $derived<IedRenameData>({
-	name: currentIedName,
-	description: currentIedDescription
-})
-let accessPoint = $derived<AccessPointData>({
-	name: currentApName,
-	description: currentApDescription
-})
+let ied = $state<IedRenameData>(
+	untrack(() => ({
+		name: currentIedName,
+		description: currentIedDescription
+	}))
+)
+let accessPoint = $state<AccessPointData>(
+	untrack(() => ({ name: currentApName, description: currentApDescription }))
+)
 let formErrors = $state<RenameFormErrors>({})
 
 const isSubmitDisabled = $derived(
