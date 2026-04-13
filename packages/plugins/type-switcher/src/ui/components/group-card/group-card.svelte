@@ -29,80 +29,28 @@ let titleText = $derived(items.join('\n'))
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-  class="group-card"
-  style="display: grid; grid-template-columns: 1fr 3rem;"
-  {onclick}
-  {onkeydown}
-  data-testid={dataTestid}
-  class:selected
-  title={titleText}
-><div class="left">
-    {#if icon}
-      <div class="icon-placeholder">
-        <Icons name={icon} size="rect" />
-      </div>
-    {:else}
-      {null}
-    {/if}
-    <ul>
-      {#each displayedItems as item}
-        <li>{item}</li>
-      {/each}
-    </ul>
-  </div><span class="right">
-    <Counter count={items.length} />
-  </span>
+	class="box-border h-[90px] cursor-pointer rounded-lg border bg-[var(--mdc-theme-surface)] transition-all duration-100 {selected
+		? 'border-[var(--mdc-theme-primary)] shadow'
+		: 'border-transparent hover:border-dashed hover:border-[var(--mdc-theme-primary)]'}"
+	style="display: grid; grid-template-columns: 1fr 3rem;"
+	{onclick}
+	{onkeydown}
+	data-testid={dataTestid}
+	title={titleText}
+>
+	<div class="overflow-hidden py-2 pl-3">
+		{#if icon}
+			<div class="pb-[0.2rem]">
+				<Icons name={icon} size="rect" />
+			</div>
+		{/if}
+		<ul class="m-0 list-none p-0 leading-[1.15]">
+			{#each displayedItems as item}
+				<li class="truncate">{item}</li>
+			{/each}
+		</ul>
+	</div>
+	<span class="p-2">
+		<Counter count={items.length} />
+	</span>
 </div>
-
-<style lang="scss">
-  .group-card {
-    cursor: pointer;
-    height: 90px;
-    padding: 0rem;
-
-    background: var(--mdc-theme-surface);
-
-    transition: all 100ms;
-    box-sizing: border-box;
-
-    border: transparent 1px solid;
-    border-radius: 0.5rem;
-
-    &.selected {
-      border-color: var(--mdc-theme-primary);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    &:hover:not(.selected) {
-      /* background: var(--color-beige-3); */
-      border-style: dashed;
-      border-color: var(--mdc-theme-primary);
-    }
-
-    .left {
-      padding: 0.5rem 0 0.5rem 0.75rem;
-
-      overflow: hidden;
-    }
-
-    .right {
-      padding: 0.5rem;
-    }
-
-    ul {
-      padding: 0;
-      margin: 0;
-      line-height: 1.15;
-    }
-
-    li {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .icon-placeholder {
-      padding-bottom: 0.2rem;
-      //margin-top: 0.5rem;
-    }
-  }
-</style>
