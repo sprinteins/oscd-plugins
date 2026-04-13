@@ -1,42 +1,42 @@
 <script lang="ts">
-  import { Counter } from "@oscd-plugins/ui";
-  import { Icons, type IconKeys } from "@oscd-plugins/ui";
+import { Counter } from '@oscd-plugins/ui'
+import { Icons, type IconKeys } from '@oscd-plugins/ui'
 
-  interface Props {
-    // Input
-    onclick?: (e: Event) => void;
-    onkeydown?: (e: KeyboardEvent) => void;
-    items?: string[];
-    icon: IconKeys | undefined;
-    dataTestid?: string;
-    selected?: boolean;
-  }
+interface Props {
+	// Input
+	onclick?: (e: Event) => void
+	onkeydown?: (e: KeyboardEvent) => void
+	items?: string[]
+	icon: IconKeys | undefined
+	dataTestid?: string
+	selected?: boolean
+}
 
-  let {
-    onclick,
-    onkeydown,
-    items = [],
-    icon,
-    dataTestid = "",
-    selected = false,
-  }: Props = $props();
+let {
+	onclick,
+	onkeydown,
+	items = [],
+	icon,
+	dataTestid = '',
+	selected = false
+}: Props = $props()
 
-  // Internal
-  const MAX_NR_OF_ITEMS = 3;
-  let displayedItems = $derived(items.slice(0, MAX_NR_OF_ITEMS));
-  let titleText = $derived(items.join("\n"));
+// Internal
+const MAX_NR_OF_ITEMS = 3
+let displayedItems = $derived(items.slice(0, MAX_NR_OF_ITEMS))
+let titleText = $derived(items.join('\n'))
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="group-card"
+  style="display: grid; grid-template-columns: 1fr 3rem;"
   {onclick}
   {onkeydown}
   data-testid={dataTestid}
   class:selected
   title={titleText}
->
-  <div class="left">
+><div class="left">
     {#if icon}
       <div class="icon-placeholder">
         <Icons name={icon} size="rect" />
@@ -49,23 +49,18 @@
         <li>{item}</li>
       {/each}
     </ul>
-  </div>
-  <span class="right">
+  </div><span class="right">
     <Counter count={items.length} />
   </span>
 </div>
 
 <style lang="scss">
   .group-card {
-    display: inline-grid;
-
     cursor: pointer;
     height: 90px;
     padding: 0rem;
 
     background: var(--mdc-theme-surface);
-
-    grid-template-columns: 1fr min(3rem);
 
     transition: all 100ms;
     box-sizing: border-box;
