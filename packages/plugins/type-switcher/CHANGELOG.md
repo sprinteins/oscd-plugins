@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.19] - 2026-04-13
+### Fixed
+- Styles lost on the group card due to specificity [#639](https://github.com/sprinteins/oscd-plugins/issues/639)
+
 ## [0.0.18] - 2026-01-16
 ### Changed
 - Receive `editor` property from Plugin API
