@@ -29,10 +29,9 @@ let titleText = $derived(items.join('\n'))
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-	class="box-border h-[90px] cursor-pointer rounded-lg border bg-[var(--mdc-theme-surface)] transition-all duration-100 {selected
+	class="grid grid-cols-[1fr_3rem] box-border h-[90px] cursor-pointer rounded-lg border bg-[var(--mdc-theme-surface)] transition-all duration-100 {selected
 		? 'border-[var(--mdc-theme-primary)] shadow'
 		: 'border-transparent hover:border-dashed hover:border-[var(--mdc-theme-primary)]'}"
-	style="display: grid; grid-template-columns: 1fr 3rem;"
 	{onclick}
 	{onkeydown}
 	data-testid={dataTestid}
