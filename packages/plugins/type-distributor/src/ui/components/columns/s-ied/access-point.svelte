@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ChevronRight, CirclePlus } from '@lucide/svelte'
+import { ChevronRight } from '@lucide/svelte'
 import {
 	Card,
 	DropdownMenuWorkaround,
@@ -24,6 +24,7 @@ const { accessPoint, apName, lDevices, iedName, iedElement }: Props = $props()
 let isOpen = $state(false)
 let hasLDevices = $derived(lDevices.length > 0)
 let isDropTarget = $state(false)
+let hoverExpandTimeout: ReturnType<typeof setTimeout> | null = null
 
 let isInUse = $derived(lDevices.some((ld) => !ld.ldInst?.startsWith('LD0')))
 
@@ -33,6 +34,12 @@ function handleDragOver(event: DragEvent) {
 	event.preventDefault()
 	if (!dndStore.isDragging) return
 	isDropTarget = true
+	if (!isOpen && hasLDevices && !hoverExpandTimeout) {
+		hoverExpandTimeout = setTimeout(() => {
+			isOpen = true
+			hoverExpandTimeout = null
+		}, 600)
+	}
 }
 
 function handleDragLeave(event: DragEvent) {
@@ -40,12 +47,20 @@ function handleDragLeave(event: DragEvent) {
 	const currentTarget = event.currentTarget as HTMLElement
 	if (!currentTarget?.contains(relatedTarget)) {
 		isDropTarget = false
+		if (hoverExpandTimeout) {
+			clearTimeout(hoverExpandTimeout)
+			hoverExpandTimeout = null
+		}
 	}
 }
 
 function handleDrop(event: DragEvent) {
 	event.preventDefault()
 	isDropTarget = false
+	if (hoverExpandTimeout) {
+		clearTimeout(hoverExpandTimeout)
+		hoverExpandTimeout = null
+	}
 
 	if (!dndStore.currentDraggedItem) {
 		console.warn('[AccessPoint] No dragged item in store')
@@ -71,13 +86,16 @@ async function handleRename() {
 }
 </script>
 
-<div class="space-y-1">
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+  class="space-y-1"
+  ondragover={handleDragOver}
+  ondragleave={handleDragLeave}
+  ondrop={handleDrop}
+>
   <button
     class="w-full"
     onclick={() => hasLDevices && (isOpen = !isOpen)}
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    ondrop={handleDrop}
   >
     <Card.Root
       class="{isInUse
@@ -104,9 +122,6 @@ async function handleRename() {
             </span>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            {#if isDropTarget}
-              <CirclePlus class="size-5 text-primary animate-pulse" />
-            {/if}
             <span
               onclick={(e) => e.stopPropagation()}
               role="button"

@@ -12,7 +12,6 @@ import { slide } from 'svelte/transition'
 import { Card, Collapsible, Badge } from '@oscd-plugins/core-ui-svelte'
 import TypeCard from './type-card.svelte'
 import CardMenu from './card-menu.svelte'
-import { CirclePlus } from 'lucide-svelte'
 // TYPES
 import type {
 	TypeElement,
@@ -45,6 +44,7 @@ const {
 // local states
 let isElementCardOpen = $state(false)
 let isCurrentDropTarget = $state(false)
+let hoverExpandTimeout: ReturnType<typeof setTimeout> | null = null
 
 //======= DERIVED STATES =======//
 
@@ -127,12 +127,22 @@ const handleDragOver = (event: DragEvent) => {
 	event.preventDefault()
 	if (!isAllowedToDrop) return
 	isCurrentDropTarget = true
+	if (!isElementCardOpen && !hoverExpandTimeout) {
+		hoverExpandTimeout = setTimeout(() => {
+			isElementCardOpen = true
+			hoverExpandTimeout = null
+		}, 600)
+	}
 }
 
 const handleDragLeave = (event: DragEvent) => {
 	const dropZone = event.currentTarget as HTMLElement
 	if (!dropZone?.contains(event.relatedTarget as Node | null)) {
 		isCurrentDropTarget = false
+		if (hoverExpandTimeout) {
+			clearTimeout(hoverExpandTimeout)
+			hoverExpandTimeout = null
+		}
 	}
 }
 
@@ -140,6 +150,10 @@ const handleDrop = (event: DragEvent) => {
 	event.preventDefault()
 	if (!isAllowedToDrop) return
 	isCurrentDropTarget = false
+	if (hoverExpandTimeout) {
+		clearTimeout(hoverExpandTimeout)
+		hoverExpandTimeout = null
+	}
 	dndStore.handleDrop({
 		parentTypeWrapper: typeElement.element,
 		parentTypeFamily: typeElementFamily
@@ -159,21 +173,20 @@ $effect(() => {
 })
 </script>
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+	ondragover={importScope ? undefined : handleDragOver}
+	ondragleave={importScope ? undefined : handleDragLeave}
+	ondrop={importScope ? undefined : handleDrop}
+>
 <Collapsible.Root
 	bind:open={isElementCardOpen}
 	class="space-y-1 mb-2"
 >
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div
-		class="relative"
-		ondragover={importScope ? undefined : handleDragOver}
-		ondragleave={importScope ? undefined : handleDragLeave}
-		ondrop={importScope ? undefined : handleDrop}
-	>
+	<div class="relative">
 		<TypeCard {typeElement} {typeElementKey} {typeElementFamily} {isElementCardOpen} {importScope} />
 		{#if isCurrentDropTarget && isAllowedToDrop}
 			<div class="absolute inset-0 rounded-lg border-2 border-primary ring-2 ring-primary ring-offset-1 pointer-events-none"></div>
-			<CirclePlus class="absolute right-2 top-1.5 size-5 text-primary animate-pulse pointer-events-none" />
 		{/if}
 	</div>
 
@@ -208,3 +221,4 @@ $effect(() => {
 		{/snippet}
 	</Collapsible.Content>
 </Collapsible.Root>
+</div>
