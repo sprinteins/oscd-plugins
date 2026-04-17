@@ -3,3 +3,6 @@ packages:
   - "packages/uilib"
   - "packages/ui"
   - "packages/core/*"
+
+autoInstallPeers: false
+linkWorkspacePackages: true
