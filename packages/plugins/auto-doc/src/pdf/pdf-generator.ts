@@ -1,6 +1,7 @@
 import type { ImageData } from '@/ui/components/elements/image-element/types.image'
 import type { SignalListOnSCD } from '@/ui/components/elements/signal-list-element/types.signal-list'
 import type { ElementType } from '@/ui/components/elements/types.elements'
+import type { InvalditiesReport } from '../stores'
 import CommunicationElement from '@/ui/components/elements/communication-element/communication-element.svelte'
 import NetworkElement from '@/ui/components/elements/network-element/network-element.svelte'
 import jsPDF from 'jspdf'
@@ -41,7 +42,8 @@ async function generatePdf(
 	templateTitle: string,
 	allBlocks: Element[],
 	orientation: 'portrait' | 'landscape' = 'portrait'
-) {
+): Promise<InvalditiesReport[]> {
+	const allInvalidities: InvalditiesReport[] = []
 	const doc = new jsPDF({
 		orientation,
 		unit: 'mm',
@@ -375,8 +377,9 @@ async function generatePdf(
 		) as SignalListOnSCD
 
 		const selectedRows = parsedBlockContent.selected
-		const tableRows =
+		const { rows: tableRows, invaliditiesReports } =
 			signallistStore.searchForMatchOnSignalList(selectedRows)
+		allInvalidities.push(...invaliditiesReports)
 
 		const header = selectedRows.map((r) => ({
 			value: r.primaryInput,
@@ -557,6 +560,8 @@ async function generatePdf(
 	}
 
 	doc.save(`${templateTitle}.pdf`)
+
+	return allInvalidities
 }
 
 async function downloadAsPdf(
@@ -572,7 +577,7 @@ async function downloadAsPdf(
 	const allBlocks: NodeList = template.querySelectorAll('Block')
 	const blockConvertedToArray: Element[] =
 		Array.prototype.slice.call(allBlocks)
-	await generatePdf(templateTitle, blockConvertedToArray, orientation)
+	return generatePdf(templateTitle, blockConvertedToArray, orientation)
 }
 
 export const pdfGenerator = {

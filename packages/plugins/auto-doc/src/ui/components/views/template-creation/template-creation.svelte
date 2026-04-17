@@ -2,8 +2,10 @@
 import { type NavigateProps, View } from '../view-navigator/view'
 import { clickOutside } from '@/actions'
 import { docTemplatesStore } from '@/stores'
+import type { InvalditiesReport } from '@/stores'
 import { TemplateBuilder, Tooltip } from '@/ui/components'
 import { pdfGenerator } from '@/pdf'
+import InvaliditiesReportDialog from '@/ui/components/dialog/invalidities-report-dialog.svelte'
 import { CustomIconButton } from '@oscd-plugins/ui/src/components'
 import Button, { Label } from '@smui/button'
 import Textfield from '@smui/textfield'
@@ -21,6 +23,8 @@ let title = $state('')
 let description = $state('')
 let isMetadataVisible = $state(false)
 let isGenerating = $state(false)
+let invaliditiesReportDialogOpen = $state(false)
+let invaliditiesReports: InvalditiesReport[] = $state([])
 let templateId: string | undefined = undefined
 let template: Element | null = $state(null)
 let menu: Menu
@@ -101,6 +105,12 @@ function downloadTemplateContent(
 	isGenerating = true
 	pdfGenerator
 		.downloadAsPdf(templateId, orientation)
+		.then((reports) => {
+			if (reports && reports.length > 0) {
+				invaliditiesReports = reports
+				invaliditiesReportDialogOpen = true
+			}
+		})
 		.catch((error) => console.error('Error generating PDF:', error))
 		.finally(() => {
 			isGenerating = false
@@ -194,6 +204,11 @@ function downloadTemplateContent(
     {/if}
   </main>
 </div>
+
+<InvaliditiesReportDialog
+    bind:isOpen={invaliditiesReportDialogOpen}
+    reports={invaliditiesReports}
+/>
 
 <style lang="scss">
   main.template-builder-container {

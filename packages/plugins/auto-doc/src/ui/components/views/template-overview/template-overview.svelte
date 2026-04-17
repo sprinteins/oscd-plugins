@@ -2,9 +2,11 @@
 import { run } from 'svelte/legacy'
 
 import { docTemplatesStore } from '@/stores'
+import type { InvalditiesReport } from '@/stores'
 import { FileSelector, Table } from '@/ui/components'
 import { pdfGenerator } from '@/pdf'
 import { queryAutoDocElement } from '@/utils'
+import InvaliditiesReportDialog from '@/ui/components/dialog/invalidities-report-dialog.svelte'
 import { IconWrapper } from '@oscd-plugins/ui'
 import Button, { Label } from '@smui/button'
 import Checkbox from '@smui/checkbox'
@@ -20,6 +22,8 @@ let menu: Menu
 let fileSelector: FileSelector
 let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
 let allTemplates: Element[] = $state([])
+let invaliditiesReportDialogOpen = $state(false)
+let invaliditiesReports: InvalditiesReport[] = $state([])
 const emptyTitleOrDescription = 'N/A'
 
 onMount(() => {
@@ -76,8 +80,12 @@ function deleteTemplate(templateId: string) {
 	)
 }
 
-function downloadTemplateContent(templateId: string) {
-	pdfGenerator.downloadAsPdf(templateId, 'portrait')
+async function downloadTemplateContent(templateId: string) {
+	const reports = await pdfGenerator.downloadAsPdf(templateId, 'portrait')
+	if (reports && reports.length > 0) {
+		invaliditiesReports = reports
+		invaliditiesReportDialogOpen = true
+	}
 }
 
 function navigateToEditTemplate(templateId: string) {
@@ -159,6 +167,11 @@ let importToolTipText = $derived(
     />
   </main>
 </div>
+
+<InvaliditiesReportDialog
+    bind:isOpen={invaliditiesReportDialogOpen}
+    reports={invaliditiesReports}
+/>
 
 <style lang="scss">
   $clr-secondary: var(--mdc-theme-secondary);
