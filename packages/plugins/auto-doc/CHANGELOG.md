@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - 2026-04-21
+### Added
+- button to edit title and description of a template
+### Changed
+- sorting order of templates by date to have the latest at the top
 ### Fixed
 - creating "new" template reopening the latest used template
 

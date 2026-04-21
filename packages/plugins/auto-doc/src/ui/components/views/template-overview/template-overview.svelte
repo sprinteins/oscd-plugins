@@ -102,7 +102,9 @@ function openFileSelectorIfNotMasterTemplate() {
 }
 
 let templatesConvertedToTableRow = $derived(
-	allTemplates.map(mapElementToTableRow)
+	allTemplates
+		.map(mapElementToTableRow)
+		.sort((a, b) => b.lastEdited.getTime() - a.lastEdited.getTime())
 )
 $effect(() => {
 	docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)
