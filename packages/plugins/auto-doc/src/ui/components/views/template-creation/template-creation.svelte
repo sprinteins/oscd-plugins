@@ -25,6 +25,7 @@ let isMetadataVisible = $state(false)
 let isGenerating = $state(false)
 let invaliditiesReportDialogOpen = $state(false)
 let invaliditiesReports: InvalditiesReport[] = $state([])
+let onConfirmPdfGeneration: (() => void) | undefined = $state(undefined)
 let templateId: string | undefined = undefined
 let template: Element | null = $state(null)
 let menu: Menu
@@ -102,19 +103,26 @@ function downloadTemplateContent(
 ) {
 	if (!templateId || isGenerating) return
 
-	isGenerating = true
-	pdfGenerator
-		.downloadAsPdf(templateId, orientation)
-		.then((reports) => {
-			if (reports && reports.length > 0) {
-				invaliditiesReports = reports
-				invaliditiesReportDialogOpen = true
-			}
-		})
-		.catch((error) => console.error('Error generating PDF:', error))
-		.finally(() => {
-			isGenerating = false
-		})
+	const currentTemplateId = templateId
+
+	const reports = pdfGenerator.validateTemplate(currentTemplateId)
+	if (reports.length > 0) {
+		invaliditiesReports = reports
+		onConfirmPdfGeneration = () => {
+			isGenerating = true
+			pdfGenerator
+				.downloadAsPdf(currentTemplateId, orientation)
+				.catch((error) => console.error('Error generating PDF:', error))
+				.finally(() => { isGenerating = false })
+		}
+		invaliditiesReportDialogOpen = true
+	} else {
+		isGenerating = true
+		pdfGenerator
+			.downloadAsPdf(currentTemplateId, orientation)
+			.catch((error) => console.error('Error generating PDF:', error))
+			.finally(() => { isGenerating = false })
+	}
 }
 </script>
 
@@ -208,6 +216,7 @@ function downloadTemplateContent(
 <InvaliditiesReportDialog
     bind:isOpen={invaliditiesReportDialogOpen}
     reports={invaliditiesReports}
+    onConfirm={onConfirmPdfGeneration}
 />
 
 <style lang="scss">

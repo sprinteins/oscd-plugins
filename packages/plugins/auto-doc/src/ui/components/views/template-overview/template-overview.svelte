@@ -24,6 +24,7 @@ let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
 let allTemplates: Element[] = $state([])
 let invaliditiesReportDialogOpen = $state(false)
 let invaliditiesReports: InvalditiesReport[] = $state([])
+let onConfirmPdfGeneration: (() => void) | undefined = $state(undefined)
 const emptyTitleOrDescription = 'N/A'
 
 onMount(() => {
@@ -81,10 +82,13 @@ function deleteTemplate(templateId: string) {
 }
 
 async function downloadTemplateContent(templateId: string) {
-	const reports = await pdfGenerator.downloadAsPdf(templateId, 'portrait')
-	if (reports && reports.length > 0) {
+	const reports = pdfGenerator.validateTemplate(templateId)
+	if (reports.length > 0) {
 		invaliditiesReports = reports
+		onConfirmPdfGeneration = () => pdfGenerator.downloadAsPdf(templateId, 'portrait')
 		invaliditiesReportDialogOpen = true
+	} else {
+		await pdfGenerator.downloadAsPdf(templateId, 'portrait')
 	}
 }
 
@@ -171,6 +175,7 @@ let importToolTipText = $derived(
 <InvaliditiesReportDialog
     bind:isOpen={invaliditiesReportDialogOpen}
     reports={invaliditiesReports}
+    onConfirm={onConfirmPdfGeneration}
 />
 
 <style lang="scss">

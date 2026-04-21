@@ -580,6 +580,39 @@ async function downloadAsPdf(
 	return generatePdf(templateTitle, blockConvertedToArray, orientation)
 }
 
+function validateTemplate(templateId: string): InvalditiesReport[] {
+	const template = docTemplatesStore.getDocumentTemplate(templateId)
+	if (!template) {
+		return []
+	}
+
+	const signalListBlocks = Array.from(
+		template.querySelectorAll('Block[type="signalList"]')
+	)
+
+	if (signalListBlocks.length === 0) {
+		return []
+	}
+
+	const allInvalidities: InvalditiesReport[] = []
+
+	for (const block of signalListBlocks) {
+		if (!block.textContent) continue
+
+		const parsedBlockContent = JSON.parse(
+			block.textContent
+		) as SignalListOnSCD
+		const { invaliditiesReports } =
+			signallistStore.searchForMatchOnSignalList(
+				parsedBlockContent.selected
+			)
+		allInvalidities.push(...invaliditiesReports)
+	}
+
+	return allInvalidities
+}
+
 export const pdfGenerator = {
-	downloadAsPdf
+	downloadAsPdf,
+	validateTemplate
 }
