@@ -11,6 +11,7 @@ let viewState = $state<ViewState>({
 function navigate(newViewState: Partial<ViewState>): void {
 	viewState = {
 		...viewState,
+		templateId: null,
 		...newViewState
 	}
 }
