@@ -2,7 +2,7 @@
 import { type NavigateProps, View } from '../view-navigator/view'
 import { clickOutside } from '@/actions'
 import { docTemplatesStore } from '@/stores'
-import { TemplateBuilder, Tooltip } from '@/ui/components'
+import { TemplateBuilder } from '@/ui/components'
 import { pdfGenerator } from '@/pdf'
 import { CustomIconButton } from '@oscd-plugins/ui/src/components'
 import Button, { Label } from '@smui/button'
@@ -117,18 +117,14 @@ function downloadTemplateContent(
           color="black"
           onclick={askForEmptyTitleConfirmation}
         />
-        <Tooltip text="Rename">
-          <div
-            class="title"
-            role="button"
-            tabindex="0"
-            onclick={(e) => displayTitleAndDescription(e)}
-            onkeydown={(e) =>
-              e.key === "Enter" && displayTitleAndDescription(e)}
-          >
-            {templateTitle}
-          </div>
-        </Tooltip>
+        <div class="title">
+          {templateTitle}
+        </div>
+        <CustomIconButton
+          icon="edit"
+          size="small"
+          onclick={(e) => displayTitleAndDescription(e)}
+        />
       </div>
       <div>
         <div>
@@ -215,16 +211,14 @@ function downloadTemplateContent(
   .template-title {
     display: flex;
     align-items: center;
-    cursor: pointer;
+    gap: 0;
     & .title {
-      min-width: 10rem;
+      margin-left: 0.5rem;
       color: black;
-    }
-    .title:hover {
-      cursor: pointer;
-      border-radius: 2px;
-      outline: 2px solid gray;
-      outline-offset: 2px;
+      max-width: 20rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
   .template-options {
