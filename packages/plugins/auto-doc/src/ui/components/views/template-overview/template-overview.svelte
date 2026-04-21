@@ -35,7 +35,7 @@ function fetchTemplates() {
 }
 
 function navigateToCreateTemplate() {
-	navigate({ view: View.Create })
+	navigate({ view: View.Create, templateId: null })
 }
 
 async function onImportTemplate(file: File) {
