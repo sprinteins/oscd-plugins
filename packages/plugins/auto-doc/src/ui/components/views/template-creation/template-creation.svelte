@@ -25,7 +25,7 @@ let isMetadataVisible = $state(false)
 let isGenerating = $state(false)
 let invaliditiesReportDialogOpen = $state(false)
 let invaliditiesReports: InvalditiesReport[] = $state([])
-let onConfirmPdfGeneration: (() => void) | undefined = $state(undefined)
+let pendingOrientation: 'landscape' | 'portrait' = $state('portrait')
 let templateId: string | undefined = undefined
 let template: Element | null = $state(null)
 let menu: Menu
@@ -98,30 +98,27 @@ function updateTitleAndDescription() {
 	)
 }
 
+function executePdfGeneration(orientation: 'landscape' | 'portrait') {
+	if (!templateId) return
+	isGenerating = true
+	pdfGenerator
+		.downloadAsPdf(templateId, orientation)
+		.catch((error) => console.error('Error generating PDF:', error))
+		.finally(() => { isGenerating = false })
+}
+
 function downloadTemplateContent(
 	orientation: 'landscape' | 'portrait' = 'portrait'
 ) {
 	if (!templateId || isGenerating) return
 
-	const currentTemplateId = templateId
-
-	const reports = pdfGenerator.validateTemplate(currentTemplateId)
+	const reports = pdfGenerator.validateTemplate(templateId)
 	if (reports.length > 0) {
 		invaliditiesReports = reports
-		onConfirmPdfGeneration = () => {
-			isGenerating = true
-			pdfGenerator
-				.downloadAsPdf(currentTemplateId, orientation)
-				.catch((error) => console.error('Error generating PDF:', error))
-				.finally(() => { isGenerating = false })
-		}
+		pendingOrientation = orientation
 		invaliditiesReportDialogOpen = true
 	} else {
-		isGenerating = true
-		pdfGenerator
-			.downloadAsPdf(currentTemplateId, orientation)
-			.catch((error) => console.error('Error generating PDF:', error))
-			.finally(() => { isGenerating = false })
+		executePdfGeneration(orientation)
 	}
 }
 </script>
@@ -216,7 +213,7 @@ function downloadTemplateContent(
 <InvaliditiesReportDialog
     bind:isOpen={invaliditiesReportDialogOpen}
     reports={invaliditiesReports}
-    onConfirm={onConfirmPdfGeneration}
+    onConfirm={() => executePdfGeneration(pendingOrientation)}
 />
 
 <style lang="scss">
