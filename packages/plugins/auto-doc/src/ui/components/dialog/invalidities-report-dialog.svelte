@@ -15,7 +15,7 @@ let {
 	onConfirm = undefined
 }: Props = $props()
 
-let reportsAsText = $derived.by(() => {
+function groupReports(reports: InvalditiesReport[]) {
 	const named = new Map<string, Map<string, number>>()
 	const unnamed = new Map<string, number>()
 
@@ -29,25 +29,33 @@ let reportsAsText = $derived.by(() => {
 		}
 	}
 
-	const formatMsg = (msg: string, count: number) =>
-		count > 1 ? `  (${count}x) ${msg}` : `  ${msg}`
+	return { named, unnamed }
+}
 
+function formatMsg(msg: string, count: number) {
+	return count > 1 ? `  (${count}x) ${msg}` : `  ${msg}`
+}
+
+function reportsToText(reports: InvalditiesReport[]): string {
+	const { named, unnamed } = groupReports(reports)
 	const sections: string[] = []
 
 	for (const [ied, msgs] of named) {
 		sections.push(
-			`${ied}:\n${[...msgs.entries()].map(([m, c]) => formatMsg(m, c)).join('\n')}`,
+			`${ied}:\n${[...msgs.entries()].map(([msg, count]) => formatMsg(msg, count)).join('\n')}`,
 		)
 	}
 
 	if (unnamed.size > 0) {
 		sections.push(
-			`(no IED name):\n${[...unnamed.entries()].map(([m, c]) => formatMsg(m, c)).join('\n')}`,
+			`(no IED name):\n${[...unnamed.entries()].map(([msg, count]) => formatMsg(msg, count)).join('\n')}`,
 		)
 	}
 
 	return sections.join('\n\n')
-})
+}
+
+let reportsAsText = $derived(reportsToText(reports))
 </script>
 
 <Dialog
