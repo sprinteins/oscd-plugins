@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.18.12] - 2026-04-20
 ### Added
 - Invalidities report for the signal list as a dialog
+- button to edit title and description of a template
+### Changed
+- sorting order of templates by date to have the latest at the top
+
 ### Fixed
 - creating "new" template reopening the latest used template
 
