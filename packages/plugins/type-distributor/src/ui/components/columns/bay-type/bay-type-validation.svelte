@@ -1,5 +1,7 @@
 <script lang="ts">
 import { Button } from '@oscd-plugins/core-ui-svelte'
+import { getScdEquipmentMatchKey } from '@/headless/domain/matching'
+import { reMatchEquipment } from '@/headless/actions'
 import {
 	assignedLNodesStore,
 	bayStore,
@@ -22,6 +24,10 @@ const hasCountMismatches = $derived(
 function handleConfirmMatching() {
 	if (!bayStore.selectedBay || !canConfirm) {
 		return
+	}
+
+	if (isBayTypeLocked) {
+		reMatchEquipment(bayStore.selectedBay)
 	}
 
 	bayStore.manualMatchingConfirmed = true
@@ -50,11 +56,27 @@ const ambiguousEquipmentCount = $derived.by(() => {
 
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
 
-const canReopenMatching = $derived(
-	bayStore.manualMatchingConfirmed && !isBayTypeLocked
-)
+const canReopenMatching = $derived(bayStore.manualMatchingConfirmed)
+
+function prefillManualMatchesFromBay() {
+	const bay = bayStore.scdBay
+	if (!bay) return
+
+	const scdEquipment = Array.from(
+		bay.querySelectorAll(':scope > ConductingEquipment')
+	)
+	for (const [index, eq] of scdEquipment.entries()) {
+		const originUuid = eq.getAttribute('originUuid')?.trim()
+		if (!originUuid) continue
+		const key = getScdEquipmentMatchKey(eq, index)
+		equipmentMatchingStore.manualMatches.set(key, originUuid)
+	}
+}
 
 function handleReopenMatching() {
+	if (isBayTypeLocked) {
+		prefillManualMatchesFromBay()
+	}
 	bayStore.manualMatchingConfirmed = false
 }
 
