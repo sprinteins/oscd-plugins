@@ -24,7 +24,7 @@ const { accessPoint, apName, lDevices, iedName, iedElement }: Props = $props()
 let isOpen = $state(false)
 let hasLDevices = $derived(lDevices.length > 0)
 let isDropTarget = $state(false)
-let hoverExpandTimeout: ReturnType<typeof setTimeout> | null = null
+let hoverExpandTimeout: NodeJS.Timeout | null = $state(null)
 
 let isInUse = $derived(lDevices.some((ld) => !ld.ldInst?.startsWith('LD0')))
 
@@ -47,6 +47,7 @@ function handleDragLeave(event: DragEvent) {
 	const currentTarget = event.currentTarget as HTMLElement
 	if (!currentTarget?.contains(relatedTarget)) {
 		isDropTarget = false
+		isOpen = false
 		if (hoverExpandTimeout) {
 			clearTimeout(hoverExpandTimeout)
 			hoverExpandTimeout = null

@@ -44,11 +44,9 @@ const {
 // local states
 let isElementCardOpen = $state(false)
 let isCurrentDropTarget = $state(false)
-let hoverExpandTimeout: ReturnType<typeof setTimeout> | null = null
+let hoverExpandTimeout: NodeJS.Timeout | null = $state(null)
 
 //======= DERIVED STATES =======//
-
-const isLNodeType = $derived(typeElementFamily === TYPE_FAMILY.lNodeType)
 
 const currentRefs = $derived.by(() => {
 	if (importScope)
@@ -139,6 +137,7 @@ const handleDragLeave = (event: DragEvent) => {
 	const dropZone = event.currentTarget as HTMLElement
 	if (!dropZone?.contains(event.relatedTarget as Node | null)) {
 		isCurrentDropTarget = false
+		isElementCardOpen = false
 		if (hoverExpandTimeout) {
 			clearTimeout(hoverExpandTimeout)
 			hoverExpandTimeout = null
@@ -161,6 +160,11 @@ const handleDrop = (event: DragEvent) => {
 }
 
 //======= EFFECTS =======//
+
+// autoclose collapsible if no refs are present
+$effect(() => {
+	if (!hasRefs) isElementCardOpen = false
+})
 
 // handle last element with drag and drop
 // to scroll the column content element to bottom
