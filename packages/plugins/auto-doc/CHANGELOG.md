@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - button to edit title and description of a template
 ### Changed
 - sorting order of templates by date to have the latest at the top
+### Fixed
+- creating "new" template reopening the latest used template
 
 ## [1.18.11] - 2026-02-16
 ### Fixed
