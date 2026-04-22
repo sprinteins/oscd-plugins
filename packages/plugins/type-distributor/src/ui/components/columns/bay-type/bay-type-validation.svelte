@@ -62,6 +62,8 @@ function prefillManualMatchesFromBay() {
 	const bay = bayStore.scdBay
 	if (!bay) return
 
+	equipmentMatchingStore.manualMatches.clear()
+
 	const scdEquipment = Array.from(
 		bay.querySelectorAll(':scope > ConductingEquipment')
 	)

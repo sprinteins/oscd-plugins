@@ -278,4 +278,94 @@ describe('reMatchEquipment', () => {
 			expect(ceUpdate.attributes.originUuid).toBe(TEMPLATE_B_UUID)
 		})
 	})
+
+	describe('GIVEN a CE whose EqFunction has never been assigned (no LDevice in IED)', () => {
+		beforeEach(() => {
+			doc = parseXml(`
+				<SCL>
+					<Substation>
+						<VoltageLevel>
+							<Bay name="Bay1" templateUuid="${BAY_TYPE_UUID}">
+								<ConductingEquipment name="CB1" type="CBR"
+									uuid="ce-uuid-1"
+									templateUuid="bt-ce-1"
+									originUuid="${TEMPLATE_A_UUID}">
+									<EqFunction name="Protection" uuid="${EQ_FUNC_UUID_OLD}">
+										<LNode lnClass="PTRC" lnType="T1" lnInst="1"
+											iedName="IED1" ldInst="${OLD_INST}" />
+									</EqFunction>
+								</ConductingEquipment>
+								<ConductingEquipment name="CB2" type="CBR"
+									uuid="ce-uuid-2"
+									templateUuid="bt-ce-2"
+									originUuid="${TEMPLATE_B_UUID}">
+									<EqFunction name="Protection" uuid="unassigned-eqfunc-uuid">
+										<LNode lnClass="PTRC" lnType="T1" lnInst="1" />
+									</EqFunction>
+								</ConductingEquipment>
+							</Bay>
+						</VoltageLevel>
+					</Substation>
+					<IED name="IED1">
+						<AccessPoint name="AP1">
+							<Server>
+								<LDevice inst="${OLD_INST}" ldName="IED1_${OLD_INST}">
+									<LN lnClass="PTRC" lnType="T1" lnInst="1" />
+								</LDevice>
+							</Server>
+						</AccessPoint>
+					</IED>
+				</SCL>
+			`)
+			const scdBay = doc.querySelector('Bay')!
+			const ceEl1 = doc.querySelectorAll('ConductingEquipment')[0]!
+			const ceEl2 = doc.querySelectorAll('ConductingEquipment')[1]!
+			bayStore.scdBay = scdBay
+			bayStore.equipmentMatches = [
+				{
+					scdElement: ceEl1,
+					bayTypeEquipment: bayType.conductingEquipments[0],
+					templateEquipment: templateA
+				},
+				{
+					scdElement: ceEl2,
+					bayTypeEquipment: bayType.conductingEquipments[1],
+					templateEquipment: templateB
+				}
+			]
+			// swap: ce-uuid-1 → templateB, ce-uuid-2 → templateA
+			equipmentMatchingStore.manualMatches.set('ce-uuid-1', TEMPLATE_B_UUID)
+			equipmentMatchingStore.manualMatches.set('ce-uuid-2', TEMPLATE_A_UUID)
+
+			vi.mocked(getDocumentAndEditor).mockReturnValue({
+				doc,
+				editor: mockEditor as unknown as XMLEditor
+			})
+		})
+
+		it('WHEN called THEN does not throw', () => {
+			expect(() => reMatchEquipment('Bay1')).not.toThrow()
+		})
+
+		it('WHEN called THEN still commits CE attribute updates', () => {
+			reMatchEquipment('Bay1')
+
+			const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
+			const ceUpdates = edits.filter(
+				(e: any) =>
+					'attributes' in e && 'templateUuid' in (e.attributes ?? {})
+			)
+			expect(ceUpdates.length).toBeGreaterThanOrEqual(1)
+		})
+
+		it('WHEN called THEN still inserts new EqFunction elements', () => {
+			reMatchEquipment('Bay1')
+
+			const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
+			const eqFunctionInserts = edits.filter(
+				(e: any) => 'parent' in e && e.node?.tagName === 'EqFunction'
+			)
+			expect(eqFunctionInserts.length).toBeGreaterThanOrEqual(1)
+		})
+	})
 })

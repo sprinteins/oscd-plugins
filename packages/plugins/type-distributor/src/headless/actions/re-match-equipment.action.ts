@@ -120,24 +120,31 @@ export function reMatchEquipment(bayName: string): void {
 				ceName
 			)
 
-			edits.push(
-				...buildUpdateForBayLNodeLdInst({
-					bay: scdBay,
-					iedName,
-					oldLdInst: oldInst,
-					newLdInst: newInst
-				})
-			)
+			const lDeviceExists =
+				ied.querySelector(
+					`AccessPoint > Server > LDevice[inst="${oldInst}"]`
+				) !== null
 
-			edits.push(
-				...buildEditsForLDeviceRename({
-					ied,
-					oldInst,
-					newInst,
-					newLNodeTemplates: newEqFuncTemplate.lnodes,
-					doc
-				})
-			)
+			if (lDeviceExists) {
+				edits.push(
+					...buildUpdateForBayLNodeLdInst({
+						bay: scdBay,
+						iedName,
+						oldLdInst: oldInst,
+						newLdInst: newInst
+					})
+				)
+
+				edits.push(
+					...buildEditsForLDeviceRename({
+						ied,
+						oldInst,
+						newInst,
+						newLNodeTemplates: newEqFuncTemplate.lnodes,
+						doc
+					})
+				)
+			}
 
 			const eqFunctionElement = createElement(doc, 'EqFunction', {
 				name: newEqFuncTemplate.name,
