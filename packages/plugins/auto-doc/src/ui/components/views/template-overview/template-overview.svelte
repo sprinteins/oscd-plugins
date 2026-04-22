@@ -31,7 +31,7 @@ function fetchTemplates() {
 }
 
 function navigateToCreateTemplate() {
-	navigate({ view: View.Create })
+	navigate({ view: View.Create, templateId: null })
 }
 
 async function onImportTemplate(file: File) {
@@ -102,7 +102,9 @@ function openFileSelectorIfNotMasterTemplate() {
 }
 
 let templatesConvertedToTableRow = $derived(
-	allTemplates.map(mapElementToTableRow)
+	allTemplates
+		.map(mapElementToTableRow)
+		.sort((a, b) => b.lastEdited.getTime() - a.lastEdited.getTime())
 )
 $effect(() => {
 	docTemplatesStore.setMasterTemplateFlag(isMasterTemplate)

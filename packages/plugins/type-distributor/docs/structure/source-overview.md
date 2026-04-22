@@ -22,6 +22,7 @@ src/
 └── ui/
     └── components/
         ├── columns/
+        ├── ssd-validation/
         ├── toolbar.svelte
         └── views/
 ```
@@ -70,6 +71,7 @@ The Svelte UI layer.
 - `views/type-distributor-view.svelte` lays out the three columns
 - `columns/bay-type/` contains bay-type selection, validation, and detail rendering
 - `columns/s-ied/` contains search, create-IED/AP flows, and target access-point interactions
+- `ssd-validation/` handles SSD import errors: `handle-import-ssd.ts` wraps `loadFromLocal()` and catches `CreationPrerequisiteError` or XML parse failures, then delegates to `open-ssd-import-problem-dialog.ts` which mounts `ssd-import-problem-dialog.svelte` via `dialogStore`
 
 At the time of writing, the left `SLD` card in `type-distributor-view.svelte` is still a placeholder rather than a fully implemented domain area.
 
@@ -104,7 +106,7 @@ Important examples:
 Pure business logic that does not own UI state.
 
 - `matching/` contains matching and validation rules
-- `type-resolution/` contains data type dependency collection
+- `type-resolution/` contains data type dependency collection and creation-prerequisite validation (`validateCreationPrerequisites` / `assertCreationPrerequisites` check that the SSD contains a valid `LLN0` type with all mandatory DOs before an S-IED or access point can be created)
 
 ### `headless/scl/`
 
