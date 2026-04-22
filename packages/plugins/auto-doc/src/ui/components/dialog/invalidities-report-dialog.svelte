@@ -25,7 +25,8 @@ function groupReports(reports: InvalditiesReport[]) {
 		} else {
 			if (!named.has(r.IEDName)) named.set(r.IEDName, new Map())
 			const msgs = named.get(r.IEDName)
-			if (msgs) msgs.set(r.invalidities, (msgs.get(r.invalidities) ?? 0) + 1)
+			if (msgs)
+				msgs.set(r.invalidities, (msgs.get(r.invalidities) ?? 0) + 1)
 		}
 	}
 
@@ -42,13 +43,13 @@ function reportsToText(reports: InvalditiesReport[]): string {
 
 	for (const [ied, msgs] of named) {
 		sections.push(
-			`${ied}:\n${[...msgs.entries()].map(([msg, count]) => formatMsg(msg, count)).join('\n')}`,
+			`${ied}:\n${[...msgs.entries()].map(([msg, count]) => formatMsg(msg, count)).join('\n')}`
 		)
 	}
 
 	if (unnamed.size > 0) {
 		sections.push(
-			`(no IED name):\n${[...unnamed.entries()].map(([msg, count]) => formatMsg(msg, count)).join('\n')}`,
+			`(no IED name):\n${[...unnamed.entries()].map(([msg, count]) => formatMsg(msg, count)).join('\n')}`
 		)
 	}
 
@@ -70,9 +71,9 @@ let reportsAsText = $derived(reportsToText(reports))
             readonly
             class="reports-textarea"
             value={reportsAsText}
-            aria-label="Invalidities report — select all and copy with Cmd+A / Ctrl+A"
+            aria-label="Invalidities report — select all and copy with Ctrl+A / Cmd+A"
         ></textarea>
-        <p class="copy-hint">Select all with Cmd+A (or Ctrl+A) to copy.</p>
+        <p class="copy-hint">Select all with Ctrl+A (or Cmd+A) to copy.</p>
     </Content>
     <Actions>
         {#if onConfirm}
@@ -96,9 +97,9 @@ let reportsAsText = $derived(reportsToText(reports))
 <style>
     .reports-textarea {
         width: 100%;
-        min-height: 12rem;
+        min-height: 12rem;        
         max-height: 20rem;
-        resize: vertical;
+        resize: none;
         font-family: monospace;
         font-size: 0.85rem;
         padding: 0.5rem;
