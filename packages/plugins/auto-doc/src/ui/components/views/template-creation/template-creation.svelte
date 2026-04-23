@@ -2,8 +2,10 @@
 import { type NavigateProps, View } from '../view-navigator/view'
 import { clickOutside } from '@/actions'
 import { docTemplatesStore } from '@/stores'
+import type { InvalditiesReport } from '@/stores'
 import { TemplateBuilder } from '@/ui/components'
 import { pdfGenerator } from '@/pdf'
+import InvaliditiesReportDialog from '../../../components/dialog/invalidities-report-dialog.svelte'
 import { CustomIconButton } from '@oscd-plugins/ui/src/components'
 import Button, { Label } from '@smui/button'
 import Textfield from '@smui/textfield'
@@ -21,6 +23,9 @@ let title = $state('')
 let description = $state('')
 let isMetadataVisible = $state(false)
 let isGenerating = $state(false)
+let invaliditiesReportDialogOpen = $state(false)
+let invaliditiesReports: InvalditiesReport[] = $state([])
+let pendingOrientation: 'landscape' | 'portrait' = $state('portrait')
 let templateId: string | undefined = undefined
 let template: Element | null = $state(null)
 let menu: Menu
@@ -93,18 +98,28 @@ function updateTitleAndDescription() {
 	)
 }
 
+function executePdfGeneration(orientation: 'landscape' | 'portrait') {
+	if (!templateId) return
+	isGenerating = true
+	pdfGenerator
+		.downloadAsPdf(templateId, orientation)
+		.catch((error) => console.error('Error generating PDF:', error))
+		.finally(() => { isGenerating = false })
+}
+
 function downloadTemplateContent(
 	orientation: 'landscape' | 'portrait' = 'portrait'
 ) {
 	if (!templateId || isGenerating) return
 
-	isGenerating = true
-	pdfGenerator
-		.downloadAsPdf(templateId, orientation)
-		.catch((error) => console.error('Error generating PDF:', error))
-		.finally(() => {
-			isGenerating = false
-		})
+	const reports = pdfGenerator.validateTemplate(templateId)
+	if (reports.length > 0) {
+		invaliditiesReports = reports
+		pendingOrientation = orientation
+		invaliditiesReportDialogOpen = true
+	} else {
+		executePdfGeneration(orientation)
+	}
 }
 </script>
 
@@ -190,6 +205,12 @@ function downloadTemplateContent(
     {/if}
   </main>
 </div>
+
+<InvaliditiesReportDialog
+    bind:isOpen={invaliditiesReportDialogOpen}
+    reports={invaliditiesReports}
+    onConfirm={() => executePdfGeneration(pendingOrientation)}
+/>
 
 <style lang="scss">
   main.template-builder-container {
