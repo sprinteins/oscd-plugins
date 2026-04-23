@@ -10,8 +10,8 @@ import {
 	buildEditsForLDeviceRename,
 	computeLDeviceInst
 } from '@/headless/scl/edits/ldevice-rename-edits'
-import { buildUpdateForBayLNodeLdInst } from '@/headless/scl/edits/bay-edits'
 import {
+	assignedLNodesStore,
 	bayStore,
 	equipmentMatchingStore,
 	ssdImportStore
@@ -80,13 +80,6 @@ export function reMatchEquipment(bayName: string): void {
 	const oldMatches = bayStore.equipmentMatches
 	const newMatches = buildNewMatches(scdBay, oldMatches)
 
-	const iedName =
-		scdBay.querySelector('LNode[iedName]')?.getAttribute('iedName') ?? null
-	if (!iedName) throw new Error('No iedName found on bay LNodes')
-
-	const ied = doc.querySelector(`IED[name="${iedName}"]`)
-	if (!ied) throw new Error(`IED "${iedName}" not found in document`)
-
 	const edits: (Insert | Remove | SetAttributes)[] = []
 
 	for (const newMatch of newMatches) {
@@ -105,6 +98,15 @@ export function reMatchEquipment(bayName: string): void {
 			newMatch.scdElement.querySelectorAll(':scope > EqFunction')
 		)
 
+		// Each CE may be assigned to a different IED — resolve per CE
+		const iedName =
+			newMatch.scdElement
+				.querySelector('LNode[iedName]')
+				?.getAttribute('iedName') ?? null
+		const ied = iedName
+			? doc.querySelector(`IED[name="${iedName}"]`)
+			: null
+
 		for (const [idx, oldEqFunc] of oldEqFunctions.entries()) {
 			const newEqFuncTemplate = newTemplate.eqFunctions[idx]
 			if (!newEqFuncTemplate) continue
@@ -121,20 +123,11 @@ export function reMatchEquipment(bayName: string): void {
 			)
 
 			const lDeviceExists =
-				ied.querySelector(
+				ied?.querySelector(
 					`AccessPoint > Server > LDevice[inst="${oldInst}"]`
-				) !== null
+				) !== null && ied !== null
 
-			if (lDeviceExists) {
-				edits.push(
-					...buildUpdateForBayLNodeLdInst({
-						bay: scdBay,
-						iedName,
-						oldLdInst: oldInst,
-						newLdInst: newInst
-					})
-				)
-
+			if (lDeviceExists && ied) {
 				edits.push(
 					...buildEditsForLDeviceRename({
 						ied,
@@ -151,9 +144,12 @@ export function reMatchEquipment(bayName: string): void {
 				uuid: newEqFuncUuid
 			})
 			for (const lnodeTemplate of newEqFuncTemplate.lnodes) {
-				eqFunctionElement.appendChild(
-					createLNodeElementInBay(doc, lnodeTemplate)
-				)
+				const lnodeEl = createLNodeElementInBay(doc, lnodeTemplate)
+				if (lDeviceExists && iedName) {
+					lnodeEl.setAttribute('iedName', iedName)
+					lnodeEl.setAttribute('ldInst', newInst)
+				}
+				eqFunctionElement.appendChild(lnodeEl)
 			}
 
 			const terminals = Array.from(
@@ -180,5 +176,7 @@ export function reMatchEquipment(bayName: string): void {
 	editor.commit(edits, {
 		title: `Re-match equipment in Bay "${bayName}"`
 	})
+
+	assignedLNodesStore.rebuild()
 }
 

@@ -16,6 +16,7 @@ class UseBayStore {
 
 	equipmentMatches = $derived.by(() => {
 		if (!this.scdBay || !this.assignedBayTypeUuid) return []
+		pluginGlobalStore.editCount
 		const bayType = ssdImportStore.bayTypes.find(
 			(bt) => bt.uuid === this.assignedBayTypeUuid
 		)

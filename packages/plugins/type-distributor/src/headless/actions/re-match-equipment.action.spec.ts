@@ -8,6 +8,7 @@ import {
 import { getDocumentAndEditor } from '@/headless/utils'
 import type { BayType, ConductingEquipmentTemplate } from '../common-types'
 import type { EquipmentMatch } from '../domain/matching'
+import { getScdEquipmentMatchKey } from '../domain/matching'
 import { reMatchEquipment } from './re-match-equipment.action'
 
 vi.mock('@/headless/utils', () => ({
@@ -26,6 +27,9 @@ vi.mock('@/headless/stores', () => ({
 	ssdImportStore: {
 		bayTypes: [] as BayType[],
 		conductingEquipmentTemplates: [] as ConductingEquipmentTemplate[]
+	},
+	assignedLNodesStore: {
+		rebuild: vi.fn()
 	}
 }))
 
@@ -153,7 +157,7 @@ describe('reMatchEquipment', () => {
 		expect(() => reMatchEquipment('Bay1')).toThrow('BayType "unknown-uuid" not found')
 	})
 
-	it('GIVEN no iedName on bay LNodes WHEN called THEN throws', () => {
+	it('GIVEN no iedName on bay LNodes (CE not yet assigned to IED) WHEN called THEN does not rename LDevice and new LNodes have no iedName', () => {
 		doc = parseXml(`
 			<SCL>
 				<Substation><VoltageLevel><Bay name="Bay1">
@@ -166,8 +170,23 @@ describe('reMatchEquipment', () => {
 				</Bay></VoltageLevel></Substation>
 			</SCL>
 		`)
+		const ceEl = doc.querySelector('ConductingEquipment')!
 		bayStore.scdBay = doc.querySelector('Bay')!
-		expect(() => reMatchEquipment('Bay1')).toThrow('No iedName found on bay LNodes')
+		bayStore.equipmentMatches = [
+			{
+				scdElement: ceEl,
+				bayTypeEquipment: bayType.conductingEquipments[0],
+				templateEquipment: templateA
+			}
+		]
+		equipmentMatchingStore.manualMatches.set(
+			getScdEquipmentMatchKey(ceEl, 0),
+			TEMPLATE_B_UUID
+		)
+		expect(() => reMatchEquipment('Bay1')).not.toThrow()
+		const newLNode = doc.querySelector('ConductingEquipment > EqFunction > LNode')!
+		expect(newLNode.getAttribute('iedName')).toBeNull()
+		expect(newLNode.getAttribute('ldInst')).toBeNull()
 	})
 
 	describe('GIVEN a valid setup where template did not change', () => {
@@ -216,17 +235,23 @@ describe('reMatchEquipment', () => {
 			)
 		})
 
-		it('WHEN called THEN commits edits that include a Bay LNode ldInst update', () => {
+		it('WHEN called THEN new EqFunction LNodes carry iedName and new ldInst', () => {
 			reMatchEquipment('Bay1')
 
 			const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
-			const ldInstUpdate = edits.find(
-				(e: any) =>
-					'attributes' in e &&
-					e.attributes?.ldInst !== undefined &&
-					!('inst' in e.attributes)
+			const eqFunctionInsert = edits.find(
+				(e: any) => 'parent' in e && e.node?.tagName === 'EqFunction'
 			)
-			expect(ldInstUpdate).toBeDefined()
+			expect(eqFunctionInsert).toBeDefined()
+			const lnodes = Array.from(
+				(eqFunctionInsert.node as Element).querySelectorAll('LNode')
+			) as Element[]
+			expect(lnodes.length).toBeGreaterThan(0)
+			for (const ln of lnodes) {
+				expect(ln.getAttribute('iedName')).toBe('IED1')
+				expect(ln.getAttribute('ldInst')).toBeTruthy()
+				expect(ln.getAttribute('ldInst')).not.toBe(OLD_INST)
+			}
 		})
 
 		it('WHEN called THEN commits edits that include a LDevice rename', () => {
