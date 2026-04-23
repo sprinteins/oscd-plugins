@@ -81,14 +81,14 @@ function deleteTemplate(templateId: string) {
 	)
 }
 
-async function downloadTemplateContent(templateId: string) {
+async function downloadTemplateContent(templateId: string, orientation: 'portrait' | 'landscape' = 'portrait') {
 	const reports = pdfGenerator.validateTemplate(templateId)
 	if (reports.length > 0) {
 		invaliditiesReports = reports
-		onConfirmPdfGeneration = () => pdfGenerator.downloadAsPdf(templateId, 'portrait')
+		onConfirmPdfGeneration = () => pdfGenerator.downloadAsPdf(templateId, orientation)
 		invaliditiesReportDialogOpen = true
 	} else {
-		await pdfGenerator.downloadAsPdf(templateId, 'portrait')
+		await pdfGenerator.downloadAsPdf(templateId, orientation)
 	}
 }
 

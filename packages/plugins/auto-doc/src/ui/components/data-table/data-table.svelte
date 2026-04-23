@@ -8,7 +8,7 @@ interface Props {
 	allTemplates: Template[]
 	deleteTemplate: (id: string) => void
 	editTemplate: (id: string) => void
-	downloadTemplate: (id: string) => void
+	downloadTemplate: (id: string, orientation: 'portrait' | 'landscape') => void
 	duplicateTemplate: (id: string) => void
 }
 
@@ -19,6 +19,19 @@ let {
 	downloadTemplate,
 	duplicateTemplate
 }: Props = $props()
+
+let openDownloadMenuFor: string | null = $state(null)
+let downloadMenuPos = $state({ top: 0, right: 0 })
+
+function openDownloadMenu(templateId: string, event: MouseEvent) {
+	const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+	downloadMenuPos = { top: rect.bottom, right: window.innerWidth - rect.right }
+	openDownloadMenuFor = templateId
+}
+
+function closeDownloadMenu() {
+	openDownloadMenuFor = null
+}
 
 function isInvalidDate(date: Date) {
 	return Number.isNaN(date.getTime())
@@ -74,7 +87,7 @@ function getDD_MM_YYYYFromDate(date: Date): string {
             </Row>
         </Head>
         <Body>
-            {#each allTemplates as template}
+            {#each allTemplates as template, i}
                 <Row>
                     <!-- <Cell checkbox>
                         <Checkbox
@@ -102,9 +115,11 @@ function getDD_MM_YYYYFromDate(date: Date): string {
                             <CustomIconButton icon="content_copy" color="black" size="small" onclick={()=>{duplicateTemplate(template.id)}}/>
                         </Tooltip>
                         <!-- ! &nbsp; - No-Break Space. Verhindert den Umbruch des Tooltips. Wenn nicht verwendet, wird das zweite Wort vom Border der Zeile(Spalte) abgeschnitten. -->
-                        <Tooltip text="Generate&nbsp;Document" position="left" isPositionModified={true}>
-                            <CustomIconButton icon="download" color="black" size="small" onclick={()=>{downloadTemplate(template.id)}}/>
-                        </Tooltip>
+                        <div class="download-menu-wrapper">
+                            <Tooltip text="Generate&nbsp;Document" position="left" isPositionModified={true}>
+                                <CustomIconButton icon="download" color="black" size="small" onclick={(e) => openDownloadMenu(template.id, e)}/>
+                            </Tooltip>
+                        </div>
                     </div>
                     </Cell>
                 </Row>
@@ -112,6 +127,15 @@ function getDD_MM_YYYYFromDate(date: Date): string {
         </Body>
     </DataTable>
 {/if}  
+
+{#if openDownloadMenuFor !== null}
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="download-backdrop" onclick={closeDownloadMenu} onkeydown={() => {}}></div>
+    <div class="download-dropdown" style="top: {downloadMenuPos.top}px; right: {downloadMenuPos.right}px;">
+        <button onclick={() => { downloadTemplate(openDownloadMenuFor!, 'portrait'); closeDownloadMenu() }}>Portrait PDF</button>
+        <button onclick={() => { downloadTemplate(openDownloadMenuFor!, 'landscape'); closeDownloadMenu() }}>Landscape PDF</button>
+    </div>
+{/if}
 </div>
 
 <style lang="scss">
@@ -123,6 +147,38 @@ function getDD_MM_YYYYFromDate(date: Date): string {
     }
     .center-action-btns {
         padding-top: 0.5rem;
+    }
+    .download-menu-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+    .download-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+    }
+    .download-dropdown {
+        position: fixed;
+        z-index: 1000;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        min-width: 8rem;
+
+        button {
+            padding: 0.6rem 1rem;
+            text-align: left;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+
+            &:hover {
+                background: rgba(0, 0, 0, 0.06);
+            }
+        }
     }
     .table-container{
 
