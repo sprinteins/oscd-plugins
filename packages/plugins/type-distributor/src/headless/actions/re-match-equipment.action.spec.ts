@@ -186,7 +186,7 @@ describe('reMatchEquipment', () => {
 		expect(() => reMatchEquipment('Bay1')).not.toThrow()
 		const newLNode = doc.querySelector('ConductingEquipment > EqFunction > LNode')!
 		expect(newLNode.getAttribute('iedName')).toBeNull()
-		expect(newLNode.getAttribute('ldInst')).toBeNull()
+		expect(newLNode.getAttribute('ldInst')).toBeNull() // ldInst is never set in bay section
 	})
 
 	describe('GIVEN a valid setup where template did not change', () => {
@@ -235,7 +235,7 @@ describe('reMatchEquipment', () => {
 			)
 		})
 
-		it('WHEN called THEN new EqFunction LNodes carry iedName and new ldInst', () => {
+		it('WHEN called THEN new EqFunction LNodes carry iedName but no ldInst', () => {
 			reMatchEquipment('Bay1')
 
 			const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
@@ -249,8 +249,7 @@ describe('reMatchEquipment', () => {
 			expect(lnodes.length).toBeGreaterThan(0)
 			for (const ln of lnodes) {
 				expect(ln.getAttribute('iedName')).toBe('IED1')
-				expect(ln.getAttribute('ldInst')).toBeTruthy()
-				expect(ln.getAttribute('ldInst')).not.toBe(OLD_INST)
+				expect(ln.getAttribute('ldInst')).toBeNull()
 			}
 		})
 

@@ -147,7 +147,6 @@ export function reMatchEquipment(bayName: string): void {
 				const lnodeEl = createLNodeElementInBay(doc, lnodeTemplate)
 				if (lDeviceExists && iedName) {
 					lnodeEl.setAttribute('iedName', iedName)
-					lnodeEl.setAttribute('ldInst', newInst)
 				}
 				eqFunctionElement.appendChild(lnodeEl)
 			}
