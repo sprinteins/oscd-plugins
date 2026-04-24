@@ -114,9 +114,6 @@ export function reMatchEquipment(bayName: string): void {
 			newMatch.scdElement.querySelectorAll(':scope > EqFunction')
 		)
 
-		// iedName follows the type: find which old CE previously had this template.
-		// This ensures that when types are swapped, the IED assignment travels with
-		// the type rather than staying on the physical equipment.
 		const sourceOldMatch = oldMatches.find(
 			(m) => m.templateEquipment.uuid === newMatch.templateEquipment.uuid
 		)
