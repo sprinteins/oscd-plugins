@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.7] - 2026-04-24
 ### Added
 - Re-matching of equipment after LNode assignment: when equipment is re-assigned to a different BayType match, existing LNodes are updated and LDevice instances are renamed accordingly
+### Changed
+- Moved the "Edit Matching" button into the bay type selection header
 
 ## [1-0-6] 2026-04-21
 ### Changed

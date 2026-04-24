@@ -69,6 +69,16 @@ To modify a manual match:
 2. The previous assignment is automatically cleared
 3. Template availability counts update in real-time
 
+## Reopening Matching After Confirmation
+
+Once matching has been confirmed, the manual matching panel is hidden and normal bay type details are shown. To reopen it:
+
+1. Look for the **Edit Matching** button in the bay type column header, to the right of the bay type dropdown
+2. Click it — the manual matching panel reopens with the current matches pre-filled from the SCD bay
+3. Adjust your selections and click **Confirm Matching** again
+
+The button is only visible when matching has already been confirmed for the selected bay.
+
 ## What happens next
 
 When you apply the bay type, manual matches are used before type-based fallback. This means your explicit choices only affect the ambiguous equipment that needed intervention, while the rest of the bay can still be matched automatically.
