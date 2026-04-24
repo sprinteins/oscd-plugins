@@ -1,7 +1,6 @@
 <script lang="ts">
 import { Button } from '@oscd-plugins/core-ui-svelte'
 import { reMatchEquipment } from '@/headless/actions'
-import { getScdEquipmentMatchKey } from '@/headless/domain/matching'
 import {
 	assignedLNodesStore,
 	bayStore,
@@ -55,32 +54,6 @@ const ambiguousEquipmentCount = $derived.by(() => {
 })
 
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
-
-const canReopenMatching = $derived(bayStore.manualMatchingConfirmed)
-
-function prefillManualMatchesFromBay() {
-	const bay = bayStore.scdBay
-	if (!bay) return
-
-	equipmentMatchingStore.manualMatches.clear()
-
-	const scdEquipment = Array.from(
-		bay.querySelectorAll(':scope > ConductingEquipment')
-	)
-	for (const [index, eq] of scdEquipment.entries()) {
-		const originUuid = eq.getAttribute('originUuid')?.trim()
-		if (!originUuid) continue
-		const key = getScdEquipmentMatchKey(eq, index)
-		equipmentMatchingStore.manualMatches.set(key, originUuid)
-	}
-}
-
-function handleReopenMatching() {
-	if (isBayTypeLocked) {
-		prefillManualMatchesFromBay()
-	}
-	bayStore.manualMatchingConfirmed = false
-}
 
 const canConfirm = $derived.by(() => {
 	if (
@@ -146,16 +119,6 @@ const showManualMatchingUI = $derived(
     </div>
 {:else if equipmentMatchingStore.validationResult?.requiresManualMatching && !bayStore.manualMatchingConfirmed}
     <EquipmentMatching />
-{/if}
-
-{#if canReopenMatching}
-    <Button.Root
-        variant="outline"
-        onclick={handleReopenMatching}
-        class="w-full"
-    >
-        Edit Matching
-    </Button.Root>
 {/if}
 
 {#if showManualMatchingUI}
