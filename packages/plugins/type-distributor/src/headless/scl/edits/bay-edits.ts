@@ -196,31 +196,3 @@ export function buildUpdatesForBayLNode({
 
 	return edits
 }
-
-type BuildUpdateForBayLNodeLdInstParams = {
-	bay: Element
-	iedName: string
-	oldLdInst: string
-	newLdInst: string
-}
-
-export function buildUpdateForBayLNodeLdInst({
-	bay,
-	iedName,
-	oldLdInst,
-	newLdInst
-}: BuildUpdateForBayLNodeLdInstParams): SetAttributes[] {
-	const lnodes = Array.from(
-		bay.querySelectorAll(
-			`LNode[iedName="${iedName}"][ldInst="${oldLdInst}"]`
-		)
-	)
-	return lnodes.map(
-		(lnode) =>
-			({
-				element: lnode,
-				attributes: { ldInst: newLdInst },
-				attributesNS: {}
-			}) as SetAttributes
-	)
-}

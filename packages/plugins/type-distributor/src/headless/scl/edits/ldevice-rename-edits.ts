@@ -2,20 +2,7 @@ import type { Insert, Remove, SetAttributes } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '@/headless/common-types'
 import {
 	createLNodeElementInIED,
-	sanitizeLDeviceInstSegment,
-	uuidToPrefix
 } from '../elements'
-
-export function computeLDeviceInst(
-	eqFunctionName: string,
-	eqFunctionUuid: string,
-	ceName: string
-): string {
-	const prefix = uuidToPrefix(eqFunctionUuid)
-	const sanitizedFnName = sanitizeLDeviceInstSegment(eqFunctionName)
-	const sanitizedCeName = sanitizeLDeviceInstSegment(ceName)
-	return `${sanitizedCeName}_${sanitizedFnName}_${prefix}`
-}
 
 type BuildEditsForLDeviceRenameParams = {
 	ied: Element

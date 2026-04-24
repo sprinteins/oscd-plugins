@@ -5,11 +5,8 @@ import type { EquipmentMatch } from '@/headless/domain/matching'
 import { getScdEquipmentMatchKey } from '@/headless/domain/matching'
 import { buildEditsForEquipmentUpdates } from '@/headless/scl/edits/bay-type-edits'
 import { buildRemovesForEqFunctions } from '@/headless/scl/edits/function-edits'
-import {
-	buildEditsForLDeviceRename,
-	computeLDeviceInst
-} from '@/headless/scl/edits/ldevice-rename-edits'
-import { createLNodeElementInBay } from '@/headless/scl/elements'
+import { buildEditsForLDeviceRename } from '@/headless/scl/edits/ldevice-rename-edits'
+import { createLNodeElementInBay, generateLDeviceInst } from '@/headless/scl/elements'
 import {
 	assignedLNodesStore,
 	bayStore,
@@ -66,6 +63,15 @@ function buildNewMatches(
 	return newMatches
 }
 
+function resolveIedNameForLNodeByIndex(
+	sourceEqFunc: Element | undefined,
+	lnodeIndex: number
+): string | null {
+	if (!sourceEqFunc) return null
+	const sourceLNodes = Array.from(sourceEqFunc.querySelectorAll(':scope > LNode'))
+	return sourceLNodes[lnodeIndex]?.getAttribute('iedName') ?? null
+}
+
 export function reMatchEquipment(bayName: string): void {
 	const { doc, editor } = getDocumentAndEditor()
 
@@ -115,17 +121,20 @@ export function reMatchEquipment(bayName: string): void {
 			sourceElement.querySelectorAll(':scope > EqFunction')
 		)
 
-		const iedName =
-			sourceElement
-				.querySelector('LNode[iedName]')
-				?.getAttribute('iedName') ?? null
-		const ied = iedName ? doc.querySelector(`IED[name="${iedName}"]`) : null
-
 		for (const [idx, oldEqFunc] of oldEqFunctions.entries()) {
 			const newEqFuncTemplate = newTemplate.eqFunctions[idx]
 			if (!newEqFuncTemplate) continue
 
 			const sourceOldEqFunc = sourceOldEqFunctions[idx]
+
+			const eqFuncIedName =
+				sourceOldEqFunc
+					?.querySelector(':scope > LNode[iedName]')
+					?.getAttribute('iedName') ?? null
+			const ied = eqFuncIedName
+				? doc.querySelector(`IED[name="${eqFuncIedName}"]`)
+				: null
+
 			const oldEqFuncUuid =
 				sourceOldEqFunc?.getAttribute('uuid') ??
 				oldEqFunc.getAttribute('uuid') ??
@@ -134,14 +143,14 @@ export function reMatchEquipment(bayName: string): void {
 				sourceOldEqFunc?.getAttribute('name') ??
 				oldEqFunc.getAttribute('name') ??
 				''
-			const oldInst = computeLDeviceInst(
+			const oldInst = generateLDeviceInst(
 				oldEqFuncName,
 				oldEqFuncUuid,
 				sourceCeName
 			)
 
 			const newEqFuncUuid = uuidv4()
-			const newInst = computeLDeviceInst(
+			const newInst = generateLDeviceInst(
 				newEqFuncTemplate.name,
 				newEqFuncUuid,
 				ceName
@@ -170,8 +179,13 @@ export function reMatchEquipment(bayName: string): void {
 			})
 			for (const lnodeTemplate of newEqFuncTemplate.lnodes) {
 				const lnodeEl = createLNodeElementInBay(doc, lnodeTemplate)
-				if (lDeviceExists && iedName) {
-					lnodeEl.setAttribute('iedName', iedName)
+
+				const lnodeIedName = resolveIedNameForLNodeByIndex(
+					sourceOldEqFunc,
+					newEqFuncTemplate.lnodes.indexOf(lnodeTemplate)
+				)
+				if (lDeviceExists && lnodeIedName) {
+					lnodeEl.setAttribute('iedName', lnodeIedName)
 				}
 				eqFunctionElement.appendChild(lnodeEl)
 			}

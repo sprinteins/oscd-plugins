@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import {
-	buildEditsForLDeviceRename,
-	computeLDeviceInst
-} from './ldevice-rename-edits'
+import { buildEditsForLDeviceRename } from './ldevice-rename-edits'
+import { generateLDeviceInst } from '../elements'
 
 const PARSER = new DOMParser()
 
@@ -13,9 +11,9 @@ function parseXml(xml: string): XMLDocument {
 	) as unknown as XMLDocument
 }
 
-describe('computeLDeviceInst', () => {
+describe('generateLDeviceInst', () => {
 	it('GIVEN an eqFunction name, uuid and CE name WHEN called THEN returns sanitized inst string', () => {
-		const inst = computeLDeviceInst(
+		const inst = generateLDeviceInst(
 			'Protection',
 			'abcdef12-0000-0000-0000-000000000000',
 			'Breaker1'
@@ -24,7 +22,7 @@ describe('computeLDeviceInst', () => {
 	})
 
 	it('GIVEN a CE name with special chars WHEN called THEN sanitizes the CE name', () => {
-		const inst = computeLDeviceInst(
+		const inst = generateLDeviceInst(
 			'Prot',
 			'aaaaaaaa-0000-0000-0000-000000000000',
 			'Bay-A.1'
