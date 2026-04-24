@@ -1,4 +1,10 @@
-import type { XMLEditor } from '@openscd/oscd-editor'
+import type {
+	Insert,
+	Remove,
+	SetAttributes,
+	XMLEditor
+} from '@openscd/oscd-editor'
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
 	bayStore,
@@ -10,6 +16,8 @@ import type { BayType, ConductingEquipmentTemplate } from '../common-types'
 import type { EquipmentMatch } from '../domain/matching'
 import { getScdEquipmentMatchKey } from '../domain/matching'
 import { reMatchEquipment } from './re-match-equipment.action'
+
+type EditorEdit = Insert | Remove | SetAttributes
 
 vi.mock('@/headless/utils', () => ({
 	getDocumentAndEditor: vi.fn()
@@ -266,6 +274,11 @@ describe('reMatchEquipment', () => {
 	let doc: XMLDocument
 	let mockEditor: { commit: ReturnType<typeof vi.fn> }
 
+	function mockEdits(): EditorEdit[] {
+		const call = mockEditor.commit.mock.calls[0] as unknown[] | undefined
+		return (call?.[0] ?? []) as EditorEdit[]
+	}
+
 	beforeEach(() => {
 		doc = buildDocSingleCe()
 		mockEditor = { commit: vi.fn() }
@@ -297,7 +310,9 @@ describe('reMatchEquipment', () => {
 	})
 
 	it('GIVEN no assignedBayTypeUuid WHEN called THEN throws', () => {
-		bayStore.scdBay = doc.querySelector('Bay')!
+		bayStore.scdBay = doc.querySelector('Bay')
+		if (!bayStore.scdBay)
+			throw new Error('Test setup failed: Bay element not found')
 		bayStore.assignedBayTypeUuid = null
 		expect(() => reMatchEquipment('Bay1')).toThrow(
 			'Bay has no assigned bay type'
@@ -305,7 +320,9 @@ describe('reMatchEquipment', () => {
 	})
 
 	it('GIVEN an unknown bayTypeUuid WHEN called THEN throws', () => {
-		bayStore.scdBay = doc.querySelector('Bay')!
+		bayStore.scdBay = doc.querySelector('Bay')
+		if (!bayStore.scdBay)
+			throw new Error('Test setup failed: Bay element not found')
 		bayStore.assignedBayTypeUuid = 'unknown-uuid'
 		expect(() => reMatchEquipment('Bay1')).toThrow(
 			'BayType "unknown-uuid" not found'
@@ -333,8 +350,14 @@ describe('reMatchEquipment', () => {
 			doc,
 			editor: mockEditor as unknown as XMLEditor
 		})
-		const ceEl = doc.querySelector('ConductingEquipment')!
-		bayStore.scdBay = doc.querySelector('Bay')!
+		const ceEl = doc.querySelector('ConductingEquipment')
+		if (!ceEl)
+			throw new Error(
+				'Test setup failed: ConductingEquipment element not found'
+			)
+		bayStore.scdBay = doc.querySelector('Bay')
+		if (!bayStore.scdBay)
+			throw new Error('Test setup failed: Bay element not found')
 		bayStore.equipmentMatches = [
 			{
 				scdElement: ceEl,
@@ -349,11 +372,16 @@ describe('reMatchEquipment', () => {
 
 		reMatchEquipment('Bay1')
 
-		const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
-		const eqFuncInsert = edits.find(
-			(e: any) => 'parent' in e && e.node?.tagName === 'EqFunction'
-		) as any
+		const edits = mockEdits()
+		const eqFuncInsert = (edits as Insert[]).find((e) => {
+			const ed = e as EditorEdit
+			return (
+				'parent' in ed &&
+				(ed.node as Element | undefined)?.tagName === 'EqFunction'
+			)
+		}) as { parent: Element; node: Element } | undefined
 		expect(eqFuncInsert).toBeDefined()
+		if (!eqFuncInsert) throw new Error('expected eqFuncInsert')
 		const lnodes = Array.from(
 			(eqFuncInsert.node as Element).querySelectorAll('LNode')
 		)
@@ -366,8 +394,14 @@ describe('reMatchEquipment', () => {
 
 	describe('GIVEN template assignment did not change', () => {
 		beforeEach(() => {
-			const ceEl = doc.querySelector('ConductingEquipment')!
-			bayStore.scdBay = doc.querySelector('Bay')!
+			const ceEl = doc.querySelector('ConductingEquipment')
+			if (!ceEl)
+				throw new Error(
+					'Test setup failed: ConductingEquipment element not found'
+				)
+			bayStore.scdBay = doc.querySelector('Bay')
+			if (!bayStore.scdBay)
+				throw new Error('Test setup failed: Bay element not found')
 			bayStore.equipmentMatches = [
 				{
 					scdElement: ceEl,
@@ -391,8 +425,14 @@ describe('reMatchEquipment', () => {
 
 	describe('GIVEN single CBR CE is reassigned from templateA (PTRC) to templateB (PDIS)', () => {
 		beforeEach(() => {
-			const ceEl = doc.querySelector('ConductingEquipment')!
-			bayStore.scdBay = doc.querySelector('Bay')!
+			const ceEl = doc.querySelector('ConductingEquipment')
+			if (!ceEl)
+				throw new Error(
+					'Test setup failed: ConductingEquipment element not found'
+				)
+			bayStore.scdBay = doc.querySelector('Bay')
+			if (!bayStore.scdBay)
+				throw new Error('Test setup failed: Bay element not found')
 			bayStore.equipmentMatches = [
 				{
 					scdElement: ceEl,
@@ -414,69 +454,115 @@ describe('reMatchEquipment', () => {
 		})
 
 		describe('WHEN called', () => {
-			let edits: any[]
+			let edits: unknown[]
 
 			beforeEach(() => {
 				reMatchEquipment('Bay1')
-				edits = (mockEditor.commit.mock.calls[0] as [any[], any])[0]
+				edits = mockEdits()
 			})
 
 			it('THEN renames the LDevice to a new inst', () => {
-				const rename = edits.find(
-					(e: any) =>
-						'attributes' in e && 'inst' in (e.attributes ?? {})
-				)
+				const rename = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					const attrs = (
+						'attributes' in ed ? ed.attributes : undefined
+					) as Partial<Record<string, string | null>> | undefined
+					return 'attributes' in ed && !!attrs && 'inst' in attrs
+				}) as
+					| { attributes?: Partial<Record<string, string | null>> }
+					| undefined
 				expect(rename).toBeDefined()
-				expect(rename.attributes.inst).not.toBe(CBR_OLD_LDEVICE_INST)
+				if (!rename || !rename.attributes)
+					throw new Error('expected rename attributes')
+				expect(String(rename.attributes.inst)).not.toBe(
+					CBR_OLD_LDEVICE_INST
+				)
 			})
 
 			it('THEN the LN0 of the LDevice is NOT removed', () => {
 				const lDevice = doc.querySelector(
 					`LDevice[inst="${CBR_OLD_LDEVICE_INST}"]`
-				)!
-				const ln0 = lDevice.querySelector('LN0')!
-				const remove = edits.find(
-					(e: any) =>
-						!('parent' in e) && 'node' in e && e.node === ln0
 				)
+				if (!lDevice)
+					throw new Error(
+						`Test setup failed: LDevice inst "${CBR_OLD_LDEVICE_INST}" not found`
+					)
+				const ln0 = lDevice.querySelector('LN0')
+				if (!ln0)
+					throw new Error('Test setup failed: LN0 element not found')
+				const remove = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					return (
+						!('parent' in ed) &&
+						'node' in ed &&
+						(ed.node as Node) === ln0
+					)
+				})
 				expect(remove).toBeUndefined()
 			})
 
 			it('THEN removes the old EqFunction', () => {
-				const removes = edits.filter(
-					(e: any) => 'node' in e && !('parent' in e)
-				)
+				const removes = (edits as EditorEdit[]).filter((e) => {
+					const ed = e as EditorEdit
+					return 'node' in ed && !('parent' in ed)
+				})
 				expect(removes.length).toBeGreaterThanOrEqual(1)
 			})
 
 			it('THEN inserts a new EqFunction named "Protection"', () => {
-				const eqFuncInsert = edits.find(
-					(e: any) =>
-						'parent' in e && e.node?.tagName === 'EqFunction'
-				)
+				const eqFuncInsert = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					return (
+						'parent' in ed &&
+						(ed.node as Element | undefined)?.tagName ===
+							'EqFunction'
+					)
+				}) as { node: Element } | undefined
 				expect(eqFuncInsert).toBeDefined()
+				if (!eqFuncInsert) throw new Error('expected eqFuncInsert')
 				expect(eqFuncInsert.node.getAttribute('name')).toBe(
 					'Protection'
 				)
 			})
 
 			it('THEN updates CE templateUuid and originUuid to templateB', () => {
-				const ceEl = doc.querySelector('ConductingEquipment')!
-				const ceUpdate = edits.find(
-					(e: any) =>
-						'attributes' in e &&
-						e.element === ceEl &&
-						'templateUuid' in (e.attributes ?? {})
-				)
+				const ceEl = doc.querySelector('ConductingEquipment')
+				if (!ceEl)
+					throw new Error(
+						'Test setup failed: ConductingEquipment element not found'
+					)
+				const ceUpdate = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					const attrs = (
+						'attributes' in ed ? ed.attributes : undefined
+					) as Partial<Record<string, string | null>> | undefined
+					return (
+						'attributes' in ed &&
+						ed.element === ceEl &&
+						!!attrs &&
+						'templateUuid' in attrs
+					)
+				}) as
+					| { attributes?: Partial<Record<string, string | null>> }
+					| undefined
 				expect(ceUpdate).toBeDefined()
-				expect(ceUpdate.attributes.originUuid).toBe(CBR_TEMPLATE_B_UUID)
+				if (!ceUpdate || !ceUpdate.attributes)
+					throw new Error('expected ceUpdate attributes')
+				expect(String(ceUpdate.attributes.originUuid)).toBe(
+					CBR_TEMPLATE_B_UUID
+				)
 			})
 
 			it('THEN new EqFunction LNodes carry iedName from the assigned IED', () => {
-				const eqFuncInsert = edits.find(
-					(e: any) =>
-						'parent' in e && e.node?.tagName === 'EqFunction'
-				) as any
+				const eqFuncInsert = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					return (
+						'parent' in ed &&
+						(ed.node as Element | undefined)?.tagName ===
+							'EqFunction'
+					)
+				}) as { node: Element } | undefined
+				if (!eqFuncInsert) throw new Error('expected eqFuncInsert')
 				const lnodes = Array.from(
 					(eqFuncInsert.node as Element).querySelectorAll('LNode')
 				)
@@ -526,9 +612,18 @@ describe('reMatchEquipment', () => {
 				doc,
 				editor: mockEditor as unknown as XMLEditor
 			})
-			const ceEl1 = doc.querySelectorAll('ConductingEquipment')[0]!
-			const ceEl2 = doc.querySelectorAll('ConductingEquipment')[1]!
-			bayStore.scdBay = doc.querySelector('Bay')!
+			const ceEls = Array.from(
+				doc.querySelectorAll('ConductingEquipment')
+			)
+			if (ceEls.length < 2)
+				throw new Error(
+					'Test setup failed: expected two ConductingEquipment elements'
+				)
+			const ceEl1 = ceEls[0]
+			const ceEl2 = ceEls[1]
+			bayStore.scdBay = doc.querySelector('Bay')
+			if (!bayStore.scdBay)
+				throw new Error('Test setup failed: Bay element not found')
 			bayStore.equipmentMatches = [
 				{
 					scdElement: ceEl1,
@@ -557,20 +652,27 @@ describe('reMatchEquipment', () => {
 
 		it('WHEN called THEN commits CE attribute updates for both CEs', () => {
 			reMatchEquipment('Bay1')
-			const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
-			const ceUpdates = edits.filter(
-				(e: any) =>
-					'attributes' in e && 'templateUuid' in (e.attributes ?? {})
-			)
+			const edits = mockEdits()
+			const ceUpdates = (edits as EditorEdit[]).filter((e) => {
+				const ed = e as EditorEdit
+				const attrs = (
+					'attributes' in ed ? ed.attributes : undefined
+				) as Partial<Record<string, string | null>> | undefined
+				return 'attributes' in ed && !!attrs && 'templateUuid' in attrs
+			})
 			expect(ceUpdates.length).toBeGreaterThanOrEqual(1)
 		})
 
 		it('WHEN called THEN inserts new EqFunction elements', () => {
 			reMatchEquipment('Bay1')
-			const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
-			const eqFunctionInserts = edits.filter(
-				(e: any) => 'parent' in e && e.node?.tagName === 'EqFunction'
-			)
+			const edits = mockEdits()
+			const eqFunctionInserts = (edits as EditorEdit[]).filter((e) => {
+				const ed = e as EditorEdit
+				return (
+					'parent' in ed &&
+					(ed.node as Element | undefined)?.tagName === 'EqFunction'
+				)
+			})
 			expect(eqFunctionInserts.length).toBeGreaterThanOrEqual(1)
 		})
 	})
@@ -594,7 +696,9 @@ describe('reMatchEquipment', () => {
 			const qc9El = findEl(doc, 'ConductingEquipment', 'uuid', QC9_UUID)
 			const qb91El = findEl(doc, 'ConductingEquipment', 'uuid', QB91_UUID)
 
-			bayStore.scdBay = doc.querySelector('Bay')!
+			bayStore.scdBay = doc.querySelector('Bay')
+			if (!bayStore.scdBay)
+				throw new Error('Test setup failed: Bay element not found')
 			bayStore.assignedBayTypeUuid = SWAP_BAY_TYPE_UUID
 			bayStore.equipmentMatches = [
 				{
@@ -632,11 +736,11 @@ describe('reMatchEquipment', () => {
 		})
 
 		describe('WHEN called', () => {
-			let edits: any[]
+			let edits: unknown[]
 
 			beforeEach(() => {
 				reMatchEquipment('Q01A_')
-				edits = (mockEditor.commit.mock.calls[0] as [any[], any])[0]
+				edits = mockEdits()
 			})
 
 			it("THEN -QC9 receives QB91's bayType CE uuid as templateUuid", () => {
@@ -646,14 +750,26 @@ describe('reMatchEquipment', () => {
 					'uuid',
 					QC9_UUID
 				)
-				const update = edits.find(
-					(e: any) =>
-						'attributes' in e &&
-						e.element === qc9El &&
-						'templateUuid' in e.attributes
-				) as any
+				const update = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					const attrs = (
+						'attributes' in ed ? ed.attributes : undefined
+					) as Partial<Record<string, string | null>> | undefined
+					return (
+						'attributes' in ed &&
+						ed.element === qc9El &&
+						!!attrs &&
+						'templateUuid' in attrs
+					)
+				}) as
+					| { attributes?: Partial<Record<string, string | null>> }
+					| undefined
 				expect(update).toBeDefined()
-				expect(update.attributes.templateUuid).toBe(BT_CE_QB91_UUID)
+				if (!update || !update.attributes)
+					throw new Error('expected update attributes')
+				expect(String(update.attributes.templateUuid)).toBe(
+					BT_CE_QB91_UUID
+				)
 			})
 
 			it("THEN -QC9 receives QB91's template uuid as originUuid", () => {
@@ -663,14 +779,26 @@ describe('reMatchEquipment', () => {
 					'uuid',
 					QC9_UUID
 				)
-				const update = edits.find(
-					(e: any) =>
-						'attributes' in e &&
-						e.element === qc9El &&
-						'templateUuid' in e.attributes
-				) as any
+				const update = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					const attrs = (
+						'attributes' in ed ? ed.attributes : undefined
+					) as Partial<Record<string, string | null>> | undefined
+					return (
+						'attributes' in ed &&
+						ed.element === qc9El &&
+						!!attrs &&
+						'templateUuid' in attrs
+					)
+				}) as
+					| { attributes?: Partial<Record<string, string | null>> }
+					| undefined
 				expect(update).toBeDefined()
-				expect(update.attributes.originUuid).toBe(TEMPLATE_QB91_UUID)
+				if (!update || !update.attributes)
+					throw new Error('expected update attributes')
+				expect(String(update.attributes.originUuid)).toBe(
+					TEMPLATE_QB91_UUID
+				)
 			})
 
 			it("THEN -QB91 receives QC9's bayType CE uuid as templateUuid", () => {
@@ -680,14 +808,26 @@ describe('reMatchEquipment', () => {
 					'uuid',
 					QB91_UUID
 				)
-				const update = edits.find(
-					(e: any) =>
-						'attributes' in e &&
-						e.element === qb91El &&
-						'templateUuid' in e.attributes
-				) as any
+				const update = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					const attrs = (
+						'attributes' in ed ? ed.attributes : undefined
+					) as Partial<Record<string, string | null>> | undefined
+					return (
+						'attributes' in ed &&
+						ed.element === qb91El &&
+						!!attrs &&
+						'templateUuid' in attrs
+					)
+				}) as
+					| { attributes?: Partial<Record<string, string | null>> }
+					| undefined
 				expect(update).toBeDefined()
-				expect(update.attributes.templateUuid).toBe(BT_CE_QC9_UUID)
+				if (!update || !update.attributes)
+					throw new Error('expected update attributes')
+				expect(String(update.attributes.templateUuid)).toBe(
+					BT_CE_QC9_UUID
+				)
 			})
 
 			it("THEN -QB91 receives QC9's template uuid as originUuid", () => {
@@ -697,21 +837,37 @@ describe('reMatchEquipment', () => {
 					'uuid',
 					QB91_UUID
 				)
-				const update = edits.find(
-					(e: any) =>
-						'attributes' in e &&
-						e.element === qb91El &&
-						'templateUuid' in e.attributes
-				) as any
+				const update = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					const attrs = (
+						'attributes' in ed ? ed.attributes : undefined
+					) as Partial<Record<string, string | null>> | undefined
+					return (
+						'attributes' in ed &&
+						ed.element === qb91El &&
+						!!attrs &&
+						'templateUuid' in attrs
+					)
+				}) as
+					| { attributes?: Partial<Record<string, string | null>> }
+					| undefined
 				expect(update).toBeDefined()
-				expect(update.attributes.originUuid).toBe(TEMPLATE_QC9_UUID)
+				if (!update || !update.attributes)
+					throw new Error('expected update attributes')
+				expect(String(update.attributes.originUuid)).toBe(
+					TEMPLATE_QC9_UUID
+				)
 			})
 
 			it('THEN inserts a new EqFunction for each CE', () => {
-				const inserts = edits.filter(
-					(e: any) =>
-						'parent' in e && e.node?.tagName === 'EqFunction'
-				)
+				const inserts = (edits as EditorEdit[]).filter((e) => {
+					const ed = e as EditorEdit
+					return (
+						'parent' in ed &&
+						(ed.node as Element | undefined)?.tagName ===
+							'EqFunction'
+					)
+				})
 				expect(inserts).toHaveLength(2)
 			})
 
@@ -722,10 +878,14 @@ describe('reMatchEquipment', () => {
 					'uuid',
 					QC9_EQ_FUNC_UUID
 				)
-				const remove = edits.find(
-					(e: any) =>
-						!('parent' in e) && 'node' in e && e.node === qc9EqFunc
-				)
+				const remove = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					return (
+						!('parent' in ed) &&
+						'node' in ed &&
+						(ed.node as Node) === qc9EqFunc
+					)
+				})
 				expect(remove).toBeDefined()
 			})
 
@@ -736,10 +896,14 @@ describe('reMatchEquipment', () => {
 					'uuid',
 					QB91_EQ_FUNC_UUID
 				)
-				const remove = edits.find(
-					(e: any) =>
-						!('parent' in e) && 'node' in e && e.node === qb91EqFunc
-				)
+				const remove = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					return (
+						!('parent' in ed) &&
+						'node' in ed &&
+						(ed.node as Node) === qb91EqFunc
+					)
+				})
 				expect(remove).toBeDefined()
 			})
 
@@ -750,17 +914,29 @@ describe('reMatchEquipment', () => {
 					'inst',
 					QB91_OLD_LDEVICE_INST
 				)
-				const rename = edits.find(
-					(e: any) =>
-						'attributes' in e &&
-						e.element === qb91LDevice &&
-						'inst' in e.attributes
-				) as any
+				const rename = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					const attrs = (
+						'attributes' in ed ? ed.attributes : undefined
+					) as Partial<Record<string, string | null>> | undefined
+					return (
+						'attributes' in ed &&
+						ed.element === qb91LDevice &&
+						!!attrs &&
+						'inst' in attrs
+					)
+				}) as
+					| { attributes?: Partial<Record<string, string | null>> }
+					| undefined
 				expect(rename).toBeDefined()
-				expect(rename.attributes.inst).toMatch(
+				if (!rename || !rename.attributes)
+					throw new Error('expected rename attributes')
+				expect(String(rename.attributes.inst)).toMatch(
 					/^QC9_DisconnectorFunction_[0-9a-f]{8}$/
 				)
-				expect(rename.attributes.inst).not.toBe(QB91_OLD_LDEVICE_INST)
+				expect(String(rename.attributes.inst)).not.toBe(
+					QB91_OLD_LDEVICE_INST
+				)
 			})
 
 			it('THEN renames the QC9 LDevice to a QB91-prefixed inst (type travels to QB91 CE)', () => {
@@ -770,17 +946,29 @@ describe('reMatchEquipment', () => {
 					'inst',
 					QC9_OLD_LDEVICE_INST
 				)
-				const rename = edits.find(
-					(e: any) =>
-						'attributes' in e &&
-						e.element === qc9LDevice &&
-						'inst' in e.attributes
-				) as any
+				const rename = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					const attrs = (
+						'attributes' in ed ? ed.attributes : undefined
+					) as Partial<Record<string, string | null>> | undefined
+					return (
+						'attributes' in ed &&
+						ed.element === qc9LDevice &&
+						!!attrs &&
+						'inst' in attrs
+					)
+				}) as
+					| { attributes?: Partial<Record<string, string | null>> }
+					| undefined
 				expect(rename).toBeDefined()
-				expect(rename.attributes.inst).toMatch(
+				if (!rename || !rename.attributes)
+					throw new Error('expected rename attributes')
+				expect(String(rename.attributes.inst)).toMatch(
 					/^QB91_DisconnectorFunction_[0-9a-f]{8}$/
 				)
-				expect(rename.attributes.inst).not.toBe(QC9_OLD_LDEVICE_INST)
+				expect(String(rename.attributes.inst)).not.toBe(
+					QC9_OLD_LDEVICE_INST
+				)
 			})
 
 			it('THEN does NOT remove LN0 from the QC9 LDevice', () => {
@@ -790,11 +978,17 @@ describe('reMatchEquipment', () => {
 					'inst',
 					QC9_OLD_LDEVICE_INST
 				)
-				const ln0 = qc9LDevice.querySelector('LN0')!
-				const remove = edits.find(
-					(e: any) =>
-						!('parent' in e) && 'node' in e && e.node === ln0
-				)
+				const ln0 = qc9LDevice.querySelector('LN0')
+				if (!ln0)
+					throw new Error('Test setup failed: LN0 element not found')
+				const remove = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					return (
+						!('parent' in ed) &&
+						'node' in ed &&
+						(ed.node as Node) === ln0
+					)
+				})
 				expect(remove).toBeUndefined()
 			})
 
@@ -805,11 +999,17 @@ describe('reMatchEquipment', () => {
 					'inst',
 					QB91_OLD_LDEVICE_INST
 				)
-				const ln0 = qb91LDevice.querySelector('LN0')!
-				const remove = edits.find(
-					(e: any) =>
-						!('parent' in e) && 'node' in e && e.node === ln0
-				)
+				const ln0 = qb91LDevice.querySelector('LN0')
+				if (!ln0)
+					throw new Error('Test setup failed: LN0 element not found')
+				const remove = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					return (
+						!('parent' in ed) &&
+						'node' in ed &&
+						(ed.node as Node) === ln0
+					)
+				})
 				expect(remove).toBeUndefined()
 			})
 
@@ -820,13 +1020,18 @@ describe('reMatchEquipment', () => {
 					'uuid',
 					QC9_UUID
 				)
-				const eqFuncInsert = edits.find(
-					(e: any) =>
-						'parent' in e &&
-						e.node?.tagName === 'EqFunction' &&
-						e.parent === qc9El
-				) as any
+				const eqFuncInsert = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					return (
+						'parent' in ed &&
+						(ed.node as Element | undefined)?.tagName ===
+							'EqFunction' &&
+						ed.parent === qc9El
+					)
+				}) as { node?: Element } | undefined
 				expect(eqFuncInsert).toBeDefined()
+				if (!eqFuncInsert || !eqFuncInsert.node)
+					throw new Error('expected eqFuncInsert.node')
 				const lnodes = Array.from(
 					(eqFuncInsert.node as Element).querySelectorAll('LNode')
 				)
@@ -843,13 +1048,18 @@ describe('reMatchEquipment', () => {
 					'uuid',
 					QB91_UUID
 				)
-				const eqFuncInsert = edits.find(
-					(e: any) =>
-						'parent' in e &&
-						e.node?.tagName === 'EqFunction' &&
-						e.parent === qb91El
-				) as any
+				const eqFuncInsert = (edits as EditorEdit[]).find((e) => {
+					const ed = e as EditorEdit
+					return (
+						'parent' in ed &&
+						(ed.node as Element | undefined)?.tagName ===
+							'EqFunction' &&
+						ed.parent === qb91El
+					)
+				}) as { node?: Element } | undefined
 				expect(eqFuncInsert).toBeDefined()
+				if (!eqFuncInsert || !eqFuncInsert.node)
+					throw new Error('expected eqFuncInsert.node')
 				const lnodes = Array.from(
 					(eqFuncInsert.node as Element).querySelectorAll('LNode')
 				)

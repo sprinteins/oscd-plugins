@@ -1,4 +1,8 @@
+import type { Insert, Remove, SetAttributes } from '@openscd/oscd-editor'
 import { beforeEach, describe, expect, it } from 'vitest'
+
+type EditorEdit = Insert | Remove | SetAttributes
+
 import { generateLDeviceInst } from '../elements'
 import { buildEditsForLDeviceRename } from './ldevice-rename-edits'
 
@@ -53,6 +57,7 @@ describe('buildEditsForLDeviceRename', () => {
 				</IED>
 			</SCL>
 		`)
+		// biome-ignore lint/style/noNonNullAssertion: test fixture
 		ied = doc.querySelector('IED')!
 	})
 
@@ -66,12 +71,19 @@ describe('buildEditsForLDeviceRename', () => {
 				doc
 			})
 
-			const renameEdit = edits.find(
-				(e) =>
-					'element' in e && (e as any).attributes?.inst === NEW_INST
-			)
+			const renameEdit = (edits as EditorEdit[]).find((e) => {
+				const ed = e as EditorEdit
+				const attrs = (
+					'attributes' in ed ? ed.attributes : undefined
+				) as Partial<Record<string, string | null>> | undefined
+				return 'element' in ed && !!attrs && attrs.inst === NEW_INST
+			}) as
+				| { attributes?: Partial<Record<string, string | null>> }
+				| undefined
 			expect(renameEdit).toBeDefined()
-			expect((renameEdit as any).attributes.ldName).toBe(
+			if (!renameEdit || !renameEdit.attributes)
+				throw new Error('expected renameEdit attributes')
+			expect(String(renameEdit.attributes.ldName)).toBe(
 				`IED1_${NEW_INST}`
 			)
 		})
@@ -102,11 +114,13 @@ describe('buildEditsForLDeviceRename', () => {
 				doc
 			})
 
-			const inserts = edits.filter((e) => 'parent' in e)
+			const inserts = (edits as EditorEdit[]).filter(
+				(e) => 'parent' in e
+			) as Insert[]
 			expect(inserts).toHaveLength(1)
-			expect((inserts[0] as any).node.getAttribute('lnClass')).toBe(
-				'PDIS'
-			)
+			const firstInsertNode = inserts[0]?.node as Element | undefined
+			if (!firstInsertNode) throw new Error('expected insert node')
+			expect(firstInsertNode.getAttribute('lnClass')).toBe('PDIS')
 		})
 
 		it('WHEN called THEN edit order is: rename, removes, inserts', () => {
@@ -150,7 +164,8 @@ describe('buildEditsForLDeviceRename', () => {
 					</AccessPoint>
 				</IED>
 			</SCL>
-		`)
+			`)
+		// biome-ignore lint/style/noNonNullAssertion: test fixture
 		ied = doc.querySelector('IED')!
 
 		const edits = buildEditsForLDeviceRename({
