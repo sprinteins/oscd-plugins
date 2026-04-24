@@ -3,13 +3,13 @@ import { createElement } from '@oscd-plugins/core'
 import { v4 as uuidv4 } from 'uuid'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { getScdEquipmentMatchKey } from '@/headless/domain/matching'
-import { createLNodeElementInBay } from '@/headless/scl/elements'
 import { buildEditsForEquipmentUpdates } from '@/headless/scl/edits/bay-type-edits'
 import { buildRemovesForEqFunctions } from '@/headless/scl/edits/function-edits'
 import {
 	buildEditsForLDeviceRename,
 	computeLDeviceInst
 } from '@/headless/scl/edits/ldevice-rename-edits'
+import { createLNodeElementInBay } from '@/headless/scl/elements'
 import {
 	assignedLNodesStore,
 	bayStore,
@@ -23,7 +23,9 @@ function buildNewMatches(
 	oldMatches: EquipmentMatch[]
 ): EquipmentMatch[] {
 	const bayTypeUuid = scdBay.getAttribute('templateUuid')
-	const bayType = ssdImportStore.bayTypes.find((bt) => bt.uuid === bayTypeUuid)
+	const bayType = ssdImportStore.bayTypes.find(
+		(bt) => bt.uuid === bayTypeUuid
+	)
 	if (!bayType) return []
 
 	const scdEquipment = Array.from(
@@ -39,7 +41,8 @@ function buildNewMatches(
 		const oldMatch = oldMatches.find((m) => m.scdElement === scdElement)
 		if (!oldMatch) continue
 
-		const newTemplateUuid = manualTemplateUuid ?? oldMatch.templateEquipment.uuid
+		const newTemplateUuid =
+			manualTemplateUuid ?? oldMatch.templateEquipment.uuid
 		const newTemplate = ssdImportStore.conductingEquipmentTemplates.find(
 			(t) => t.uuid === newTemplateUuid
 		)
@@ -88,7 +91,9 @@ export function reMatchEquipment(bayName: string): void {
 		)
 		if (!oldMatch) continue
 
-		if (oldMatch.templateEquipment.uuid === newMatch.templateEquipment.uuid) {
+		if (
+			oldMatch.templateEquipment.uuid === newMatch.templateEquipment.uuid
+		) {
 			continue
 		}
 
@@ -98,22 +103,42 @@ export function reMatchEquipment(bayName: string): void {
 			newMatch.scdElement.querySelectorAll(':scope > EqFunction')
 		)
 
-		// Each CE may be assigned to a different IED — resolve per CE
+		// iedName follows the type: find which old CE previously had this template.
+		// This ensures that when types are swapped, the IED assignment travels with
+		// the type rather than staying on the physical equipment.
+		const sourceOldMatch = oldMatches.find(
+			(m) => m.templateEquipment.uuid === newMatch.templateEquipment.uuid
+		)
+		const sourceElement = sourceOldMatch?.scdElement ?? newMatch.scdElement
+		const sourceCeName = sourceElement.getAttribute('name') ?? ''
+		const sourceOldEqFunctions = Array.from(
+			sourceElement.querySelectorAll(':scope > EqFunction')
+		)
+
 		const iedName =
-			newMatch.scdElement
+			sourceElement
 				.querySelector('LNode[iedName]')
 				?.getAttribute('iedName') ?? null
-		const ied = iedName
-			? doc.querySelector(`IED[name="${iedName}"]`)
-			: null
+		const ied = iedName ? doc.querySelector(`IED[name="${iedName}"]`) : null
 
 		for (const [idx, oldEqFunc] of oldEqFunctions.entries()) {
 			const newEqFuncTemplate = newTemplate.eqFunctions[idx]
 			if (!newEqFuncTemplate) continue
 
-			const oldEqFuncUuid = oldEqFunc.getAttribute('uuid') ?? ''
-			const oldEqFuncName = oldEqFunc.getAttribute('name') ?? ''
-			const oldInst = computeLDeviceInst(oldEqFuncName, oldEqFuncUuid, ceName)
+			const sourceOldEqFunc = sourceOldEqFunctions[idx]
+			const oldEqFuncUuid =
+				sourceOldEqFunc?.getAttribute('uuid') ??
+				oldEqFunc.getAttribute('uuid') ??
+				''
+			const oldEqFuncName =
+				sourceOldEqFunc?.getAttribute('name') ??
+				oldEqFunc.getAttribute('name') ??
+				''
+			const oldInst = computeLDeviceInst(
+				oldEqFuncName,
+				oldEqFuncUuid,
+				sourceCeName
+			)
 
 			const newEqFuncUuid = uuidv4()
 			const newInst = computeLDeviceInst(
@@ -178,4 +203,3 @@ export function reMatchEquipment(bayName: string): void {
 
 	assignedLNodesStore.rebuild()
 }
-

@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Button } from '@oscd-plugins/core-ui-svelte'
-import { getScdEquipmentMatchKey } from '@/headless/domain/matching'
 import { reMatchEquipment } from '@/headless/actions'
+import { getScdEquipmentMatchKey } from '@/headless/domain/matching'
 import {
 	assignedLNodesStore,
 	bayStore,

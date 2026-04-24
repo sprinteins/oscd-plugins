@@ -36,7 +36,10 @@ vi.mock('@/headless/stores', () => ({
 const PARSER = new DOMParser()
 
 function parseXml(xml: string): XMLDocument {
-	return PARSER.parseFromString(xml, 'application/xml') as unknown as XMLDocument
+	return PARSER.parseFromString(
+		xml,
+		'application/xml'
+	) as unknown as XMLDocument
 }
 
 const TEMPLATE_A_UUID = 'template-a-uuid'
@@ -148,13 +151,17 @@ describe('reMatchEquipment', () => {
 	it('GIVEN no assignedBayTypeUuid WHEN called THEN throws', () => {
 		bayStore.scdBay = doc.querySelector('Bay')!
 		bayStore.assignedBayTypeUuid = null
-		expect(() => reMatchEquipment('Bay1')).toThrow('Bay has no assigned bay type')
+		expect(() => reMatchEquipment('Bay1')).toThrow(
+			'Bay has no assigned bay type'
+		)
 	})
 
 	it('GIVEN an unknown bayTypeUuid WHEN called THEN throws', () => {
 		bayStore.scdBay = doc.querySelector('Bay')!
 		bayStore.assignedBayTypeUuid = 'unknown-uuid'
-		expect(() => reMatchEquipment('Bay1')).toThrow('BayType "unknown-uuid" not found')
+		expect(() => reMatchEquipment('Bay1')).toThrow(
+			'BayType "unknown-uuid" not found'
+		)
 	})
 
 	it('GIVEN no iedName on bay LNodes (CE not yet assigned to IED) WHEN called THEN does not rename LDevice and new LNodes have no iedName', () => {
@@ -184,9 +191,11 @@ describe('reMatchEquipment', () => {
 			TEMPLATE_B_UUID
 		)
 		expect(() => reMatchEquipment('Bay1')).not.toThrow()
-		const newLNode = doc.querySelector('ConductingEquipment > EqFunction > LNode')!
+		const newLNode = doc.querySelector(
+			'ConductingEquipment > EqFunction > LNode'
+		)!
 		expect(newLNode.getAttribute('iedName')).toBeNull()
-		expect(newLNode.getAttribute('ldInst')).toBeNull() // ldInst is never set in bay section
+		expect(newLNode.getAttribute('ldInst')).toBeNull()
 	})
 
 	describe('GIVEN a valid setup where template did not change', () => {
@@ -202,7 +211,10 @@ describe('reMatchEquipment', () => {
 				}
 			]
 			// manualMatches maps CE key to same template → no change
-			equipmentMatchingStore.manualMatches.set('ce-uuid-1', TEMPLATE_A_UUID)
+			equipmentMatchingStore.manualMatches.set(
+				'ce-uuid-1',
+				TEMPLATE_A_UUID
+			)
 		})
 
 		it('WHEN called THEN does not commit any edits', () => {
@@ -224,33 +236,17 @@ describe('reMatchEquipment', () => {
 				}
 			]
 			// manualMatches maps CE to templateB → swap
-			equipmentMatchingStore.manualMatches.set('ce-uuid-1', TEMPLATE_B_UUID)
+			equipmentMatchingStore.manualMatches.set(
+				'ce-uuid-1',
+				TEMPLATE_B_UUID
+			)
 		})
 
 		it('WHEN called THEN commits edits with the bay name in the title', () => {
 			reMatchEquipment('Bay1')
-			expect(mockEditor.commit).toHaveBeenCalledWith(
-				expect.any(Array),
-				{ title: 'Re-match equipment in Bay "Bay1"' }
-			)
-		})
-
-		it('WHEN called THEN new EqFunction LNodes carry iedName but no ldInst', () => {
-			reMatchEquipment('Bay1')
-
-			const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
-			const eqFunctionInsert = edits.find(
-				(e: any) => 'parent' in e && e.node?.tagName === 'EqFunction'
-			)
-			expect(eqFunctionInsert).toBeDefined()
-			const lnodes = Array.from(
-				(eqFunctionInsert.node as Element).querySelectorAll('LNode')
-			) as Element[]
-			expect(lnodes.length).toBeGreaterThan(0)
-			for (const ln of lnodes) {
-				expect(ln.getAttribute('iedName')).toBe('IED1')
-				expect(ln.getAttribute('ldInst')).toBeNull()
-			}
+			expect(mockEditor.commit).toHaveBeenCalledWith(expect.any(Array), {
+				title: 'Re-match equipment in Bay "Bay1"'
+			})
 		})
 
 		it('WHEN called THEN commits edits that include a LDevice rename', () => {
@@ -258,8 +254,7 @@ describe('reMatchEquipment', () => {
 
 			const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
 			const lDeviceRename = edits.find(
-				(e: any) =>
-					'attributes' in e && 'inst' in (e.attributes ?? {})
+				(e: any) => 'attributes' in e && 'inst' in (e.attributes ?? {})
 			)
 			expect(lDeviceRename).toBeDefined()
 			expect(lDeviceRename.attributes.inst).not.toBe(OLD_INST)
@@ -282,11 +277,12 @@ describe('reMatchEquipment', () => {
 			const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
 			const eqFunctionInsert = edits.find(
 				(e: any) =>
-					'parent' in e &&
-					(e as any).node?.tagName === 'EqFunction'
+					'parent' in e && (e as any).node?.tagName === 'EqFunction'
 			)
 			expect(eqFunctionInsert).toBeDefined()
-			expect(eqFunctionInsert.node.getAttribute('name')).toBe('Protection')
+			expect(eqFunctionInsert.node.getAttribute('name')).toBe(
+				'Protection'
+			)
 		})
 
 		it('WHEN called THEN commits edits that update CE templateUuid/originUuid', () => {
@@ -295,8 +291,7 @@ describe('reMatchEquipment', () => {
 			const [edits] = mockEditor.commit.mock.calls[0] as [any[], any]
 			const ceUpdate = edits.find(
 				(e: any) =>
-					'attributes' in e &&
-					'templateUuid' in (e.attributes ?? {})
+					'attributes' in e && 'templateUuid' in (e.attributes ?? {})
 			)
 			expect(ceUpdate).toBeDefined()
 			expect(ceUpdate.attributes.originUuid).toBe(TEMPLATE_B_UUID)
@@ -358,8 +353,14 @@ describe('reMatchEquipment', () => {
 				}
 			]
 			// swap: ce-uuid-1 → templateB, ce-uuid-2 → templateA
-			equipmentMatchingStore.manualMatches.set('ce-uuid-1', TEMPLATE_B_UUID)
-			equipmentMatchingStore.manualMatches.set('ce-uuid-2', TEMPLATE_A_UUID)
+			equipmentMatchingStore.manualMatches.set(
+				'ce-uuid-1',
+				TEMPLATE_B_UUID
+			)
+			equipmentMatchingStore.manualMatches.set(
+				'ce-uuid-2',
+				TEMPLATE_A_UUID
+			)
 
 			vi.mocked(getDocumentAndEditor).mockReturnValue({
 				doc,

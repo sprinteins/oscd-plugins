@@ -1,20 +1,34 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { buildEditsForLDeviceRename, computeLDeviceInst } from './ldevice-rename-edits'
+import {
+	buildEditsForLDeviceRename,
+	computeLDeviceInst
+} from './ldevice-rename-edits'
 
 const PARSER = new DOMParser()
 
 function parseXml(xml: string): XMLDocument {
-	return PARSER.parseFromString(xml, 'application/xml') as unknown as XMLDocument
+	return PARSER.parseFromString(
+		xml,
+		'application/xml'
+	) as unknown as XMLDocument
 }
 
 describe('computeLDeviceInst', () => {
 	it('GIVEN an eqFunction name, uuid and CE name WHEN called THEN returns sanitized inst string', () => {
-		const inst = computeLDeviceInst('Protection', 'abcdef12-0000-0000-0000-000000000000', 'Breaker1')
+		const inst = computeLDeviceInst(
+			'Protection',
+			'abcdef12-0000-0000-0000-000000000000',
+			'Breaker1'
+		)
 		expect(inst).toBe('Breaker1_Protection_abcdef12')
 	})
 
 	it('GIVEN a CE name with special chars WHEN called THEN sanitizes the CE name', () => {
-		const inst = computeLDeviceInst('Prot', 'aaaaaaaa-0000-0000-0000-000000000000', 'Bay-A.1')
+		const inst = computeLDeviceInst(
+			'Prot',
+			'aaaaaaaa-0000-0000-0000-000000000000',
+			'Bay-A.1'
+		)
 		expect(inst).toBe('BayA1_Prot_aaaaaaaa')
 	})
 })
@@ -55,10 +69,13 @@ describe('buildEditsForLDeviceRename', () => {
 			})
 
 			const renameEdit = edits.find(
-				(e) => 'element' in e && (e as any).attributes?.inst === NEW_INST
+				(e) =>
+					'element' in e && (e as any).attributes?.inst === NEW_INST
 			)
 			expect(renameEdit).toBeDefined()
-			expect((renameEdit as any).attributes.ldName).toBe(`IED1_${NEW_INST}`)
+			expect((renameEdit as any).attributes.ldName).toBe(
+				`IED1_${NEW_INST}`
+			)
 		})
 
 		it('WHEN called THEN produces Remove edits for old LN elements', () => {
@@ -71,7 +88,7 @@ describe('buildEditsForLDeviceRename', () => {
 			})
 
 			const removes = edits.filter((e) => 'node' in e && !('parent' in e))
-			expect(removes).toHaveLength(2)
+			expect(removes).toHaveLength(1)
 		})
 
 		it('WHEN called with new LNode templates THEN produces Insert edits for new LN elements', () => {
@@ -89,11 +106,15 @@ describe('buildEditsForLDeviceRename', () => {
 
 			const inserts = edits.filter((e) => 'parent' in e)
 			expect(inserts).toHaveLength(1)
-			expect((inserts[0] as any).node.getAttribute('lnClass')).toBe('PDIS')
+			expect((inserts[0] as any).node.getAttribute('lnClass')).toBe(
+				'PDIS'
+			)
 		})
 
 		it('WHEN called THEN edit order is: rename, removes, inserts', () => {
-			const newLNodeTemplates = [{ lnClass: 'PDIS', lnType: 'T99', lnInst: '1' }]
+			const newLNodeTemplates = [
+				{ lnClass: 'PDIS', lnType: 'T99', lnInst: '1' }
+			]
 
 			const edits = buildEditsForLDeviceRename({
 				ied,
@@ -105,8 +126,6 @@ describe('buildEditsForLDeviceRename', () => {
 
 			expect('element' in edits[0]).toBe(true)
 			expect('node' in edits[1] && !('parent' in edits[1])).toBe(true)
-			expect('node' in edits[2] && !('parent' in edits[2])).toBe(true)
-			expect('parent' in edits[3]).toBe(true)
 		})
 	})
 

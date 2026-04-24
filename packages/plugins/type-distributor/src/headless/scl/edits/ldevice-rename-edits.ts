@@ -50,16 +50,18 @@ export function buildEditsForLDeviceRename({
 		attributesNS: {}
 	} as SetAttributes)
 
-	const oldLnElements = Array.from(
-		lDevice.querySelectorAll(':scope > LN, :scope > LN0')
-	)
+	const oldLnElements = Array.from(lDevice.querySelectorAll(':scope > LN'))
 	for (const ln of oldLnElements) {
 		edits.push({ node: ln } as Remove)
 	}
 
 	for (const template of newLNodeTemplates) {
 		const lnElement = createLNodeElementInIED(template, doc)
-		edits.push({ node: lnElement, parent: lDevice, reference: null } as Insert)
+		edits.push({
+			node: lnElement,
+			parent: lDevice,
+			reference: null
+		} as Insert)
 	}
 
 	return edits
