@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { buildEditsForLDeviceRename } from './ldevice-rename-edits'
 import { generateLDeviceInst } from '../elements'
+import { buildEditsForLDeviceRename } from './ldevice-rename-edits'
 
 const PARSER = new DOMParser()
 

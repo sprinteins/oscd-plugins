@@ -6,7 +6,10 @@ import { getScdEquipmentMatchKey } from '@/headless/domain/matching'
 import { buildEditsForEquipmentUpdates } from '@/headless/scl/edits/bay-type-edits'
 import { buildRemovesForEqFunctions } from '@/headless/scl/edits/function-edits'
 import { buildEditsForLDeviceRename } from '@/headless/scl/edits/ldevice-rename-edits'
-import { createLNodeElementInBay, generateLDeviceInst } from '@/headless/scl/elements'
+import {
+	createLNodeElementInBay,
+	generateLDeviceInst
+} from '@/headless/scl/elements'
 import {
 	assignedLNodesStore,
 	bayStore,
@@ -68,7 +71,9 @@ function resolveIedNameForLNodeByIndex(
 	lnodeIndex: number
 ): string | null {
 	if (!sourceEqFunc) return null
-	const sourceLNodes = Array.from(sourceEqFunc.querySelectorAll(':scope > LNode'))
+	const sourceLNodes = Array.from(
+		sourceEqFunc.querySelectorAll(':scope > LNode')
+	)
 	return sourceLNodes[lnodeIndex]?.getAttribute('iedName') ?? null
 }
 

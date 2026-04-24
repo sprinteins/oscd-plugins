@@ -1,8 +1,6 @@
 import type { Insert, Remove, SetAttributes } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '@/headless/common-types'
-import {
-	createLNodeElementInIED,
-} from '../elements'
+import { createLNodeElementInIED } from '../elements'
 
 type BuildEditsForLDeviceRenameParams = {
 	ied: Element
