@@ -1,5 +1,6 @@
 <script lang="ts">
 import {
+	Button,
 	Card,
 	pluginGlobalStore,
 	SelectWorkaround
@@ -7,6 +8,7 @@ import {
 import { untrack } from 'svelte'
 import { validateBayType } from '@/headless/actions'
 import type { BayType } from '@/headless/common-types'
+import { getScdEquipmentMatchKey } from '@/headless/domain/matching'
 import { queryIEDs, type SearchType } from '@/headless/scl'
 import {
 	assignedLNodesStore,
@@ -91,6 +93,32 @@ $effect(() => {
 
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
 
+const canReopenMatching = $derived(bayStore.manualMatchingConfirmed)
+
+function prefillManualMatchesFromBay() {
+	const bay = bayStore.scdBay
+	if (!bay) return
+
+	equipmentMatchingStore.manualMatches.clear()
+
+	const scdEquipment = Array.from(
+		bay.querySelectorAll(':scope > ConductingEquipment')
+	)
+	for (const [index, eq] of scdEquipment.entries()) {
+		const originUuid = eq.getAttribute('originUuid')?.trim()
+		if (!originUuid) continue
+		const key = getScdEquipmentMatchKey(eq, index)
+		equipmentMatchingStore.manualMatches.set(key, originUuid)
+	}
+}
+
+function handleReopenMatching() {
+	if (isBayTypeLocked) {
+		prefillManualMatchesFromBay()
+	}
+	bayStore.manualMatchingConfirmed = false
+}
+
 let bayTypeError = $state<string | null>(null)
 
 const hasBlockingValidationError = $derived.by(() => {
@@ -163,14 +191,21 @@ function handleBayTypeChange() {
 	</Card.Root>
 	<Card.Root class="flex-1 flex flex-col min-h-full">
 		<Card.Header>
-			<SelectWorkaround
-				disabled={bayTypeOptions.length === 0 || isBayTypeLocked || bayStore.selectedBay === null}
-				bind:value={ssdImportStore.selectedBayType}
-				handleChange={handleBayTypeChange}
-				options={bayTypeOptions}
-				placeholder="Select Bay Type"
-				class="w-full"
-			/>
+			<div class="flex items-center gap-2">
+				<SelectWorkaround
+					disabled={bayTypeOptions.length === 0 || isBayTypeLocked || bayStore.selectedBay === null}
+					bind:value={ssdImportStore.selectedBayType}
+					handleChange={handleBayTypeChange}
+					options={bayTypeOptions}
+					placeholder="Select Bay Type"
+					class="flex-1"
+				/>
+				{#if canReopenMatching}
+					<Button.Root variant="outline" onclick={handleReopenMatching}>
+						Edit Matching
+					</Button.Root>
+				{/if}
+			</div>
 		</Card.Header>
 		<Card.Content class="flex-1 flex flex-col overflow-hidden">
 			<div class="flex-1 flex flex-col gap-y-4 overflow-y-auto">

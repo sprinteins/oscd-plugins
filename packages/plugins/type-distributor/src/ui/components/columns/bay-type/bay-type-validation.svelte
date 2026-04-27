@@ -1,5 +1,6 @@
 <script lang="ts">
 import { Button } from '@oscd-plugins/core-ui-svelte'
+import { reMatchEquipment } from '@/headless/actions'
 import {
 	assignedLNodesStore,
 	bayStore,
@@ -22,6 +23,10 @@ const hasCountMismatches = $derived(
 function handleConfirmMatching() {
 	if (!bayStore.selectedBay || !canConfirm) {
 		return
+	}
+
+	if (isBayTypeLocked) {
+		reMatchEquipment(bayStore.selectedBay)
 	}
 
 	bayStore.manualMatchingConfirmed = true
@@ -49,14 +54,6 @@ const ambiguousEquipmentCount = $derived.by(() => {
 })
 
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
-
-const canReopenMatching = $derived(
-	bayStore.manualMatchingConfirmed && !isBayTypeLocked
-)
-
-function handleReopenMatching() {
-	bayStore.manualMatchingConfirmed = false
-}
 
 const canConfirm = $derived.by(() => {
 	if (
@@ -122,16 +119,6 @@ const showManualMatchingUI = $derived(
     </div>
 {:else if equipmentMatchingStore.validationResult?.requiresManualMatching && !bayStore.manualMatchingConfirmed}
     <EquipmentMatching />
-{/if}
-
-{#if canReopenMatching}
-    <Button.Root
-        variant="outline"
-        onclick={handleReopenMatching}
-        class="w-full"
-    >
-        Edit Matching
-    </Button.Root>
 {/if}
 
 {#if showManualMatchingUI}

@@ -1,4 +1,4 @@
-import type { XMLEditor } from '@openscd/oscd-editor'
+import type { Insert, XMLEditor } from '@openscd/oscd-editor'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type {
@@ -296,14 +296,13 @@ describe('Integration: Assigned LNodes Flow', () => {
 	describe('GIVEN a drag-and-drop flow with edits produced', () => {
 		beforeEach(() => {
 			// Mock createMultipleLNodesInAccessPoint to return a non-empty array so commitEdits is called
+			const stubNode = mockDocument.createElement('LN')
 			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue([
 				{
-					type: 'insert',
-					node: {},
+					node: stubNode,
 					parent: accessPoint,
 					reference: null
-					// biome-ignore lint/suspicious/noExplicitAny: mock data
-				} as any
+				} satisfies Insert
 			])
 
 			assignedLNodesStore.rebuild()

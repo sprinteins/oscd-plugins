@@ -102,7 +102,7 @@ export function sanitizeLDeviceInstSegment(name: string): string {
 	return name.replace(/[^A-Za-z0-9_]/g, '')
 }
 
-function generateLDeviceInst(
+export function generateLDeviceInst(
 	functionName: string,
 	functionUuid: string,
 	conductingEquipmentName?: string

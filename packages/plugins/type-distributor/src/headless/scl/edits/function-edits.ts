@@ -1,4 +1,4 @@
-import type { Insert } from '@openscd/oscd-api'
+import type { Insert, Remove } from '@openscd/oscd-api'
 import { createElement } from '@oscd-plugins/core'
 import { v4 as uuidv4 } from 'uuid'
 import type { BayType, FunctionTemplate } from '@/headless/common-types'
@@ -131,4 +131,11 @@ export function buildInsertsForEqFunction({
 	}
 
 	return inserts
+}
+
+export function buildRemovesForEqFunctions(match: EquipmentMatch): Remove[] {
+	const eqFunctions = Array.from(
+		match.scdElement.querySelectorAll(':scope > EqFunction')
+	)
+	return eqFunctions.map((eqFunction) => ({ node: eqFunction }) as Remove)
 }
