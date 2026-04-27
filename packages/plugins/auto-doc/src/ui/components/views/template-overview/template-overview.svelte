@@ -2,9 +2,11 @@
 import { run } from 'svelte/legacy'
 
 import { docTemplatesStore } from '@/stores'
+import type { InvalditiesReport } from '@/stores'
 import { FileSelector, Table } from '@/ui/components'
 import { pdfGenerator } from '@/pdf'
 import { queryAutoDocElement } from '@/utils'
+import InvaliditiesReportDialog from '@/ui/components/dialog/invalidities-report-dialog.svelte'
 import { IconWrapper } from '@oscd-plugins/ui'
 import Button, { Label } from '@smui/button'
 import Checkbox from '@smui/checkbox'
@@ -20,6 +22,9 @@ let menu: Menu
 let fileSelector: FileSelector
 let isMasterTemplate = $state(docTemplatesStore.getMasterTemplateFlag())
 let allTemplates: Element[] = $state([])
+let invaliditiesReportDialogOpen = $state(false)
+let invaliditiesReports: InvalditiesReport[] = $state([])
+let onConfirmPdfGeneration: (() => void) | undefined = $state(undefined)
 const emptyTitleOrDescription = 'N/A'
 
 onMount(() => {
@@ -76,8 +81,15 @@ function deleteTemplate(templateId: string) {
 	)
 }
 
-function downloadTemplateContent(templateId: string) {
-	pdfGenerator.downloadAsPdf(templateId, 'portrait')
+async function downloadTemplateContent(templateId: string) {
+	const reports = pdfGenerator.validateTemplate(templateId)
+	if (reports.length > 0) {
+		invaliditiesReports = reports
+		onConfirmPdfGeneration = () => pdfGenerator.downloadAsPdf(templateId, 'portrait')
+		invaliditiesReportDialogOpen = true
+	} else {
+		await pdfGenerator.downloadAsPdf(templateId, 'portrait')
+	}
 }
 
 function navigateToEditTemplate(templateId: string) {
@@ -161,6 +173,12 @@ let importToolTipText = $derived(
     />
   </main>
 </div>
+
+<InvaliditiesReportDialog
+    bind:isOpen={invaliditiesReportDialogOpen}
+    reports={invaliditiesReports}
+    onConfirm={onConfirmPdfGeneration}
+/>
 
 <style lang="scss">
   $clr-secondary: var(--mdc-theme-secondary);

@@ -419,7 +419,10 @@ function getPublishingLogicalDevices(
 	return { pdfRows: pdfRowWithSubscribers, invaliditiesReports }
 }
 
-function searchForMatchOnSignalList(selectedRows: SignalRow[]): string[][] {
+function searchForMatchOnSignalList(selectedRows: SignalRow[]): {
+	rows: string[][]
+	invaliditiesReports: InvalditiesReport[]
+} {
 	const publisherFilter: MessagePublisherFilter = {}
 	const subscriberFilter: MessageSubscriberFilter = {}
 
@@ -433,14 +436,14 @@ function searchForMatchOnSignalList(selectedRows: SignalRow[]): string[][] {
 		}
 	}
 
-	const { pdfRows } = getPublishingLogicalDevices(
+	const { pdfRows, invaliditiesReports } = getPublishingLogicalDevices(
 		publisherFilter,
 		subscriberFilter
 	)
 
-	const pdfResultWithoutDuplicates = removeMatchDuplicates(pdfRows)
+	const rows = removeMatchDuplicates(pdfRows)
 
-	return pdfResultWithoutDuplicates
+	return { rows, invaliditiesReports }
 }
 
 function removeMatchDuplicates(pdfRows: PdfRowStructure[]): string[][] {

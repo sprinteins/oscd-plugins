@@ -169,6 +169,7 @@ const swapTemplateQC9: ConductingEquipmentTemplate = {
 	uuid: TEMPLATE_QC9_UUID,
 	name: '-QC9',
 	type: 'DIS',
+	virtual: false,
 	terminals: [],
 	eqFunctions: [
 		{
@@ -189,6 +190,7 @@ const swapTemplateQB91: ConductingEquipmentTemplate = {
 	uuid: TEMPLATE_QB91_UUID,
 	name: '-QB91',
 	type: 'DIS',
+	virtual: false,
 	terminals: [],
 	eqFunctions: [
 		{
