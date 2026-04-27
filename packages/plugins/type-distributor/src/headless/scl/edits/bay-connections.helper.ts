@@ -111,6 +111,13 @@ export function buildUpdatesForClearingBayLNodeConnections({
 		for (const func of functions) {
 			edits.push({ node: func } as Remove)
 		}
+
+		const generalEquipments = Array.from(
+			selectedBay.querySelectorAll(':scope > GeneralEquipment')
+		)
+		for (const ge of generalEquipments) {
+			edits.push({ node: ge } as Remove)
+		}
 	}
 
 	return edits

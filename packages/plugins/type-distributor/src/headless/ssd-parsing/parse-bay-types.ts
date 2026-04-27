@@ -23,6 +23,12 @@ export function parseBayTypes(doc: XMLDocument): BayType[] {
 			templateUuid: ce.getAttribute('templateUuid') || '',
 			virtual: ce.getAttribute('virtual') === 'true'
 		})),
+		generalEquipments: Array.from(
+			bay.querySelectorAll('GeneralEquipment')
+		).map((ge) => ({
+			uuid: ge.getAttribute('uuid') || '',
+			templateUuid: ge.getAttribute('templateUuid') || ''
+		})),
 		functions: Array.from(bay.querySelectorAll('Function')).map((func) => ({
 			uuid: func.getAttribute('uuid') || '',
 			templateUuid: func.getAttribute('templateUuid') || ''

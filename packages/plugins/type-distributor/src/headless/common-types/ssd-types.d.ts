@@ -4,13 +4,16 @@ export type BayType = {
 	name: string
 	desc?: string
 	conductingEquipments: ConductingEquipmentType[]
+	generalEquipments: GeneralEquipmentType[]
 	functions: FunctionType[]
 }
 
 export type BayTypeWithTemplates = BayType & {
 	conductingEquipmentTemplates: ConductingEquipmentTemplate[]
+	generalEquipmentTemplates: GeneralEquipmentTemplate[]
 	functionTemplates: FunctionTemplate[]
 	conductingEquipmentTemplateMap: Map<string, ConductingEquipmentTemplate>
+	generalEquipmentTemplateMap: Map<string, GeneralEquipmentTemplate>
 	functionTemplateMap: Map<string, FunctionTemplate>
 }
 
@@ -21,6 +24,11 @@ export type ConductingEquipmentType = {
 }
 
 export type FunctionType = {
+	uuid: string
+	templateUuid: string
+}
+
+export type GeneralEquipmentType = {
 	uuid: string
 	templateUuid: string
 }
@@ -47,6 +55,14 @@ export type EqFunctionTemplate = {
 	name: string
 	desc?: string
 	lnodes: LNodeTemplate[]
+}
+
+export type GeneralEquipmentTemplate = {
+	uuid: string
+	name: string
+	type: string
+	desc?: string
+	eqFunctions: EqFunctionTemplate[]
 }
 
 export type FunctionTemplate = {

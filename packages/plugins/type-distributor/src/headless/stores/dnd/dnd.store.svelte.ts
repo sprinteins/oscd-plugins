@@ -8,7 +8,8 @@ import {
 	buildUpdatesForBayLNode,
 	createMultipleLNodesInAccessPoint,
 	resolveScdEqFunctionUuid,
-	resolveScdFunctionUuid
+	resolveScdFunctionUuid,
+	resolveScdGeEqFunctionUuid
 } from '@/headless/scl'
 import {
 	assignedLNodesStore,
@@ -31,6 +32,7 @@ type DraggedItem = {
 	parentUuid: string
 	functionScopeUuid: string
 	equipmentUuid?: string
+	geEquipmentUuid?: string
 }
 
 function validateDraggedItem(
@@ -83,6 +85,7 @@ class UseDndStore {
 			lNodes,
 			sourceFunction: functionFromSSD,
 			equipmentUuid,
+			geEquipmentUuid,
 			parentUuid,
 			functionScopeUuid
 		} = this.draggedItem
@@ -99,13 +102,18 @@ class UseDndStore {
 
 			const { doc } = getDocumentAndEditor()
 			const lnodeTypes = ssdImportStore.lnodeTypes
-			const functionUuidOverride = equipmentUuid
-				? resolveScdEqFunctionUuid({
-						sourceFunction: functionFromSSD,
-						equipmentUuid,
-						equipmentMatches
-					})
-				: resolveScdFunctionUuid(parentUuid)
+			const functionUuidOverride = geEquipmentUuid
+				? resolveScdGeEqFunctionUuid(
+						geEquipmentUuid,
+						functionFromSSD.name
+					)
+				: equipmentUuid
+					? resolveScdEqFunctionUuid({
+							sourceFunction: functionFromSSD,
+							equipmentUuid,
+							equipmentMatches
+						})
+					: resolveScdFunctionUuid(parentUuid)
 			const allEdits: (Insert | SetAttributes)[] = [
 				...createMultipleLNodesInAccessPoint({
 					sourceFunction: functionFromSSD,

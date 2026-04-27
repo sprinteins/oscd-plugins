@@ -109,6 +109,7 @@ const cbrBayType: BayType = {
 		{ uuid: 'bt-ce-1', templateUuid: CBR_TEMPLATE_A_UUID, virtual: false },
 		{ uuid: 'bt-ce-2', templateUuid: CBR_TEMPLATE_B_UUID, virtual: false }
 	],
+	generalEquipments: [],
 	functions: []
 }
 
@@ -219,6 +220,7 @@ const swapBayType: BayType = {
 			virtual: false
 		}
 	],
+	generalEquipments: [],
 	functions: []
 }
 

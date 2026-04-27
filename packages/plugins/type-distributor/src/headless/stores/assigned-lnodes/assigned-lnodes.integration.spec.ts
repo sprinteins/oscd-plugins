@@ -591,8 +591,10 @@ describe('Integration: Assigned LNodes Flow', () => {
 				uuid: 'bt-uuid',
 				name: 'TestBayType',
 				conductingEquipments: [],
+				generalEquipments: [],
 				functions: [{ uuid: funcUuid, templateUuid: funcUuid }],
 				conductingEquipmentTemplates: [],
+				generalEquipmentTemplates: [],
 				functionTemplates: [
 					{
 						uuid: funcUuid,
@@ -602,6 +604,7 @@ describe('Integration: Assigned LNodes Flow', () => {
 					}
 				],
 				conductingEquipmentTemplateMap: new Map(),
+				generalEquipmentTemplateMap: new Map(),
 				functionTemplateMap: new Map([
 					[
 						funcUuid,
@@ -631,8 +634,10 @@ describe('Integration: Assigned LNodes Flow', () => {
 				uuid: 'bt-uuid',
 				name: 'TestBayType',
 				conductingEquipments: [],
+				generalEquipments: [],
 				functions: [{ uuid: funcUuid, templateUuid: funcUuid }],
 				conductingEquipmentTemplates: [],
+				generalEquipmentTemplates: [],
 				functionTemplates: [
 					{
 						uuid: funcUuid,
@@ -642,6 +647,7 @@ describe('Integration: Assigned LNodes Flow', () => {
 					}
 				],
 				conductingEquipmentTemplateMap: new Map(),
+				generalEquipmentTemplateMap: new Map(),
 				functionTemplateMap: new Map([
 					[
 						funcUuid,

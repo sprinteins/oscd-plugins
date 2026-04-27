@@ -262,6 +262,7 @@ describe('equipmentMatchingStore', () => {
 						},
 						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
 					],
+					generalEquipments: [],
 					functions: []
 				}
 			]
@@ -293,6 +294,7 @@ describe('equipmentMatchingStore', () => {
 						},
 						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
 					],
+					generalEquipments: [],
 					functions: []
 				}
 			]
@@ -322,6 +324,7 @@ describe('equipmentMatchingStore', () => {
 							virtual: false
 						}
 					],
+					generalEquipments: [],
 					functions: []
 				}
 			]
@@ -360,6 +363,7 @@ describe('equipmentMatchingStore', () => {
 						},
 						{ uuid: 'ce-3', templateUuid: 'tmpl-B', virtual: false }
 					],
+					generalEquipments: [],
 					functions: []
 				}
 			]
@@ -406,6 +410,7 @@ describe('equipmentMatchingStore', () => {
 								virtual: false
 							}
 						],
+						generalEquipments: [],
 						functions: []
 					}
 				]
@@ -473,6 +478,7 @@ describe('equipmentMatchingStore', () => {
 						},
 						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
 					],
+					generalEquipments: [],
 					functions: []
 				}
 			]
@@ -506,6 +512,7 @@ describe('equipmentMatchingStore', () => {
 					conductingEquipments: [
 						{ uuid: 'ce-1', templateUuid: 'tmpl-1', virtual: false }
 					],
+					generalEquipments: [],
 					functions: []
 				}
 			]
@@ -533,6 +540,7 @@ describe('equipmentMatchingStore', () => {
 						},
 						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
 					],
+					generalEquipments: [],
 					functions: []
 				}
 			]
@@ -560,6 +568,7 @@ describe('equipmentMatchingStore', () => {
 						},
 						{ uuid: 'ce-2', templateUuid: 'tmpl-2', virtual: false }
 					],
+					generalEquipments: [],
 					functions: []
 				}
 			]

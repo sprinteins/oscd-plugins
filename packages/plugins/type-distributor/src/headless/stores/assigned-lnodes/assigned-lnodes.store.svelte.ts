@@ -9,7 +9,8 @@ import { ssdImportStore } from '../ssd-import.store.svelte'
 import {
 	type LNodeKey,
 	processEqFunctions,
-	processFunctions
+	processFunctions,
+	processGeneralEquipmentEqFunctions
 } from './assigned-lnodes.helpers'
 
 interface BuildKeyParams {
@@ -56,6 +57,12 @@ class UseAssignedLNodesStore {
 			scdBay,
 			assignedIndex: this.assignedIndex,
 			equipmentMatches: bayStore.equipmentMatches ?? []
+		})
+		processGeneralEquipmentEqFunctions({
+			scdBay,
+			assignedIndex: this.assignedIndex,
+			generalEquipmentTemplates:
+				ssdImportStore.generalEquipmentTemplates ?? []
 		})
 	}
 

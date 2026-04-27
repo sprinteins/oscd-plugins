@@ -35,6 +35,7 @@ const bayType: BayType = {
 	uuid: 'bt-uuid',
 	name: 'TestBayType',
 	conductingEquipments: [],
+	generalEquipments: [],
 	functions: [{ uuid: 'fn-bt-uuid', templateUuid: 'fn-tmpl-uuid' }]
 }
 

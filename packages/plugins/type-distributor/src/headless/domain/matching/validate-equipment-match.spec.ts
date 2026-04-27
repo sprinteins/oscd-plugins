@@ -41,6 +41,7 @@ function makeBayType(
 			templateUuid: t.uuid,
 			virtual: false
 		})),
+		generalEquipments: [],
 		functions: []
 	}
 }

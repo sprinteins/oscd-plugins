@@ -521,4 +521,38 @@ describe('buildUpdatesForClearingBayLNodeConnections', () => {
 			expect(lnodeEdit).toBeDefined()
 		})
 	})
+
+	describe('GIVEN a bay with a GeneralEquipment element and a matched LNode', () => {
+		it('WHEN no remaining connections THEN includes a Remove edit for the GeneralEquipment', () => {
+			const bay = makeElement(`
+				<Bay>
+					<Function uuid="550e8400abc">
+						<LNode lnClass="PDIS" lnType="PDIS1" lnInst="1" iedName="IED1"/>
+					</Function>
+					<GeneralEquipment name="Valves_1" type="VLV"/>
+				</Bay>
+			`)
+			const ge = bay.querySelector('GeneralEquipment')
+			if (!ge)
+				throw new Error(
+					'Test setup failure: GeneralEquipment not found'
+				)
+
+			const edits = buildUpdatesForClearingBayLNodeConnections({
+				selectedBay: bay,
+				lNodeTemplates: [
+					{
+						lnClass: 'PDIS',
+						lnType: 'PDIS1',
+						lnInst: '1',
+						ldInst: 'Protection_550e8400'
+					}
+				],
+				iedName: IED_NAME
+			})
+
+			const removeGE = edits.find((e) => hasNode(e) && e.node === ge)
+			expect(removeGE).toBeDefined()
+		})
+	})
 })

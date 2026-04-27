@@ -35,6 +35,7 @@ describe('bay-types.utils', () => {
 			expect(Array.isArray(result?.conductingEquipmentTemplates)).toBe(
 				true
 			)
+			expect(Array.isArray(result?.generalEquipmentTemplates)).toBe(true)
 			expect(Array.isArray(result?.functionTemplates)).toBe(true)
 		})
 
@@ -98,6 +99,29 @@ describe('bay-types.utils', () => {
 			)
 		})
 
+		it('GIVEN bay type with general equipment WHEN called THEN should resolve GE templates', () => {
+			// GIVEN
+			const bayType = ssdImportStore.bayTypes.find(
+				(b) => b.generalEquipments.length > 0
+			)
+			if (!bayType)
+				throw new Error(
+					'Test setup failed: no bay type with generalEquipments'
+				)
+
+			// WHEN
+			const result = getBayTypeWithTemplates(bayType.uuid)
+			if (!result)
+				throw new Error(
+					'Test setup failed: getBayTypeWithTemplates returned null'
+				)
+
+			// THEN
+			expect(result.generalEquipmentTemplates.length).toBeGreaterThan(0)
+			expect(result.generalEquipmentTemplates[0]).toHaveProperty('name')
+			expect(result.generalEquipmentTemplates[0]).toHaveProperty('type')
+		})
+
 		it('GIVEN bay type with missing template UUIDs WHEN called THEN should filter out undefined templates', () => {
 			// GIVEN
 			const invalidBayType = {
@@ -110,6 +134,7 @@ describe('bay-types.utils', () => {
 						virtual: false
 					}
 				],
+				generalEquipments: [],
 				functions: [
 					{
 						uuid: 'func-uuid',
@@ -139,6 +164,7 @@ describe('bay-types.utils', () => {
 				uuid: 'empty-bay-uuid',
 				name: 'Empty Bay',
 				conductingEquipments: [],
+				generalEquipments: [],
 				functions: []
 			}
 			ssdImportStore.bayTypes.push(emptyBayType)
@@ -209,6 +235,7 @@ describe('bay-types.utils', () => {
 				uuid: 'e',
 				name: 'E',
 				conductingEquipments: [],
+				generalEquipments: [],
 				functions: []
 			}
 			ssdImportStore.bayTypes.push(emptyBayType)
@@ -235,6 +262,7 @@ describe('bay-types.utils', () => {
 				conductingEquipments: [
 					{ uuid: 'inst-ce', templateUuid: 't-ce', virtual: false }
 				],
+				generalEquipments: [],
 				functions: [{ uuid: 'inst-f', templateUuid: 't-f' }],
 				conductingEquipmentTemplates: [
 					{
@@ -257,6 +285,7 @@ describe('bay-types.utils', () => {
 						]
 					}
 				],
+				generalEquipmentTemplates: [],
 				functionTemplates: [
 					{
 						uuid: 't-f',
@@ -288,6 +317,7 @@ describe('bay-types.utils', () => {
 						}
 					]
 				]),
+				generalEquipmentTemplateMap: new Map(),
 				functionTemplateMap: new Map([
 					[
 						't-f',
@@ -331,6 +361,7 @@ describe('bay-types.utils', () => {
 				conductingEquipments: [
 					{ uuid: 'inst-ce', templateUuid: 't-ce', virtual: false }
 				],
+				generalEquipments: [],
 				functions: [{ uuid: 'inst-f', templateUuid: 't-f' }],
 				conductingEquipmentTemplates: [
 					{
@@ -348,6 +379,7 @@ describe('bay-types.utils', () => {
 						lnodes: [{ lnClass: 'LLN0', lnType: 'T2', lnInst: '1' }]
 					}
 				],
+				generalEquipmentTemplates: [],
 				conductingEquipmentTemplateMap: new Map([
 					[
 						't-ce',
@@ -360,6 +392,7 @@ describe('bay-types.utils', () => {
 						}
 					]
 				]),
+				generalEquipmentTemplateMap: new Map(),
 				functionTemplateMap: new Map([
 					[
 						't-f',
@@ -385,6 +418,48 @@ describe('bay-types.utils', () => {
 					lnode: { lnClass: 'LLN0', lnType: 'T2', lnInst: '1' }
 				}
 			])
+		})
+
+		it('GIVEN a BayType with GeneralEquipment WHEN getAllLNodesWithParent is called THEN includes GE EqFunction lnodes', () => {
+			// GIVEN
+			const geTemplate = {
+				uuid: 'ge-tmpl',
+				name: 'Valve',
+				type: 'VLV',
+				eqFunctions: [
+					{
+						uuid: 'ge-eq-1',
+						name: 'ValveFn',
+						lnodes: [{ lnClass: 'GGIO', lnType: 'T3', lnInst: '1' }]
+					}
+				]
+			}
+			const fake: BayTypeWithTemplates = {
+				uuid: 'fake-ge',
+				name: 'fake-ge',
+				conductingEquipments: [],
+				generalEquipments: [
+					{ uuid: 'inst-ge', templateUuid: 'ge-tmpl' }
+				],
+				functions: [],
+				conductingEquipmentTemplates: [],
+				generalEquipmentTemplates: [geTemplate],
+				functionTemplates: [],
+				conductingEquipmentTemplateMap: new Map(),
+				generalEquipmentTemplateMap: new Map([['ge-tmpl', geTemplate]]),
+				functionTemplateMap: new Map()
+			}
+
+			// WHEN
+			const result = getAllLNodesWithParent(fake)
+
+			// THEN
+			expect(result).toHaveLength(1)
+			expect(result[0]).toEqual({
+				parentUuid: 'inst-ge',
+				functionScopeUuid: 'ge-eq-1',
+				lnode: { lnClass: 'GGIO', lnType: 'T3', lnInst: '1' }
+			})
 		})
 	})
 

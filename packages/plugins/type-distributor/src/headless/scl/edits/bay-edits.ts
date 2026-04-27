@@ -39,6 +39,23 @@ export function resolveScdEqFunctionUuid({
 	return scdEqFunctions[templateIndex]?.getAttribute('uuid') ?? undefined
 }
 
+export function resolveScdGeEqFunctionUuid(
+	geInstanceUuid: string,
+	eqFunctionName: string
+): string | undefined {
+	const scdBay = bayStore.scdBay
+	if (!scdBay) return undefined
+
+	const ge = scdBay.querySelector(
+		`:scope > GeneralEquipment[templateUuid="${geInstanceUuid}"]`
+	)
+	return (
+		ge
+			?.querySelector(`EqFunction[name="${eqFunctionName}"]`)
+			?.getAttribute('uuid') ?? undefined
+	)
+}
+
 export function resolveScdFunctionUuid(
 	functionInstanceUuid: string
 ): string | undefined {
@@ -120,6 +137,14 @@ function queryFunctionElements({
 		}
 
 		return []
+	}
+
+	// No equipmentUuid — could be a bay Function or a GE EqFunction
+	if (scdEqFunctionUuid) {
+		const specific = scdBay.querySelector(
+			`EqFunction[uuid="${scdEqFunctionUuid}"]`
+		)
+		return specific ? [specific] : []
 	}
 
 	return Array.from(

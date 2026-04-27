@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
 	parseConductingEquipmentTemplate,
 	parseFunctionTemplate,
+	parseGeneralEquipmentTemplate,
 	parseTemplates
 } from './parse-templates'
 
@@ -15,8 +16,11 @@ describe('parseTemplates', () => {
 	})
 
 	it('parses function and conducting equipment templates from TEMPLATE bay', () => {
-		const { functionTemplates, conductingEquipmentTemplates } =
-			parseTemplates(doc)
+		const {
+			functionTemplates,
+			conductingEquipmentTemplates,
+			generalEquipmentTemplates
+		} = parseTemplates(doc)
 
 		expect(functionTemplates.length).toBeGreaterThan(0)
 		expect(functionTemplates.some((ft) => ft.name === 'Func_1')).toBe(true)
@@ -29,6 +33,15 @@ describe('parseTemplates', () => {
 		expect(conductingEquipmentTemplates.length).toBeGreaterThanOrEqual(0)
 		expect(
 			conductingEquipmentTemplates.every((ce) => ce.name !== 'Valves_1')
+		).toBe(true)
+
+		// ssdMockA has 2 GeneralEquipment in TEMPLATE bay
+		expect(generalEquipmentTemplates).toHaveLength(2)
+		expect(
+			generalEquipmentTemplates.some((ge) => ge.name === 'Valves_1')
+		).toBe(true)
+		expect(
+			generalEquipmentTemplates.some((ge) => ge.name === 'Valves_2')
 		).toBe(true)
 	})
 
@@ -50,6 +63,49 @@ describe('parseTemplates', () => {
 		const empty = parseTemplates(emptyDoc)
 		expect(empty.functionTemplates).toHaveLength(0)
 		expect(empty.conductingEquipmentTemplates).toHaveLength(0)
+		expect(empty.generalEquipmentTemplates).toHaveLength(0)
+	})
+
+	describe('parseGeneralEquipmentTemplate', () => {
+		it('GIVEN a GE element with EqFunction WHEN parsed THEN resolves lnodes from function template', () => {
+			const parser = new DOMParser()
+			const funcTemplates = [
+				{
+					uuid: 'fn-uuid',
+					name: 'ValveFn',
+					desc: 'FnDesc',
+					lnodes: [
+						{ lnClass: 'GGIO', lnType: 'T1', lnInst: '1', uuid: '' }
+					]
+				}
+			]
+			const geXml = `<GeneralEquipment name="Valves_1" type="VLV" uuid="ge-uuid" desc="GE Desc"><EqFunction templateUuid="fn-uuid"/></GeneralEquipment>`
+			const result = parseGeneralEquipmentTemplate(
+				parser.parseFromString(geXml, 'application/xml')
+					.documentElement,
+				funcTemplates
+			)
+
+			expect(result.name).toBe('Valves_1')
+			expect(result.type).toBe('VLV')
+			expect(result.uuid).toBe('ge-uuid')
+			expect(result.desc).toBe('GE Desc')
+			expect(result.eqFunctions).toHaveLength(1)
+			expect(result.eqFunctions[0].name).toBe('ValveFn')
+			expect(result.eqFunctions[0].lnodes).toHaveLength(1)
+		})
+
+		it('GIVEN a GE element with no attributes WHEN parsed THEN returns defaults', () => {
+			const parser = new DOMParser()
+			const result = parseGeneralEquipmentTemplate(
+				parser.parseFromString('<GeneralEquipment/>', 'application/xml')
+					.documentElement,
+				[]
+			)
+			expect(result.name).toBe('Unnamed General Equipment')
+			expect(result.type).toBe('')
+			expect(result.eqFunctions).toHaveLength(0)
+		})
 	})
 
 	describe('parseFunctionTemplate', () => {

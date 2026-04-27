@@ -35,6 +35,7 @@ const bayType: BayType = {
 		{ uuid: 'ce-bt-1', templateUuid: 'tmpl-uuid-1', virtual: false },
 		{ uuid: 'ce-bt-2', templateUuid: 'tmpl-uuid-2', virtual: false }
 	],
+	generalEquipments: [],
 	functions: []
 }
 

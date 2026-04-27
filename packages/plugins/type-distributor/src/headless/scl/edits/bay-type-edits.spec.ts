@@ -20,6 +20,7 @@ const bayType: BayType = {
 	uuid: 'bt-uuid',
 	name: 'TestBayType',
 	conductingEquipments: [],
+	generalEquipments: [],
 	functions: []
 }
 
