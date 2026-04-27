@@ -31,6 +31,7 @@ export type FunctionType = {
 export type GeneralEquipmentType = {
 	uuid: string
 	templateUuid: string
+	virtual: boolean
 }
 
 // TEMPLATE section
@@ -39,6 +40,7 @@ export type ConductingEquipmentTemplate = {
 	name: string
 	type: string
 	desc?: string
+	virtual: boolean
 	terminals: TerminalTemplate[]
 	eqFunctions: EqFunctionTemplate[]
 }
@@ -68,6 +70,7 @@ export type GeneralEquipmentTemplate = {
 export type FunctionTemplate = {
 	uuid: string
 	name: string
+	type?: string
 	desc?: string
 	lnodes: LNodeTemplate[]
 }
@@ -79,6 +82,7 @@ export type LNodeTemplate = {
 	lnInst: string
 	iedName?: string
 	ldInst?: string
+	prefix?: string
 }
 
 export type LDeviceData = {
@@ -113,7 +117,15 @@ export type DOType = {
 	cdc: string
 	iedType?: string
 	desc?: string
+	subDataObjects: SubDataObject[]
 	dataAttributes: DataAttribute[]
+}
+
+export type SubDataObject = {
+	name: string
+	type: string
+	count?: string
+	desc?: string
 }
 
 export type DataAttribute = {

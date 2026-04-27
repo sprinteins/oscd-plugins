@@ -9,13 +9,16 @@ export function parseFunctionTemplate(element: Element): FunctionTemplate {
 	return {
 		uuid: element.getAttribute('uuid') || '',
 		name: element.getAttribute('name') || 'Unnamed Function',
+		type: element.getAttribute('type') || undefined,
 		desc: element.getAttribute('desc') || undefined,
-		lnodes: Array.from(element.querySelectorAll('LNode')).map((ln) => ({
+		lnodes: Array.from(element.querySelectorAll(':scope > LNode')).map((ln) => ({
 			lnClass: ln.getAttribute('lnClass') || '',
 			lnInst: ln.getAttribute('lnInst') || '',
 			lnType: ln.getAttribute('lnType') || '',
 			uuid: ln.getAttribute('uuid') || '',
-			iedName: ln.getAttribute('iedName') || undefined
+			iedName: ln.getAttribute('iedName') || undefined,
+			ldInst: ln.getAttribute('ldInst') || undefined,
+			prefix: ln.getAttribute('prefix') || undefined
 		}))
 	}
 }
@@ -67,6 +70,7 @@ export function parseConductingEquipmentTemplate(
 		name: element.getAttribute('name') || 'Unnamed Equipment',
 		type: element.getAttribute('type') || '',
 		desc: element.getAttribute('desc') || undefined,
+		virtual: element.getAttribute('virtual') === 'true',
 		terminals: Array.from(element.querySelectorAll('Terminal')).map(
 			(term) => ({
 				uuid: term.getAttribute('uuid') || '',

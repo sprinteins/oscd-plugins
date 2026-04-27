@@ -27,7 +27,8 @@ export function parseBayTypes(doc: XMLDocument): BayType[] {
 			bay.querySelectorAll('GeneralEquipment')
 		).map((ge) => ({
 			uuid: ge.getAttribute('uuid') || '',
-			templateUuid: ge.getAttribute('templateUuid') || ''
+			templateUuid: ge.getAttribute('templateUuid') || '',
+			virtual: ge.getAttribute('virtual') === 'true'
 		})),
 		functions: Array.from(bay.querySelectorAll('Function')).map((func) => ({
 			uuid: func.getAttribute('uuid') || '',

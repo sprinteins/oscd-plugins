@@ -22,6 +22,7 @@ export function parseDataTypeTemplates(doc: XMLDocument) {
 	).map((el) => ({
 		id: el.getAttribute('id') || '',
 		lnClass: el.getAttribute('lnClass') || '',
+		iedType: el.getAttribute('iedType') || undefined,
 		desc: el.getAttribute('desc') || undefined,
 		dataObjects: Array.from(el.querySelectorAll('DO')).map((doEl) => ({
 			name: doEl.getAttribute('name') || '',
@@ -37,6 +38,14 @@ export function parseDataTypeTemplates(doc: XMLDocument) {
 	).map((el) => ({
 		id: el.getAttribute('id') || '',
 		cdc: el.getAttribute('cdc') || '',
+		iedType: el.getAttribute('iedType') || undefined,
+		desc: el.getAttribute('desc') || undefined,
+		subDataObjects: Array.from(el.querySelectorAll('SDO')).map((sdoEl) => ({
+			name: sdoEl.getAttribute('name') || '',
+			type: sdoEl.getAttribute('type') || '',
+			count: sdoEl.getAttribute('count') || undefined,
+			desc: sdoEl.getAttribute('desc') || undefined
+		})),
 		dataAttributes: Array.from(el.querySelectorAll('DA')).map((daEl) => ({
 			name: daEl.getAttribute('name') || '',
 			bType: daEl.getAttribute('bType') || '',
