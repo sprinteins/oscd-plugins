@@ -139,7 +139,6 @@ function queryFunctionElements({
 		return []
 	}
 
-	// No equipmentUuid — could be a bay Function or a GE EqFunction
 	if (scdEqFunctionUuid) {
 		const specific = scdBay.querySelector(
 			`EqFunction[uuid="${scdEqFunctionUuid}"]`
