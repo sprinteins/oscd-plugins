@@ -1,11 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { LNodeTemplate } from '@/headless/common-types'
+import type { LNodeTemplate, LNodeType } from '@/headless/common-types'
+import { createLD0LNodeTemplates } from '@/headless/scl/elements'
 import {
 	buildInsertsForDataTypeTemplates,
+	buildInsertsForLd0DataTypes,
 	ensureDataTypeTemplates
 } from './data-type-edits'
 
-vi.mock('uuid', () => ({ v4: () => 'mocked-uuid' }))
+vi.mock('@/headless/scl/elements', async (importOriginal) => {
+	const actual =
+		await importOriginal<typeof import('@/headless/scl/elements')>()
+	return {
+		...actual,
+		createLD0LNodeTemplates: vi.fn()
+	}
+})
 
 afterEach(() => {
 	vi.restoreAllMocks()
@@ -196,5 +205,83 @@ describe('buildInsertsForDataTypeTemplates', () => {
 		})
 
 		expect(edits).toHaveLength(0)
+	})
+})
+
+// ─── buildInsertsForLd0DataTypes ──────────────────────────────────────────────
+
+const lnodeTypeFixture: LNodeType = {
+	id: 'XCBR1',
+	lnClass: 'XCBR',
+	dataObjects: []
+}
+
+const lnodeTemplateForLd0: LNodeTemplate = {
+	lnClass: 'XCBR',
+	lnType: 'XCBR1',
+	lnInst: '1'
+}
+
+describe('buildInsertsForLd0DataTypes', () => {
+	afterEach(() => {
+		vi.restoreAllMocks()
+	})
+
+	it('GIVEN createLD0LNodeTemplates returns empty array WHEN called THEN returns empty array', () => {
+		vi.mocked(createLD0LNodeTemplates).mockReturnValue([])
+		const doc = makeDoc(
+			'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"/>'
+		) as XMLDocument
+		const ssdDoc = makeSsdDoc(SSD_DTT_XML) as XMLDocument
+
+		const result = buildInsertsForLd0DataTypes({
+			doc,
+			lnodeTypes: [lnodeTypeFixture],
+			ssdDoc
+		})
+
+		expect(result).toHaveLength(0)
+	})
+
+	it('GIVEN createLD0LNodeTemplates returns templates AND SCD has no DataTypeTemplates THEN returns DataTypeTemplates insert plus type inserts', () => {
+		vi.mocked(createLD0LNodeTemplates).mockReturnValue([
+			lnodeTemplateForLd0
+		])
+		const doc = makeDoc(
+			'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"/>'
+		) as XMLDocument
+		const ssdDoc = makeSsdDoc(SSD_DTT_XML) as XMLDocument
+
+		const result = buildInsertsForLd0DataTypes({
+			doc,
+			lnodeTypes: [lnodeTypeFixture],
+			ssdDoc
+		})
+
+		// At minimum: DataTypeTemplates insert + type inserts
+		expect(result.length).toBeGreaterThan(0)
+		const tagNames = result.map((e) => (e.node as Element).tagName)
+		expect(tagNames).toContain('DataTypeTemplates')
+	})
+
+	it('GIVEN createLD0LNodeTemplates returns templates AND SCD already has DataTypeTemplates THEN returns type inserts without DataTypeTemplates creation edit', () => {
+		vi.mocked(createLD0LNodeTemplates).mockReturnValue([
+			lnodeTemplateForLd0
+		])
+		const doc = makeDoc(
+			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL"><DataTypeTemplates/></SCL>`
+		) as XMLDocument
+		const ssdDoc = makeSsdDoc(SSD_DTT_XML) as XMLDocument
+
+		const result = buildInsertsForLd0DataTypes({
+			doc,
+			lnodeTypes: [lnodeTypeFixture],
+			ssdDoc
+		})
+
+		expect(result.length).toBeGreaterThan(0)
+		const tagNames = result.map((e) => (e.node as Element).tagName)
+		expect(tagNames).not.toContain('DataTypeTemplates')
+		expect(tagNames).toContain('LNodeType')
 	})
 })
