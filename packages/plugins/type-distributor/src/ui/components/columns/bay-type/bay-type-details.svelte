@@ -50,7 +50,7 @@ const hasFunctions = $derived(
 
 {#if hasEquipmentFunctions && bayTypeWithTemplates}
   <div class="space-y-2 mb-2">
-    <h3 class="text-sm font-semibold text-gray-700">Equipment Functions</h3>
+    <h3 class="text-sm font-semibold text-gray-700">Conducting Equipment Functions</h3>
     {#each bayTypeWithTemplates.conductingEquipments as eqInstance}
       {@const equipment = equipmentMap.get(eqInstance.templateUuid)}
       {#if equipment?.eqFunctions?.length}
