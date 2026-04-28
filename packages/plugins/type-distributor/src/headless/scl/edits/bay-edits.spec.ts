@@ -3,7 +3,7 @@ import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
-import { bayStore } from '@/headless/stores'
+import { bayStore, ssdImportStore } from '@/headless/stores'
 import {
 	buildUpdatesForBayLNode,
 	resolveFunctionElementUuid
@@ -512,6 +512,62 @@ describe('resolveFunctionElementUuid', () => {
 				equipmentMatches: []
 			})
 			expect(result).toBeUndefined()
+		})
+	})
+
+	describe('GIVEN geEquipmentUuid is set and GE has duplicate EqFunction names', () => {
+		beforeEach(() => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="TestBay">
+						<GeneralEquipment templateUuid="ge-inst-1" originUuid="ge-tmpl-1">
+							<EqFunction name="ValveFn" uuid="ge-eqf-1" />
+							<EqFunction name="ValveFn" uuid="ge-eqf-2" />
+						</GeneralEquipment>
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
+			ssdImportStore.generalEquipmentTemplates = [
+				{
+					uuid: 'ge-tmpl-1',
+					name: 'Valves',
+					type: 'VLV',
+					eqFunctions: [
+						{ uuid: 'tpl-eq-1', name: 'ValveFn', lnodes: [] },
+						{ uuid: 'tpl-eq-2', name: 'ValveFn', lnodes: [] }
+					]
+				}
+			]
+		})
+
+		afterEach(() => {
+			ssdImportStore.generalEquipmentTemplates = []
+		})
+
+		it('WHEN sourceFunction is the first EqFunction template THEN returns uuid of first SCD EqFunction', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-inst-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-inst-1',
+				sourceFunction: { uuid: 'tpl-eq-1', name: 'ValveFn', lnodes: [] },
+				equipmentMatches: []
+			})
+			expect(result).toBe('ge-eqf-1')
+		})
+
+		it('WHEN sourceFunction is the second EqFunction template THEN returns uuid of second SCD EqFunction', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-inst-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-inst-1',
+				sourceFunction: { uuid: 'tpl-eq-2', name: 'ValveFn', lnodes: [] },
+				equipmentMatches: []
+			})
+			expect(result).toBe('ge-eqf-2')
 		})
 	})
 

@@ -5,7 +5,7 @@ import type {
 	LNodeTemplate
 } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
-import { bayStore } from '@/headless/stores'
+import { bayStore, ssdImportStore } from '@/headless/stores'
 
 type ResolveFunctionElementUuidParams = {
 	geEquipmentUuid: string | undefined
@@ -23,7 +23,7 @@ export function resolveFunctionElementUuid({
 	equipmentMatches
 }: ResolveFunctionElementUuidParams): string | undefined {
 	if (geEquipmentUuid) {
-		return resolveScdGeEqFunctionUuid(geEquipmentUuid, sourceFunction.name)
+		return resolveScdGeEqFunctionUuid(geEquipmentUuid, sourceFunction)
 	}
 	if (equipmentUuid) {
 		return resolveScdEqFunctionUuid({
@@ -69,7 +69,7 @@ function resolveScdEqFunctionUuid({
 
 function resolveScdGeEqFunctionUuid(
 	geInstanceUuid: string,
-	eqFunctionName: string
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
 ): string | undefined {
 	const scdBay = bayStore.scdBay
 	if (!scdBay) {
@@ -87,6 +87,31 @@ function resolveScdGeEqFunctionUuid(
 		return undefined
 	}
 
+	const eqFunctionName = sourceFunction.name
+
+	// Index-based resolution: use the template to disambiguate when multiple
+	// EqFunctions share the same name within the same GeneralEquipment.
+	const originUuid = generalEquipment.getAttribute('originUuid')
+	const geTemplate = originUuid
+		? ssdImportStore.getGeneralEquipmentTemplate(originUuid)
+		: undefined
+
+	if (geTemplate) {
+		const templateIndex = geTemplate.eqFunctions.findIndex(
+			(f) => f.uuid === sourceFunction.uuid
+		)
+		if (templateIndex >= 0) {
+			const scdEqFunctions = Array.from(
+				generalEquipment.querySelectorAll(
+					`:scope > EqFunction[name="${eqFunctionName}"]`
+				)
+			)
+			const eqFunc = scdEqFunctions[templateIndex]
+			if (eqFunc) return eqFunc.getAttribute('uuid') ?? undefined
+		}
+	}
+
+	// Fallback: first match by name (when template is unavailable)
 	const eqFunc = generalEquipment.querySelector(
 		`EqFunction[name="${eqFunctionName}"]`
 	)
