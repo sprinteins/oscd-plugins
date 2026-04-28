@@ -20,7 +20,7 @@ export type BayTypeWithTemplates = BayType & {
 export type ConductingEquipmentType = {
 	uuid: string
 	templateUuid: string
-	virtual: boolean
+	virtual?: boolean
 }
 
 export type FunctionType = {
@@ -31,7 +31,7 @@ export type FunctionType = {
 export type GeneralEquipmentType = {
 	uuid: string
 	templateUuid: string
-	virtual: boolean
+	virtual?: boolean
 }
 
 // TEMPLATE section
@@ -40,7 +40,7 @@ export type ConductingEquipmentTemplate = {
 	name: string
 	type: string
 	desc?: string
-	virtual: boolean
+	virtual?: boolean
 	terminals: TerminalTemplate[]
 	eqFunctions: EqFunctionTemplate[]
 }
@@ -64,6 +64,7 @@ export type GeneralEquipmentTemplate = {
 	name: string
 	type: string
 	desc?: string
+	virtual?: boolean
 	eqFunctions: EqFunctionTemplate[]
 }
 
