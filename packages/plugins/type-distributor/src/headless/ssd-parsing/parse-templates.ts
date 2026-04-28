@@ -37,7 +37,7 @@ export function parseGeneralEquipmentTemplate(
 		virtual: element.hasAttribute('virtual')
 			? element.getAttribute('virtual') === 'true'
 			: undefined,
-		eqFunctions: Array.from(element.querySelectorAll('EqFunction')).map(
+		eqFunctions: Array.from(element.querySelectorAll(':scope > EqFunction')).map(
 			(eqFunc) => {
 				const templateUuid = eqFunc.getAttribute('templateUuid')
 				let name = eqFunc.getAttribute('name') || 'Unnamed EqFunction'
