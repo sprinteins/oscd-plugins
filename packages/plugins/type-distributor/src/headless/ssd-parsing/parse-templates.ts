@@ -37,32 +37,32 @@ export function parseGeneralEquipmentTemplate(
 		virtual: element.hasAttribute('virtual')
 			? element.getAttribute('virtual') === 'true'
 			: undefined,
-		eqFunctions: Array.from(element.querySelectorAll(':scope > EqFunction')).map(
-			(eqFunc) => {
-				const templateUuid = eqFunc.getAttribute('templateUuid')
-				let name = eqFunc.getAttribute('name') || 'Unnamed EqFunction'
-				let desc = eqFunc.getAttribute('desc') || undefined
-				let templateLnodes: LNodeTemplate[] = []
+		eqFunctions: Array.from(
+			element.querySelectorAll(':scope > EqFunction')
+		).map((eqFunc) => {
+			const templateUuid = eqFunc.getAttribute('templateUuid')
+			let name = eqFunc.getAttribute('name') || 'Unnamed EqFunction'
+			let desc = eqFunc.getAttribute('desc') || undefined
+			let templateLnodes: LNodeTemplate[] = []
 
-				if (templateUuid) {
-					const template = functionTemplates.find(
-						(t) => t.uuid === templateUuid
-					)
-					if (template) {
-						name = template.name
-						desc = desc || template.desc
-						templateLnodes = template.lnodes
-					}
-				}
-
-				return {
-					uuid: eqFunc.getAttribute('uuid') || '',
-					name,
-					desc,
-					lnodes: templateLnodes
+			if (templateUuid) {
+				const template = functionTemplates.find(
+					(t) => t.uuid === templateUuid
+				)
+				if (template) {
+					name = template.name
+					desc = desc || template.desc
+					templateLnodes = template.lnodes
 				}
 			}
-		)
+
+			return {
+				uuid: eqFunc.getAttribute('uuid') || '',
+				name,
+				desc,
+				lnodes: templateLnodes
+			}
+		})
 	}
 }
 

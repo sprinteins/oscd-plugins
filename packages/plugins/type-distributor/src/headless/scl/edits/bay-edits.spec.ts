@@ -485,7 +485,9 @@ describe('resolveFunctionElementUuid', () => {
 					uuid: 'ge-origin-1',
 					name: 'ProtectionEquipment',
 					type: 'MOT',
-					eqFunctions: [{ uuid: 'f-1', name: 'ProtectionFunc', lnodes: [] }]
+					eqFunctions: [
+						{ uuid: 'f-1', name: 'ProtectionFunc', lnodes: [] }
+					]
 				}
 			]
 		})
