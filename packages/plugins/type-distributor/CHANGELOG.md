@@ -8,7 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-04-27
 ### Added
 - Handles now general equipment elements
+- `virtual` attribute support for `ConductingEquipment` and `GeneralEquipment` templates, parsed from SSD and propagated when building inserts
 - missing attributes on parsing ssd
+### Changed
+- Renamed "Equipment Functions" section header to "Conducting Equipment Functions"
+- Unified `resolveFunctionElementUuid` into a single helper; now handles duplicate `EqFunction` names and missing `originUuid`
 
 ## [1.0.7] - 2026-04-24
 ### Added
