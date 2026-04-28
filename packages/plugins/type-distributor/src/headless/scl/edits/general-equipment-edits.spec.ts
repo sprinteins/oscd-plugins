@@ -45,7 +45,7 @@ const bayTypeWithGE: BayType = {
 	name: 'TestBayType',
 	conductingEquipments: [],
 	generalEquipments: [
-		{ uuid: 'ge-bt-uuid', templateUuid: 'ge-tmpl-uuid', virtual: false }
+		{ uuid: 'ge-bt-uuid', templateUuid: 'ge-tmpl-uuid', virtual: undefined }
 	],
 	functions: []
 }
@@ -186,7 +186,11 @@ describe('buildInsertsForGeneralEquipment', () => {
 			const virtualBayType: BayType = {
 				...bayTypeWithGE,
 				generalEquipments: [
-					{ uuid: 'ge-bt-uuid', templateUuid: 'ge-tmpl-uuid', virtual: true }
+					{
+						uuid: 'ge-bt-uuid',
+						templateUuid: 'ge-tmpl-uuid',
+						virtual: true
+					}
 				]
 			}
 
@@ -204,7 +208,89 @@ describe('buildInsertsForGeneralEquipment', () => {
 		})
 	})
 
-	it('GIVEN a GeneralEquipment instance with virtual=false WHEN called THEN virtual attribute is absent', () => {
+	describe('GIVEN a GeneralEquipment instance with virtual=false explicitly', () => {
+		it('WHEN called THEN virtual="false" is written explicitly', () => {
+			const { doc, scdBay } = makeScdBay()
+			const explicitFalseBayType: BayType = {
+				...bayTypeWithGE,
+				generalEquipments: [
+					{
+						uuid: 'ge-bt-uuid',
+						templateUuid: 'ge-tmpl-uuid',
+						virtual: false
+					}
+				]
+			}
+
+			const edits = buildInsertsForGeneralEquipment({
+				doc,
+				bayType: explicitFalseBayType,
+				scdBay,
+				generalEquipmentTemplates: [geTemplate],
+				existingPrefixes: new Set()
+			})
+
+			expect(edits).toHaveLength(1)
+			const ge = edits[0].node as Element
+			expect(ge.getAttribute('virtual')).toBe('false')
+		})
+	})
+
+	describe('GIVEN a GeneralEquipment template with virtual=true and instance with no virtual', () => {
+		it('WHEN called THEN the GeneralEquipment element has virtual="true" (template default used)', () => {
+			const { doc, scdBay } = makeScdBay()
+			const virtualTemplate: GeneralEquipmentTemplate = {
+				...geTemplate,
+				virtual: true
+			}
+
+			const edits = buildInsertsForGeneralEquipment({
+				doc,
+				bayType: bayTypeWithGE,
+				scdBay,
+				generalEquipmentTemplates: [virtualTemplate],
+				existingPrefixes: new Set()
+			})
+
+			expect(edits).toHaveLength(1)
+			const ge = edits[0].node as Element
+			expect(ge.getAttribute('virtual')).toBe('true')
+		})
+	})
+
+	describe('GIVEN a GeneralEquipment template with virtual=true and instance with virtual=false', () => {
+		it('WHEN called THEN virtual="false" is written (instance overrides template)', () => {
+			const { doc, scdBay } = makeScdBay()
+			const virtualTemplate: GeneralEquipmentTemplate = {
+				...geTemplate,
+				virtual: true
+			}
+			const overrideBayType: BayType = {
+				...bayTypeWithGE,
+				generalEquipments: [
+					{
+						uuid: 'ge-bt-uuid',
+						templateUuid: 'ge-tmpl-uuid',
+						virtual: false
+					}
+				]
+			}
+
+			const edits = buildInsertsForGeneralEquipment({
+				doc,
+				bayType: overrideBayType,
+				scdBay,
+				generalEquipmentTemplates: [virtualTemplate],
+				existingPrefixes: new Set()
+			})
+
+			expect(edits).toHaveLength(1)
+			const ge = edits[0].node as Element
+			expect(ge.getAttribute('virtual')).toBe('false')
+		})
+	})
+
+	it('GIVEN neither template nor instance sets virtual WHEN called THEN virtual attribute is absent', () => {
 		const { doc, scdBay } = makeScdBay()
 
 		const edits = buildInsertsForGeneralEquipment({
@@ -218,5 +304,27 @@ describe('buildInsertsForGeneralEquipment', () => {
 		expect(edits).toHaveLength(1)
 		const ge = edits[0].node as Element
 		expect(ge.getAttribute('virtual')).toBeNull()
+	})
+
+	describe('GIVEN a GeneralEquipment template with virtual=false and instance with no virtual', () => {
+		it('WHEN called THEN virtual="false" is written (template default used)', () => {
+			const { doc, scdBay } = makeScdBay()
+			const falseTemplate: GeneralEquipmentTemplate = {
+				...geTemplate,
+				virtual: false
+			}
+
+			const edits = buildInsertsForGeneralEquipment({
+				doc,
+				bayType: bayTypeWithGE,
+				scdBay,
+				generalEquipmentTemplates: [falseTemplate],
+				existingPrefixes: new Set()
+			})
+
+			expect(edits).toHaveLength(1)
+			const ge = edits[0].node as Element
+			expect(ge.getAttribute('virtual')).toBe('false')
+		})
 	})
 })

@@ -105,6 +105,32 @@ describe('parseTemplates', () => {
 			expect(result.name).toBe('Unnamed General Equipment')
 			expect(result.type).toBe('')
 			expect(result.eqFunctions).toHaveLength(0)
+			// virtual absent in template element → undefined (not false)
+			expect(result.virtual).toBeUndefined()
+		})
+
+		it('GIVEN a GE element with virtual="true" WHEN parsed THEN virtual is true', () => {
+			const parser = new DOMParser()
+			const result = parseGeneralEquipmentTemplate(
+				parser.parseFromString(
+					'<GeneralEquipment name="V1" type="VLV" uuid="ge-uuid" virtual="true"/>',
+					'application/xml'
+				).documentElement,
+				[]
+			)
+			expect(result.virtual).toBe(true)
+		})
+
+		it('GIVEN a GE element with virtual="false" WHEN parsed THEN virtual is false', () => {
+			const parser = new DOMParser()
+			const result = parseGeneralEquipmentTemplate(
+				parser.parseFromString(
+					'<GeneralEquipment name="V1" type="VLV" uuid="ge-uuid" virtual="false"/>',
+					'application/xml'
+				).documentElement,
+				[]
+			)
+			expect(result.virtual).toBe(false)
 		})
 	})
 
@@ -196,6 +222,32 @@ describe('parseTemplates', () => {
 			expect(res.type).toBe('')
 			expect(res.terminals).toHaveLength(0)
 			expect(res.eqFunctions).toHaveLength(0)
+			// virtual absent in template element → undefined (not false)
+			expect(res.virtual).toBeUndefined()
+		})
+
+		it('GIVEN a CE element with virtual="true" WHEN parsed THEN virtual is true', () => {
+			const parser = new DOMParser()
+			const res = parseConductingEquipmentTemplate(
+				parser.parseFromString(
+					'<ConductingEquipment name="CB1" type="CBR" virtual="true"/>',
+					'application/xml'
+				).documentElement,
+				[]
+			)
+			expect(res.virtual).toBe(true)
+		})
+
+		it('GIVEN a CE element with virtual="false" WHEN parsed THEN virtual is false', () => {
+			const parser = new DOMParser()
+			const res = parseConductingEquipmentTemplate(
+				parser.parseFromString(
+					'<ConductingEquipment name="CB1" type="CBR" virtual="false"/>',
+					'application/xml'
+				).documentElement,
+				[]
+			)
+			expect(res.virtual).toBe(false)
 		})
 	})
 })

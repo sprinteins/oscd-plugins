@@ -553,7 +553,11 @@ describe('resolveFunctionElementUuid', () => {
 				geEquipmentUuid: 'ge-inst-1',
 				equipmentUuid: undefined,
 				parentUuid: 'ge-inst-1',
-				sourceFunction: { uuid: 'tpl-eq-1', name: 'ValveFn', lnodes: [] },
+				sourceFunction: {
+					uuid: 'tpl-eq-1',
+					name: 'ValveFn',
+					lnodes: []
+				},
 				equipmentMatches: []
 			})
 			expect(result).toBe('ge-eqf-1')
@@ -564,7 +568,11 @@ describe('resolveFunctionElementUuid', () => {
 				geEquipmentUuid: 'ge-inst-1',
 				equipmentUuid: undefined,
 				parentUuid: 'ge-inst-1',
-				sourceFunction: { uuid: 'tpl-eq-2', name: 'ValveFn', lnodes: [] },
+				sourceFunction: {
+					uuid: 'tpl-eq-2',
+					name: 'ValveFn',
+					lnodes: []
+				},
 				equipmentMatches: []
 			})
 			expect(result).toBe('ge-eqf-2')

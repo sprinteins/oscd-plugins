@@ -34,6 +34,9 @@ export function parseGeneralEquipmentTemplate(
 		name: element.getAttribute('name') || 'Unnamed General Equipment',
 		type: element.getAttribute('type') || '',
 		desc: element.getAttribute('desc') || undefined,
+		virtual: element.hasAttribute('virtual')
+			? element.getAttribute('virtual') === 'true'
+			: undefined,
 		eqFunctions: Array.from(element.querySelectorAll('EqFunction')).map(
 			(eqFunc) => {
 				const templateUuid = eqFunc.getAttribute('templateUuid')
@@ -72,7 +75,9 @@ export function parseConductingEquipmentTemplate(
 		name: element.getAttribute('name') || 'Unnamed Equipment',
 		type: element.getAttribute('type') || '',
 		desc: element.getAttribute('desc') || undefined,
-		virtual: element.getAttribute('virtual') === 'true',
+		virtual: element.hasAttribute('virtual')
+			? element.getAttribute('virtual') === 'true'
+			: undefined,
 		terminals: Array.from(element.querySelectorAll('Terminal')).map(
 			(term) => ({
 				uuid: term.getAttribute('uuid') || '',

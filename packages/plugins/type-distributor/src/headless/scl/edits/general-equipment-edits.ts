@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { BayType, GeneralEquipmentTemplate } from '@/headless/common-types'
 import { uuidToPrefix } from '@/headless/scl/elements'
 import { createLNodeElementInBay } from '@/headless/scl/elements/lnode-element'
+import { resolveVirtual } from '../resolve-virtual'
 
 function generateUniquePrefixUuid(existingPrefixes: Set<string>): string {
 	for (let i = 0; i < 1000; i++) {
@@ -52,7 +53,10 @@ export function buildInsertsForGeneralEquipment({
 			templateUuid: generalEquipmentType.uuid,
 			originUuid: geTemplate.uuid,
 			desc: geTemplate.desc ?? null,
-			virtual: generalEquipmentType.virtual ? 'true' : null
+			virtual: resolveVirtual(
+				generalEquipmentType.virtual,
+				geTemplate.virtual
+			)
 		})
 
 		for (const eqFunctionTemplate of geTemplate.eqFunctions) {

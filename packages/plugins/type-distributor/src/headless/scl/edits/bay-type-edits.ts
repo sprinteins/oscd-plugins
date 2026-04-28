@@ -2,6 +2,7 @@ import type { Insert, SetAttributes } from '@openscd/oscd-api'
 import { v4 as uuidv4 } from 'uuid'
 import type { BayType } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
+import { resolveVirtual } from '../resolve-virtual'
 
 export function buildUpdateForBay(
 	scdBay: Element,
@@ -30,7 +31,11 @@ export function buildEditsForEquipmentUpdates(
 			attributes: {
 				uuid: existingUuid || uuidv4(),
 				templateUuid: match.bayTypeEquipment.uuid,
-				originUuid: match.templateEquipment.uuid
+				originUuid: match.templateEquipment.uuid,
+				virtual: resolveVirtual(
+					match.bayTypeEquipment.virtual,
+					match.templateEquipment.virtual
+				)
 			},
 			attributesNS: {}
 		})

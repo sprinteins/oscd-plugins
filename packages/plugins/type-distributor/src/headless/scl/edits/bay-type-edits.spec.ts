@@ -28,7 +28,7 @@ const ceTemplate: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid',
 	name: 'Breaker',
 	type: 'CBR',
-	virtual: false,
+	virtual: undefined,
 	terminals: [],
 	eqFunctions: []
 }
@@ -44,7 +44,7 @@ function makeEquipmentMatch(xml: string): EquipmentMatch {
 		bayTypeEquipment: {
 			uuid: 'ce-bt-uuid',
 			templateUuid: 'tmpl-uuid',
-			virtual: false
+			virtual: undefined
 		},
 		templateEquipment: ceTemplate
 	}
@@ -97,6 +97,97 @@ describe('buildEditsForEquipmentUpdates', () => {
 		})
 	})
 
+	describe('GIVEN a match where neither template nor instance sets virtual', () => {
+		it('WHEN called THEN virtual attribute is null (absent from SCD)', () => {
+			const match = makeEquipmentMatch('name="Q1" type="CBR"')
+
+			const edits = buildEditsForEquipmentUpdates([match])
+
+			const edit = edits[0] as {
+				attributes: Record<string, string | null>
+			}
+			expect(edit.attributes.virtual).toBeNull()
+		})
+	})
+
+	describe('GIVEN a match where the template has virtual=true and instance does not override', () => {
+		it('WHEN called THEN virtual="true" is set on the element', () => {
+			const doc = createTestDocument(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL"><Substation><VoltageLevel><Bay><ConductingEquipment name="Q1" type="CBR"/></Bay></VoltageLevel></Substation></SCL>`
+			)
+			// biome-ignore lint/style/noNonNullAssertion: test fixture
+			const scdElement = doc.querySelector('ConductingEquipment')!
+			const match: EquipmentMatch = {
+				scdElement,
+				bayTypeEquipment: {
+					uuid: 'ce-bt-uuid',
+					templateUuid: 'tmpl-uuid',
+					virtual: undefined
+				},
+				templateEquipment: { ...ceTemplate, virtual: true }
+			}
+
+			const edits = buildEditsForEquipmentUpdates([match])
+
+			const edit = edits[0] as {
+				attributes: Record<string, string | null>
+			}
+			expect(edit.attributes.virtual).toBe('true')
+		})
+	})
+
+	describe('GIVEN a match where the instance sets virtual=true and template is false', () => {
+		it('WHEN called THEN virtual="true" is set (instance overrides template)', () => {
+			const doc = createTestDocument(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL"><Substation><VoltageLevel><Bay><ConductingEquipment name="Q1" type="CBR"/></Bay></VoltageLevel></Substation></SCL>`
+			)
+			// biome-ignore lint/style/noNonNullAssertion: test fixture
+			const scdElement = doc.querySelector('ConductingEquipment')!
+			const match: EquipmentMatch = {
+				scdElement,
+				bayTypeEquipment: {
+					uuid: 'ce-bt-uuid',
+					templateUuid: 'tmpl-uuid',
+					virtual: true
+				},
+				templateEquipment: { ...ceTemplate, virtual: false }
+			}
+
+			const edits = buildEditsForEquipmentUpdates([match])
+
+			const edit = edits[0] as {
+				attributes: Record<string, string | null>
+			}
+			expect(edit.attributes.virtual).toBe('true')
+		})
+	})
+
+	describe('GIVEN a match where the instance sets virtual=false and template is true', () => {
+		it('WHEN called THEN virtual="false" is set (instance overrides template)', () => {
+			const doc = createTestDocument(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL"><Substation><VoltageLevel><Bay><ConductingEquipment name="Q1" type="CBR"/></Bay></VoltageLevel></Substation></SCL>`
+			)
+			// biome-ignore lint/style/noNonNullAssertion: test fixture
+			const scdElement = doc.querySelector('ConductingEquipment')!
+			const match: EquipmentMatch = {
+				scdElement,
+				bayTypeEquipment: {
+					uuid: 'ce-bt-uuid',
+					templateUuid: 'tmpl-uuid',
+					virtual: false
+				},
+				templateEquipment: { ...ceTemplate, virtual: true }
+			}
+
+			const edits = buildEditsForEquipmentUpdates([match])
+
+			const edit = edits[0] as {
+				attributes: Record<string, string | null>
+			}
+			expect(edit.attributes.virtual).toBe('false')
+		})
+	})
+
 	describe('GIVEN a match with an existing uuid', () => {
 		it('WHEN called THEN it preserves the existing uuid', () => {
 			const match = makeEquipmentMatch(
@@ -127,7 +218,7 @@ describe('buildEditsForEquipmentUpdates', () => {
 				bayTypeEquipment: {
 					uuid: 'ce-bt-uuid',
 					templateUuid: 'tmpl-uuid',
-					virtual: false
+					virtual: undefined
 				},
 				templateEquipment: ceTemplate
 			}
@@ -155,7 +246,7 @@ describe('buildEditsForEquipmentUpdates', () => {
 				bayTypeEquipment: {
 					uuid: 'ce-bt-uuid',
 					templateUuid: 'tmpl-uuid',
-					virtual: false
+					virtual: undefined
 				},
 				templateEquipment: ceTemplate
 			}
