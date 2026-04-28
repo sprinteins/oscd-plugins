@@ -88,6 +88,7 @@ Persisted bays use `matchEquipmentForPersistedBay(...)` instead.
 - `buildUpdateForBay(...)`
 - `buildEditsForEquipmentUpdates(...)`
 - `buildInsertsForEqFunction(...)`
+- `buildInsertsForGeneralEquipment(...)`
 - `buildInsertsForFunction(...)`
 - `ensureDataTypeTemplates(...)`
 - `buildInsertsForDataTypeTemplates(...)`

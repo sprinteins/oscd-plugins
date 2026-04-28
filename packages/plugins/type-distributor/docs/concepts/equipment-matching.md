@@ -8,6 +8,12 @@ The output of matching determines:
 - which `EqFunction` and bay-level `Function` content gets inserted
 - which data type templates must be copied into the SCD
 
+## Scope: ConductingEquipment only
+
+Equipment matching applies exclusively to `ConductingEquipment` instances.
+
+`GeneralEquipment` entries defined in a bay type are inserted directly by `buildInsertsForGeneralEquipment(...)` without any matching step — each `GeneralEquipment` in the bay type carries a `templateUuid` that points unambiguously to its template, so no user resolution is needed.
+
 ## Matching modes
 
 The plugin uses two explicit modes.
