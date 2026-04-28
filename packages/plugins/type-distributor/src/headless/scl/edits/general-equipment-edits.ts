@@ -51,7 +51,8 @@ export function buildInsertsForGeneralEquipment({
 			uuid: geUuid,
 			templateUuid: generalEquipmentType.uuid,
 			originUuid: geTemplate.uuid,
-			desc: geTemplate.desc ?? null
+			desc: geTemplate.desc ?? null,
+			virtual: generalEquipmentType.virtual ? 'true' : null
 		})
 
 		for (const eqFunctionTemplate of geTemplate.eqFunctions) {

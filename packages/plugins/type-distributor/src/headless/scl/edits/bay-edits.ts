@@ -89,8 +89,6 @@ function resolveScdGeEqFunctionUuid(
 
 	const eqFunctionName = sourceFunction.name
 
-	// Index-based resolution: use the template to disambiguate when multiple
-	// EqFunctions share the same name within the same GeneralEquipment.
 	const originUuid = generalEquipment.getAttribute('originUuid')
 	const geTemplate = originUuid
 		? ssdImportStore.getGeneralEquipmentTemplate(originUuid)
@@ -111,7 +109,6 @@ function resolveScdGeEqFunctionUuid(
 		}
 	}
 
-	// Fallback: first match by name (when template is unavailable)
 	const eqFunc = generalEquipment.querySelector(
 		`EqFunction[name="${eqFunctionName}"]`
 	)

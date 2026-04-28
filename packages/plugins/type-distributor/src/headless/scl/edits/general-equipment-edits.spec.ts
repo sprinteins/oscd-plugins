@@ -179,4 +179,44 @@ describe('buildInsertsForGeneralEquipment', () => {
 			expect(ge.getAttribute('desc')).toBe('A valve description')
 		})
 	})
+
+	describe('GIVEN a GeneralEquipment instance with virtual=true', () => {
+		it('WHEN called THEN the GeneralEquipment element has virtual="true"', () => {
+			const { doc, scdBay } = makeScdBay()
+			const virtualBayType: BayType = {
+				...bayTypeWithGE,
+				generalEquipments: [
+					{ uuid: 'ge-bt-uuid', templateUuid: 'ge-tmpl-uuid', virtual: true }
+				]
+			}
+
+			const edits = buildInsertsForGeneralEquipment({
+				doc,
+				bayType: virtualBayType,
+				scdBay,
+				generalEquipmentTemplates: [geTemplate],
+				existingPrefixes: new Set()
+			})
+
+			expect(edits).toHaveLength(1)
+			const ge = edits[0].node as Element
+			expect(ge.getAttribute('virtual')).toBe('true')
+		})
+	})
+
+	it('GIVEN a GeneralEquipment instance with virtual=false WHEN called THEN virtual attribute is absent', () => {
+		const { doc, scdBay } = makeScdBay()
+
+		const edits = buildInsertsForGeneralEquipment({
+			doc,
+			bayType: bayTypeWithGE,
+			scdBay,
+			generalEquipmentTemplates: [geTemplate],
+			existingPrefixes: new Set()
+		})
+
+		expect(edits).toHaveLength(1)
+		const ge = edits[0].node as Element
+		expect(ge.getAttribute('virtual')).toBeNull()
+	})
 })
