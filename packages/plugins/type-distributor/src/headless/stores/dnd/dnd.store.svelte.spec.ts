@@ -308,7 +308,7 @@ describe('dndStore', () => {
 				sourceFunction: mockFunction,
 				equipmentUuid: 'eq-uuid',
 				equipmentMatches: [],
-				scdEqFunctionUuid: undefined
+				functionElementUuid: undefined
 			})
 			expect(dropHandler.commitEdits).toHaveBeenCalledWith({
 				edits: [...mockIedEdits, ...mockBayEdits],

@@ -269,6 +269,7 @@ describe('bay-types.utils', () => {
 						uuid: 't-ce',
 						name: '',
 						type: '',
+						virtual: false,
 						terminals: [],
 						eqFunctions: [
 							{
@@ -300,6 +301,7 @@ describe('bay-types.utils', () => {
 							uuid: 't-ce',
 							name: '',
 							type: '',
+							virtual: false,
 							terminals: [],
 							eqFunctions: [
 								{
@@ -368,6 +370,7 @@ describe('bay-types.utils', () => {
 						uuid: 't-ce',
 						name: '',
 						type: '',
+						virtual: false,
 						terminals: [],
 						eqFunctions: []
 					}
@@ -387,6 +390,7 @@ describe('bay-types.utils', () => {
 							uuid: 't-ce',
 							name: '',
 							type: '',
+							virtual: false,
 							terminals: [],
 							eqFunctions: []
 						}
@@ -439,7 +443,7 @@ describe('bay-types.utils', () => {
 				name: 'fake-ge',
 				conductingEquipments: [],
 				generalEquipments: [
-					{ uuid: 'inst-ge', templateUuid: 'ge-tmpl' }
+					{ uuid: 'inst-ge', templateUuid: 'ge-tmpl', virtual: false }
 				],
 				functions: [],
 				conductingEquipmentTemplates: [],

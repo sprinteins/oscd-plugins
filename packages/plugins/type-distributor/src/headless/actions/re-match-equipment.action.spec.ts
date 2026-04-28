@@ -78,6 +78,7 @@ const cbrTemplateA: ConductingEquipmentTemplate = {
 	uuid: CBR_TEMPLATE_A_UUID,
 	name: 'CB1',
 	type: 'CBR',
+	virtual: false,
 	terminals: [],
 	eqFunctions: [
 		{
@@ -92,6 +93,7 @@ const cbrTemplateB: ConductingEquipmentTemplate = {
 	uuid: CBR_TEMPLATE_B_UUID,
 	name: 'CB2',
 	type: 'CBR',
+	virtual: false,
 	terminals: [],
 	eqFunctions: [
 		{

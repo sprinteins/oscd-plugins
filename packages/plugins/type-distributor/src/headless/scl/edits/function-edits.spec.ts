@@ -42,6 +42,7 @@ const bayType: BayType = {
 const ceTemplate: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid',
 	name: 'Breaker',
+	virtual: false,
 	type: 'CBR',
 	terminals: [],
 	eqFunctions: [

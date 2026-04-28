@@ -14,6 +14,7 @@ const createTemplate = (
 	uuid,
 	type,
 	name,
+	virtual: false,
 	terminals: [],
 	eqFunctions: []
 })

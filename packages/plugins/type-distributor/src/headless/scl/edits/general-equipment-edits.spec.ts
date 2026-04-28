@@ -44,7 +44,7 @@ const bayTypeWithGE: BayType = {
 	uuid: 'bt-uuid',
 	name: 'TestBayType',
 	conductingEquipments: [],
-	generalEquipments: [{ uuid: 'ge-bt-uuid', templateUuid: 'ge-tmpl-uuid' }],
+	generalEquipments: [{ uuid: 'ge-bt-uuid', templateUuid: 'ge-tmpl-uuid', virtual: false }],
 	functions: []
 }
 

@@ -28,6 +28,7 @@ const ceTemplate: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid',
 	name: 'Breaker',
 	type: 'CBR',
+	virtual: false,
 	terminals: [],
 	eqFunctions: []
 }
