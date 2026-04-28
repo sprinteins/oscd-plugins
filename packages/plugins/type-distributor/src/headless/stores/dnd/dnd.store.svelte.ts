@@ -138,7 +138,7 @@ class UseDndStore {
 						sourceFunction: functionFromSSD,
 						equipmentUuid,
 						equipmentMatches,
-						scdEqFunctionUuid: functionUuidOverride
+						functionElementUuid: functionUuidOverride
 					})
 				)
 			}

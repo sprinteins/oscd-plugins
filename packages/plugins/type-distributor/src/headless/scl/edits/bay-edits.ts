@@ -44,16 +44,31 @@ export function resolveScdGeEqFunctionUuid(
 	eqFunctionName: string
 ): string | undefined {
 	const scdBay = bayStore.scdBay
-	if (!scdBay) return undefined
+	if (!scdBay) {
+		return undefined
+	}
 
-	const ge = scdBay.querySelector(
+	const generalEquipment = scdBay.querySelector(
 		`:scope > GeneralEquipment[templateUuid="${geInstanceUuid}"]`
 	)
-	return (
-		ge
-			?.querySelector(`EqFunction[name="${eqFunctionName}"]`)
-			?.getAttribute('uuid') ?? undefined
-	)
+
+	if (!generalEquipment) {
+		console.warn(
+			`GeneralEquipment with templateUuid ${geInstanceUuid} not found in selected bay`
+		)
+		return undefined
+	}
+
+	const eqFunc = generalEquipment.querySelector(`EqFunction[name="${eqFunctionName}"]`)
+
+	if (!eqFunc) {
+		console.warn(
+			`EqFunction with name ${eqFunctionName} not found in GeneralEquipment ${generalEquipment.getAttribute('name')}`
+		)
+		return undefined
+	}
+
+	return eqFunc.getAttribute('uuid') ?? undefined
 }
 
 export function resolveScdFunctionUuid(
@@ -73,7 +88,7 @@ type FindMatchingLNodeElementParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentMatches: EquipmentMatch[]
 	equipmentUuid?: string
-	scdEqFunctionUuid?: string
+	functionElementUuid?: string
 }
 
 function findMatchingLNodeElement({
@@ -81,13 +96,13 @@ function findMatchingLNodeElement({
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches,
-	scdEqFunctionUuid
+	functionElementUuid
 }: FindMatchingLNodeElementParams): Element | null {
 	const functionElements = queryFunctionElements({
 		sourceFunction,
 		equipmentUuid,
 		equipmentMatches,
-		scdEqFunctionUuid
+		functionElementUuid
 	})
 
 	for (const functionElement of functionElements) {
@@ -103,14 +118,14 @@ type QueryFunctionElementsParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentMatches: EquipmentMatch[]
 	equipmentUuid?: string
-	scdEqFunctionUuid?: string
+	functionElementUuid?: string
 }
 
 function queryFunctionElements({
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches,
-	scdEqFunctionUuid
+	functionElementUuid
 }: QueryFunctionElementsParams): Element[] {
 	const scdBay = bayStore.scdBay
 	if (!scdBay) {
@@ -118,38 +133,25 @@ function queryFunctionElements({
 		return []
 	}
 
+	if (functionElementUuid) {
+		const specific = scdBay.querySelector(`[uuid="${functionElementUuid}"]`)
+		return specific ? [specific] : []
+	}
+
 	if (equipmentUuid) {
 		const matchFromStore = equipmentMatches.find(
 			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
-		if (matchFromStore) {
-			if (scdEqFunctionUuid) {
-				const specific = matchFromStore.scdElement.querySelector(
-					`EqFunction[uuid="${scdEqFunctionUuid}"]`
-				)
-				return specific ? [specific] : []
-			}
-			return Array.from(
-				matchFromStore.scdElement.querySelectorAll(
-					`EqFunction[name="${sourceFunction.name}"]`
-				)
+		if (!matchFromStore) return []
+		return Array.from(
+			matchFromStore.scdElement.querySelectorAll(
+				`EqFunction[name="${sourceFunction.name}"]`
 			)
-		}
-
-		return []
-	}
-
-	if (scdEqFunctionUuid) {
-		const specific = scdBay.querySelector(
-			`EqFunction[uuid="${scdEqFunctionUuid}"]`
 		)
-		return specific ? [specific] : []
 	}
 
 	return Array.from(
-		scdBay.querySelectorAll(
-			`:scope > Function[name="${sourceFunction.name}"]`
-		)
+		scdBay.querySelectorAll(`:scope > Function[name="${sourceFunction.name}"]`)
 	)
 }
 
@@ -186,7 +188,7 @@ type BuildUpdatesForBayLNodeParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentMatches: EquipmentMatch[]
 	equipmentUuid?: string
-	scdEqFunctionUuid?: string
+	functionElementUuid?: string
 }
 
 export function buildUpdatesForBayLNode({
@@ -195,7 +197,7 @@ export function buildUpdatesForBayLNode({
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches,
-	scdEqFunctionUuid
+	functionElementUuid
 }: BuildUpdatesForBayLNodeParams): SetAttributes[] {
 	const edits: SetAttributes[] = []
 
@@ -205,7 +207,7 @@ export function buildUpdatesForBayLNode({
 			sourceFunction,
 			equipmentUuid,
 			equipmentMatches,
-			scdEqFunctionUuid
+			functionElementUuid
 		})
 		if (!lnodeElement) {
 			continue
