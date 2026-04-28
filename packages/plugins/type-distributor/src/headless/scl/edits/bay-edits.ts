@@ -59,7 +59,9 @@ export function resolveScdGeEqFunctionUuid(
 		return undefined
 	}
 
-	const eqFunc = generalEquipment.querySelector(`EqFunction[name="${eqFunctionName}"]`)
+	const eqFunc = generalEquipment.querySelector(
+		`EqFunction[name="${eqFunctionName}"]`
+	)
 
 	if (!eqFunc) {
 		console.warn(
@@ -151,7 +153,9 @@ function queryFunctionElements({
 	}
 
 	return Array.from(
-		scdBay.querySelectorAll(`:scope > Function[name="${sourceFunction.name}"]`)
+		scdBay.querySelectorAll(
+			`:scope > Function[name="${sourceFunction.name}"]`
+		)
 	)
 }
 

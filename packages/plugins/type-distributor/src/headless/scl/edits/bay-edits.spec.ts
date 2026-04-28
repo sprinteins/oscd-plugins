@@ -1,13 +1,14 @@
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { EqFunctionTemplate, FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
+import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
+import type { EquipmentMatch } from '@/headless/domain/matching'
 import { bayStore } from '@/headless/stores'
 import {
 	buildUpdatesForBayLNode,
 	resolveScdEqFunctionUuid,
-	resolveScdGeEqFunctionUuid,
-	resolveScdFunctionUuid
+	resolveScdFunctionUuid,
+	resolveScdGeEqFunctionUuid
 } from './bay-edits'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -468,7 +469,7 @@ describe('buildUpdatesForBayLNode', () => {
 describe('resolveScdEqFunctionUuid', () => {
 	it('GIVEN undefined equipmentUuid WHEN resolveScdEqFunctionUuid is called THEN returns undefined', () => {
 		const result = resolveScdEqFunctionUuid({
-			sourceFunction: { uuid: 'f-1', name: 'ProtectionFunc' } as any,
+			sourceFunction: { uuid: 'f-1', name: 'ProtectionFunc', lnodes: [] },
 			equipmentUuid: undefined,
 			equipmentMatches: []
 		})
@@ -477,7 +478,7 @@ describe('resolveScdEqFunctionUuid', () => {
 
 	it('GIVEN equipmentUuid not in matches WHEN resolveScdEqFunctionUuid is called THEN returns undefined', () => {
 		const result = resolveScdEqFunctionUuid({
-			sourceFunction: { uuid: 'f-1', name: 'ProtectionFunc' } as any,
+			sourceFunction: { uuid: 'f-1', name: 'ProtectionFunc', lnodes: [] },
 			equipmentUuid: 'non-existent',
 			equipmentMatches: []
 		})
@@ -496,10 +497,14 @@ describe('resolveScdEqFunctionUuid', () => {
 		)
 
 		const scdElement = doc.querySelector('ConductingEquipment') as Element
-		const equipmentMatches: any[] = [
+		const equipmentMatches: EquipmentMatch[] = [
 			{
 				scdElement,
-				bayTypeEquipment: { uuid: 'eq-uuid', templateUuid: 'template-uuid', virtual: false },
+				bayTypeEquipment: {
+					uuid: 'eq-uuid',
+					templateUuid: 'template-uuid',
+					virtual: false
+				},
 				templateEquipment: {
 					uuid: 'template-uuid',
 					name: 'Breaker1',
@@ -511,7 +516,11 @@ describe('resolveScdEqFunctionUuid', () => {
 		]
 
 		const result = resolveScdEqFunctionUuid({
-			sourceFunction: { uuid: 'tpl-2', name: 'ProtectionFunc' } as any,
+			sourceFunction: {
+				uuid: 'tpl-2',
+				name: 'ProtectionFunc',
+				lnodes: []
+			},
 			equipmentUuid: 'eq-uuid',
 			equipmentMatches
 		})
@@ -543,14 +552,19 @@ describe('resolveScdGeEqFunctionUuid', () => {
 	})
 
 	it('GIVEN GeneralEquipment present WHEN resolveScdGeEqFunctionUuid called THEN returns uuid', () => {
-		const result = resolveScdGeEqFunctionUuid('ge-template-1', 'ProtectionFunc')
+		const result = resolveScdGeEqFunctionUuid(
+			'ge-template-1',
+			'ProtectionFunc'
+		)
 		expect(result).toBe('ge-eqf-1')
 	})
 
 	it('GIVEN no document WHEN resolveScdGeEqFunctionUuid called THEN returns undefined', () => {
 		pluginGlobalStore.xmlDocument = undefined
 		bayStore.selectedBay = null
-		expect(resolveScdGeEqFunctionUuid('ge-template-1', 'ProtectionFunc')).toBeUndefined()
+		expect(
+			resolveScdGeEqFunctionUuid('ge-template-1', 'ProtectionFunc')
+		).toBeUndefined()
 	})
 })
 

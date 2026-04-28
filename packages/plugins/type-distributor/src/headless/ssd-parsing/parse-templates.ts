@@ -11,15 +11,17 @@ export function parseFunctionTemplate(element: Element): FunctionTemplate {
 		name: element.getAttribute('name') || 'Unnamed Function',
 		type: element.getAttribute('type') || undefined,
 		desc: element.getAttribute('desc') || undefined,
-		lnodes: Array.from(element.querySelectorAll(':scope > LNode')).map((ln) => ({
-			lnClass: ln.getAttribute('lnClass') || '',
-			lnInst: ln.getAttribute('lnInst') || '',
-			lnType: ln.getAttribute('lnType') || '',
-			uuid: ln.getAttribute('uuid') || '',
-			iedName: ln.getAttribute('iedName') || undefined,
-			ldInst: ln.getAttribute('ldInst') || undefined,
-			prefix: ln.getAttribute('prefix') || undefined
-		}))
+		lnodes: Array.from(element.querySelectorAll(':scope > LNode')).map(
+			(ln) => ({
+				lnClass: ln.getAttribute('lnClass') || '',
+				lnInst: ln.getAttribute('lnInst') || '',
+				lnType: ln.getAttribute('lnType') || '',
+				uuid: ln.getAttribute('uuid') || '',
+				iedName: ln.getAttribute('iedName') || undefined,
+				ldInst: ln.getAttribute('ldInst') || undefined,
+				prefix: ln.getAttribute('prefix') || undefined
+			})
+		)
 	}
 }
 
