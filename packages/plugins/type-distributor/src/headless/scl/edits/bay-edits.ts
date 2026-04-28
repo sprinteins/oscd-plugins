@@ -90,37 +90,37 @@ function resolveScdGeEqFunctionUuid(
 	const eqFunctionName = sourceFunction.name
 
 	const originUuid = generalEquipment.getAttribute('originUuid')
-	const geTemplate = originUuid
-		? ssdImportStore.getGeneralEquipmentTemplate(originUuid)
-		: undefined
-
-	if (geTemplate) {
-		const templateIndex = geTemplate.eqFunctions.findIndex(
-			(f) => f.uuid === sourceFunction.uuid
-		)
-		if (templateIndex >= 0) {
-			const scdEqFunctions = Array.from(
-				generalEquipment.querySelectorAll(
-					`:scope > EqFunction[name="${eqFunctionName}"]`
-				)
-			)
-			const eqFunc = scdEqFunctions[templateIndex]
-			if (eqFunc) return eqFunc.getAttribute('uuid') ?? undefined
-		}
-	}
-
-	const eqFunc = generalEquipment.querySelector(
-		`EqFunction[name="${eqFunctionName}"]`
-	)
-
-	if (!eqFunc) {
+	if (!originUuid) {
 		console.warn(
-			`EqFunction with name ${eqFunctionName} not found in GeneralEquipment ${generalEquipment.getAttribute('name')}`
+			`GeneralEquipment ${generalEquipment.getAttribute('name')} is missing originUuid — cannot resolve EqFunction`
 		)
 		return undefined
 	}
 
-	return eqFunc.getAttribute('uuid') ?? undefined
+	const geTemplate = ssdImportStore.getGeneralEquipmentTemplate(originUuid)
+	if (!geTemplate) {
+		console.warn(
+			`GeneralEquipment template ${originUuid} not found in SSD import store`
+		)
+		return undefined
+	}
+
+	const templateIndex = geTemplate.eqFunctions.findIndex(
+		(f) => f.uuid === sourceFunction.uuid
+	)
+	if (templateIndex < 0) {
+		console.warn(
+			`EqFunction ${sourceFunction.uuid} not found in GeneralEquipment template ${originUuid}`
+		)
+		return undefined
+	}
+
+	const scdEqFunctions = Array.from(
+		generalEquipment.querySelectorAll(
+			`:scope > EqFunction[name="${eqFunctionName}"]`
+		)
+	)
+	return scdEqFunctions[templateIndex]?.getAttribute('uuid') ?? undefined
 }
 
 function resolveScdFunctionUuid(

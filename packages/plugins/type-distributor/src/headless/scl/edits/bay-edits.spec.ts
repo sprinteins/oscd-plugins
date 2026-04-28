@@ -470,7 +470,7 @@ describe('resolveFunctionElementUuid', () => {
 			const doc = new DOMParser().parseFromString(
 				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
 					<Substation><VoltageLevel><Bay name="TestBay">
-						<GeneralEquipment templateUuid="ge-template-1">
+						<GeneralEquipment templateUuid="ge-template-1" originUuid="ge-origin-1">
 							<EqFunction name="ProtectionFunc" uuid="ge-eqf-1" />
 						</GeneralEquipment>
 					</Bay></VoltageLevel></Substation>
@@ -480,6 +480,18 @@ describe('resolveFunctionElementUuid', () => {
 			pluginGlobalStore.xmlDocument = doc
 			bayStore.selectedBay = null
 			bayStore.selectedBay = 'TestBay'
+			ssdImportStore.generalEquipmentTemplates = [
+				{
+					uuid: 'ge-origin-1',
+					name: 'ProtectionEquipment',
+					type: 'MOT',
+					eqFunctions: [{ uuid: 'f-1', name: 'ProtectionFunc', lnodes: [] }]
+				}
+			]
+		})
+
+		afterEach(() => {
+			ssdImportStore.generalEquipmentTemplates = []
 		})
 
 		it('WHEN GeneralEquipment and EqFunction exist THEN returns EqFunction uuid', () => {
@@ -506,6 +518,65 @@ describe('resolveFunctionElementUuid', () => {
 				parentUuid: 'ge-template-1',
 				sourceFunction: {
 					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
+
+		it('WHEN GeneralEquipment is missing originUuid THEN returns undefined', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="TestBay">
+						<GeneralEquipment templateUuid="ge-template-1">
+							<EqFunction name="ProtectionFunc" uuid="ge-eqf-1" />
+						</GeneralEquipment>
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-template-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-template-1',
+				sourceFunction: {
+					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
+
+		it('WHEN originUuid template not found in SSD store THEN returns undefined', () => {
+			ssdImportStore.generalEquipmentTemplates = []
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-template-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-template-1',
+				sourceFunction: {
+					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
+
+		it('WHEN sourceFunction uuid not found in template eqFunctions THEN returns undefined', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-template-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-template-1',
+				sourceFunction: {
+					uuid: 'unknown-uuid',
 					name: 'ProtectionFunc',
 					lnodes: []
 				},
