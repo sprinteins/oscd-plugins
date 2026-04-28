@@ -47,7 +47,7 @@ export function applyBayType(bayName: string): EquipmentMatch[] {
 	edits.push(buildUpdateForBay(scdBay, bayType))
 	edits.push(...buildEditsForEquipmentUpdates(matches))
 	const existingPrefixes = collectExistingPrefixes(
-		doc.querySelectorAll('Function, GeneralEquipment, EqFunction')
+		doc.querySelectorAll('Function, EqFunction')
 	)
 
 	edits.push(
