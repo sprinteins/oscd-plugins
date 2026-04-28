@@ -26,7 +26,7 @@
 		"biome:lint": "biome lint src",
 		"biome:lint:write": "biome lint --write src",
 		"//====== CUSTOM ======//": "",
-		"run:all": "pnpm run biome:format:write && pnpm run biome:lint:write && pnpm run biome:check:write && pnpm run check"
+		"fix:all": "pnpm run biome:format:write && pnpm run biome:lint:write && pnpm run biome:check:write && pnpm run check"
 	},
 	"files": [
 		"dist"
