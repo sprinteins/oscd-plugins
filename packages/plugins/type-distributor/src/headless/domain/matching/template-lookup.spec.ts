@@ -12,6 +12,7 @@ const ceTemplate1: ConductingEquipmentTemplate = {
 	uuid: 'ce-uuid-1',
 	name: 'Breaker',
 	type: 'CBR',
+	virtual: false,
 	terminals: [],
 	eqFunctions: []
 }
@@ -20,6 +21,7 @@ const ceTemplate2: ConductingEquipmentTemplate = {
 	uuid: 'ce-uuid-2',
 	name: 'Switch',
 	type: 'DIS',
+	virtual: false,
 	terminals: [],
 	eqFunctions: []
 }

@@ -6,9 +6,7 @@ import type { EquipmentMatch } from '@/headless/domain/matching'
 import { bayStore } from '@/headless/stores'
 import {
 	buildUpdatesForBayLNode,
-	resolveScdEqFunctionUuid,
-	resolveScdFunctionUuid,
-	resolveScdGeEqFunctionUuid
+	resolveFunctionElementUuid
 } from './bay-edits'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -466,133 +464,153 @@ describe('buildUpdatesForBayLNode', () => {
 	})
 })
 
-describe('resolveScdEqFunctionUuid', () => {
-	it('GIVEN undefined equipmentUuid WHEN resolveScdEqFunctionUuid is called THEN returns undefined', () => {
-		const result = resolveScdEqFunctionUuid({
-			sourceFunction: { uuid: 'f-1', name: 'ProtectionFunc', lnodes: [] },
-			equipmentUuid: undefined,
-			equipmentMatches: []
+describe('resolveFunctionElementUuid', () => {
+	describe('GIVEN geEquipmentUuid is set', () => {
+		beforeEach(() => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="TestBay">
+						<GeneralEquipment templateUuid="ge-template-1">
+							<EqFunction name="ProtectionFunc" uuid="ge-eqf-1" />
+						</GeneralEquipment>
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
 		})
-		expect(result).toBeUndefined()
-	})
 
-	it('GIVEN equipmentUuid not in matches WHEN resolveScdEqFunctionUuid is called THEN returns undefined', () => {
-		const result = resolveScdEqFunctionUuid({
-			sourceFunction: { uuid: 'f-1', name: 'ProtectionFunc', lnodes: [] },
-			equipmentUuid: 'non-existent',
-			equipmentMatches: []
-		})
-		expect(result).toBeUndefined()
-	})
-
-	it('GIVEN matching equipment WHEN template index matches THEN returns scd EqFunction uuid', () => {
-		const doc = new DOMParser().parseFromString(
-			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-				<ConductingEquipment name="Breaker1">
-					<EqFunction name="ProtectionFunc" uuid="scd-eqf-1"/>
-					<EqFunction name="ProtectionFunc" uuid="scd-eqf-2"/>
-				</ConductingEquipment>
-			</SCL>`,
-			'application/xml'
-		)
-
-		const scdElement = doc.querySelector('ConductingEquipment') as Element
-		const equipmentMatches: EquipmentMatch[] = [
-			{
-				scdElement,
-				bayTypeEquipment: {
-					uuid: 'eq-uuid',
-					templateUuid: 'template-uuid',
-					virtual: false
+		it('WHEN GeneralEquipment and EqFunction exist THEN returns EqFunction uuid', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-template-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-template-1',
+				sourceFunction: {
+					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
 				},
-				templateEquipment: {
-					uuid: 'template-uuid',
-					name: 'Breaker1',
-					type: 'CBR',
-					terminals: [],
-					eqFunctions: [{ uuid: 'tpl-1' }, { uuid: 'tpl-2' }]
-				}
-			}
-		]
-
-		const result = resolveScdEqFunctionUuid({
-			sourceFunction: {
-				uuid: 'tpl-2',
-				name: 'ProtectionFunc',
-				lnodes: []
-			},
-			equipmentUuid: 'eq-uuid',
-			equipmentMatches
+				equipmentMatches: []
+			})
+			expect(result).toBe('ge-eqf-1')
 		})
 
-		expect(result).toBe('scd-eqf-2')
-	})
-})
-
-describe('resolveScdGeEqFunctionUuid', () => {
-	beforeEach(() => {
-		const doc = new DOMParser().parseFromString(
-			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-				<Substation>
-					<VoltageLevel>
-						<Bay name="TestBay">
-							<GeneralEquipment templateUuid="ge-template-1">
-								<EqFunction name="ProtectionFunc" uuid="ge-eqf-1" />
-							</GeneralEquipment>
-						</Bay>
-					</VoltageLevel>
-				</Substation>
-			</SCL>`,
-			'application/xml'
-		)
-
-		pluginGlobalStore.xmlDocument = doc
-		bayStore.selectedBay = null
-		bayStore.selectedBay = 'TestBay'
+		it('WHEN no document loaded THEN returns undefined', () => {
+			pluginGlobalStore.xmlDocument = undefined
+			bayStore.selectedBay = null
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-template-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-template-1',
+				sourceFunction: {
+					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
 	})
 
-	it('GIVEN GeneralEquipment present WHEN resolveScdGeEqFunctionUuid called THEN returns uuid', () => {
-		const result = resolveScdGeEqFunctionUuid(
-			'ge-template-1',
-			'ProtectionFunc'
-		)
-		expect(result).toBe('ge-eqf-1')
+	describe('GIVEN equipmentUuid is set', () => {
+		it('WHEN equipmentUuid not in matches THEN returns undefined', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: undefined,
+				equipmentUuid: 'non-existent',
+				parentUuid: 'some-parent',
+				sourceFunction: {
+					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
+
+		it('WHEN template index matches THEN returns corresponding SCD EqFunction uuid', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<ConductingEquipment name="Breaker1">
+						<EqFunction name="ProtectionFunc" uuid="scd-eqf-1"/>
+						<EqFunction name="ProtectionFunc" uuid="scd-eqf-2"/>
+					</ConductingEquipment>
+				</SCL>`,
+				'application/xml'
+			)
+			const scdElement = doc.querySelector(
+				'ConductingEquipment'
+			) as Element
+			const equipmentMatches: EquipmentMatch[] = [
+				{
+					scdElement,
+					bayTypeEquipment: {
+						uuid: 'eq-uuid',
+						templateUuid: 'template-uuid',
+						virtual: false
+					},
+					templateEquipment: {
+						uuid: 'template-uuid',
+						name: 'Breaker1',
+						type: 'CBR',
+						terminals: [],
+						eqFunctions: [{ uuid: 'tpl-1' }, { uuid: 'tpl-2' }]
+					}
+				}
+			]
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: undefined,
+				equipmentUuid: 'eq-uuid',
+				parentUuid: 'some-parent',
+				sourceFunction: {
+					uuid: 'tpl-2',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches
+			})
+			expect(result).toBe('scd-eqf-2')
+		})
 	})
 
-	it('GIVEN no document WHEN resolveScdGeEqFunctionUuid called THEN returns undefined', () => {
-		pluginGlobalStore.xmlDocument = undefined
-		bayStore.selectedBay = null
-		expect(
-			resolveScdGeEqFunctionUuid('ge-template-1', 'ProtectionFunc')
-		).toBeUndefined()
-	})
-})
+	describe('GIVEN neither geEquipmentUuid nor equipmentUuid is set', () => {
+		beforeEach(() => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="TestBay">
+						<Function templateUuid="func-template-1" uuid="func-uuid-1" />
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
+		})
 
-describe('resolveScdFunctionUuid', () => {
-	beforeEach(() => {
-		const doc = new DOMParser().parseFromString(
-			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
-				<Substation>
-					<VoltageLevel>
-						<Bay name="TestBay">
-							<Function templateUuid="func-template-1" uuid="func-uuid-1" />
-						</Bay>
-					</VoltageLevel>
-				</Substation>
-			</SCL>`,
-			'application/xml'
-		)
+		it('WHEN bay Function exists THEN returns Function uuid', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: undefined,
+				equipmentUuid: undefined,
+				parentUuid: 'func-template-1',
+				sourceFunction: { uuid: 'f-1', name: 'SomeFunc', lnodes: [] },
+				equipmentMatches: []
+			})
+			expect(result).toBe('func-uuid-1')
+		})
 
-		pluginGlobalStore.xmlDocument = doc
-		bayStore.selectedBay = null
-		bayStore.selectedBay = 'TestBay'
-	})
-
-	it('GIVEN Function present WHEN resolveScdFunctionUuid called THEN returns uuid', () => {
-		expect(resolveScdFunctionUuid('func-template-1')).toBe('func-uuid-1')
-	})
-
-	it('GIVEN no matching Function WHEN resolveScdFunctionUuid called THEN returns undefined', () => {
-		expect(resolveScdFunctionUuid('non-existent')).toBeUndefined()
+		it('WHEN no matching Function exists THEN returns undefined', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: undefined,
+				equipmentUuid: undefined,
+				parentUuid: 'non-existent',
+				sourceFunction: { uuid: 'f-1', name: 'SomeFunc', lnodes: [] },
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
 	})
 })

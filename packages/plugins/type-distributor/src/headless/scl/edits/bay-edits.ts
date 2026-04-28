@@ -7,13 +7,41 @@ import type {
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { bayStore } from '@/headless/stores'
 
+type ResolveFunctionElementUuidParams = {
+	geEquipmentUuid: string | undefined
+	equipmentUuid: string | undefined
+	parentUuid: string
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
+	equipmentMatches: EquipmentMatch[]
+}
+
+export function resolveFunctionElementUuid({
+	geEquipmentUuid,
+	equipmentUuid,
+	parentUuid,
+	sourceFunction,
+	equipmentMatches
+}: ResolveFunctionElementUuidParams): string | undefined {
+	if (geEquipmentUuid) {
+		return resolveScdGeEqFunctionUuid(geEquipmentUuid, sourceFunction.name)
+	}
+	if (equipmentUuid) {
+		return resolveScdEqFunctionUuid({
+			sourceFunction,
+			equipmentUuid,
+			equipmentMatches
+		})
+	}
+	return resolveScdFunctionUuid(parentUuid)
+}
+
 interface ResolveScdEqFunctionUuidParams {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentUuid: string | undefined
 	equipmentMatches: EquipmentMatch[]
 }
 
-export function resolveScdEqFunctionUuid({
+function resolveScdEqFunctionUuid({
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches
@@ -39,7 +67,7 @@ export function resolveScdEqFunctionUuid({
 	return scdEqFunctions[templateIndex]?.getAttribute('uuid') ?? undefined
 }
 
-export function resolveScdGeEqFunctionUuid(
+function resolveScdGeEqFunctionUuid(
 	geInstanceUuid: string,
 	eqFunctionName: string
 ): string | undefined {
@@ -73,7 +101,7 @@ export function resolveScdGeEqFunctionUuid(
 	return eqFunc.getAttribute('uuid') ?? undefined
 }
 
-export function resolveScdFunctionUuid(
+function resolveScdFunctionUuid(
 	functionInstanceUuid: string
 ): string | undefined {
 	const scdBay = bayStore.scdBay
