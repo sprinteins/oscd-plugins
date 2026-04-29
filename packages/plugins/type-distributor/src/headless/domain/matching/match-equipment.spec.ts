@@ -13,6 +13,7 @@ import {
 const ceTemplate1: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid-1',
 	name: 'Breaker',
+	virtual: false,
 	type: 'CBR',
 	terminals: [],
 	eqFunctions: []
@@ -21,6 +22,7 @@ const ceTemplate1: ConductingEquipmentTemplate = {
 const ceTemplate2: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid-2',
 	name: 'Switch',
+	virtual: false,
 	type: 'DIS',
 	terminals: [],
 	eqFunctions: []
@@ -35,6 +37,7 @@ const bayType: BayType = {
 		{ uuid: 'ce-bt-1', templateUuid: 'tmpl-uuid-1', virtual: false },
 		{ uuid: 'ce-bt-2', templateUuid: 'tmpl-uuid-2', virtual: false }
 	],
+	generalEquipments: [],
 	functions: []
 }
 

@@ -2,8 +2,12 @@ import type { XMLEditor } from '@openscd/oscd-editor'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
-import { bayStore } from '@/headless/stores'
-import { buildUpdatesForBayLNode } from './bay-edits'
+import type { EquipmentMatch } from '@/headless/domain/matching'
+import { bayStore, ssdImportStore } from '@/headless/stores'
+import {
+	buildUpdatesForBayLNode,
+	resolveFunctionElementUuid
+} from './bay-edits'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 	pluginGlobalStore: {
@@ -456,6 +460,294 @@ describe('buildUpdatesForBayLNode', () => {
 
 			// THEN should return empty array
 			expect(edits).toEqual([])
+		})
+	})
+})
+
+describe('resolveFunctionElementUuid', () => {
+	describe('GIVEN geEquipmentUuid is set', () => {
+		beforeEach(() => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="TestBay">
+						<GeneralEquipment templateUuid="ge-template-1" originUuid="ge-origin-1">
+							<EqFunction name="ProtectionFunc" uuid="ge-eqf-1" />
+						</GeneralEquipment>
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
+			ssdImportStore.generalEquipmentTemplates = [
+				{
+					uuid: 'ge-origin-1',
+					name: 'ProtectionEquipment',
+					type: 'MOT',
+					eqFunctions: [
+						{ uuid: 'f-1', name: 'ProtectionFunc', lnodes: [] }
+					]
+				}
+			]
+		})
+
+		afterEach(() => {
+			ssdImportStore.generalEquipmentTemplates = []
+		})
+
+		it('WHEN GeneralEquipment and EqFunction exist THEN returns EqFunction uuid', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-template-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-template-1',
+				sourceFunction: {
+					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBe('ge-eqf-1')
+		})
+
+		it('WHEN no document loaded THEN returns undefined', () => {
+			pluginGlobalStore.xmlDocument = undefined
+			bayStore.selectedBay = null
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-template-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-template-1',
+				sourceFunction: {
+					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
+
+		it('WHEN GeneralEquipment is missing originUuid THEN returns undefined', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="TestBay">
+						<GeneralEquipment templateUuid="ge-template-1">
+							<EqFunction name="ProtectionFunc" uuid="ge-eqf-1" />
+						</GeneralEquipment>
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-template-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-template-1',
+				sourceFunction: {
+					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
+
+		it('WHEN originUuid template not found in SSD store THEN returns undefined', () => {
+			ssdImportStore.generalEquipmentTemplates = []
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-template-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-template-1',
+				sourceFunction: {
+					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
+
+		it('WHEN sourceFunction uuid not found in template eqFunctions THEN returns undefined', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-template-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-template-1',
+				sourceFunction: {
+					uuid: 'unknown-uuid',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
+	})
+
+	describe('GIVEN geEquipmentUuid is set and GE has duplicate EqFunction names', () => {
+		beforeEach(() => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="TestBay">
+						<GeneralEquipment templateUuid="ge-inst-1" originUuid="ge-tmpl-1">
+							<EqFunction name="ValveFn" uuid="ge-eqf-1" />
+							<EqFunction name="ValveFn" uuid="ge-eqf-2" />
+						</GeneralEquipment>
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
+			ssdImportStore.generalEquipmentTemplates = [
+				{
+					uuid: 'ge-tmpl-1',
+					name: 'Valves',
+					type: 'VLV',
+					eqFunctions: [
+						{ uuid: 'tpl-eq-1', name: 'ValveFn', lnodes: [] },
+						{ uuid: 'tpl-eq-2', name: 'ValveFn', lnodes: [] }
+					]
+				}
+			]
+		})
+
+		afterEach(() => {
+			ssdImportStore.generalEquipmentTemplates = []
+		})
+
+		it('WHEN sourceFunction is the first EqFunction template THEN returns uuid of first SCD EqFunction', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-inst-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-inst-1',
+				sourceFunction: {
+					uuid: 'tpl-eq-1',
+					name: 'ValveFn',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBe('ge-eqf-1')
+		})
+
+		it('WHEN sourceFunction is the second EqFunction template THEN returns uuid of second SCD EqFunction', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: 'ge-inst-1',
+				equipmentUuid: undefined,
+				parentUuid: 'ge-inst-1',
+				sourceFunction: {
+					uuid: 'tpl-eq-2',
+					name: 'ValveFn',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBe('ge-eqf-2')
+		})
+	})
+
+	describe('GIVEN equipmentUuid is set', () => {
+		it('WHEN equipmentUuid not in matches THEN returns undefined', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: undefined,
+				equipmentUuid: 'non-existent',
+				parentUuid: 'some-parent',
+				sourceFunction: {
+					uuid: 'f-1',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
+		})
+
+		it('WHEN template index matches THEN returns corresponding SCD EqFunction uuid', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<ConductingEquipment name="Breaker1">
+						<EqFunction name="ProtectionFunc" uuid="scd-eqf-1"/>
+						<EqFunction name="ProtectionFunc" uuid="scd-eqf-2"/>
+					</ConductingEquipment>
+				</SCL>`,
+				'application/xml'
+			)
+			const scdElement = doc.querySelector(
+				'ConductingEquipment'
+			) as Element
+			const equipmentMatches: EquipmentMatch[] = [
+				{
+					scdElement,
+					bayTypeEquipment: {
+						uuid: 'eq-uuid',
+						templateUuid: 'template-uuid',
+						virtual: false
+					},
+					templateEquipment: {
+						uuid: 'template-uuid',
+						name: 'Breaker1',
+						type: 'CBR',
+						terminals: [],
+						eqFunctions: [{ uuid: 'tpl-1' }, { uuid: 'tpl-2' }]
+					}
+				}
+			]
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: undefined,
+				equipmentUuid: 'eq-uuid',
+				parentUuid: 'some-parent',
+				sourceFunction: {
+					uuid: 'tpl-2',
+					name: 'ProtectionFunc',
+					lnodes: []
+				},
+				equipmentMatches
+			})
+			expect(result).toBe('scd-eqf-2')
+		})
+	})
+
+	describe('GIVEN neither geEquipmentUuid nor equipmentUuid is set', () => {
+		beforeEach(() => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="TestBay">
+						<Function templateUuid="func-template-1" uuid="func-uuid-1" />
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.selectedBay = null
+			bayStore.selectedBay = 'TestBay'
+		})
+
+		it('WHEN bay Function exists THEN returns Function uuid', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: undefined,
+				equipmentUuid: undefined,
+				parentUuid: 'func-template-1',
+				sourceFunction: { uuid: 'f-1', name: 'SomeFunc', lnodes: [] },
+				equipmentMatches: []
+			})
+			expect(result).toBe('func-uuid-1')
+		})
+
+		it('WHEN no matching Function exists THEN returns undefined', () => {
+			const result = resolveFunctionElementUuid({
+				geEquipmentUuid: undefined,
+				equipmentUuid: undefined,
+				parentUuid: 'non-existent',
+				sourceFunction: { uuid: 'f-1', name: 'SomeFunc', lnodes: [] },
+				equipmentMatches: []
+			})
+			expect(result).toBeUndefined()
 		})
 	})
 })

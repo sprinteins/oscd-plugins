@@ -46,6 +46,7 @@ describe('parseBayTypes', () => {
 
 		expect(bayTypes[2].functions).toHaveLength(0)
 		expect(bayTypes[2].conductingEquipments).toHaveLength(0)
+		expect(bayTypes[2].generalEquipments).toHaveLength(0)
 	})
 
 	it('should not include TEMPLATE bay in results', () => {
@@ -108,6 +109,21 @@ describe('parseBayTypes', () => {
 		expect(bayTypes[0].desc).toBe('Test Description')
 	})
 
+	it('GIVEN bays with GeneralEquipment WHEN parsed THEN generalEquipments are populated', () => {
+		const bayTypes = parseBayTypes(doc)
+
+		// Bay_1 and Bay_2 each have one GeneralEquipment in ssdMockA
+		expect(bayTypes[0].generalEquipments).toHaveLength(1)
+		expect(bayTypes[0].generalEquipments[0].templateUuid).toBe(
+			'5f02e91e-76b0-411b-8694-d5110aae66f0'
+		)
+
+		expect(bayTypes[1].generalEquipments).toHaveLength(1)
+		expect(bayTypes[1].generalEquipments[0].templateUuid).toBe(
+			'5f02e91e-76b0-411b-8694-d5110aae66f0'
+		)
+	})
+
 	it('should correctly parse conducting equipment and function attributes', () => {
 		const parser = new DOMParser()
 		const docWithConductingEquipmentsAndFunctions = parser.parseFromString(
@@ -138,9 +154,11 @@ describe('parseBayTypes', () => {
 		}
 
 		const conductingEquipments = bay.conductingEquipments
+		const generalEquipments = bay.generalEquipments
 		const functions = bay.functions
 
 		expect(conductingEquipments).toHaveLength(2)
+		expect(generalEquipments).toHaveLength(0)
 		expect(functions).toHaveLength(2)
 
 		expect(conductingEquipments[0]).toEqual({

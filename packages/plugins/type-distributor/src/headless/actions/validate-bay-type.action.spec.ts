@@ -45,6 +45,7 @@ describe('validateBayType', () => {
 		uuid: 'bt-1',
 		name: 'TestBayType',
 		conductingEquipments: [],
+		generalEquipments: [],
 		functions: []
 	}
 

@@ -21,6 +21,7 @@ vi.mock('@/headless/stores', () => ({
 		selectedBayType: 'bt-1',
 		bayTypes: [],
 		conductingEquipmentTemplates: [],
+		generalEquipmentTemplates: [],
 		functionTemplates: [],
 		loadedSSDDocument: null as XMLDocument | null
 	},
@@ -33,6 +34,7 @@ const mockBayType: BayType = {
 	uuid: 'bt-1',
 	name: 'TestBayType',
 	conductingEquipments: [],
+	generalEquipments: [],
 	functions: []
 }
 
@@ -54,6 +56,7 @@ describe('applyBayType', () => {
 		ssdImportStore.selectedBayType = 'bt-1'
 		ssdImportStore.bayTypes = [mockBayType]
 		ssdImportStore.conductingEquipmentTemplates = []
+		ssdImportStore.generalEquipmentTemplates = []
 		ssdImportStore.functionTemplates = []
 		ssdImportStore.loadedSSDDocument = mockDoc as XMLDocument
 		bayStore.scdBay = mockScdBay

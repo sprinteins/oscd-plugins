@@ -4,25 +4,34 @@ export type BayType = {
 	name: string
 	desc?: string
 	conductingEquipments: ConductingEquipmentType[]
+	generalEquipments: GeneralEquipmentType[]
 	functions: FunctionType[]
 }
 
 export type BayTypeWithTemplates = BayType & {
 	conductingEquipmentTemplates: ConductingEquipmentTemplate[]
+	generalEquipmentTemplates: GeneralEquipmentTemplate[]
 	functionTemplates: FunctionTemplate[]
 	conductingEquipmentTemplateMap: Map<string, ConductingEquipmentTemplate>
+	generalEquipmentTemplateMap: Map<string, GeneralEquipmentTemplate>
 	functionTemplateMap: Map<string, FunctionTemplate>
 }
 
 export type ConductingEquipmentType = {
 	uuid: string
 	templateUuid: string
-	virtual: boolean
+	virtual?: boolean
 }
 
 export type FunctionType = {
 	uuid: string
 	templateUuid: string
+}
+
+export type GeneralEquipmentType = {
+	uuid: string
+	templateUuid: string
+	virtual?: boolean
 }
 
 // TEMPLATE section
@@ -31,6 +40,7 @@ export type ConductingEquipmentTemplate = {
 	name: string
 	type: string
 	desc?: string
+	virtual?: boolean
 	terminals: TerminalTemplate[]
 	eqFunctions: EqFunctionTemplate[]
 }
@@ -49,9 +59,19 @@ export type EqFunctionTemplate = {
 	lnodes: LNodeTemplate[]
 }
 
+export type GeneralEquipmentTemplate = {
+	uuid: string
+	name: string
+	type: string
+	desc?: string
+	virtual?: boolean
+	eqFunctions: EqFunctionTemplate[]
+}
+
 export type FunctionTemplate = {
 	uuid: string
 	name: string
+	type?: string
 	desc?: string
 	lnodes: LNodeTemplate[]
 }
@@ -63,6 +83,7 @@ export type LNodeTemplate = {
 	lnInst: string
 	iedName?: string
 	ldInst?: string
+	prefix?: string
 }
 
 export type LDeviceData = {
@@ -97,7 +118,15 @@ export type DOType = {
 	cdc: string
 	iedType?: string
 	desc?: string
+	subDataObjects: SubDataObject[]
 	dataAttributes: DataAttribute[]
+}
+
+export type SubDataObject = {
+	name: string
+	type: string
+	count?: string
+	desc?: string
 }
 
 export type DataAttribute = {

@@ -4,7 +4,10 @@ import {
 	isRemoveEdit,
 	isSetAttributesEdit
 } from '@/headless/test-helpers/type-guards'
-import { buildEditsForDeleteLNodeFromAccessPoint } from './ied-lnode-edits'
+import {
+	buildEditsForDeleteLDevice,
+	buildEditsForDeleteLNodeFromAccessPoint
+} from './ied-lnode-edits'
 
 // Mock dependencies
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -452,5 +455,131 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 				selectedBay: bay1
 			})
 		}).toThrow()
+	})
+
+	it('GIVEN no selectedBay WHEN buildEditsForDeleteLNodeFromAccessPoint called THEN throws "No bay selected"', () => {
+		const accessPoint = doc.querySelector(
+			'IED[name="IED1"] AccessPoint[name="P1"]'
+		) as Element
+		expect(() =>
+			buildEditsForDeleteLNodeFromAccessPoint({
+				iedName: 'IED1',
+				accessPoint,
+				lNodeTemplate: {
+					lnClass: 'XCBR',
+					lnType: 'TestXCBR',
+					lnInst: '1',
+					ldInst: 'CBFunction_aa11bb22'
+				},
+				selectedBay: null
+			})
+		).toThrow('No bay selected')
+	})
+
+	it('GIVEN lNodeTemplate with empty ldInst WHEN buildEditsForDeleteLNodeFromAccessPoint called THEN throws about ldInst', () => {
+		const accessPoint = doc.querySelector(
+			'IED[name="IED1"] AccessPoint[name="P1"]'
+		) as Element
+		expect(() =>
+			buildEditsForDeleteLNodeFromAccessPoint({
+				iedName: 'IED1',
+				accessPoint,
+				lNodeTemplate: {
+					lnClass: 'XCBR',
+					lnType: 'TestXCBR',
+					lnInst: '1',
+					ldInst: ''
+				},
+				selectedBay: bay1
+			})
+		).toThrow('LNodeTemplate must have ldInst')
+	})
+
+	it('GIVEN valid LDevice but non-existent LNode WHEN buildEditsForDeleteLNodeFromAccessPoint called THEN throws about lnClass/lnInst', () => {
+		const accessPoint = doc.querySelector(
+			'IED[name="IED1"] AccessPoint[name="P1"]'
+		) as Element
+		expect(() =>
+			buildEditsForDeleteLNodeFromAccessPoint({
+				iedName: 'IED1',
+				accessPoint,
+				lNodeTemplate: {
+					lnClass: 'XCBR',
+					lnType: 'TestXCBR',
+					lnInst: '99',
+					ldInst: 'CBFunction_aa11bb22'
+				},
+				selectedBay: bay1
+			})
+		).toThrow(/LNode with lnClass/)
+	})
+})
+
+describe('buildEditsForDeleteLDevice', () => {
+	let doc: Document
+	let bay1: Element | null
+	let accessPoint: Element
+
+	beforeEach(() => {
+		doc = createTestDocument(sampleSCD)
+		bay1 = doc.querySelector('Bay[name="Bay1"]')
+		accessPoint = doc.querySelector(
+			'IED[name="IED1"] AccessPoint[name="P1"]'
+		) as Element
+		expect(bay1).not.toBeNull()
+	})
+
+	it('GIVEN no selectedBay WHEN buildEditsForDeleteLDevice called THEN throws "No bay selected"', () => {
+		expect(() =>
+			buildEditsForDeleteLDevice({
+				iedName: 'IED1',
+				accessPoint,
+				ldInst: 'CBFunction_aa11bb22',
+				selectedBay: null
+			})
+		).toThrow('No bay selected')
+	})
+
+	it('GIVEN a non-existent ldInst WHEN buildEditsForDeleteLDevice called THEN throws with the ldInst name', () => {
+		expect(() =>
+			buildEditsForDeleteLDevice({
+				iedName: 'IED1',
+				accessPoint,
+				ldInst: 'NonExistentLDevice',
+				selectedBay: bay1
+			})
+		).toThrow('NonExistentLDevice')
+	})
+
+	describe('GIVEN a valid LDevice with LNodes', () => {
+		let edits: ReturnType<typeof buildEditsForDeleteLDevice>
+
+		beforeEach(() => {
+			edits = buildEditsForDeleteLDevice({
+				iedName: 'IED1',
+				accessPoint,
+				ldInst: 'CBFunction_aa11bb22',
+				selectedBay: bay1
+			})
+		})
+
+		it('THEN returns a Remove edit for the LDevice', () => {
+			const removeEdit = edits.find(isRemoveEdit)
+			expect(removeEdit).toBeDefined()
+			if (removeEdit) {
+				const node = removeEdit.node as Element
+				expect(node.tagName).toBe('LDevice')
+				expect(node.getAttribute('inst')).toBe('CBFunction_aa11bb22')
+			}
+		})
+
+		it('THEN returns SetAttributes edits for clearing bay LNode connections', () => {
+			const setAttributesEdits = edits.filter(isSetAttributesEdit)
+			expect(setAttributesEdits.length).toBeGreaterThan(0)
+			const lnodeEdits = setAttributesEdits.filter(
+				(edit) => edit.element.tagName === 'LNode'
+			)
+			expect(lnodeEdits.length).toBeGreaterThan(0)
+		})
 	})
 })

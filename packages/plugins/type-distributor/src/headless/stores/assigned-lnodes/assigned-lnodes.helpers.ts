@@ -1,4 +1,7 @@
-import type { EqFunctionTemplate } from '@/headless/common-types'
+import type {
+	EqFunctionTemplate,
+	GeneralEquipmentTemplate
+} from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 
 export type LNodeKey = `${string}:${string}:${string}:${string}:${string}` // parentUuid:functionScopeUuid:lnClass:lnType:lnInst
@@ -142,6 +145,85 @@ export function processEqFunctions({
 		if (!functionScopeUuid) {
 			console.warn(
 				`[AssignedLNodes] Could not resolve EqFunction template UUID for "${eqFuncName}" in equipment "${equipmentName}"`
+			)
+			continue
+		}
+
+		processLNodesFromElement({
+			element: eqFunc,
+			parentUuid,
+			assignedIndex,
+			functionScopeUuid
+		})
+	}
+}
+
+interface ProcessGeneralEquipmentEqFunctionsParams {
+	scdBay: Element
+	assignedIndex: Set<LNodeKey>
+	generalEquipmentTemplates: GeneralEquipmentTemplate[]
+}
+
+export function processGeneralEquipmentEqFunctions({
+	scdBay,
+	assignedIndex,
+	generalEquipmentTemplates
+}: ProcessGeneralEquipmentEqFunctionsParams): void {
+	const eqFunctions = scdBay.querySelectorAll(
+		':scope > GeneralEquipment > EqFunction'
+	)
+
+	for (const eqFunc of eqFunctions) {
+		const lnodes = eqFunc.querySelectorAll('LNode[iedName]')
+		if (lnodes.length === 0) continue
+
+		const equipment = eqFunc.parentElement
+		if (!equipment || equipment.tagName !== 'GeneralEquipment') continue
+
+		const equipmentName = equipment.getAttribute('name')
+		const eqFuncName = eqFunc.getAttribute('name')
+
+		const parentUuid = equipment.getAttribute('templateUuid')
+		if (!parentUuid) {
+			console.warn(
+				`[AssignedLNodes] GeneralEquipment "${equipmentName}" has no templateUuid, skipping`
+			)
+			continue
+		}
+
+		if (!eqFuncName) {
+			console.warn(
+				`[AssignedLNodes] EqFunction in GeneralEquipment "${equipmentName}" missing name`
+			)
+			continue
+		}
+
+		const originUuid = equipment.getAttribute('originUuid')
+		const geTemplate = generalEquipmentTemplates.find(
+			(t) => t.uuid === originUuid
+		)
+
+		if (!geTemplate) {
+			console.warn(
+				`[AssignedLNodes] Could not find GeneralEquipment template for originUuid "${originUuid}"`
+			)
+			continue
+		}
+
+		const allScdEqFunctionsWithName = Array.from(
+			equipment.querySelectorAll(
+				`:scope > EqFunction[name="${eqFuncName}"]`
+			)
+		)
+		const indexInScd = allScdEqFunctionsWithName.indexOf(eqFunc)
+		const sameNameTemplates = geTemplate.eqFunctions.filter(
+			(f: EqFunctionTemplate) => f.name === eqFuncName
+		)
+		const functionScopeUuid = sameNameTemplates[indexInScd]?.uuid ?? null
+
+		if (!functionScopeUuid) {
+			console.warn(
+				`[AssignedLNodes] Could not resolve EqFunction template UUID for "${eqFuncName}" in GeneralEquipment "${equipmentName}"`
 			)
 			continue
 		}

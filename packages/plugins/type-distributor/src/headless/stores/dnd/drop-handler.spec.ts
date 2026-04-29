@@ -1,9 +1,12 @@
+import type { Insert, SetAttributes, XMLEditor } from '@openscd/oscd-editor'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { applyBayType as applyBayTypeAction } from '@/headless/actions'
+import { getDocumentAndEditor } from '@/headless/utils/get-document-and-Editor'
 import { bayStore } from '../bay.store.svelte'
 import { ssdImportStore } from '../ssd-import.store.svelte'
 import {
 	applyBayType,
+	commitEdits,
 	generateCommitTitle,
 	shouldApplyBayType
 } from './drop-handler'
@@ -211,6 +214,99 @@ describe('drop-handler', () => {
 			expect(commitTitle).toBe(
 				'Assign BayType "Unknown" to Bay "Unknown" + Assign XCBR from TestFunction to IED targetSied'
 			)
+		})
+
+		it('GIVEN multiple lNodes WHEN didApplyBayType is false THEN uses "N LNodes" format', () => {
+			const multipleLNodes = [
+				{
+					lnClass: 'XCBR',
+					lnType: 'XCBR_Type1',
+					lnInst: '1',
+					iedName: undefined,
+					ldInst: 'LD0'
+				},
+				{
+					lnClass: 'CSWI',
+					lnType: 'CSWI_Type1',
+					lnInst: '1',
+					iedName: undefined,
+					ldInst: 'LD0'
+				}
+			]
+
+			const commitTitle = generateCommitTitle({
+				lNodes: multipleLNodes,
+				functionName: 'TestFunction',
+				targetSIedName: 'targetSied',
+				didApplyBayType: false
+			})
+
+			expect(commitTitle).toBe(
+				'Assign 2 LNodes from TestFunction to IED targetSied'
+			)
+		})
+
+		it('GIVEN multiple lNodes WHEN didApplyBayType is true THEN uses "N LNodes" format with bay type info', () => {
+			const multipleLNodes = [
+				{
+					lnClass: 'XCBR',
+					lnType: 'XCBR_Type1',
+					lnInst: '1',
+					iedName: undefined,
+					ldInst: 'LD0'
+				},
+				{
+					lnClass: 'CSWI',
+					lnType: 'CSWI_Type1',
+					lnInst: '1',
+					iedName: undefined,
+					ldInst: 'LD0'
+				}
+			]
+
+			const commitTitle = generateCommitTitle({
+				lNodes: multipleLNodes,
+				functionName: 'TestFunction',
+				targetSIedName: 'targetSied',
+				didApplyBayType: true
+			})
+
+			expect(commitTitle).toBe(
+				'Assign BayType "Unknown" to Bay "Unknown" + Assign 2 LNodes from TestFunction to IED targetSied'
+			)
+		})
+	})
+
+	describe('commitEdits', () => {
+		it('GIVEN squash is false WHEN commitEdits called THEN calls editor.commit with only title', () => {
+			const mockCommit = vi.fn()
+			vi.mocked(getDocumentAndEditor).mockReturnValue({
+				doc: {} as XMLDocument,
+				editor: { commit: mockCommit } as unknown as XMLEditor
+			})
+			const edits: (Insert | SetAttributes)[] = []
+
+			commitEdits({ edits, title: 'My Title', squash: false })
+
+			expect(mockCommit).toHaveBeenCalledWith(edits, {
+				title: 'My Title'
+			})
+		})
+
+		it('GIVEN squash is true WHEN commitEdits called THEN calls editor.commit with title and squash: true', () => {
+			const mockCommit = vi.fn()
+			vi.mocked(getDocumentAndEditor).mockReturnValue({
+				doc: {} as XMLDocument,
+				editor: { commit: mockCommit } as unknown as XMLEditor
+			})
+			const edits: (Insert | SetAttributes)[] = []
+
+			commitEdits({ edits, title: 'My Title', squash: true })
+
+			expect(mockCommit).toHaveBeenCalledWith(edits, {
+				title: 'My Title',
+				squash: true
+			})
 		})
 	})
 })

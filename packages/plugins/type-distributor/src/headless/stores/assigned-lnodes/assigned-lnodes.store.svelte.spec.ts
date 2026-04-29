@@ -1,7 +1,11 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { LNodeTemplate } from '@/headless/common-types'
+import type {
+	GeneralEquipmentTemplate,
+	LNodeTemplate
+} from '@/headless/common-types'
 import { bayStore } from '../bay.store.svelte'
+import { ssdImportStore } from '../ssd-import.store.svelte'
 import { assignedLNodesStore } from './assigned-lnodes.store.svelte'
 
 // Mock pluginGlobalStore
@@ -45,7 +49,8 @@ vi.mock('../ssd-import.store.svelte', () => ({
 					}
 				]
 			}
-		]
+		],
+		generalEquipmentTemplates: []
 	}
 }))
 
@@ -707,6 +712,229 @@ describe('assignedLNodesStore', () => {
 					lnode: newLNode
 				})
 			).toBe(false)
+		})
+	})
+
+	describe('rebuild — GeneralEquipment EqFunction processing', () => {
+		const geTemplateUuid = 'ge-tmpl-uuid'
+		const geBayTypeInstanceUuid = 'ge-bt-uuid'
+		const eqFuncTemplateUuid = 'eq-func-ge-tmpl-uuid'
+
+		const geTemplate: GeneralEquipmentTemplate = {
+			uuid: geTemplateUuid,
+			name: 'Valves_1',
+			type: 'VLV',
+			eqFunctions: [
+				{
+					uuid: eqFuncTemplateUuid,
+					name: 'ValveFn',
+					lnodes: []
+				}
+			]
+		}
+
+		beforeEach(() => {
+			ssdImportStore.generalEquipmentTemplates = [geTemplate]
+		})
+
+		afterEach(() => {
+			ssdImportStore.generalEquipmentTemplates = []
+			vi.restoreAllMocks()
+		})
+
+		describe('GIVEN a bay with a GeneralEquipment that has an EqFunction with assigned LNodes', () => {
+			beforeEach(() => {
+				const doc = new DOMParser().parseFromString(
+					`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+						<Substation name="Sub1">
+							<VoltageLevel name="VL1">
+								<Bay name="Bay1">
+									<GeneralEquipment name="Valves_1" type="VLV"
+										templateUuid="${geBayTypeInstanceUuid}"
+										originUuid="${geTemplateUuid}">
+										<EqFunction name="ValveFn">
+											<LNode lnClass="GGIO" lnType="TestGGIO" lnInst="1" iedName="IED1" ldInst="LD1" />
+										</EqFunction>
+									</GeneralEquipment>
+								</Bay>
+							</VoltageLevel>
+						</Substation>
+					</SCL>`,
+					'application/xml'
+				)
+				pluginGlobalStore.xmlDocument = doc
+				bayStore.scdBay = doc.querySelector('Bay') as Element
+			})
+
+			it('WHEN rebuild is called THEN the LNode is marked as assigned', () => {
+				assignedLNodesStore.rebuild()
+
+				expect(
+					assignedLNodesStore.isAssigned({
+						parentUuid: geBayTypeInstanceUuid,
+						lnode: {
+							lnClass: 'GGIO',
+							lnType: 'TestGGIO',
+							lnInst: '1'
+						},
+						functionScopeUuid: eqFuncTemplateUuid
+					})
+				).toBe(true)
+			})
+
+			it('WHEN rebuild is called THEN LNodes without iedName are not marked as assigned', () => {
+				const doc = new DOMParser().parseFromString(
+					`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+						<Substation><VoltageLevel><Bay name="Bay1">
+							<GeneralEquipment name="Valves_1" type="VLV"
+								templateUuid="${geBayTypeInstanceUuid}"
+								originUuid="${geTemplateUuid}">
+								<EqFunction name="ValveFn">
+									<LNode lnClass="GGIO" lnType="TestGGIO" lnInst="1" />
+								</EqFunction>
+							</GeneralEquipment>
+						</Bay></VoltageLevel></Substation>
+					</SCL>`,
+					'application/xml'
+				)
+				pluginGlobalStore.xmlDocument = doc
+				bayStore.scdBay = doc.querySelector('Bay') as Element
+
+				assignedLNodesStore.rebuild()
+
+				expect(
+					assignedLNodesStore.isAssigned({
+						parentUuid: geBayTypeInstanceUuid,
+						lnode: {
+							lnClass: 'GGIO',
+							lnType: 'TestGGIO',
+							lnInst: '1'
+						},
+						functionScopeUuid: eqFuncTemplateUuid
+					})
+				).toBe(false)
+			})
+		})
+
+		it('GIVEN a GeneralEquipment without templateUuid WHEN rebuild is called THEN a warning is logged and LNode is not indexed', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="Bay1">
+						<GeneralEquipment name="Valves_1" type="VLV" originUuid="${geTemplateUuid}">
+							<EqFunction name="ValveFn">
+								<LNode lnClass="GGIO" lnType="TestGGIO" lnInst="1" iedName="IED1" />
+							</EqFunction>
+						</GeneralEquipment>
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.scdBay = doc.querySelector('Bay') as Element
+
+			const consoleSpy = vi
+				.spyOn(console, 'warn')
+				.mockImplementation(() => {})
+
+			assignedLNodesStore.rebuild()
+
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining('has no templateUuid')
+			)
+			expect(assignedLNodesStore.hasConnections).toBe(false)
+		})
+
+		it('GIVEN a GeneralEquipment with an originUuid that has no matching template WHEN rebuild is called THEN a warning is logged', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="Bay1">
+						<GeneralEquipment name="Valves_1" type="VLV"
+							templateUuid="${geBayTypeInstanceUuid}"
+							originUuid="unknown-tmpl-uuid">
+							<EqFunction name="ValveFn">
+								<LNode lnClass="GGIO" lnType="TestGGIO" lnInst="1" iedName="IED1" />
+							</EqFunction>
+						</GeneralEquipment>
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.scdBay = doc.querySelector('Bay') as Element
+
+			const consoleSpy = vi
+				.spyOn(console, 'warn')
+				.mockImplementation(() => {})
+
+			assignedLNodesStore.rebuild()
+
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining(
+					'Could not find GeneralEquipment template'
+				)
+			)
+			expect(assignedLNodesStore.hasConnections).toBe(false)
+		})
+
+		it('GIVEN an EqFunction in a GeneralEquipment without a name WHEN rebuild is called THEN a warning is logged', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="Bay1">
+						<GeneralEquipment name="Valves_1" type="VLV"
+							templateUuid="${geBayTypeInstanceUuid}"
+							originUuid="${geTemplateUuid}">
+							<EqFunction>
+								<LNode lnClass="GGIO" lnType="TestGGIO" lnInst="1" iedName="IED1" />
+							</EqFunction>
+						</GeneralEquipment>
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.scdBay = doc.querySelector('Bay') as Element
+
+			const consoleSpy = vi
+				.spyOn(console, 'warn')
+				.mockImplementation(() => {})
+
+			assignedLNodesStore.rebuild()
+
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining('missing name')
+			)
+		})
+
+		it('GIVEN an EqFunction name that cannot be resolved to a template uuid WHEN rebuild is called THEN a warning is logged', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<Substation><VoltageLevel><Bay name="Bay1">
+						<GeneralEquipment name="Valves_1" type="VLV"
+							templateUuid="${geBayTypeInstanceUuid}"
+							originUuid="${geTemplateUuid}">
+							<EqFunction name="NonExistentFn">
+								<LNode lnClass="GGIO" lnType="TestGGIO" lnInst="1" iedName="IED1" />
+							</EqFunction>
+						</GeneralEquipment>
+					</Bay></VoltageLevel></Substation>
+				</SCL>`,
+				'application/xml'
+			)
+			pluginGlobalStore.xmlDocument = doc
+			bayStore.scdBay = doc.querySelector('Bay') as Element
+
+			const consoleSpy = vi
+				.spyOn(console, 'warn')
+				.mockImplementation(() => {})
+
+			assignedLNodesStore.rebuild()
+
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining(
+					'Could not resolve EqFunction template UUID'
+				)
+			)
+			expect(assignedLNodesStore.hasConnections).toBe(false)
 		})
 	})
 })

@@ -21,7 +21,18 @@ export function parseBayTypes(doc: XMLDocument): BayType[] {
 		).map((ce) => ({
 			uuid: ce.getAttribute('uuid') || '',
 			templateUuid: ce.getAttribute('templateUuid') || '',
-			virtual: ce.getAttribute('virtual') === 'true'
+			virtual: ce.hasAttribute('virtual')
+				? ce.getAttribute('virtual') === 'true'
+				: undefined
+		})),
+		generalEquipments: Array.from(
+			bay.querySelectorAll('GeneralEquipment')
+		).map((ge) => ({
+			uuid: ge.getAttribute('uuid') || '',
+			templateUuid: ge.getAttribute('templateUuid') || '',
+			virtual: ge.hasAttribute('virtual')
+				? ge.getAttribute('virtual') === 'true'
+				: undefined
 		})),
 		functions: Array.from(bay.querySelectorAll('Function')).map((func) => ({
 			uuid: func.getAttribute('uuid') || '',

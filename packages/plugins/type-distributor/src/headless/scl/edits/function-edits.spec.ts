@@ -8,7 +8,9 @@ import type { EquipmentMatch } from '@/headless/domain/matching'
 import { createTestDocument } from '@/headless/test-helpers'
 import {
 	buildInsertsForEqFunction,
-	buildInsertsForFunction
+	buildInsertsForFunction,
+	buildRemovesForEqFunctions,
+	collectExistingPrefixes
 } from './function-edits'
 
 vi.mock('uuid', () => ({ v4: () => 'mocked-uuid' }))
@@ -35,12 +37,14 @@ const bayType: BayType = {
 	uuid: 'bt-uuid',
 	name: 'TestBayType',
 	conductingEquipments: [],
+	generalEquipments: [],
 	functions: [{ uuid: 'fn-bt-uuid', templateUuid: 'fn-tmpl-uuid' }]
 }
 
 const ceTemplate: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid',
 	name: 'Breaker',
+	virtual: false,
 	type: 'CBR',
 	terminals: [],
 	eqFunctions: [
@@ -213,5 +217,126 @@ describe('buildInsertsForEqFunction', () => {
 				})
 			).toHaveLength(0)
 		})
+	})
+
+	describe('GIVEN a CE element with a Terminal child', () => {
+		it('WHEN called THEN the EqFunction insert reference is after the last Terminal', () => {
+			const doc = createTestDocument(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL"><Substation><VoltageLevel><Bay>
+					<ConductingEquipment name="Q1" type="CBR">
+						<Terminal name="T1"/>
+					</ConductingEquipment>
+				</Bay></VoltageLevel></Substation></SCL>`
+			)
+			// biome-ignore lint/style/noNonNullAssertion: test fixture
+			const scdElement = doc.querySelector('ConductingEquipment')!
+			// biome-ignore lint/style/noNonNullAssertion: test fixture
+			const terminal = doc.querySelector('Terminal')!
+			const match: EquipmentMatch = {
+				scdElement,
+				bayTypeEquipment: {
+					uuid: 'ce-bt-uuid',
+					templateUuid: 'tmpl-uuid',
+					virtual: false
+				},
+				templateEquipment: ceTemplate
+			}
+
+			const edits = buildInsertsForEqFunction({
+				doc,
+				matches: [match],
+				prefixes: new Set()
+			})
+
+			expect(edits).toHaveLength(1)
+			// reference should be the sibling after the last terminal
+			expect(edits[0].reference).toBe(terminal.nextSibling)
+		})
+	})
+})
+
+// ─── collectExistingPrefixes ──────────────────────────────────────────────────
+
+describe('collectExistingPrefixes', () => {
+	it('GIVEN an empty iterable WHEN called THEN returns an empty set', () => {
+		const result = collectExistingPrefixes([])
+		expect(result.size).toBe(0)
+	})
+
+	it('GIVEN elements with uuid attributes WHEN called THEN set contains the derived prefixes', () => {
+		const doc = createTestDocument(
+			'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"/>'
+		)
+		const el = doc.createElement('Function')
+		// uuidToPrefix strips dashes and takes first 8 chars → '12345678'
+		el.setAttribute('uuid', '12345678-0000-0000-0000-000000000000')
+		const result = collectExistingPrefixes([el])
+		expect(result.has('12345678')).toBe(true)
+	})
+
+	it('GIVEN elements without uuid attributes WHEN called THEN those elements are skipped and set remains empty', () => {
+		const doc = createTestDocument(
+			'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"/>'
+		)
+		const el = doc.createElement('Function')
+		// no uuid attribute set
+		const result = collectExistingPrefixes([el])
+		expect(result.size).toBe(0)
+	})
+})
+
+// ─── buildRemovesForEqFunctions ───────────────────────────────────────────────
+
+describe('buildRemovesForEqFunctions', () => {
+	it('GIVEN a ConductingEquipment with 2 EqFunction children WHEN called THEN returns 2 Remove edits', () => {
+		const doc = createTestDocument(
+			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL"><Substation><VoltageLevel><Bay>
+				<ConductingEquipment name="Q1" type="CBR">
+					<EqFunction name="F1"/>
+					<EqFunction name="F2"/>
+				</ConductingEquipment>
+			</Bay></VoltageLevel></Substation></SCL>`
+		)
+		// biome-ignore lint/style/noNonNullAssertion: test fixture
+		const scdElement = doc.querySelector('ConductingEquipment')!
+		const match: EquipmentMatch = {
+			scdElement,
+			bayTypeEquipment: {
+				uuid: 'ce-bt-uuid',
+				templateUuid: 'tmpl-uuid',
+				virtual: false
+			},
+			templateEquipment: ceTemplate
+		}
+
+		const removes = buildRemovesForEqFunctions(match)
+
+		expect(removes).toHaveLength(2)
+		for (const remove of removes) {
+			expect((remove.node as Element).tagName).toBe('EqFunction')
+		}
+	})
+
+	it('GIVEN a ConductingEquipment with no EqFunctions WHEN called THEN returns empty array', () => {
+		const doc = createTestDocument(
+			`<SCL xmlns="http://www.iec.ch/61850/2003/SCL"><Substation><VoltageLevel><Bay>
+				<ConductingEquipment name="Q1" type="CBR"/>
+			</Bay></VoltageLevel></Substation></SCL>`
+		)
+		// biome-ignore lint/style/noNonNullAssertion: test fixture
+		const scdElement = doc.querySelector('ConductingEquipment')!
+		const match: EquipmentMatch = {
+			scdElement,
+			bayTypeEquipment: {
+				uuid: 'ce-bt-uuid',
+				templateUuid: 'tmpl-uuid',
+				virtual: false
+			},
+			templateEquipment: ceTemplate
+		}
+
+		const removes = buildRemovesForEqFunctions(match)
+
+		expect(removes).toHaveLength(0)
 	})
 })

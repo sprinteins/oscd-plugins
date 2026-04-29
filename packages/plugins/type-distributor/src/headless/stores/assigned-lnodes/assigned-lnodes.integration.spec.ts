@@ -25,8 +25,8 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 
 vi.mock('@/headless/scl', () => ({
 	createMultipleLNodesInAccessPoint: vi.fn(() => []),
-	resolveScdEqFunctionUuid: vi.fn(() => undefined),
-	resolveScdFunctionUuid: vi.fn(() => undefined)
+	resolveFunctionElementUuid: vi.fn(() => undefined),
+	buildUpdatesForBayLNode: vi.fn(() => [])
 }))
 
 // Mock the entire drop-handler module to avoid real execution
@@ -591,8 +591,10 @@ describe('Integration: Assigned LNodes Flow', () => {
 				uuid: 'bt-uuid',
 				name: 'TestBayType',
 				conductingEquipments: [],
+				generalEquipments: [],
 				functions: [{ uuid: funcUuid, templateUuid: funcUuid }],
 				conductingEquipmentTemplates: [],
+				generalEquipmentTemplates: [],
 				functionTemplates: [
 					{
 						uuid: funcUuid,
@@ -602,6 +604,7 @@ describe('Integration: Assigned LNodes Flow', () => {
 					}
 				],
 				conductingEquipmentTemplateMap: new Map(),
+				generalEquipmentTemplateMap: new Map(),
 				functionTemplateMap: new Map([
 					[
 						funcUuid,
@@ -631,8 +634,10 @@ describe('Integration: Assigned LNodes Flow', () => {
 				uuid: 'bt-uuid',
 				name: 'TestBayType',
 				conductingEquipments: [],
+				generalEquipments: [],
 				functions: [{ uuid: funcUuid, templateUuid: funcUuid }],
 				conductingEquipmentTemplates: [],
+				generalEquipmentTemplates: [],
 				functionTemplates: [
 					{
 						uuid: funcUuid,
@@ -642,6 +647,7 @@ describe('Integration: Assigned LNodes Flow', () => {
 					}
 				],
 				conductingEquipmentTemplateMap: new Map(),
+				generalEquipmentTemplateMap: new Map(),
 				functionTemplateMap: new Map([
 					[
 						funcUuid,

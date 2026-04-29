@@ -5,6 +5,8 @@ import type {
 	ConductingEquipmentType,
 	FunctionTemplate,
 	FunctionType,
+	GeneralEquipmentTemplate,
+	GeneralEquipmentType,
 	LNodeTemplate
 } from '../common-types'
 import { ssdImportStore } from './ssd-import.store.svelte'
@@ -37,6 +39,16 @@ function resolveFunctionTemplates(
 		.filter((t): t is FunctionTemplate => t != null)
 }
 
+function resolveGeneralEquipmentTemplates(
+	generalEquipments: GeneralEquipmentType[]
+): GeneralEquipmentTemplate[] {
+	return generalEquipments
+		.map((ge) =>
+			ssdImportStore.getGeneralEquipmentTemplate(ge.templateUuid)
+		)
+		.filter((t): t is GeneralEquipmentTemplate => t != null)
+}
+
 export function getBayTypeWithTemplates(
 	bayUuid: string
 ): BayTypeWithTemplates | null {
@@ -52,14 +64,21 @@ export function getBayTypeWithTemplates(
 	const conductingEquipmentTemplates = resolveConductingEquipmentTemplates(
 		bayType.conductingEquipments
 	)
+	const generalEquipmentTemplates = resolveGeneralEquipmentTemplates(
+		bayType.generalEquipments
+	)
 	const functionTemplates = resolveFunctionTemplates(bayType.functions)
 
 	const result: BayTypeWithTemplates = {
 		...bayType,
 		conductingEquipmentTemplates,
+		generalEquipmentTemplates,
 		functionTemplates,
 		conductingEquipmentTemplateMap: new Map(
 			conductingEquipmentTemplates.map((t) => [t.uuid, t])
+		),
+		generalEquipmentTemplateMap: new Map(
+			generalEquipmentTemplates.map((t) => [t.uuid, t])
 		),
 		functionTemplateMap: new Map(functionTemplates.map((t) => [t.uuid, t]))
 	}
@@ -86,6 +105,23 @@ export function getAllLNodesWithParent(
 			bayTypeWithTemplates.conductingEquipmentTemplateMap.get(
 				instance.templateUuid
 			)
+		if (template?.eqFunctions) {
+			for (const eqFunction of template.eqFunctions) {
+				for (const lnode of eqFunction.lnodes) {
+					result.push({
+						parentUuid: instance.uuid,
+						functionScopeUuid: eqFunction.uuid,
+						lnode
+					})
+				}
+			}
+		}
+	}
+
+	for (const instance of bayTypeWithTemplates.generalEquipments) {
+		const template = bayTypeWithTemplates.generalEquipmentTemplateMap.get(
+			instance.templateUuid
+		)
 		if (template?.eqFunctions) {
 			for (const eqFunction of template.eqFunctions) {
 				for (const lnode of eqFunction.lnodes) {

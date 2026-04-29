@@ -6,6 +6,7 @@ const bayTypeA: BayType = {
 	uuid: 'bt-uuid-A',
 	name: 'BayTypeA',
 	conductingEquipments: [],
+	generalEquipments: [],
 	functions: []
 }
 
@@ -13,6 +14,7 @@ const bayTypeB: BayType = {
 	uuid: 'bt-uuid-B',
 	name: 'BayTypeB',
 	conductingEquipments: [],
+	generalEquipments: [],
 	functions: []
 }
 

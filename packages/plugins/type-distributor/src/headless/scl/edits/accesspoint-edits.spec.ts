@@ -75,6 +75,7 @@ const equipmentTemplate: ConductingEquipmentTemplate = {
 	uuid: 'eq-template-uuid',
 	name: 'CircuitBreaker1',
 	type: 'CBR',
+	virtual: false,
 	desc: 'Test Circuit Breaker',
 	terminals: [
 		{

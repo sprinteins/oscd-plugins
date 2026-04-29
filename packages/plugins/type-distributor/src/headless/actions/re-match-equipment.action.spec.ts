@@ -78,6 +78,7 @@ const cbrTemplateA: ConductingEquipmentTemplate = {
 	uuid: CBR_TEMPLATE_A_UUID,
 	name: 'CB1',
 	type: 'CBR',
+	virtual: false,
 	terminals: [],
 	eqFunctions: [
 		{
@@ -92,6 +93,7 @@ const cbrTemplateB: ConductingEquipmentTemplate = {
 	uuid: CBR_TEMPLATE_B_UUID,
 	name: 'CB2',
 	type: 'CBR',
+	virtual: false,
 	terminals: [],
 	eqFunctions: [
 		{
@@ -109,6 +111,7 @@ const cbrBayType: BayType = {
 		{ uuid: 'bt-ce-1', templateUuid: CBR_TEMPLATE_A_UUID, virtual: false },
 		{ uuid: 'bt-ce-2', templateUuid: CBR_TEMPLATE_B_UUID, virtual: false }
 	],
+	generalEquipments: [],
 	functions: []
 }
 
@@ -168,6 +171,7 @@ const swapTemplateQC9: ConductingEquipmentTemplate = {
 	uuid: TEMPLATE_QC9_UUID,
 	name: '-QC9',
 	type: 'DIS',
+	virtual: false,
 	terminals: [],
 	eqFunctions: [
 		{
@@ -188,6 +192,7 @@ const swapTemplateQB91: ConductingEquipmentTemplate = {
 	uuid: TEMPLATE_QB91_UUID,
 	name: '-QB91',
 	type: 'DIS',
+	virtual: false,
 	terminals: [],
 	eqFunctions: [
 		{
@@ -219,6 +224,7 @@ const swapBayType: BayType = {
 			virtual: false
 		}
 	],
+	generalEquipments: [],
 	functions: []
 }
 

@@ -5,6 +5,7 @@ import type {
 	DOType,
 	EnumType,
 	FunctionTemplate,
+	GeneralEquipmentTemplate,
 	LNodeType
 } from '@/headless/common-types'
 import { assertCreationPrerequisites } from '@/headless/domain/type-resolution'
@@ -23,6 +24,7 @@ class UseImportSSDStore {
 	// Templates
 	bayTypes = $state<BayType[]>([])
 	functionTemplates = $state<FunctionTemplate[]>([])
+	generalEquipmentTemplates = $state<GeneralEquipmentTemplate[]>([])
 	conductingEquipmentTemplates = $state<ConductingEquipmentTemplate[]>([])
 
 	// Data Type Templates
@@ -39,6 +41,7 @@ class UseImportSSDStore {
 		this.loadedSSDDocument = null
 		this.bayTypes = []
 		this.functionTemplates = []
+		this.generalEquipmentTemplates = []
 		this.conductingEquipmentTemplates = []
 		this.lnodeTypes = []
 		this.doTypes = []
@@ -58,6 +61,7 @@ class UseImportSSDStore {
 			this.selectedBayType = null
 			this.bayTypes = bayTypes
 			this.functionTemplates = templates.functionTemplates
+			this.generalEquipmentTemplates = templates.generalEquipmentTemplates
 			this.conductingEquipmentTemplates =
 				templates.conductingEquipmentTemplates
 			this.lnodeTypes = dts.lnodeTypes
@@ -77,6 +81,12 @@ class UseImportSSDStore {
 		uuid: string
 	): ConductingEquipmentTemplate | undefined {
 		return this.conductingEquipmentTemplates.find((t) => t.uuid === uuid)
+	}
+
+	getGeneralEquipmentTemplate(
+		uuid: string
+	): GeneralEquipmentTemplate | undefined {
+		return this.generalEquipmentTemplates.find((t) => t.uuid === uuid)
 	}
 
 	getFunctionTemplate(uuid: string): FunctionTemplate | undefined {

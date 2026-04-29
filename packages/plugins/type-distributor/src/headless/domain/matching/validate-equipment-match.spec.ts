@@ -9,6 +9,7 @@ import { validateEquipmentMatch } from './validate-equipment-match'
 const ceTemplate1: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid-1',
 	name: 'Breaker',
+	virtual: false,
 	type: 'CBR',
 	terminals: [],
 	eqFunctions: []
@@ -16,6 +17,7 @@ const ceTemplate1: ConductingEquipmentTemplate = {
 
 const ceTemplate2: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid-2',
+	virtual: false,
 	name: 'Switch',
 	type: 'DIS',
 	terminals: [],
@@ -26,6 +28,7 @@ const ceTemplateCBR2: ConductingEquipmentTemplate = {
 	uuid: 'tmpl-uuid-3',
 	name: 'AnotherBreaker',
 	type: 'CBR',
+	virtual: false,
 	terminals: [],
 	eqFunctions: []
 }
@@ -41,6 +44,7 @@ function makeBayType(
 			templateUuid: t.uuid,
 			virtual: false
 		})),
+		generalEquipments: [],
 		functions: []
 	}
 }

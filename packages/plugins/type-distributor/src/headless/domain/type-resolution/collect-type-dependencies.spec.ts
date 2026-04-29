@@ -124,4 +124,50 @@ describe('collectTypeDependencies', () => {
 		expect(daTypeIds.size).toBe(0)
 		expect(enumTypeIds.size).toBe(0)
 	})
+
+	it('GIVEN a DOType id referenced by LNodeType that is not present in SSD WHEN collecting THEN daTypeIds is empty', () => {
+		const ssdDoc = makeSsdDoc(`
+			<DataTypeTemplates>
+				<LNodeType id="XCBR1" lnClass="XCBR">
+					<DO name="Mod" type="MISSING_DOT"/>
+				</LNodeType>
+			</DataTypeTemplates>
+		`)
+		const { doTypeIds, daTypeIds, enumTypeIds } = collectTypeDependencies(
+			[lnodeTemplate],
+			ssdDoc
+		)
+		// doTypeIds still contains the id referenced by the LNodeType
+		expect(doTypeIds.has('MISSING_DOT')).toBe(true)
+		// but no DATypes or EnumTypes can be resolved
+		expect(daTypeIds.size).toBe(0)
+		expect(enumTypeIds.size).toBe(0)
+	})
+
+	it('GIVEN a DAType that is already in processedDaTypes WHEN collecting THEN it is not processed twice (no duplicates in results)', () => {
+		// Two DAs in the same DOType both reference the same DAType
+		const ssdDoc = makeSsdDoc(`
+			<DataTypeTemplates>
+				<LNodeType id="XCBR1" lnClass="XCBR">
+					<DO name="Mod" type="ENC_Shared"/>
+				</LNodeType>
+				<DOType id="ENC_Shared" cdc="ENC">
+					<DA name="a" bType="Struct" type="SharedDAType"/>
+					<DA name="b" bType="Struct" type="SharedDAType"/>
+				</DOType>
+				<DAType id="SharedDAType">
+					<BDA name="orCat" bType="Enum" type="SomeEnum"/>
+				</DAType>
+				<EnumType id="SomeEnum"/>
+			</DataTypeTemplates>
+		`)
+		const { daTypeIds, enumTypeIds } = collectTypeDependencies(
+			[lnodeTemplate],
+			ssdDoc
+		)
+		// SharedDAType should appear exactly once
+		expect(daTypeIds.size).toBe(1)
+		expect(daTypeIds.has('SharedDAType')).toBe(true)
+		expect(enumTypeIds.has('SomeEnum')).toBe(true)
+	})
 })

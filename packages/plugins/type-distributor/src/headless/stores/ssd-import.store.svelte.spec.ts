@@ -78,6 +78,22 @@ describe('ssdImportStore', () => {
 			)
 		})
 
+		it('should populate general equipment templates after loading', () => {
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
+
+			expect(ssdImportStore.generalEquipmentTemplates).toHaveLength(2)
+			expect(
+				ssdImportStore.generalEquipmentTemplates.some(
+					(ge) => ge.name === 'Valves_1'
+				)
+			).toBe(true)
+			expect(
+				ssdImportStore.generalEquipmentTemplates.some(
+					(ge) => ge.name === 'Valves_2'
+				)
+			).toBe(true)
+		})
+
 		it('should populate data type templates after loading', () => {
 			ssdImportStore.loadFromSSD(doc, 'test.ssd')
 
@@ -152,7 +168,28 @@ describe('ssdImportStore', () => {
 			expect(template?.lnodes).toHaveLength(2)
 		})
 	})
+	describe('getGeneralEquipmentTemplate', () => {
+		beforeEach(() => {
+			ssdImportStore.loadFromSSD(doc, 'test.ssd')
+		})
 
+		it('GIVEN valid UUID WHEN called THEN returns the matching template', () => {
+			const template = ssdImportStore.getGeneralEquipmentTemplate(
+				'5f02e91e-76b0-411b-8694-d5110aae66f0'
+			)
+
+			expect(template).toBeDefined()
+			expect(template?.name).toBe('Valves_1')
+			expect(template?.type).toBe('VLV')
+		})
+
+		it('GIVEN non-existent UUID WHEN called THEN returns undefined', () => {
+			const template =
+				ssdImportStore.getGeneralEquipmentTemplate('non-existent-uuid')
+
+			expect(template).toBeUndefined()
+		})
+	})
 	describe('state management', () => {
 		it('should reset all loaded SSD state', () => {
 			ssdImportStore.loadFromSSD(doc, 'test.ssd')
@@ -162,6 +199,7 @@ describe('ssdImportStore', () => {
 			expect(ssdImportStore.loadedSSDDocument).toBeNull()
 			expect(ssdImportStore.bayTypes).toHaveLength(0)
 			expect(ssdImportStore.functionTemplates).toHaveLength(0)
+			expect(ssdImportStore.generalEquipmentTemplates).toHaveLength(0)
 			expect(ssdImportStore.conductingEquipmentTemplates).toHaveLength(0)
 			expect(ssdImportStore.lnodeTypes).toHaveLength(0)
 			expect(ssdImportStore.doTypes).toHaveLength(0)

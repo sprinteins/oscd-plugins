@@ -5,7 +5,35 @@ import type {
 	LNodeTemplate
 } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
-import { bayStore } from '@/headless/stores'
+import { bayStore, ssdImportStore } from '@/headless/stores'
+
+type ResolveFunctionElementUuidParams = {
+	geEquipmentUuid: string | undefined
+	equipmentUuid: string | undefined
+	parentUuid: string
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
+	equipmentMatches: EquipmentMatch[]
+}
+
+export function resolveFunctionElementUuid({
+	geEquipmentUuid,
+	equipmentUuid,
+	parentUuid,
+	sourceFunction,
+	equipmentMatches
+}: ResolveFunctionElementUuidParams): string | undefined {
+	if (geEquipmentUuid) {
+		return resolveScdGeEqFunctionUuid(geEquipmentUuid, sourceFunction)
+	}
+	if (equipmentUuid) {
+		return resolveScdEqFunctionUuid({
+			sourceFunction,
+			equipmentUuid,
+			equipmentMatches
+		})
+	}
+	return resolveScdFunctionUuid(parentUuid)
+}
 
 interface ResolveScdEqFunctionUuidParams {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
@@ -13,7 +41,7 @@ interface ResolveScdEqFunctionUuidParams {
 	equipmentMatches: EquipmentMatch[]
 }
 
-export function resolveScdEqFunctionUuid({
+function resolveScdEqFunctionUuid({
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches
@@ -39,7 +67,63 @@ export function resolveScdEqFunctionUuid({
 	return scdEqFunctions[templateIndex]?.getAttribute('uuid') ?? undefined
 }
 
-export function resolveScdFunctionUuid(
+function resolveScdGeEqFunctionUuid(
+	geInstanceUuid: string,
+	sourceFunction: EqFunctionTemplate | FunctionTemplate
+): string | undefined {
+	const scdBay = bayStore.scdBay
+	if (!scdBay) {
+		return undefined
+	}
+
+	const generalEquipment = scdBay.querySelector(
+		`:scope > GeneralEquipment[templateUuid="${geInstanceUuid}"]`
+	)
+
+	if (!generalEquipment) {
+		console.warn(
+			`GeneralEquipment with templateUuid ${geInstanceUuid} not found in selected bay`
+		)
+		return undefined
+	}
+
+	const eqFunctionName = sourceFunction.name
+
+	const originUuid = generalEquipment.getAttribute('originUuid')
+	if (!originUuid) {
+		console.warn(
+			`GeneralEquipment ${generalEquipment.getAttribute('name')} is missing originUuid — cannot resolve EqFunction`
+		)
+		return undefined
+	}
+
+	const geTemplate = ssdImportStore.getGeneralEquipmentTemplate(originUuid)
+	if (!geTemplate) {
+		console.warn(
+			`GeneralEquipment template ${originUuid} not found in SSD import store`
+		)
+		return undefined
+	}
+
+	const templateIndex = geTemplate.eqFunctions.findIndex(
+		(f) => f.uuid === sourceFunction.uuid
+	)
+	if (templateIndex < 0) {
+		console.warn(
+			`EqFunction ${sourceFunction.uuid} not found in GeneralEquipment template ${originUuid}`
+		)
+		return undefined
+	}
+
+	const scdEqFunctions = Array.from(
+		generalEquipment.querySelectorAll(
+			`:scope > EqFunction[name="${eqFunctionName}"]`
+		)
+	)
+	return scdEqFunctions[templateIndex]?.getAttribute('uuid') ?? undefined
+}
+
+function resolveScdFunctionUuid(
 	functionInstanceUuid: string
 ): string | undefined {
 	const scdBay = bayStore.scdBay
@@ -56,7 +140,7 @@ type FindMatchingLNodeElementParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentMatches: EquipmentMatch[]
 	equipmentUuid?: string
-	scdEqFunctionUuid?: string
+	functionElementUuid?: string
 }
 
 function findMatchingLNodeElement({
@@ -64,13 +148,13 @@ function findMatchingLNodeElement({
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches,
-	scdEqFunctionUuid
+	functionElementUuid
 }: FindMatchingLNodeElementParams): Element | null {
 	const functionElements = queryFunctionElements({
 		sourceFunction,
 		equipmentUuid,
 		equipmentMatches,
-		scdEqFunctionUuid
+		functionElementUuid
 	})
 
 	for (const functionElement of functionElements) {
@@ -86,14 +170,14 @@ type QueryFunctionElementsParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentMatches: EquipmentMatch[]
 	equipmentUuid?: string
-	scdEqFunctionUuid?: string
+	functionElementUuid?: string
 }
 
 function queryFunctionElements({
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches,
-	scdEqFunctionUuid
+	functionElementUuid
 }: QueryFunctionElementsParams): Element[] {
 	const scdBay = bayStore.scdBay
 	if (!scdBay) {
@@ -101,25 +185,21 @@ function queryFunctionElements({
 		return []
 	}
 
+	if (functionElementUuid) {
+		const specific = scdBay.querySelector(`[uuid="${functionElementUuid}"]`)
+		return specific ? [specific] : []
+	}
+
 	if (equipmentUuid) {
 		const matchFromStore = equipmentMatches.find(
 			(m) => m.bayTypeEquipment.uuid === equipmentUuid
 		)
-		if (matchFromStore) {
-			if (scdEqFunctionUuid) {
-				const specific = matchFromStore.scdElement.querySelector(
-					`EqFunction[uuid="${scdEqFunctionUuid}"]`
-				)
-				return specific ? [specific] : []
-			}
-			return Array.from(
-				matchFromStore.scdElement.querySelectorAll(
-					`EqFunction[name="${sourceFunction.name}"]`
-				)
+		if (!matchFromStore) return []
+		return Array.from(
+			matchFromStore.scdElement.querySelectorAll(
+				`EqFunction[name="${sourceFunction.name}"]`
 			)
-		}
-
-		return []
+		)
 	}
 
 	return Array.from(
@@ -162,7 +242,7 @@ type BuildUpdatesForBayLNodeParams = {
 	sourceFunction: EqFunctionTemplate | FunctionTemplate
 	equipmentMatches: EquipmentMatch[]
 	equipmentUuid?: string
-	scdEqFunctionUuid?: string
+	functionElementUuid?: string
 }
 
 export function buildUpdatesForBayLNode({
@@ -171,7 +251,7 @@ export function buildUpdatesForBayLNode({
 	sourceFunction,
 	equipmentUuid,
 	equipmentMatches,
-	scdEqFunctionUuid
+	functionElementUuid
 }: BuildUpdatesForBayLNodeParams): SetAttributes[] {
 	const edits: SetAttributes[] = []
 
@@ -181,7 +261,7 @@ export function buildUpdatesForBayLNode({
 			sourceFunction,
 			equipmentUuid,
 			equipmentMatches,
-			scdEqFunctionUuid
+			functionElementUuid
 		})
 		if (!lnodeElement) {
 			continue

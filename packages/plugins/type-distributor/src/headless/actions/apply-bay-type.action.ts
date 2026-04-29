@@ -18,6 +18,7 @@ import {
 	buildInsertsForFunction,
 	collectExistingPrefixes
 } from '@/headless/scl/edits/function-edits'
+import { buildInsertsForGeneralEquipment } from '@/headless/scl/edits/general-equipment-edits'
 import {
 	bayStore,
 	equipmentMatchingStore,
@@ -57,6 +58,15 @@ export function applyBayType(bayName: string): EquipmentMatch[] {
 		})
 	)
 	edits.push(
+		...buildInsertsForGeneralEquipment({
+			doc,
+			bayType,
+			scdBay,
+			generalEquipmentTemplates: ssdImportStore.generalEquipmentTemplates,
+			existingPrefixes
+		})
+	)
+	edits.push(
 		...buildInsertsForFunction({
 			doc,
 			bayType,
@@ -81,6 +91,17 @@ export function applyBayType(bayName: string): EquipmentMatch[] {
 	for (const match of matches) {
 		for (const eqFunctionTemplate of match.templateEquipment.eqFunctions) {
 			allLNodeTemplates.push(...eqFunctionTemplate.lnodes)
+		}
+	}
+
+	for (const generalEquipmentType of bayType.generalEquipments) {
+		const geTemplate = ssdImportStore.generalEquipmentTemplates.find(
+			(t) => t.uuid === generalEquipmentType.templateUuid
+		)
+		if (geTemplate) {
+			for (const eqFunctionTemplate of geTemplate.eqFunctions) {
+				allLNodeTemplates.push(...eqFunctionTemplate.lnodes)
+			}
 		}
 	}
 

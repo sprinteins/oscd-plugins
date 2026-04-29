@@ -99,6 +99,10 @@ Important examples:
 - `create-ied.action.ts`
 - `create-ied-with-access-points.action.ts`
 - `create-access-point.action.ts`
+- `rename-ied.action.ts`
+- `rename-access-point.action.ts`
+- `rename-ied-and-access-point.action.ts`
+- `re-match-equipment.action.ts`
 - delete actions for IED, access point, `LDevice`, and `LNode`
 
 ### `headless/domain/`
@@ -128,6 +132,7 @@ Parses the imported SSD into the in-memory model used by the rest of the plugin:
 - bay types
 - function templates
 - conducting equipment templates
+- general equipment templates
 - data type templates
 
 ## Current boundary notes
