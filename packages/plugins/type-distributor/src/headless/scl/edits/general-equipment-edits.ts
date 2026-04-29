@@ -7,11 +7,11 @@ import { createLNodeElementInBay } from '@/headless/scl/elements/lnode-element'
 import { resolveVirtual } from '../resolve-virtual'
 
 function generateUniquePrefixUuid(existingPrefixes: Set<string>): string {
-	for (let i = 0; i < 1000; i++) {
+	for (let i = 0; i < 3; i++) {
 		const uuid = uuidv4()
 		if (!existingPrefixes.has(uuidToPrefix(uuid))) return uuid
 	}
-	throw new Error('Unable to generate unique UUID after 1000 attempts')
+	throw new Error('Unable to generate unique UUID after 3 attempts')
 }
 
 interface BuildInsertsForGeneralEquipmentParams {
