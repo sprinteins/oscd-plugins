@@ -109,7 +109,7 @@ export function buildEditsForDeleteLDevice({
 	const lNodeTemplates: LNodeTemplate[] = lnElements.map((lnElement) => ({
 		lnClass: lnElement.getAttribute('lnClass') ?? '',
 		lnType: lnElement.getAttribute('lnType') ?? '',
-		lnInst: lnElement.getAttribute('lnInst') ?? '',
+		lnInst: lnElement.getAttribute('inst') ?? '',
 		ldInst
 	}))
 

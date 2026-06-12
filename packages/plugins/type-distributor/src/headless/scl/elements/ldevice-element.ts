@@ -230,7 +230,7 @@ function createLln0Element(
 	return createElement(doc, 'LN0', {
 		lnClass: 'LLN0',
 		lnType: lln0Type.id,
-		lnInst: ''
+		inst: ''
 	})
 }
 

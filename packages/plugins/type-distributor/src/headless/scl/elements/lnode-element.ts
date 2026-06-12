@@ -25,7 +25,7 @@ export function createLNodeElementInIED(
 	const lnElement = createElement(doc, getLNTagName(lNode), {
 		lnClass: lNode.lnClass,
 		lnType: lNode.lnType,
-		lnInst: lNode.lnInst
+		inst: lNode.lnInst
 	})
 
 	return lnElement
@@ -38,7 +38,7 @@ export function isLNodePresentInDevice(
 	const attrs =
 		`[lnClass="${lNode.lnClass}"]` +
 		`[lnType="${lNode.lnType}"]` +
-		`[lnInst="${lNode.lnInst}"]`
+		`[inst="${lNode.lnInst}"]`
 
 	const selector = `LN${attrs}, LN0${attrs}`
 	return !!lDevice.querySelector(selector)
@@ -48,6 +48,6 @@ export function queryLNodeInLDevice(
 	lDevice: Element,
 	template: LNodeTemplate
 ): Element | null {
-	const attrs = `[lnClass="${template.lnClass}"][lnType="${template.lnType}"][lnInst="${template.lnInst}"]`
+	const attrs = `[lnClass="${template.lnClass}"][lnType="${template.lnType}"][inst="${template.lnInst}"]`
 	return lDevice.querySelector(`:scope > LN${attrs}`)
 }

@@ -39,12 +39,12 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
         <Authentication none="true"/>
         <LDevice inst="CBFunction_aa11bb22">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
-          <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
-          <LN lnClass="CSWI" lnInst="1" lnType="TestCSWI"/>
+          <LN lnClass="XCBR" inst="1" lnType="TestXCBR"/>
+          <LN lnClass="CSWI" inst="1" lnType="TestCSWI"/>
         </LDevice>
         <LDevice inst="QA1_Protection_cc33dd44">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
-          <LN lnClass="PTRC" lnInst="1" lnType="TestPTRC"/>
+          <LN lnClass="PTRC" inst="1" lnType="TestPTRC"/>
         </LDevice>
       </Server>
     </AccessPoint>
@@ -53,7 +53,7 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
         <Authentication none="true"/>
         <LDevice inst="OtherFunction">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
-          <LN lnClass="XCBR" lnInst="2" lnType="TestXCBR"/>
+					<LN lnClass="XCBR" inst="2" lnType="TestXCBR"/>
         </LDevice>
       </Server>
     </AccessPoint>
@@ -64,7 +64,7 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
         <Authentication none="true"/>
         <LDevice inst="CBFunction">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
-          <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
+          <LN lnClass="XCBR" inst="1" lnType="TestXCBR"/>
         </LDevice>
       </Server>
     </AccessPoint>
@@ -74,27 +74,27 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
       <Bay name="Bay1" templateUuid="baytype-uuid-1">
         <!-- Function with LNodes -->
         <Function name="CBFunction" uuid="aa11bb22-0000-0000-0000-000000000000" templateUuid="func-uuid-1">
-          <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1" ldInst="CBFunction_aa11bb22"/>
-          <LNode lnClass="CSWI" lnType="TestCSWI" lnInst="1" iedName="IED1" ldInst="CBFunction_aa11bb22"/>
+		  <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1" ldInst="CBFunction_aa11bb22"/>
+		  <LNode lnClass="CSWI" lnType="TestCSWI" lnInst="1" iedName="IED1" ldInst="CBFunction_aa11bb22"/>
         </Function>
         <!-- Equipment with EqFunction -->
         <ConductingEquipment name="QA1" type="CBR" templateUuid="eq-uuid-1">
           <EqFunction name="Protection" uuid="cc33dd44-0000-0000-0000-000000000000">
-            <LNode lnClass="PTRC" lnType="TestPTRC" lnInst="1" iedName="IED1" ldInst="QA1_Protection_cc33dd44"/>
+			<LNode lnClass="PTRC" lnType="TestPTRC" lnInst="1" iedName="IED1" ldInst="QA1_Protection_cc33dd44"/>
           </EqFunction>
         </ConductingEquipment>
       </Bay>
       <Bay name="Bay2" templateUuid="baytype-uuid-2">
         <!-- LNode assigned to different IED -->
         <Function name="CBFunction" templateUuid="func-uuid-2">
-          <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED2" ldInst="CBFunction"/>
+		  <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED2" ldInst="CBFunction"/>
         </Function>
       </Bay>
       <Bay name="Bay3" templateUuid="baytype-uuid-3">
         <!-- Unassigned LNodes (no iedName) -->
         <Function name="CBFunction" templateUuid="func-uuid-3">
-          <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1"/>
-          <LNode lnClass="CSWI" lnType="TestCSWI" lnInst="1"/>
+		  <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1"/>
+		  <LNode lnClass="CSWI" lnType="TestCSWI" lnInst="1"/>
         </Function>
       </Bay>
     </VoltageLevel>
@@ -142,7 +142,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 					const node = removeEdit.node as Element
 					expect(node.tagName).toBe('LN')
 					expect(node.getAttribute('lnClass')).toBe('XCBR')
-					expect(node.getAttribute('lnInst')).toBe('1')
+					expect(node.getAttribute('inst')).toBe('1')
 				}
 			})
 
@@ -228,9 +228,9 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
   <IED name="IED1">
     <AccessPoint name="P1">
       <Server>
-        <LDevice inst="CBFunction_aa11bb22">
-          <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
-        </LDevice>
+				<LDevice inst="CBFunction_aa11bb22">
+					<LN lnClass="XCBR" inst="1" lnType="TestXCBR"/>
+				</LDevice>
       </Server>
     </AccessPoint>
   </IED>
@@ -238,7 +238,7 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
     <VoltageLevel>
       <Bay name="Bay1" templateUuid="baytype-uuid-1">
         <Function name="CBFunction" uuid="aa11bb22-0000-0000-0000-000000000000">
-          <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1"/>
+		  <LNode lnClass="XCBR" lnType="TestXCBR" lnInst="1" iedName="IED1"/>
         </Function>
       </Bay>
     </VoltageLevel>
@@ -293,8 +293,8 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
   <IED name="IED1">
     <AccessPoint name="P1">
       <Server>
-        <LDevice inst="-CEQ2_DisconnectorFunction_a1b2c3d4">
-          <LN lnClass="XSWI" lnInst="1" lnType="XSWI$type"/>
+				<LDevice inst="-CEQ2_DisconnectorFunction_a1b2c3d4">
+					<LN lnClass="XSWI" inst="1" lnType="XSWI$type"/>
         </LDevice>
       </Server>
     </AccessPoint>
@@ -304,12 +304,12 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
       <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
         <ConductingEquipment name="-CEQ2" type="DIS" uuid="equip-uuid-2" templateUuid="tpl-uuid-2" originUuid="orig-uuid-2">
           <EqFunction name="DisconnectorFunction" uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
-            <LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction_a1b2c3d4"/>
+			<LNode lnClass="XSWI" lnInst="1" lnType="XSWI$type" iedName="IED1" ldInst="-CEQ2_DisconnectorFunction_a1b2c3d4"/>
           </EqFunction>
         </ConductingEquipment>
         <ConductingEquipment name="-CEQ3" type="CBR" uuid="equip-uuid-3" templateUuid="tpl-uuid-3" originUuid="orig-uuid-3">
           <EqFunction name="CircuitBreakerFunction">
-            <LNode lnClass="XCBR" lnInst="1" lnType="XCBR$type"/>
+			<LNode lnClass="XCBR" lnInst="1" lnType="XCBR$type"/>
           </EqFunction>
         </ConductingEquipment>
       </Bay>
@@ -378,8 +378,8 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
   <IED name="IED1">
     <AccessPoint name="P1">
       <Server>
-        <LDevice inst="ProtectionFunction_bb22cc33">
-          <LN lnClass="PTRC" lnInst="1" lnType="PTRC$type"/>
+				<LDevice inst="ProtectionFunction_bb22cc33">
+					<LN lnClass="PTRC" inst="1" lnType="PTRC$type"/>
         </LDevice>
       </Server>
     </AccessPoint>
@@ -388,10 +388,10 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
     <VoltageLevel>
       <Bay name="Bay1" uuid="bay-uuid-1" templateUuid="baytype-uuid-1">
         <Function name="ProtectionFunction" uuid="bb22cc33-0000-0000-0000-000000000000" templateUuid="tpl-func-1" originUuid="orig-func-1">
-          <LNode lnClass="PTRC" lnInst="1" lnType="PTRC$type" iedName="IED1" ldInst="ProtectionFunction_bb22cc33"/>
+		  <LNode lnClass="PTRC" lnInst="1" lnType="PTRC$type" iedName="IED1" ldInst="ProtectionFunction_bb22cc33"/>
         </Function>
         <Function name="MeasurementFunction" uuid="func-uuid-2" templateUuid="tpl-func-2" originUuid="orig-func-2">
-          <LNode lnClass="MMXU" lnInst="1" lnType="MMXU$type"/>
+		  <LNode lnClass="MMXU" lnInst="1" lnType="MMXU$type"/>
         </Function>
       </Bay>
     </VoltageLevel>

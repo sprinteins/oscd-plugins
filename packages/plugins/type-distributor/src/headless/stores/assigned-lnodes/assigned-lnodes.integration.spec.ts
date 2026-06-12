@@ -104,7 +104,7 @@ describe('Integration: Assigned LNodes Flow', () => {
 					<AccessPoint name="AP1">
 						<Server>
 							<LDevice inst="LD1">
-								<LN lnClass="XCBR" lnType="TestXCBR" lnInst="1" />
+								<LN lnClass="XCBR" lnType="TestXCBR" inst="1" />
 							</LDevice>
 						</Server>
 					</AccessPoint>
