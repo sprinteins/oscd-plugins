@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-06-12
+### Added
+- `<Services>` element on each generated IED now contains a full fixed set of child elements required for Publisher Plugin compatibility. All values are fixed/non-configurable.
+### Changed
+- Logical Nodes within IED `LDevice` elements (`LN`, `LN0`) now use the normative SCL attribute `inst` instead of `lnInst`.
+
 ## [1.1.0] - 2026-04-27
 ### Added
 - Handles now general equipment elements
