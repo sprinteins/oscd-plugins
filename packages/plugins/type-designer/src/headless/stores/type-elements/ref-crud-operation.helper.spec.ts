@@ -1,46 +1,36 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const {
-	mockAddUnstableNamespaceToRootElement,
-	mockCreateAndDispatchEditEvent,
-	mockCreateStandardElement,
-	mockUuid,
-	mockStores,
-	mockConstants,
+  mockAddUnstableNamespaceToRootElement,
+  mockCreateAndDispatchEditEvent,
+  mockCreateStandardElement,
+  mockUuid,
+  mockStores,
 } = vi.hoisted(() => ({
-	mockAddUnstableNamespaceToRootElement: vi.fn(),
-	mockCreateAndDispatchEditEvent: vi.fn(),
-	mockCreateStandardElement: vi.fn(),
-	mockUuid: vi.fn(() => 'test-uuid'),
-	mockStores: {
-		pluginGlobalStore: {
-			host: {} as EventTarget | null,
-			xmlDocument: document.implementation.createDocument(
-				null,
-				'SCL',
-				null,
-			) as XMLDocument | null,
-		},
-		pluginLocalStore: {
-			addUnstableNamespaceToRootElement: vi.fn(),
-			currentEdition: 'edition-2',
-			currentUnstableRevision: 'revision-1',
-		},
-		typeElementsStore: {
-			typeElementsPerFamily: {
-				lNodeType: {},
-			},
-		},
-	},
-	mockConstants: {
-		REF_FAMILY: {
-			generalEquipment: 'generalEquipment',
-			conductingEquipment: 'conductingEquipment',
-			function: 'function',
-			eqFunction: 'eqFunction',
-			lNode: 'lNode',
-		},
-	},
+  mockAddUnstableNamespaceToRootElement: vi.fn(),
+  mockCreateAndDispatchEditEvent: vi.fn(),
+  mockCreateStandardElement: vi.fn(),
+  mockUuid: vi.fn(() => 'test-uuid'),
+  mockStores: {
+    pluginGlobalStore: {
+      host: {} as EventTarget | null,
+      xmlDocument: document.implementation.createDocument(
+        null,
+        'SCL',
+        null,
+      ) as XMLDocument | null,
+    },
+    pluginLocalStore: {
+      addUnstableNamespaceToRootElement: vi.fn(),
+      currentEdition: 'edition-2',
+      currentUnstableRevision: 'revision-1',
+    },
+    typeElementsStore: {
+      typeElementsPerFamily: {
+        lNodeType: {},
+      },
+    },
+  },
 }))
 
 mockStores.pluginLocalStore.addUnstableNamespaceToRootElement =
@@ -64,7 +54,7 @@ vi.mock('@/headless/stores', () => ({
 	typeElementsStore: mockStores.typeElementsStore,
 }))
 
-vi.mock('@/headless/constants', () => mockConstants)
+import { REF_FAMILY } from '@/headless/constants/type-elements'
 
 import {
 	createNewRef,
@@ -106,7 +96,7 @@ beforeEach(() => {
 describe('createNewRef', () => {
 	it.each([
 		{
-			family: 'generalEquipment',
+			family: REF_FAMILY.generalEquipment,
 			expectedAttributes: {
 				virtual: 'false',
 				templateUuid: 'type-id',
@@ -114,7 +104,7 @@ describe('createNewRef', () => {
 			},
 		},
 		{
-			family: 'conductingEquipment',
+			family: REF_FAMILY.conductingEquipment,
 			expectedAttributes: {
 				virtual: 'false',
 				templateUuid: 'type-id',
@@ -122,14 +112,14 @@ describe('createNewRef', () => {
 			},
 		},
 		{
-			family: 'function',
+			family: REF_FAMILY.function,
 			expectedAttributes: {
 				templateUuid: 'type-id',
 				uuid: 'test-uuid',
 			},
 		},
 		{
-			family: 'eqFunction',
+			family: REF_FAMILY.eqFunction,
 			expectedAttributes: {
 				templateUuid: 'type-id',
 				uuid: 'test-uuid',
@@ -149,7 +139,7 @@ describe('createNewRef', () => {
 			mockCreateStandardElement.mockReturnValue(newReference)
 
 			createNewRef({
-				family: family as never,
+				family: family,
 				sourceTypeIdOrUuid: 'type-id',
 				parentTypeWrapper,
 			})
@@ -208,7 +198,7 @@ describe('createNewRef', () => {
 		mockCreateStandardElement.mockReturnValue(newLNodeReference)
 
 		createNewRef({
-			family: 'lNode' as never,
+			family: REF_FAMILY.lNode,
 			sourceTypeIdOrUuid: 'lNode-type-id',
 			parentTypeWrapper,
 		})
@@ -216,7 +206,7 @@ describe('createNewRef', () => {
 		expect(mockCreateStandardElement).toHaveBeenCalledWith({
 			xmlDocument,
 			element: {
-				family: 'lNode',
+				family: REF_FAMILY.lNode,
 			},
 			attributes: {
 				lnClass: 'PTOC',
@@ -235,7 +225,7 @@ describe('createNewRef', () => {
 
 		expect(() =>
 			createNewRef({
-				family: 'function' as never,
+				family: REF_FAMILY.function,
 				sourceTypeIdOrUuid: 'type-id',
 				parentTypeWrapper: document.createElement('Parent'),
 			}),
@@ -249,7 +239,7 @@ describe('createNewRef', () => {
 
 		expect(() =>
 			createNewRef({
-				family: 'function' as never,
+				family: REF_FAMILY.function,
 				sourceTypeIdOrUuid: 'type-id',
 				parentTypeWrapper: document.createElement('Parent'),
 			}),
@@ -269,7 +259,7 @@ describe('deleteRef', () => {
 
 		deleteRef({
 			refElementToDelete: referenceToDelete,
-			refFamily: 'function' as never,
+			refFamily: REF_FAMILY.function,
 		})
 
 		expect(mockCreateAndDispatchEditEvent).toHaveBeenCalledWith({
@@ -299,7 +289,7 @@ describe('deleteRef', () => {
 
 		deleteRef({
 			refElementToDelete: lNodeToDelete,
-			refFamily: 'lNode' as never,
+			refFamily: REF_FAMILY.lNode,
 		})
 
 		expect(firstLNode.getAttribute('lnInst')).toBe('1')
@@ -331,7 +321,7 @@ describe('deleteRef', () => {
 		expect(() =>
 			deleteRef({
 				refElementToDelete: document.createElement('Reference'),
-				refFamily: 'function' as never,
+				refFamily: REF_FAMILY.function,
 			}),
 		).toThrow('No host available')
 	})
