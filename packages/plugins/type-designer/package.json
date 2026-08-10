@@ -14,7 +14,11 @@
 		"//====== INTEGRATED ======//": "",
 		"integrated": "concurrently 'npm:build:watch' 'npm:preview'",
 		"//====== SVELTE ======//": "",
-		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
+		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
+		"//====== TEST ======//": "",
+		"test": "vitest --config vitest.config.ts",
+    	"test:run": "vitest --config vitest.config.ts --run",
+    	"test:coverage": "vitest --config vitest.config.ts --run --coverage"
 	},
 	"files": [
 		"dist"
@@ -30,10 +34,15 @@
 		"@oscd-plugins/core-standard": "workspace:^",
 		"@oscd-plugins/core-ui-svelte": "workspace:^",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/svelte": "^3.2.2",
+		"@testing-library/user-event": "^14.6.1",
 		"@tsconfig/svelte": "^5.0.4",
 		"@types/uuid": "^10.0.0",
+		"@vitest/coverage-v8": "^4.1.10",
 		"autoprefixer": "^10.4.20",
 		"concurrently": "^7.6.0",
+		"jsdom": "^21.1.2",
 		"lucide-svelte": "^0.469.0",
 		"postcss": "^8.4.49",
 		"svelte": "^5.19.8",
@@ -44,6 +53,7 @@
 		"typescript": "~5.6.2",
 		"uuid": "^10.0.0",
 		"vite": "6.1.0",
-		"vite-plugin-dts": "^4.5.0"
+		"vite-plugin-dts": "^4.5.0",
+		"vitest": "^4.1.10"
 	}
 }
