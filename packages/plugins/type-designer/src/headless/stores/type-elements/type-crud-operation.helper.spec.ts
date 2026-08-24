@@ -118,7 +118,7 @@ function createElement(tagName: string): Element {
 }
 
 function resetStores(): void {
-  mockStores.pluginGlobalStore.host = {}
+  mockStores.pluginGlobalStore.host = {} as EventTarget
   mockStores.pluginGlobalStore.xmlDocument =
     document.implementation.createDocument(null, 'SCL', null)
 

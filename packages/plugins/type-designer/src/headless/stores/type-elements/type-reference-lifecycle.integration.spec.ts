@@ -217,16 +217,16 @@ describe('Integration: type and reference lifecycle', () => {
       'function-type-uuid',
     )
 
-    mockStores.typeElementsStore.typeElementsPerFamily[
-      TYPE_FAMILY.function
-    ] = {
-      'function-type-uuid': {
-        element: functionType,
-        parameters: {
-          refFamily: REF_FAMILY.function,
+    Object.assign(mockStores.typeElementsStore.typeElementsPerFamily, {
+      [TYPE_FAMILY.function]: {
+        'function-type-uuid': {
+          element: functionType,
+          parameters: {
+            refFamily: REF_FAMILY.function,
+          },
         },
       },
-    }
+    })
 
     createNewRef({
       family: REF_FAMILY.function,

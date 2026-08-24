@@ -75,7 +75,7 @@ function createXmlElement(
 beforeEach(() => {
 	vi.clearAllMocks()
 
-	mockStores.pluginGlobalStore.host = {}
+	mockStores.pluginGlobalStore.host = {} as EventTarget
 	mockStores.pluginGlobalStore.xmlDocument = createXmlDocument()
 
 	mockStores.typeElementsStore.typeElementsPerFamily = {
