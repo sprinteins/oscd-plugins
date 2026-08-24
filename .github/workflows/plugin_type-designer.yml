@@ -1,4 +1,5 @@
 name: "Plugin: Type Designer"
+
 on:
   workflow_dispatch:
   push:
@@ -6,14 +7,53 @@ on:
       - main
     paths:
       - "packages/plugins/type-designer/**"
+      - ".github/workflows/plugin_type-designer.yml"
+
 jobs:
   check:
     uses: "./.github/workflows/check_version.yml"
     with:
       plugin-name: type-designer
 
-  build:
+  test:
     needs: [check]
+    if: needs.check.outputs.has_change == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout oscd-plugins
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+        id: pnpm-install
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install Type Designer dependencies
+        run: pnpm run type-designer:install
+
+      - name: Run unit and integration tests
+        run: pnpm -C ./packages/plugins/type-designer run test:run
+
+      - name: Generate coverage report
+        run: pnpm -C ./packages/plugins/type-designer run test:coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: type-designer-coverage
+          path: packages/plugins/type-designer/coverage/
+          if-no-files-found: warn
+          retention-days: 30
+
+  build:
+    needs: [check, test]
     if: needs.check.outputs.has_change == 'true'
     uses: "./.github/workflows/build.yml"
     with:
