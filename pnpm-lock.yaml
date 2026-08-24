@@ -685,6 +685,9 @@ importers:
       '@oscd-plugins/core-ui-svelte':
         specifier: workspace:^
         version: link:../../core/ui-svelte
+      '@playwright/test':
+        specifier: ^1.57.0
+        version: 1.57.0
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
         version: 5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.97.0))

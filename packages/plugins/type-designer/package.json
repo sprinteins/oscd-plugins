@@ -17,8 +17,11 @@
 		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
 		"//====== TEST ======//": "",
 		"test": "vitest --config vitest.config.ts",
-    	"test:run": "vitest --config vitest.config.ts --run",
-    	"test:coverage": "vitest --config vitest.config.ts --run --coverage"
+		"test:run": "vitest --config vitest.config.ts --run",
+		"test:coverage": "vitest --config vitest.config.ts --run --coverage",
+		"e2e": "playwright test --config playwright.config.ts",
+		"e2e:ui": "playwright test --config playwright.config.ts --ui",
+		"e2e:report": "playwright show-report"
 	},
 	"files": [
 		"dist"
@@ -33,6 +36,7 @@
 		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/core-standard": "workspace:^",
 		"@oscd-plugins/core-ui-svelte": "workspace:^",
+		"@playwright/test": "^1.57.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/svelte": "^3.2.2",

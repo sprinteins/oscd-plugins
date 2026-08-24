@@ -89,32 +89,34 @@ onMount(() => {
 </script>
 
 
-{#if columnKey === 'equipmentType' }
-	<SelectWorkaround
-		options={equipmentFamilyOptions}
-		bind:value={currentColumnTypeFamily}
-		handleChange={() => {
-			typeElementsStore.newEquipmentType = undefined
-		}}
-	/>
-	<SelectWorkaround
-		options={equipmentTypeOptions}
-		bind:value={typeElementsStore.newEquipmentType}
-		placeholder="Select Eq"
-	/>
+<div data-testid={`${columnKey}-add-element`}>
+	{#if columnKey === 'equipmentType' }
+		<SelectWorkaround
+			options={equipmentFamilyOptions}
+			bind:value={currentColumnTypeFamily}
+			handleChange={() => {
+				typeElementsStore.newEquipmentType = undefined
+			}}
+		/>
+		<SelectWorkaround
+			options={equipmentTypeOptions}
+			bind:value={typeElementsStore.newEquipmentType}
+			placeholder="Select Eq"
+		/>
 
-{:else if columnKey === 'bayType' || columnKey === 'functionType'}
-	<Input.Root
-		bind:value={typeElementsStore.newTypeNameInputValueByColumnKey[columnKey]}
-		placeholder={currentColumnTypeFamily && typeElementsStore.newComputedTypeName?.[currentColumnTypeFamily]}
-	/>
-{/if}
+	{:else if columnKey === 'bayType' || columnKey === 'functionType'}
+		<Input.Root
+			bind:value={typeElementsStore.newTypeNameInputValueByColumnKey[columnKey]}
+			placeholder={currentColumnTypeFamily && typeElementsStore.newComputedTypeName?.[currentColumnTypeFamily]}
+		/>
+	{/if}
 
-<Button.Root
-	class="w-full lg:w-auto"
-	variant="ghost"
-	onclick={handleAddNewElement}
-	disabled={columnKey === 'equipmentType' && !(!!typeElementsStore.newEquipmentType)}
->
-	Add
-</Button.Root>
+	<Button.Root
+		class="w-full lg:w-auto"
+		variant="ghost"
+		onclick={handleAddNewElement}
+		disabled={columnKey === 'equipmentType' && !(!!typeElementsStore.newEquipmentType)}
+	>
+		Add
+	</Button.Root>
+</div>
