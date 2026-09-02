@@ -2,7 +2,8 @@
 import {
 	Button,
 	pluginGlobalStore,
-	SelectWorkaround
+	SelectWorkaround,
+	compasStore
 } from '@oscd-plugins/core-ui-svelte'
 import {
 	assignedLNodesStore,
@@ -12,6 +13,7 @@ import {
 	ssdImportStore
 } from '@/headless/stores'
 import { handleImportSSD } from './ssd-validation'
+import { loadFromCompas } from '@/headless/import'
 
 const bays = $derived(
 	pluginGlobalStore.xmlDocument?.querySelectorAll(
@@ -65,6 +67,13 @@ const isBaySwitchLocked = $derived(
       />
     </div>
   {/if}
+  {#await compasStore.isCompasEnabled then isEnabled}
+    {#if isEnabled}
+      <Button.Root variant="ghost" onclick={() => loadFromCompas()}>
+        Load from Compas
+      </Button.Root>
+    {/if}
+  {/await}
   <Button.Root onclick={() => ssdImportStore.fileInput?.click()}>
     Import SSD File
   </Button.Root>
