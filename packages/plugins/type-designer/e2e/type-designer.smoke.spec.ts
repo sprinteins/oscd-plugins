@@ -63,30 +63,4 @@ test.describe('Type Designer end-to-end tests', () => {
 			page.getByText('Bay_2', { exact: true }),
 		).toBeVisible()
 	})
-
-    /* test('creates a new Bay Type through the visible user interface', async ({
-        page,
-    }) => {
-        await page.goto('/')
-
-        const bayTypeAddElement = page.getByTestId('bayType-add-element')
-
-        const bayTypeInput = bayTypeAddElement.getByRole('textbox')
-        const addBayTypeButton = bayTypeAddElement.getByRole('button', {
-            name: 'Add',
-        })
-
-        await expect(bayTypeInput).toBeVisible()
-        await expect(addBayTypeButton).toBeVisible()
-
-        await bayTypeInput.fill('E2E_Bay')
-
-        await expect(addBayTypeButton).toBeEnabled()
-
-        await addBayTypeButton.click()
-
-        await expect(
-            page.getByText('E2E_Bay_1', { exact: true }),
-        ).toBeVisible()
-    }) */
 })
