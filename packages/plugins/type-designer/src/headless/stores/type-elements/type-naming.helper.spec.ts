@@ -81,7 +81,7 @@ describe('getNumberOfCharactersToRemoveOccurrencePart', () => {
       expected: 4,
     },
   ])(
-    'returns $expected for "$elementName" with hasUnderscore=$hasUnderscore',
+    'GIVEN element name "$elementName" with hasUnderscore=$hasUnderscore WHEN the occurrence suffix length is calculated THEN $expected characters are returned',
     ({ elementName, hasUnderscore, expected }) => {
       const result = getNumberOfCharactersToRemoveOccurrencePart({
         elementName,
@@ -94,7 +94,7 @@ describe('getNumberOfCharactersToRemoveOccurrencePart', () => {
 })
 
 describe('getElementsWithSameNameBase', () => {
-  it('returns elements with the same base name when occurrences are removed', () => {
+  it('GIVEN elements with matching and different name bases WHEN occurrences are removed THEN only elements with the same base name are returned', () => {
     setElements(TYPE_FAMILY.bay, [
       'Bay_copy_1',
       'Bay_copy_3',
@@ -114,7 +114,7 @@ describe('getElementsWithSameNameBase', () => {
     ])
   })
 
-  it('searches across all families when no family is provided', () => {
+  it('GIVEN matching elements in multiple families WHEN no family is provided THEN all families are searched', () => {
     setElements(TYPE_FAMILY.bay, ['Bay_copy_1'])
     setElements(TYPE_FAMILY.function, ['Bay_copy_2'])
 
@@ -142,7 +142,7 @@ describe('getTypeNextOccurrence', () => {
       expected: 11,
     },
   ])(
-    'returns $expected as the next occurrence for $existingNames',
+    'GIVEN existing names $existingNames WHEN the next occurrence is requested THEN $expected is returned',
     ({ existingNames, expected }) => {
       setElements(TYPE_FAMILY.bay, existingNames)
 
@@ -188,7 +188,7 @@ describe('getNewNameWithOccurrence', () => {
       expected: 'Bay_copy_3',
     },
   ])(
-    'returns "$expected" when cloning "$elementName"',
+    'GIVEN "$elementName" and existing names $existingNames WHEN a clone name is generated THEN "$expected" is returned',
     ({
       existingNames,
       elementName,
@@ -237,7 +237,7 @@ describe('computeNameWithOptionalSuffix', () => {
       expected: 'CustomFunction_7',
     },
   ])(
-    'returns "$expected" for input "$inputValue"',
+    'GIVEN input "$inputValue" WHEN a name with an optional suffix is computed THEN "$expected" is returned',
     ({ inputValue, defaultPrefix, nextOccurrence, expected }) => {
       const result = computeNameWithOptionalSuffix(
         TYPE_FAMILY.function,
@@ -250,7 +250,7 @@ describe('computeNameWithOptionalSuffix', () => {
     },
   )
 
-  it('appends the occurrence when an explicitly suffixed name already exists', () => {
+  it('GIVEN an explicitly suffixed name that already exists WHEN a new name is computed THEN the next occurrence is appended', () => {
     setElements(TYPE_FAMILY.function, ['CustomFunction_7'])
 
     const result = computeNameWithOptionalSuffix(

@@ -5,5 +5,3 @@ import { afterEach } from 'vitest'
 afterEach(() => {
   cleanup()
 })
-
-// (setup for integration tests later)

@@ -39,7 +39,7 @@ beforeEach(() => {
 })
 
 describe('setNameAttribute', () => {
-	it('does nothing when the imported element has no name attribute', () => {
+	it('GIVEN an imported element without a name attribute WHEN its name is processed THEN the element remains unchanged', () => {
 		const element = createImportedElement()
 
 		const result = setNameAttribute(element)
@@ -50,7 +50,7 @@ describe('setNameAttribute', () => {
 		expect(element.hasAttribute('name')).toBe(false)
 	})
 
-	it('keeps the original name when no conflict exists', () => {
+	it('GIVEN an imported element without a name conflict WHEN its name is processed THEN the original name is preserved', () => {
 		const element = createImportedElement('BayType')
 
 		mockGetElementsWithSameNameBase.mockReturnValue([])
@@ -66,7 +66,7 @@ describe('setNameAttribute', () => {
 		expect(element.getAttribute('name')).toBe('BayType')
 	})
 
-	it('renames the imported element when a name conflict exists', () => {
+	it('GIVEN an imported element with a name conflict WHEN its name is processed THEN the element is renamed', () => {
 		const element = createImportedElement('BayType')
 
 		mockGetElementsWithSameNameBase.mockReturnValue([
@@ -94,7 +94,7 @@ describe('setNameAttribute', () => {
 		expect(element.getAttribute('name')).toBe('BayType_Imported')
 	})
 
-	it('uses the generated occurrence name for repeated import conflicts', () => {
+	it('GIVEN repeated import name conflicts WHEN the imported element name is processed THEN the generated occurrence name is used', () => {
 		const element = createImportedElement('BayType')
 
 		mockGetElementsWithSameNameBase.mockReturnValue([

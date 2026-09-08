@@ -107,7 +107,7 @@ beforeEach(() => {
 })
 
 describe('Integration: imported-tree handler workflow', () => {
-	it('creates an import action and assigns originUuid plus a new uuid', async () => {
+	it('GIVEN an imported Function without a local equivalent WHEN it is imported THEN a create action is added with originUuid and a new UUID', async () => {
 		const localDocument = createXmlDocument()
 		const localRoot = localDocument.documentElement
 
@@ -163,7 +163,7 @@ describe('Integration: imported-tree handler workflow', () => {
 		expect(mockUuid).toHaveBeenCalledOnce()
 	})
 
-	it('does not create the same import action twice', async () => {
+	it('GIVEN an imported Function that was already processed WHEN it is imported again THEN no duplicate import action is created', async () => {
 		const localDocument = createXmlDocument()
 		const localRoot = localDocument.documentElement
 
@@ -198,7 +198,7 @@ describe('Integration: imported-tree handler workflow', () => {
 		expect(mockUuid).toHaveBeenCalledOnce()
 	})
 
-	it('creates a replace action when an equivalent local element exists but differs', async () => {
+	it('GIVEN a differing local element with the same UUID WHEN the imported element is processed THEN a replace action is created', async () => {
 		const localDocument = createXmlDocument()
 		const localRoot = localDocument.documentElement
 
@@ -251,7 +251,7 @@ describe('Integration: imported-tree handler workflow', () => {
 		})
 	})
 
-	it('does not create an action when local and imported elements are identical', async () => {
+	it('GIVEN identical local and imported elements WHEN the imported element is processed THEN no import action is created', async () => {
 		const localDocument = createXmlDocument()
 		const localRoot = localDocument.documentElement
 

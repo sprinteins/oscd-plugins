@@ -69,7 +69,7 @@ beforeEach(() => {
 })
 
 describe('setUuidAttributesRecursively', () => {
-	it('sets originUuid and replaces uuid recursively', () => {
+	it('GIVEN an element tree with existing UUIDs WHEN UUID attributes are updated recursively THEN originUuid is preserved and new UUIDs are assigned', () => {
 		const xmlDocument = createXmlDocument()
 
 		const root = createXmlElement(xmlDocument, 'Bay')
@@ -91,7 +91,7 @@ describe('setUuidAttributesRecursively', () => {
 		expect(mockUuid).toHaveBeenCalledTimes(2)
 	})
 
-	it('preserves an already existing originUuid', () => {
+	it('GIVEN an element with an existing originUuid WHEN UUID attributes are updated recursively THEN the existing originUuid is preserved', () => {
 		const xmlDocument = createXmlDocument()
 		const element = createXmlElement(xmlDocument, 'Function')
 
@@ -104,7 +104,7 @@ describe('setUuidAttributesRecursively', () => {
 		expect(element.getAttribute('uuid')).toBe('new-uuid')
 	})
 
-	it('assigns a uuid even when the element previously had no uuid', () => {
+	it('GIVEN an element without a UUID WHEN UUID attributes are updated recursively THEN a new UUID is assigned', () => {
 		const xmlDocument = createXmlDocument()
 		const element = createXmlElement(xmlDocument, 'Function')
 
@@ -114,7 +114,7 @@ describe('setUuidAttributesRecursively', () => {
 		expect(element.getAttribute('uuid')).toBe('new-uuid')
 	})
 
-	it('does not modify LNodeType elements or their descendants', () => {
+	it('GIVEN an LNodeType element with descendants WHEN UUID attributes are updated recursively THEN the LNodeType subtree remains unchanged', () => {
 		const xmlDocument = createXmlDocument()
 
 		const lNodeType = createXmlElement(xmlDocument, 'LNodeType')
@@ -138,7 +138,7 @@ describe('setUuidAttributesRecursively', () => {
 })
 
 describe('getCurrentImportedActionsWithUpdatedTemplateUuids', () => {
-	it('updates templateUuid references using imported elements', () => {
+	it('GIVEN imported elements with originUuid mappings WHEN templateUuid references are updated THEN imported references use the new UUIDs', () => {
 		const xmlDocument = createXmlDocument()
 
 		const importedType = createXmlElement(xmlDocument, 'Function')
@@ -176,7 +176,7 @@ describe('getCurrentImportedActionsWithUpdatedTemplateUuids', () => {
 		)
 	})
 
-	it('updates references using elements in the working SSD document', () => {
+	it('GIVEN matching elements in the working SSD document WHEN templateUuid references are updated THEN references use the current SSD UUIDs', () => {
 		const xmlDocument = createXmlDocument()
 
 		const bayTemplate = createXmlElement(xmlDocument, 'Bay')
@@ -213,7 +213,7 @@ describe('getCurrentImportedActionsWithUpdatedTemplateUuids', () => {
 		)
 	})
 
-	it('keeps an unknown templateUuid unchanged', () => {
+	it('GIVEN a templateUuid without a matching imported or SSD element WHEN templateUuid references are updated THEN the unknown UUID remains unchanged', () => {
 		const xmlDocument = createXmlDocument()
 
 		const importedReference = createXmlElement(

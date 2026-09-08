@@ -56,7 +56,7 @@ describe('getFilteredTypeElementByIds', () => {
 			filter: 'battery',
 			expectedKeys: [],
 		},
-	])('returns matching type elements for $description', ({
+	])('GIVEN $description WHEN type elements are filtered THEN the matching type elements are returned', ({
 		filter,
 		expectedKeys,
 	}) => {
@@ -65,7 +65,7 @@ describe('getFilteredTypeElementByIds', () => {
 		expect(Object.keys(result)).toEqual(expectedKeys)
 	})
 
-	it('does not modify the original collection', () => {
+	it('GIVEN a collection of type elements WHEN the collection is filtered THEN the original collection remains unchanged', () => {
 		getFilteredTypeElementByIds('transformer', typeElements)
 
 		expect(Object.keys(typeElements)).toEqual([

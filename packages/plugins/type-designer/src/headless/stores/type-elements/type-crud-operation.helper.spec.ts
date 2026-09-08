@@ -152,7 +152,7 @@ beforeEach(() => {
 })
 
 describe('getTypeParent', () => {
-  it('returns the voltage-level template for bay types', () => {
+  it('GIVEN a voltage-level template WHEN the parent for a Bay type is requested THEN the voltage-level template is returned', () => {
     const voltageLevelTemplate = createElement('VoltageLevel')
     mockStores.ssdStore.voltageLevelTemplateElement =
       voltageLevelTemplate
@@ -167,7 +167,7 @@ describe('getTypeParent', () => {
     TYPE_FAMILY.conductingEquipment,
     TYPE_FAMILY.function,
   ] as const)(
-    'returns the bay template for "%s" types',
+    'GIVEN a Bay template WHEN the parent for "%s" types is requested THEN the Bay template is returned',
     (family) => {
       const bayTemplate = createElement('Bay')
       mockStores.ssdStore.bayTemplateElement = bayTemplate
@@ -176,7 +176,7 @@ describe('getTypeParent', () => {
     },
   )
 
-  it('returns DataTypeTemplates for lNodeType', () => {
+  it('GIVEN DataTypeTemplates WHEN the parent for an lNodeType is requested THEN DataTypeTemplates are returned', () => {
     const dataTypeTemplates = createElement('DataTypeTemplates')
     mockStores.pluginLocalStore.rootSubElements.dataTypeTemplates =
       dataTypeTemplates
@@ -188,7 +188,7 @@ describe('getTypeParent', () => {
 })
 
 describe('getTypeInsertBeforeReference', () => {
-  it('returns the first ConductingEquipment before inserting GeneralEquipment', () => {
+  it('GIVEN ConductingEquipment in the Bay template WHEN the insert reference for GeneralEquipment is requested THEN the first ConductingEquipment is returned', () => {
     const bayTemplate = createElement('Bay')
     const conductingEquipment = createElement('ConductingEquipment')
 
@@ -200,7 +200,7 @@ describe('getTypeInsertBeforeReference', () => {
     ).toBe(conductingEquipment)
   })
 
-  it('uses the first Function as fallback before inserting GeneralEquipment', () => {
+  it('GIVEN no ConductingEquipment but a Function in the Bay template WHEN the insert reference for GeneralEquipment is requested THEN the first Function is returned', () => {
     const bayTemplate = createElement('Bay')
     const functionElement = createElement('Function')
 
@@ -212,7 +212,7 @@ describe('getTypeInsertBeforeReference', () => {
     ).toBe(functionElement)
   })
 
-  it('returns the first Function before inserting ConductingEquipment', () => {
+  it('GIVEN a Function in the Bay template WHEN the insert reference for ConductingEquipment is requested THEN the first Function is returned', () => {
     const bayTemplate = createElement('Bay')
     const functionElement = createElement('Function')
 
@@ -228,13 +228,13 @@ describe('getTypeInsertBeforeReference', () => {
     TYPE_FAMILY.bay,
     TYPE_FAMILY.function,
     TYPE_FAMILY.lNodeType,
-  ] as const)('returns null for "%s"', (family) => {
+  ] as const)('GIVEN the "%s" type family WHEN its insert reference is requested THEN null is returned', (family) => {
     expect(getTypeInsertBeforeReference(family)).toBeNull()
   })
 })
 
 describe('createNewType', () => {
-  it('creates and dispatches a new bay type', async () => {
+  it('GIVEN a valid Bay type context WHEN a new Bay type is created THEN the type is created and its edit is dispatched', async () => {
     const voltageLevelTemplate = createElement('VoltageLevel')
     const createdBay = createElement('Bay')
 
@@ -272,7 +272,7 @@ describe('createNewType', () => {
     })
   })
 
-  it('creates configured Terminal children for conducting equipment', async () => {
+  it('GIVEN conducting equipment configured with terminals WHEN a new type is created with children THEN the configured Terminal children are created', async () => {
     const bayTemplate = createElement('Bay')
     const createdConductingEquipment = createElement(
       'ConductingEquipment',
@@ -313,7 +313,7 @@ describe('createNewType', () => {
     })
   })
 
-  it('throws when no host is available', async () => {
+  it('GIVEN no host WHEN a new type is created THEN an error is thrown', async () => {
     mockStores.pluginGlobalStore.host = null
 
     await expect(
@@ -325,7 +325,7 @@ describe('createNewType', () => {
 })
 
 describe('deleteTypeAndRefs', () => {
-  it('deletes a bay type without searching for associated references', () => {
+  it('GIVEN a Bay type without reference handling WHEN the type is deleted THEN it is removed without searching for associated references', () => {
     const bay = createElement('Bay')
 
     mockStores.typeElementsStore.typeElementsPerFamily.bay = {
@@ -346,7 +346,7 @@ describe('deleteTypeAndRefs', () => {
     ).toHaveBeenCalledOnce()
   })
 
-  it('deletes associated references before deleting a function type', () => {
+  it('GIVEN a Function type with associated references WHEN the type is deleted THEN its matching references are deleted first', () => {
     const functionType = createElement('Function')
     const rootElement = createElement('SCL')
     const matchingReference = createElement('FunctionRef')

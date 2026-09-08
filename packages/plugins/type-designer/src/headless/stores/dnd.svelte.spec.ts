@@ -54,7 +54,7 @@ afterEach(() => {
 })
 
 describe('dndStore.handleDragStart', () => {
-	it('sets the drag state from the dragged source', () => {
+	it('GIVEN a dragged source WHEN drag start is handled THEN the drag state is populated from the source', () => {
 		startDrag({
 			sourceTypeId: 'function-id',
 			sourceTypeFamily: 'function',
@@ -69,7 +69,7 @@ describe('dndStore.handleDragStart', () => {
 })
 
 describe('dndStore.handleDragEnd', () => {
-	it('clears the complete drag state', () => {
+	it('GIVEN an active drag state WHEN drag end is handled THEN the complete drag state is cleared', () => {
 		startDrag({
 			sourceTypeId: 'function-id',
 			sourceTypeFamily: 'function',
@@ -86,7 +86,7 @@ describe('dndStore.handleDragEnd', () => {
 })
 
 describe('dndStore.handleDrop', () => {
-	it('creates a reference with an explicitly supplied reference family', () => {
+	it('GIVEN an explicitly supplied reference family WHEN the source is dropped THEN a reference is created with that family', () => {
 		const parentTypeWrapper = createParentWrapper()
 
 		startDrag({
@@ -125,7 +125,7 @@ describe('dndStore.handleDrop', () => {
 			expectedRefFamily: 'function',
 		},
 	])(
-		'derives "$expectedRefFamily" for a function dropped on "$parentTypeFamily"',
+		'GIVEN a Function source dropped on "$parentTypeFamily" WHEN no reference family is supplied THEN "$expectedRefFamily" is derived',
 		({ parentTypeFamily, expectedRefFamily }) => {
 			const parentTypeWrapper = createParentWrapper()
 
@@ -147,7 +147,7 @@ describe('dndStore.handleDrop', () => {
 		},
 	)
 
-	it('resets the drag state after a successful drop', () => {
+	it('GIVEN an active drag state WHEN a valid drop succeeds THEN the drag state is reset', () => {
 		startDrag({
 			sourceTypeId: 'function-id',
 			sourceTypeFamily: 'function',
@@ -164,7 +164,7 @@ describe('dndStore.handleDrop', () => {
 		expect(dndStore.currentSourceRefFamily).toBeUndefined()
 	})
 
-	it('throws when no reference family can be determined', () => {
+	it('GIVEN a drop combination without a valid reference family WHEN the source is dropped THEN an error is thrown', () => {
 		startDrag({
 			sourceTypeId: 'bay-id',
 			sourceTypeFamily: 'bay',

@@ -126,7 +126,7 @@ describe('createNewRef', () => {
 			},
 		},
 	])(
-		'creates a "$family" reference with the expected attributes',
+		'GIVEN the "$family" reference family WHEN a reference is created THEN it has the expected attributes',
 		({ family, expectedAttributes }) => {
 			const xmlDocument = createXmlDocument()
 			const parentTypeWrapper = createXmlElement(
@@ -169,7 +169,7 @@ describe('createNewRef', () => {
 		},
 	)
 
-	it('creates an LNode reference with the next lnInst occurrence', () => {
+	it('GIVEN existing LNode references with the same lnType WHEN a new LNode reference is created THEN the next lnInst occurrence is assigned', () => {
 		const xmlDocument = createXmlDocument()
 		const parentTypeWrapper = createXmlElement(
 			xmlDocument,
@@ -220,7 +220,7 @@ describe('createNewRef', () => {
 		})
 	})
 
-	it('throws when no XML document is available', () => {
+	it('GIVEN no XML document WHEN a reference is created THEN an error is thrown', () => {
 		mockStores.pluginGlobalStore.xmlDocument = null
 
 		expect(() =>
@@ -234,7 +234,7 @@ describe('createNewRef', () => {
 		expect(mockCreateStandardElement).not.toHaveBeenCalled()
 	})
 
-	it('throws when no host is available', () => {
+	it('GIVEN no host WHEN a reference is created THEN an error is thrown', () => {
 		mockStores.pluginGlobalStore.host = null
 
 		expect(() =>
@@ -250,7 +250,7 @@ describe('createNewRef', () => {
 })
 
 describe('deleteRef', () => {
-	it('dispatches a remove edit for a non-LNode reference', () => {
+	it('GIVEN a non-LNode reference WHEN the reference is deleted THEN a remove edit is dispatched', () => {
 		const xmlDocument = createXmlDocument()
 		const referenceToDelete = createXmlElement(
 			xmlDocument,
@@ -272,7 +272,7 @@ describe('deleteRef', () => {
 		})
 	})
 
-	it('renumbers remaining LNode references after deletion', () => {
+	it('GIVEN multiple LNode references WHEN one reference is deleted THEN the remaining references are renumbered', () => {
 		const xmlDocument = createXmlDocument()
 		const parent = createXmlElement(xmlDocument, 'Function')
 
@@ -315,7 +315,7 @@ describe('deleteRef', () => {
 		})
 	})
 
-	it('throws when no host is available for deletion', () => {
+	it('GIVEN no host WHEN a reference is deleted THEN an error is thrown', () => {
 		mockStores.pluginGlobalStore.host = null
 
 		expect(() =>

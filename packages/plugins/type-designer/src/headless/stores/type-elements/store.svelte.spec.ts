@@ -187,7 +187,7 @@ beforeEach(() => {
 })
 
 describe('typeElementsStore columns integration', () => {
-  it('groups mapped type elements into the expected columns', () => {
+  it('GIVEN mapped type elements WHEN the store columns are evaluated THEN the elements are grouped into the expected columns', () => {
     expect(
       typeElementsStore.columns[COLUMNS.bayType]
         .groupedTypeElements,
@@ -229,7 +229,7 @@ describe('typeElementsStore columns integration', () => {
     })
   })
 
-  it('includes imported type elements in the matching column', () => {
+  it('GIVEN imported type elements WHEN the store columns are evaluated THEN the imported elements are included in the matching columns', () => {
     expect(
       typeElementsStore.columns[COLUMNS.bayType]
         .importedTypeElements,
@@ -253,7 +253,7 @@ describe('typeElementsStore columns integration', () => {
     })
   })
 
-  it('filters current and imported bay types with the same filter value', () => {
+  it('GIVEN current and imported Bay types WHEN a Bay filter is applied THEN both collections use the same filter value', () => {
     typeElementsStore.filtersByColumns[COLUMNS.bayType] = 'main'
 
     expect(
@@ -271,7 +271,7 @@ describe('typeElementsStore columns integration', () => {
     ).toEqual([])
   })
 
-  it('filters imported bay types independently from current type elements', () => {
+  it('GIVEN a filter matching only imported Bay types WHEN the Bay column is evaluated THEN only the imported Bay types are returned', () => {
     typeElementsStore.filtersByColumns[COLUMNS.bayType] =
       'imported'
 
@@ -292,13 +292,13 @@ describe('typeElementsStore columns integration', () => {
 })
 
 describe('typeElementsStore name calculation integration', () => {
-  it('uses the Bay default prefix and the next occurrence', () => {
+  it('GIVEN no custom Bay name WHEN the computed name is requested THEN the Bay default prefix and next occurrence are used', () => {
     expect(
       typeElementsStore.newComputedTypeName[TYPE_FAMILY.bay],
     ).toBe('Bay_3')
   })
 
-  it('updates the computed Bay name after user input changes', () => {
+  it('GIVEN custom Bay name input WHEN the computed name is requested THEN the Bay name reflects the user input', () => {
     typeElementsStore.newTypeNameInputValueByColumnKey[
       COLUMNS.bayType
     ] = '  Custom Bay  '
@@ -308,13 +308,13 @@ describe('typeElementsStore name calculation integration', () => {
     ).toBe('Custom Bay_3')
   })
 
-  it('uses the Function default prefix and the next occurrence', () => {
+  it('GIVEN no custom Function name WHEN the computed name is requested THEN the Function default prefix and next occurrence are used', () => {
     expect(
       typeElementsStore.newComputedTypeName[TYPE_FAMILY.function],
     ).toBe('Func_3')
   })
 
-  it('updates the computed Function name after user input changes', () => {
+  it('GIVEN custom Function name input WHEN the computed name is requested THEN the Function name reflects the user input', () => {
     typeElementsStore.newTypeNameInputValueByColumnKey[
       COLUMNS.functionType
     ] = 'Protection'
@@ -326,7 +326,7 @@ describe('typeElementsStore name calculation integration', () => {
 })
 
 describe('typeElementsStore helper proxies', () => {
-  it('exposes CRUD helpers through the store', () => {
+  it('GIVEN the type elements store WHEN its CRUD helpers are accessed THEN the production helpers are exposed', () => {
     expect(typeElementsStore.createNewType).toBe(
       mocks.createNewType,
     )
@@ -339,7 +339,7 @@ describe('typeElementsStore helper proxies', () => {
     expect(typeElementsStore.deleteRef).toBe(mocks.deleteRef)
   })
 
-  it('exposes shared naming and duplicate helpers through the store', () => {
+  it('GIVEN the type elements store WHEN its shared helpers are accessed THEN the naming and duplicate helpers are exposed', () => {
     expect(typeElementsStore.getTypeNextOccurrence).toBe(
       mocks.getTypeNextOccurrence,
     )
@@ -351,7 +351,7 @@ describe('typeElementsStore helper proxies', () => {
     )
   })
 
-  it('uses production reference-family constants in the mocked definition', () => {
+  it('GIVEN the mocked plugin definition WHEN reference families are accessed THEN the production reference-family constants are used', () => {
     expect(
       mocks.pluginLocalStore.currentDefinition[
         REF_FAMILY.generalEquipment

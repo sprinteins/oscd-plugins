@@ -189,7 +189,7 @@ beforeEach(() => {
 })
 
 describe('Integration: type and reference lifecycle', () => {
-  it('creates a function type and reference, then removes both', async () => {
+  it('GIVEN a Bay template WHEN a Function type and reference are created and the type is deleted THEN both the type and reference are removed', async () => {
     const bayTemplate = mockStores.ssdStore.bayTemplateElement
 
     expect(bayTemplate).not.toBeNull()

@@ -52,7 +52,7 @@ describe('getChildrenOptions', () => {
   }
 
   it.each(familiesWithoutChildrenOptions)(
-    'returns no children options for the "%s" family',
+    'GIVEN the "%s" family without child options WHEN children options are requested THEN no children options are returned',
     (family) => {
       const result = getChildrenOptions({
         family: family,
@@ -64,7 +64,7 @@ describe('getChildrenOptions', () => {
     },
   )
 
-  it('returns one terminal as the only option for known single-terminal equipment', () => {
+  it('GIVEN known single-terminal conducting equipment WHEN children options are requested THEN one terminal is the only option', () => {
     const element = createConductingEquipment(
       singleTerminalEquipment.type,
       1,
@@ -87,7 +87,7 @@ describe('getChildrenOptions', () => {
     })
   })
 
-  it('returns two terminals as the only option for known double-terminal equipment', () => {
+  it('GIVEN known double-terminal conducting equipment WHEN children options are requested THEN two terminals are the only option', () => {
     const element = createConductingEquipment(
       doubleTerminalEquipment.type,
       2,
@@ -109,7 +109,7 @@ describe('getChildrenOptions', () => {
     })
   })
 
-  it('counts only Terminal children', () => {
+  it('GIVEN conducting equipment with Terminal and non-Terminal children WHEN children options are requested THEN only Terminal children are counted', () => {
     const element = createConductingEquipment(
       doubleTerminalEquipment.type,
       2,
@@ -126,7 +126,7 @@ describe('getChildrenOptions', () => {
     })
   })
 
-  it('allows one and two terminals for unknown conducting equipment', () => {
+  it('GIVEN unknown conducting equipment WHEN children options are requested THEN one and two terminals are allowed', () => {
     const element = createConductingEquipment('UnknownEquipment', 0)
 
     const result = getChildrenOptions({
@@ -149,7 +149,7 @@ describe('getChildrenOptions', () => {
     })
   })
 
-  it('throws an error when conducting equipment has no type attribute', () => {
+  it('GIVEN conducting equipment without a type attribute WHEN children options are requested THEN an error is thrown', () => {
     const element = createConductingEquipment()
 
     expect(() =>
