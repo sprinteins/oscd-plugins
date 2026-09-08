@@ -12,7 +12,7 @@ import {
 // STORES
 import { ssdImportStore } from '@/headless/stores/ssd-import.store.svelte'
 // COMPONENTS
-import { MoveLeft, LoaderCircle, Folder, File, FolderOpen } from 'lucide-svelte'
+import { MoveLeft, LoaderCircle, Folder, File, FolderOpen } from '@lucide/svelte'
 // TYPES
 import type { Compas } from '@oscd-plugins/core-ui-svelte'
 // VALIDATION
