@@ -14,6 +14,7 @@
 		"integrated": "concurrently 'npm:build:watch' 'npm:preview'",
 		"//====== TEST ======//": "",
 		"test": "vitest",
+		"test:ci": "vitest run --coverage",
 		"test:ui": "vitest --ui",
 		"test:ui:open": "vitest --ui --open",
 		"//====== SVELTE ======//": "",
@@ -26,7 +27,9 @@
 		"biome:lint": "biome lint src",
 		"biome:lint:write": "biome lint --write src",
 		"//====== CUSTOM ======//": "",
-		"fix:all": "pnpm run biome:format:write && pnpm run biome:lint:write && pnpm run biome:check:write && pnpm run check"
+		"fix:all": "pnpm run biome:format:write && pnpm run biome:lint:write && pnpm run biome:check:write && pnpm run check",
+		"//====== CI ======//": "",
+		"ci-tests": "npm run format:check && npm run lint && npm run build && npm run test"
 	},
 	"files": [
 		"dist"
