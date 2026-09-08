@@ -107,15 +107,99 @@ describe('buildEditForCreateIed', () => {
 			expect(servicesElement?.getAttribute('nameLength')).toBe('64')
 		})
 
-		it('GIVEN a valid name WHEN building the IED edit THEN IED has exactly one child element which is Services', () => {
+		it('GIVEN a valid name WHEN building the IED edit THEN Services contains DynAssociation with max="8"', () => {
 			// WHEN
 			const edit = buildEditForCreateIed('TestIED')
-			const iedElement = edit.node as Element
+			const services = (edit.node as Element).querySelector('Services')
 
 			// THEN
-			const children = Array.from(iedElement.children)
-			expect(children).toHaveLength(1)
-			expect(children[0].tagName).toBe('Services')
+			const el = services?.querySelector('DynAssociation')
+			expect(el).not.toBeNull()
+			expect(el?.getAttribute('max')).toBe('8')
+		})
+
+		it('GIVEN a valid name WHEN building the IED edit THEN Services contains ReportSettings with required attributes', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
+			const services = (edit.node as Element).querySelector('Services')
+
+			// THEN
+			const el = services?.querySelector('ReportSettings')
+			expect(el).not.toBeNull()
+			expect(el?.getAttribute('cbName')).toBe('Conf')
+			expect(el?.getAttribute('datSet')).toBe('Conf')
+			expect(el?.getAttribute('bufTime')).toBe('Dyn')
+			expect(el?.getAttribute('intgPd')).toBe('Dyn')
+			expect(el?.getAttribute('optFields')).toBe('Dyn')
+			expect(el?.getAttribute('owner')).toBe('true')
+			expect(el?.getAttribute('resvTms')).toBe('true')
+			expect(el?.getAttribute('rptID')).toBe('Dyn')
+			expect(el?.getAttribute('trgOps')).toBe('Dyn')
+		})
+
+		it('GIVEN a valid name WHEN building the IED edit THEN Services contains GSESettings with required attributes', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
+			const services = (edit.node as Element).querySelector('Services')
+
+			// THEN
+			const el = services?.querySelector('GSESettings')
+			expect(el).not.toBeNull()
+			expect(el?.getAttribute('cbName')).toBe('Conf')
+			expect(el?.getAttribute('datSet')).toBe('Conf')
+			expect(el?.getAttribute('appID')).toBe('Conf')
+			expect(el?.getAttribute('dataLabel')).toBe('Conf')
+		})
+
+		it('GIVEN a valid name WHEN building the IED edit THEN Services contains SMVSettings with SmpRate and SamplesPerSec children', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
+			const services = (edit.node as Element).querySelector('Services')
+
+			// THEN
+			const smvSettings = services?.querySelector('SMVSettings')
+			expect(smvSettings).not.toBeNull()
+			const smpRates = smvSettings?.querySelectorAll('SmpRate')
+			expect(smpRates?.length).toBe(2)
+			const samplesPerSec = smvSettings?.querySelectorAll('SamplesPerSec')
+			expect(samplesPerSec?.length).toBe(5)
+		})
+
+		it('GIVEN a valid name WHEN building the IED edit THEN Services contains ConfLNs with fixLnInst and fixPrefix', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
+			const services = (edit.node as Element).querySelector('Services')
+
+			// THEN
+			const el = services?.querySelector('ConfLNs')
+			expect(el).not.toBeNull()
+			expect(el?.getAttribute('fixLnInst')).toBe('true')
+			expect(el?.getAttribute('fixPrefix')).toBe('true')
+		})
+
+		it('GIVEN a valid name WHEN building the IED edit THEN Services contains SupSubscription with maxGo and maxSv', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
+			const services = (edit.node as Element).querySelector('Services')
+
+			// THEN
+			const el = services?.querySelector('SupSubscription')
+			expect(el).not.toBeNull()
+			expect(el?.getAttribute('maxGo')).toBe('100')
+			expect(el?.getAttribute('maxSv')).toBe('0')
+		})
+
+		it('GIVEN a valid name WHEN building the IED edit THEN Services contains ConfDataSet with required attributes', () => {
+			// WHEN
+			const edit = buildEditForCreateIed('TestIED')
+			const services = (edit.node as Element).querySelector('Services')
+
+			// THEN
+			const el = services?.querySelector('ConfDataSet')
+			expect(el).not.toBeNull()
+			expect(el?.getAttribute('max')).toBe('50')
+			expect(el?.getAttribute('maxAttributes')).toBe('100')
+			expect(el?.getAttribute('modify')).toBe('true')
 		})
 	})
 

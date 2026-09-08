@@ -235,7 +235,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			expect(lnElements).toHaveLength(3)
 		})
 
-		it('WHEN creating lNodes THEN LN has correct lnClass / lnType / lnInst attributes', () => {
+		it('WHEN creating lNodes THEN LN has correct lnClass / lnType / inst attributes', () => {
 			const edits = createMultipleLNodesInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
@@ -247,10 +247,10 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const [lnEl] = collectEditsByTag(edits, 'LN')
 			expect(lnEl.getAttribute('lnClass')).toBe('XCBR')
 			expect(lnEl.getAttribute('lnType')).toBe('TestLNType')
-			expect(lnEl.getAttribute('lnInst')).toBe('1')
+			expect(lnEl.getAttribute('inst')).toBe('1')
 		})
 
-		it('WHEN creating multiple lNodes THEN each LN has a unique lnInst', () => {
+		it('WHEN creating multiple lNodes THEN each LN has a unique inst', () => {
 			const lnode2: LNodeTemplate = {
 				...lnodeTemplate,
 				uuid: 'lnode2-uuid',
@@ -266,7 +266,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			})
 
 			const insts = collectEditsByTag(edits, 'LN').map((el) =>
-				el.getAttribute('lnInst')
+				el.getAttribute('inst')
 			)
 			expect(new Set(insts).size).toBe(2)
 		})
@@ -358,7 +358,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const ln = mockDocument.createElement('LN')
 			ln.setAttribute('lnClass', 'XCBR')
 			ln.setAttribute('lnType', 'TestLNType')
-			ln.setAttribute('lnInst', '1')
+			ln.setAttribute('inst', '1')
 			lDevice.appendChild(ln)
 		})
 
@@ -389,7 +389,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const existingLN = mockDocument.createElement('LN')
 			existingLN.setAttribute('lnClass', 'XCBR')
 			existingLN.setAttribute('lnType', 'TestLNType')
-			existingLN.setAttribute('lnInst', '1')
+			existingLN.setAttribute('inst', '1')
 			lDevice.appendChild(existingLN)
 		})
 
@@ -404,7 +404,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 
 			const lnEls = collectEditsByTag(edits, 'LN')
 			expect(lnEls).toHaveLength(1)
-			expect(lnEls[0].getAttribute('lnInst')).toBe('2')
+				expect(lnEls[0].getAttribute('inst')).toBe('2')
 		})
 
 		it('WHEN adding missing lNode THEN does not emit Server or LDevice edits', () => {
@@ -437,7 +437,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const existingLN = mockDocument.createElement('LN')
 			existingLN.setAttribute('lnClass', 'XCBR')
 			existingLN.setAttribute('lnType', 'TestLNType')
-			existingLN.setAttribute('lnInst', '1')
+			existingLN.setAttribute('inst', '1')
 			otherLDevice.appendChild(existingLN)
 			mockDocument.documentElement.appendChild(otherIED)
 		})
@@ -484,7 +484,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const existingLN = mockDocument.createElement('LN')
 			existingLN.setAttribute('lnClass', 'XCBR')
 			existingLN.setAttribute('lnType', 'TestLNType')
-			existingLN.setAttribute('lnInst', '1')
+			existingLN.setAttribute('inst', '1')
 			lDevice.appendChild(existingLN)
 
 			const edits = createMultipleLNodesInAccessPoint({
@@ -572,7 +572,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			const existingLN0 = mockDocument.createElement('LN0')
 			existingLN0.setAttribute('lnClass', 'LLN0')
 			existingLN0.setAttribute('lnType', 'LLN0Type')
-			existingLN0.setAttribute('lnInst', '')
+			existingLN0.setAttribute('inst', '')
 			lDevice.appendChild(existingLN0)
 
 			const edits = createMultipleLNodesInAccessPoint({

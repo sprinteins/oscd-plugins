@@ -150,7 +150,7 @@ describe('createLD0Element', () => {
 				'LN0[lnClass="LLN0"][lnType="LLN0Type"]'
 			)
 			expect(ln0).not.toBeNull()
-			expect(ln0?.getAttribute('lnInst')).toBe('')
+			expect(ln0?.getAttribute('inst')).toBe('')
 		})
 
 		it('WHEN called THEN does not create an LN element', () => {
@@ -175,7 +175,7 @@ describe('createLD0Element', () => {
 			)
 
 			const ln = ld0.querySelector(
-				'LN[lnClass="LPHD"][lnType="LPHDType"][lnInst="1"]'
+				'LN[lnClass="LPHD"][lnType="LPHDType"][inst="1"]'
 			)
 			expect(ln).not.toBeNull()
 		})
@@ -316,10 +316,10 @@ describe('createLDeviceElement', () => {
 			)
 		})
 
-		it('WHEN called THEN LN0 has lnInst as empty string', () => {
+		it('WHEN called THEN LN0 has inst as empty string', () => {
 			const lDevice = createLDeviceElement(DOC, { ...params, lnodeTypes })
 
-			expect(lDevice.querySelector('LN0')?.getAttribute('lnInst')).toBe(
+			expect(lDevice.querySelector('LN0')?.getAttribute('inst')).toBe(
 				''
 			)
 		})
