@@ -22,6 +22,7 @@ legacy-theme {
     --color-white: #f9f7f1;
     --color-white-dark: #f2f2f2;
     --color-yellow: #d9d800;
+    --color-yellow-30pc-opacity: #d9d8004d;
     --color-blue: #004552;
     --color-blue-dark: #14343e;
     --color-blue-1: #3253a8;
@@ -88,6 +89,9 @@ legacy-theme {
     --color-message-sampledvalues: var(--color-pink);
     --color-message-highlight-sampledvalues: var(--color-pink-light);
     --color-message-disabled-samplevalues: var(--color-pink-30pc-opacity);
+    --color-message-report: var(--color-yellow);
+    --color-message-highlight-report: var(--color-yellow);
+    --color-message-disabled-report: var(--color-yellow-30pc-opacity);
     --color-message-unknown: var(--color-black);
 
     /* Category Selector */

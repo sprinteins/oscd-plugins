@@ -81,6 +81,26 @@ let checkboxIsClicked = true
             type="checkbox"
             onchange={setTargetMessageType}
             checked={isSelected(
+                MESSAGE_TYPE.Report,
+                selectedMessageTypes,
+                checkboxIsClicked
+            )}
+            disabled={filterDisabled}
+            name={MESSAGE_TYPE.Report}
+            class="report-checkbox"
+        />
+        <div class="message-label">
+            <div class="icon">
+                <Icons size={"normal"} name={"reportIcon"} />
+            </div>
+            <span class="text">Report</span>
+        </div>
+    </label>
+    <label>
+        <input
+            type="checkbox"
+            onchange={setTargetMessageType}
+            checked={isSelected(
                 MESSAGE_TYPE.Unknown,
                 selectedMessageTypes,
                 checkboxIsClicked
@@ -141,6 +161,10 @@ let checkboxIsClicked = true
     // rule applies, when checkbox is checked AND not disabled
     // affects the div.message-label class
     .sampledvalues-checkbox:checked:not([disabled]) + div.message-label {
+        opacity: 1;
+    }
+
+    .report-checkbox:checked:not([disabled]) + div.message-label {
         opacity: 1;
     }
 

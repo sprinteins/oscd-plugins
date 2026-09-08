@@ -30,6 +30,7 @@ let bays = $derived(Array.from(IEDSelection.bays).join(", "))
 const serviceTypeColor: { [key in MessageType | 'Unknown']: string } = {
 	GOOSE: '--color-message-goose',
 	MMS: '--color-message-mms',
+	Report: '--color-message-report',
 	SampledValues: '--color-message-sampledvalues',
 	Unknown: '--color-message-unknown'
 }

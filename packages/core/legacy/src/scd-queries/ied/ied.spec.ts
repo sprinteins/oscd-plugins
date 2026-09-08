@@ -46,7 +46,7 @@ describe('UCCommunicationInformation', () => {
 						name: 'ReportCb',
 						targetIEDName: 'IED1',
 						serviceType: 'MMS',
-						serviceCbName: '',
+						serviceCbName: 'ReportCb',
 						serviceDatSet: ''
 					},
 					{
@@ -54,7 +54,7 @@ describe('UCCommunicationInformation', () => {
 						name: 'ReportCb',
 						targetIEDName: 'IED1',
 						serviceType: 'MMS',
-						serviceCbName: '',
+						serviceCbName: 'ReportCb',
 						serviceDatSet: ''
 					}
 				],

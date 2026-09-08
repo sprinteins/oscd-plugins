@@ -36,6 +36,9 @@
     		serviceTypeShort = "sv"
     	else if (serviceType === "MMS")
     		serviceTypeShort = "mms"
+    	else if (serviceType === "Report")
+    		// no dedicated report icon set exists yet, reuse mms icons
+    		serviceTypeShort = "mms"
     	else
     		serviceTypeShort = "undefined"
 

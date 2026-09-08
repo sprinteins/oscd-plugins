@@ -112,7 +112,7 @@ export class IEDService {
 				name: info.name,
 				targetIEDName: info.clientIEDName,
 				serviceType: MESSAGE_TYPE.MMS,
-				serviceCbName: 'MMS',
+				serviceCbName: info.name,
 				serviceDatSet: 'not implemented yet'
 			})
 		}
