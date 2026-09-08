@@ -16,7 +16,6 @@
 		--color-white: #f9f7f1;
 		--color-white-dark: #f2f2f2;
 		--color-yellow: #d9d800;
-		--color-yellow-30pc-opacity: #d9d8004d;
 		--color-blue: #004552;
 		--color-blue-dark: #14343e;
 		--color-blue-1: #3253a8;
@@ -37,6 +36,9 @@
 		--color-pink: #c73c61;
 		--color-pink-30-pc-opacity: #c73c614d;
 		--color-pink-light: #ff40a7;
+		--color-orange: #e07b00;
+		--color-orange-30pc-opacity: #e07b004d;
+		--color-orange-light: #ffb347;
 		--color-grey-1: #626262;
 		--color-grey-2: #808080;
 
@@ -79,9 +81,9 @@
 		--color-message-sampledvalues: var(--color-pink);
 		--color-message-highlight-sampledvalues: var(--color-pink-light);
 		--color-message-disabled-samplevalues: var(--color-pink-30-pc-opacity);
-		--color-message-report: var(--color-yellow);
-		--color-message-highlight-report: var(--color-yellow);
-		--color-message-disabled-report: var(--color-yellow-30pc-opacity);
+		--color-message-report: var(--color-orange);
+		--color-message-highlight-report: var(--color-orange-light);
+		--color-message-disabled-report: var(--color-orange-30pc-opacity);
 		--color-message-unknown: var(--color-black);
 
 		--color-category-selector: var(--color-beige-5);

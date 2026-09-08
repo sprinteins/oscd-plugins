@@ -114,3 +114,6 @@ dist
 _build_
 
 .local*
+
+# IDE
+.idea/

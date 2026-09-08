@@ -1,121 +1,73 @@
 <script lang="ts">
-import { isSelected, setTargetMessageType } from '.'
-import { Icons } from '@oscd-plugins/ui/src/components/icons'
 // CONSTANTS
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
+import {
+	Icons,
+	type OpenSCDIconNames
+} from '@oscd-plugins/ui/src/components/icons'
+// TYPES
+import type { MessageType } from '../../../../headless/types'
+import { isSelected, setTargetMessageType } from '.'
 
-    interface Props {
-        filterDisabled: boolean;
-        selectedMessageTypes: string[];
-    }
+interface Props {
+	filterDisabled: boolean
+	selectedMessageTypes: string[]
+}
 
-    let { filterDisabled, selectedMessageTypes }: Props = $props();
+let { filterDisabled, selectedMessageTypes }: Props = $props()
 
 let checkboxIsClicked = true
+
+type MessageTypeOption = {
+	type: MessageType
+	label: string
+	icon: OpenSCDIconNames
+	testId?: string
+}
+
+// Adding a new message type only requires a new entry here -
+// markup and styling below are generic and apply to all entries.
+const messageTypeOptions: MessageTypeOption[] = [
+	{
+		type: MESSAGE_TYPE.MMS,
+		label: 'MMS',
+		icon: 'tscdMmsIcon',
+		testId: 'exampleFilterToBeChecked'
+	},
+	{ type: MESSAGE_TYPE.GOOSE, label: 'GOOSE', icon: 'tscdGooseIcon' },
+	{
+		type: MESSAGE_TYPE.SampledValues,
+		label: 'Sampled Values',
+		icon: 'tscdSvIcon'
+	},
+	{ type: MESSAGE_TYPE.Report, label: 'Report', icon: 'reportIcon' },
+	{ type: MESSAGE_TYPE.Unknown, label: 'Unknown', icon: 'unknownIcon' }
+]
 </script>
 
 <div class="message-type">
-    <label>
-        <input
-            type="checkbox"
-            onchange={setTargetMessageType}
-            checked={isSelected(
-                MESSAGE_TYPE.MMS,
-                selectedMessageTypes,
-                checkboxIsClicked
-            )}
-            disabled={filterDisabled}
-            name={MESSAGE_TYPE.MMS}
-            data-testid="exampleFilterToBeChecked"
-            class="mms-checkbox"
-        />
-        <div class="message-label">
-            <div class="icon">
-                <Icons size={"normal"} name={"tscdMmsIcon"} />
+    {#each messageTypeOptions as option (option.type)}
+        <label>
+            <input
+                type="checkbox"
+                onchange={setTargetMessageType}
+                checked={isSelected(
+                    option.type,
+                    selectedMessageTypes,
+                    checkboxIsClicked
+                )}
+                disabled={filterDisabled}
+                name={option.type}
+                data-testid={option.testId}
+            />
+            <div class="message-label">
+                <div class="icon">
+                    <Icons size={"normal"} name={option.icon} />
+                </div>
+                <span class="text">{option.label}</span>
             </div>
-            <span class="text">MMS</span>
-        </div>
-    </label>
-    <label>
-        <input
-            type="checkbox"
-            onchange={setTargetMessageType}
-            checked={isSelected(
-                MESSAGE_TYPE.GOOSE,
-                selectedMessageTypes,
-                checkboxIsClicked
-            )}
-            disabled={filterDisabled}
-            name={MESSAGE_TYPE.GOOSE}
-            class="goose-checkbox"
-        />
-        <div class="message-label">
-            <div class="icon">
-                <Icons size={"normal"} name={"tscdGooseIcon"} />
-            </div>
-            <span class="text">GOOSE</span>
-        </div>
-    </label>
-    <label>
-        <input
-            type="checkbox"
-            onchange={setTargetMessageType}
-            checked={isSelected(
-                MESSAGE_TYPE.SampledValues,
-                selectedMessageTypes,
-                checkboxIsClicked
-            )}
-            disabled={filterDisabled}
-            name={MESSAGE_TYPE.SampledValues}
-            class="sampledvalues-checkbox"
-        />
-        <div class="message-label">
-            <div class="icon">
-                <Icons size={"normal"} name={"tscdSvIcon"} />
-            </div>
-            <span class="text">Sampled Values</span>
-        </div>
-    </label>
-    <label>
-        <input
-            type="checkbox"
-            onchange={setTargetMessageType}
-            checked={isSelected(
-                MESSAGE_TYPE.Report,
-                selectedMessageTypes,
-                checkboxIsClicked
-            )}
-            disabled={filterDisabled}
-            name={MESSAGE_TYPE.Report}
-            class="report-checkbox"
-        />
-        <div class="message-label">
-            <div class="icon">
-                <Icons size={"normal"} name={"reportIcon"} />
-            </div>
-            <span class="text">Report</span>
-        </div>
-    </label>
-    <label>
-        <input
-            type="checkbox"
-            onchange={setTargetMessageType}
-            checked={isSelected(
-                MESSAGE_TYPE.Unknown,
-                selectedMessageTypes,
-                checkboxIsClicked
-            )}
-            disabled={filterDisabled}
-            name={MESSAGE_TYPE.Unknown}
-            class="undefined-checkbox"
-        />
-        <div class="message-label">
-            <div class="icon">
-                <Icons size={"normal"} name={"unknownIcon"} />
-            </div>
-            <span class="text">Unknown</span>
-        </div>
-    </label>
+        </label>
+    {/each}
 </div>
 
 <style lang="scss">
@@ -146,29 +98,9 @@ let checkboxIsClicked = true
         opacity: 0.4;
     }
 
-    // rule applies, when checkbox is checked AND not disabled
-    // affects the div.message-label class
-    .mms-checkbox:checked:not([disabled]) + div.message-label {
-        opacity: 1;
-    }
-
-    // rule applies, when checkbox is checked AND not disabled
-    // affects the div.message-label class
-    .goose-checkbox:checked:not([disabled]) + div.message-label {
-        opacity: 1;
-    }
-
-    // rule applies, when checkbox is checked AND not disabled
-    // affects the div.message-label class
-    .sampledvalues-checkbox:checked:not([disabled]) + div.message-label {
-        opacity: 1;
-    }
-
-    .report-checkbox:checked:not([disabled]) + div.message-label {
-        opacity: 1;
-    }
-
-    .undefined-checkbox:checked:not([disabled]) + div.message-label {
+    // rule applies, when a checkbox is checked AND not disabled
+    // affects the sibling div.message-label, regardless of message type
+    input[type="checkbox"]:checked:not([disabled]) + div.message-label {
         opacity: 1;
     }
 
@@ -178,3 +110,4 @@ let checkboxIsClicked = true
         }
     }
 </style>
+
