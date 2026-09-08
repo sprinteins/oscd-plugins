@@ -1,0 +1,27 @@
+name: Install Dependencies
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        required: true
+        type: string
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install package dependencies
+        run: pnpm run ${{ inputs.package-name }}:install

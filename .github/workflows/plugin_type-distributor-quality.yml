@@ -1,0 +1,35 @@
+name: Quality Check @oscd-plugins/type-distributor
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/plugins/type-distributor/**'
+
+jobs:
+  install:
+    name: Install Dependencies
+    uses: ./.github/workflows/_install.yml
+    with:
+      package-name: type-distributor
+
+  build:
+    name: Build Project
+    needs: install
+    uses: ./.github/workflows/_build.yml
+    with:
+      package-name: type-distributor
+
+  test:
+    name: Run Tests
+    needs: install
+    uses: ./.github/workflows/_test.yml
+    with:
+      package-name: type-distributor
+
+  lint:
+    name: Lint Code
+    needs: install
+    uses: ./.github/workflows/_lint.yml
+    with:
+      package-name: type-distributor
