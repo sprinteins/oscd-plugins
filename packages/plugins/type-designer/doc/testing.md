@@ -44,52 +44,6 @@ The main configuration files are:
 
 Refer to these files for environment-specific configuration.
 
-### Running tests locally
-
-Run the commands from the repository root after installing the workspace dependencies:
-
-```bash
-pnpm run type-designer:install
-```
-
-Run unit and integration tests in watch mode:
-
-```bash
-pnpm -C ./packages/plugins/type-designer run test
-```
-
-Run unit and integration tests once:
-
-```bash
-pnpm -C ./packages/plugins/type-designer run test:run
-```
-
-Run unit and integration tests with coverage:
-
-```bash
-pnpm -C ./packages/plugins/type-designer run test:coverage
-```
-
-Run the Playwright end-to-end tests:
-
-```bash
-pnpm -C ./packages/plugins/type-designer run e2e
-```
-
-For interactive Playwright development:
-
-```bash
-pnpm -C ./packages/plugins/type-designer run e2e:ui
-```
-
-Open the Playwright HTML report:
-
-```bash
-pnpm -C ./packages/plugins/type-designer run e2e:report
-```
-
-Generated coverage reports, Playwright reports and test results are ignored by Git.
-
 ### Test file conventions
 
 Vitest unit tests use the `*.spec.ts` suffix and are located next to the implementation under test.
