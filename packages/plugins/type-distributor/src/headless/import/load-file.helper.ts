@@ -1,18 +1,9 @@
-import { dialogStore } from '@oscd-plugins/core-ui-svelte'
 import { ssdImportStore } from '@/headless/stores/ssd-import.store.svelte'
-import ImportDialog from '@/ui/components/compas/import-dialog.svelte'
 
 export const INVALID_XML_IMPORT_MESSAGE =
 	'The selected file is not a valid XML SSD.'
 
 export const NO_FILE_SELECTED_MESSAGE = 'No file selected'
-
-export async function loadFromCompas() {
-	dialogStore.mountInnerComponent({
-		innerComponent: ImportDialog
-	})
-	await dialogStore.openDialog()
-}
 
 export async function loadFromLocal() {
 	const file = ssdImportStore.fileInput?.files?.[0]

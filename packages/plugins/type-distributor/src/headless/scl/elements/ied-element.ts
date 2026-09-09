@@ -10,7 +10,9 @@ const DEFAULT_SIED_ATTRIBUTES = {
 } as const
 
 function createServicesElement(xmlDocument: XMLDocument): Element {
-	const services = createElement(xmlDocument, 'Services', { nameLength: '64' })
+	const services = createElement(xmlDocument, 'Services', {
+		nameLength: '64'
+	})
 
 	services.appendChild(
 		createElement(xmlDocument, 'DynAssociation', { max: '8' })
@@ -98,7 +100,10 @@ function createServicesElement(xmlDocument: XMLDocument): Element {
 		})
 	)
 	services.appendChild(
-		createElement(xmlDocument, 'FileHandling', { ftp: 'true', ftps: 'true' })
+		createElement(xmlDocument, 'FileHandling', {
+			ftp: 'true',
+			ftps: 'true'
+		})
 	)
 	services.appendChild(
 		createElement(xmlDocument, 'ConfLNs', {

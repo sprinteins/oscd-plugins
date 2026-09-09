@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config'
 import { resolve } from 'node:path'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
 	// biome-ignore lint/suspicious/noExplicitAny: There seem to be inconsistencies with instances of vite
@@ -17,7 +17,6 @@ export default defineConfig({
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'lcov', 'html'],
-			enabled: true,
 			reportsDirectory: 'coverage',
 			include: ['src/headless/**/*.{ts,svelte}'],
 			exclude: ['src/**/*.spec.ts', 'src/headless/tests/**']
