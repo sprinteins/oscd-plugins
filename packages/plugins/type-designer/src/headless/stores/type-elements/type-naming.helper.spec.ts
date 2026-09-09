@@ -1,0 +1,265 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const { mockTypeElementsPerFamily } = vi.hoisted(() => ({
+  mockTypeElementsPerFamily: {
+    bay: {},
+    function: {},
+  },
+}))
+
+vi.mock('@/headless/stores', () => ({
+  typeElementsStore: {
+    typeElementsPerFamily: mockTypeElementsPerFamily,
+  },
+}))
+
+import { TYPE_FAMILY } from '@/headless/constants/type-elements'
+
+import {
+  computeNameWithOptionalSuffix,
+  getElementsWithSameNameBase,
+  getNewNameWithOccurrence,
+  getNumberOfCharactersToRemoveOccurrencePart,
+  getTypeNextOccurrence,
+} from './type-naming.helper'
+
+type TestedFamily =
+  | typeof TYPE_FAMILY.bay
+  | typeof TYPE_FAMILY.function
+
+function resetElements(): void {
+  mockTypeElementsPerFamily.bay = {}
+  mockTypeElementsPerFamily.function = {}
+}
+
+function setElements(
+  family: TestedFamily,
+  names: string[],
+): void {
+  mockTypeElementsPerFamily[family] = Object.fromEntries(
+    names.map((name, index) => [
+      `${family}-${index}`,
+      {
+        attributes: { name },
+        parameters: { label: name },
+      },
+    ]),
+  )
+}
+
+function createElementWithName(name: string): Element {
+  const element = document.createElement('Bay')
+  element.setAttribute('name', name)
+
+  return element
+}
+
+beforeEach(() => {
+  resetElements()
+})
+
+describe('getNumberOfCharactersToRemoveOccurrencePart', () => {
+  it.each([
+    {
+      elementName: undefined,
+      hasUnderscore: false,
+      expected: 0,
+    },
+    {
+      elementName: 'Bay',
+      hasUnderscore: false,
+      expected: 3,
+    },
+    {
+      elementName: 'Bay_12',
+      hasUnderscore: true,
+      expected: 3,
+    },
+    {
+      elementName: 'Bay_12',
+      hasUnderscore: false,
+      expected: 4,
+    },
+  ])(
+    'GIVEN element name "$elementName" with hasUnderscore=$hasUnderscore WHEN the occurrence suffix length is calculated THEN $expected characters are returned',
+    ({ elementName, hasUnderscore, expected }) => {
+      const result = getNumberOfCharactersToRemoveOccurrencePart({
+        elementName,
+        hasUnderscore,
+      })
+
+      expect(result).toBe(expected)
+    },
+  )
+})
+
+describe('getElementsWithSameNameBase', () => {
+  it('GIVEN elements with matching and different name bases WHEN occurrences are removed THEN only elements with the same base name are returned', () => {
+    setElements(TYPE_FAMILY.bay, [
+      'Bay_copy_1',
+      'Bay_copy_3',
+      'Other_copy_1',
+    ])
+
+    const result = getElementsWithSameNameBase({
+      family: TYPE_FAMILY.bay,
+      valueToTest: 'Bay_copy',
+      removeOccurrencePartToTestedValue: true,
+    })
+
+    expect(result).toHaveLength(2)
+    expect(result.map((element) => element.attributes.name)).toEqual([
+      'Bay_copy_1',
+      'Bay_copy_3',
+    ])
+  })
+
+  it('GIVEN matching elements in multiple families WHEN no family is provided THEN all families are searched', () => {
+    setElements(TYPE_FAMILY.bay, ['Bay_copy_1'])
+    setElements(TYPE_FAMILY.function, ['Bay_copy_2'])
+
+    const result = getElementsWithSameNameBase({
+      valueToTest: 'Bay_copy',
+      removeOccurrencePartToTestedValue: true,
+    })
+
+    expect(result).toHaveLength(2)
+  })
+})
+
+describe('getTypeNextOccurrence', () => {
+  it.each([
+    {
+      existingNames: [],
+      expected: 1,
+    },
+    {
+      existingNames: ['Bay_copy_1'],
+      expected: 2,
+    },
+    {
+      existingNames: ['Bay_copy_1', 'Bay_copy_3', 'Bay_copy_10'],
+      expected: 11,
+    },
+  ])(
+    'GIVEN existing names $existingNames WHEN the next occurrence is requested THEN $expected is returned',
+    ({ existingNames, expected }) => {
+      setElements(TYPE_FAMILY.bay, existingNames)
+
+      const result = getTypeNextOccurrence({
+        family: TYPE_FAMILY.bay,
+        valueToTest: 'Bay_copy',
+        removeOccurrencePartToTestedValue: true,
+      })
+
+      expect(result).toBe(expected)
+    },
+  )
+})
+
+describe('getNewNameWithOccurrence', () => {
+  it.each([
+    {
+      existingNames: [],
+      elementName: 'Bay',
+      suffix: 'copy',
+      skipFirstOccurrence: false,
+      expected: 'Bay_copy_1',
+    },
+    {
+      existingNames: ['Bay_copy_1', 'Bay_copy_2'],
+      elementName: 'Bay',
+      suffix: 'copy',
+      skipFirstOccurrence: false,
+      expected: 'Bay_copy_3',
+    },
+    {
+      existingNames: [],
+      elementName: 'Bay',
+      suffix: 'copy',
+      skipFirstOccurrence: true,
+      expected: 'Bay_copy',
+    },
+    {
+      existingNames: ['Bay_copy_1', 'Bay_copy_2'],
+      elementName: 'Bay_copy_1',
+      suffix: 'copy',
+      skipFirstOccurrence: false,
+      expected: 'Bay_copy_3',
+    },
+  ])(
+    'GIVEN "$elementName" and existing names $existingNames WHEN a clone name is generated THEN "$expected" is returned',
+    ({
+      existingNames,
+      elementName,
+      suffix,
+      skipFirstOccurrence,
+      expected,
+    }) => {
+      setElements(TYPE_FAMILY.bay, existingNames)
+
+      const result = getNewNameWithOccurrence({
+        element: createElementWithName(elementName),
+        family: TYPE_FAMILY.bay,
+        suffix,
+        skipFirstOccurrence,
+      })
+
+      expect(result).toBe(expected)
+    },
+  )
+})
+
+describe('computeNameWithOptionalSuffix', () => {
+  it.each([
+    {
+      inputValue: 'Function',
+      defaultPrefix: 'Function',
+      nextOccurrence: 1,
+      expected: 'Function_1',
+    },
+    {
+      inputValue: '  Function  ',
+      defaultPrefix: 'Function',
+      nextOccurrence: 2,
+      expected: 'Function_2',
+    },
+    {
+      inputValue: undefined,
+      defaultPrefix: 'Function',
+      nextOccurrence: 3,
+      expected: 'Function_3',
+    },
+    {
+      inputValue: 'CustomFunction_7',
+      defaultPrefix: 'Function',
+      nextOccurrence: 2,
+      expected: 'CustomFunction_7',
+    },
+  ])(
+    'GIVEN input "$inputValue" WHEN a name with an optional suffix is computed THEN "$expected" is returned',
+    ({ inputValue, defaultPrefix, nextOccurrence, expected }) => {
+      const result = computeNameWithOptionalSuffix(
+        TYPE_FAMILY.function,
+        inputValue,
+        defaultPrefix,
+        nextOccurrence,
+      )
+
+      expect(result).toBe(expected)
+    },
+  )
+
+  it('GIVEN an explicitly suffixed name that already exists WHEN a new name is computed THEN the next occurrence is appended', () => {
+    setElements(TYPE_FAMILY.function, ['CustomFunction_7'])
+
+    const result = computeNameWithOptionalSuffix(
+      TYPE_FAMILY.function,
+      'CustomFunction_7',
+      'Function',
+      2,
+    )
+
+    expect(result).toBe('CustomFunction_7_2')
+  })
+})
