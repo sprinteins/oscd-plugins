@@ -319,9 +319,7 @@ describe('createLDeviceElement', () => {
 		it('WHEN called THEN LN0 has inst as empty string', () => {
 			const lDevice = createLDeviceElement(DOC, { ...params, lnodeTypes })
 
-			expect(lDevice.querySelector('LN0')?.getAttribute('inst')).toBe(
-				''
-			)
+			expect(lDevice.querySelector('LN0')?.getAttribute('inst')).toBe('')
 		})
 	})
 

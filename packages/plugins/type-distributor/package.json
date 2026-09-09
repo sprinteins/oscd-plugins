@@ -29,7 +29,7 @@
 		"//====== CUSTOM ======//": "",
 		"fix:all": "pnpm run biome:format:write && pnpm run biome:lint:write && pnpm run biome:check:write && pnpm run check",
 		"//====== CI ======//": "",
-		"ci-tests": "npm run format:check && npm run lint && npm run build && npm run test"
+		"ci-tests": "pnpm run biome:check && pnpm run check && pnpm run build && pnpm run test:ci"
 	},
 	"files": [
 		"dist"

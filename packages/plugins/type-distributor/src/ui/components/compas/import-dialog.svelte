@@ -1,26 +1,33 @@
 <script lang="ts">
 // SVELTE
-import { fly } from 'svelte/transition'
-import { cubicOut } from 'svelte/easing'
-// CORE
-import {
-	dialogStore,
-	compasStore,
-	Button,
-	Separator
-} from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { ssdImportStore } from '@/headless/stores/ssd-import.store.svelte'
+
 // COMPONENTS
-import { MoveLeft, LoaderCircle, Folder, File, FolderOpen } from '@lucide/svelte'
+import {
+	File,
+	Folder,
+	FolderOpen,
+	LoaderCircle,
+	MoveLeft
+} from '@lucide/svelte'
 // TYPES
 import type { Compas } from '@oscd-plugins/core-ui-svelte'
+// CORE
+import {
+	Button,
+	compasStore,
+	dialogStore,
+	Separator
+} from '@oscd-plugins/core-ui-svelte'
+import { cubicOut } from 'svelte/easing'
+import { fly } from 'svelte/transition'
+import { CreationPrerequisiteError } from '@/headless/domain/type-resolution'
+// STORES
+import { ssdImportStore } from '@/headless/stores/ssd-import.store.svelte'
 // VALIDATION
 import {
 	openSsdImportProblemDialog,
 	openSsdImportProblemDialogFromError
 } from '../ssd-validation'
-import { CreationPrerequisiteError } from '@/headless/domain/type-resolution'
 
 //====== INITIALIZATION ======//
 
