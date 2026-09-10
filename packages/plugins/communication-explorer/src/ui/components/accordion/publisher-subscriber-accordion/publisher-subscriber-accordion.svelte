@@ -36,6 +36,16 @@ const SERVICE_TYPE_ICON_PREFIX: Record<string, string> = {
 	Report: 'mms'
 }
 
+// Maps a service type to the label shown in the accordion title.
+// Report is displayed as MMS, since both are merged into a single MMS filter/label.
+const SERVICE_TYPE_DISPLAY_LABEL: Record<string, string> = {
+	Report: 'MMS'
+}
+
+function calcServiceTypeLabel(serviceType: string): string {
+	return SERVICE_TYPE_DISPLAY_LABEL[serviceType] ?? serviceType
+}
+
 function calcIconName(
 	serviceType: string,
 	connectionDirection: ConnectionTypeDirection
@@ -66,6 +76,7 @@ let affectedPublisherIEDs = $derived(
 		.map((el) => el.node)
 )
 let iconName = $derived(calcIconName(serviceType, connectionDirection))
+let serviceTypeLabel = $derived(calcServiceTypeLabel(serviceType))
 </script>
 
 <div class="accordion">
@@ -73,7 +84,7 @@ let iconName = $derived(calcIconName(serviceType, connectionDirection))
         <summary style="border-color: var({color})" class="summary">
             <div class="infoblock-headline">
                 <Icons size={"normal"} name={iconName} />
-                <span class="label">{serviceType} - {serviceLabel}</span>
+                <span class="label">{serviceTypeLabel} - {serviceLabel}</span>
                 <div class="icon">
                     <IconArrowDropDown />
                 </div>
@@ -83,7 +94,7 @@ let iconName = $derived(calcIconName(serviceType, connectionDirection))
             <hr class="dashed-line" />
             <div class="infomation-block">
                 <div>Label: {serviceLabel}</div>
-                <div>MessageType: {serviceType}</div>
+                <div>MessageType: {serviceTypeLabel}</div>
             </div>
 
             <hr class="seperation-line" />
