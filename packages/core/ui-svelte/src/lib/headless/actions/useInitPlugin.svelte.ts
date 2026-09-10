@@ -1,21 +1,23 @@
 // SVELTE
+
+import type { XMLEditor } from '@openscd/oscd-editor'
+// TYPES
+import type { IEC61850 } from '@oscd-plugins/core-standard'
 import { mount, unmount } from 'svelte'
 // LIB
 import { toast } from 'svelte-sonner'
+// HEADLESS
+import { pluginGlobalStore } from '$lib/headless/stores/index.js'
+import { buildOscdShadcnThemeVars } from '$lib/theme/oscd-to-shadcn.theme.js'
+import inlineCssFonts from '$lib/theme/styles/fonts.css?inline'
 // CSS
 import inlineCssLegacyTheme from '$lib/theme/styles/legacy-oscd-instance.theme.css?inline'
-import inlineCssShadcnTheme from '$lib/theme/styles/shadcn-stock.theme.css?inline'
-import inlineCssFonts from '$lib/theme/styles/fonts.css?inline'
 import inlineShadCnAdaptation from '$lib/theme/styles/shadcn-adaptation-to-instance-specificities.css?inline'
+import inlineCssShadcnTheme from '$lib/theme/styles/shadcn-stock.theme.css?inline'
 // COMPONENTS
 import { Toaster } from '$lib/ui/shadcn/sonner/index.js'
 // UTILS
 import { setInlineStylesVariables } from '$lib/utils/style.js'
-// HEADLESS
-import { pluginGlobalStore } from '$lib/headless/stores/index.js'
-// TYPES
-import type { IEC61850 } from '@oscd-plugins/core-standard'
-import type { XMLEditor } from '@openscd/oscd-editor';
 
 export function initPlugin(
 	node: HTMLElement,
@@ -245,12 +247,15 @@ export function initPlugin(
 			inlineShadCnAdaptation &&
 			cssVariables
 		) {
+			const oscdVarsOverride = buildOscdShadcnThemeVars(node)
+
 			style = document.createElement('style')
 			style.setAttribute('id', 'plugin-style')
 			node.insertAdjacentElement('beforebegin', style)
 
 			style.innerHTML = `
 				${selectedTheme}
+				${oscdVarsOverride}
 				${inlineCssFonts}
 				${inlineShadCnAdaptation}
 				main {
