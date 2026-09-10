@@ -42,7 +42,7 @@ Store any documentation directly connected to the system in git.
 ## File Location
 
 * Globally applicable documentation should be in the `/doc` folder.
-* PLugin specific documentation goes into `packages/plugins/<plugin>/doc`.
+* Plugin specific documentation goes into `packages/plugins/<plugin>/doc`.
 
 ## Language
 

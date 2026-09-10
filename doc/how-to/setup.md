@@ -5,7 +5,8 @@
 
 ## Project dependencies
 
-- NodeJS
+-  [NodeJS LTS](https://nodejs.org) (actual in use is v20.19.5)
+	* On MacOS: `brew install node@20`
 - pnpm: `sudo corepack enable`
 
 ## Core's dependency
