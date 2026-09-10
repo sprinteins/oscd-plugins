@@ -40,7 +40,6 @@ const messageTypeOptions: MessageTypeOption[] = [
 		label: 'Sampled Values',
 		icon: 'tscdSvIcon'
 	},
-	{ type: MESSAGE_TYPE.Report, label: 'Report', icon: 'reportIcon' },
 	{ type: MESSAGE_TYPE.Unknown, label: 'Unknown', icon: 'unknownIcon' }
 ]
 </script>
