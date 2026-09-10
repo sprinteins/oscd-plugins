@@ -1,6 +1,4 @@
 <script lang="ts">
-// import type { ServiceObject } from "../../../../communication-explorer/sidebar/ied-accordion"
-
 import { IconArrowDropDown } from '@oscd-plugins/ui'
 import {
 	Icons,
@@ -27,8 +25,7 @@ let {
 	connectionDirection
 }: Props = $props()
 
-// Maps a service type to the icon-name prefix used for its incoming/outgoing icons.
-// Report currently has no dedicated icon set, so it falls back to the MMS icons.
+// Report has no dedicated icon/label; it is displayed as MMS.
 const SERVICE_TYPE_ICON_PREFIX: Record<string, string> = {
 	GOOSE: 'goose',
 	SampledValues: 'sv',
@@ -36,8 +33,6 @@ const SERVICE_TYPE_ICON_PREFIX: Record<string, string> = {
 	Report: 'mms'
 }
 
-// Maps a service type to the label shown in the accordion title.
-// Report is displayed as MMS, since both are merged into a single MMS filter/label.
 const SERVICE_TYPE_DISPLAY_LABEL: Record<string, string> = {
 	Report: 'MMS'
 }

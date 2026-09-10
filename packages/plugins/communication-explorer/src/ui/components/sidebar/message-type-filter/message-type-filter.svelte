@@ -25,8 +25,7 @@ type MessageTypeOption = {
 	testId?: string
 }
 
-// Adding a new message type only requires a new entry here -
-// markup and styling below are generic and apply to all entries.
+// Adding a new message type only requires a new entry here.
 const messageTypeOptions: MessageTypeOption[] = [
 	{
 		type: MESSAGE_TYPE.MMS,
@@ -109,4 +108,3 @@ const messageTypeOptions: MessageTypeOption[] = [
         }
     }
 </style>
-

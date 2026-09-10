@@ -36,9 +36,6 @@
 		--color-pink: #c73c61;
 		--color-pink-30-pc-opacity: #c73c614d;
 		--color-pink-light: #ff40a7;
-		--color-orange: #e07b00;
-		--color-orange-30pc-opacity: #e07b004d;
-		--color-orange-light: #ffb347;
 		--color-grey-1: #626262;
 		--color-grey-2: #808080;
 
