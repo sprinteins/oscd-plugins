@@ -1,8 +1,11 @@
 import { ConnectionTypeDirection } from '.'
 // TYPES
 import type { ServiceObject, ServiceTypeGroup } from '.'
-import type { ConnectedIEDs } from '../../_func-layout-calculation'
-import type { MessageType } from '../../types'
+import type {
+	ConnectedIED,
+	ConnectedIEDs
+} from '../../../../headless/services/_func-layout-calculation'
+import type { MessageType } from '../../../../headless/types'
 
 export function groupRelationsByServiceType(
 	relations: ConnectedIEDs
@@ -10,51 +13,39 @@ export function groupRelationsByServiceType(
 	const array: ServiceTypeGroup = new Map()
 
 	relations.subscribedFrom.forEach((element) => {
-		let serviceType: MessageType | undefined = element.serviceType
-		if (serviceType === undefined) {
-			serviceType = 'Unknown'
-		}
-		{
-			const keyName = `${element.serviceType}_${element.serviceTypeLabel}_Outgoing`
-			const content: ServiceObject = {
-				node: element.node,
-				serviceType: serviceType,
-				serviceTypeLabel: element.serviceTypeLabel,
-				connectionDirection: ConnectionTypeDirection.OUTGOING
-			}
-
-			const hasServiceTypeElement = array.has(keyName)
-			if (!hasServiceTypeElement) {
-				array.set(keyName, [])
-			}
-
-			const serviceTypeElement = array.get(keyName)
-			serviceTypeElement?.push(content)
-		}
+		addRelation(array, element, ConnectionTypeDirection.OUTGOING)
 	})
 
 	relations.publishedTo.forEach((element) => {
-		let serviceType: MessageType | undefined = element.serviceType
-		if (serviceType === undefined) {
-			serviceType = 'Unknown'
-		}
-		{
-			const keyName = `${element.serviceType}_${element.serviceTypeLabel}_Incoming`
-			const content: ServiceObject = {
-				node: element.node,
-				serviceType: serviceType,
-				serviceTypeLabel: element.serviceTypeLabel,
-				connectionDirection: ConnectionTypeDirection.INCOMING
-			}
-
-			const hasServiceTypeElement = array.has(keyName)
-			if (!hasServiceTypeElement) {
-				array.set(keyName, [])
-			}
-
-			const serviceTypeElement = array.get(keyName)
-			serviceTypeElement?.push(content)
-		}
+		addRelation(array, element, ConnectionTypeDirection.INCOMING)
 	})
 	return array
+}
+
+function addRelation(
+	array: ServiceTypeGroup,
+	element: ConnectedIED,
+	connectionDirection: ConnectionTypeDirection
+) {
+	const serviceType: MessageType = element.serviceType ?? 'Unknown'
+	const keyName = `${serviceType}_${element.serviceTypeLabel}_${element.node.label}_${connectionDirection}`
+	const content: ServiceObject = {
+		node: element.node,
+		serviceType,
+		serviceTypeLabel: element.serviceTypeLabel,
+		connectionDirection
+	}
+
+	const group = array.get(keyName)
+	if (!group) {
+		array.set(keyName, [content])
+		return
+	}
+
+	const alreadyListed = group.some(
+		(item) => item.node.label === element.node.label
+	)
+	if (!alreadyListed) {
+		group.push(content)
+	}
 }

@@ -1,4 +1,3 @@
-import { MESSAGE_TYPE } from '@oscd-plugins/core'
 // TYPES
 import type { MessageType } from '../../../../headless/types'
 import { setSelectedMessageTypes } from '../../../../stores/_store-view-filter'
@@ -21,8 +20,4 @@ export function setTargetMessageType(e: Event) {
 	const value = element?.checked
 
 	setSelectedMessageTypes(name, value)
-
-	if (name === MESSAGE_TYPE.MMS) {
-		setSelectedMessageTypes(MESSAGE_TYPE.Report, value)
-	}
 }

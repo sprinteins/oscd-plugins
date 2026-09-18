@@ -206,10 +206,14 @@ export class IEDService {
 				continue
 			}
 
-			const key = `${element.iedName}_${element.serviceType}_${element.srcCBName}_${element.datSet}`
+			const serviceType =
+				element.serviceType === MESSAGE_TYPE.Report
+					? MESSAGE_TYPE.MMS
+					: element.serviceType
+			const key = `${element.iedName}_${serviceType}_${element.srcCBName}_${element.datSet}`
 			const tempKey = {
 				iedName: element.iedName,
-				serviceType: element.serviceType,
+				serviceType,
 				srcCBName: element.srcCBName,
 				datSet: element.datSet
 			}

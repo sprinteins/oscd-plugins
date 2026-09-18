@@ -25,20 +25,10 @@ let {
 	connectionDirection
 }: Props = $props()
 
-// Report has no dedicated icon/label; it is displayed as MMS.
 const SERVICE_TYPE_ICON_PREFIX: Record<string, string> = {
 	GOOSE: 'goose',
 	SampledValues: 'sv',
-	MMS: 'mms',
-	Report: 'mms'
-}
-
-const SERVICE_TYPE_DISPLAY_LABEL: Record<string, string> = {
-	Report: 'MMS'
-}
-
-function calcServiceTypeLabel(serviceType: string): string {
-	return SERVICE_TYPE_DISPLAY_LABEL[serviceType] ?? serviceType
+	MMS: 'mms'
 }
 
 function calcIconName(
@@ -71,7 +61,6 @@ let affectedPublisherIEDs = $derived(
 		.map((el) => el.node)
 )
 let iconName = $derived(calcIconName(serviceType, connectionDirection))
-let serviceTypeLabel = $derived(calcServiceTypeLabel(serviceType))
 </script>
 
 <div class="accordion">
@@ -79,7 +68,7 @@ let serviceTypeLabel = $derived(calcServiceTypeLabel(serviceType))
         <summary style="border-color: var({color})" class="summary">
             <div class="infoblock-headline">
                 <Icons size={"normal"} name={iconName} />
-                <span class="label">{serviceTypeLabel} - {serviceLabel}</span>
+                <span class="label">{serviceType} - {serviceLabel}</span>
                 <div class="icon">
                     <IconArrowDropDown />
                 </div>
@@ -89,7 +78,7 @@ let serviceTypeLabel = $derived(calcServiceTypeLabel(serviceType))
             <hr class="dashed-line" />
             <div class="infomation-block">
                 <div>Label: {serviceLabel}</div>
-                <div>MessageType: {serviceTypeLabel}</div>
+                <div>MessageType: {serviceType}</div>
             </div>
 
             <hr class="seperation-line" />

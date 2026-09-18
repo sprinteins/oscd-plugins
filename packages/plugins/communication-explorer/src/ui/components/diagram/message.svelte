@@ -145,7 +145,7 @@ const messageTypeToDashArray: { [key in keyof typeof MESSAGE_TYPE]: string } = {
 	[MESSAGE_TYPE.GOOSE]: '16,8, 16,8, 4,8, 4,8 4,8 ',
 	[MESSAGE_TYPE.SampledValues]: '4, 8',
 	[MESSAGE_TYPE.MMS]: '16, 40',
-	[MESSAGE_TYPE.Report]: '8, 24',
+	[MESSAGE_TYPE.Report]: '16, 40',
 	[MESSAGE_TYPE.Unknown]: '16,40'
 }
 

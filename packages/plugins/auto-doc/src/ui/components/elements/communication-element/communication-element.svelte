@@ -77,7 +77,6 @@ function initializeMessageTypeRows(): MessageTypeRow[] {
 	const defaultMessageTypes = [
 		MESSAGE_TYPE.GOOSE,
 		MESSAGE_TYPE.MMS,
-		MESSAGE_TYPE.Report,
 		MESSAGE_TYPE.SampledValues,
 		MESSAGE_TYPE.Unknown
 	]
@@ -236,7 +235,6 @@ $effect(() => {
 						>
 							<Option value={MESSAGE_TYPE.GOOSE}>GOOSE</Option>
 							<Option value={MESSAGE_TYPE.MMS}>MMS</Option>
-							<Option value={MESSAGE_TYPE.Report}>Report</Option>
 							<Option value={MESSAGE_TYPE.SampledValues}
 								>SampledValues</Option
 							>
