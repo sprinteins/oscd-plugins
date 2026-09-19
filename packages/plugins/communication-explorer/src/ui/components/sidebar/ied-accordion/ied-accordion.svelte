@@ -3,13 +3,12 @@
 import PublisherSubscriberAccordion from '../../accordion/publisher-subscriber-accordion/publisher-subscriber-accordion.svelte'
 import type { IEDElkNode, RootNode } from '../../diagram'
 import { IED } from '@oscd-plugins/ui/src/components/ied'
-import { getConnectedIEDsByLabel } from '../../../../headless/services/_func-layout-calculation/get-connected-ieds'
-import { getIEDDetails } from '../../../../headless/services/_func-layout-calculation/get-ied-details'
 import {
-	ConnectionTypeDirection,
-	groupRelationsByServiceType,
-	type ServiceTypeGroup
-} from '.'
+	getConnectedIEDsByLabel,
+	type ConnectedIED
+} from '../../../../headless/services/_func-layout-calculation/get-connected-ieds'
+import { getIEDDetails } from '../../../../headless/services/_func-layout-calculation/get-ied-details'
+import { ConnectionTypeDirection, type ServiceObject } from '.'
 import { filterState } from '../../../../stores/_store-view-filter'
 // TYPES
 import type { MessageType } from '../../../../headless/types'
@@ -21,9 +20,27 @@ import type { MessageType } from '../../../../headless/types'
 
     let { rootNode, IEDSelection }: Props = $props();
 
+function toServiceObject(
+	element: ConnectedIED,
+	connectionDirection: ConnectionTypeDirection
+): ServiceObject {
+	return {
+		node: element.node,
+		serviceType: element.serviceType ?? 'Unknown',
+		serviceTypeLabel: element.serviceTypeLabel,
+		connectionDirection
+	}
+}
+
 let relations = $derived(getConnectedIEDsByLabel(rootNode, IEDSelection.label))
-let relationsByServiceType: ServiceTypeGroup = $derived(groupRelationsByServiceType(relations));
-let serviceTypes = $derived(Array.from(relationsByServiceType.entries()))
+let serviceItems: ServiceObject[] = $derived([
+	...relations.subscribedFrom.map((element) =>
+		toServiceObject(element, ConnectionTypeDirection.OUTGOING)
+	),
+	...relations.publishedTo.map((element) =>
+		toServiceObject(element, ConnectionTypeDirection.INCOMING)
+	)
+])
 let details = $derived(getIEDDetails(rootNode, IEDSelection.label))
 let bays = $derived(Array.from(IEDSelection.bays).join(", "))
 
@@ -79,11 +96,10 @@ let detailsCollapsed = $state(true)
     {/if}
     
     <div class="accordions">
-        {#each serviceTypes as serviceType}
-            {@const service = serviceType[1]}
-            {@const type = service[0].serviceType}
-            {@const typeLabel = service[0].serviceTypeLabel}
-            {@const connection = service[0].connectionDirection}
+        {#each serviceItems as service}
+            {@const type = service.serviceType}
+            {@const typeLabel = service.serviceTypeLabel}
+            {@const connection = service.connectionDirection}
     
             {@const shouldMessageTypeBeShown = $filterState.selectedMessageTypes.includes(type)}
             {@const shouldMessageDirectionShownIncoming = $filterState.incomingConnections && (connection === ConnectionTypeDirection.INCOMING)}
@@ -96,7 +112,7 @@ let detailsCollapsed = $state(true)
                         color={serviceTypeColor[type]}
                         serviceType={type}
                         serviceLabel={typeLabel}
-                        affectedIEDObjects={service}
+                        affectedIEDObjects={[service]}
                         connectionDirection={connection}
                     />
                 </div>
