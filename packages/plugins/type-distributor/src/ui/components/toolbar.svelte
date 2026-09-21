@@ -1,9 +1,9 @@
 <script lang="ts">
 import {
 	Button,
+	compasStore,
 	pluginGlobalStore,
-	SelectWorkaround,
-	compasStore
+	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
 import {
 	assignedLNodesStore,
@@ -12,8 +12,8 @@ import {
 	getBayTypeWithTemplates,
 	ssdImportStore
 } from '@/headless/stores'
+import { loadFromCompas } from './compas/load-from-compas'
 import { handleImportSSD } from './ssd-validation'
-import { loadFromCompas } from '@/headless/import'
 
 const bays = $derived(
 	pluginGlobalStore.xmlDocument?.querySelectorAll(

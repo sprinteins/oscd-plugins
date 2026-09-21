@@ -1,0 +1,39 @@
+name: Run Tests
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install package dependencies
+        run: pnpm run ${{ inputs.package-name }}:install
+
+      - name: Run tests with coverage
+        run: pnpm --dir packages/plugins/${{ inputs.package-name }} run test:ci
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ inputs.package-name }}-coverage
+          path: packages/plugins/${{ inputs.package-name }}/coverage
+          if-no-files-found: ignore
+          retention-days: 7

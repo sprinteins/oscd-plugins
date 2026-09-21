@@ -404,7 +404,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 
 			const lnEls = collectEditsByTag(edits, 'LN')
 			expect(lnEls).toHaveLength(1)
-				expect(lnEls[0].getAttribute('inst')).toBe('2')
+			expect(lnEls[0].getAttribute('inst')).toBe('2')
 		})
 
 		it('WHEN adding missing lNode THEN does not emit Server or LDevice edits', () => {

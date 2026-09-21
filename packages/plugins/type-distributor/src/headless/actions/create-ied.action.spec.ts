@@ -27,17 +27,7 @@ describe('createIed', () => {
 		vi.restoreAllMocks()
 	})
 
-	it('GIVEN IED data WHEN createIed is called THEN commits with the IED name in the title', () => {
-		const ied = { name: 'TestIED', description: 'A test IED', isNew: true }
-
-		createIed(ied)
-
-		expect(mockEditor.commit).toHaveBeenCalledWith(expect.anything(), {
-			title: 'Create IED "TestIED"'
-		})
-	})
-
-	it('GIVEN IED data WHEN createIed is called THEN builds the edit with the correct name and description', () => {
+	it('GIVEN IED data WHEN createIed is called THEN builds and commits the named edit', () => {
 		const ied = {
 			name: 'MyIED',
 			description: 'My description',
@@ -50,5 +40,8 @@ describe('createIed', () => {
 			'MyIED',
 			'My description'
 		)
+		expect(mockEditor.commit).toHaveBeenCalledWith([mockEdit], {
+			title: 'Create IED "MyIED"'
+		})
 	})
 })
