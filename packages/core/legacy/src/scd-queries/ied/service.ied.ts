@@ -207,7 +207,7 @@ export class IEDService {
 			}
 
 			const serviceType =
-				element.serviceType === MESSAGE_TYPE.Report
+				element.serviceType === 'Report'
 					? MESSAGE_TYPE.MMS
 					: element.serviceType
 			const key = `${element.iedName}_${serviceType}_${element.srcCBName}_${element.datSet}`

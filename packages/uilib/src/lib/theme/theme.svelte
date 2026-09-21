@@ -78,9 +78,6 @@
 		--color-message-sampledvalues: var(--color-pink);
 		--color-message-highlight-sampledvalues: var(--color-pink-light);
 		--color-message-disabled-samplevalues: var(--color-pink-30-pc-opacity);
-		--color-message-report: var(--color-blue-1);
-		--color-message-highlight-report: var(--color-blue-1-light);
-		--color-message-disabled-report: var(--color-torques-30-opacity);
 		--color-message-unknown: var(--color-black);
 
 		--color-category-selector: var(--color-beige-5);

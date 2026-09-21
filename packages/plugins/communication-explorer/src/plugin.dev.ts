@@ -3,7 +3,7 @@ import { mount } from 'svelte'
 import Plugin from './plugin.svelte'
 
 const MOCKS = { sclMockA, sclMockB, sclMockC }
-const activeMock = MOCKS.sclMockC
+const activeMock = MOCKS.sclMockA; // select Test-File for loca Development
 
 mount(Plugin, {
 	target: document.getElementById('plugin') as Element,

@@ -121,7 +121,6 @@ const messageTypeToColorMap: { [key in keyof typeof MESSAGE_TYPE]: string } = {
 	[MESSAGE_TYPE.GOOSE]: 'var(--color-message-goose)',
 	[MESSAGE_TYPE.SampledValues]: 'var(--color-message-sampledvalues)',
 	[MESSAGE_TYPE.MMS]: 'var(--color-message-mms)',
-	[MESSAGE_TYPE.Report]: 'var(--color-message-report)',
 	[MESSAGE_TYPE.Unknown]: 'var(--color-message-unknown)'
 }
 
@@ -133,7 +132,6 @@ const messageTypeToHighlightColorMap: {
 	[MESSAGE_TYPE.SampledValues]:
 		'var(--color-message-highlight-sampledvalues)',
 	[MESSAGE_TYPE.MMS]: 'var(--color-message-highlight-mms)',
-	[MESSAGE_TYPE.Report]: 'var(--color-message-highlight-report)',
 	[MESSAGE_TYPE.Unknown]: 'var(--color-message-unknown)'
 }
 
@@ -145,7 +143,6 @@ const messageTypeToDashArray: { [key in keyof typeof MESSAGE_TYPE]: string } = {
 	[MESSAGE_TYPE.GOOSE]: '16,8, 16,8, 4,8, 4,8 4,8 ',
 	[MESSAGE_TYPE.SampledValues]: '4, 8',
 	[MESSAGE_TYPE.MMS]: '16, 40',
-	[MESSAGE_TYPE.Report]: '16, 40',
 	[MESSAGE_TYPE.Unknown]: '16,40'
 }
 
