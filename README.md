@@ -13,7 +13,8 @@ A high-level overview of how the documentation is organized will help you know w
 
 ## ☑ How-Tos
 
-- [Setup Project](./doc//how-to/setup.md)
+- [Setup Project](./doc/how-to/setup.md)
+- [Release a Plugin](./doc/how-to/release-a-plugin.md)
 
 ## 👷 Guides
 
