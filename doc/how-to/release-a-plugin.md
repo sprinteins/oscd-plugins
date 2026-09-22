@@ -31,7 +31,9 @@ format:
 ## 3. Merge the changes into `main`
 
 Commit the version and changelog changes, open a pull request, and merge it
-into `main` in the upstream repository.
+into `main` in the upstream
+[`sprinteins/oscd-plugins`](https://github.com/sprinteins/oscd-plugins)
+repository.
 
 After the merge, the plugin's GitHub Actions workflow automatically:
 
