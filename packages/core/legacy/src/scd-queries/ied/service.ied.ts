@@ -112,7 +112,7 @@ export class IEDService {
 				name: info.name,
 				targetIEDName: info.clientIEDName,
 				serviceType: MESSAGE_TYPE.MMS,
-				serviceCbName: 'MMS',
+				serviceCbName: info.name,
 				serviceDatSet: 'not implemented yet'
 			})
 		}
@@ -206,10 +206,14 @@ export class IEDService {
 				continue
 			}
 
-			const key = `${element.iedName}_${element.serviceType}_${element.srcCBName}_${element.datSet}`
+			const serviceType =
+				element.serviceType === 'Report'
+					? MESSAGE_TYPE.MMS
+					: element.serviceType
+			const key = `${element.iedName}_${serviceType}_${element.srcCBName}_${element.datSet}`
 			const tempKey = {
 				iedName: element.iedName,
-				serviceType: element.serviceType,
+				serviceType,
 				srcCBName: element.srcCBName,
 				datSet: element.datSet
 			}

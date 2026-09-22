@@ -1,64 +1,66 @@
 <script lang="ts">
-    // import type { ServiceObject } from "../../../../communication-explorer/sidebar/ied-accordion"
-    import type { ServiceObject } from "../../sidebar/ied-accordion"
-    import { ConnectionTypeDirection } from "../../sidebar/ied-accordion"
-    import { IconArrowDropDown } from "@oscd-plugins/ui"
-    import {Icons, type OpenSCDIconNames} from "@oscd-plugins/ui/src/components/icons"
+import { IconArrowDropDown } from '@oscd-plugins/ui'
+import {
+	Icons,
+	type OpenSCDIconNames
+} from '@oscd-plugins/ui/src/components/icons'
+import type { ServiceObject } from '../../sidebar/ied-accordion'
+import { ConnectionTypeDirection } from '../../sidebar/ied-accordion'
 
-    interface Props {
-        open?: boolean;
-        serviceType: string;
-        serviceLabel?: string | undefined;
-        affectedIEDObjects?: ServiceObject[];
-        color: string;
-        connectionDirection: ConnectionTypeDirection;
-    }
+interface Props {
+	open?: boolean
+	serviceType: string
+	serviceLabel?: string | undefined
+	affectedIEDObjects?: ServiceObject[]
+	color: string
+	connectionDirection: ConnectionTypeDirection
+}
 
-    let {
-        open = $bindable(false),
-        serviceType,
-        serviceLabel = "",
-        affectedIEDObjects = [],
-        color,
-        connectionDirection
-    }: Props = $props();
+let {
+	open = $bindable(false),
+	serviceType,
+	serviceLabel = '',
+	affectedIEDObjects = [],
+	color,
+	connectionDirection
+}: Props = $props()
 
+const SERVICE_TYPE_ICON_PREFIX: Record<string, string> = {
+	GOOSE: 'goose',
+	SampledValues: 'sv',
+	MMS: 'mms'
+}
 
+function calcIconName(
+	serviceType: string,
+	connectionDirection: ConnectionTypeDirection
+): OpenSCDIconNames {
+	const serviceTypeShort =
+		SERVICE_TYPE_ICON_PREFIX[serviceType] ?? 'undefined'
+	const serviceTypeDirection =
+		connectionDirection === ConnectionTypeDirection.INCOMING
+			? 'Incoming'
+			: 'Outgoing'
 
+	const iconName = `${serviceTypeShort}${serviceTypeDirection}Icon`
 
-    function calcIconName(serviceType: string, connectionDirection: ConnectionTypeDirection): OpenSCDIconNames {
-    	let serviceTypeShort = ""
-    	let serviceTypeDirection = ""
-
-    	if (serviceType === "GOOSE") 
-    		serviceTypeShort = "goose"
-    	else if (serviceType === "SampledValues")
-    		serviceTypeShort = "sv"
-    	else if (serviceType === "MMS")
-    		serviceTypeShort = "mms"
-    	else
-    		serviceTypeShort = "undefined"
-
-        if (connectionDirection === ConnectionTypeDirection.INCOMING)
-    		serviceTypeDirection = "Incoming"
-    	else 
-    		serviceTypeDirection = "Outgoing"
-
-    	const iconName = `${serviceTypeShort}${serviceTypeDirection}Icon`
-
-    	return iconName as OpenSCDIconNames
-    }
-    let affectedSubscriberIEDs = $derived(affectedIEDObjects
-        .filter(
-            (el) => el.connectionDirection === ConnectionTypeDirection.INCOMING,
-        )
-        .map((el) => el.node));
-    let affectedPublisherIEDs = $derived(affectedIEDObjects
-        .filter(
-            (el) => el.connectionDirection === ConnectionTypeDirection.OUTGOING,
-        )
-        .map((el) => el.node));
-    let iconName = $derived(calcIconName(serviceType, connectionDirection))
+	return iconName as OpenSCDIconNames
+}
+let affectedSubscriberIEDs = $derived(
+	affectedIEDObjects
+		.filter(
+			(el) => el.connectionDirection === ConnectionTypeDirection.INCOMING
+		)
+		.map((el) => el.node)
+)
+let affectedPublisherIEDs = $derived(
+	affectedIEDObjects
+		.filter(
+			(el) => el.connectionDirection === ConnectionTypeDirection.OUTGOING
+		)
+		.map((el) => el.node)
+)
+let iconName = $derived(calcIconName(serviceType, connectionDirection))
 </script>
 
 <div class="accordion">

@@ -11,6 +11,7 @@ export const messageTypeMap: {
 	GOOSE: MESSAGE_TYPE.GOOSE,
 	SMV: MESSAGE_TYPE.SampledValues,
 	MMS: MESSAGE_TYPE.MMS,
+	Report: MESSAGE_TYPE.MMS,
 	UNKNOWN: MESSAGE_TYPE.Unknown
 }
 
