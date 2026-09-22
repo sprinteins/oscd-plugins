@@ -5,6 +5,11 @@ All notable changes to the communication explorer plugin will be documented here
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2026-09-22
+
+### Changed
+-  Visualize Report ExtRefs as MMS connections and remove Groupings of connections - PR: https://github.com/sprinteins/oscd-plugins/pull/809
+
 ## [0.0.41] - 2026-01-16
 ### Changed
 - Receive `editor` property from Plugin API

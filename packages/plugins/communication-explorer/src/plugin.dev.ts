@@ -3,13 +3,13 @@ import { mount } from 'svelte'
 import Plugin from './plugin.svelte'
 
 const MOCKS = { sclMockA, sclMockB, sclMockC }
-const activeMock = MOCKS.sclMockA; // select Test-File for loca Development
+const activeMock: keyof typeof MOCKS = 'sclMockA' // select Test-File for local Development
 
 mount(Plugin, {
 	target: document.getElementById('plugin') as Element,
 	props: {
-		doc: new DOMParser().parseFromString(activeMock, 'text/xml'),
-		docName: 'scl-mock-C',
+		doc: new DOMParser().parseFromString(MOCKS[activeMock], 'text/xml'),
+		docName: activeMock,
 		editCount: 0,
 		locale: 'en'
 	}
