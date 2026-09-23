@@ -5,6 +5,8 @@ description: Test-driven development with red-green-refactor loop. Use when user
 
 # Test-Driven Development
 
+For this repository, use Vitest for package source tests. Place `*.spec.ts` files next to the implementation under test, use the package's configured environment, and follow the repository's GIVEN/WHEN/THEN naming convention. Before editing a spec, also load [vitest-test.instructions.md](../../instructions/vitest-test.instructions.md).
+
 ## Philosophy
 
 **Core principle**: Tests should verify behavior through public interfaces, not implementation details. Code can change entirely; tests shouldn't.
@@ -17,7 +19,7 @@ See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking g
 
 ## Anti-Pattern: Horizontal Slices
 
-**DO NOT write all tests first, then all implementation.** This is "horizontal slicing" - treating RED as "write all tests" and GREEN as "write all code."
+**Do not write all tests first, then all implementation.** This is "horizontal slicing" - treating RED as "write all tests" and GREEN as "write all code."
 
 This produces **crap tests**:
 
@@ -104,7 +106,9 @@ After all tests pass, look for [refactor candidates](refactoring.md):
 [ ] Test would survive internal refactor
 [ ] Code is minimal for this test
 [ ] No speculative features added
-[ ] Table-driven structure used (runSclTestCases from @dialecte/scl/test)
-[ ] Inputs are XML strings; assertions use single XPath strings
-[ ] Test description: <initial state> → <outcome>, no GIVEN/WHEN/THEN
+[ ] Test name uses GIVEN / WHEN / THEN, or the case is grouped under a GIVEN / WHEN describe
+[ ] Shared setup is in beforeEach instead of duplicated across tests
+[ ] Table-driven cases use it.each when the same behavior varies by input
+[ ] SCD/XML behavior is asserted through semantic DOM/XML queries, not brittle serialized strings
+[ ] Tests run with the owning package's documented command
 ```

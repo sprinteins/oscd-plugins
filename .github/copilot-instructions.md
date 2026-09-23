@@ -4,6 +4,10 @@
 
 pnpm monorepo of [OpenSCD](https://github.com/openscd/open-scd) plugins for editing IEC 61850 Substation Configuration Description (SCD) files. Plugins are Svelte 5 custom elements dynamically loaded by OpenSCD at runtime. The public GitHub repo stores built artifacts alongside source; development is mirrored from an internal Gitea instance.
 
+## Agent Instructions
+
+Always-on guidance is in the root [AGENTS.md](../AGENTS.md). Load the scoped instructions there for coding, testing, documentation, architecture, communication, terminal safety, instruction registration, and PR work. For package source specs, also follow [vitest-test.instructions.md](instructions/vitest-test.instructions.md) and load the [`vitest-test` skill](skills/vitest-test/SKILL.md).
+
 ## Commands
 
 ```bash
