@@ -1,31 +1,30 @@
 <script lang="ts">
 // STORE
-import { dndStore, sidebarStore } from '@/headless/stores'
-// CONSTANTS
-import { REF_FAMILY, TYPE_FAMILY } from '@/headless/constants'
-// STORES
-import { importsStore } from '@/headless/stores'
+
 // COMPONENTS
 import {
+	Badge,
+	Button,
 	Card,
 	Collapsible,
-	Button,
-	Sidebar,
-	Badge
+	Sidebar
 } from '@oscd-plugins/core-ui-svelte'
 import {
-	ChevronRight,
 	ChevronDown,
+	ChevronRight,
 	CircleArrowDown,
 	RefreshCcw
 } from 'lucide-svelte'
-import CardMenu from './card-menu.svelte'
+// CONSTANTS
+import { REF_FAMILY, TYPE_FAMILY } from '@/headless/constants'
 // TYPES
 import type {
-	TypeElement,
 	AvailableTypeFamily,
-	ImportScope
+	ImportScope,
+	TypeElement
 } from '@/headless/stores'
+import { dndStore, importsStore, sidebarStore } from '@/headless/stores'
+import CardMenu from './card-menu.svelte'
 
 //======= INITIALIZATION =======//
 
@@ -54,25 +53,32 @@ const shouldShowBadge = $derived(
 		typeElement.parameters.refFamily === REF_FAMILY.function
 )
 
+const isCorrupted = $derived(!!typeElement.corruptionReason)
+
 const hasCurrentTypeElementRefs = $derived.by(() => {
+	if (isCorrupted) return false
 	return Object.values(typeElement.refs).some(
 		(ref) => Object.keys(ref).length
 	)
 })
 
 const cursorPointer = $derived.by(() => {
+	if (isCorrupted) return 'cursor-not-allowed'
 	if (dndStore.isDragging) return 'cursor-grabbing'
 	if (isDraggable) return 'cursor-grab'
 	return 'cursor-pointer'
 })
 
 const isDraggable = $derived.by(() => {
+	if (isCorrupted) return false
 	if (typeElementFamily === TYPE_FAMILY.bay || importScope) return false
 	return true
 })
 //======= FUNCTIONS =======//
 
 function handleCardClick() {
+	if (isCorrupted) return
+
 	if (sidebarStore.currentElementTypeKey === typeElementKey) {
 		sidebarStore.resetCurrentElementType()
 		return sidebar.setOpen(false)
@@ -89,6 +95,7 @@ function handleCardClick() {
 
 async function handleImport(event: Event) {
 	event.stopPropagation()
+	if (isCorrupted) return
 
 	await importsStore.handleImportsAndFireDialogDecision(
 		typeElementKey,
@@ -103,15 +110,17 @@ function getBadgeLabel(refFamily: string | undefined) {
 </script>
 
 <Card.Root 
-	class={`mb-1 ${sidebarStore.currentElementTypeKey === typeElementKey ? 'border-primary ring ring-primary ring-offset-2 ring-offset-primary-foreground' : ''}`}
-	onclick={handleCardClick}
-	draggable={isDraggable} 
-	ondragstart={(event) => dndStore.handleDragStart({
+	class={`mb-1 ${isCorrupted ? 'opacity-50 grayscale' : ''} ${sidebarStore.currentElementTypeKey === typeElementKey ? 'border-primary ring ring-primary ring-offset-2 ring-offset-primary-foreground' : ''}`}
+	title={typeElement.corruptionReason}
+	aria-disabled={isCorrupted}
+	onclick={isCorrupted ? undefined : handleCardClick}
+	draggable={isDraggable}
+	ondragstart={isDraggable ? (event) => dndStore.handleDragStart({
 		event,
 		sourceTypeId: typeElementKey,
 		sourceTypeFamily: typeElementFamily,
 		sourceRefFamily: typeElement.parameters.refFamily
-	})} 
+	}) : undefined}
 	ondragend={() => dndStore.handleDragEnd()}
 >
 	<Card.Content class={`flex flex-row items-center justify-between h-8 p-2 ${cursorPointer} ${typeElementFamily === TYPE_FAMILY.lNodeType ? 'pl-4 pr-1' : 'px-1'}`}>
@@ -139,9 +148,17 @@ function getBadgeLabel(refFamily: string | undefined) {
 			<div class="min-w-2.5 min-h-2.5 bg-teal-700 transform rotate-45"></div>
 			
 			<div class="ml-6 truncate capitalize">{ typeElement.parameters.label }</div>
+			{#if isCorrupted}
+				<Badge.Root
+					class="bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300 ml-auto"
+					title={typeElement.corruptionReason}
+				>
+					Invalid
+				</Badge.Root>
+			{/if}
 
 			<!-- FUNCTION BADGES START -->
-			{#if shouldShowBadge}
+			{#if shouldShowBadge && !isCorrupted}
 				<Badge.Root class="bg-gray-300 rounded-sm text-gray-600 hover:bg-gray-300 ml-auto">{ getBadgeLabel(typeElement.parameters.refFamily) }</Badge.Root>
 			{/if}
 			<!-- FUNCTION BADGES END -->
@@ -149,14 +166,14 @@ function getBadgeLabel(refFamily: string | undefined) {
 
 		<!-- CARD MENU START -->
 		{#if importScope}
-			<Button.Root variant="ghost" class="rounded-full p-0 size-7 ml-2" onclick={async (event) => await handleImport(event)}>
+			<Button.Root variant="ghost" class="rounded-full p-0 size-7 ml-2" disabled={isCorrupted} onclick={async (event) => await handleImport(event)}>
 				{#if importScope === 'toAdd'}
 					<CircleArrowDown class="!size-5"/>
 				{:else if importScope === 'toUpdate'}
 					<RefreshCcw class="!size-5"/>
 				{/if}
 			</Button.Root>
-		{:else if typeElementFamily !== TYPE_FAMILY.lNodeType }
+		{:else if typeElementFamily !== TYPE_FAMILY.lNodeType && !isCorrupted }
 			<CardMenu type={{ family: typeElementFamily, id: typeElementKey }}/>
 		{/if}
 		<!-- CARD MENU END -->
