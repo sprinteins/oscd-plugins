@@ -38,6 +38,7 @@ export type TypeElement<GenericTypeFamily extends AvailableTypeFamily> = {
 		typeof pluginLocalStore.currentEdition,
 		typeof pluginLocalStore.currentUnstableRevision
 	>
+	corruptionReason?: string
 	attributes: Record<string, string | null>
 	parameters: {
 		label: string

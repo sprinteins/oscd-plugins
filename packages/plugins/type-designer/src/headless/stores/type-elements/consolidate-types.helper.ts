@@ -1,31 +1,32 @@
-import { v4 as uuidv4 } from 'uuid'
 // CORE
 import {
 	findAllCustomElementBySelector,
+	findAllStandardElementsByTagNameNS,
 	namedNodeMapAttributesToPlainObject,
 	typeGuard
 } from '@oscd-plugins/core-api/plugin/v1'
-// STORES
-import { typeElementsStore, pluginLocalStore } from '@/headless/stores'
+import { v4 as uuidv4 } from 'uuid'
 // CONSTANTS
 import {
 	REF_FAMILY,
+	REF_FAMILY_TO_TYPE_FAMILY_MAP,
 	TYPE_FAMILY,
-	TYPE_ID_ATTRIBUTE,
-	REF_FAMILY_TO_TYPE_FAMILY_MAP
+	TYPE_ID_ATTRIBUTE
 } from '@/headless/constants'
-// HELPERS
-import { getChildrenOptions } from '@/headless/stores/type-elements/children-options.helper'
 // TYPES
 import type {
 	AvailableRefFamily,
+	AvailableTypeFamily,
+	RefElementsByFamily,
+	RefRawElement,
 	TypeElement,
 	TypeElementByIds,
-	AvailableTypeFamily,
-	TypeRawElement,
-	RefRawElement,
-	RefElementsByFamily
+	TypeRawElement
 } from '@/headless/stores'
+// STORES
+import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
+// HELPERS
+import { getChildrenOptions } from '@/headless/stores/type-elements/children-options.helper'
 
 /**
  * Retrieves the attributes of a type element
@@ -63,57 +64,96 @@ function getTypeElementAttributes(params: {
 	}
 }
 
-function getRefs(element: Element): RefElementsByFamily {
-	return Array.from(element.children).reduce(
-		(acc, childElement) => {
-			if (
-				!typeGuard.isPropertyOfObject(
-					childElement.tagName,
-					typeElementsStore.mapRefTagNameToRefFamily
-				)
-			)
-				return acc
-			const refFamily =
-				typeElementsStore.mapRefTagNameToRefFamily[childElement.tagName]
+function getMissingRequiredAttributes(
+	family: AvailableTypeFamily,
+	element: Element
+) {
+	const definition = pluginLocalStore.currentDefinition[TYPE_FAMILY[family]]
+	const requiredAttributes = new Set([
+		...Object.entries(definition.attributes)
+			.filter(([, attribute]) => attribute.required)
+			.map(([attributeName]) => attributeName),
+		TYPE_ID_ATTRIBUTE[family]
+	])
 
-			let typeId = ''
-
-			//get LNodeType ids
-			const lnTypeAttribute = childElement.getAttribute('lnType')
-			//get other Types uuids
-			const templateUuidAttribute =
-				childElement.getAttribute('templateUuid')
-
-			if (lnTypeAttribute) typeId = lnTypeAttribute
-			else if (templateUuidAttribute) typeId = templateUuidAttribute
-
-			if (!typeId) throw new Error('No id found for ref element')
-
-			const typeFamily = REF_FAMILY_TO_TYPE_FAMILY_MAP[refFamily]
-
-			const refOccurrence =
-				Object.values(acc[refFamily]).filter(
-					(ref) => ref.source.id === typeId
-				).length + 1
-
-			acc[refFamily][uuidv4()] = {
-				element: childElement as RefRawElement<typeof refFamily>,
-				source: {
-					id: typeId,
-					family: typeFamily
-				},
-				occurrence: refOccurrence
-			} as RefElementsByFamily[typeof refFamily][string]
-			return acc
-		},
-		{
-			generalEquipment: {},
-			conductingEquipment: {},
-			function: {},
-			eqFunction: {},
-			lNode: {}
-		} as RefElementsByFamily
+	return Array.from(requiredAttributes).filter(
+		(attributeName) => !element.getAttribute(attributeName)?.trim()
 	)
+}
+
+function getEmptyRefs(): RefElementsByFamily {
+	return {
+		generalEquipment: {},
+		conductingEquipment: {},
+		function: {},
+		eqFunction: {},
+		lNode: {}
+	}
+}
+
+function getRefs(element: Element, rootElement?: Element): RefElementsByFamily {
+	return Array.from(element.children).reduce((acc, childElement) => {
+		if (
+			!typeGuard.isPropertyOfObject(
+				childElement.tagName,
+				typeElementsStore.mapRefTagNameToRefFamily
+			)
+		)
+			return acc
+		const refFamily =
+			typeElementsStore.mapRefTagNameToRefFamily[childElement.tagName]
+
+		let typeId = ''
+
+		//get LNodeType ids
+		const lnTypeAttribute = childElement.getAttribute('lnType')
+		//get other Types uuids
+		const templateUuidAttribute = childElement.getAttribute('templateUuid')
+
+		if (lnTypeAttribute) typeId = lnTypeAttribute
+		else if (templateUuidAttribute) typeId = templateUuidAttribute
+
+		if (!typeId) throw new Error('No id found for ref element')
+
+		const typeFamily = REF_FAMILY_TO_TYPE_FAMILY_MAP[refFamily]
+		if (rootElement) {
+			const targetDefinition =
+				pluginLocalStore.currentDefinition[TYPE_FAMILY[typeFamily]]
+			const targetIdAttribute = TYPE_ID_ATTRIBUTE[typeFamily]
+			const targetExists = findAllStandardElementsByTagNameNS<
+				typeof typeFamily,
+				typeof pluginLocalStore.currentEdition,
+				typeof pluginLocalStore.currentUnstableRevision
+			>({
+				namespace: '*',
+				tagName: targetDefinition.tag,
+				root: rootElement
+			}).some(
+				(targetElement) =>
+					targetElement.getAttribute(targetIdAttribute) === typeId
+			)
+
+			if (!targetExists)
+				throw new Error(
+					`No ${targetDefinition.tag} found with ${targetIdAttribute} "${typeId}"`
+				)
+		}
+
+		const refOccurrence =
+			Object.values(acc[refFamily]).filter(
+				(ref) => ref.source.id === typeId
+			).length + 1
+
+		acc[refFamily][uuidv4()] = {
+			element: childElement as RefRawElement<typeof refFamily>,
+			source: {
+				id: typeId,
+				family: typeFamily
+			},
+			occurrence: refOccurrence
+		} as RefElementsByFamily[typeof refFamily][string]
+		return acc
+	}, getEmptyRefs())
 }
 
 function getRefFamilyByChildren(elementId: string, rootElement?: Element) {
@@ -155,28 +195,52 @@ export function getAndMapTypeElements<
 	typeElements: TypeRawElement<GenericFamily>[] | undefined
 	rootElement?: Element
 }) {
-	return (
-		params.typeElements?.reduce(
-			(acc, element) => {
-				const elementId =
-					element.getAttribute(TYPE_ID_ATTRIBUTE[params.family]) ||
-					uuidv4()
+	return (params.typeElements || []).reduce(
+		(acc, element, index) => {
+			const identifierAttribute = TYPE_ID_ATTRIBUTE[params.family]
+			const originalId = element.getAttribute(identifierAttribute)
+			const fallbackId = `invalid-${params.family}-${index}`
+			let elementId = originalId || fallbackId
+			let corruptionReason: string | undefined
 
+			if (!originalId)
+				corruptionReason = `Missing required SCL attribute "${identifierAttribute}"`
+
+			const missingRequiredAttributes = getMissingRequiredAttributes(
+				params.family,
+				element
+			)
+			if (missingRequiredAttributes.length) {
+				corruptionReason ??= `Missing or empty required SCL attributes: ${missingRequiredAttributes.join(', ')}`
+			}
+
+			if (Object.hasOwn(acc, elementId)) {
+				const duplicateId = elementId
+				elementId = fallbackId
+				while (Object.hasOwn(acc, elementId))
+					elementId = `${elementId}-duplicate`
+
+				const duplicateReason = `Duplicate ${identifierAttribute} "${duplicateId}"`
+				acc[duplicateId].corruptionReason ??= duplicateReason
+				corruptionReason ??= duplicateReason
+			}
+
+			try {
 				acc[elementId] = {
 					element,
 					attributes: getTypeElementAttributes({
 						family: params.family,
 						attributes: element.attributes,
-						elementId
+						elementId: originalId || elementId
 					}),
 					parameters: {
 						label:
 							element.getAttribute('name') ||
 							element.getAttribute('id') ||
-							'This element has no name or no id',
+							'Invalid SCL element',
 						refFamily: getRefFamily(
 							params.family,
-							elementId,
+							originalId || elementId,
 							params.rootElement
 						),
 						childrenOptions: getChildrenOptions({
@@ -184,11 +248,46 @@ export function getAndMapTypeElements<
 							element
 						})
 					},
-					refs: getRefs(element)
+					refs: getRefs(element, params.rootElement),
+					...(corruptionReason ? { corruptionReason } : {})
 				} as TypeElement<GenericFamily>
-				return acc
-			},
-			{} as TypeElementByIds<GenericFamily>
-		) || {}
+			} catch (error) {
+				acc[elementId] = {
+					element,
+					corruptionReason:
+						corruptionReason ??
+						(error instanceof Error
+							? error.message
+							: `Unable to read ${element.tagName}`),
+					attributes: {
+						...Object.fromEntries(
+							Array.from(
+								element.attributes,
+								({ name, value }) => [name, value]
+							)
+						),
+						[identifierAttribute]: originalId || elementId
+					},
+					parameters: {
+						label:
+							element.getAttribute('name') ||
+							element.getAttribute('id') ||
+							'Invalid SCL element',
+						refFamily: undefined,
+						childrenOptions: {
+							bay: undefined,
+							generalEquipment: undefined,
+							conductingEquipment: undefined,
+							function: undefined,
+							lNodeType: undefined
+						}
+					},
+					refs: getEmptyRefs()
+				} as TypeElement<GenericFamily>
+			}
+
+			return acc
+		},
+		{} as TypeElementByIds<GenericFamily>
 	)
 }
