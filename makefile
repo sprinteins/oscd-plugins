@@ -28,6 +28,9 @@ network-explorer: _install ## Start the network explorer plugin in dev mode
 type-designer: _install ## Start the type designer plugin in dev mode
 	pnpm -C ./packages/plugins/type-designer run build:watch
 
+type-distributor: _install ## Start the type distributor plugin in dev mode
+	pnpm -C ./packages/plugins/type-distributor run build:watch
+
 type-switcher: _install ## Start the type switcher plugin in dev mode
 	pnpm -C ./packages/plugins/type-switcher run build:watch
 
