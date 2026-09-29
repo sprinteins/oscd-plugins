@@ -1,11 +1,11 @@
 // CORE
 import {
-	getCurrentDefinition,
-	findAllStandardElementsBySelector
+	findAllStandardElementsBySelector,
+	getCurrentDefinition
 } from '@oscd-plugins/core-api/plugin/v1'
-import { pluginGlobalStore, ssdStore } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { IEC61850 } from '@oscd-plugins/core-standard'
+import { pluginGlobalStore, ssdStore } from '@oscd-plugins/core-ui-svelte'
 
 class UsePluginLocalStore {
 	//====== CONSTANTS ======//
@@ -65,7 +65,7 @@ class UsePluginLocalStore {
 				'bay',
 				typeof this.currentEdition
 			>({
-				selector: `${this.currentDefinition.bay.tag}[name]:not([name="TEMPLATE"])`,
+				selector: `${this.currentDefinition.bay.tag}:not([name="TEMPLATE"])`,
 				root: ssdStore.voltageLevelTemplateElement
 			})
 	})

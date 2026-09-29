@@ -1,26 +1,27 @@
 <script lang="ts">
 // STORE
-import { dndStore, typeElementsStore, importsStore } from '@/headless/stores'
-// CONSTANTS
-import {
-	TYPE_FAMILY,
-	REF_FAMILY,
-	ALLOWED_TARGETS_BY_REF_FAMILY
-} from '@/headless/constants'
+
+import { Badge, Card, Collapsible } from '@oscd-plugins/core-ui-svelte'
 // COMPONENTS
 import { slide } from 'svelte/transition'
-import { Card, Collapsible, Badge } from '@oscd-plugins/core-ui-svelte'
-import TypeCard from './type-card.svelte'
-import CardMenu from './card-menu.svelte'
+// CONSTANTS
+import {
+	ALLOWED_TARGETS_BY_REF_FAMILY,
+	REF_FAMILY,
+	TYPE_FAMILY
+} from '@/headless/constants'
 // TYPES
 import type {
-	TypeElement,
-	AvailableTypeFamily,
 	AvailableRefFamily,
-	RefElementByIds,
+	AvailableTypeFamily,
+	ImportScope,
 	RefElement,
-	ImportScope
+	RefElementByIds,
+	TypeElement
 } from '@/headless/stores'
+import { dndStore, importsStore, typeElementsStore } from '@/headless/stores'
+import CardMenu from './card-menu.svelte'
+import TypeCard from './type-card.svelte'
 
 //======= INITIALIZATION =======//
 
@@ -49,6 +50,7 @@ let hoverExpandTimeout: NodeJS.Timeout | null = $state(null)
 //======= DERIVED STATES =======//
 
 const currentRefs = $derived.by(() => {
+	if (typeElement.corruptionReason) return []
 	if (importScope)
 		return Object.entries(
 			importsStore.loadedTypeElementsPerFamily[typeElementFamily].raw[
@@ -69,6 +71,7 @@ const hasRefs = $derived.by(() => {
 })
 
 const isAllowedToDrop = $derived.by(() => {
+	if (typeElement.corruptionReason) return false
 	if (dndStore.currentSourceRefFamily)
 		return ALLOWED_TARGETS_BY_REF_FAMILY[
 			dndStore.currentSourceRefFamily

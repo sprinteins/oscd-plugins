@@ -32,23 +32,49 @@ export type TypeElementsByFamily = {
 export type TypeElementByIds<GenericTypeFamily extends AvailableTypeFamily> =
 	Record<string, TypeElement<GenericTypeFamily>>
 
-export type TypeElement<GenericTypeFamily extends AvailableTypeFamily> = {
+type TypeElementCommonFields<GenericTypeFamily extends AvailableTypeFamily> = {
 	element: Xml.SclElement<
 		GenericTypeFamily,
 		typeof pluginLocalStore.currentEdition,
 		typeof pluginLocalStore.currentUnstableRevision
 	>
 	attributes: Record<string, string | null>
-	parameters: {
-		label: string
-		refFamily: AvailableRefFamily | undefined
-		childrenOptions: Record<
-			AvailableTypeFamily,
-			ConductingEquipmentChildrenOptions | undefined
-		>
-	}
 	refs: RefElementsByFamily
 }
+
+// A type element built from well-formed SCL: its reference family and
+// children options were resolved without error.
+export type ValidTypeElement<GenericTypeFamily extends AvailableTypeFamily> =
+	TypeElementCommonFields<GenericTypeFamily> & {
+		corruptionReason?: undefined
+		parameters: {
+			label: string
+			refFamily: AvailableRefFamily | undefined
+			childrenOptions: Record<
+				AvailableTypeFamily,
+				ConductingEquipmentChildrenOptions | undefined
+			>
+		}
+	}
+
+// A type element whose SCL could not be fully trusted (missing/duplicate
+// identifier, missing required attribute, dangling reference, ...). It is
+// kept visible with a `corruptionReason` instead of being dropped, but its
+// reference family, children options and refs are not resolved.
+export type CorruptedTypeElement<
+	GenericTypeFamily extends AvailableTypeFamily
+> = TypeElementCommonFields<GenericTypeFamily> & {
+	corruptionReason: string
+	parameters: {
+		label: string
+		refFamily: undefined
+		childrenOptions: Record<AvailableTypeFamily, undefined>
+	}
+}
+
+export type TypeElement<GenericTypeFamily extends AvailableTypeFamily> =
+	| ValidTypeElement<GenericTypeFamily>
+	| CorruptedTypeElement<GenericTypeFamily>
 
 export type RefElementsByFamily = {
 	[key in AvailableRefFamily]: RefElementByIds<key>

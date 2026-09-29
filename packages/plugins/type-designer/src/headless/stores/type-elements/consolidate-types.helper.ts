@@ -1,151 +1,102 @@
-import { v4 as uuidv4 } from 'uuid'
-// CORE
-import {
-	findAllCustomElementBySelector,
-	namedNodeMapAttributesToPlainObject,
-	typeGuard
-} from '@oscd-plugins/core-api/plugin/v1'
-// STORES
-import { typeElementsStore, pluginLocalStore } from '@/headless/stores'
-// CONSTANTS
-import {
-	REF_FAMILY,
-	TYPE_FAMILY,
-	TYPE_ID_ATTRIBUTE,
-	REF_FAMILY_TO_TYPE_FAMILY_MAP
-} from '@/headless/constants'
-// HELPERS
-import { getChildrenOptions } from '@/headless/stores/type-elements/children-options.helper'
 // TYPES
 import type {
-	AvailableRefFamily,
+	AvailableTypeFamily,
 	TypeElement,
 	TypeElementByIds,
-	AvailableTypeFamily,
 	TypeRawElement,
-	RefRawElement,
-	RefElementsByFamily
+	ValidTypeElement
 } from '@/headless/stores'
+// HELPERS
+import { getChildrenOptions } from '@/headless/stores/type-elements/children-options.helper'
+import { getRefFamily } from '@/headless/stores/type-elements/ref-family.helper'
+import { buildRefs } from '@/headless/stores/type-elements/ref-mapping.helper'
+import {
+	buildCorruptedTypeElement,
+	getLabel,
+	getTypeElementAttributes
+} from '@/headless/stores/type-elements/type-element-builder.helper'
+import { resolveElementIdentity } from '@/headless/stores/type-elements/type-identity.helper'
 
 /**
- * Retrieves the attributes of a type element
- *
- * @param params - The parameters for retrieving the type element attributes.
- * @param params.family - The family of the type element.
- * @param params.attributes - The NamedNodeMap of attributes to be converted.
- * @param params.elementId - The ID of the element to be enforced as an identification attribute.
- * @returns An object containing the attributes of the type element
+ * Falls back to a placeholder `CorruptedTypeElement` (no consumer reads its
+ * refs/parameters once `corruptionReason` is set) on any known corruption:
+ * an existing structural reason short-circuits immediately; otherwise the
+ * reference family or refs may report their own; only an unexpected throw
+ * from reading attributes/children options (a genuine bug, not an expected
+ * validation outcome) is caught.
  */
-function getTypeElementAttributes(params: {
-	family: AvailableTypeFamily
-	attributes: NamedNodeMap
+function buildTypeElement<GenericFamily extends AvailableTypeFamily>(params: {
+	family: GenericFamily
+	element: TypeRawElement<GenericFamily>
 	elementId: string
-}) {
-	let enforceIdentificationAttribute:
-		| Record<'id', string>
-		| Record<'uuid', string>
-
-	if (params.family === TYPE_FAMILY.lNodeType)
-		enforceIdentificationAttribute = { id: params.elementId }
-	else enforceIdentificationAttribute = { uuid: params.elementId }
-
-	return {
-		...namedNodeMapAttributesToPlainObject({
-			attributes: params.attributes,
-			addAttributesFromDefinition: {
-				element: TYPE_FAMILY[params.family],
-				currentEdition: pluginLocalStore.currentEdition,
-				currentUnstableRevision:
-					pluginLocalStore.currentUnstableRevision
-			}
-		}),
-		...enforceIdentificationAttribute
-	}
-}
-
-function getRefs(element: Element): RefElementsByFamily {
-	return Array.from(element.children).reduce(
-		(acc, childElement) => {
-			if (
-				!typeGuard.isPropertyOfObject(
-					childElement.tagName,
-					typeElementsStore.mapRefTagNameToRefFamily
-				)
-			)
-				return acc
-			const refFamily =
-				typeElementsStore.mapRefTagNameToRefFamily[childElement.tagName]
-
-			let typeId = ''
-
-			//get LNodeType ids
-			const lnTypeAttribute = childElement.getAttribute('lnType')
-			//get other Types uuids
-			const templateUuidAttribute =
-				childElement.getAttribute('templateUuid')
-
-			if (lnTypeAttribute) typeId = lnTypeAttribute
-			else if (templateUuidAttribute) typeId = templateUuidAttribute
-
-			if (!typeId) throw new Error('No id found for ref element')
-
-			const typeFamily = REF_FAMILY_TO_TYPE_FAMILY_MAP[refFamily]
-
-			const refOccurrence =
-				Object.values(acc[refFamily]).filter(
-					(ref) => ref.source.id === typeId
-				).length + 1
-
-			acc[refFamily][uuidv4()] = {
-				element: childElement as RefRawElement<typeof refFamily>,
-				source: {
-					id: typeId,
-					family: typeFamily
-				},
-				occurrence: refOccurrence
-			} as RefElementsByFamily[typeof refFamily][string]
-			return acc
-		},
-		{
-			generalEquipment: {},
-			conductingEquipment: {},
-			function: {},
-			eqFunction: {},
-			lNode: {}
-		} as RefElementsByFamily
-	)
-}
-
-function getRefFamilyByChildren(elementId: string, rootElement?: Element) {
-	if (!rootElement) throw new Error('No root element')
-	const match = findAllCustomElementBySelector({
-		selector: `[templateUuid="${elementId}"]`,
-		root: rootElement
-	})
-
-	if (!match.length) return undefined
-	if (
-		typeGuard.isPropertyOfObject(
-			match[0].tagName,
-			typeElementsStore.mapRefTagNameToRefFamily
-		)
-	)
-		return typeElementsStore.mapRefTagNameToRefFamily[match[0].tagName]
-}
-
-function getRefFamily(
-	typeFamily: AvailableTypeFamily,
-	elementId: string,
+	originalId: string | null
+	structuralCorruptionReason: string | undefined
 	rootElement?: Element
-): AvailableRefFamily | undefined {
+}): TypeElement<GenericFamily> {
+	if (params.structuralCorruptionReason)
+		return buildCorruptedTypeElement({
+			family: params.family,
+			element: params.element,
+			elementId: params.elementId,
+			originalId: params.originalId,
+			corruptionReason: params.structuralCorruptionReason
+		})
+
+	const idForLookups = params.originalId || params.elementId
+
+	let attributes: Record<string, string | null>
+	let childrenOptions: ValidTypeElement<GenericFamily>['parameters']['childrenOptions']
+	try {
+		attributes = getTypeElementAttributes({
+			family: params.family,
+			attributes: params.element.attributes,
+			elementId: idForLookups
+		})
+		childrenOptions = getChildrenOptions({
+			family: params.family,
+			element: params.element
+		})
+	} catch (error) {
+		return buildCorruptedTypeElement({
+			family: params.family,
+			element: params.element,
+			elementId: params.elementId,
+			originalId: params.originalId,
+			corruptionReason:
+				error instanceof Error
+					? error.message
+					: `Unable to read ${params.element.tagName}`
+		})
+	}
+
+	const refFamilyResult = getRefFamily(
+		params.family,
+		idForLookups,
+		params.rootElement
+	)
+	const refsResult = buildRefs(params.element, params.rootElement)
+	const corruptionReason =
+		refFamilyResult.corruptionReason ?? refsResult.corruptionReason
+
+	if (corruptionReason)
+		return buildCorruptedTypeElement({
+			family: params.family,
+			element: params.element,
+			elementId: params.elementId,
+			originalId: params.originalId,
+			corruptionReason
+		})
+
 	return {
-		[TYPE_FAMILY.bay]: () => undefined,
-		[TYPE_FAMILY.generalEquipment]: () => REF_FAMILY.generalEquipment,
-		[TYPE_FAMILY.conductingEquipment]: () => REF_FAMILY.conductingEquipment,
-		[TYPE_FAMILY.function]: () =>
-			getRefFamilyByChildren(elementId, rootElement),
-		[TYPE_FAMILY.lNodeType]: () => REF_FAMILY.lNode
-	}[typeFamily]()
+		element: params.element,
+		attributes,
+		parameters: {
+			label: getLabel(params.element),
+			refFamily: refFamilyResult.refFamily,
+			childrenOptions
+		},
+		refs: refsResult.refs
+	}
 }
 
 export function getAndMapTypeElements<
@@ -155,40 +106,27 @@ export function getAndMapTypeElements<
 	typeElements: TypeRawElement<GenericFamily>[] | undefined
 	rootElement?: Element
 }) {
-	return (
-		params.typeElements?.reduce(
-			(acc, element) => {
-				const elementId =
-					element.getAttribute(TYPE_ID_ATTRIBUTE[params.family]) ||
-					uuidv4()
-
-				acc[elementId] = {
+	return (params.typeElements || []).reduce(
+		(acc, element, index) => {
+			const { elementId, originalId, corruptionReason } =
+				resolveElementIdentity({
+					family: params.family,
 					element,
-					attributes: getTypeElementAttributes({
-						family: params.family,
-						attributes: element.attributes,
-						elementId
-					}),
-					parameters: {
-						label:
-							element.getAttribute('name') ||
-							element.getAttribute('id') ||
-							'This element has no name or no id',
-						refFamily: getRefFamily(
-							params.family,
-							elementId,
-							params.rootElement
-						),
-						childrenOptions: getChildrenOptions({
-							family: params.family,
-							element
-						})
-					},
-					refs: getRefs(element)
-				} as TypeElement<GenericFamily>
-				return acc
-			},
-			{} as TypeElementByIds<GenericFamily>
-		) || {}
+					index,
+					existingElements: acc
+				})
+
+			acc[elementId] = buildTypeElement({
+				family: params.family,
+				element,
+				elementId,
+				originalId,
+				structuralCorruptionReason: corruptionReason,
+				rootElement: params.rootElement
+			})
+
+			return acc
+		},
+		{} as TypeElementByIds<GenericFamily>
 	)
 }
