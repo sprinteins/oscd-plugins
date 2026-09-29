@@ -1,128 +1,94 @@
-# Good and Bad Tests
+# Test Design in This Repository
 
-## Good Tests
+## Test Layers
 
-**Integration-style**: Test through real interfaces, not mocks of internal parts.
+Choose the lowest layer that can prove the behavior:
 
-```typescript
-// GOOD: Tests observable behavior
-test('user can checkout with valid cart', async () => {
-	const cart = createCart()
-	cart.add(product)
-	const result = await checkout(cart, paymentMethod)
-	expect(result.status).toBe('confirmed')
+- Pure headless logic: test the exported function or store with Vitest.
+- Svelte component behavior: render with `@testing-library/svelte` and assert visible DOM state or user interaction.
+- SCD/XML behavior: use `DOMParser`, existing fixtures, and the public query/action interface; assert semantic elements and attributes.
+- Browser-specific legacy behavior: use the package's configured Vitest browser mode.
+
+Read the owning package's `package.json` and test configuration before choosing helpers, environment, or commands.
+
+## Test Shape
+
+Use `describe`, `it`, `expect`, and `it.each` from `vitest`. Name tests with GIVEN / WHEN / THEN:
+
+```ts
+describe('GIVEN a type collection', () => {
+	it.each([
+		{ existingNames: [], expected: 1 },
+		{ existingNames: ['Bay_copy_1'], expected: 2 },
+	])(
+		'WHEN the next occurrence is requested THEN $expected is returned',
+		({ existingNames, expected }) => {
+			setElements(existingNames)
+
+			expect(getTypeNextOccurrence()).toBe(expected)
+		},
+	)
 })
 ```
 
-Characteristics:
+Use a flat `it('GIVEN ... WHEN ... THEN ...')` when there is only one case. Group cases under `describe('GIVEN ...')` or `describe('WHEN ...')` when setup is shared. Put repeated setup in `beforeEach`; keep each case's varying inputs and expected result in the case table.
 
-- Tests behavior users/callers care about
-- Uses public API only
-- Survives internal refactors
-- Describes WHAT, not HOW
-- One logical assertion per test
+## Component Tests
 
-## Bad Tests
+Render the component through its public props and interact through accessible controls:
 
-**Implementation-detail tests**: Coupled to internal structure.
+```ts
+import { render, screen } from '@testing-library/svelte'
+import { expect, it } from 'vitest'
 
-```typescript
-// BAD: Tests implementation details
-test('checkout calls paymentService.process', async () => {
-	const mockPayment = jest.mock(paymentService)
-	await checkout(cart, payment)
-	expect(mockPayment.process).toHaveBeenCalledWith(cart.total)
+it('GIVEN an unselected connection WHEN the component renders THEN the selected style is absent', () => {
+	render(Message, { edge: connection, isSelected: false, testid: 'connection' })
+
+	expect(screen.getByTestId('connection')).not.toHaveClass('selected')
 })
 ```
 
-Red flags:
+Assert what users can observe: text, roles, labels, enabled state, classes that represent visible state, and emitted/public behavior. Avoid asserting Svelte internals or implementation-only helper calls.
 
-- Mocking internal collaborators
-- Testing private methods
-- Asserting on call counts/order
-- Test breaks when refactoring without behavior change
-- Test name describes HOW not WHAT
-- Verifying through external means instead of interface
+## SCD and XML Tests
 
-```typescript
-// BAD: Bypasses interface to verify
-test('createUser saves to database', async () => {
-	await createUser({ name: 'Alice' })
-	const row = await db.query('SELECT * FROM users WHERE name = ?', ['Alice'])
-	expect(row).toBeDefined()
-})
+Use existing SCD fixtures and mocks where possible. Parse XML with the repository's existing DOM utilities or `DOMParser`. Assert the semantic result:
 
-// GOOD: Verifies through interface
-test('createUser makes user retrievable', async () => {
-	const user = await createUser({ name: 'Alice' })
-	const retrieved = await getUser(user.id)
-	expect(retrieved.name).toBe('Alice')
+```ts
+it('GIVEN a document without a Bay WHEN the action runs THEN the Bay is added with its name', () => {
+	const document = new DOMParser().parseFromString(sourceXml, 'text/xml')
+
+	addBay(document, { name: 'Q01' })
+
+	const bay = document.querySelector('Bay[name="Q01"]')
+	expect(bay).not.toBeNull()
 })
 ```
 
-## SET Project Tests: XML + XPath + Table-Driven
+Prefer assertions on element presence, absence, attributes, and relationships. Avoid comparing an entire serialized XML string because formatting, ordering, namespaces, and generated identifiers can change without changing behavior. Use namespace-aware helpers when the package provides them.
 
-See the [table-driven-tdd skill](../../table-driven-tdd/SKILL.md) for the full pattern, helpers, and readability conventions.
+## Good and Bad Tests
 
-### Good
+Good tests:
 
-Use `runSclTestCases` from `@dialecte/scl/test`. Case key: `<initial state> → <outcome>`.
+- exercise public functions, stores, components, or actions;
+- use realistic fixtures and the package's existing setup;
+- cover happy paths, edge cases, and error behavior;
+- keep mocks at external boundaries only;
+- remain valid after internal refactoring.
 
-```typescript
-// GOOD: XML in, XPath assertions out — table-driven
-import { runSclTestCases } from '@dialecte/scl/test'
-runSclTestCases({
-  testCases: {
-    'VoltageLevel missing → created under Substation': {
-      sourceXml: `<SCL xmlns="http://www.iec.ch/61850/2003/SCL"><Substation name="S1" dev:db-id="s1"/></SCL>`,
-      expectedQueries: ['//scl:Substation[@name="S1"]/scl:VoltageLevel[@name="VL1"]'],
-    },
-  },
-  async act({ source }) {
-    // ...
-    return { assertDatabaseName: source.databaseName }
-  },
-})
+Bad tests:
 
-runTests(testCases, testFunction)
-  	//
-  	// Arrange
-  	//
-  	const sclFile = new File([tc.initialXml], `test-${crypto.randomUUID()}.ssd`, { type: 'application/xml' })
-  	const [sclFileName] = await importXmlFiles({ files: [sclFile] })
+- test private helpers solely because they exist;
+- assert internal call counts or collaborator order;
+- duplicate large fixture setup in every test;
+- compare complete serialized XML for a structural change;
+- use a broad mock where a real in-memory DOM or fixture is practical.
 
-	//
-  	// Act
-	/
-  	await instantiateFunction(sclFileName)
+## Completion
 
-	//
-  	// Assert
-	//
-	const { xmlDocument } = await exportFile({ databaseName: sclFileName })
-	assertExpectedElementQueries(xmlDocument, tc.expectedElementQueries)
-})
-```
-
-### Bad
-
-```typescript
-// BAD: String comparison — brittle, breaks on UUID or whitespace differences
-test('instantiateFunction adds Bay', async () => {
-	const result = await instantiateFunction(scl)
-	expect(result).toBe(`<SCL><Substation name="S1">...</SCL>`)
-})
-
-// BAD: CSS queries — fails on XML namespaces
-test('instantiateFunction adds Bay', async () => {
-	const result = await instantiateFunction(scl)
-	expect(result.querySelector('Bay[name="Q01"]')).not.toBeNull()
-})
-
-// BAD: Tests internal JSON structure instead of XML interface
-test('instantiateFunction stores bay in DB', async () => {
-	await instantiateFunction(scl)
-	const row = await db.find({ type: 'Bay', name: 'Q01' })
-	expect(row).toBeDefined()
-})
-```
+- The tracer-bullet test fails for the intended reason before implementation.
+- Each added behavior reaches GREEN before the next behavior is added.
+- Shared setup is extracted without hiding case-specific intent.
+- Important success, boundary, and error branches are covered.
+- The focused package test command passes, and coverage is checked when the package provides a coverage script.
