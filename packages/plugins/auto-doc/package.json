@@ -39,7 +39,7 @@
 		"@smui/textfield": "^8.0.3",
 		"@tiptap/core": "^2.11.5",
 		"@tiptap/extension-list-item": "^2.11.5",
-		"@tiptap/extension-text-style": "^2.11.5",
+		"@tiptap/extension-text-style": "^3.31.3",
 		"@tiptap/extension-underline": "^2.11.5",
 		"@tiptap/pm": "^2.11.5",
 		"@tiptap/starter-kit": "^2.11.5",
