@@ -317,6 +317,25 @@ describe('getAndMapTypeElements', () => {
 		expect(result['function-1'].parameters.refFamily).toBeUndefined()
 	})
 
+	it('GIVEN a Function ID containing a quote and a valid sibling WHEN the elements are mapped THEN both elements remain available under their exact IDs', () => {
+		const quotedFunction = createType('Function', {
+			name: 'Quoted Function',
+			uuid: 'function"1'
+		})
+		const validFunction = createType('Function', {
+			name: 'Valid Function',
+			uuid: 'function-2'
+		})
+
+		const result = mapElements(TYPE_FAMILY.function, [
+			quotedFunction,
+			validFunction
+		])
+
+		expect(result['function"1'].parameters.label).toBe('Quoted Function')
+		expect(result['function-2'].parameters.label).toBe('Valid Function')
+	})
+
 	it('GIVEN a Function type without a root element WHEN the element is mapped THEN it is retained as invalid', () => {
 		const functionType = createType('Function', {
 			name: 'Protection',
