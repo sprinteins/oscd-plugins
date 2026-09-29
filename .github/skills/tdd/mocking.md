@@ -1,59 +1,56 @@
-# When to Mock
+# Mocking in This Repository
 
-Mock at **system boundaries** only:
+Mock at boundaries only. Prefer real package code, in-memory DOM/XML documents, existing SCD fixtures, and configured test stores when they are practical.
 
-- External APIs (payment, email, etc.)
-- Databases (sometimes - prefer test DB)
-- Time/randomness
-- File system (sometimes)
+## Mock These Boundaries
 
-Don't mock:
+- Browser-only or OpenSCD host APIs unavailable in the test environment.
+- Network, file-system, time, randomness, and other external services.
+- Shared stores or modules only when a component test needs to isolate one public behavior.
+- Expensive package boundaries when the real implementation would make the test slow or nondeterministic.
 
-- Your own classes/modules
-- Internal collaborators
-- Anything you control
+Do not mock:
+
+- The module under test.
+- Internal helpers or collaborators whose behavior is part of the package.
+- DOM/XML operations that can run in the configured Vitest environment.
+- Svelte components that can be rendered directly with `@testing-library/svelte`.
+
+## Vitest Mocking
+
+Use Vitest APIs and keep mocks typed and local to the boundary:
+
+```ts
+import { afterEach, vi } from 'vitest'
+
+vi.mock('@/headless/stores', () => ({
+	typeElementsStore: {
+		typeElementsPerFamily: {
+			bay: {},
+			function: {},
+		},
+	},
+}))
+
+afterEach(() => {
+	vi.restoreAllMocks()
+})
+```
+
+Use `vi.spyOn` for a narrow existing-module boundary and `vi.fn` for an injected callback. Use `vi.hoisted` when a `vi.mock` factory must reference mutable test state. Avoid broad module mocks that hide the behavior under test.
 
 ## Designing for Mockability
 
-At system boundaries, design interfaces that are easy to mock:
+Pass external dependencies into headless functions when the dependency is meaningful to the behavior:
 
-**1. Use dependency injection**
+```ts
+type XmlParser = (source: string) => XMLDocument
 
-Pass external dependencies in rather than creating them internally:
-
-```typescript
-// Easy to mock
-function processPayment(order, paymentClient) {
-  return paymentClient.charge(order.total);
-}
-
-// Hard to mock
-function processPayment(order) {
-  const client = new StripeClient(process.env.STRIPE_KEY);
-  return client.charge(order.total);
+export function loadDocument(source: string, parse: XmlParser): XMLDocument {
+	return parse(source)
 }
 ```
 
-**2. Prefer SDK-style interfaces over generic fetchers**
+For Svelte components, prefer public props and events over mocking child components. For SCD/XML logic, prefer a real `Document` created from a fixture and assert the resulting elements and attributes. If a host editor or browser API must be isolated, wrap it behind the smallest typed interface and mock that boundary.
 
-Create specific functions for each external operation instead of one generic function with conditional logic:
-
-```typescript
-// GOOD: Each function is independently mockable
-const api = {
-  getUser: (id) => fetch(`/users/${id}`),
-  getOrders: (userId) => fetch(`/users/${userId}/orders`),
-  createOrder: (data) => fetch('/orders', { method: 'POST', body: data }),
-};
-
-// BAD: Mocking requires conditional logic inside the mock
-const api = {
-  fetch: (endpoint, options) => fetch(endpoint, options),
-};
-```
-
-The SDK approach means:
-- Each mock returns one specific shape
-- No conditional logic in test setup
-- Easier to see which endpoints a test exercises
-- Type safety per endpoint
+Good mocks have one purpose, one stable shape, and no conditional behavior based on arbitrary request details. If setup needs many branches, the production interface is probably too broad or the test is mocking the wrong layer.
