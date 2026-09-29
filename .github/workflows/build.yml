@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout oscd-plugins/main
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install pnpm
         uses: pnpm/action-setup@v5
@@ -44,7 +44,7 @@ jobs:
         run: mkdir _build_ && cd _build_
 
       - name: Checkout oscd-plugins
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           repository: sprinteins/oscd-plugins
           ref: gh-pages
