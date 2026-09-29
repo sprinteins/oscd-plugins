@@ -41,7 +41,7 @@
 		}
 	},
 	"devDependencies": {
-		"@lucide/svelte": "^0.562.0",
+		"@lucide/svelte": "^1.48.0",
 		"@openscd/oscd-api": "^0.1.6",
 		"@openscd/oscd-editor": "^1.8.0",
 		"@oscd-plugins/core": "workspace:^",
