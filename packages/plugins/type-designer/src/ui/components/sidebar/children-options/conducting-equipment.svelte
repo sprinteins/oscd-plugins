@@ -1,15 +1,10 @@
 	
 <script lang="ts">
-import { v4 as uuidv4 } from 'uuid'
 // COMPONENTS
-import {
-	Label,
-	pluginGlobalStore,
-	SelectWorkaround
-} from '@oscd-plugins/core-ui-svelte'
+import { Label, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { sidebarStore } from '@/headless/stores'
-import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
+import { setConductingEquipmentTerminalCount } from '@/headless/stores/type-elements/terminal-crud-operation.helper'
 
 //====== FUNCTIONS ======//
 
@@ -31,36 +26,13 @@ function getTerminalValue() {
 }
 
 async function setTerminalValue(value: number) {
-	if (!sidebarStore.currentElementType) return
+	const equipmentElement = sidebarStore.currentElementType?.element
+	if (!equipmentElement) return
 
-	if (!pluginGlobalStore.host) throw new Error('Host not found')
-
-	const currentTerminalsElements =
-		sidebarStore.currentElementType.parameters.childrenOptions
-			.conductingEquipment?.currentTerminalsElements
-
-	if (value === 1 && currentTerminalsElements?.length === 2)
-		createAndDispatchEditEvent({
-			host: pluginGlobalStore.host,
-			edit: {
-				node: currentTerminalsElements[1]
-			}
-		})
-	if (value === 2 && currentTerminalsElements?.length === 1) {
-		const clonedTerminal = currentTerminalsElements[0].cloneNode(
-			false
-		) as Element
-		clonedTerminal.setAttribute('uuid', uuidv4())
-
-		createAndDispatchEditEvent({
-			host: pluginGlobalStore.host,
-			edit: {
-				parent: sidebarStore.currentElementType.element,
-				node: clonedTerminal,
-				reference: null
-			}
-		})
-	}
+	setConductingEquipmentTerminalCount({
+		equipmentElement,
+		value
+	})
 
 	await sidebarStore.refreshCurrentElementType()
 }
