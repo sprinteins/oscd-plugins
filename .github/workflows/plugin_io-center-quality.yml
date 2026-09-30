@@ -1,0 +1,13 @@
+name: Quality Check @oscd-plugins/io-center
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/plugins/io-center/**'
+
+jobs:
+  quality:
+    uses: ./.github/workflows/_quality.yml
+    with:
+      package-name: io-center

@@ -1,0 +1,14 @@
+name: Quality Check @oscd-plugins/auto-doc
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/plugins/auto-doc/**'
+
+jobs:
+  quality:
+    uses: ./.github/workflows/_quality.yml
+    with:
+      package-name: auto-doc
+      has-tests: true
