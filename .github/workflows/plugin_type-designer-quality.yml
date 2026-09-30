@@ -1,16 +1,15 @@
-name: Quality Check @oscd-plugins/type-distributor
+name: Quality Check @oscd-plugins/type-designer
 
 on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'packages/plugins/type-distributor/**'
+      - 'packages/plugins/type-designer/**'
 
 jobs:
   quality:
     uses: ./.github/workflows/_quality.yml
     with:
-      package-name: type-distributor
+      package-name: type-designer
       has-tests: true
       has-coverage: true
-      has-lint: true

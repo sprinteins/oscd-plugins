@@ -44,7 +44,7 @@ jobs:
         run: mkdir _build_ && cd _build_
 
       - name: Checkout oscd-plugins
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           repository: sprinteins/oscd-plugins
           ref: gh-pages

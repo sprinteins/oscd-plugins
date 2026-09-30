@@ -6,6 +6,10 @@ on:
       package-name:
         required: true
         type: string
+      has-coverage:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   test:
@@ -26,8 +30,13 @@ jobs:
       - name: Install package dependencies
         run: pnpm run ${{ inputs.package-name }}:install
 
+      - name: Run tests
+        if: inputs.has-coverage == false
+        run: pnpm --dir packages/plugins/${{ inputs.package-name }} exec vitest run
+
       - name: Run tests with coverage
-        run: pnpm --dir packages/plugins/${{ inputs.package-name }} run test:ci
+        if: inputs.has-coverage
+        run: pnpm --dir packages/plugins/${{ inputs.package-name }} exec vitest run --coverage
 
       - name: Upload coverage report
         if: always()

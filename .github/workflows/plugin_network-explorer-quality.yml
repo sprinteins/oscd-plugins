@@ -1,0 +1,13 @@
+name: Quality Check @oscd-plugins/network-explorer
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/plugins/network-explorer/**'
+
+jobs:
+  quality:
+    uses: ./.github/workflows/_quality.yml
+    with:
+      package-name: network-explorer
