@@ -64,7 +64,7 @@
 		"concurrently": "^7.6.0",
 		"html-to-image": "1.11.11",
 		"playwright": "^1.48.1",
-		"postcss": "^8.4.49",
+		"postcss": "^8.5.23",
 		"svelte": "^5.19.8",
 		"svelte-check": "^4.1.4",
 		"tailwindcss": "^3.4.15",
