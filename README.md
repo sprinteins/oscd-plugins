@@ -15,6 +15,7 @@ A high-level overview of how the documentation is organized will help you know w
 
 - [Setup Project](./doc/how-to/setup.md)
 - [Release a Plugin](./doc/how-to/release-a-plugin.md)
+- [Review Dependency Updates](./doc/how-to/review-dependency-updates.md)
 
 ## 👷 Guides
 
