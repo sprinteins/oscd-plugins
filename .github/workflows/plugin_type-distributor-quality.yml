@@ -7,10 +7,27 @@ on:
       - 'packages/plugins/type-distributor/**'
 
 jobs:
-  quality:
-    uses: ./.github/workflows/_quality.yml
+  build:
+    name: Build Project
+    uses: ./.github/workflows/_build.yml
     with:
       package-name: type-distributor
-      has-tests: true
+
+  check:
+    name: Check Project
+    uses: ./.github/workflows/_check.yml
+    with:
+      package-name: type-distributor
+
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/_test.yml
+    with:
+      package-name: type-distributor
       has-coverage: true
-      has-lint: true
+
+  lint:
+    name: Lint Code
+    uses: ./.github/workflows/_lint.yml
+    with:
+      package-name: type-distributor

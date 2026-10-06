@@ -7,9 +7,21 @@ on:
       - 'packages/plugins/type-designer/**'
 
 jobs:
-  quality:
-    uses: ./.github/workflows/_quality.yml
+  build:
+    name: Build Project
+    uses: ./.github/workflows/_build.yml
     with:
       package-name: type-designer
-      has-tests: true
+
+  check:
+    name: Check Project
+    uses: ./.github/workflows/_check.yml
+    with:
+      package-name: type-designer
+
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/_test.yml
+    with:
+      package-name: type-designer
       has-coverage: true

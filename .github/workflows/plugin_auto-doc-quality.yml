@@ -7,8 +7,20 @@ on:
       - 'packages/plugins/auto-doc/**'
 
 jobs:
-  quality:
-    uses: ./.github/workflows/_quality.yml
+  build:
+    name: Build Project
+    uses: ./.github/workflows/_build.yml
     with:
       package-name: auto-doc
-      has-tests: true
+
+  check:
+    name: Check Project
+    uses: ./.github/workflows/_check.yml
+    with:
+      package-name: auto-doc
+
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/_test.yml
+    with:
+      package-name: auto-doc

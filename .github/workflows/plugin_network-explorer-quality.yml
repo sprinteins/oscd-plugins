@@ -7,7 +7,14 @@ on:
       - 'packages/plugins/network-explorer/**'
 
 jobs:
-  quality:
-    uses: ./.github/workflows/_quality.yml
+  build:
+    name: Build Project
+    uses: ./.github/workflows/_build.yml
+    with:
+      package-name: network-explorer
+
+  check:
+    name: Check Project
+    uses: ./.github/workflows/_check.yml
     with:
       package-name: network-explorer

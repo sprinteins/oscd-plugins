@@ -7,7 +7,14 @@ on:
       - 'packages/plugins/io-center/**'
 
 jobs:
-  quality:
-    uses: ./.github/workflows/_quality.yml
+  build:
+    name: Build Project
+    uses: ./.github/workflows/_build.yml
+    with:
+      package-name: io-center
+
+  check:
+    name: Check Project
+    uses: ./.github/workflows/_check.yml
     with:
       package-name: io-center

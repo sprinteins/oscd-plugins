@@ -7,7 +7,14 @@ on:
       - 'packages/plugins/type-switcher/**'
 
 jobs:
-  quality:
-    uses: ./.github/workflows/_quality.yml
+  build:
+    name: Build Project
+    uses: ./.github/workflows/_build.yml
+    with:
+      package-name: type-switcher
+
+  check:
+    name: Check Project
+    uses: ./.github/workflows/_check.yml
     with:
       package-name: type-switcher
