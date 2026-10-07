@@ -1,4 +1,4 @@
-name: Lint Code
+name: Check Project
 
 on:
   workflow_call:
@@ -8,7 +8,7 @@ on:
         type: string
 
 jobs:
-  lint:
+  check:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -26,5 +26,5 @@ jobs:
       - name: Install package dependencies
         run: pnpm run ${{ inputs.package-name }}:install
 
-      - name: Check Biome
-        run: pnpm --dir packages/plugins/${{ inputs.package-name }} run biome:check
+      - name: Check package
+        run: pnpm --dir packages/plugins/${{ inputs.package-name }} run check
