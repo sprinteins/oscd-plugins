@@ -10,9 +10,9 @@ import type { EquipmentMatch } from '@/headless/domain/matching'
 import {
 	createLD0Element,
 	createLDeviceElement,
-	createLNodeElementInIED,
+	createLNElementInIED,
 	createServerElementWithAuth,
-	isLNodePresentInDevice,
+	isLNPresentInDevice,
 	queryLDevice,
 	queryServer
 } from '../elements'
@@ -89,21 +89,21 @@ function ensureLDevice({
 	return { lDevice, edit }
 }
 
-type createLNodeInAccessPointParams = {
+type createLNInAccessPointParams = {
 	lNode: LNodeTemplate
 	lDevice: Element
 	doc: XMLDocument
 }
 
-function createLNodeInAccessPoint({
+function createLNInAccessPoint({
 	lNode,
 	lDevice,
 	doc
-}: createLNodeInAccessPointParams): Insert {
-	const lNodeElement = createLNodeElementInIED(lNode, doc)
+}: createLNInAccessPointParams): Insert {
+	const lnElement = createLNElementInIED(lNode, doc)
 
 	const edit: Insert = {
-		node: lNodeElement,
+		node: lnElement,
 		parent: lDevice,
 		reference: null
 	}
@@ -111,7 +111,7 @@ function createLNodeInAccessPoint({
 	return edit
 }
 
-type createMultipleLNodesInAccessPointParams = {
+type createMultipleLNsInAccessPointParams = {
 	doc: XMLDocument
 	sourceFunction: ConductingEquipmentTemplate | FunctionTemplate
 	lNodes: LNodeTemplate[]
@@ -122,7 +122,7 @@ type createMultipleLNodesInAccessPointParams = {
 	functionUuidOverride?: string
 }
 
-export function createMultipleLNodesInAccessPoint({
+export function createMultipleLNsInAccessPoint({
 	sourceFunction,
 	lNodes,
 	accessPoint,
@@ -131,7 +131,7 @@ export function createMultipleLNodesInAccessPoint({
 	doc,
 	lnodeTypes,
 	functionUuidOverride
-}: createMultipleLNodesInAccessPointParams): Insert[] {
+}: createMultipleLNsInAccessPointParams): Insert[] {
 	const edits: Insert[] = []
 	const iedName = accessPoint.parentElement?.getAttribute('name') ?? ''
 
@@ -148,29 +148,29 @@ export function createMultipleLNodesInAccessPoint({
 	})
 
 	const lNodesToAdd = lNodes.filter((lNode) => {
-		const exists = isLNodePresentInDevice(lNode, lDevice)
+		const exists = isLNPresentInDevice(lNode, lDevice)
 		if (exists) {
 			console.warn(
-				`[createLNodesInAccessPoint] LN ${lNode.lnClass}:${lNode.lnType}:${lNode.lnInst} already exists in LDevice, skipping`
+				`[createMultipleLNsInAccessPoint] LN ${lNode.lnClass}:${lNode.lnType}:${lNode.lnInst} already exists in LDevice, skipping`
 			)
 		}
 		return !exists
 	})
 
 	if (lNodesToAdd.length === 0) {
-		console.info('[createLNodesInAccessPoint] No new lNodes to add')
+		console.info('[createMultipleLNsInAccessPoint] No new LNs to add')
 		return edits
 	}
 	if (serverEdit) edits.push(serverEdit)
 	if (lDeviceEdit) edits.push(lDeviceEdit)
 
 	for (const lNode of lNodesToAdd) {
-		const lNodeEdit = createLNodeInAccessPoint({
+		const lnEdit = createLNInAccessPoint({
 			lNode,
 			lDevice,
 			doc
 		})
-		edits.push(lNodeEdit)
+		edits.push(lnEdit)
 	}
 
 	return edits
@@ -258,13 +258,21 @@ export function buildEditsForDeleteAccessPoint({
 	const edits: (Remove | SetAttributes)[] = []
 
 	if (selectedBay) {
-		const apLNodes = queryLDevicesFromAccessPoint(accessPoint).flatMap(
-			(ld) => ld.lNodes
+		const bayLNodeTemplates: LNodeTemplate[] = queryLDevicesFromAccessPoint(
+			accessPoint
+		).flatMap((ld) =>
+			ld.lns.map((ln) => ({
+				lnClass: ln.lnClass,
+				lnType: ln.lnType,
+				lnInst: ln.inst,
+				iedName: ln.iedName,
+				ldInst: ln.ldInst
+			}))
 		)
 
 		const bayEdits = buildUpdatesForClearingBayLNodeConnections({
 			selectedBay,
-			lNodeTemplates: apLNodes,
+			lNodeTemplates: bayLNodeTemplates,
 			iedName
 		})
 		edits.push(...bayEdits)

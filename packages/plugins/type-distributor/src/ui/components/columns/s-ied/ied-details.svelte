@@ -3,7 +3,7 @@ import {
 	filterByAccessPoint,
 	filterByIED,
 	filterByLDevice,
-	filterByLNode,
+	filterByLN,
 	type IEDData,
 	queryLDevicesFromAccessPoint,
 	type SearchType
@@ -46,8 +46,8 @@ const sIedData = $derived.by(() => {
 			return filterByAccessPoint(data, searchTerm)
 		case 'LDevice':
 			return filterByLDevice(data, searchTerm)
-		case 'LNode':
-			return filterByLNode(data, searchTerm)
+		case 'LN/LN0':
+			return filterByLN(data, searchTerm)
 		default:
 			return data
 	}

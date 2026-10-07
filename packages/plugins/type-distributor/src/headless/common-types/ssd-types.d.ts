@@ -86,11 +86,6 @@ export type LNodeTemplate = {
 	prefix?: string
 }
 
-export type LDeviceData = {
-	ldInst: string
-	lNodes: LNodeTemplate[]
-}
-
 export type AssignableTemplates =
 	| EqFunctionTemplate
 	| FunctionTemplate

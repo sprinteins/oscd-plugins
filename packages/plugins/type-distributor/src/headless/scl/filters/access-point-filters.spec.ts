@@ -14,11 +14,11 @@ describe('filterByAccessPoint', () => {
 					lDevices: [
 						{
 							ldInst: 'LD0',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'XCBR',
 									lnType: 'XCBR_Type1',
-									lnInst: '1',
+									inst: '1',
 									ldInst: 'LD0'
 								}
 							]
@@ -31,11 +31,11 @@ describe('filterByAccessPoint', () => {
 					lDevices: [
 						{
 							ldInst: 'LD1',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'XSWI',
 									lnType: 'XSWI_Type1',
-									lnInst: '1',
+									inst: '1',
 									ldInst: 'LD1'
 								}
 							]
@@ -54,11 +54,11 @@ describe('filterByAccessPoint', () => {
 					lDevices: [
 						{
 							ldInst: 'LD0',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'CSWI',
 									lnType: 'CSWI_Type1',
-									lnInst: '1',
+									inst: '1',
 									ldInst: 'LD0'
 								}
 							]

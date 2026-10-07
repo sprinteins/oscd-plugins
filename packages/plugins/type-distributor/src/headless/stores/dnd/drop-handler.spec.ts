@@ -45,7 +45,7 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 }))
 
 vi.mock('@/headless/scl', () => ({
-	createMultipleLNodesInAccessPoint: vi.fn()
+	createMultipleLNsInAccessPoint: vi.fn()
 }))
 
 describe('drop-handler', () => {

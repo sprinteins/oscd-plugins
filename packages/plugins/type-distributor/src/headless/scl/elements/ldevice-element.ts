@@ -6,7 +6,7 @@ import type {
 	LNodeType
 } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
-import { createLNodeElementInIED } from './lnode-element'
+import { createLNElementInIED } from './ied-ln-element'
 import { queryServer } from './server-element'
 
 const LD0_INSTANCE = 'LD0'
@@ -281,7 +281,7 @@ export function createLD0Element(
 	const ld0LNodeTemplates = createLD0LNodeTemplates(lnodeTypes)
 
 	for (const lnodeTemplate of ld0LNodeTemplates) {
-		const lnElement = createLNodeElementInIED(lnodeTemplate, doc)
+		const lnElement = createLNElementInIED(lnodeTemplate, doc)
 		ld0.appendChild(lnElement)
 	}
 
