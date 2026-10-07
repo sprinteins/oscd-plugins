@@ -676,6 +676,9 @@ importers:
 
   packages/plugins/type-designer:
     devDependencies:
+      '@openscd/oscd-editor':
+        specifier: ^1.8.0
+        version: 1.8.0
       '@oscd-plugins/core-api':
         specifier: workspace:^
         version: link:../../core/api

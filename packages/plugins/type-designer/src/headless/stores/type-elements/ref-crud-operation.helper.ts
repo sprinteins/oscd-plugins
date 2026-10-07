@@ -1,12 +1,10 @@
-import { v4 as uuidv4 } from 'uuid'
 // CORE
 import {
-	createStandardElement,
-	createAndDispatchEditEvent
+	createAndDispatchEditEvent,
+	createStandardElement
 } from '@oscd-plugins/core-api/plugin/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
+import { v4 as uuidv4 } from 'uuid'
 // CONSTANTS
 import { REF_FAMILY } from '@/headless/constants'
 // TYPES
@@ -15,6 +13,9 @@ import type {
 	EditEvent,
 	RemoveEvent
 } from '@/headless/stores'
+// STORES
+import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
+import { getSchemaInsertBeforeReference } from './schema-insertion.helper'
 
 function getRefAttributes(params: {
 	typeId: string
@@ -95,7 +96,10 @@ export function createNewRef(params: {
 		edit: {
 			parent: params.parentTypeWrapper,
 			node: newRefElement,
-			reference: null
+			reference: getSchemaInsertBeforeReference({
+				elementName: params.family,
+				parentTypeWrapper: params.parentTypeWrapper
+			})
 		}
 	})
 }

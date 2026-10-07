@@ -14,29 +14,27 @@ on:
       - '.github/workflows/**'
 
 jobs:
-  install:
-    name: Install Dependencies
-    uses: ./.github/workflows/_install.yml
+  build:
+    name: Build Project
+    uses: ./.github/workflows/_build.yml
     with:
       package-name: type-distributor
 
-  build:
-    name: Build Project
-    needs: install
-    uses: ./.github/workflows/_build.yml
+  check:
+    name: Check Project
+    uses: ./.github/workflows/_check.yml
     with:
       package-name: type-distributor
 
   test:
     name: Run Tests
-    needs: install
     uses: ./.github/workflows/_test.yml
     with:
       package-name: type-distributor
+      has-coverage: true
 
   lint:
     name: Lint Code
-    needs: install
     uses: ./.github/workflows/_lint.yml
     with:
       package-name: type-distributor
