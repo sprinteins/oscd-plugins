@@ -5,6 +5,13 @@ on:
   pull_request:
     paths:
       - 'packages/plugins/type-distributor/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'packages/core/**'
+      - 'packages/ui/**'
+      - 'packages/uilib/**'
+      - '.github/workflows/**'
 
 jobs:
   build:

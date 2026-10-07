@@ -1,0 +1,152 @@
+name: Dependency Quality
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependency-quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Detect affected paths
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      required: ${{ steps.paths.outputs.required }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect package and workflow changes
+        id: paths
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process'
+          import { appendFileSync } from 'node:fs'
+
+          const files = process.env.EVENT_NAME === 'workflow_dispatch'
+            ? ['pnpm-lock.yaml']
+            : execFileSync('git', ['diff', '--name-only', process.env.BASE_SHA, process.env.HEAD_SHA], { encoding: 'utf8' }).trim().split('\n')
+          const required = files.some(file => /^(package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.npmrc$|biome\.json$|packages\/(plugins|core|ui|uilib)\/|\.github\/(dependabot\.yml$|workflows\/))/.test(file))
+          appendFileSync(process.env.GITHUB_OUTPUT, `required=${required}\n`)
+          NODE
+
+  plugins:
+    name: Plugin / ${{ matrix.plugin }}
+    needs: changes
+    if: needs.changes.outputs.required == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin:
+          - auto-doc
+          - communication-explorer
+          - diffing-tool
+          - documentation
+          - io-center
+          - network-explorer
+          - type-designer
+          - type-distributor
+          - type-switcher
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared dependencies
+        run: pnpm run dependencies:build
+
+      - name: Build plugin
+        run: pnpm --dir packages/plugins/${{ matrix.plugin }} run build
+
+      - name: Run configured plugin tests
+        if: contains(fromJSON('["auto-doc", "type-designer", "type-distributor"]'), matrix.plugin)
+        run: pnpm --dir packages/plugins/${{ matrix.plugin }} run test --run
+
+      - name: Check plugin types
+        run: pnpm --dir packages/plugins/${{ matrix.plugin }} run check
+
+  shared:
+    name: Shared packages
+    needs: changes
+    if: needs.changes.outputs.required == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared dependencies
+        run: pnpm run dependencies:build
+
+      - name: Build UI packages
+        run: pnpm --filter @oscd-plugins/ui --filter @oscd-plugins/uilib run build
+
+      - name: Run UILib tests
+        run: pnpm --dir packages/uilib run test
+
+      - name: Run core browser tests
+        run: pnpm --dir packages/core/legacy run test:watch --run --browser.headless
+
+      - name: Check shared package types
+        run: |
+          pnpm --filter './packages/core/*' --filter @oscd-plugins/ui --filter @oscd-plugins/uilib --if-present run check
+          pnpm --filter './packages/core/*' --if-present run types
+
+      - name: Check formatting and lint
+        run: pnpm run biome:check
+
+  quality:
+    name: Dependency quality gate
+    needs: [changes, plugins, shared]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require successful checks
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          REQUIRED: ${{ needs.changes.outputs.required }}
+          PLUGINS_RESULT: ${{ needs.plugins.result }}
+          SHARED_RESULT: ${{ needs.shared.result }}
+        run: |
+          [[ "$CHANGES_RESULT" == 'success' ]] || exit 1
+          if [[ "$REQUIRED" == 'true' ]]; then
+            [[ "$PLUGINS_RESULT" == 'success' && "$SHARED_RESULT" == 'success' ]] || exit 1
+          fi
