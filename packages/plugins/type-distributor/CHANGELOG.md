@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- TypeDistributor now reads `LN@inst` and `LN0@inst` when displaying IED logical nodes, while keeping `lnInst` for bay `LNode` references.
+- TypeDistributor now reads `LN@inst` and `LN0@inst` when displaying and searching IED logical nodes, and labels the search filter `LN/LN0`. SSD bay `LNode@lnInst` references remain unchanged.
 
 ## [1.1.2] - 2026-09-09
 ### Added

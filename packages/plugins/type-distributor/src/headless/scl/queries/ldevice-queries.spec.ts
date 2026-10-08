@@ -246,14 +246,17 @@ describe('queryLDevicesFromAccessPoint', () => {
 			expect(result[0].lns[0].iedName).toBeUndefined()
 		})
 
-		it('GIVEN LDevice without inst attribute WHEN queryLDevicesFromAccessPoint is called THEN should exclude it from results', () => {
-			// GIVEN LDevice without inst attribute
+		it('GIVEN access point with LDevices with and without inst WHEN queryLDevicesFromAccessPoint is called THEN should exclude only the LDevice without inst', () => {
+			// GIVEN access point with one LDevice without inst and one with inst
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(
 				`<AccessPoint name="AP1">
 					<Server>
 						<LDevice>
 							<LN lnClass="XCBR" lnType="XCBR_Type1" inst="1"/>
+						</LDevice>
+						<LDevice inst="LD0">
+							<LN lnClass="XSWI" lnType="XSWI_Type1" inst="1"/>
 						</LDevice>
 					</Server>
 				</AccessPoint>`,
@@ -264,8 +267,10 @@ describe('queryLDevicesFromAccessPoint', () => {
 			// WHEN queryLDevicesFromAccessPoint is called
 			const result = queryLDevicesFromAccessPoint(accessPoint)
 
-			// THEN LDevice without inst is excluded (ldInst would be falsy)
-			expect(result).toHaveLength(0)
+			// THEN LDevice without inst is excluded and valid LDevice remains
+			expect(result).toHaveLength(1)
+			expect(result[0].ldInst).toBe('LD0')
+			expect(result[0].lns[0].lnClass).toBe('XSWI')
 		})
 	})
 
