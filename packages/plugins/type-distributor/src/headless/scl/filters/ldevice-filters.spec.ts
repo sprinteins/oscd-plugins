@@ -14,22 +14,22 @@ describe('filterByLDevice', () => {
 					lDevices: [
 						{
 							ldInst: 'LD_Circuit_Breaker',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'XCBR',
 									lnType: 'XCBR_Type1',
-									lnInst: '1',
+									inst: '1',
 									ldInst: 'LD_Circuit_Breaker'
 								}
 							]
 						},
 						{
 							ldInst: 'LD_Disconnector',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'XSWI',
 									lnType: 'XSWI_Type1',
-									lnInst: '1',
+									inst: '1',
 									ldInst: 'LD_Disconnector'
 								}
 							]
@@ -42,11 +42,11 @@ describe('filterByLDevice', () => {
 					lDevices: [
 						{
 							ldInst: 'LD_Measurement',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'MMXU',
 									lnType: 'MMXU_Type1',
-									lnInst: '1',
+									inst: '1',
 									ldInst: 'LD_Measurement'
 								}
 							]
@@ -65,22 +65,22 @@ describe('filterByLDevice', () => {
 					lDevices: [
 						{
 							ldInst: 'LD_Control_Unit',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'CSWI',
 									lnType: 'CSWI_Type1',
-									lnInst: '1',
+									inst: '1',
 									ldInst: 'LD_Control_Unit'
 								}
 							]
 						},
 						{
 							ldInst: 'LD_Interlock',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'CILO',
 									lnType: 'CILO_Type1',
-									lnInst: '1',
+									inst: '1',
 									ldInst: 'LD_Interlock'
 								}
 							]
@@ -99,12 +99,12 @@ describe('filterByLDevice', () => {
 					lDevices: [
 						{
 							ldInst: '',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'LLN0',
 									lnType: 'LLN0_Type',
-									lnInst: '',
-									ldInst: undefined
+									inst: '',
+									ldInst: ''
 								}
 							]
 						}

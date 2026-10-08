@@ -6,7 +6,7 @@ import {
 	dialogStore
 } from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
-import type { LDeviceData } from '@/headless/common-types'
+import type { IedLDeviceData } from '@/headless/common-types'
 import { dndStore } from '@/headless/stores'
 import LDevice from './l-device.svelte'
 import { RenameCombinedDialogForm } from './rename-dialogs'
@@ -14,7 +14,7 @@ import { RenameCombinedDialogForm } from './rename-dialogs'
 interface Props {
 	accessPoint: Element
 	apName: string | null
-	lDevices: LDeviceData[]
+	lDevices: IedLDeviceData[]
 	iedName: string
 	iedElement: Element
 }
@@ -157,8 +157,8 @@ async function handleRename() {
   </button>
   {#if isOpen && hasLDevices}
     <div class="ml-4 space-y-1">
-      {#each lDevices as { ldInst, lNodes: ldLNodes }}
-        <LDevice {ldInst} lNodes={ldLNodes} {iedName} {accessPoint} />
+      {#each lDevices as { ldInst, lns }}
+        <LDevice {ldInst} {lns} {iedName} {accessPoint} />
       {/each}
     </div>
   {/if}

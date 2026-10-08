@@ -1,31 +1,31 @@
-import type { LDeviceData, LNodeTemplate } from '@/headless/common-types'
+import type { IedLDeviceData, IedLNData } from '@/headless/common-types'
 import type { FilteredAccessPoint, FilteredIED, IEDData } from './types'
 
-function matchesLNode(lNode: LNodeTemplate, term: string): boolean {
+function matchesLN(ln: IedLNData, term: string): boolean {
 	return (
-		lNode.lnClass.toLowerCase().includes(term) ||
-		lNode.lnType.toLowerCase().includes(term) ||
-		lNode.lnInst.toLowerCase().includes(term)
+		ln.lnClass.toLowerCase().includes(term) ||
+		ln.lnType.toLowerCase().includes(term) ||
+		ln.inst.toLowerCase().includes(term)
 	)
 }
 
-export function filterByLNode(ieds: IEDData[], term: string): FilteredIED[] {
+export function filterByLN(ieds: IEDData[], term: string): FilteredIED[] {
 	const normalizedTerm = term.toLowerCase().trim()
 	if (!normalizedTerm) return []
 	return ieds
 		.map((ied) => {
 			const filteredAPs: FilteredAccessPoint[] = ied.accessPoints
 				.map((ap) => {
-					const filteredLDevices: LDeviceData[] = ap.lDevices
+					const filteredLDevices: IedLDeviceData[] = ap.lDevices
 						.map((ld) => {
-							const filteredLNodes = ld.lNodes.filter((ln) =>
-								matchesLNode(ln, normalizedTerm)
+							const filteredLNs = ld.lns.filter((ln) =>
+								matchesLN(ln, normalizedTerm)
 							)
-							return filteredLNodes.length > 0
-								? { ...ld, lNodes: filteredLNodes }
+							return filteredLNs.length > 0
+								? { ...ld, lns: filteredLNs }
 								: null
 						})
-						.filter((ld): ld is LDeviceData => ld !== null)
+						.filter((ld): ld is IedLDeviceData => ld !== null)
 					if (filteredLDevices.length > 0) {
 						return { ...ap, lDevices: filteredLDevices }
 					}

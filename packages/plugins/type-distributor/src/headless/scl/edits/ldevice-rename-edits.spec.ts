@@ -49,8 +49,8 @@ describe('buildEditsForLDeviceRename', () => {
 					<AccessPoint name="AP1">
 						<Server>
 							<LDevice inst="${OLD_INST}" ldName="IED1_${OLD_INST}">
-								<LN0 lnClass="LLN0" lnType="T1" lnInst="" />
-								<LN lnClass="PTRC" lnType="T2" lnInst="1" />
+								<LN0 lnClass="LLN0" lnType="T1" inst="" />
+								<LN lnClass="PTRC" lnType="T2" inst="1" />
 							</LDevice>
 						</Server>
 					</AccessPoint>
