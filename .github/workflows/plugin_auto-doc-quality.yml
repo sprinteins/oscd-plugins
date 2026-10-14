@@ -5,22 +5,31 @@ on:
   pull_request:
     paths:
       - 'packages/plugins/auto-doc/**'
+      - 'packages/plugins/communication-explorer/**'
+      - 'packages/plugins/network-explorer/**'
+      - 'packages/core/api/**'
+      - 'packages/core/legacy/**'
+      - 'packages/core/standard/**'
+      - 'packages/core/ui-svelte/**'
+      - 'packages/ui/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/_quality.yml'
+      - '.github/actions/build-core/**'
+      - '.github/workflows/plugin_auto-doc-quality.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build Project
-    uses: ./.github/workflows/_build.yml
+  quality:
+    name: Quality
+    uses: ./.github/workflows/_quality.yml
     with:
       package-name: auto-doc
-
-  check:
-    name: Check Project
-    uses: ./.github/workflows/_check.yml
-    with:
-      package-name: auto-doc
-
-  test:
-    name: Run Tests
-    uses: ./.github/workflows/_test.yml
-    with:
-      package-name: auto-doc
+      has-tests: true

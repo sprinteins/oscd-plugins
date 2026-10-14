@@ -1,0 +1,21 @@
+name: Build core packages
+description: Restore or build the shared core package outputs. Run after installing workspace dependencies.
+
+runs:
+  using: composite
+  steps:
+    - name: Restore core build output
+      id: cache-core
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          packages/core/standard/dist
+          packages/core/api/dist
+          packages/core/ui-svelte/dist
+          packages/core/legacy/dist
+        key: core-dist-v1-${{ runner.os }}-node24-${{ hashFiles('packages/core/**', 'package.json', 'pnpm-lock.yaml', '!**/node_modules/**', '!**/dist/**', '!**/.svelte-kit/**', '!**/generated/**', '!**/coverage/**') }}
+
+    - name: Build core packages
+      if: steps.cache-core.outputs.cache-hit != 'true'
+      shell: bash
+      run: pnpm run dependencies:build

@@ -5,16 +5,28 @@ on:
   pull_request:
     paths:
       - 'packages/plugins/type-switcher/**'
+      - 'packages/core/api/**'
+      - 'packages/core/legacy/**'
+      - 'packages/core/standard/**'
+      - 'packages/core/ui-svelte/**'
+      - 'packages/ui/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/_quality.yml'
+      - '.github/actions/build-core/**'
+      - '.github/workflows/plugin_type-switcher-quality.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build Project
-    uses: ./.github/workflows/_build.yml
-    with:
-      package-name: type-switcher
-
-  check:
-    name: Check Project
-    uses: ./.github/workflows/_check.yml
+  quality:
+    name: Quality
+    uses: ./.github/workflows/_quality.yml
     with:
       package-name: type-switcher

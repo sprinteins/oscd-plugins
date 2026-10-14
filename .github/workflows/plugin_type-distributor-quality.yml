@@ -5,36 +5,30 @@ on:
   pull_request:
     paths:
       - 'packages/plugins/type-distributor/**'
+      - 'packages/core/api/**'
+      - 'packages/core/legacy/**'
+      - 'packages/core/standard/**'
+      - 'packages/core/ui-svelte/**'
+      - 'packages/ui/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
-      - 'packages/core/**'
-      - 'packages/ui/**'
-      - 'packages/uilib/**'
-      - '.github/workflows/**'
+      - '.github/workflows/_quality.yml'
+      - '.github/actions/build-core/**'
+      - '.github/workflows/plugin_type-distributor-quality.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build Project
-    uses: ./.github/workflows/_build.yml
+  quality:
+    name: Quality
+    uses: ./.github/workflows/_quality.yml
     with:
       package-name: type-distributor
-
-  check:
-    name: Check Project
-    uses: ./.github/workflows/_check.yml
-    with:
-      package-name: type-distributor
-
-  test:
-    name: Run Tests
-    uses: ./.github/workflows/_test.yml
-    with:
-      package-name: type-distributor
+      has-tests: true
       has-coverage: true
-
-  lint:
-    name: Lint Code
-    uses: ./.github/workflows/_lint.yml
-    with:
-      package-name: type-distributor
