@@ -2,20 +2,6 @@ name: Quality Check @oscd-plugins/type-distributor
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'packages/plugins/type-distributor/**'
-      - 'packages/core/api/**'
-      - 'packages/core/legacy/**'
-      - 'packages/core/standard/**'
-      - 'packages/core/ui-svelte/**'
-      - 'packages/ui/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
-      - '.github/workflows/_quality.yml'
-      - '.github/actions/build-core/**'
-      - '.github/workflows/plugin_type-distributor-quality.yml'
 
 permissions:
   contents: read

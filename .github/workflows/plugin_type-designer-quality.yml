@@ -2,18 +2,6 @@ name: Quality Check @oscd-plugins/type-designer
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'packages/plugins/type-designer/**'
-      - 'packages/core/api/**'
-      - 'packages/core/standard/**'
-      - 'packages/core/ui-svelte/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
-      - '.github/workflows/_quality.yml'
-      - '.github/actions/build-core/**'
-      - '.github/workflows/plugin_type-designer-quality.yml'
 
 permissions:
   contents: read
