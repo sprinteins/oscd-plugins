@@ -1,5 +1,5 @@
 name: Build core packages
-description: Restore or build the shared core package outputs. Run after installing workspace dependencies.
+description: Restore or build shared core package outputs and generated files. Run after installing workspace dependencies.
 
 runs:
   using: composite
@@ -10,10 +10,12 @@ runs:
       with:
         path: |
           packages/core/standard/dist
+          packages/core/standard/src/generated
           packages/core/api/dist
           packages/core/ui-svelte/dist
+          packages/core/ui-svelte/.svelte-kit
           packages/core/legacy/dist
-        key: core-dist-v1-${{ runner.os }}-node24-${{ hashFiles('packages/core/**', 'package.json', 'pnpm-lock.yaml', '!**/node_modules/**', '!**/dist/**', '!**/.svelte-kit/**', '!**/generated/**', '!**/coverage/**') }}
+        key: core-dist-v2-${{ runner.os }}-node24-${{ hashFiles('packages/core/**', 'package.json', 'pnpm-lock.yaml', '!**/node_modules/**', '!**/dist/**', '!**/.svelte-kit/**', '!**/generated/**', '!**/coverage/**') }}
 
     - name: Build core packages
       if: steps.cache-core.outputs.cache-hit != 'true'
