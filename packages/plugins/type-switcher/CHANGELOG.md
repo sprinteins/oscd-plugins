@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Update SMUI dependencies to 8.0.3 and align component event handling with Svelte 5
+- Forward SMUI click handlers through the shared UI components' typed actions
 - Fix TypeScript checks for test and Vite configuration files
 
 ## [0.0.19] - 2026-04-13
