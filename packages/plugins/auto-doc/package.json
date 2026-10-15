@@ -35,7 +35,7 @@
 		"@smui/dialog": "8.0.3",
 		"@smui/icon-button": "^8.0.3",
 		"@smui/list": "^8.0.3",
-		"@smui/menu": "^8.0.3",
+		"@smui/menu": "^9.0.2",
 		"@smui/textfield": "^8.0.3",
 		"@tiptap/core": "^2.11.5",
 		"@tiptap/extension-list-item": "^2.11.5",
