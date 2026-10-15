@@ -1,6 +1,5 @@
 <script lang="ts">
 import Button, { Label } from '@smui/button'
-import { forwardClick } from '../../utils'
 
 interface Props {
 	// Input
@@ -35,7 +34,7 @@ let dataProps = $derived({
 
 <Button
   class="tscd-button {componentClasses} "
-  use={[[forwardClick, onclick]]}
+  {onclick}
   {disabled}
   variant={varianTypeMap[type]}
   {...dataProps}
