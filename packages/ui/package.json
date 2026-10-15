@@ -1,7 +1,7 @@
 {
 	"name": "@oscd-plugins/ui",
 	"private": true,
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"type": "module",
 	"main": "src/index.ts",
 	"scripts": {
@@ -14,8 +14,8 @@
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^1.9.0",
-		"@smui/common": "8.0.0-beta.3",
-		"@smui/segmented-button": "8.0.0-beta.3",
+		"@smui/common": "^8.0.3",
+		"@smui/segmented-button": "^8.0.3",
 		"@storybook/addon-essentials": "^8.3.5",
 		"@storybook/addon-interactions": "^8.3.5",
 		"@storybook/addon-links": "^8.3.5",
@@ -35,12 +35,12 @@
 	},
 	"dependencies": {
 		"@oscd-plugins/core": "workspace:^",
-		"@smui/button": "^8.0.0-beta.3",
-		"@smui/drawer": "^8.0.0-beta.3",
-		"@smui/icon-button": "8.0.0-beta.3",
-		"@smui/select": "8.0.0-beta.3",
-		"@smui/top-app-bar": "^8.0.0-beta.3",
-		"normalize.css": "^8.0.1",
-		"svelte-material-ui": "^8.0.0-beta.3"
+		"@smui/button": "^8.0.3",
+		"@smui/drawer": "^8.0.3",
+		"@smui/icon-button": "^8.0.3",
+		"@smui/select": "^8.0.3",
+		"@smui/top-app-bar": "^8.0.3",
+		"normalize.css": "8.0.1",
+		"svelte-material-ui": "^8.0.3"
 	}
 }
