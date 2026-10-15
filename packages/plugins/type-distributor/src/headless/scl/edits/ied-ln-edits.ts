@@ -1,31 +1,31 @@
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import type { LNodeTemplate } from '@/headless/common-types'
-import { queryLDeviceFromAccessPoint, queryLNodeInLDevice } from '../elements'
+import type { IedLNData, LNodeTemplate } from '@/headless/common-types'
+import { queryLDeviceFromAccessPoint, queryLNInLDevice } from '../elements'
 import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
 
-interface BuildEditsForDeleteLNodeFromAccessPointParams {
+interface BuildEditsForDeleteLNFromAccessPointParams {
 	iedName: string
 	accessPoint: Element
-	lNodeTemplate: LNodeTemplate
+	ln: IedLNData
 	selectedBay: Element | null
 }
 
-export function buildEditsForDeleteLNodeFromAccessPoint({
+export function buildEditsForDeleteLNFromAccessPoint({
 	iedName,
 	accessPoint,
-	lNodeTemplate,
+	ln,
 	selectedBay
-}: BuildEditsForDeleteLNodeFromAccessPointParams): (Remove | SetAttributes)[] {
+}: BuildEditsForDeleteLNFromAccessPointParams): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
 
 	if (!selectedBay) {
 		throw new Error('No bay selected')
 	}
 
-	const ldInst = lNodeTemplate.ldInst
+	const ldInst = ln.ldInst
 	if (!ldInst) {
 		throw new Error(
-			'LNodeTemplate must have ldInst to delete LNode from AccessPoint'
+			'IED LN data must have ldInst to delete LN from AccessPoint'
 		)
 	}
 
@@ -36,19 +36,19 @@ export function buildEditsForDeleteLNodeFromAccessPoint({
 		)
 	}
 
-	const lnElement = queryLNodeInLDevice(lDevice, lNodeTemplate)
+	const lnElement = queryLNInLDevice(lDevice, ln)
 
 	if (!lnElement) {
 		throw new Error(
-			`LNode with lnClass="${lNodeTemplate.lnClass}", lnType="${lNodeTemplate.lnType}", lnInst="${lNodeTemplate.lnInst}" not found in LDevice "${ldInst}"`
+			`LN with lnClass="${ln.lnClass}", lnType="${ln.lnType}", inst="${ln.inst}" not found in LDevice "${ldInst}"`
 		)
 	}
 
-	const lNodeTemplates = [
+	const lNodeTemplates: LNodeTemplate[] = [
 		{
-			lnClass: lNodeTemplate.lnClass,
-			lnType: lNodeTemplate.lnType,
-			lnInst: lNodeTemplate.lnInst,
+			lnClass: ln.lnClass,
+			lnType: ln.lnType,
+			lnInst: ln.inst,
 			ldInst
 		}
 	]
@@ -61,9 +61,9 @@ export function buildEditsForDeleteLNodeFromAccessPoint({
 	edits.push(...bayEdits)
 
 	const allLNs = Array.from(lDevice.querySelectorAll(':scope > LN'))
-	const isLastLNode = allLNs.length === 1
+	const isLastLN = allLNs.length === 1
 
-	if (isLastLNode) {
+	if (isLastLN) {
 		edits.push({
 			node: lDevice
 		} as Remove)

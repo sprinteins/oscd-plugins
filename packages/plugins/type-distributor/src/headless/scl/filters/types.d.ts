@@ -1,11 +1,11 @@
-import type { LDeviceData } from '@/headless/common-types'
+import type { IedLDeviceData } from '@/headless/common-types'
 
-export type SearchType = 'IED' | 'AccessPoint' | 'LDevice' | 'LNode'
+export type SearchType = 'IED' | 'AccessPoint' | 'LDevice' | 'LN/LN0'
 
 export type FilteredAccessPoint = {
 	element: Element
 	name: string | null
-	lDevices: LDeviceData[]
+	lDevices: IedLDeviceData[]
 }
 
 export type IEDData = {

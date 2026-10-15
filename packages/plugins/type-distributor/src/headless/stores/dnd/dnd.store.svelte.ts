@@ -6,7 +6,7 @@ import type {
 } from '@/headless/common-types'
 import {
 	buildUpdatesForBayLNode,
-	createMultipleLNodesInAccessPoint,
+	createMultipleLNsInAccessPoint,
 	resolveFunctionElementUuid
 } from '@/headless/scl'
 import {
@@ -108,7 +108,7 @@ class UseDndStore {
 				equipmentMatches
 			})
 			const allEdits: (Insert | SetAttributes)[] = [
-				...createMultipleLNodesInAccessPoint({
+				...createMultipleLNsInAccessPoint({
 					sourceFunction: functionFromSSD,
 					lNodes,
 					accessPoint,

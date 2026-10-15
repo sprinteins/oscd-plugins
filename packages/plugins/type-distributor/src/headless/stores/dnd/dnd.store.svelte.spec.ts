@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
 	buildUpdatesForBayLNode,
-	createMultipleLNodesInAccessPoint
+	createMultipleLNsInAccessPoint
 } from '@/headless/scl'
 import { bayStore } from '@/headless/stores'
 import { dndStore } from './dnd.store.svelte'
@@ -19,7 +19,7 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 }))
 
 vi.mock('@/headless/scl', () => ({
-	createMultipleLNodesInAccessPoint: vi.fn(),
+	createMultipleLNsInAccessPoint: vi.fn(),
 	buildUpdatesForBayLNode: vi.fn(),
 	resolveFunctionElementUuid: vi.fn(() => undefined)
 }))
@@ -221,7 +221,7 @@ describe('dndStore', () => {
 				}
 			]
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
-			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
+			vi.mocked(createMultipleLNsInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
 			vi.mocked(dropHandler.generateCommitTitle).mockReturnValue(
@@ -232,7 +232,7 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should build IED edits only and commit
-			expect(createMultipleLNodesInAccessPoint).toHaveBeenCalledWith({
+			expect(createMultipleLNsInAccessPoint).toHaveBeenCalledWith({
 				sourceFunction: mockFunction,
 				lNodes: mockLNodes,
 				accessPoint: mockAccessPoint,
@@ -279,7 +279,7 @@ describe('dndStore', () => {
 			]
 
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
-			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
+			vi.mocked(createMultipleLNsInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
 			vi.mocked(buildUpdatesForBayLNode).mockReturnValue(mockBayEdits)
@@ -291,7 +291,7 @@ describe('dndStore', () => {
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')
 
 			// THEN should build both IED and bay edits
-			expect(createMultipleLNodesInAccessPoint).toHaveBeenCalledWith({
+			expect(createMultipleLNsInAccessPoint).toHaveBeenCalledWith({
 				sourceFunction: mockFunction,
 				lNodes: mockLNodes,
 				accessPoint: mockAccessPoint,
@@ -343,7 +343,7 @@ describe('dndStore', () => {
 			]
 
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(true)
-			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue(
+			vi.mocked(createMultipleLNsInAccessPoint).mockReturnValue(
 				mockIedEdits
 			)
 			vi.mocked(buildUpdatesForBayLNode).mockReturnValue(mockBayEdits)
@@ -377,7 +377,7 @@ describe('dndStore', () => {
 			}
 
 			vi.mocked(dropHandler.shouldApplyBayType).mockReturnValue(false)
-			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue([])
+			vi.mocked(createMultipleLNsInAccessPoint).mockReturnValue([])
 
 			// WHEN handleDrop is called
 			dndStore.handleDrop(mockAccessPoint, 'TestIED')

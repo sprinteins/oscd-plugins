@@ -10,7 +10,7 @@ import type {
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import {
 	buildInsertsForCreateAccessPoint,
-	createMultipleLNodesInAccessPoint
+	createMultipleLNsInAccessPoint
 } from './accesspoint-edits'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -88,7 +88,7 @@ const equipmentTemplate: ConductingEquipmentTemplate = {
 	eqFunctions: [functionTemplate]
 }
 
-describe('createMultipleLNodesInAccessPoint', () => {
+describe('createMultipleLNsInAccessPoint', () => {
 	let mockDocument: Document
 	let accessPoint: Element
 
@@ -107,7 +107,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 
 	it('GIVEN an empty lNodes array WHEN creating lNodes THEN returns empty array', () => {
 		// WHEN
-		const edits = createMultipleLNodesInAccessPoint({
+		const edits = createMultipleLNsInAccessPoint({
 			sourceFunction: functionTemplate,
 			lNodes: [],
 			accessPoint,
@@ -121,7 +121,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 
 	describe('GIVEN a fresh AccessPoint without Server or LDevice', () => {
 		it('WHEN creating lNodes with FunctionTemplate THEN creates Server parented to AccessPoint', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -140,7 +140,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN creating lNodes with FunctionTemplate THEN Server has Authentication none="true"', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -155,7 +155,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN creating lNodes with FunctionTemplate THEN creates LDevice with inst=functionName_uuid', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -169,7 +169,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN creating lNodes with ConductingEquipmentTemplate THEN LDevice inst is equipmentName_functionName_uuid', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: equipmentTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -196,7 +196,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				scdElement
 			}
 
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: equipmentTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -223,7 +223,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				lnInst: '3'
 			}
 
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2, lnode3],
 				accessPoint,
@@ -236,7 +236,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN creating lNodes THEN LN has correct lnClass / lnType / inst attributes', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -257,7 +257,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				lnInst: '2'
 			}
 
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2],
 				accessPoint,
@@ -279,7 +279,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 				lnInst: '0'
 			}
 
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lln0],
 				accessPoint,
@@ -302,7 +302,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		server.appendChild(auth)
 		accessPoint.appendChild(server)
 
-		const edits = createMultipleLNodesInAccessPoint({
+		const edits = createMultipleLNsInAccessPoint({
 			sourceFunction: functionTemplate,
 			lNodes: [lnodeTemplate],
 			accessPoint,
@@ -323,7 +323,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN creating lNodes THEN does not create LDevice or Server edits', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -336,7 +336,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN creating lNodes THEN still creates LN edits', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -363,7 +363,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN creating lNodes THEN returns empty array (no edits at all)', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -394,7 +394,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN creating both lNodes THEN only adds the missing lNode', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2],
 				accessPoint,
@@ -408,7 +408,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN adding missing lNode THEN does not emit Server or LDevice edits', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate, lnode2],
 				accessPoint,
@@ -443,7 +443,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN creating lNodes in target AccessPoint THEN creates Server, LDevice and LN (uniqueness is LDevice-scoped)', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -487,7 +487,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			existingLN.setAttribute('inst', '1')
 			lDevice.appendChild(existingLN)
 
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -502,7 +502,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 
 	describe('authentication setup', () => {
 		it('should create Server with Authentication element set to none=true', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -534,7 +534,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		]
 
 		it('WHEN creating lNodes THEN created LDevice contains an LN0 element', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -548,7 +548,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 		})
 
 		it('WHEN creating lNodes THEN LN0 in LDevice has correct lnType', () => {
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -575,7 +575,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 			existingLN0.setAttribute('inst', '')
 			lDevice.appendChild(existingLN0)
 
-			const edits = createMultipleLNodesInAccessPoint({
+			const edits = createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
@@ -591,7 +591,7 @@ describe('createMultipleLNodesInAccessPoint', () => {
 	})
 
 	it('GIVEN lnodeTypes is undefined WHEN creating lNodes THEN LDevice has no LN0 child', () => {
-		const edits = createMultipleLNodesInAccessPoint({
+		const edits = createMultipleLNsInAccessPoint({
 			sourceFunction: functionTemplate,
 			lNodes: [lnodeTemplate],
 			accessPoint,

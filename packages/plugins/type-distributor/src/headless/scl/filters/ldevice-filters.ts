@@ -1,4 +1,4 @@
-import type { LDeviceData } from '@/headless/common-types'
+import type { IedLDeviceData } from '@/headless/common-types'
 import type { FilteredAccessPoint, FilteredIED, IEDData } from './types'
 
 function matchesLDevice(ldInst: string | undefined, term: string): boolean {
@@ -12,9 +12,10 @@ export function filterByLDevice(ieds: IEDData[], term: string): FilteredIED[] {
 		.map((ied) => {
 			const filteredAPs: FilteredAccessPoint[] = ied.accessPoints
 				.map((ap) => {
-					const filteredLDevices: LDeviceData[] = ap.lDevices.filter(
-						(ld) => matchesLDevice(ld.ldInst, normalizedTerm)
-					)
+					const filteredLDevices: IedLDeviceData[] =
+						ap.lDevices.filter((ld) =>
+							matchesLDevice(ld.ldInst, normalizedTerm)
+						)
 					if (filteredLDevices.length > 0) {
 						return { ...ap, lDevices: filteredLDevices }
 					}

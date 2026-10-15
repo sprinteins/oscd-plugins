@@ -38,12 +38,12 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
         <Authentication none="true"/>
         <LDevice inst="CBFunction_aa11bb22">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
-          <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
-          <LN lnClass="CSWI" lnInst="1" lnType="TestCSWI"/>
+          <LN lnClass="XCBR" inst="1" lnType="TestXCBR"/>
+          <LN lnClass="CSWI" inst="1" lnType="TestCSWI"/>
         </LDevice>
         <LDevice inst="QA1_Protection_a7f3b2c1">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
-          <LN lnClass="PTRC" lnInst="1" lnType="TestPTRC"/>
+          <LN lnClass="PTRC" inst="1" lnType="TestPTRC"/>
         </LDevice>
       </Server>
     </AccessPoint>
@@ -52,7 +52,7 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
         <Authentication none="true"/>
         <LDevice inst="OtherFunction">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
-          <LN lnClass="XCBR" lnInst="2" lnType="TestXCBR"/>
+          <LN lnClass="XCBR" inst="2" lnType="TestXCBR"/>
         </LDevice>
       </Server>
     </AccessPoint>
@@ -63,7 +63,7 @@ const sampleSCD = `<?xml version="1.0" encoding="UTF-8"?>
         <Authentication none="true"/>
         <LDevice inst="CBFunction">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
-          <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
+          <LN lnClass="XCBR" inst="1" lnType="TestXCBR"/>
         </LDevice>
       </Server>
     </AccessPoint>
@@ -357,10 +357,10 @@ describe('buildEditsForDeleteAccessPoint', () => {
     <AccessPoint name="AP1">
       <Server>
         <LDevice inst="-QC2_DisconnectorFunction_7e3d9a4f">
-          <LN lnClass="XSWI" lnInst="1" lnType="XSWI$oscd$_5114e81752706b92"/>
+          <LN lnClass="XSWI" inst="1" lnType="XSWI$oscd$_5114e81752706b92"/>
         </LDevice>
         <LDevice inst="-QB92_DisconnectorFunction_3d7b8f2c">
-          <LN lnClass="XSWI" lnInst="1" lnType="XSWI$oscd$_5114e81752706b92"/>
+          <LN lnClass="XSWI" inst="1" lnType="XSWI$oscd$_5114e81752706b92"/>
         </LDevice>
       </Server>
     </AccessPoint>
@@ -475,7 +475,7 @@ describe('buildEditsForDeleteAccessPoint', () => {
     <AccessPoint name="P1">
       <Server>
         <LDevice inst="-CEQ2_DisconnectorFunction_a1b2c3d4">
-          <LN lnClass="XSWI" lnInst="1" lnType="XSWI$type"/>
+          <LN lnClass="XSWI" inst="1" lnType="XSWI$type"/>
         </LDevice>
       </Server>
     </AccessPoint>
@@ -555,10 +555,10 @@ describe('buildEditsForDeleteAccessPoint', () => {
       <Server>
         <LDevice inst="LD0">
           <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
-          <LN lnClass="LPHD" lnInst="1" lnType="TestLPHD"/>
+          <LN lnClass="LPHD" inst="1" lnType="TestLPHD"/>
         </LDevice>
         <LDevice inst="CBFunction_aa11bb22">
-          <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
+          <LN lnClass="XCBR" inst="1" lnType="TestXCBR"/>
         </LDevice>
       </Server>
     </AccessPoint>

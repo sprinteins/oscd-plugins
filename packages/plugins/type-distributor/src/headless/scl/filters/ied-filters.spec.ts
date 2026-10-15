@@ -14,11 +14,11 @@ describe('filterByIED', () => {
 					lDevices: [
 						{
 							ldInst: 'LD0',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'XCBR',
 									lnType: 'XCBR_Type1',
-									lnInst: '1',
+									inst: '1',
 									ldInst: 'LD0'
 								}
 							]
@@ -37,11 +37,11 @@ describe('filterByIED', () => {
 					lDevices: [
 						{
 							ldInst: 'LD0',
-							lNodes: [
+							lns: [
 								{
 									lnClass: 'CSWI',
 									lnType: 'CSWI_Type1',
-									lnInst: '1',
+									inst: '1',
 									ldInst: 'LD0'
 								}
 							]
