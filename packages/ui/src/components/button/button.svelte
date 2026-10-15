@@ -1,35 +1,35 @@
 <script lang="ts">
-  import Button, { Label } from "@smui/button";
+import Button, { Label } from '@smui/button'
 
-  interface Props {
-    // Input
-    onclick?: (event: MouseEvent) => void;
-    testid?: string;
-    disabled?: boolean;
-    componentClasses?: string;
-    type?: "primary" | "secondary" | "tertiary";
-    children?: import("svelte").Snippet;
-  }
+interface Props {
+	// Input
+	onclick?: (event: MouseEvent) => void
+	testid?: string
+	disabled?: boolean
+	componentClasses?: string
+	type?: 'primary' | 'secondary' | 'tertiary'
+	children?: import('svelte').Snippet
+}
 
-  let {
-    onclick,
-    testid = "",
-    disabled = false,
-    componentClasses = "",
-    type = "primary",
-    children,
-  }: Props = $props();
+let {
+	onclick,
+	testid = '',
+	disabled = false,
+	componentClasses = '',
+	type = 'primary',
+	children
+}: Props = $props()
 
-  type Variant = "text" | "raised" | "unelevated" | "outlined";
-  const varianTypeMap: { [key in typeof type]: Variant } = {
-    primary: "raised",
-    secondary: "outlined",
-    tertiary: "text",
-  };
+type Variant = 'text' | 'raised' | 'unelevated' | 'outlined'
+const varianTypeMap: { [key in typeof type]: Variant } = {
+	primary: 'raised',
+	secondary: 'outlined',
+	tertiary: 'text'
+}
 
-  let dataProps = $derived({
-    "data-testid": testid,
-  });
+let dataProps = $derived({
+	'data-testid': testid
+})
 </script>
 
 <Button

@@ -1,13 +1,18 @@
-<IconButton size="button" style={cssDynamicStyles} { onclick } class={className}>
+<IconButton
+	size="button"
+	style={cssDynamicStyles}
+	{onclick}
+	class={className}
+>
 	<IconWrapper icon={icon} fillColor={color} class="custom-icon-button-wrapper"/>
 </IconButton>
 
 <script lang='ts'>
 import IconButton from '@smui/icon-button'
-// COMPONENTS
-import { IconWrapper } from '../icons'
 // UTILS
 import { setInlineStyles } from '../../utils'
+// COMPONENTS
+import { IconWrapper } from '../icons'
 // TYPES
 import type { AvailableIcon } from '../icons/types.icon'
 
@@ -21,13 +26,7 @@ interface Props {
 	onclick?: (e: MouseEvent) => void
 }
 
-let {
-	icon,
-	size,
-	color,
-	class: className = '',
-	onclick
-}: Props = $props();
+let { icon, size, color, class: className = '', onclick }: Props = $props()
 
 //====== REACTIVITY ======//
 
@@ -38,10 +37,9 @@ const cssFixedStyles = $derived.by(() => {
 	if (size === 'large') buttonSize = '56px'
 
 	return { 'button-size': buttonSize }
-});
+})
 
 const cssDynamicStyles = $derived(setInlineStyles(cssFixedStyles))
-
 </script>
 
 <style>
