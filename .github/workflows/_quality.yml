@@ -1,4 +1,4 @@
-name: Run Tests
+name: Plugin Quality
 
 on:
   workflow_call:
@@ -6,14 +6,22 @@ on:
       package-name:
         required: true
         type: string
+      has-tests:
+        required: false
+        type: boolean
+        default: false
       has-coverage:
         required: false
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
 jobs:
-  test:
+  quality:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -27,19 +35,28 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      - name: Install package dependencies
-        run: pnpm run ${{ inputs.package-name }}:install
+      - name: Install plugin and its workspace dependencies
+        run: pnpm --filter "@oscd-plugins/${{ inputs.package-name }}..." install --frozen-lockfile
+
+      - name: Build core packages
+        uses: ./.github/actions/build-core
+
+      - name: Check package
+        run: pnpm --dir packages/plugins/${{ inputs.package-name }} run check
 
       - name: Run tests
-        if: inputs.has-coverage == false
+        if: inputs.has-tests && !inputs.has-coverage
         run: pnpm --dir packages/plugins/${{ inputs.package-name }} exec vitest run
 
       - name: Run tests with coverage
-        if: inputs.has-coverage
+        if: inputs.has-tests && inputs.has-coverage
         run: pnpm --dir packages/plugins/${{ inputs.package-name }} exec vitest run --coverage
 
+      - name: Build package
+        run: pnpm --dir packages/plugins/${{ inputs.package-name }} run build
+
       - name: Upload coverage report
-        if: always()
+        if: always() && inputs.has-tests && inputs.has-coverage
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ inputs.package-name }}-coverage

@@ -3,6 +3,8 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /
+    assignees:
+      - tmenzel27
     schedule:
       interval: weekly
       day: monday
@@ -12,41 +14,53 @@ updates:
       default-days: 3
     open-pull-requests-limit: 10
     groups:
-      production-dependencies:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      test-tooling-patches:
+        dependency-type: development
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+        update-types:
+          - patch
+      test-tooling-minor:
+        dependency-type: development
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+        update-types:
+          - minor
+      production-patches:
+        dependency-type: production
+        patterns:
+          - "*"
+        update-types:
+          - patch
+      production-minor:
         dependency-type: production
         patterns:
           - "*"
         update-types:
           - minor
+      development-patches:
+        dependency-type: development
+        patterns:
+          - "*"
+        update-types:
           - patch
-      development-dependencies:
+      development-minor:
         dependency-type: development
         patterns:
           - "*"
         update-types:
           - minor
-          - patch
-
-  - package-ecosystem: npm
-    directory: /packages/uilib
-    schedule:
-      interval: weekly
-      day: monday
-      time: "09:00"
-      timezone: Europe/Berlin
-    cooldown:
-      default-days: 3
-    open-pull-requests-limit: 5
-    groups:
-      uilib-dependencies:
-        patterns:
-          - "*"
-        update-types:
-          - minor
-          - patch
 
   - package-ecosystem: github-actions
     directory: /
+    assignees:
+      - tmenzel27
     schedule:
       interval: weekly
       day: monday
