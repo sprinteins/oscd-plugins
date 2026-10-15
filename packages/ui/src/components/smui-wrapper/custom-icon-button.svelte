@@ -1,7 +1,7 @@
 <IconButton
 	size="button"
 	style={cssDynamicStyles}
-	{onclick}
+	use={[[forwardClick, onclick]]}
 	class={className}
 >
 	<IconWrapper icon={icon} fillColor={color} class="custom-icon-button-wrapper"/>
@@ -10,7 +10,7 @@
 <script lang='ts'>
 import IconButton from '@smui/icon-button'
 // UTILS
-import { setInlineStyles } from '../../utils'
+import { forwardClick, setInlineStyles } from '../../utils'
 // COMPONENTS
 import { IconWrapper } from '../icons'
 // TYPES
