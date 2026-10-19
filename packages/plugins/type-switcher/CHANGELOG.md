@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.20] - 2026-10-15
+### Added
+- Add Vitest component tests for the category selector, group card list, and type linker
+
+### Changed
+- Update SMUI dependencies to 8.0.3 and align component event handling with Svelte 5
+- Fix TypeScript checks for test and Vite configuration files
+
 ## [0.0.19] - 2026-04-13
 ### Fixed
 - Styles lost on the group card due to specificity [#639](https://github.com/sprinteins/oscd-plugins/issues/639)

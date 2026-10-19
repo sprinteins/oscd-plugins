@@ -10,12 +10,12 @@ import Chip, { Set as ChipSet, Text } from '@smui/chips'
 
 interface Props {
 	// Input
-	selected: string[]
+	selected?: string[]
 	testid?: string
 	labels: string[]
 }
 
-let { selected = $bindable(), testid = '', labels }: Props = $props()
+let { selected = $bindable([]), testid = '', labels }: Props = $props()
 
 function dataTestid(id: string) {
 	return { 'data-testid': id }

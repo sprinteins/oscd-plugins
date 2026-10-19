@@ -18,3 +18,9 @@ jobs:
     uses: ./.github/workflows/_check.yml
     with:
       package-name: type-switcher
+
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/_test.yml
+    with:
+      package-name: type-switcher
