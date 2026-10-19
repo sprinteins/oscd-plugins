@@ -23,7 +23,7 @@
 		"@storybook/blocks": "^8.3.5",
 		"@storybook/svelte": "^8.3.5",
 		"@storybook/svelte-vite": "^8.3.5",
-		"@storybook/test": "^8.3.5",
+		"@storybook/test": "^8.6.15",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@tsconfig/svelte": "^5.0.4",
 		"storybook": "^8.3.5",
