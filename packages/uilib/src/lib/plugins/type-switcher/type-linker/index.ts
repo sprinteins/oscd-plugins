@@ -1,1 +1,0 @@
-export { default as TypeLinker } from "./type-linker.svelte"
