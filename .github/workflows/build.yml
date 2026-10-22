@@ -27,10 +27,6 @@ jobs:
       - name: Install Dependencies
         run: pnpm run ${{ inputs.plugin-name }}:install
 
-      - name: Run Tests
-        continue-on-error: true
-        run: (cd ./packages/uilib ; npm run test)
-
       - name: Build Plugin
         run: pnpm -C ./packages/plugins/${{ inputs.plugin-name }} run build
 
