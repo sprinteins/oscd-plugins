@@ -58,14 +58,11 @@ The automated release workflow currently covers:
 
 - `auto-doc`
 - `communication-explorer`
-- `documentation`
 - `io-center`
 - `network-explorer`
 - `type-designer`
 - `type-distributor`
 - `type-switcher`
-
-`diffing-tool` does not currently have a release workflow.
 
 For the workflow implementation, see
 [`plugin_network-explorer.yml`](../../.github/workflows/plugin_network-explorer.yml)
