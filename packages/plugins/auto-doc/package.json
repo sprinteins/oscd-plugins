@@ -43,7 +43,7 @@
 		"@tiptap/extension-underline": "^2.11.5",
 		"@tiptap/pm": "^2.11.5",
 		"@tiptap/starter-kit": "^2.11.5",
-		"jspdf": "^2.5.2",
+		"jspdf": "^4.2.1",
 		"jspdf-autotable": "^3.8.4",
 		"uuid": "^10.0.0",
 		"zipcelx": "^1.6.2"
