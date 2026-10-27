@@ -2,25 +2,18 @@ name: Quality Check @oscd-plugins/auto-doc
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'packages/plugins/auto-doc/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build Project
-    uses: ./.github/workflows/_build.yml
+  quality:
+    name: Quality
+    uses: ./.github/workflows/_quality.yml
     with:
       package-name: auto-doc
-
-  check:
-    name: Check Project
-    uses: ./.github/workflows/_check.yml
-    with:
-      package-name: auto-doc
-
-  test:
-    name: Run Tests
-    uses: ./.github/workflows/_test.yml
-    with:
-      package-name: auto-doc
+      has-tests: true

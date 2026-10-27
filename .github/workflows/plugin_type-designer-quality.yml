@@ -2,26 +2,19 @@ name: Quality Check @oscd-plugins/type-designer
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'packages/plugins/type-designer/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build Project
-    uses: ./.github/workflows/_build.yml
+  quality:
+    name: Quality
+    uses: ./.github/workflows/_quality.yml
     with:
       package-name: type-designer
-
-  check:
-    name: Check Project
-    uses: ./.github/workflows/_check.yml
-    with:
-      package-name: type-designer
-
-  test:
-    name: Run Tests
-    uses: ./.github/workflows/_test.yml
-    with:
-      package-name: type-designer
+      has-tests: true
       has-coverage: true

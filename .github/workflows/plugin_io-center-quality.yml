@@ -2,19 +2,17 @@ name: Quality Check @oscd-plugins/io-center
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'packages/plugins/io-center/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build Project
-    uses: ./.github/workflows/_build.yml
-    with:
-      package-name: io-center
-
-  check:
-    name: Check Project
-    uses: ./.github/workflows/_check.yml
+  quality:
+    name: Quality
+    uses: ./.github/workflows/_quality.yml
     with:
       package-name: io-center
