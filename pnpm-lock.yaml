@@ -228,8 +228,8 @@ importers:
         specifier: ^8.0.3
         version: 8.0.3
       '@smui/menu':
-        specifier: ^8.0.3
-        version: 8.0.3
+        specifier: ^9.0.6
+        version: 9.0.6
       '@smui/textfield':
         specifier: ^8.0.3
         version: 8.0.3
@@ -364,8 +364,8 @@ importers:
         specifier: ^8.0.0-beta.3
         version: 8.0.3
       '@smui/menu':
-        specifier: ^8.0.0-beta.3
-        version: 8.0.3
+        specifier: ^9.0.6
+        version: 9.0.6
       '@smui/textfield':
         specifier: ^8.0.0-beta.3
         version: 8.0.3
@@ -2580,6 +2580,9 @@ packages:
   '@smui/common@8.0.3':
     resolution: {integrity: sha512-Zgsp8KE4NH0+eLihHdhxYSzbV8M2w0B53BnM+5WvEEEJWzHcKhpvYNHTT6tG909IsIrU7uNNVJosNIw7leU8Wg==}
 
+  '@smui/common@9.0.6':
+    resolution: {integrity: sha512-wWQ+4ixA0PjlHGlF9rTD8UKOxbyZlMGz0IKIwDqgo2189v9LOJFIHoqXfZO8b0YXcK0pO82M85xsvcUXkTcv1g==}
+
   '@smui/data-table@8.0.3':
     resolution: {integrity: sha512-uOhf4AL1fj+e0LukISZpgvWJ8lqswGjrU45gjrT3rKxjKJuNIFu8ApAoX8OrbjhFcZdtvBls82ymQEcD8kVY7Q==}
 
@@ -2622,11 +2625,20 @@ packages:
   '@smui/list@8.0.3':
     resolution: {integrity: sha512-9ZMw+1GFp19TjD76AvDMjAu/lIngU+HIQIEDC76sVSJfdRRGRaUwWCM8H4qwz5vnpvEiD91Sw4aRqVlYMtSu9g==}
 
+  '@smui/list@9.0.6':
+    resolution: {integrity: sha512-Vs8JEhL/+GPEZNxEsjkxQUEiEF/3yW4gbhT+xgLVqfnaNdXOrxUpng/U+8bfHvDGrpt+/EpaBjUW197soEk7NA==}
+
   '@smui/menu-surface@8.0.3':
     resolution: {integrity: sha512-3D86+7GoQSTtnSP2S2Cl6Us9D51jpbcalNBfmMJtujY8FnFdoOCrQomBqtZ5o1EAXZUPIwiii+j+czPorMXpKQ==}
 
+  '@smui/menu-surface@9.0.6':
+    resolution: {integrity: sha512-MaE7jvkLyaoJxV8H7g7AwG8mer4TmsLKGrx7V5gVZK1S2eDhBheP4w+rJ5J78k14XAUm9csId3Mi1otrPgsspw==}
+
   '@smui/menu@8.0.3':
     resolution: {integrity: sha512-I7+SRTXMq+1O052GMS2Xhkd1fOxYk7oF8nASQr8+2bpfMwMJxh1QNXDIaLX2Tymf79QpA/N0AP0D662jvvkIjQ==}
+
+  '@smui/menu@9.0.6':
+    resolution: {integrity: sha512-iaUuFoC4CmLpVRvf090oP6Wqdj38ASsjpAv1DL4aihwAl4x7TFvLISgGuC5zs4i439hbCbkLzjbW980FGt2PKg==}
 
   '@smui/notched-outline@8.0.3':
     resolution: {integrity: sha512-LTTPHGGg8RyF8spoeExk5MgwhQTvKd5TB28mneRR8PeFpSH3v144bH3v205QdMmJhipCX7gbu3tX2+SJcTfTxw==}
@@ -2639,6 +2651,9 @@ packages:
 
   '@smui/ripple@8.0.3':
     resolution: {integrity: sha512-K3dPwoMaSFFNTlQ0/iaGqY3mn6L1TXG6awmovlgX0SmrgRr9WUg+23xIdlxbWVGHihC2ZlJ4qczn7fA9XTRsEA==}
+
+  '@smui/ripple@9.0.6':
+    resolution: {integrity: sha512-ju3IDWJAor0Lp9N1RPnVS5yStBzuPPEvsEZSlHHWpP4oQkP0xa+pByqKeX+7+Kb1YCzTGYuTcIihDvmavuYLCw==}
 
   '@smui/segmented-button@8.0.0-beta.3':
     resolution: {integrity: sha512-Vj+s5zk3YbzyH5B8DvlurkRc4afls99AYKE/ONvQX7G1fA+m0lqeJ57KgRxGH2Snf1t5EAd36agAXTXtfFvpow==}
@@ -3752,6 +3767,7 @@ packages:
   basic-ftp@5.0.5:
     resolution: {integrity: sha512-4Bcg1P8xhUuqcii/S0Z9wiHIrQVPMermM1any+MX5GeGD7faD3/msQUDGLol9wOcz4/jbg/WJnGqoJF6LiBdtg==}
     engines: {node: '>=10.0.0'}
+    deprecated: Security vulnerability fixed in 5.2.1, please upgrade
 
   better-opn@3.0.2:
     resolution: {integrity: sha512-aVNobHnJqLiUelTaHat9DZ1qM2w0C0Eym4LPI/3JxOnSokGVdsl1T1kN7TFvsEAD8G47A6VKQ0TVHqbBnYMJlQ==}
@@ -4862,25 +4878,28 @@ packages:
 
   glob@10.4.5:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@11.1.0:
     resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
     engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
     engines: {node: '>=12'}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   globals@13.24.0:
     resolution: {integrity: sha512-AhO5QUcj8llrbG09iWhPU2B204J1xnPeL8kQmVorSsy+Sjj1sk8gIyh6cUocGmH4L0UuhAJy+hJMRA4mgA4mFQ==}
@@ -5407,11 +5426,13 @@ packages:
 
   lucide-svelte@0.469.0:
     resolution: {integrity: sha512-PMIJ8jrFqVUsXJz4d1yfAQplaGhNOahwwkzbunha8DhpiD73xqX24n8dE1dPpUk3vcrdWVsHc1y/liHHotOnGQ==}
+    deprecated: Package deprecated. Please use @lucide/svelte instead.
     peerDependencies:
       svelte: ^3 || ^4 || ^5.0.0-next.42
 
   lucide-svelte@0.474.0:
     resolution: {integrity: sha512-yOSqjXPoEDOXCceBIfDaed6RinOvhp03ShiTXH6O+vlXE/NsyjQpktL8gm2vGDxi9d81HMuPFN1dwhVURh6mGg==}
+    deprecated: Package deprecated. Please use @lucide/svelte instead.
     peerDependencies:
       svelte: ^3 || ^4 || ^5.0.0-next.42
 
@@ -6173,6 +6194,9 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
+  safevalues@1.2.0:
+    resolution: {integrity: sha512-zIsuhjYvJCjfsfjoim2ab6gLKFYAnTiDSJGh0cC3T44L/4kNLL90hBG2BzrXPrHA3f8Ms8FSJ1mljKH5dVR1cw==}
+
   sander@0.5.1:
     resolution: {integrity: sha512-3lVqBir7WuKDHGrKRDn/1Ye3kwpXaDOMsiRP1wd6wpZW56gJhsbp5RqQpA6JG/P+pkXizygnr1dKR8vzWaVsfA==}
 
@@ -6796,10 +6820,12 @@ packages:
 
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   v8-compile-cache@2.4.0:
@@ -9232,6 +9258,10 @@ snapshots:
     dependencies:
       '@material/dom': 14.0.0
 
+  '@smui/common@9.0.6':
+    dependencies:
+      safevalues: 1.2.0
+
   '@smui/data-table@8.0.3':
     dependencies:
       '@material/data-table': 14.0.0
@@ -9323,11 +9353,20 @@ snapshots:
       '@smui/common': 8.0.3
       '@smui/ripple': 8.0.3
 
+  '@smui/list@9.0.6':
+    dependencies:
+      '@smui/common': 9.0.6
+      '@smui/ripple': 9.0.6
+
   '@smui/menu-surface@8.0.3':
     dependencies:
       '@material/animation': 14.0.0
       '@material/menu-surface': 14.0.0
       '@smui/common': 8.0.3
+
+  '@smui/menu-surface@9.0.6':
+    dependencies:
+      '@smui/common': 9.0.6
 
   '@smui/menu@8.0.3':
     dependencies:
@@ -9336,6 +9375,13 @@ snapshots:
       '@smui/common': 8.0.3
       '@smui/list': 8.0.3
       '@smui/menu-surface': 8.0.3
+
+  '@smui/menu@9.0.6':
+    dependencies:
+      '@smui/common': 9.0.6
+      '@smui/list': 9.0.6
+      '@smui/menu-surface': 9.0.6
+      '@smui/ripple': 9.0.6
 
   '@smui/notched-outline@8.0.3':
     dependencies:
@@ -9363,6 +9409,10 @@ snapshots:
       '@material/dom': 14.0.0
       '@material/ripple': 14.0.0
       '@smui/common': 8.0.3
+
+  '@smui/ripple@9.0.6':
+    dependencies:
+      '@smui/common': 9.0.6
 
   '@smui/segmented-button@8.0.0-beta.3':
     dependencies:
@@ -13546,6 +13596,8 @@ snapshots:
   safe-stable-stringify@2.5.0: {}
 
   safer-buffer@2.1.2: {}
+
+  safevalues@1.2.0: {}
 
   sander@0.5.1:
     dependencies:
