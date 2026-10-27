@@ -37,7 +37,7 @@
 		"@smui/list": "^8.0.3",
 		"@smui/menu": "^8.0.3",
 		"@smui/textfield": "^8.0.3",
-		"@tiptap/core": "^2.11.5",
+		"@tiptap/core": "^3.30.5",
 		"@tiptap/extension-list-item": "^2.11.5",
 		"@tiptap/extension-text-style": "^2.11.5",
 		"@tiptap/extension-underline": "^2.11.5",
