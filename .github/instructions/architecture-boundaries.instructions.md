@@ -11,7 +11,7 @@ applyTo: 'packages/**,doc/**'
 - Keep plugins independent. A plugin failure must not require unrelated plugins to change or fail.
 - Shared plugin API contracts belong in `packages/core/api/`; shared IEC 61850 definitions belong in `packages/core/standard/`.
 - SCD manipulation and legacy business logic belong in `packages/core/legacy/`, not in individual UI components.
-- Reusable Svelte components and themes belong in `packages/core/ui-svelte/`, `packages/ui/`, or `packages/uilib/` according to the existing package boundary.
+- Reusable Svelte components and themes belong in `packages/core/ui-svelte/` or `packages/ui/` according to the existing package boundary.
 - Avoid circular dependencies and do not import plugin implementation code into shared core packages.
 - Keep headless logic independent from Svelte and browser-only APIs whenever the package structure provides a `headless/` area.
 - Preserve the OpenSCD custom-element contract: plugins default-export an element class and do not self-register it.

@@ -11,7 +11,7 @@ import SubContent from './dropdown-menu-sub-content.svelte'
 import SubTrigger from './dropdown-menu-sub-trigger.svelte'
 
 const Sub = DropdownMenuPrimitive.Sub
-const Root = DropdownMenuPrimitive.Root
+const Root: typeof DropdownMenuPrimitive.Root = DropdownMenuPrimitive.Root
 const Trigger = DropdownMenuPrimitive.Trigger
 const Group = DropdownMenuPrimitive.Group
 const RadioGroup = DropdownMenuPrimitive.RadioGroup

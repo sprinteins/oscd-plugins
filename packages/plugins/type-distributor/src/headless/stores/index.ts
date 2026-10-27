@@ -2,7 +2,8 @@ export { assignedLNodesStore } from './assigned-lnodes'
 export { bayStore } from './bay.store.svelte'
 export {
 	getAllLNodesWithParent,
-	getBayTypeWithTemplates
+	getBayTypeWithTemplates,
+	resolveAssignedBayTypeUuid
 } from './bay-types.utils'
 export { dndStore } from './dnd'
 export { equipmentMatchingStore } from './equipment-matching.store.svelte'

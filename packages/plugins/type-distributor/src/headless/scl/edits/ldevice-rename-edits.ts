@@ -1,6 +1,6 @@
 import type { Insert, Remove, SetAttributes } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '@/headless/common-types'
-import { createLNodeElementInIED } from '../elements'
+import { createLNElementInIED } from '../elements'
 
 type BuildEditsForLDeviceRenameParams = {
 	ied: Element
@@ -41,7 +41,7 @@ export function buildEditsForLDeviceRename({
 	}
 
 	for (const template of newLNodeTemplates) {
-		const lnElement = createLNodeElementInIED(template, doc)
+		const lnElement = createLNElementInIED(template, doc)
 		edits.push({
 			node: lnElement,
 			parent: lDevice,

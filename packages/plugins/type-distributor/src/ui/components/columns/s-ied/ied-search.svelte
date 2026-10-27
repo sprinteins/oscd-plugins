@@ -41,10 +41,10 @@ const searchTypeActions = [
 		}
 	},
 	{
-		label: 'LNode',
+		label: 'LN/LN0',
 		disabled: false,
 		callback: () => {
-			searchType = 'LNode'
+			searchType = 'LN/LN0'
 		}
 	}
 ]
