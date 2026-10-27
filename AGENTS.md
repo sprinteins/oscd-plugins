@@ -60,7 +60,7 @@ The workspace dependency direction is generally:
 ```text
 packages/plugins/*
         |
-core-ui-svelte, core-api, core-standard, core/legacy, ui, uilib
+core-ui-svelte, core-api, core-standard, core/legacy, ui
 ```
 
 - `packages/core/api/` - shared plugin API types and mocks, including `pluginV1` and `mocksV1`.
@@ -68,8 +68,7 @@ core-ui-svelte, core-api, core-standard, core/legacy, ui, uilib
 - `packages/core/standard/` - IEC 61850 standard types and generated definitions.
 - `packages/core/ui-svelte/` - shared Svelte 5 UI components and themes.
 - `packages/ui/` - additional UI components and the newer UI package.
-- `packages/uilib/` - legacy Svelte UI/plugin library.
-- `packages/plugins/` - standalone plugin applications such as `network-explorer`, `communication-explorer`, `auto-doc`, `io-center`, `documentation`, `diffing-tool`, `type-designer`, `type-distributor`, and `type-switcher`.
+- `packages/plugins/` - standalone plugin applications such as `network-explorer`, `communication-explorer`, `auto-doc`, `io-center`, `type-designer`, `type-distributor`, and `type-switcher`.
 - `packages/create-plugin/` - plugin scaffolding and its template.
 - `doc/` - repository-wide architecture, ADRs, guidelines, references, and how-to documentation.
 
