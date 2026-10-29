@@ -6,7 +6,7 @@
 {#if mode.isStandAlone}
 	<DevMenuBar pluginType={pluginType}/>
 {/if}
-<tscd-theme style={cssDynamicStyles}>
+<tscd-theme style={cssDynamicStyles} use:injectStyles={normalizeCss}>
 	{@render children?.()}
 </tscd-theme>
 
@@ -21,7 +21,7 @@ import svelteMaterialUiUrl from 'svelte-material-ui/bare.css?url'
 // DEV COMPONENTS
 import { DevMenuBar } from '../../components/dev'
 // UTILS
-import { setInlineStyles } from '../../utils'
+import { setInlineStyles, injectStyles } from '../../utils'
 // TYPES
 import type { PluginType } from '@oscd-plugins/core'
 
@@ -43,6 +43,8 @@ const baseURL = new URL(import.meta.url)
 const fontCss = new URL(fontsUrl, baseURL).href
 const themeCss = new URL(themeUrl, baseURL).href
 const svelteMaterialUiCss = new URL(svelteMaterialUiUrl, baseURL).href
+
+let normalizeCss = $state('')
 
 const cssFixedStyles = $state({
 	'header-height': '',
@@ -85,7 +87,10 @@ let mode = $derived({
 	isStorybook: import.meta.env.DEV && import.meta.env.MODE === 'STORYBOOK'
 })
 run(() => {
-		if (mode.isStandAlone) import('normalize.css/normalize.css')
+		if (import.meta.env.DEV && mode.isStandAlone)
+			import('normalize.css/normalize.css?inline').then((module) => {
+				normalizeCss = module.default
+			})
 	});
 // style
 run(() => {

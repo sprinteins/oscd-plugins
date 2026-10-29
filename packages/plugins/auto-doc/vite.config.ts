@@ -7,7 +7,15 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 
 export default defineConfig(({ mode }) => ({
 	base: './',
-	plugins: [svelte(), dts({ rollupTypes: true })],
+	plugins: [
+		svelte({
+			dynamicCompileOptions: ({ filename }) =>
+				filename === resolve(__dirname, 'src/plugin.svelte')
+					? { customElement: true }
+					: { customElement: false, css: 'injected' }
+		}),
+		dts({ rollupTypes: true })
+	],
 	resolve: {
 		alias: {
 			'@': resolve(__dirname, 'src')
