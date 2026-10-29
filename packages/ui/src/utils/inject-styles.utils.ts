@@ -4,16 +4,27 @@
  * it stays scoped to it instead of leaking into the document head.
  */
 export function injectStyles(node: HTMLElement, css: string) {
-	const style = document.createElement('style')
-	style.textContent = css
-	node.prepend(style)
+	let style: HTMLStyleElement | undefined
+
+	function apply(newCss: string) {
+		if (!newCss) {
+			style?.remove()
+			style = undefined
+			return
+		}
+		if (!style) {
+			style = document.createElement('style')
+			node.prepend(style)
+		}
+		style.textContent = newCss
+	}
+
+	apply(css)
 
 	return {
-		update(newCss: string) {
-			style.textContent = newCss
-		},
+		update: apply,
 		destroy() {
-			style.remove()
+			style?.remove()
 		}
 	}
 }
