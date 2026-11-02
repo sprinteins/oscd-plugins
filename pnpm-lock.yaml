@@ -868,8 +868,8 @@ importers:
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
       '@smui/top-app-bar':
-        specifier: ^8.0.0-beta.3
-        version: 8.0.3
+        specifier: ^9.0.6
+        version: 9.0.6
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -2580,6 +2580,9 @@ packages:
   '@smui/common@8.0.3':
     resolution: {integrity: sha512-Zgsp8KE4NH0+eLihHdhxYSzbV8M2w0B53BnM+5WvEEEJWzHcKhpvYNHTT6tG909IsIrU7uNNVJosNIw7leU8Wg==}
 
+  '@smui/common@9.0.6':
+    resolution: {integrity: sha512-wWQ+4ixA0PjlHGlF9rTD8UKOxbyZlMGz0IKIwDqgo2189v9LOJFIHoqXfZO8b0YXcK0pO82M85xsvcUXkTcv1g==}
+
   '@smui/data-table@8.0.3':
     resolution: {integrity: sha512-uOhf4AL1fj+e0LukISZpgvWJ8lqswGjrU45gjrT3rKxjKJuNIFu8ApAoX8OrbjhFcZdtvBls82ymQEcD8kVY7Q==}
 
@@ -2640,6 +2643,9 @@ packages:
   '@smui/ripple@8.0.3':
     resolution: {integrity: sha512-K3dPwoMaSFFNTlQ0/iaGqY3mn6L1TXG6awmovlgX0SmrgRr9WUg+23xIdlxbWVGHihC2ZlJ4qczn7fA9XTRsEA==}
 
+  '@smui/ripple@9.0.6':
+    resolution: {integrity: sha512-ju3IDWJAor0Lp9N1RPnVS5yStBzuPPEvsEZSlHHWpP4oQkP0xa+pByqKeX+7+Kb1YCzTGYuTcIihDvmavuYLCw==}
+
   '@smui/segmented-button@8.0.0-beta.3':
     resolution: {integrity: sha512-Vj+s5zk3YbzyH5B8DvlurkRc4afls99AYKE/ONvQX7G1fA+m0lqeJ57KgRxGH2Snf1t5EAd36agAXTXtfFvpow==}
 
@@ -2684,6 +2690,9 @@ packages:
 
   '@smui/top-app-bar@8.0.3':
     resolution: {integrity: sha512-V7EALHZj1KSC5jVtsE4PmljaM7H9YucPmF9LWu8YQ6mfJlmoCXQhdJ1xFJCEv5tbTUTdSY+txkhDfgDyc89OvQ==}
+
+  '@smui/top-app-bar@9.0.6':
+    resolution: {integrity: sha512-QFGhcCrwvgGMrsXaVnJjmklAp63bdk22Qv0M1Bh/DO3ABMtND+QHkysx5X7OC6fk3o+mAqu1ZOS3y3Xhb6o8nQ==}
 
   '@smui/touch-target@8.0.3':
     resolution: {integrity: sha512-yh/jAEID0cHItVftmeVjjMPt56PJe+/K5JXGeNRI5MSL5HI9a+V44XNltrS4nxCCFoqZfX2GAIR/psYf3QaxCw==}
@@ -6179,6 +6188,9 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
+  safevalues@1.2.0:
+    resolution: {integrity: sha512-zIsuhjYvJCjfsfjoim2ab6gLKFYAnTiDSJGh0cC3T44L/4kNLL90hBG2BzrXPrHA3f8Ms8FSJ1mljKH5dVR1cw==}
+
   sander@0.5.1:
     resolution: {integrity: sha512-3lVqBir7WuKDHGrKRDn/1Ye3kwpXaDOMsiRP1wd6wpZW56gJhsbp5RqQpA6JG/P+pkXizygnr1dKR8vzWaVsfA==}
 
@@ -9237,6 +9249,10 @@ snapshots:
     dependencies:
       '@material/dom': 14.0.0
 
+  '@smui/common@9.0.6':
+    dependencies:
+      safevalues: 1.2.0
+
   '@smui/data-table@8.0.3':
     dependencies:
       '@material/data-table': 14.0.0
@@ -9369,6 +9385,10 @@ snapshots:
       '@material/ripple': 14.0.0
       '@smui/common': 8.0.3
 
+  '@smui/ripple@9.0.6':
+    dependencies:
+      '@smui/common': 9.0.6
+
   '@smui/segmented-button@8.0.0-beta.3':
     dependencies:
       '@material/base': 14.0.0
@@ -9500,6 +9520,11 @@ snapshots:
       '@material/feature-targeting': 14.0.0
       '@material/top-app-bar': 14.0.0
       '@smui/common': 8.0.3
+
+  '@smui/top-app-bar@9.0.6':
+    dependencies:
+      '@smui/common': 9.0.6
+      '@smui/ripple': 9.0.6
 
   '@smui/touch-target@8.0.3':
     dependencies:
@@ -13551,6 +13576,8 @@ snapshots:
   safe-stable-stringify@2.5.0: {}
 
   safer-buffer@2.1.2: {}
+
+  safevalues@1.2.0: {}
 
   sander@0.5.1:
     dependencies:
