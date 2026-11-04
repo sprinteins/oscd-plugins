@@ -1,0 +1,189 @@
+name: Dependency Quality
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependency-quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Detect affected paths
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      core_required: ${{ steps.paths.outputs.core_required }}
+      plugins_required: ${{ steps.paths.outputs.plugins_required }}
+      plugin_matrix: ${{ steps.paths.outputs.plugin_matrix }}
+      lint_required: ${{ steps.paths.outputs.lint_required }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: Fetch base and head commits
+        if: github.event_name == 'pull_request'
+        run: git fetch --no-tags --depth=1 origin ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
+
+      - name: Detect core and plugin changes
+        id: paths
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process'
+          import { appendFileSync } from 'node:fs'
+
+          // UILib, Documentation and Diffing Tool are intentionally not part of this gate.
+          const plugins = [
+            { name: 'auto-doc', tests: true, coverage: false, dependsOn: ['communication-explorer', 'network-explorer'] },
+            { name: 'communication-explorer', tests: false, coverage: false },
+            { name: 'io-center', tests: false, coverage: false },
+            { name: 'network-explorer', tests: false, coverage: false },
+            { name: 'type-designer', tests: true, coverage: true },
+            { name: 'type-distributor', tests: true, coverage: true },
+            { name: 'type-switcher', tests: false, coverage: false }
+          ]
+
+          const isDispatch = process.env.EVENT_NAME === 'workflow_dispatch'
+          const files = isDispatch
+            ? []
+            : execFileSync('git', ['diff', '--name-only', process.env.BASE_SHA, process.env.HEAD_SHA], { encoding: 'utf8' }).trim().split('\n')
+
+          const coreRequired = isDispatch || files.some(file => /^(package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|packages\/(core|ui)\/|\.github\/(workflows\/(dependency-quality|_quality)\.yml$|actions\/))/.test(file))
+          const affected = plugins.filter(plugin => coreRequired || files.some(file => [plugin.name, ...(plugin.dependsOn ?? [])].some(name => file.startsWith(`packages/plugins/${name}/`))))
+          const matrix = affected.map(plugin => ({
+            'package-name': plugin.name,
+            'has-tests': plugin.tests,
+            'has-coverage': plugin.coverage
+          }))
+
+          const outputs = {
+            core_required: coreRequired,
+            plugins_required: matrix.length > 0,
+            plugin_matrix: JSON.stringify(matrix),
+            lint_required: !isDispatch
+          }
+          for (const [key, value] of Object.entries(outputs)) {
+            appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${value}\n`)
+          }
+          NODE
+
+  core:
+    name: Core packages
+    needs: changes
+    if: needs.changes.outputs.core_required == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build core packages
+        uses: ./.github/actions/build-core
+
+      - name: Build UI package
+        run: pnpm --filter @oscd-plugins/ui run build
+
+      - name: Run core legacy browser tests
+        if: ${{ !cancelled() }}
+        run: pnpm --dir packages/core/legacy run test:watch --run --browser.headless
+
+      - name: Check core types
+        if: ${{ !cancelled() }}
+        run: pnpm --filter @oscd-plugins/core-api --filter @oscd-plugins/core-standard --filter @oscd-plugins/core run types
+
+      - name: Check Svelte packages
+        if: ${{ !cancelled() }}
+        run: pnpm --filter @oscd-plugins/core-ui-svelte --filter @oscd-plugins/ui run check
+
+  plugins:
+    name: Plugin ${{ matrix.package-name }}
+    needs: changes
+    if: needs.changes.outputs.plugins_required == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.changes.outputs.plugin_matrix) }}
+    uses: ./.github/workflows/_quality.yml
+    with:
+      package-name: ${{ matrix.package-name }}
+      has-tests: ${{ matrix.has-tests }}
+      has-coverage: ${{ matrix.has-coverage }}
+
+  lint:
+    name: Lint changed files
+    needs: changes
+    if: needs.changes.outputs.lint_required == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: Fetch base and head commits
+        run: git fetch --no-tags --depth=1 origin ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check formatting and lint of changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: git diff -z --name-only --diff-filter=d "$BASE_SHA" "$HEAD_SHA" | xargs -0 -r pnpm exec biome check --no-errors-on-unmatched
+
+  quality:
+    name: Dependency quality gate
+    needs: [changes, core, plugins, lint]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require successful checks
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          CORE_REQUIRED: ${{ needs.changes.outputs.core_required }}
+          CORE_RESULT: ${{ needs.core.result }}
+          PLUGINS_REQUIRED: ${{ needs.changes.outputs.plugins_required }}
+          PLUGINS_RESULT: ${{ needs.plugins.result }}
+          LINT_REQUIRED: ${{ needs.changes.outputs.lint_required }}
+          LINT_RESULT: ${{ needs.lint.result }}
+        run: |
+          [[ "$CHANGES_RESULT" == 'success' ]] || exit 1
+          if [[ "$CORE_REQUIRED" == 'true' ]]; then
+            [[ "$CORE_RESULT" == 'success' ]] || exit 1
+          fi
+          if [[ "$PLUGINS_REQUIRED" == 'true' ]]; then
+            [[ "$PLUGINS_RESULT" == 'success' ]] || exit 1
+          fi
+          if [[ "$LINT_REQUIRED" == 'true' ]]; then
+            [[ "$LINT_RESULT" == 'success' ]] || exit 1
+          fi
