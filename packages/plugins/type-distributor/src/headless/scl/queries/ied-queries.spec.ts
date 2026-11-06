@@ -160,6 +160,8 @@ describe('queryIEDs', () => {
 											lnClass: 'LLN0',
 											lnType: 'LLN0',
 											inst: '',
+											prefix: '',
+											iedName: undefined,
 											ldInst: 'LD0'
 										}
 									]

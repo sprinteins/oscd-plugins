@@ -155,6 +155,25 @@ describe('buildUpdatesForClearingLNodeConnections', () => {
 		).toBe(false)
 	})
 
+	it('GIVEN a reference without optional lnType WHEN its LN is deleted THEN clears it using lnClass and the other identifiers', () => {
+		const reference = element('Bay[name="B"] > LNode')
+		reference.removeAttribute('lnType')
+
+		const edits = clear()
+		const attributeEdits = edits.filter(isSetAttributesEdit)
+
+		expect(attributeEdits).toContainEqual({
+			element: reference,
+			attributes: { iedName: null, ldInst: null },
+			attributesNS: {}
+		})
+		expect(attributeEdits).toContainEqual({
+			element: element('Bay[name="B"]'),
+			attributes: { uuid: null, templateUuid: null },
+			attributesNS: {}
+		})
+	})
+
 	it('GIVEN an explicit target without lnType and a non-generated LDevice inst WHEN deleting THEN does not guess its type', () => {
 		element('LDevice').setAttribute('inst', 'ExternalLD')
 		const reference = element('Bay[name="B"] > LNode')

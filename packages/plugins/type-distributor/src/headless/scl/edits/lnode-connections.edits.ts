@@ -55,11 +55,14 @@ export function buildUpdatesForClearingLNodeConnections({
 }
 
 function referencesLN(lnode: Element, ln: Element): boolean {
+	const lnClass = ln.getAttribute('lnClass')
 	const lnType = ln.getAttribute('lnType')
+	const referencedLnType = lnode.getAttribute('lnType')
 	if (
+		!lnClass ||
 		!lnType ||
-		lnode.getAttribute('lnClass') !== ln.getAttribute('lnClass') ||
-		lnode.getAttribute('lnType') !== lnType ||
+		lnode.getAttribute('lnClass') !== lnClass ||
+		(referencedLnType !== null && referencedLnType !== lnType) ||
 		(lnode.getAttribute('lnInst') ?? '') !==
 			(ln.getAttribute('inst') ?? '') ||
 		(lnode.getAttribute('prefix') ?? '') !==
