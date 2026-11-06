@@ -18,7 +18,6 @@ vi.mock('@oscd-plugins/core-ui-svelte', () => ({
 
 vi.mock('@/headless/stores/bay.store.svelte', () => ({
 	bayStore: {
-		selectedBay: null,
 		selectedBayUuid: null,
 		assignedBayTypeUuid: null,
 		manualMatchingConfirmed: false,
@@ -128,8 +127,7 @@ describe('buildEditsForDeleteLNFromAccessPoint', () => {
 						lnType: 'TestXCBR',
 						inst: '1',
 						ldInst: 'CBFunction_aa11bb22'
-					},
-					selectedBay: bay1
+					}
 				})
 			})
 
@@ -170,8 +168,7 @@ describe('buildEditsForDeleteLNFromAccessPoint', () => {
 					lnType: 'TestXCBR',
 					inst: '1',
 					ldInst: 'CBFunction_aa11bb22'
-				},
-				selectedBay: bay1
+				}
 			})
 
 			// THEN
@@ -201,8 +198,7 @@ describe('buildEditsForDeleteLNFromAccessPoint', () => {
 					lnType: 'TestPTRC',
 					inst: '1',
 					ldInst: 'QA1_Protection_cc33dd44'
-				},
-				selectedBay: bay1
+				}
 			})
 
 			// THEN
@@ -259,8 +255,7 @@ describe('buildEditsForDeleteLNFromAccessPoint', () => {
 				lnType: 'TestXCBR',
 				inst: '1',
 				ldInst: 'CBFunction_aa11bb22'
-			},
-			selectedBay: simpleBay
+			}
 		})
 
 		// Apply edits
@@ -331,8 +326,7 @@ describe('buildEditsForDeleteLNFromAccessPoint', () => {
 				lnType: 'XSWI$type',
 				inst: '1',
 				ldInst: '-CEQ2_DisconnectorFunction_a1b2c3d4'
-			},
-			selectedBay: assignedBay
+			}
 		})
 
 		// THEN - bay uuid and templateUuid must be cleared
@@ -412,8 +406,7 @@ describe('buildEditsForDeleteLNFromAccessPoint', () => {
 				lnType: 'PTRC$type',
 				inst: '1',
 				ldInst: 'ProtectionFunction_bb22cc33'
-			},
-			selectedBay: functionBay
+			}
 		})
 
 		// THEN - bay uuid and templateUuid must be cleared
@@ -449,29 +442,36 @@ describe('buildEditsForDeleteLNFromAccessPoint', () => {
 					lnType: 'TestXCBR',
 					inst: '99',
 					ldInst: 'QBFunction'
-				},
-				selectedBay: bay1
+				}
 			})
 		}).toThrow()
 	})
 
-	it('GIVEN no selectedBay WHEN buildEditsForDeleteLNFromAccessPoint called THEN throws "No bay selected"', () => {
+	it('GIVEN no selectedBay WHEN buildEditsForDeleteLNFromAccessPoint called THEN clears matching Bay references and removes the LN', () => {
 		const accessPoint = doc.querySelector(
 			'IED[name="IED1"] AccessPoint[name="P1"]'
 		) as Element
-		expect(() =>
-			buildEditsForDeleteLNFromAccessPoint({
-				iedName: 'IED1',
-				accessPoint,
-				ln: {
-					lnClass: 'XCBR',
-					lnType: 'TestXCBR',
-					inst: '1',
-					ldInst: 'CBFunction_aa11bb22'
-				},
-				selectedBay: null
-			})
-		).toThrow('No bay selected')
+		const edits = buildEditsForDeleteLNFromAccessPoint({
+			iedName: 'IED1',
+			accessPoint,
+			ln: {
+				lnClass: 'XCBR',
+				lnType: 'TestXCBR',
+				inst: '1',
+				ldInst: 'CBFunction_aa11bb22'
+			}
+		})
+
+		expect(edits.some(isRemoveEdit)).toBe(true)
+		expect(
+			edits
+				.filter(isSetAttributesEdit)
+				.some(
+					(edit) =>
+						edit.element.getAttribute('lnClass') === 'XCBR' &&
+						edit.attributes?.iedName === null
+				)
+		).toBe(true)
 	})
 
 	it('GIVEN IED LN data with empty ldInst WHEN buildEditsForDeleteLNFromAccessPoint called THEN throws about ldInst', () => {
@@ -487,8 +487,7 @@ describe('buildEditsForDeleteLNFromAccessPoint', () => {
 					lnType: 'TestXCBR',
 					inst: '1',
 					ldInst: ''
-				},
-				selectedBay: bay1
+				}
 			})
 		).toThrow('IED LN data must have ldInst')
 	})
@@ -506,8 +505,7 @@ describe('buildEditsForDeleteLNFromAccessPoint', () => {
 					lnType: 'TestXCBR',
 					inst: '99',
 					ldInst: 'CBFunction_aa11bb22'
-				},
-				selectedBay: bay1
+				}
 			})
 		).toThrow(/LN with lnClass/)
 	})
@@ -527,15 +525,29 @@ describe('buildEditsForDeleteLDevice', () => {
 		expect(bay1).not.toBeNull()
 	})
 
-	it('GIVEN no selectedBay WHEN buildEditsForDeleteLDevice called THEN throws "No bay selected"', () => {
-		expect(() =>
-			buildEditsForDeleteLDevice({
-				iedName: 'IED1',
-				accessPoint,
-				ldInst: 'CBFunction_aa11bb22',
-				selectedBay: null
-			})
-		).toThrow('No bay selected')
+	it('GIVEN no selectedBay WHEN buildEditsForDeleteLDevice called THEN removes the LDevice and clears matching Bay references', () => {
+		const edits = buildEditsForDeleteLDevice({
+			iedName: 'IED1',
+			accessPoint,
+			ldInst: 'CBFunction_aa11bb22'
+		})
+
+		expect(
+			edits.some(
+				(edit) =>
+					isRemoveEdit(edit) &&
+					(edit.node as Element).tagName === 'LDevice'
+			)
+		).toBe(true)
+		expect(
+			edits
+				.filter(isSetAttributesEdit)
+				.some(
+					(edit) =>
+						edit.element.getAttribute('lnClass') === 'XCBR' &&
+						edit.attributes?.iedName === null
+				)
+		).toBe(true)
 	})
 
 	it('GIVEN a non-existent ldInst WHEN buildEditsForDeleteLDevice called THEN throws with the ldInst name', () => {
@@ -543,8 +555,7 @@ describe('buildEditsForDeleteLDevice', () => {
 			buildEditsForDeleteLDevice({
 				iedName: 'IED1',
 				accessPoint,
-				ldInst: 'NonExistentLDevice',
-				selectedBay: bay1
+				ldInst: 'NonExistentLDevice'
 			})
 		).toThrow('NonExistentLDevice')
 	})
@@ -556,8 +567,74 @@ describe('buildEditsForDeleteLDevice', () => {
 			edits = buildEditsForDeleteLDevice({
 				iedName: 'IED1',
 				accessPoint,
-				ldInst: 'CBFunction_aa11bb22',
-				selectedBay: bay1
+				ldInst: 'CBFunction_aa11bb22'
+			})
+		})
+
+		describe('deleting logical nodes referenced outside Bays', () => {
+			let doc: Document
+			let accessPoint: Element
+			let references: Element[]
+
+			beforeEach(() => {
+				doc = createTestDocument(`
+					<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+						<IED name="IED1">
+							<AccessPoint name="P1">
+								<Server>
+									<LDevice inst="ExternalLD">
+										<LN0 lnClass="LLN0" inst="" lnType="LLN0Type"/>
+										<LN lnClass="PTRC" inst="1" lnType="PTRCType"/>
+									</LDevice>
+								</Server>
+							</AccessPoint>
+						</IED>
+						<Substation name="S">
+							<LNode iedName="IED1" ldInst="ExternalLD" lnClass="LLN0" lnType="LLN0Type"/>
+							<VoltageLevel name="V">
+								<LNode iedName="IED1" ldInst="ExternalLD" lnClass="PTRC" lnInst="1" lnType="PTRCType"/>
+							</VoltageLevel>
+						</Substation>
+					</SCL>
+				`)
+				const ap = doc.querySelector('AccessPoint')
+				if (!ap) throw new Error('Missing test AccessPoint')
+				accessPoint = ap
+				references = Array.from(doc.querySelectorAll('LNode'))
+			})
+
+			it.each([
+				'last LN',
+				'LDevice'
+			])('GIVEN direct Substation and VoltageLevel references WHEN deleting the %s THEN clears both LN and LN0 references', (target) => {
+				const edits =
+					target === 'last LN'
+						? buildEditsForDeleteLNFromAccessPoint({
+								accessPoint,
+								iedName: 'IED1',
+								ln: {
+									lnClass: 'PTRC',
+									lnType: 'PTRCType',
+									inst: '1',
+									ldInst: 'ExternalLD'
+								}
+							})
+						: buildEditsForDeleteLDevice({
+								accessPoint,
+								iedName: 'IED1',
+								ldInst: 'ExternalLD'
+							})
+
+				expect(edits.filter(isSetAttributesEdit)).toEqual(
+					references.map((element) => ({
+						element,
+						attributes: { iedName: null, ldInst: null },
+						attributesNS: {}
+					}))
+				)
+				expect(edits.filter(isRemoveEdit)).toEqual([
+					{ node: doc.querySelector('LDevice') }
+				])
 			})
 		})
 

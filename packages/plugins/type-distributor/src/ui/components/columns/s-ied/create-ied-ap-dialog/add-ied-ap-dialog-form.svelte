@@ -5,6 +5,7 @@ import { ssdImportStore } from '@/headless/stores'
 import { FieldError, FormActions, MultiApButton } from './form-elements'
 import {
 	type AccessPointData,
+	collectServerAtTargets,
 	createInitialAccessPoint,
 	createInitialAccessPoints,
 	createInitialIedData,
@@ -29,6 +30,29 @@ let formErrors = $state<FormErrors>({})
 
 const activeAp = $derived(accessPoints[accessPoints.length - 1])
 const confirmedAps = $derived(accessPoints.slice(0, -1))
+const serverAtApNames = $derived.by(() => {
+	// The XML document mutates in place, so editCount invalidates this derivation.
+	void pluginGlobalStore.editCount
+	return collectServerAtTargets(
+		ied,
+		confirmedAps,
+		pluginGlobalStore.xmlDocument
+	)
+})
+const serverAtOptions = $derived.by(() => {
+	const options = serverAtApNames.map((name) => ({
+		value: name,
+		label: name
+	}))
+	const currentTarget = activeAp?.serverAtApName?.trim()
+	if (currentTarget && !serverAtApNames.includes(currentTarget)) {
+		options.unshift({
+			value: currentTarget,
+			label: `${currentTarget} (unavailable)`
+		})
+	}
+	return options
+})
 const hasActiveAp = $derived(activeAp?.name.trim().length > 0)
 const hasValidIed = $derived(ied.name.trim().length > 0)
 
@@ -101,7 +125,8 @@ function confirmActiveAp(): boolean {
 		...confirmedAps,
 		{
 			name: activeAp.name.trim(),
-			description: activeAp.description.trim()
+			description: activeAp.description.trim(),
+			serverAtApName: activeAp.serverAtApName?.trim() ?? ''
 		},
 		createInitialAccessPoint()
 	]
@@ -114,10 +139,26 @@ function addAccessPoint() {
 }
 
 function removeAccessPoint(apName: string) {
+	const hasDependents = [...confirmedAps, activeAp].some(
+		(ap) => ap.serverAtApName === apName
+	)
+	if (hasDependents) {
+		formErrors = {
+			errors: [
+				`Cannot remove Access Point "${apName}" while another Access Point uses its Server.`
+			]
+		}
+		return
+	}
+
 	accessPoints = [
 		...confirmedAps.filter((ap) => ap.name !== apName),
 		activeAp
 	]
+	const remainingErrors = formErrors.errors?.filter(
+		(error) => !error.startsWith('Cannot remove Access Point "')
+	)
+	formErrors = { ...formErrors, errors: remainingErrors }
 }
 
 async function handleSubmit() {
@@ -161,6 +202,7 @@ async function handleCancel() {
 
   <AccessPointFormSection
     bind:accessPoint={accessPoints[accessPoints.length - 1]}
+    {serverAtOptions}
     isRequired={!ied.isNew}
     errors={formErrors.properties?.ap?.items?.[0] ?? formErrors.properties?.ap}
   />

@@ -9,7 +9,7 @@ export function createInitialIedData(): IedData {
 }
 
 export function createInitialAccessPoint(): AccessPointData {
-	return { name: '', description: '' }
+	return { name: '', description: '', serverAtApName: '' }
 }
 
 export function createInitialAccessPoints(): AccessPointData[] {

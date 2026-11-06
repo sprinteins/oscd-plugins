@@ -11,6 +11,7 @@ describe('filterByIED', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD0',
@@ -34,6 +35,7 @@ describe('filterByIED', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD0',

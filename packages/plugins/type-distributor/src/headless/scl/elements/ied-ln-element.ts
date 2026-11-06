@@ -32,6 +32,14 @@ export function queryLNInLDevice(
 	lDevice: Element,
 	ln: IedLNData
 ): Element | null {
-	const attrs = `[lnClass="${ln.lnClass}"][lnType="${ln.lnType}"][inst="${ln.inst}"]`
-	return lDevice.querySelector(`:scope > LN${attrs}`)
+	return (
+		Array.from(lDevice.children).find(
+			(element) =>
+				element.localName === 'LN' &&
+				element.getAttribute('lnClass') === ln.lnClass &&
+				element.getAttribute('lnType') === ln.lnType &&
+				element.getAttribute('inst') === ln.inst &&
+				(element.getAttribute('prefix') ?? '') === (ln.prefix ?? '')
+		) ?? null
+	)
 }

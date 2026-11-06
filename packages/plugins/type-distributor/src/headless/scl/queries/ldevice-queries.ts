@@ -24,6 +24,7 @@ export function queryLDevicesFromAccessPoint(
 					lnClass: ln.getAttribute('lnClass') ?? '',
 					lnType: ln.getAttribute('lnType') ?? '',
 					inst: ln.getAttribute('inst') ?? '',
+					prefix: ln.getAttribute('prefix') ?? '',
 					iedName: ln.getAttribute('iedName') ?? undefined,
 					ldInst
 				})
