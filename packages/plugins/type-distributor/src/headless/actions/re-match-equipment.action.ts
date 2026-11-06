@@ -188,6 +188,7 @@ export function reMatchEquipment(bayName: string): void {
 				)
 				if (lDeviceExists && lnodeIedName) {
 					lnodeEl.setAttribute('iedName', lnodeIedName)
+					lnodeEl.setAttribute('ldInst', newInst)
 				}
 				eqFunctionElement.appendChild(lnodeEl)
 			}

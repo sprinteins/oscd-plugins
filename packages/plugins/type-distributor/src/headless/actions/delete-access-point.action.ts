@@ -1,5 +1,4 @@
 import { buildEditsForDeleteAccessPoint } from '../scl/edits/'
-import { bayStore } from '../stores'
 import { getEditor } from '../utils'
 
 type deleteAccessPointFromIedParams = {
@@ -15,8 +14,7 @@ export function deleteAccessPointFromIed({
 
 	const edits = buildEditsForDeleteAccessPoint({
 		accessPoint,
-		iedName,
-		selectedBay: bayStore.scdBay
+		iedName
 	})
 	if (!(edits.length > 0)) {
 		console.warn(

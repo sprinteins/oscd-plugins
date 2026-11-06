@@ -17,8 +17,8 @@ import {
 	queryServer,
 	queryServerAtAccessPointsFromHost
 } from '../elements'
-import { queryIedElement, queryLDevicesFromAccessPoint } from '../queries'
-import { buildUpdatesForClearingBayLNodeConnectionsInDocument } from './bay-connections.helper'
+import { queryIedElement } from '../queries'
+import { buildUpdatesForClearingLNodeConnections } from './bay-connections.helper'
 import { buildInsertsForLd0DataTypes } from './data-type-edits'
 
 function ensureServer(
@@ -289,35 +289,26 @@ export function buildInsertsForCreateAccessPoint({
 interface BuildEditsForDeleteAccessPointParams {
 	accessPoint: Element
 	iedName: string
-	selectedBay: Element | null
 }
 
 export function buildEditsForDeleteAccessPoint({
-	selectedBay,
 	accessPoint,
 	iedName
 }: BuildEditsForDeleteAccessPointParams): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
 
-	const apLNodes: LNodeTemplate[] = queryLDevicesFromAccessPoint(
-		accessPoint
-	).flatMap((ld) =>
-		ld.lns.map((ln) => ({
-			lnClass: ln.lnClass,
-			lnType: ln.lnType,
-			lnInst: ln.inst,
-			iedName: ln.iedName,
-			ldInst: ln.ldInst
-		}))
+	const lnElements = Array.from(
+		accessPoint.querySelectorAll(
+			':scope > Server > LDevice > LN, :scope > Server > LDevice > LN0'
+		)
 	)
 
-	const bayEdits = buildUpdatesForClearingBayLNodeConnectionsInDocument({
+	const connectionEdits = buildUpdatesForClearingLNodeConnections({
 		document: accessPoint.ownerDocument,
-		selectedBay,
-		lNodeTemplates: apLNodes,
+		lnElements,
 		iedName
 	})
-	edits.push(...bayEdits)
+	edits.push(...connectionEdits)
 
 	edits.push(
 		...queryServerAtAccessPointsFromHost(accessPoint).map(

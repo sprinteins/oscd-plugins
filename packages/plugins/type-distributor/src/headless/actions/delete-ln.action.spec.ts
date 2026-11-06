@@ -1,18 +1,11 @@
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildEditsForDeleteLNFromAccessPoint } from '../scl/edits'
-import { bayStore } from '../stores'
 import { getEditor } from '../utils'
 import { deleteLNFromAccessPoint } from './delete-ln.action'
 
 vi.mock('../scl/edits', () => ({
 	buildEditsForDeleteLNFromAccessPoint: vi.fn()
-}))
-
-vi.mock('../stores', () => ({
-	bayStore: {
-		scdBay: null as Element | null
-	}
 }))
 
 vi.mock('../utils', () => ({
@@ -32,7 +25,6 @@ describe('deleteLNFromAccessPoint', () => {
 
 	beforeEach(() => {
 		vi.mocked(getEditor).mockReturnValue(mockEditor)
-		bayStore.scdBay = document.createElement('Bay')
 	})
 
 	afterEach(() => {
@@ -69,8 +61,6 @@ describe('deleteLNFromAccessPoint', () => {
 	})
 
 	it('GIVEN valid input WHEN deleteLNFromAccessPoint is called THEN passes the correct params to the edit builder', () => {
-		const mockBay = document.createElement('Bay')
-		bayStore.scdBay = mockBay
 		vi.mocked(buildEditsForDeleteLNFromAccessPoint).mockReturnValue([
 			{ node: document.createElement('LNode') }
 		])
@@ -84,8 +74,7 @@ describe('deleteLNFromAccessPoint', () => {
 		expect(buildEditsForDeleteLNFromAccessPoint).toHaveBeenCalledWith({
 			iedName: 'IED_A',
 			accessPoint: mockAccessPoint,
-			ln,
-			selectedBay: mockBay
+			ln
 		})
 	})
 })

@@ -1,185 +1,121 @@
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import type { LNodeTemplate } from '@/headless/common-types'
-import { type ParsedLDeviceInst, parseLDeviceInst } from '../elements'
+import { uuidToPrefix } from '../elements'
 
-export function hasRemainingConnectionsAfterClearing(
-	bay: Element,
-	clearedLNodes: Set<Element>
-): boolean {
-	const allLNodes = Array.from(bay.querySelectorAll('LNode[iedName]'))
-	const remainingLNodes = allLNodes.filter(
-		(lnode) => !clearedLNodes.has(lnode)
-	)
-	return remainingLNodes.length > 0
-}
-
-type BuildUpdatesForClearingBayLNodeConnectionsParams = {
-	selectedBay: Element
-	lNodeTemplates: LNodeTemplate[]
+type ClearLNodeConnectionsParams = {
+	document: Document
+	lnElements: Element[]
 	iedName: string
 }
 
-export function buildUpdatesForClearingBayLNodeConnections({
-	selectedBay,
-	lNodeTemplates,
+export function buildUpdatesForClearingLNodeConnections({
+	document,
+	lnElements,
 	iedName
-}: BuildUpdatesForClearingBayLNodeConnectionsParams): (
-	| Remove
-	| SetAttributes
-)[] {
-	const edits: (Remove | SetAttributes)[] = []
-	const clearedBayLNodes = new Set<Element>()
-
-	for (const template of lNodeTemplates) {
-		if (!template.ldInst) continue
-
-		const matchingBayLNode = queryMatchingBayLNode(
-			selectedBay,
-			{
-				lnClass: template.lnClass,
-				lnType: template.lnType,
-				lnInst: template.lnInst,
-				ldInst: template.ldInst
-			},
-			iedName
+}: ClearLNodeConnectionsParams): (Remove | SetAttributes)[] {
+	const clearedLNodes = new Set(
+		Array.from(document.querySelectorAll('LNode')).filter(
+			(lnode) =>
+				lnode.getAttribute('iedName') === iedName &&
+				lnElements.some((ln) => referencesLN(lnode, ln))
 		)
+	)
+	const edits: (Remove | SetAttributes)[] = []
+	const affectedBays = new Set<Element>()
 
-		if (!matchingBayLNode) continue
-
-		clearedBayLNodes.add(matchingBayLNode)
-
+	for (const lnode of clearedLNodes) {
 		edits.push({
-			element: matchingBayLNode,
-			attributes: {
-				iedName: null,
-				ldInst: null
-			},
+			element: lnode,
+			attributes: { iedName: null, ldInst: null },
 			attributesNS: {}
-		} as SetAttributes)
+		})
+		const bay = lnode.closest('Bay')
+		if (bay) affectedBays.add(bay)
 	}
 
-	const hasRemainingConnections = hasRemainingConnectionsAfterClearing(
-		selectedBay,
-		clearedBayLNodes
-	)
-
-	const shouldClearReferences =
-		clearedBayLNodes.size > 0 && !hasRemainingConnections
-
-	if (shouldClearReferences) {
-		edits.push({
-			element: selectedBay,
-			attributes: {
-				uuid: null,
-				templateUuid: null
-			},
-			attributesNS: {}
-		} as SetAttributes)
-
-		const conductingEquipments = Array.from(
-			selectedBay.querySelectorAll(':scope > ConductingEquipment')
-		)
-
-		for (const equipment of conductingEquipments) {
-			if (
-				equipment.hasAttribute('uuid') ||
-				equipment.hasAttribute('templateUuid') ||
-				equipment.hasAttribute('originUuid')
-			) {
-				edits.push({
-					element: equipment,
-					attributes: {
-						uuid: null,
-						templateUuid: null,
-						originUuid: null
-					},
-					attributesNS: {}
-				} as SetAttributes)
-			}
-
-			const eqFunctions = Array.from(
-				equipment.querySelectorAll(':scope > EqFunction')
-			)
-			for (const eqFunction of eqFunctions) {
-				edits.push({ node: eqFunction } as Remove)
-			}
-		}
-
-		const functions = Array.from(
-			selectedBay.querySelectorAll(':scope > Function')
-		)
-		for (const func of functions) {
-			edits.push({ node: func } as Remove)
-		}
-
-		const generalEquipments = Array.from(
-			selectedBay.querySelectorAll(':scope > GeneralEquipment')
-		)
-		for (const ge of generalEquipments) {
-			edits.push({ node: ge } as Remove)
+	for (const bay of affectedBays) {
+		const hasRemainingConnections = Array.from(
+			bay.querySelectorAll('LNode[iedName]')
+		).some((lnode) => {
+			const name = lnode.getAttribute('iedName')
+			return name && name !== 'None' && !clearedLNodes.has(lnode)
+		})
+		if (!hasRemainingConnections) {
+			edits.push(...buildEditsForUnassigningBayTemplate(bay))
 		}
 	}
 
 	return edits
 }
 
-type BuildUpdatesForClearingBayLNodeConnectionsInDocumentParams = {
-	document: Document
-	selectedBay: Element | null
-	lNodeTemplates: LNodeTemplate[]
-	iedName: string
-}
-
-export function buildUpdatesForClearingBayLNodeConnectionsInDocument({
-	document,
-	selectedBay,
-	lNodeTemplates,
-	iedName
-}: BuildUpdatesForClearingBayLNodeConnectionsInDocumentParams): (
-	| Remove
-	| SetAttributes
-)[] {
-	const bays = new Set<Element>(document.querySelectorAll('Bay'))
-	if (selectedBay) bays.add(selectedBay)
-
-	return Array.from(bays).flatMap((bay) =>
-		buildUpdatesForClearingBayLNodeConnections({
-			selectedBay: bay,
-			lNodeTemplates,
-			iedName
-		})
-	)
-}
-
-function queryMatchingBayLNode(
-	bay: Element,
-	lNodeTemplate: LNodeTemplate,
-	iedName: string
-): Element | null {
-	const ldInst = lNodeTemplate.ldInst
-	if (!ldInst) return null
-
-	let parsed: ParsedLDeviceInst
-	try {
-		parsed = parseLDeviceInst(ldInst)
-	} catch (error) {
-		console.error(`Failed to parse LDevice inst "${ldInst}":`, error)
-		return null
+function referencesLN(lnode: Element, ln: Element): boolean {
+	if (
+		lnode.getAttribute('lnClass') !== ln.getAttribute('lnClass') ||
+		(lnode.getAttribute('lnInst') ?? '') !==
+			(ln.getAttribute('inst') ?? '') ||
+		(lnode.getAttribute('prefix') ?? '') !==
+			(ln.getAttribute('prefix') ?? '')
+	) {
+		return false
 	}
 
-	if (parsed.isLD0) return null
+	const ldInst = ln.parentElement?.getAttribute('inst')
+	if (!ldInst) {
+		throw new Error(
+			'Cannot clear references to an LN without an LDevice inst'
+		)
+	}
+	const referencedLdInst = lnode.getAttribute('ldInst')
+	if (referencedLdInst !== null) return referencedLdInst === ldInst
 
-	const { functionPrefixUuid } = parsed
-
-	const targetFunction = bay.querySelector(
-		`EqFunction[uuid^="${functionPrefixUuid}"], Function[uuid^="${functionPrefixUuid}"]`
+	// Older distributor-created LNodes store only iedName, not ldInst.
+	const parent = lnode.parentElement
+	const functionUuid = parent?.getAttribute('uuid')
+	return (
+		(parent?.localName === 'Function' ||
+			parent?.localName === 'EqFunction') &&
+		!!functionUuid &&
+		ldInst.endsWith(`_${uuidToPrefix(functionUuid)}`)
 	)
+}
 
-	if (!targetFunction) return null
-
-	const matchingLNode = targetFunction.querySelector(
-		`:scope > LNode[lnClass="${lNodeTemplate.lnClass}"][lnType="${lNodeTemplate.lnType}"][lnInst="${lNodeTemplate.lnInst}"][iedName="${iedName}"]`
-	)
-
-	return matchingLNode
+function buildEditsForUnassigningBayTemplate(
+	bay: Element
+): (Remove | SetAttributes)[] {
+	const edits: (Remove | SetAttributes)[] = [
+		{
+			element: bay,
+			attributes: { uuid: null, templateUuid: null },
+			attributesNS: {}
+		}
+	]
+	for (const equipment of bay.querySelectorAll(
+		':scope > ConductingEquipment'
+	)) {
+		if (
+			equipment.hasAttribute('uuid') ||
+			equipment.hasAttribute('templateUuid') ||
+			equipment.hasAttribute('originUuid')
+		) {
+			edits.push({
+				element: equipment,
+				attributes: {
+					uuid: null,
+					templateUuid: null,
+					originUuid: null
+				},
+				attributesNS: {}
+			})
+		}
+		for (const eqFunction of equipment.querySelectorAll(
+			':scope > EqFunction'
+		)) {
+			edits.push({ node: eqFunction })
+		}
+	}
+	for (const element of bay.querySelectorAll(
+		':scope > Function, :scope > GeneralEquipment'
+	)) {
+		edits.push({ node: element })
+	}
+	return edits
 }

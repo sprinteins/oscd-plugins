@@ -1,18 +1,11 @@
 import type { Insert, XMLEditor } from '@openscd/oscd-editor'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildEditsForDeleteAccessPoint } from '../scl/edits/'
-import { bayStore } from '../stores'
 import { getEditor } from '../utils'
 import { deleteAccessPointFromIed } from './delete-access-point.action'
 
 vi.mock('../scl/edits/', () => ({
 	buildEditsForDeleteAccessPoint: vi.fn()
-}))
-
-vi.mock('../stores', () => ({
-	bayStore: {
-		scdBay: null as Element | null
-	}
 }))
 
 vi.mock('../utils', () => ({
@@ -34,15 +27,13 @@ describe('deleteAccessPointFromIed', () => {
 		vi.mocked(buildEditsForDeleteAccessPoint).mockReturnValue([
 			{ node: document.createElement('AccessPoint') } as unknown as Insert
 		])
-		bayStore.scdBay = document.createElement('Bay')
 	})
 
 	afterEach(() => {
 		vi.restoreAllMocks()
 	})
 
-	it('GIVEN no bay is selected WHEN deleteAccessPointFromIed is called THEN commits and passes the missing bay context to the edit builder', () => {
-		bayStore.scdBay = null
+	it('GIVEN an AccessPoint WHEN deleteAccessPointFromIed is called THEN commits without requiring Bay selection', () => {
 		const accessPoint = makeAccessPoint('AP1')
 
 		deleteAccessPointFromIed({
@@ -52,8 +43,7 @@ describe('deleteAccessPointFromIed', () => {
 
 		expect(buildEditsForDeleteAccessPoint).toHaveBeenCalledWith({
 			accessPoint,
-			iedName: 'IED_A',
-			selectedBay: null
+			iedName: 'IED_A'
 		})
 		expect(mockEditor.commit).toHaveBeenCalled()
 	})

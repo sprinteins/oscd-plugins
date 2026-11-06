@@ -1,6 +1,5 @@
 import type { IedLNData } from '../common-types'
 import { buildEditsForDeleteLNFromAccessPoint } from '../scl/edits'
-import { bayStore } from '../stores'
 import { getEditor } from '../utils'
 
 type deleteLNFromAccessPointParams = {
@@ -18,8 +17,7 @@ export function deleteLNFromAccessPoint({
 	const edits = buildEditsForDeleteLNFromAccessPoint({
 		iedName,
 		accessPoint,
-		ln,
-		selectedBay: bayStore.scdBay
+		ln
 	})
 	if (!(edits.length > 0)) {
 		console.warn(

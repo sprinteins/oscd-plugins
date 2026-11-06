@@ -172,26 +172,20 @@ export function parseLDeviceInst(lDeviceInst: string): ParsedLDeviceInst {
 
 export function queryLDevice(
 	server: Element,
-	{
-		sourceFunction,
-		equipmentUuid,
-		equipmentMatches,
-		functionUuidOverride
-	}: SourceFunctionParams
+	params: SourceFunctionParams
 ): Element | null {
+	const lDeviceInst = resolveLDeviceInst(params)
+	return server.querySelector(`LDevice[inst="${lDeviceInst}"]`)
+}
+
+export function resolveLDeviceInst(params: SourceFunctionParams): string {
 	const { functionName, functionUuid, conductingEquipmentName } =
-		extractFunctionNames({
-			sourceFunction,
-			equipmentUuid,
-			equipmentMatches,
-			functionUuidOverride
-		})
-	const lDeviceInst = generateLDeviceInst(
+		extractFunctionNames(params)
+	return generateLDeviceInst(
 		functionName,
 		functionUuid,
 		conductingEquipmentName
 	)
-	return server.querySelector(`LDevice[inst="${lDeviceInst}"]`)
 }
 
 export function queryLDeviceByInst(
@@ -245,18 +239,12 @@ export function createLDeviceElement(
 		functionUuidOverride
 	}: CreateLDeviceElementParams
 ): Element {
-	const { functionName, functionUuid, conductingEquipmentName } =
-		extractFunctionNames({
-			sourceFunction,
-			equipmentUuid,
-			equipmentMatches,
-			functionUuidOverride
-		})
-	const inst = generateLDeviceInst(
-		functionName,
-		functionUuid,
-		conductingEquipmentName
-	)
+	const inst = resolveLDeviceInst({
+		sourceFunction,
+		equipmentUuid,
+		equipmentMatches,
+		functionUuidOverride
+	})
 	const ldName = `${iedName}_${inst}`
 	const lDevice = createElement(doc, 'LDevice', { inst, ldName })
 

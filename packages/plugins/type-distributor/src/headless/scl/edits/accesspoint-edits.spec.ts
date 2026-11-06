@@ -841,22 +841,10 @@ describe('buildInsertsForCreateAccessPoint', () => {
 			accessPoint = mockDocument.createElement('AccessPoint')
 		})
 
-		it('GIVEN no selected Bay WHEN building deletion edits THEN returns only the AccessPoint removal', () => {
+		it('GIVEN an AccessPoint without LNodes WHEN building deletion edits THEN returns only the AccessPoint removal', () => {
 			const edits = buildEditsForDeleteAccessPoint({
 				accessPoint,
-				iedName: 'TestIED',
-				selectedBay: null
-			})
-
-			expect(edits).toEqual([{ node: accessPoint }])
-		})
-
-		it('GIVEN a selected Bay and no LNodes WHEN building deletion edits THEN returns only the AccessPoint removal', () => {
-			const selectedBay = mockDocument.createElement('Bay')
-			const edits = buildEditsForDeleteAccessPoint({
-				accessPoint,
-				iedName: 'TestIED',
-				selectedBay
+				iedName: 'TestIED'
 			})
 
 			expect(edits).toEqual([{ node: accessPoint }])

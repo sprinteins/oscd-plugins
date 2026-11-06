@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { FunctionTemplate, LNodeTemplate } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { bayStore, ssdImportStore } from '@/headless/stores'
+import { createMultipleLNsInAccessPoint } from './accesspoint-edits'
 import {
 	buildUpdatesForBayLNode,
 	resolveFunctionElementUuid
@@ -64,6 +65,107 @@ describe('buildUpdatesForBayLNode', () => {
 		vi.restoreAllMocks()
 	})
 
+	it.each([
+		'Function',
+		'ConductingEquipment',
+		'GeneralEquipment'
+	])('GIVEN a %s assignment WHEN creating or reusing its LDevice THEN writes the exact target inst alongside iedName', (kind) => {
+		const bay = mockDocument.querySelector('Bay')
+		if (!bay) throw new Error('Missing test Bay')
+		const uuid = 'a1b2c3d4-0000-0000-0000-000000000000'
+		const otherUuid = 'b1b2c3d4-0000-0000-0000-000000000000'
+		const functionElement = mockDocument.createElementNS(
+			bay.namespaceURI,
+			kind === 'Function' ? 'Function' : 'EqFunction'
+		)
+		functionElement.setAttribute('uuid', uuid)
+		functionElement.setAttribute('name', 'Protection-Function')
+		const lnode = mockDocument.createElementNS(bay.namespaceURI, 'LNode')
+		lnode.setAttribute('lnClass', 'PTRC')
+		lnode.setAttribute('lnType', 'PTRCType')
+		lnode.setAttribute('lnInst', '1')
+		functionElement.append(lnode)
+		const equipment = mockDocument.createElementNS(bay.namespaceURI, kind)
+		equipment.setAttribute('name', 'Equipment-1')
+		if (kind === 'Function') bay.append(functionElement)
+		else {
+			const duplicate = functionElement.cloneNode(true) as Element
+			duplicate.setAttribute('uuid', otherUuid)
+			equipment.append(duplicate, functionElement)
+			bay.append(equipment)
+		}
+		const sourceFunction: FunctionTemplate = {
+			uuid: 'template-uuid',
+			name: 'Protection-Function',
+			lnodes: [{ lnClass: 'PTRC', lnType: 'PTRCType', lnInst: '1' }]
+		}
+		const equipmentUuid =
+			kind === 'ConductingEquipment' ? 'equipment-uuid' : undefined
+		const equipmentMatches: EquipmentMatch[] = equipmentUuid
+			? [
+					{
+						scdElement: equipment,
+						bayTypeEquipment: {
+							uuid: equipmentUuid,
+							templateUuid: 'equipment-template'
+						},
+						templateEquipment: {
+							uuid: 'equipment-template',
+							name: 'Equipment',
+							type: 'CBR',
+							terminals: [],
+							eqFunctions: []
+						}
+					}
+				]
+			: []
+		const accessPoint = mockDocument.createElementNS(
+			bay.namespaceURI,
+			'AccessPoint'
+		)
+		accessPoint.append(
+			mockDocument.createElementNS(bay.namespaceURI, 'Server')
+		)
+		const params = {
+			sourceFunction,
+			lNodes: sourceFunction.lnodes,
+			equipmentUuid,
+			equipmentMatches,
+			functionUuidOverride: uuid,
+			accessPoint,
+			doc: mockDocument
+		}
+		const inserts = createMultipleLNsInAccessPoint(params)
+		for (const edit of inserts) edit.parent.appendChild(edit.node)
+		const lDevice = accessPoint.querySelector('LDevice')
+		if (!lDevice) throw new Error('Missing test LDevice')
+		expect(lDevice.getAttribute('inst')).toBe(
+			kind === 'ConductingEquipment'
+				? 'Equipment1_ProtectionFunction_a1b2c3d4'
+				: 'ProtectionFunction_a1b2c3d4'
+		)
+		expect(createMultipleLNsInAccessPoint(params)).toEqual([])
+
+		const edits = buildUpdatesForBayLNode({
+			lNodes: sourceFunction.lnodes,
+			iedName: 'IED1',
+			sourceFunction,
+			equipmentUuid,
+			equipmentMatches,
+			functionElementUuid: uuid
+		})
+		expect(edits).toEqual([
+			{
+				element: lnode,
+				attributes: {
+					iedName: 'IED1',
+					ldInst: lDevice.getAttribute('inst')
+				},
+				attributesNS: {}
+			}
+		])
+	})
+
 	describe('with equipment UUID', () => {
 		it('GIVEN equipment UUID and matching LNode WHEN buildUpdatesForBayLNode is called THEN should create edit for EqFunction LNode', () => {
 			// GIVEN equipment UUID and matching LNode
@@ -118,7 +220,10 @@ describe('buildUpdatesForBayLNode', () => {
 			// THEN should create edit for EqFunction LNode
 			expect(edits).toHaveLength(1)
 			expect(edits[0].element.tagName).toBe('LNode')
-			expect(edits[0].attributes).toEqual({ iedName: 'IED1' })
+			expect(edits[0].attributes).toEqual({
+				iedName: 'IED1',
+				ldInst: 'Breaker1_ProtectionFunc_funcuuid'
+			})
 			expect(edits[0].element.getAttribute('lnType')).toBe('XCBR_Type1')
 			expect(edits[0].element.getAttribute('lnInst')).toBe('1')
 		})
@@ -181,7 +286,10 @@ describe('buildUpdatesForBayLNode', () => {
 			// THEN should create edit for top-level Function
 			expect(edits).toHaveLength(1)
 			expect(edits[0].element.tagName).toBe('LNode')
-			expect(edits[0].attributes).toEqual({ iedName: 'IED1' })
+			expect(edits[0].attributes).toEqual({
+				iedName: 'IED1',
+				ldInst: 'TopLevelFunc_funcuuid'
+			})
 			expect(edits[0].element.getAttribute('lnType')).toBe('XSWI_Type1')
 		})
 
