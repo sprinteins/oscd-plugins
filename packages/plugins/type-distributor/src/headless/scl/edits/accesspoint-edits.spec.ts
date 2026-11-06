@@ -117,7 +117,7 @@ describe('createMultipleLNsInAccessPoint', () => {
 		serverAt.setAttribute('apName', 'ServerAP')
 		accessPoint.appendChild(serverAt)
 
-		const edits = createMultipleLNodesInAccessPoint({
+		const edits = createMultipleLNsInAccessPoint({
 			sourceFunction: functionTemplate,
 			lNodes: [lnodeTemplate],
 			accessPoint,
@@ -141,7 +141,7 @@ describe('createMultipleLNsInAccessPoint', () => {
 		accessPoint.appendChild(serverAt)
 
 		expect(() =>
-			createMultipleLNodesInAccessPoint({
+			createMultipleLNsInAccessPoint({
 				sourceFunction: functionTemplate,
 				lNodes: [lnodeTemplate],
 				accessPoint,
