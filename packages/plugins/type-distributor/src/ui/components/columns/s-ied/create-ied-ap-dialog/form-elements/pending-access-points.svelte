@@ -17,6 +17,9 @@ let {
         class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border border-primary text-primary"
       >
         {ap.name}
+        {#if ap.serverAtApName}
+          <span class="text-xs">ServerAt: {ap.serverAtApName}</span>
+        {/if}
         <button
           type="button"
           class="ml-1 hover:opacity-70 focus:outline-none"

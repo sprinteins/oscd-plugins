@@ -1,5 +1,8 @@
 import { z } from 'zod'
-import { queryAccessPointsFromIed } from '@/headless/scl'
+import {
+	queryAccessPointsFromIed,
+	queryServerAccessPointsFromIed
+} from '@/headless/scl'
 import {
 	createAccessPointSchema,
 	createFormSchema,
@@ -9,6 +12,7 @@ import type {
 	AccessPointContext,
 	AccessPointData,
 	FieldErrors,
+	FormErrors,
 	IedData
 } from './types'
 
@@ -42,6 +46,23 @@ export function validateSubmission({
 	xmlDocument,
 	ssdDocument
 }: ValidateSubmissionParams) {
+	const serverAtTargets = ied.isNew
+		? []
+		: queryServerAccessPointsFromIed(xmlDocument, ied.name.trim())
+	const serverAtErrors: string[] = []
+	for (const accessPoint of accessPoints) {
+		const serverAtApName = accessPoint.serverAtApName?.trim()
+		if (serverAtApName) {
+			if (!serverAtTargets.includes(serverAtApName)) {
+				serverAtErrors.push(
+					`ServerAt target "${serverAtApName}" for Access Point "${accessPoint.name}" is not a server-hosting Access Point in IED "${ied.name}".`
+				)
+			}
+		} else if (accessPoint.name.trim()) {
+			serverAtTargets.push(accessPoint.name.trim())
+		}
+	}
+
 	const existingNames = ied.isNew
 		? []
 		: queryAccessPointsFromIed(xmlDocument, ied.name.trim())
@@ -54,7 +75,12 @@ export function validateSubmission({
 		iedName: ied.name
 	}).safeParse({ ied, ap: accessPoints })
 
-	if (result.success) return null
+	if (result.success && serverAtErrors.length === 0) return null
 
-	return z.treeifyError(result.error)
+	const errors: FormErrors = result.success
+		? {}
+		: z.treeifyError(result.error)
+	return serverAtErrors.length > 0
+		? { ...errors, errors: [...(errors.errors ?? []), ...serverAtErrors] }
+		: errors
 }

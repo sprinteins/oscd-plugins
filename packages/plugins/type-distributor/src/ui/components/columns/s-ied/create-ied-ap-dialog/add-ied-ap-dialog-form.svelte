@@ -1,6 +1,9 @@
 <script lang="ts">
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import { queryAccessPointsFromIed } from '@/headless/scl'
+import {
+	queryAccessPointsFromIed,
+	queryServerAccessPointsFromIed
+} from '@/headless/scl'
 import { ssdImportStore } from '@/headless/stores'
 import { FieldError, FormActions, MultiApButton } from './form-elements'
 import {
@@ -29,8 +32,34 @@ let formErrors = $state<FormErrors>({})
 
 const activeAp = $derived(accessPoints[accessPoints.length - 1])
 const confirmedAps = $derived(accessPoints.slice(0, -1))
+const serverAtApNames = $derived.by(() => {
+	void pluginGlobalStore.editCount
+	const existingServerAps = ied.isNew
+		? []
+		: queryServerAccessPointsFromIed(
+				pluginGlobalStore.xmlDocument,
+				ied.name.trim()
+			)
+	const pendingServerAps = confirmedAps
+		.filter((ap) => !ap.serverAtApName)
+		.map((ap) => ap.name)
+
+	return [...new Set([...existingServerAps, ...pendingServerAps])]
+})
+const serverAtOptions = $derived(
+	serverAtApNames.map((name) => ({ value: name, label: name }))
+)
+const serverAtTargetNames = $derived(new Set(serverAtApNames))
 const hasActiveAp = $derived(activeAp?.name.trim().length > 0)
 const hasValidIed = $derived(ied.name.trim().length > 0)
+
+$effect(() => {
+	for (const ap of accessPoints) {
+		if (ap.serverAtApName && !serverAtTargetNames.has(ap.serverAtApName)) {
+			ap.serverAtApName = ''
+		}
+	}
+})
 
 const submitLabel = $derived(
 	isMultiApMode
@@ -101,7 +130,8 @@ function confirmActiveAp(): boolean {
 		...confirmedAps,
 		{
 			name: activeAp.name.trim(),
-			description: activeAp.description.trim()
+			description: activeAp.description.trim(),
+			serverAtApName: activeAp.serverAtApName?.trim() ?? ''
 		},
 		createInitialAccessPoint()
 	]
@@ -114,10 +144,23 @@ function addAccessPoint() {
 }
 
 function removeAccessPoint(apName: string) {
+	const hasDependents = [...confirmedAps, activeAp].some(
+		(ap) => ap.serverAtApName === apName
+	)
+	if (hasDependents) {
+		formErrors = {
+			errors: [
+				`Cannot remove Access Point "${apName}" while another Access Point uses its Server.`
+			]
+		}
+		return
+	}
+
 	accessPoints = [
 		...confirmedAps.filter((ap) => ap.name !== apName),
 		activeAp
 	]
+	formErrors = {}
 }
 
 async function handleSubmit() {
@@ -161,6 +204,7 @@ async function handleCancel() {
 
   <AccessPointFormSection
     bind:accessPoint={accessPoints[accessPoints.length - 1]}
+    {serverAtOptions}
     isRequired={!ied.isNew}
     errors={formErrors.properties?.ap?.items?.[0] ?? formErrors.properties?.ap}
   />

@@ -10,6 +10,7 @@ import { cn } from '$lib/utils/shadcn.js'
 let {
 	value = $bindable(),
 	disabled = false,
+	id,
 	class: className,
 	options,
 	placeholder,
@@ -17,6 +18,7 @@ let {
 }: {
 	value: string | number | null | undefined | Record<string, unknown>
 	disabled?: boolean
+	id?: string
 	class?: string
 	options?: {
 		value: string | number | Record<string, unknown>
@@ -31,6 +33,7 @@ let {
 bind:value={value}
 onchange={handleChange}
 disabled={disabled}
+{id}
 class={cn(
 	"border-input bg-background ring-offset-background data-[placeholder]:text-muted-foreground focus:ring-ring flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
 	className
