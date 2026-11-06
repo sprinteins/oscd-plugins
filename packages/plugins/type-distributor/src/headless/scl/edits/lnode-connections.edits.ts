@@ -12,11 +12,18 @@ export function buildUpdatesForClearingLNodeConnections({
 	lnElements,
 	iedName
 }: ClearLNodeConnectionsParams): (Remove | SetAttributes)[] {
+	const lNodesByIedName = new Map<string, Element[]>()
+	for (const lnode of document.querySelectorAll('LNode[iedName]')) {
+		const name = lnode.getAttribute('iedName')
+		if (!name) continue
+		const lnodes = lNodesByIedName.get(name) ?? []
+		lnodes.push(lnode)
+		lNodesByIedName.set(name, lnodes)
+	}
+
 	const clearedLNodes = new Set(
-		Array.from(document.querySelectorAll('LNode')).filter(
-			(lnode) =>
-				lnode.getAttribute('iedName') === iedName &&
-				lnElements.some((ln) => referencesLN(lnode, ln))
+		(lNodesByIedName.get(iedName) ?? []).filter((lnode) =>
+			lnElements.some((ln) => referencesLN(lnode, ln))
 		)
 	)
 	const edits: (Remove | SetAttributes)[] = []
@@ -48,8 +55,11 @@ export function buildUpdatesForClearingLNodeConnections({
 }
 
 function referencesLN(lnode: Element, ln: Element): boolean {
+	const lnType = ln.getAttribute('lnType')
 	if (
+		!lnType ||
 		lnode.getAttribute('lnClass') !== ln.getAttribute('lnClass') ||
+		lnode.getAttribute('lnType') !== lnType ||
 		(lnode.getAttribute('lnInst') ?? '') !==
 			(ln.getAttribute('inst') ?? '') ||
 		(lnode.getAttribute('prefix') ?? '') !==

@@ -7,12 +7,14 @@ import {
 } from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
 import type { IedLDeviceData } from '@/headless/common-types'
-import type { FilteredAccessPoint } from '@/headless/scl'
-import { queryServerAtAccessPointsFromHost } from '@/headless/scl'
+import {
+	type FilteredAccessPoint,
+	queryServerAtAccessPointsFromHost
+} from '@/headless/scl'
 import { dndStore } from '@/headless/stores'
 import DeleteHostAccessPointConfirmation from './delete-host-access-point-confirmation.svelte'
 import LDevice from './l-device.svelte'
-import { RenameCombinedDialogForm } from './rename-dialogs'
+import { openRenameAccessPointDialog } from './rename-access-point.dialog'
 import ServerAtAccessPoint from './server-at-access-point.svelte'
 
 interface Props {
@@ -107,20 +109,8 @@ async function handleDelete() {
 	})
 }
 
-async function handleRename() {
-	dialogStore.mountInnerComponent({
-		innerComponent: RenameCombinedDialogForm,
-		innerComponentProps: {
-			currentIedName: iedName,
-			currentIedDescription: iedElement?.getAttribute('desc') ?? '',
-			currentApName: accessPoint.getAttribute('name') ?? '',
-			currentApDescription: accessPoint.getAttribute('desc') ?? '',
-			iedElement,
-			accessPointElement: accessPoint
-		}
-	})
-	await dialogStore.openDialog()
-}
+const handleRename = () =>
+	openRenameAccessPointDialog({ iedName, iedElement, accessPoint })
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -168,7 +158,7 @@ async function handleRename() {
 			</div>
 			{#if isOpen}
 				<div class="space-y-1">
-					{#each serverAtAccessPoints as serverAtAccessPoint}
+					{#each serverAtAccessPoints as serverAtAccessPoint (serverAtAccessPoint.element)}
 						<ServerAtAccessPoint
 							accessPoint={serverAtAccessPoint.element}
 							apName={serverAtAccessPoint.name}
@@ -177,7 +167,7 @@ async function handleRename() {
 							{iedElement}
 						/>
 					{/each}
-					{#each lDevices as { ldInst, lns }}
+					{#each lDevices as { ldInst, lns } (ldInst)}
 						<LDevice {ldInst} {lns} {iedName} {accessPoint} />
 					{/each}
 				</div>

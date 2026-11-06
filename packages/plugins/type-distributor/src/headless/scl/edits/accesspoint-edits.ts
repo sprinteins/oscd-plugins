@@ -14,23 +14,23 @@ import {
 	createServerElementWithAuth,
 	isLNPresentInDevice,
 	queryLDevice,
-	queryServer,
-	queryServerAtAccessPointsFromHost
+	queryOwnServer,
+	queryServerAtAccessPointsFromHost,
+	queryServerAtElement,
+	resolveServer
 } from '../elements'
 import { queryIedElement } from '../queries'
-import { buildUpdatesForClearingLNodeConnections } from './bay-connections.helper'
 import { buildInsertsForLd0DataTypes } from './data-type-edits'
+import { buildUpdatesForClearingLNodeConnections } from './lnode-connections.edits'
 
 function ensureServer(
 	accessPoint: Element,
 	doc: XMLDocument
 ): { serverElement: Element; edit: Insert | undefined } {
-	const serverAt = Array.from(accessPoint.children).find(
-		(child) => child.localName === 'ServerAt'
-	)
+	const serverAt = queryServerAtElement(accessPoint)
 	if (serverAt) {
 		const serverAtApName = serverAt.getAttribute('apName')
-		const sharedServer = queryServer(accessPoint)
+		const sharedServer = resolveServer(accessPoint)
 		if (!sharedServer) {
 			throw new Error(
 				`ServerAt on AccessPoint "${accessPoint.getAttribute('name') ?? ''}" references AccessPoint "${serverAtApName ?? ''}" without a Server`
@@ -39,7 +39,7 @@ function ensureServer(
 		return { serverElement: sharedServer, edit: undefined }
 	}
 
-	const existingServer = queryServer(accessPoint)
+	const existingServer = queryOwnServer(accessPoint)
 	if (existingServer) {
 		return { serverElement: existingServer, edit: undefined }
 	}
@@ -302,13 +302,13 @@ export function buildEditsForDeleteAccessPoint({
 
 	edits.push(
 		...queryServerAtAccessPointsFromHost(accessPoint).map(
-			(serverAtAccessPoint) => ({ node: serverAtAccessPoint }) as Remove
+			(serverAtAccessPoint): Remove => ({ node: serverAtAccessPoint })
 		)
 	)
 
 	edits.push({
 		node: accessPoint
-	} as Remove)
+	})
 
 	return edits
 }

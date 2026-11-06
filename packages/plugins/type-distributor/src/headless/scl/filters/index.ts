@@ -2,6 +2,7 @@ export * from './access-point-filters'
 export * from './ied-filters'
 export * from './ldevice-filters'
 export * from './ln-filters'
+export * from './search-filters'
 export type {
 	AccessPointGroup,
 	FilteredAccessPoint,

@@ -6,7 +6,7 @@ import {
 	dialogStore
 } from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
-import { RenameCombinedDialogForm } from './rename-dialogs'
+import { openRenameAccessPointDialog } from './rename-access-point.dialog'
 
 interface Props {
 	accessPoint: Element
@@ -33,22 +33,10 @@ const serverAtDescription = $derived(
 		: `ServerAt references missing Access Point ${serverAtApName || '(unnamed)'}`
 )
 
-async function handleRename() {
-	dialogStore.mountInnerComponent({
-		innerComponent: RenameCombinedDialogForm,
-		innerComponentProps: {
-			currentIedName: iedName,
-			currentIedDescription: iedElement.getAttribute('desc') ?? '',
-			currentApName: accessPoint.getAttribute('name') ?? '',
-			currentApDescription: accessPoint.getAttribute('desc') ?? '',
-			iedElement,
-			accessPointElement: accessPoint
-		}
-	})
-	await dialogStore.openDialog()
-}
+const handleRename = () =>
+	openRenameAccessPointDialog({ iedName, iedElement, accessPoint })
 
-async function handleDelete() {
+function handleDelete() {
 	deleteAccessPointFromIed({
 		iedName,
 		accessPoint

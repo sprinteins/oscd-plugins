@@ -590,9 +590,9 @@ describe('buildEditsForDeleteLDevice', () => {
 							</AccessPoint>
 						</IED>
 						<Substation name="S">
-							<LNode iedName="IED1" ldInst="ExternalLD" lnClass="LLN0"/>
+							<LNode iedName="IED1" ldInst="ExternalLD" lnClass="LLN0" lnType="LLN0Type"/>
 							<VoltageLevel name="V">
-								<LNode iedName="IED1" ldInst="ExternalLD" lnClass="PTRC" lnInst="1"/>
+								<LNode iedName="IED1" ldInst="ExternalLD" lnClass="PTRC" lnInst="1" lnType="PTRCType"/>
 							</VoltageLevel>
 						</Substation>
 					</SCL>

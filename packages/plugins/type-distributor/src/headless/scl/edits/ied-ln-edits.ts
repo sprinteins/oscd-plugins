@@ -1,7 +1,7 @@
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
 import type { IedLNData } from '@/headless/common-types'
 import { queryLDeviceFromAccessPoint, queryLNInLDevice } from '../elements'
-import { buildUpdatesForClearingLNodeConnections } from './bay-connections.helper'
+import { buildUpdatesForClearingLNodeConnections } from './lnode-connections.edits'
 
 interface BuildEditsForDeleteLNFromAccessPointParams {
 	iedName: string

@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
-	queryServer,
-	queryServerAtAccessPointsFromHost
+	queryOwnServer,
+	queryServerAtAccessPointsFromHost,
+	queryServerAtElement,
+	resolveServer
 } from './server-element'
 
-describe('queryServer', () => {
+describe('resolveServer', () => {
 	it('GIVEN an AccessPoint with a Server WHEN queried THEN returns its Server', () => {
 		const doc = new DOMParser().parseFromString(
 			'<IED><AccessPoint name="AP1"><Server /></AccessPoint></IED>',
@@ -13,7 +15,7 @@ describe('queryServer', () => {
 		const accessPoint = doc.querySelector('AccessPoint') as Element
 		const server = accessPoint.querySelector('Server')
 
-		expect(queryServer(accessPoint)).toBe(server)
+		expect(resolveServer(accessPoint)).toBe(server)
 	})
 
 	it('GIVEN an AccessPoint with ServerAt WHEN queried THEN returns referenced Server', () => {
@@ -26,7 +28,7 @@ describe('queryServer', () => {
 		) as Element
 		const server = doc.querySelector('Server')
 
-		expect(queryServer(accessPoint)).toBe(server)
+		expect(resolveServer(accessPoint)).toBe(server)
 	})
 
 	it('GIVEN a ServerAt chain WHEN queried THEN returns null', () => {
@@ -38,7 +40,7 @@ describe('queryServer', () => {
 			'AccessPoint[name="AP1"]'
 		) as Element
 
-		expect(queryServer(accessPoint)).toBeNull()
+		expect(resolveServer(accessPoint)).toBeNull()
 	})
 
 	it('GIVEN a missing ServerAt target WHEN queried THEN returns null', () => {
@@ -48,7 +50,7 @@ describe('queryServer', () => {
 		)
 		const accessPoint = doc.querySelector('AccessPoint') as Element
 
-		expect(queryServer(accessPoint)).toBeNull()
+		expect(resolveServer(accessPoint)).toBeNull()
 	})
 
 	it('GIVEN a cyclic ServerAt reference WHEN queried THEN returns null', () => {
@@ -60,7 +62,7 @@ describe('queryServer', () => {
 			'AccessPoint[name="AP1"]'
 		) as Element
 
-		expect(queryServer(accessPoint)).toBeNull()
+		expect(resolveServer(accessPoint)).toBeNull()
 	})
 
 	it('GIVEN an AccessPoint without Server or ServerAt WHEN queried THEN returns null', () => {
@@ -70,8 +72,21 @@ describe('queryServer', () => {
 		)
 		const accessPoint = doc.querySelector('AccessPoint') as Element
 
-		expect(queryServer(accessPoint)).toBeNull()
+		expect(resolveServer(accessPoint)).toBeNull()
 	})
+})
+
+it('GIVEN an AccessPoint with ServerAt WHEN querying its own Server THEN returns null', () => {
+	const doc = new DOMParser().parseFromString(
+		'<IED><AccessPoint name="AP1"><ServerAt apName="AP2" /></AccessPoint><AccessPoint name="AP2"><Server /></AccessPoint></IED>',
+		'application/xml'
+	)
+	const accessPoint = doc.querySelector('AccessPoint[name="AP1"]') as Element
+
+	expect(queryOwnServer(accessPoint)).toBeNull()
+	expect(queryServerAtElement(accessPoint)?.getAttribute('apName')).toBe(
+		'AP2'
+	)
 })
 
 describe('queryServerAtAccessPointsFromHost', () => {

@@ -1,4 +1,7 @@
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { queryOwnServer, queryServerAtElement } from '../elements'
+import type { FilteredAccessPoint, IEDData } from '../filters'
+import { queryLDevicesFromAccessPoint } from './ldevice-queries'
 
 export function queryIEDs(selectedBay: string): Element[] {
 	const xmlDocument = pluginGlobalStore.xmlDocument
@@ -85,7 +88,7 @@ export function queryAccessPointsFromIed(
 		.filter((name): name is string => name !== null)
 }
 
-export function queryServerAccessPointsFromIed(
+export function queryServerHostApNamesFromIed(
 	xmlDocument: XMLDocument | null | undefined,
 	iedName: string
 ): string[] {
@@ -94,11 +97,31 @@ export function queryServerAccessPointsFromIed(
 
 	return Array.from(iedElement.children)
 		.filter((element) => element.localName === 'AccessPoint')
-		.filter((accessPoint) =>
-			Array.from(accessPoint.children).some(
-				(child) => child.localName === 'Server'
-			)
-		)
+		.filter((accessPoint) => queryOwnServer(accessPoint) !== null)
 		.map((accessPoint) => accessPoint.getAttribute('name'))
 		.filter((name): name is string => Boolean(name))
+}
+
+export function queryIedDisplayData(iedItems: Element[]): IEDData[] {
+	return iedItems.map((iedElement) => {
+		const accessPoints = Array.from(
+			iedElement.querySelectorAll(':scope > AccessPoint')
+		).map((element): FilteredAccessPoint => {
+			const serverAt = queryServerAtElement(element)
+			return {
+				element,
+				name: element.getAttribute('name'),
+				lDevices: queryLDevicesFromAccessPoint(element),
+				serverAt: serverAt
+					? { apName: serverAt.getAttribute('apName') ?? '' }
+					: null
+			}
+		})
+
+		return {
+			name: iedElement.getAttribute('name') ?? 'Unnamed IED',
+			element: iedElement,
+			accessPoints
+		}
+	})
 }

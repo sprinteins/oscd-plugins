@@ -6,7 +6,7 @@ export type FilteredAccessPoint = {
 	element: Element
 	name: string | null
 	lDevices: IedLDeviceData[]
-	serverAtApName?: string
+	serverAt: { apName: string } | null
 }
 
 export type AccessPointGroup =

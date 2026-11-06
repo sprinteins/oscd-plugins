@@ -4,7 +4,7 @@ import {
 	isRemoveEdit,
 	isSetAttributesEdit
 } from '@/headless/test-helpers/type-guards'
-import { buildUpdatesForClearingLNodeConnections } from './bay-connections.helper'
+import { buildUpdatesForClearingLNodeConnections } from './lnode-connections.edits'
 
 describe('buildUpdatesForClearingLNodeConnections', () => {
 	let document: Document
@@ -53,7 +53,7 @@ describe('buildUpdatesForClearingLNodeConnections', () => {
 							<GeneralEquipment name="Generated"/>
 						</Bay>
 						<Bay name="B" templateUuid="template-b">
-							<LNode lnClass="PTRC" lnInst="1" iedName="IED1" ldInst="Protection_aa11bb22"/>
+							<LNode lnClass="PTRC" lnInst="1" lnType="PTRCType" iedName="IED1" ldInst="Protection_aa11bb22"/>
 						</Bay>
 						<Bay name="Untouched" templateUuid="template-c">
 							<Function name="Keep"/>
@@ -142,6 +142,7 @@ describe('buildUpdatesForClearingLNodeConnections', () => {
 		['iedName', 'IED2'],
 		['ldInst', 'OtherDevice'],
 		['lnClass', 'XCBR'],
+		['lnType', 'OtherType'],
 		['lnInst', '2'],
 		['prefix', 'OtherPrefix']
 	])('GIVEN a reference with a different %s WHEN deleting the LN THEN leaves that reference untouched', (attribute, value) => {
@@ -154,17 +155,18 @@ describe('buildUpdatesForClearingLNodeConnections', () => {
 		).toBe(false)
 	})
 
-	it('GIVEN an explicit target without lnType and a non-generated LDevice inst WHEN deleting THEN matches by reference identity', () => {
+	it('GIVEN an explicit target without lnType and a non-generated LDevice inst WHEN deleting THEN does not guess its type', () => {
 		element('LDevice').setAttribute('inst', 'ExternalLD')
 		const reference = element('Bay[name="B"] > LNode')
 		reference.setAttribute('ldInst', 'ExternalLD')
 		ln.setAttribute('prefix', 'P')
 		reference.setAttribute('prefix', 'P')
-		expect(clear().filter(isSetAttributesEdit)).toContainEqual({
-			element: reference,
-			attributes: { iedName: null, ldInst: null },
-			attributesNS: {}
-		})
+		ln.removeAttribute('lnType')
+		expect(
+			clear()
+				.filter(isSetAttributesEdit)
+				.some((edit) => edit.element === reference)
+		).toBe(false)
 	})
 
 	it.each([
@@ -205,6 +207,7 @@ describe('buildUpdatesForClearingLNodeConnections', () => {
 	it('GIVEN an LN0 reference with omitted lnInst WHEN its LDevice is deleted THEN clears it too', () => {
 		const reference = element('Bay[name="B"] > LNode')
 		reference.setAttribute('lnClass', 'LLN0')
+		reference.setAttribute('lnType', 'LLN0Type')
 		reference.removeAttribute('lnInst')
 		expect(
 			clear([element('LN0'), ln])

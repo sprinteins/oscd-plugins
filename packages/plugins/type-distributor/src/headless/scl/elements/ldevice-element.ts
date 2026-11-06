@@ -7,7 +7,7 @@ import type {
 } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { createLNElementInIED } from './ied-ln-element'
-import { queryServer } from './server-element'
+import { resolveServer } from './server-element'
 
 const LD0_INSTANCE = 'LD0'
 const EXCLUDED_LNODE_CLASSES = new Set(['LGOS', 'LSVS'])
@@ -199,7 +199,7 @@ export function queryLDeviceFromAccessPoint(
 	accessPoint: Element,
 	lDeviceInst: string
 ): Element | null {
-	const server = queryServer(accessPoint)
+	const server = resolveServer(accessPoint)
 	if (!server) return null
 
 	return queryLDeviceByInst(server, lDeviceInst)

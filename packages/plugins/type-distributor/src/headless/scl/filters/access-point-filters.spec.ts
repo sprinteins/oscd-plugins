@@ -49,19 +49,20 @@ describe('GIVEN access points with multiple LDevices and LNs', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'Host',
-					lDevices
+					lDevices,
+					serverAt: null
 				},
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'Alias',
 					lDevices,
-					serverAtApName: 'Host'
+					serverAt: { apName: 'Host' }
 				},
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'Unresolved',
 					lDevices,
-					serverAtApName: 'Missing'
+					serverAt: { apName: 'Missing' }
 				}
 			]
 		}
@@ -147,6 +148,7 @@ describe('filterByAccessPoint', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Primary',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD0',
@@ -164,6 +166,7 @@ describe('filterByAccessPoint', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Secondary',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD1',
@@ -187,6 +190,7 @@ describe('filterByAccessPoint', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Main',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD0',
@@ -210,7 +214,8 @@ describe('filterByAccessPoint', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_NonMatch',
-					lDevices: []
+					lDevices: [],
+					serverAt: null
 				}
 			]
 		}
@@ -233,18 +238,20 @@ describe('filterByAccessPoint', () => {
 			const host = {
 				element: document.createElement('AccessPoint'),
 				name: 'AP1',
-				lDevices: []
+				lDevices: [],
+				serverAt: null
 			}
 			const alias = {
 				element: document.createElement('AccessPoint'),
 				name: 'AP2',
 				lDevices: [],
-				serverAtApName: 'AP1'
+				serverAt: { apName: 'AP1' }
 			}
 			const otherHost = {
 				element: document.createElement('AccessPoint'),
 				name: 'AP3',
-				lDevices: []
+				lDevices: [],
+				serverAt: null
 			}
 
 			expect(groupAccessPointsByServer([host, alias, otherHost])).toEqual(
@@ -260,7 +267,7 @@ describe('filterByAccessPoint', () => {
 				element: document.createElement('AccessPoint'),
 				name: 'AP2',
 				lDevices: [],
-				serverAtApName: 'MissingAP'
+				serverAt: { apName: 'MissingAP' }
 			}
 
 			expect(groupAccessPointsByServer([unresolved])).toEqual([
@@ -274,19 +281,20 @@ describe('filterByAccessPoint', () => {
 			const host = {
 				element: document.createElement('AccessPoint'),
 				name: 'AP1',
-				lDevices: []
+				lDevices: [],
+				serverAt: null
 			}
 			const matchingAlias = {
 				element: document.createElement('AccessPoint'),
 				name: 'AP2',
 				lDevices: [],
-				serverAtApName: 'AP1'
+				serverAt: { apName: 'AP1' }
 			}
 			const nonMatchingAlias = {
 				element: document.createElement('AccessPoint'),
 				name: 'AP3',
 				lDevices: [],
-				serverAtApName: 'AP1'
+				serverAt: { apName: 'AP1' }
 			}
 			const groups = groupAccessPointsByServer([
 				host,
@@ -309,13 +317,14 @@ describe('filterByAccessPoint', () => {
 			const host = {
 				element: document.createElement('AccessPoint'),
 				name: 'AP1',
-				lDevices: []
+				lDevices: [],
+				serverAt: null
 			}
 			const alias = {
 				element: document.createElement('AccessPoint'),
 				name: 'AP2',
 				lDevices: [],
-				serverAtApName: 'AP1'
+				serverAt: { apName: 'AP1' }
 			}
 			const groups = groupAccessPointsByServer([host, alias])
 
@@ -328,13 +337,14 @@ describe('filterByAccessPoint', () => {
 			const host = {
 				element: document.createElement('AccessPoint'),
 				name: 'AP1',
-				lDevices: []
+				lDevices: [],
+				serverAt: null
 			}
 			const alias = {
 				element: document.createElement('AccessPoint'),
 				name: 'AP2',
 				lDevices: [],
-				serverAtApName: 'MissingAP'
+				serverAt: { apName: 'MissingAP' }
 			}
 
 			expect(
@@ -350,7 +360,7 @@ describe('filterByAccessPoint', () => {
 				element: document.createElement('AccessPoint'),
 				name: 'AP2',
 				lDevices: [],
-				serverAtApName: 'MissingAP'
+				serverAt: { apName: 'MissingAP' }
 			}
 			const groups = groupAccessPointsByServer([unresolved])
 
@@ -426,7 +436,8 @@ describe('filterByAccessPoint', () => {
 					{
 						element: document.createElement('AccessPoint'),
 						name: null,
-						lDevices: []
+						lDevices: [],
+						serverAt: null
 					}
 				]
 			}

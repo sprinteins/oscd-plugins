@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Button, dialogStore } from '@oscd-plugins/core-ui-svelte'
 
-let {
+const {
 	hostName,
 	serverAtNames
 }: {
@@ -25,7 +25,7 @@ async function confirm() {
 		Points that reference it:
 	</p>
 	<ul class="list-inside list-disc">
-		{#each serverAtNames as serverAtName}
+		{#each serverAtNames as serverAtName, index (`${serverAtName}-${index}`)}
 			<li>{serverAtName}</li>
 		{/each}
 	</ul>

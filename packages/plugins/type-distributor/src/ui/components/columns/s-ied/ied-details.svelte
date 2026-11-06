@@ -1,15 +1,9 @@
 <script lang="ts">
 import {
-	type FilteredAccessPoint,
-	type FilteredIED,
 	filterAccessPointGroupsByAccessPoint,
-	filterByAccessPoint,
-	filterByIED,
-	filterByLDevice,
-	filterByLN,
+	filterIedDataBySearch,
 	groupAccessPointsByServer,
-	type IEDData,
-	queryLDevicesFromAccessPoint,
+	queryIedDisplayData,
 	type SearchType
 } from '@/headless/scl'
 import AccessPoint from './access-point.svelte'
@@ -27,54 +21,17 @@ const {
 } = $props()
 
 const sIedData = $derived.by(() => {
-	const data: IEDData[] = iedItems.map((iedItem) => {
-		const name = iedItem.getAttribute('name') ?? 'Unnamed IED'
-		const accessPoints = Array.from(
-			iedItem.querySelectorAll(':scope > AccessPoint')
-		).map((ap): FilteredAccessPoint => {
-			const serverAt = Array.from(ap.children).find(
-				(child) => child.localName === 'ServerAt'
-			)
-			return {
-				element: ap,
-				name: ap.getAttribute('name'),
-				lDevices: queryLDevicesFromAccessPoint(ap),
-				...(serverAt
-					? { serverAtApName: serverAt.getAttribute('apName') ?? '' }
-					: {})
-			}
-		})
-		return { name, accessPoints, element: iedItem }
-	})
-
-	let filteredIeds: FilteredIED[]
-	if (!searchTerm) {
-		filteredIeds = data
-	} else {
-		switch (searchType) {
-			case 'IED':
-				filteredIeds = filterByIED(data, searchTerm)
-				break
-			case 'AccessPoint':
-				filteredIeds = filterByAccessPoint(data, searchTerm)
-				break
-			case 'LDevice':
-				filteredIeds = filterByLDevice(data, searchTerm)
-				break
-			case 'LN/LN0':
-				filteredIeds = filterByLN(data, searchTerm)
-				break
-			default:
-				filteredIeds = data
-		}
-	}
+	const data = queryIedDisplayData(iedItems)
+	const filteredIeds = filterIedDataBySearch(data, searchType, searchTerm)
+	const accessPointsByIed = new Map(
+		data.map((ied) => [ied.element, ied.accessPoints])
+	)
 
 	return filteredIeds.map((ied) => {
-		const allIedAccessPoints =
-			data.find((item) => item.element === ied.element)?.accessPoints ??
-			[]
 		const accessPointGroups = filterAccessPointGroupsByAccessPoint(
-			groupAccessPointsByServer(allIedAccessPoints),
+			groupAccessPointsByServer(
+				accessPointsByIed.get(ied.element) ?? ied.accessPoints
+			),
 			ied.accessPoints
 		)
 		return { ...ied, accessPointGroups }
@@ -83,30 +40,30 @@ const sIedData = $derived.by(() => {
 </script>
 {#if sIedData && sIedData.length > 0}
   <div class="space-y-2 my-2">
-    {#each sIedData as { name: iedName, accessPoints, accessPointGroups, element: iedElement }}
-      {#if accessPoints.length === 0}
-        <IedEmptyItem {iedName} {iedElement} />
+    {#each sIedData as ied (ied.element)}
+      {#if ied.accessPoints.length === 0}
+        <IedEmptyItem iedName={ied.name} iedElement={ied.element} />
       {:else}
         <section class="space-y-2">
-          <h2 class="px-1 text-sm font-semibold">{iedName}</h2>
-          {#each accessPointGroups as group}
+          <h2 class="px-1 text-sm font-semibold">{ied.name}</h2>
+          {#each ied.accessPointGroups as group (group.type === 'host' ? group.host.element : group.accessPoint.element)}
             {#if group.type === 'host'}
               <AccessPoint
                 accessPoint={group.host.element}
                 apName={group.host.name}
                 lDevices={group.host.lDevices}
                 serverAtAccessPoints={group.serverAtAccessPoints}
-                {iedName}
-                iedElement={iedElement}
+                iedName={ied.name}
+                iedElement={ied.element}
               />
             {:else}
               <ServerAtAccessPoint
                 accessPoint={group.accessPoint.element}
                 apName={group.accessPoint.name}
-                serverAtApName={group.accessPoint.serverAtApName ?? ''}
+                serverAtApName={group.accessPoint.serverAt?.apName ?? ''}
                 hostAvailable={false}
-                {iedName}
-                iedElement={iedElement}
+                iedName={ied.name}
+                iedElement={ied.element}
               />
             {/if}
           {/each}

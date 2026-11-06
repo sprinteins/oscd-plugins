@@ -127,6 +127,10 @@ describe('buildEditsForDeleteAccessPoint', () => {
 			reference.setAttribute('iedName', 'IED1')
 			reference.setAttribute('ldInst', 'CBFunction_aa11bb22')
 			reference.setAttribute('lnClass', lnClass)
+			reference.setAttribute(
+				'lnType',
+				lnClass === 'LLN0' ? 'TestLLN0' : 'TestXCBR'
+			)
 			if (lnClass !== 'LLN0') reference.setAttribute('lnInst', '1')
 			substation.append(reference)
 			return reference

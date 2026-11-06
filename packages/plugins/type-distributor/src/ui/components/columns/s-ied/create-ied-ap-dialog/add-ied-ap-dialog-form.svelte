@@ -1,13 +1,11 @@
 <script lang="ts">
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-import {
-	queryAccessPointsFromIed,
-	queryServerAccessPointsFromIed
-} from '@/headless/scl'
+import { queryAccessPointsFromIed } from '@/headless/scl'
 import { ssdImportStore } from '@/headless/stores'
 import { FieldError, FormActions, MultiApButton } from './form-elements'
 import {
 	type AccessPointData,
+	collectServerAtTargets,
 	createInitialAccessPoint,
 	createInitialAccessPoints,
 	createInitialIedData,
@@ -33,33 +31,30 @@ let formErrors = $state<FormErrors>({})
 const activeAp = $derived(accessPoints[accessPoints.length - 1])
 const confirmedAps = $derived(accessPoints.slice(0, -1))
 const serverAtApNames = $derived.by(() => {
+	// The XML document mutates in place, so editCount invalidates this derivation.
 	void pluginGlobalStore.editCount
-	const existingServerAps = ied.isNew
-		? []
-		: queryServerAccessPointsFromIed(
-				pluginGlobalStore.xmlDocument,
-				ied.name.trim()
-			)
-	const pendingServerAps = confirmedAps
-		.filter((ap) => !ap.serverAtApName)
-		.map((ap) => ap.name)
-
-	return [...new Set([...existingServerAps, ...pendingServerAps])]
+	return collectServerAtTargets(
+		ied,
+		confirmedAps,
+		pluginGlobalStore.xmlDocument
+	)
 })
-const serverAtOptions = $derived(
-	serverAtApNames.map((name) => ({ value: name, label: name }))
-)
-const serverAtTargetNames = $derived(new Set(serverAtApNames))
+const serverAtOptions = $derived.by(() => {
+	const options = serverAtApNames.map((name) => ({
+		value: name,
+		label: name
+	}))
+	const currentTarget = activeAp?.serverAtApName?.trim()
+	if (currentTarget && !serverAtApNames.includes(currentTarget)) {
+		options.unshift({
+			value: currentTarget,
+			label: `${currentTarget} (unavailable)`
+		})
+	}
+	return options
+})
 const hasActiveAp = $derived(activeAp?.name.trim().length > 0)
 const hasValidIed = $derived(ied.name.trim().length > 0)
-
-$effect(() => {
-	for (const ap of accessPoints) {
-		if (ap.serverAtApName && !serverAtTargetNames.has(ap.serverAtApName)) {
-			ap.serverAtApName = ''
-		}
-	}
-})
 
 const submitLabel = $derived(
 	isMultiApMode
@@ -160,7 +155,10 @@ function removeAccessPoint(apName: string) {
 		...confirmedAps.filter((ap) => ap.name !== apName),
 		activeAp
 	]
-	formErrors = {}
+	const remainingErrors = formErrors.errors?.filter(
+		(error) => !error.startsWith('Cannot remove Access Point "')
+	)
+	formErrors = { ...formErrors, errors: remainingErrors }
 }
 
 async function handleSubmit() {

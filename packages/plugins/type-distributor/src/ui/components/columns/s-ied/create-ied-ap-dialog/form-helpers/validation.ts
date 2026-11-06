@@ -1,13 +1,11 @@
 import { z } from 'zod'
-import {
-	queryAccessPointsFromIed,
-	queryServerAccessPointsFromIed
-} from '@/headless/scl'
+import { queryAccessPointsFromIed } from '@/headless/scl'
 import {
 	createAccessPointSchema,
 	createFormSchema,
 	createIedSchema
 } from './schemas'
+import { validateServerAtTargets } from './server-at-validation'
 import type {
 	AccessPointContext,
 	AccessPointData,
@@ -46,22 +44,11 @@ export function validateSubmission({
 	xmlDocument,
 	ssdDocument
 }: ValidateSubmissionParams) {
-	const serverAtTargets = ied.isNew
-		? []
-		: queryServerAccessPointsFromIed(xmlDocument, ied.name.trim())
-	const serverAtErrors: string[] = []
-	for (const accessPoint of accessPoints) {
-		const serverAtApName = accessPoint.serverAtApName?.trim()
-		if (serverAtApName) {
-			if (!serverAtTargets.includes(serverAtApName)) {
-				serverAtErrors.push(
-					`ServerAt target "${serverAtApName}" for Access Point "${accessPoint.name}" is not a server-hosting Access Point in IED "${ied.name}".`
-				)
-			}
-		} else if (accessPoint.name.trim()) {
-			serverAtTargets.push(accessPoint.name.trim())
-		}
-	}
+	const serverAtErrors = validateServerAtTargets(
+		ied,
+		accessPoints,
+		xmlDocument
+	)
 
 	const existingNames = ied.isNew
 		? []

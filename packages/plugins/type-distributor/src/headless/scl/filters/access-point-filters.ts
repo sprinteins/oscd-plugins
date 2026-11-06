@@ -13,16 +13,16 @@ export function groupAccessPointsByServer(
 	accessPoints: FilteredAccessPoint[]
 ): AccessPointGroup[] {
 	const hosts = accessPoints.filter(
-		(accessPoint) => accessPoint.serverAtApName === undefined
+		(accessPoint) => accessPoint.serverAt === null
 	)
 	const serverAtAccessPoints = accessPoints.filter(
-		(accessPoint) => accessPoint.serverAtApName !== undefined
+		(accessPoint) => accessPoint.serverAt !== null
 	)
 	const groups: AccessPointGroup[] = hosts.map((host) => ({
 		type: 'host',
 		host,
 		serverAtAccessPoints: serverAtAccessPoints.filter(
-			(accessPoint) => accessPoint.serverAtApName === host.name
+			(accessPoint) => accessPoint.serverAt?.apName === host.name
 		)
 	}))
 	const groupedServerAtElements = new Set(

@@ -7,15 +7,28 @@ export function createServerElementWithAuth(doc: XMLDocument): Element {
 	return serverElement
 }
 
-export function queryServer(accessPoint: Element): Element | null {
-	const directServer = Array.from(accessPoint.children).find(
-		(child) => child.localName === 'Server'
+export function queryOwnServer(accessPoint: Element): Element | null {
+	return (
+		Array.from(accessPoint.children).find(
+			(child) => child.localName === 'Server'
+		) ?? null
 	)
-	if (directServer) return directServer
+}
 
-	const serverAtApName = Array.from(accessPoint.children)
-		.find((child) => child.localName === 'ServerAt')
-		?.getAttribute('apName')
+export function queryServerAtElement(accessPoint: Element): Element | null {
+	return (
+		Array.from(accessPoint.children).find(
+			(child) => child.localName === 'ServerAt'
+		) ?? null
+	)
+}
+
+export function resolveServer(accessPoint: Element): Element | null {
+	const ownServer = queryOwnServer(accessPoint)
+	if (ownServer) return ownServer
+
+	const serverAtApName =
+		queryServerAtElement(accessPoint)?.getAttribute('apName')
 	const ied = accessPoint.parentElement
 	if (!serverAtApName || !ied) return null
 
@@ -24,11 +37,7 @@ export function queryServer(accessPoint: Element): Element | null {
 			child.localName === 'AccessPoint' &&
 			child.getAttribute('name') === serverAtApName
 	)
-	return (
-		Array.from(serverAccessPoint?.children ?? []).find(
-			(child) => child.localName === 'Server'
-		) ?? null
-	)
+	return serverAccessPoint ? queryOwnServer(serverAccessPoint) : null
 }
 
 export function queryServerAtAccessPointsFromHost(
@@ -39,11 +48,10 @@ export function queryServerAtAccessPointsFromHost(
 	if (!iedElement || hostName === null) return []
 
 	return Array.from(iedElement.children).filter((accessPoint) => {
-		if (accessPoint.localName !== 'AccessPoint') return false
-		return Array.from(accessPoint.children).some(
-			(child) =>
-				child.localName === 'ServerAt' &&
-				child.getAttribute('apName') === hostName
+		const serverAt = queryServerAtElement(accessPoint)
+		return (
+			accessPoint.localName === 'AccessPoint' &&
+			serverAt?.getAttribute('apName') === hostName
 		)
 	})
 }
