@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - 2026-11-06
+### Added
+- Access Points can share another Access Point's Server through `ServerAt`. Shared Access Points are grouped under their host, and LNodes assigned through them use the shared Server.
+### Changed
+- Deleting a host Access Point now confirms removal of its dependent `ServerAt` Access Points.
 
 ## [1.1.3] - 2026-10-08
 ### Changed
