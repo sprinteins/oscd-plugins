@@ -68,7 +68,7 @@ let isLD0 = $derived(ldInst.startsWith('LD0'))
 	</Card.Root>
 	{#if isOpen && hasLNs}
 		<div class="ml-4 space-y-1">
-			{#each lns as ln (JSON.stringify([ln.lnClass, ln.lnType, ln.inst, ln.ldInst]))}
+			{#each lns as ln (JSON.stringify([ln.lnClass, ln.prefix ?? '', ln.lnType, ln.inst, ln.ldInst]))}
 				<IedLN
 					{ln}
 					{iedName}

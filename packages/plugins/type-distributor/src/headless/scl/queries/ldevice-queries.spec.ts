@@ -29,9 +29,28 @@ describe('queryLDevicesFromAccessPoint', () => {
 				lnClass: 'XCBR',
 				lnType: 'XCBR_Type1',
 				inst: '1',
+				prefix: '',
 				iedName: undefined,
 				ldInst: 'LD0'
 			})
+		})
+
+		it('GIVEN LNs with different prefixes WHEN queried THEN should preserve their prefixes', () => {
+			const doc = new DOMParser().parseFromString(
+				`<AccessPoint name="AP1">
+					<Server>
+						<LDevice inst="LD0">
+							<LN lnClass="XCBR" lnType="XCBR_Type1" inst="1"/>
+							<LN lnClass="XCBR" lnType="XCBR_Type1" inst="1" prefix="remote"/>
+						</LDevice>
+					</Server>
+				</AccessPoint>`,
+				'application/xml'
+			)
+
+			const result = queryLDevicesFromAccessPoint(doc.documentElement)
+
+			expect(result[0].lns.map((ln) => ln.prefix)).toEqual(['', 'remote'])
 		})
 
 		it('GIVEN access point with LN0 WHEN queryLDevicesFromAccessPoint is called THEN should include LN0', () => {

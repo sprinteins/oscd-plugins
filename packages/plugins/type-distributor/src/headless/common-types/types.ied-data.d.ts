@@ -2,6 +2,7 @@ export type IedLNData = {
 	lnClass: string
 	lnType: string
 	inst: string
+	prefix?: string
 	iedName?: string
 	ldInst: string
 }
