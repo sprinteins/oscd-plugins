@@ -42,19 +42,25 @@ We have currently the following packages:
 
 ```
 ├── core
+│   ├── api
+│   ├── legacy
+│   ├── standard
+│   └── ui-svelte
 ├── plugins
+│   ├── auto-doc
 │   ├── communication-explorer
-│   ├── diffing-tool
-│   └── network-explorer
-└── uilib
+│   ├── io-center
+│   ├── network-explorer
+│   ├── type-designer
+│   ├── type-distributor
+│   └── type-switcher
+└── ui
 ```
 
 - `core` contains the business models and any interaction with the `.scd` files
-- each plugin has its own package in `plugins` folder. Plugins are just a lightweight 
-  wrapper around the plugin components that manage the file handling and interaction
+- each plugin has its own package in `plugins` folder and manages its file handling and interaction
   with the core of OpenSCD (not with our core!)
-- `uilib` is where all the ui components and the plugin components are.
-  we develop the plugins here so we can work independent of the file system and files.
+- shared UI components are provided by `core/ui-svelte` and `ui`.
 
 
 ## OpenSCD's Plugin System

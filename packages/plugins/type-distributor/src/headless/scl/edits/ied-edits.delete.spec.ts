@@ -64,7 +64,7 @@ describe('buildEditsForDeleteEmptyIed', () => {
             <Authentication none="true"/>
             <LDevice inst="CBFunction">
               <LN0 lnClass="LLN0" inst="" lnType="TestLLN0"/>
-              <LN lnClass="XCBR" lnInst="1" lnType="TestXCBR"/>
+              <LN lnClass="XCBR" inst="1" lnType="TestXCBR"/>
             </LDevice>
           </Server>
         </AccessPoint>

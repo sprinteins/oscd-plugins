@@ -6,7 +6,7 @@ import {
 	dialogStore
 } from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
-import type { LDeviceData } from '@/headless/common-types'
+import type { IedLDeviceData } from '@/headless/common-types'
 import type { FilteredAccessPoint } from '@/headless/scl'
 import { queryServerAtAccessPointsFromHost } from '@/headless/scl'
 import { dndStore } from '@/headless/stores'
@@ -18,7 +18,7 @@ import ServerAtAccessPoint from './server-at-access-point.svelte'
 interface Props {
 	accessPoint: Element
 	apName: string | null
-	lDevices: LDeviceData[]
+	lDevices: IedLDeviceData[]
 	serverAtAccessPoints: FilteredAccessPoint[]
 	iedName: string
 	iedElement: Element
@@ -177,9 +177,9 @@ async function handleRename() {
 							{iedElement}
 						/>
 					{/each}
-      {#each lDevices as { ldInst, lNodes: ldLNodes }}
-        <LDevice {ldInst} lNodes={ldLNodes} {iedName} {accessPoint} />
-      {/each}
+					{#each lDevices as { ldInst, lns }}
+						<LDevice {ldInst} {lns} {iedName} {accessPoint} />
+					{/each}
 				</div>
 			{/if}
 		</Card.Content>

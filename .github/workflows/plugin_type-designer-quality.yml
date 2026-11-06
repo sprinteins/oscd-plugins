@@ -1,0 +1,27 @@
+name: Quality Check @oscd-plugins/type-designer
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/plugins/type-designer/**'
+
+jobs:
+  build:
+    name: Build Project
+    uses: ./.github/workflows/_build.yml
+    with:
+      package-name: type-designer
+
+  check:
+    name: Check Project
+    uses: ./.github/workflows/_check.yml
+    with:
+      package-name: type-designer
+
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/_test.yml
+    with:
+      package-name: type-designer
+      has-coverage: true

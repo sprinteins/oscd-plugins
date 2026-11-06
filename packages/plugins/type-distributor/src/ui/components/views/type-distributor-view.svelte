@@ -15,6 +15,7 @@ import {
 	bayStore,
 	equipmentMatchingStore,
 	getBayTypeWithTemplates,
+	resolveAssignedBayTypeUuid,
 	ssdImportStore
 } from '@/headless/stores'
 import {
@@ -37,6 +38,18 @@ const bayTypeOptions = $derived(
 const activeBayTypeUuid = $derived(
 	bayStore.assignedBayTypeUuid || ssdImportStore.selectedBayType
 )
+
+$effect(() => {
+	if (ssdImportStore.selectedBayType !== null) return
+
+	const assignedBayTypeUuid = resolveAssignedBayTypeUuid(
+		bayStore.assignedBayTypeUuid,
+		ssdImportStore.bayTypes
+	)
+	if (assignedBayTypeUuid !== null) {
+		ssdImportStore.selectedBayType = assignedBayTypeUuid
+	}
+})
 
 const bayTypeWithTemplates = $derived(
 	activeBayTypeUuid ? getBayTypeWithTemplates(activeBayTypeUuid) : null
@@ -93,7 +106,11 @@ $effect(() => {
 
 const isBayTypeLocked = $derived(assignedLNodesStore.hasConnections)
 
-const canReopenMatching = $derived(bayStore.manualMatchingConfirmed)
+const canReopenMatching = $derived(
+	bayStore.manualMatchingConfirmed &&
+		(!bayTypeWithTemplates ||
+			!assignedLNodesStore.areAllLNodesAssigned(bayTypeWithTemplates))
+)
 
 function prefillManualMatchesFromBay() {
 	const bay = bayStore.scdBay

@@ -4,7 +4,8 @@ import { resetSSDImportStore } from '@/headless/test-helpers'
 import type { BayTypeWithTemplates } from '../common-types'
 import {
 	getAllLNodesWithParent,
-	getBayTypeWithTemplates
+	getBayTypeWithTemplates,
+	resolveAssignedBayTypeUuid
 } from './bay-types.utils'
 import { ssdImportStore } from './ssd-import.store.svelte'
 
@@ -17,6 +18,34 @@ describe('bay-types.utils', () => {
 		const parser = new DOMParser()
 		doc = parser.parseFromString(ssdMockA, 'application/xml')
 		ssdImportStore.loadFromSSD(doc, 'test.ssd')
+	})
+
+	describe('resolveAssignedBayTypeUuid', () => {
+		it('GIVEN the assigned BayType is in the imported SSD WHEN resolved THEN returns its UUID', () => {
+			const assignedBayTypeUuid = ssdImportStore.bayTypes[0].uuid
+
+			expect(
+				resolveAssignedBayTypeUuid(
+					assignedBayTypeUuid,
+					ssdImportStore.bayTypes
+				)
+			).toBe(assignedBayTypeUuid)
+		})
+
+		it('GIVEN no BayType is assigned WHEN resolved THEN returns null', () => {
+			expect(
+				resolveAssignedBayTypeUuid(null, ssdImportStore.bayTypes)
+			).toBeNull()
+		})
+
+		it('GIVEN the assigned BayType is absent from the imported SSD WHEN resolved THEN returns null', () => {
+			expect(
+				resolveAssignedBayTypeUuid(
+					'not-in-imported-ssd',
+					ssdImportStore.bayTypes
+				)
+			).toBeNull()
+		})
 	})
 
 	describe('getBayTypeWithTemplates', () => {

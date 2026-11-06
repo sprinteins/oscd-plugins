@@ -14,6 +14,20 @@ import { ssdImportStore } from './ssd-import.store.svelte'
 let cachedBayTypesRef: BayType[] | null = null
 const templateCache = new Map<string, BayTypeWithTemplates>()
 
+export function resolveAssignedBayTypeUuid(
+	assignedBayTypeUuid: string | null,
+	bayTypes: BayType[]
+): string | null {
+	if (
+		assignedBayTypeUuid === null ||
+		!bayTypes.some((bayType) => bayType.uuid === assignedBayTypeUuid)
+	) {
+		return null
+	}
+
+	return assignedBayTypeUuid
+}
+
 function ensureCacheValid(currentBayTypes: BayType[]) {
 	if (cachedBayTypesRef !== currentBayTypes) {
 		templateCache.clear()

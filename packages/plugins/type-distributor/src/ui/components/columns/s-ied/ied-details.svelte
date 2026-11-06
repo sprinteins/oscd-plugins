@@ -6,7 +6,7 @@ import {
 	filterByAccessPoint,
 	filterByIED,
 	filterByLDevice,
-	filterByLNode,
+	filterByLN,
 	groupAccessPointsByServer,
 	type IEDData,
 	queryLDevicesFromAccessPoint,
@@ -61,8 +61,8 @@ const sIedData = $derived.by(() => {
 			case 'LDevice':
 				filteredIeds = filterByLDevice(data, searchTerm)
 				break
-			case 'LNode':
-				filteredIeds = filterByLNode(data, searchTerm)
+			case 'LN/LN0':
+				filteredIeds = filterByLN(data, searchTerm)
 				break
 			default:
 				filteredIeds = data

@@ -6,7 +6,7 @@ import type {
 	FunctionTemplate,
 	LNodeTemplate
 } from '@/headless/common-types'
-import { createMultipleLNodesInAccessPoint } from '@/headless/scl'
+import { createMultipleLNsInAccessPoint } from '@/headless/scl'
 import { assignedLNodesStore } from '@/headless/stores/assigned-lnodes'
 import { bayStore } from '@/headless/stores/bay.store.svelte'
 import { dndStore } from '@/headless/stores/dnd'
@@ -24,7 +24,7 @@ vi.mock('@/headless/utils/get-document-and-Editor', () => ({
 }))
 
 vi.mock('@/headless/scl', () => ({
-	createMultipleLNodesInAccessPoint: vi.fn(() => []),
+	createMultipleLNsInAccessPoint: vi.fn(() => []),
 	resolveFunctionElementUuid: vi.fn(() => undefined),
 	buildUpdatesForBayLNode: vi.fn(() => [])
 }))
@@ -295,9 +295,9 @@ describe('Integration: Assigned LNodes Flow', () => {
 
 	describe('GIVEN a drag-and-drop flow with edits produced', () => {
 		beforeEach(() => {
-			// Mock createMultipleLNodesInAccessPoint to return a non-empty array so commitEdits is called
+			// Mock createMultipleLNsInAccessPoint to return a non-empty array so commitEdits is called
 			const stubNode = mockDocument.createElement('LN')
-			vi.mocked(createMultipleLNodesInAccessPoint).mockReturnValue([
+			vi.mocked(createMultipleLNsInAccessPoint).mockReturnValue([
 				{
 					node: stubNode,
 					parent: accessPoint,

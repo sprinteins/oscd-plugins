@@ -2,26 +2,26 @@
 import { ChevronRight } from '@lucide/svelte'
 import { Card, DropdownMenuWorkaround } from '@oscd-plugins/core-ui-svelte'
 import { deleteLDevice } from '@/headless/actions'
-import type { LNodeTemplate } from '@/headless/common-types'
-import IedLnode from './ied-lnode.svelte'
+import type { IedLNData } from '@/headless/common-types'
+import IedLN from './ied-ln.svelte'
 
 interface Props {
 	ldInst: string
-	lNodes: LNodeTemplate[]
+	lns: IedLNData[]
 	iedName: string
 	accessPoint: Element
 }
 
-const { ldInst, lNodes, iedName, accessPoint }: Props = $props()
+const { ldInst, lns, iedName, accessPoint }: Props = $props()
 
 let isOpen = $state(false)
-let hasLNodes = $derived(lNodes.length > 0)
+let hasLNs = $derived(lns.length > 0)
 let isLD0 = $derived(ldInst.startsWith('LD0'))
 </script>
 
 <div class="space-y-1">
 	<Card.Root
-		class="{hasLNodes
+		class="{hasLNs
 			? 'hover:bg-gray-50'
 			: 'border border-dashed'} transition-all"
 	>
@@ -30,11 +30,11 @@ let isLD0 = $derived(ldInst.startsWith('LD0'))
 				<button
 					type="button"
 					class="flex min-w-0 flex-1 items-center gap-2 text-left"
-					disabled={!hasLNodes}
-					aria-expanded={hasLNodes ? isOpen : undefined}
+					disabled={!hasLNs}
+					aria-expanded={hasLNs ? isOpen : undefined}
 					onclick={() => (isOpen = !isOpen)}
 				>
-					{#if hasLNodes}
+					{#if hasLNs}
 						<ChevronRight
 							class="size-4 shrink-0 transition-transform duration-200 {isOpen
 								? 'rotate-90'
@@ -66,11 +66,11 @@ let isLD0 = $derived(ldInst.startsWith('LD0'))
 			</div>
 		</Card.Content>
 	</Card.Root>
-	{#if isOpen && hasLNodes}
+	{#if isOpen && hasLNs}
 		<div class="ml-4 space-y-1">
-			{#each lNodes as lnode}
-				<IedLnode
-					{lnode}
+			{#each lns as ln}
+				<IedLN
+					{ln}
 					{iedName}
 					{accessPoint}
 					{isLD0}

@@ -60,7 +60,7 @@ Core packages must be built before plugins. Always run `pnpm dependencies:instal
 | `@oscd-plugins/core-standard` | `packages/core/standard/` | IEC 61850 standard type definitions (some auto-generated) |
 | `@oscd-plugins/core-ui-svelte` | `packages/core/ui-svelte/` | Shared Svelte 5 UI component library (shadcn-style) |
 | `@oscd-plugins/ui` | `packages/ui/` | Additional UI component library |
-| `packages/plugins/*` | `packages/plugins/` | 9 standalone plugin apps (auto-doc, communication-explorer, diffing-tool, documentation, io-center, network-explorer, type-designer, type-distributor, type-switcher) |
+| `packages/plugins/*` | `packages/plugins/` | 7 standalone plugin apps (auto-doc, communication-explorer, io-center, network-explorer, type-designer, type-distributor, type-switcher) |
 
 ### Plugin Structure
 

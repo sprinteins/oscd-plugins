@@ -1,1 +1,0 @@
-export {default as IEDAccordion} from "./publisher-subscriber-accordion.svelte"

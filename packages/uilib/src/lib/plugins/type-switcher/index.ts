@@ -1,1 +1,0 @@
-export { default as TypeSwitcher } from "./type-switcher.svelte"

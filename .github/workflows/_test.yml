@@ -6,19 +6,23 @@ on:
       package-name:
         required: true
         type: string
+      has-coverage:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: 24
           cache: pnpm
@@ -26,12 +30,17 @@ jobs:
       - name: Install package dependencies
         run: pnpm run ${{ inputs.package-name }}:install
 
+      - name: Run tests
+        if: inputs.has-coverage == false
+        run: pnpm --dir packages/plugins/${{ inputs.package-name }} exec vitest run
+
       - name: Run tests with coverage
-        run: pnpm --dir packages/plugins/${{ inputs.package-name }} run test:ci
+        if: inputs.has-coverage
+        run: pnpm --dir packages/plugins/${{ inputs.package-name }} exec vitest run --coverage
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ inputs.package-name }}-coverage
           path: packages/plugins/${{ inputs.package-name }}/coverage
