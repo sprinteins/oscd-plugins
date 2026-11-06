@@ -118,11 +118,7 @@ This repository already contains AI-related guidance that is useful when working
 Useful files:
 
 - `.github/copilot-instructions.md` for project structure, commands, and conventions
-- `.github/prompts/critical-branch-review.prompt.md` for critical review of a branch
 - `.github/agents/vitest.agent.md` for Vitest-oriented testing guidance
 - `.github/skills/vitest-test/SKILL.md` for expectations when editing `*.spec.ts`
-
-This one needs to be optimised:
-- `.github/prompts/pre-review.prompt.md` for pre-review analysis
 
 Use AI output as a draft, not as the source of truth.
