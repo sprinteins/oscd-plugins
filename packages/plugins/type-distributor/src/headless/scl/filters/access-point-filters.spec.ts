@@ -1,10 +1,142 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import {
 	filterAccessPointGroupsByAccessPoint,
 	filterByAccessPoint,
 	groupAccessPointsByServer
 } from './access-point-filters'
+import { filterByLDevice } from './ldevice-filters'
+import { filterByLN } from './ln-filters'
 import type { IEDData } from './types'
+
+describe('GIVEN access points with multiple LDevices and LNs', () => {
+	let ied: IEDData
+
+	beforeEach(() => {
+		const lDevices = [
+			{
+				ldInst: 'Protection',
+				lns: [
+					{
+						lnClass: 'XCBR',
+						lnType: 'Breaker',
+						inst: '1',
+						ldInst: 'Protection'
+					},
+					{
+						lnClass: 'CSWI',
+						lnType: 'Switch',
+						inst: '2',
+						ldInst: 'Protection'
+					}
+				]
+			},
+			{
+				ldInst: 'Control',
+				lns: [
+					{
+						lnClass: 'CSWI',
+						lnType: 'Switch',
+						inst: '1',
+						ldInst: 'Control'
+					}
+				]
+			}
+		]
+		ied = {
+			name: 'IED',
+			element: document.createElement('IED'),
+			accessPoints: [
+				{
+					element: document.createElement('AccessPoint'),
+					name: 'Host',
+					lDevices
+				},
+				{
+					element: document.createElement('AccessPoint'),
+					name: 'Alias',
+					lDevices,
+					serverAtApName: 'Host'
+				},
+				{
+					element: document.createElement('AccessPoint'),
+					name: 'Unresolved',
+					lDevices,
+					serverAtApName: 'Missing'
+				}
+			]
+		}
+	})
+
+	it('GIVEN LDevice filter WHEN grouping THEN host keeps only filtered lDevices', () => {
+		const matchingAccessPoints = filterByLDevice([ied], 'Protection')[0]
+			.accessPoints
+		const groups = filterAccessPointGroupsByAccessPoint(
+			groupAccessPointsByServer(ied.accessPoints),
+			matchingAccessPoints
+		)
+
+		expect(groups[0]).toEqual({
+			type: 'host',
+			host: {
+				...ied.accessPoints[0],
+				lDevices: [ied.accessPoints[0].lDevices[0]]
+			},
+			serverAtAccessPoints: [matchingAccessPoints[1]]
+		})
+		expect(ied.accessPoints[0].lDevices).toHaveLength(2)
+	})
+
+	it('GIVEN LN filter WHEN grouping THEN host keeps only matching LDevices and LNs', () => {
+		const matchingAccessPoints = filterByLN([ied], 'XCBR')[0].accessPoints
+		const groups = filterAccessPointGroupsByAccessPoint(
+			groupAccessPointsByServer(ied.accessPoints),
+			matchingAccessPoints
+		)
+
+		expect(groups[0]).toEqual({
+			type: 'host',
+			host: {
+				...ied.accessPoints[0],
+				lDevices: [
+					{
+						...ied.accessPoints[0].lDevices[0],
+						lns: [ied.accessPoints[0].lDevices[0].lns[0]]
+					}
+				]
+			},
+			serverAtAccessPoints: [matchingAccessPoints[1]]
+		})
+		expect(ied.accessPoints[0].lDevices[0].lns).toHaveLength(2)
+	})
+
+	it('WHEN only a filtered alias matches THEN keeps its filtered data and original host context', () => {
+		const alias = filterByLN([ied], 'XCBR')[0].accessPoints[1]
+
+		expect(
+			filterAccessPointGroupsByAccessPoint(
+				groupAccessPointsByServer(ied.accessPoints),
+				[alias]
+			)
+		).toEqual([
+			{
+				type: 'host',
+				host: ied.accessPoints[0],
+				serverAtAccessPoints: [alias]
+			}
+		])
+	})
+
+	it('WHEN an unresolved ServerAt matches THEN keeps its filtered data', () => {
+		const unresolved = filterByLN([ied], 'XCBR')[0].accessPoints[2]
+
+		expect(
+			filterAccessPointGroupsByAccessPoint(
+				groupAccessPointsByServer(ied.accessPoints),
+				[unresolved]
+			)
+		).toEqual([{ type: 'unresolved-server-at', accessPoint: unresolved }])
+	})
+})
 
 describe('filterByAccessPoint', () => {
 	const mockIEDs: IEDData[] = [

@@ -44,28 +44,33 @@ export function filterAccessPointGroupsByAccessPoint(
 	groups: AccessPointGroup[],
 	matchingAccessPoints: FilteredAccessPoint[]
 ): AccessPointGroup[] {
-	const matchingElements = new Set(
-		matchingAccessPoints.map((accessPoint) => accessPoint.element)
+	const matchingByElement = new Map(
+		matchingAccessPoints.map((accessPoint) => [
+			accessPoint.element,
+			accessPoint
+		])
 	)
 
 	return groups.flatMap((group): AccessPointGroup[] => {
 		if (group.type === 'unresolved-server-at') {
-			return matchingElements.has(group.accessPoint.element)
-				? [group]
-				: []
+			const accessPoint = matchingByElement.get(group.accessPoint.element)
+			return accessPoint ? [{ ...group, accessPoint }] : []
 		}
 
-		const serverAtAccessPoints = group.serverAtAccessPoints.filter(
-			(accessPoint) => matchingElements.has(accessPoint.element)
+		const host = matchingByElement.get(group.host.element)
+		const serverAtAccessPoints = group.serverAtAccessPoints.flatMap(
+			(accessPoint) => {
+				const matchingAccessPoint = matchingByElement.get(
+					accessPoint.element
+				)
+				return matchingAccessPoint ? [matchingAccessPoint] : []
+			}
 		)
-		if (
-			!matchingElements.has(group.host.element) &&
-			serverAtAccessPoints.length === 0
-		) {
+		if (!host && serverAtAccessPoints.length === 0) {
 			return []
 		}
 
-		return [{ ...group, serverAtAccessPoints }]
+		return [{ ...group, host: host ?? group.host, serverAtAccessPoints }]
 	})
 }
 
