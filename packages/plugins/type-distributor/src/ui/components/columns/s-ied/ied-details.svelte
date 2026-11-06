@@ -1,8 +1,8 @@
 <script lang="ts">
 import {
-	type AccessPointGroup,
 	type FilteredAccessPoint,
 	type FilteredIED,
+	filterAccessPointGroupsByAccessPoint,
 	filterByAccessPoint,
 	filterByIED,
 	filterByLDevice,
@@ -73,39 +73,10 @@ const sIedData = $derived.by(() => {
 		const allIedAccessPoints =
 			data.find((item) => item.element === ied.element)?.accessPoints ??
 			[]
-		const matchingAccessPoints = new Map(
-			ied.accessPoints.map((accessPoint) => [
-				accessPoint.element,
-				accessPoint
-			])
+		const accessPointGroups = filterAccessPointGroupsByAccessPoint(
+			groupAccessPointsByServer(allIedAccessPoints),
+			ied.accessPoints
 		)
-		const accessPointGroups = groupAccessPointsByServer(allIedAccessPoints)
-			.filter((group) => {
-				const groupAccessPoints =
-					group.type === 'host'
-						? [group.host, ...group.serverAtAccessPoints]
-						: [group.accessPoint]
-				return groupAccessPoints.some((accessPoint) =>
-					matchingAccessPoints.has(accessPoint.element)
-				)
-			})
-			.map((group): AccessPointGroup => {
-				if (group.type === 'unresolved-server-at') {
-					return {
-						...group,
-						accessPoint:
-							matchingAccessPoints.get(
-								group.accessPoint.element
-							) ?? group.accessPoint
-					}
-				}
-				return {
-					...group,
-					host:
-						matchingAccessPoints.get(group.host.element) ??
-						group.host
-				}
-			})
 		return { ...ied, accessPointGroups }
 	})
 })

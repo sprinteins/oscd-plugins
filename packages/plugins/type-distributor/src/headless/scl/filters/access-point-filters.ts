@@ -40,6 +40,35 @@ export function groupAccessPointsByServer(
 	return groups
 }
 
+export function filterAccessPointGroupsByAccessPoint(
+	groups: AccessPointGroup[],
+	matchingAccessPoints: FilteredAccessPoint[]
+): AccessPointGroup[] {
+	const matchingElements = new Set(
+		matchingAccessPoints.map((accessPoint) => accessPoint.element)
+	)
+
+	return groups.flatMap((group): AccessPointGroup[] => {
+		if (group.type === 'unresolved-server-at') {
+			return matchingElements.has(group.accessPoint.element)
+				? [group]
+				: []
+		}
+
+		const serverAtAccessPoints = group.serverAtAccessPoints.filter(
+			(accessPoint) => matchingElements.has(accessPoint.element)
+		)
+		if (
+			!matchingElements.has(group.host.element) &&
+			serverAtAccessPoints.length === 0
+		) {
+			return []
+		}
+
+		return [{ ...group, serverAtAccessPoints }]
+	})
+}
+
 export function filterByAccessPoint(
 	ieds: IEDData[],
 	term: string

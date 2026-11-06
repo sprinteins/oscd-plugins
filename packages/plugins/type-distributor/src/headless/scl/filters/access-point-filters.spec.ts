@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+	filterAccessPointGroupsByAccessPoint,
 	filterByAccessPoint,
 	groupAccessPointsByServer
 } from './access-point-filters'
@@ -133,6 +134,100 @@ describe('filterByAccessPoint', () => {
 			expect(groupAccessPointsByServer([unresolved])).toEqual([
 				{ type: 'unresolved-server-at', accessPoint: unresolved }
 			])
+		})
+	})
+
+	describe('filterAccessPointGroupsByAccessPoint', () => {
+		it('GIVEN a host group with multiple aliases WHEN only one alias matches THEN hides non-matching aliases', () => {
+			const host = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP1',
+				lDevices: []
+			}
+			const matchingAlias = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP2',
+				lDevices: [],
+				serverAtApName: 'AP1'
+			}
+			const nonMatchingAlias = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP3',
+				lDevices: [],
+				serverAtApName: 'AP1'
+			}
+			const groups = groupAccessPointsByServer([
+				host,
+				matchingAlias,
+				nonMatchingAlias
+			])
+
+			expect(
+				filterAccessPointGroupsByAccessPoint(groups, [matchingAlias])
+			).toEqual([
+				{
+					type: 'host',
+					host,
+					serverAtAccessPoints: [matchingAlias]
+				}
+			])
+		})
+
+		it('GIVEN a matching host with aliases WHEN filtering groups THEN keeps the host and only matching aliases', () => {
+			const host = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP1',
+				lDevices: []
+			}
+			const alias = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP2',
+				lDevices: [],
+				serverAtApName: 'AP1'
+			}
+			const groups = groupAccessPointsByServer([host, alias])
+
+			expect(
+				filterAccessPointGroupsByAccessPoint(groups, [host])
+			).toEqual([{ type: 'host', host, serverAtAccessPoints: [] }])
+		})
+
+		it('GIVEN groups without matching AccessPoints WHEN filtering groups THEN removes the groups', () => {
+			const host = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP1',
+				lDevices: []
+			}
+			const alias = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP2',
+				lDevices: [],
+				serverAtApName: 'MissingAP'
+			}
+
+			expect(
+				filterAccessPointGroupsByAccessPoint(
+					groupAccessPointsByServer([host, alias]),
+					[]
+				)
+			).toEqual([])
+		})
+
+		it('GIVEN an unresolved ServerAt WHEN filtering groups THEN keeps it only when it matches', () => {
+			const unresolved = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP2',
+				lDevices: [],
+				serverAtApName: 'MissingAP'
+			}
+			const groups = groupAccessPointsByServer([unresolved])
+
+			expect(
+				filterAccessPointGroupsByAccessPoint(groups, [unresolved])
+			).toEqual([
+				{ type: 'unresolved-server-at', accessPoint: unresolved }
+			])
+			expect(filterAccessPointGroupsByAccessPoint(groups, [])).toEqual([])
 		})
 	})
 
