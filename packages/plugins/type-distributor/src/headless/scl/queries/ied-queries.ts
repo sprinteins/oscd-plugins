@@ -84,3 +84,21 @@ export function queryAccessPointsFromIed(
 		.map((ap) => ap.getAttribute('name'))
 		.filter((name): name is string => name !== null)
 }
+
+export function queryServerAccessPointsFromIed(
+	xmlDocument: XMLDocument | null | undefined,
+	iedName: string
+): string[] {
+	const iedElement = queryIedElement(xmlDocument, iedName)
+	if (!iedElement) return []
+
+	return Array.from(iedElement.children)
+		.filter((element) => element.localName === 'AccessPoint')
+		.filter((accessPoint) =>
+			Array.from(accessPoint.children).some(
+				(child) => child.localName === 'Server'
+			)
+		)
+		.map((accessPoint) => accessPoint.getAttribute('name'))
+		.filter((name): name is string => Boolean(name))
+}

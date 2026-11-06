@@ -1,7 +1,7 @@
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
 import type { LNodeTemplate } from '@/headless/common-types'
 import { queryLDeviceFromAccessPoint, queryLNodeInLDevice } from '../elements'
-import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
+import { buildUpdatesForClearingBayLNodeConnectionsInDocument } from './bay-connections.helper'
 
 interface BuildEditsForDeleteLNodeFromAccessPointParams {
 	iedName: string
@@ -17,10 +17,6 @@ export function buildEditsForDeleteLNodeFromAccessPoint({
 	selectedBay
 }: BuildEditsForDeleteLNodeFromAccessPointParams): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
-
-	if (!selectedBay) {
-		throw new Error('No bay selected')
-	}
 
 	const ldInst = lNodeTemplate.ldInst
 	if (!ldInst) {
@@ -53,7 +49,8 @@ export function buildEditsForDeleteLNodeFromAccessPoint({
 		}
 	]
 
-	const bayEdits = buildUpdatesForClearingBayLNodeConnections({
+	const bayEdits = buildUpdatesForClearingBayLNodeConnectionsInDocument({
+		document: accessPoint.ownerDocument,
 		selectedBay,
 		lNodeTemplates,
 		iedName
@@ -91,10 +88,6 @@ export function buildEditsForDeleteLDevice({
 }: BuildEditsForDeleteLDeviceParams): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
 
-	if (!selectedBay) {
-		throw new Error('No bay selected')
-	}
-
 	const lDevice = queryLDeviceFromAccessPoint(accessPoint, ldInst)
 	if (!lDevice) {
 		throw new Error(
@@ -113,7 +106,8 @@ export function buildEditsForDeleteLDevice({
 		ldInst
 	}))
 
-	const bayEdits = buildUpdatesForClearingBayLNodeConnections({
+	const bayEdits = buildUpdatesForClearingBayLNodeConnectionsInDocument({
+		document: accessPoint.ownerDocument,
 		selectedBay,
 		lNodeTemplates,
 		iedName

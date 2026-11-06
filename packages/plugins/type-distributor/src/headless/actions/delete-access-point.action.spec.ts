@@ -41,27 +41,20 @@ describe('deleteAccessPointFromIed', () => {
 		vi.restoreAllMocks()
 	})
 
-	it('GIVEN hasLDevices is true AND no bay is selected WHEN deleteAccessPointFromIed is called THEN returns without committing', () => {
+	it('GIVEN no bay is selected WHEN deleteAccessPointFromIed is called THEN commits and passes the missing bay context to the edit builder', () => {
 		bayStore.scdBay = null
+		const accessPoint = makeAccessPoint('AP1')
 
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
-			accessPoint: makeAccessPoint('AP1'),
-			hasLDevices: true
+			accessPoint
 		})
 
-		expect(mockEditor.commit).not.toHaveBeenCalled()
-	})
-
-	it('GIVEN hasLDevices is false AND no bay is selected WHEN deleteAccessPointFromIed is called THEN proceeds to commit', () => {
-		bayStore.scdBay = null
-
-		deleteAccessPointFromIed({
+		expect(buildEditsForDeleteAccessPoint).toHaveBeenCalledWith({
+			accessPoint,
 			iedName: 'IED_A',
-			accessPoint: makeAccessPoint('AP1'),
-			hasLDevices: false
+			selectedBay: null
 		})
-
 		expect(mockEditor.commit).toHaveBeenCalled()
 	})
 
@@ -70,8 +63,7 @@ describe('deleteAccessPointFromIed', () => {
 
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
-			accessPoint: makeAccessPoint('AP1'),
-			hasLDevices: false
+			accessPoint: makeAccessPoint('AP1')
 		})
 
 		expect(mockEditor.commit).not.toHaveBeenCalled()
@@ -80,8 +72,7 @@ describe('deleteAccessPointFromIed', () => {
 	it('GIVEN a named access point WHEN deleteAccessPointFromIed is called THEN commits with the AP name in the title', () => {
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
-			accessPoint: makeAccessPoint('AP1'),
-			hasLDevices: false
+			accessPoint: makeAccessPoint('AP1')
 		})
 
 		expect(mockEditor.commit).toHaveBeenCalledWith(expect.anything(), {
@@ -92,8 +83,7 @@ describe('deleteAccessPointFromIed', () => {
 	it('GIVEN an access point without a name WHEN deleteAccessPointFromIed is called THEN commits with (unnamed) in the title', () => {
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
-			accessPoint: makeAccessPoint(),
-			hasLDevices: false
+			accessPoint: makeAccessPoint()
 		})
 
 		expect(mockEditor.commit).toHaveBeenCalledWith(expect.anything(), {

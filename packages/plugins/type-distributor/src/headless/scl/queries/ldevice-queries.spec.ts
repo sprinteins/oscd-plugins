@@ -200,6 +200,25 @@ describe('queryLDevicesFromAccessPoint', () => {
 			expect(result[0].lNodes[0].lnInst).toBe('')
 		})
 
+		it('GIVEN standard LN inst attribute WHEN queryLDevicesFromAccessPoint is called THEN maps it to lnInst', () => {
+			const parser = new DOMParser()
+			const doc = parser.parseFromString(
+				`<AccessPoint name="AP1">
+					<Server>
+						<LDevice inst="LD1">
+							<LN lnClass="XCBR" lnType="XCBR_Type1" inst="1"/>
+						</LDevice>
+					</Server>
+				</AccessPoint>`,
+				'application/xml'
+			)
+			const accessPoint = doc.documentElement
+
+			const result = queryLDevicesFromAccessPoint(accessPoint)
+
+			expect(result[0].lNodes[0].lnInst).toBe('1')
+		})
+
 		it('GIVEN LNode with iedName attribute WHEN queryLDevicesFromAccessPoint is called THEN should capture iedName', () => {
 			// GIVEN LNode with iedName attribute
 			const parser = new DOMParser()

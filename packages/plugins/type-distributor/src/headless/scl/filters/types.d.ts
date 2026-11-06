@@ -6,7 +6,19 @@ export type FilteredAccessPoint = {
 	element: Element
 	name: string | null
 	lDevices: LDeviceData[]
+	serverAtApName?: string
 }
+
+export type AccessPointGroup =
+	| {
+			type: 'host'
+			host: FilteredAccessPoint
+			serverAtAccessPoints: FilteredAccessPoint[]
+	  }
+	| {
+			type: 'unresolved-server-at'
+			accessPoint: FilteredAccessPoint
+	  }
 
 export type IEDData = {
 	name: string

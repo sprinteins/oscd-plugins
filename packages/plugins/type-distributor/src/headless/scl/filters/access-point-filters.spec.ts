@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { filterByAccessPoint } from './access-point-filters'
+import {
+	filterByAccessPoint,
+	groupAccessPointsByServer
+} from './access-point-filters'
 import type { IEDData } from './types'
 
 describe('filterByAccessPoint', () => {
@@ -90,6 +93,47 @@ describe('filterByAccessPoint', () => {
 		expect(result[0].accessPoints).toHaveLength(1)
 		expect(result[0].accessPoints[0].name).toBe('AP_Primary')
 		expect(result[0].accessPoints[0].lDevices).toHaveLength(1)
+	})
+
+	describe('groupAccessPointsByServer', () => {
+		it('GIVEN host AccessPoints and valid ServerAt references WHEN grouping THEN returns aliases beside their host', () => {
+			const host = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP1',
+				lDevices: []
+			}
+			const alias = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP2',
+				lDevices: [],
+				serverAtApName: 'AP1'
+			}
+			const otherHost = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP3',
+				lDevices: []
+			}
+
+			expect(groupAccessPointsByServer([host, alias, otherHost])).toEqual(
+				[
+					{ type: 'host', host, serverAtAccessPoints: [alias] },
+					{ type: 'host', host: otherHost, serverAtAccessPoints: [] }
+				]
+			)
+		})
+
+		it('GIVEN a ServerAt without a matching host WHEN grouping THEN keeps it visible as unresolved', () => {
+			const unresolved = {
+				element: document.createElement('AccessPoint'),
+				name: 'AP2',
+				lDevices: [],
+				serverAtApName: 'MissingAP'
+			}
+
+			expect(groupAccessPointsByServer([unresolved])).toEqual([
+				{ type: 'unresolved-server-at', accessPoint: unresolved }
+			])
+		})
 	})
 
 	it('GIVEN IED with multiple AccessPoints WHEN filtering matches multiple THEN should return IED with all matching AccessPoints', () => {

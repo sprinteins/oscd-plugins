@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
 	queryAccessPointsFromIed,
 	queryIEDs,
-	queryIedExists
+	queryIedExists,
+	queryServerAccessPointsFromIed
 } from './ied-queries'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -92,6 +93,34 @@ describe('queryIEDs', () => {
 		expect(iedNames).toContain('IED4')
 		expect(iedNames).not.toContain('IED2')
 		expect(result.length).toBe(3)
+	})
+
+	describe('queryServerAccessPointsFromIed', () => {
+		it('GIVEN an IED with Server and ServerAt access points WHEN queried THEN returns only named access points with a Server', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<IED name="IED1">
+						<AccessPoint name="AP1"><Server /></AccessPoint>
+						<AccessPoint name="AP2"><ServerAt apName="AP1" /></AccessPoint>
+						<AccessPoint><Server /></AccessPoint>
+						<Other><Server /></Other>
+					</IED>
+				</SCL>`,
+				'application/xml'
+			)
+
+			expect(queryServerAccessPointsFromIed(doc, 'IED1')).toEqual(['AP1'])
+		})
+
+		it('GIVEN no document or matching IED WHEN queried THEN returns no access points', () => {
+			const doc = new DOMParser().parseFromString(
+				'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"></SCL>',
+				'application/xml'
+			)
+
+			expect(queryServerAccessPointsFromIed(null, 'IED1')).toEqual([])
+			expect(queryServerAccessPointsFromIed(doc, 'IED1')).toEqual([])
+		})
 	})
 
 	describe('queryIedExists', () => {

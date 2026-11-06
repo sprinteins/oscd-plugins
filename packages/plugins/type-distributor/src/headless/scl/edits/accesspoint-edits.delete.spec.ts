@@ -113,6 +113,27 @@ describe('buildEditsForDeleteAccessPoint', () => {
 		_bay3 = doc.querySelector('Bay[name="Bay3"]')
 	})
 
+	it('GIVEN an AccessPoint with LNodes and no selected Bay WHEN deleting it THEN clears matching Bay references', () => {
+		const accessPoint = doc.querySelector(
+			'IED[name="IED1"] AccessPoint[name="P1"]'
+		) as Element
+		const edits = buildEditsForDeleteAccessPoint({
+			accessPoint,
+			iedName: 'IED1',
+			selectedBay: null
+		})
+
+		expect(
+			edits
+				.filter(isSetAttributesEdit)
+				.some(
+					(edit) =>
+						edit.element.getAttribute('lnClass') === 'XCBR' &&
+						edit.attributes?.iedName === null
+				)
+		).toBe(true)
+	})
+
 	describe('GIVEN an AccessPoint with LNodes', () => {
 		describe('WHEN deleting the AccessPoint', () => {
 			let accessPoint: Element
@@ -322,6 +343,34 @@ describe('buildEditsForDeleteAccessPoint', () => {
 				expect(parent?.getAttribute('name')).toBe('Bay1')
 			}
 		})
+	})
+
+	it('GIVEN a host AccessPoint with ServerAt dependents WHEN deleting the host THEN removes dependent APs before the host', () => {
+		const doc = createTestDocument(`
+			<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+				<IED name="IED1">
+					<AccessPoint name="Host"><Server /></AccessPoint>
+					<AccessPoint name="Alias1"><ServerAt apName="Host" /></AccessPoint>
+					<AccessPoint name="Alias2"><ServerAt apName="Host" /></AccessPoint>
+				</IED>
+			</SCL>
+		`)
+		const host = doc.querySelector('AccessPoint[name="Host"]') as Element
+
+		const edits = buildEditsForDeleteAccessPoint({
+			accessPoint: host,
+			iedName: 'IED1',
+			selectedBay: null
+		})
+		const removedAccessPoints = edits
+			.filter(isRemoveEdit)
+			.map((edit) => edit.node as Element)
+
+		expect(removedAccessPoints).toEqual([
+			doc.querySelector('AccessPoint[name="Alias1"]'),
+			doc.querySelector('AccessPoint[name="Alias2"]'),
+			host
+		])
 	})
 
 	it('GIVEN LNode matching algorithm WHEN LNodes exist in different parent contexts THEN should match by lnClass, lnType, lnInst regardless of parent', () => {

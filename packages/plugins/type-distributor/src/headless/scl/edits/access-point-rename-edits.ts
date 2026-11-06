@@ -1,4 +1,5 @@
 import type { SetAttributes } from '@openscd/oscd-api'
+import { queryServerAtAccessPointsFromHost } from '../elements'
 
 type BuildUpdatesForRenameAccessPointParams = {
 	accessPoint: Element
@@ -40,6 +41,23 @@ export function buildUpdatesForRenameAccessPoint({
 			},
 			attributesNS: {}
 		} as SetAttributes)
+	}
+
+	if (oldName !== newName) {
+		for (const serverAtAccessPoint of queryServerAtAccessPointsFromHost(
+			accessPoint
+		)) {
+			const serverAtElement = Array.from(
+				serverAtAccessPoint.children
+			).find((child) => child.localName === 'ServerAt')
+			if (!serverAtElement) continue
+
+			edits.push({
+				element: serverAtElement,
+				attributes: { apName: newName },
+				attributesNS: {}
+			} as SetAttributes)
+		}
 	}
 
 	return edits

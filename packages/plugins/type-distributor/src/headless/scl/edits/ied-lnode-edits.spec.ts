@@ -457,23 +457,32 @@ describe('buildEditsForDeleteLNodeFromAccessPoint', () => {
 		}).toThrow()
 	})
 
-	it('GIVEN no selectedBay WHEN buildEditsForDeleteLNodeFromAccessPoint called THEN throws "No bay selected"', () => {
+	it('GIVEN no selectedBay WHEN buildEditsForDeleteLNodeFromAccessPoint called THEN clears matching Bay references and removes the LNode', () => {
 		const accessPoint = doc.querySelector(
 			'IED[name="IED1"] AccessPoint[name="P1"]'
 		) as Element
-		expect(() =>
-			buildEditsForDeleteLNodeFromAccessPoint({
-				iedName: 'IED1',
-				accessPoint,
-				lNodeTemplate: {
-					lnClass: 'XCBR',
-					lnType: 'TestXCBR',
-					lnInst: '1',
-					ldInst: 'CBFunction_aa11bb22'
-				},
-				selectedBay: null
-			})
-		).toThrow('No bay selected')
+		const edits = buildEditsForDeleteLNodeFromAccessPoint({
+			iedName: 'IED1',
+			accessPoint,
+			lNodeTemplate: {
+				lnClass: 'XCBR',
+				lnType: 'TestXCBR',
+				lnInst: '1',
+				ldInst: 'CBFunction_aa11bb22'
+			},
+			selectedBay: null
+		})
+
+		expect(edits.some(isRemoveEdit)).toBe(true)
+		expect(
+			edits
+				.filter(isSetAttributesEdit)
+				.some(
+					(edit) =>
+						edit.element.getAttribute('lnClass') === 'XCBR' &&
+						edit.attributes?.iedName === null
+				)
+		).toBe(true)
 	})
 
 	it('GIVEN lNodeTemplate with empty ldInst WHEN buildEditsForDeleteLNodeFromAccessPoint called THEN throws about ldInst', () => {
@@ -529,15 +538,30 @@ describe('buildEditsForDeleteLDevice', () => {
 		expect(bay1).not.toBeNull()
 	})
 
-	it('GIVEN no selectedBay WHEN buildEditsForDeleteLDevice called THEN throws "No bay selected"', () => {
-		expect(() =>
-			buildEditsForDeleteLDevice({
-				iedName: 'IED1',
-				accessPoint,
-				ldInst: 'CBFunction_aa11bb22',
-				selectedBay: null
-			})
-		).toThrow('No bay selected')
+	it('GIVEN no selectedBay WHEN buildEditsForDeleteLDevice called THEN removes the LDevice and clears matching Bay references', () => {
+		const edits = buildEditsForDeleteLDevice({
+			iedName: 'IED1',
+			accessPoint,
+			ldInst: 'CBFunction_aa11bb22',
+			selectedBay: null
+		})
+
+		expect(
+			edits.some(
+				(edit) =>
+					isRemoveEdit(edit) &&
+					(edit.node as Element).tagName === 'LDevice'
+			)
+		).toBe(true)
+		expect(
+			edits
+				.filter(isSetAttributesEdit)
+				.some(
+					(edit) =>
+						edit.element.getAttribute('lnClass') === 'XCBR' &&
+						edit.attributes?.iedName === null
+				)
+		).toBe(true)
 	})
 
 	it('GIVEN a non-existent ldInst WHEN buildEditsForDeleteLDevice called THEN throws with the ldInst name', () => {

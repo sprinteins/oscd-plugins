@@ -123,6 +123,34 @@ export function buildUpdatesForClearingBayLNodeConnections({
 	return edits
 }
 
+type BuildUpdatesForClearingBayLNodeConnectionsInDocumentParams = {
+	document: Document
+	selectedBay: Element | null
+	lNodeTemplates: LNodeTemplate[]
+	iedName: string
+}
+
+export function buildUpdatesForClearingBayLNodeConnectionsInDocument({
+	document,
+	selectedBay,
+	lNodeTemplates,
+	iedName
+}: BuildUpdatesForClearingBayLNodeConnectionsInDocumentParams): (
+	| Remove
+	| SetAttributes
+)[] {
+	const bays = new Set<Element>(document.querySelectorAll('Bay'))
+	if (selectedBay) bays.add(selectedBay)
+
+	return Array.from(bays).flatMap((bay) =>
+		buildUpdatesForClearingBayLNodeConnections({
+			selectedBay: bay,
+			lNodeTemplates,
+			iedName
+		})
+	)
+}
+
 function queryMatchingBayLNode(
 	bay: Element,
 	lNodeTemplate: LNodeTemplate,

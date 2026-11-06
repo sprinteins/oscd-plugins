@@ -3,6 +3,7 @@ export * from './ied-filters'
 export * from './ldevice-filters'
 export * from './lnode-filters'
 export type {
+	AccessPointGroup,
 	FilteredAccessPoint,
 	FilteredIED,
 	IEDData,
