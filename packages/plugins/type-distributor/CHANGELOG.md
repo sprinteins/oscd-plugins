@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Access Points can share another Access Point's Server through `ServerAt`. Shared Access Points are grouped under their host, and LNodes assigned through them use the shared Server.
 ### Changed
-- Deleting a host Access Point now confirms removal of its dependent `ServerAt` Access Points.
+- Deleting an LN, LDevice, or Access Point now clears references to the removed LNodes throughout the SCD document, without requiring a selected bay.
+- Deleting a host Access Point now confirms removal of its direct `ServerAt` Access Points.
+- Access Point cards are expanded by default, and the dashed not-in-use style has been removed.
+### Fixed
+- Bay LNodes now receive both `iedName` and `ldInst` when assigned or re-matched, keeping their connections tied to the target LDevice.
 
 ## [1.1.3] - 2026-10-08
 ### Changed
