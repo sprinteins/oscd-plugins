@@ -29,7 +29,7 @@ describe('queryServer', () => {
 		expect(queryServer(accessPoint)).toBe(server)
 	})
 
-	it('GIVEN a ServerAt chain WHEN queried THEN returns final Server', () => {
+	it('GIVEN a ServerAt chain WHEN queried THEN returns null', () => {
 		const doc = new DOMParser().parseFromString(
 			'<IED><AccessPoint name="AP1"><ServerAt apName="AP2" /></AccessPoint><AccessPoint name="AP2"><ServerAt apName="AP3" /></AccessPoint><AccessPoint name="AP3"><Server /></AccessPoint></IED>',
 			'application/xml'
@@ -37,9 +37,8 @@ describe('queryServer', () => {
 		const accessPoint = doc.querySelector(
 			'AccessPoint[name="AP1"]'
 		) as Element
-		const server = doc.querySelector('Server')
 
-		expect(queryServer(accessPoint)).toBe(server)
+		expect(queryServer(accessPoint)).toBeNull()
 	})
 
 	it('GIVEN a missing ServerAt target WHEN queried THEN returns null', () => {

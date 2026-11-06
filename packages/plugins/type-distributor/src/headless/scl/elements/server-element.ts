@@ -8,33 +8,27 @@ export function createServerElementWithAuth(doc: XMLDocument): Element {
 }
 
 export function queryServer(accessPoint: Element): Element | null {
-	return queryServerFromAccessPoint(accessPoint, new Set())
-}
+	const directServer = Array.from(accessPoint.children).find(
+		(child) => child.localName === 'Server'
+	)
+	if (directServer) return directServer
 
-function queryServerFromAccessPoint(
-	accessPoint: Element,
-	visited: Set<Element>
-): Element | null {
-	if (visited.has(accessPoint)) return null
-	visited.add(accessPoint)
-
-	const server = accessPoint.querySelector('Server')
-	if (server) return server
-
-	const apName = Array.from(accessPoint.children)
+	const serverAtApName = Array.from(accessPoint.children)
 		.find((child) => child.localName === 'ServerAt')
 		?.getAttribute('apName')
 	const ied = accessPoint.parentElement
-	if (!apName || !ied) return null
+	if (!serverAtApName || !ied) return null
 
 	const serverAccessPoint = Array.from(ied.children).find(
 		(child) =>
 			child.localName === 'AccessPoint' &&
-			child.getAttribute('name') === apName
+			child.getAttribute('name') === serverAtApName
 	)
-	return serverAccessPoint
-		? queryServerFromAccessPoint(serverAccessPoint, visited)
-		: null
+	return (
+		Array.from(serverAccessPoint?.children ?? []).find(
+			(child) => child.localName === 'Server'
+		) ?? null
+	)
 }
 
 export function queryServerAtAccessPointsFromHost(

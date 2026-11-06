@@ -30,17 +30,7 @@ function ensureServer(
 	)
 	if (serverAt) {
 		const serverAtApName = serverAt.getAttribute('apName')
-		const ied = accessPoint.parentElement
-		const serverAccessPoint = serverAtApName
-			? Array.from(ied?.children ?? []).find(
-					(child) =>
-						child.localName === 'AccessPoint' &&
-						child.getAttribute('name') === serverAtApName
-				)
-			: undefined
-		const sharedServer = serverAccessPoint
-			? queryServer(serverAccessPoint)
-			: null
+		const sharedServer = queryServer(accessPoint)
 		if (!sharedServer) {
 			throw new Error(
 				`ServerAt on AccessPoint "${accessPoint.getAttribute('name') ?? ''}" references AccessPoint "${serverAtApName ?? ''}" without a Server`
