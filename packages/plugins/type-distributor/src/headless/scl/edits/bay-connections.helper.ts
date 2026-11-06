@@ -58,12 +58,9 @@ function referencesLN(lnode: Element, ln: Element): boolean {
 		return false
 	}
 
+	// Malformed SCD: without an LDevice inst no LNode can reference this LN.
 	const ldInst = ln.parentElement?.getAttribute('inst')
-	if (!ldInst) {
-		throw new Error(
-			'Cannot clear references to an LN without an LDevice inst'
-		)
-	}
+	if (!ldInst) return false
 	const referencedLdInst = lnode.getAttribute('ldInst')
 	if (referencedLdInst !== null) return referencedLdInst === ldInst
 

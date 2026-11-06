@@ -223,8 +223,8 @@ describe('buildUpdatesForClearingLNodeConnections', () => {
 		expect(clear([])).toEqual([])
 	})
 
-	it('GIVEN an LN without an LDevice inst WHEN clearing a matching reference THEN throws explicitly', () => {
+	it('GIVEN an LN without an LDevice inst WHEN clearing references THEN treats it as unreferenced and returns no edits', () => {
 		element('LDevice').removeAttribute('inst')
-		expect(() => clear()).toThrow('without an LDevice inst')
+		expect(clear()).toEqual([])
 	})
 })
