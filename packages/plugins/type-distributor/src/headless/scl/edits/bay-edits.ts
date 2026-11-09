@@ -256,6 +256,7 @@ export function buildUpdatesForBayLNode({
 	functionElementUuid
 }: BuildUpdatesForBayLNodeParams): SetAttributes[] {
 	const edits: SetAttributes[] = []
+	let resolvedLDeviceInst: string | undefined
 
 	for (const lNode of lNodes) {
 		const lnodeElement = findMatchingLNodeElement({
@@ -273,13 +274,19 @@ export function buildUpdatesForBayLNode({
 		if (currentIedName) {
 			continue
 		}
-		const ldInst = resolveLDeviceInst({
+		resolvedLDeviceInst ??= resolveLDeviceInst({
 			sourceFunction,
 			equipmentUuid,
 			equipmentMatches,
 			functionUuidOverride: functionElementUuid
 		})
-		edits.push(createSetLNodeConnectionEdit(lnodeElement, iedName, ldInst))
+		edits.push(
+			createSetLNodeConnectionEdit(
+				lnodeElement,
+				iedName,
+				resolvedLDeviceInst
+			)
+		)
 	}
 
 	return edits

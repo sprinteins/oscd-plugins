@@ -11,6 +11,7 @@ import {
 	createInitialIedData,
 	type FormErrors,
 	type IedData,
+	removePendingAccessPoint,
 	submitForm,
 	validateAccessPointFields,
 	validateIedFields,
@@ -139,26 +140,9 @@ function addAccessPoint() {
 }
 
 function removeAccessPoint(apName: string) {
-	const hasDependents = [...confirmedAps, activeAp].some(
-		(ap) => ap.serverAtApName === apName
-	)
-	if (hasDependents) {
-		formErrors = {
-			errors: [
-				`Cannot remove Access Point "${apName}" while another Access Point uses its Server.`
-			]
-		}
-		return
-	}
-
-	accessPoints = [
-		...confirmedAps.filter((ap) => ap.name !== apName),
-		activeAp
-	]
-	const remainingErrors = formErrors.errors?.filter(
-		(error) => !error.startsWith('Cannot remove Access Point "')
-	)
-	formErrors = { ...formErrors, errors: remainingErrors }
+	const removesActiveAp = activeAp.serverAtApName === apName
+	accessPoints = removePendingAccessPoint(confirmedAps, activeAp, apName)
+	formErrors = removesActiveAp ? {} : { properties: formErrors.properties }
 }
 
 async function handleSubmit() {

@@ -15,3 +15,18 @@ export function createInitialAccessPoint(): AccessPointData {
 export function createInitialAccessPoints(): AccessPointData[] {
 	return [createInitialAccessPoint()]
 }
+
+export function removePendingAccessPoint(
+	confirmedAps: AccessPointData[],
+	activeAp: AccessPointData,
+	apName: string
+): AccessPointData[] {
+	return [
+		...confirmedAps.filter(
+			(ap) => ap.name !== apName && ap.serverAtApName !== apName
+		),
+		activeAp.serverAtApName === apName
+			? createInitialAccessPoint()
+			: activeAp
+	]
+}

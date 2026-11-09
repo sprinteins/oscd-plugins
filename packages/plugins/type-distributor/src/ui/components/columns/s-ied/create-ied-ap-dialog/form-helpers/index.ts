@@ -1,7 +1,8 @@
 export {
 	createInitialAccessPoint,
 	createInitialAccessPoints,
-	createInitialIedData
+	createInitialIedData,
+	removePendingAccessPoint
 } from './reset'
 export { iedNameBaseSchema } from './schemas'
 export {

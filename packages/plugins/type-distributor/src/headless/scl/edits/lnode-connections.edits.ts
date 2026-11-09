@@ -12,18 +12,16 @@ export function buildUpdatesForClearingLNodeConnections({
 	lnElements,
 	iedName
 }: ClearLNodeConnectionsParams): (Remove | SetAttributes)[] {
-	const lNodesByIedName = new Map<string, Element[]>()
-	for (const lnode of document.querySelectorAll('LNode[iedName]')) {
-		const name = lnode.getAttribute('iedName')
-		if (!name) continue
-		const lnodes = lNodesByIedName.get(name) ?? []
-		lnodes.push(lnode)
-		lNodesByIedName.set(name, lnodes)
-	}
-
 	const clearedLNodes = new Set(
-		(lNodesByIedName.get(iedName) ?? []).filter((lnode) =>
-			lnElements.some((ln) => referencesLN(lnode, ln))
+		Array.from(document.querySelectorAll('LNode[iedName]')).filter(
+			(lnode) => {
+				const name = lnode.getAttribute('iedName')
+				return (
+					!!name &&
+					name === iedName &&
+					lnElements.some((ln) => referencesLN(lnode, ln))
+				)
+			}
 		)
 	)
 	const edits: (Remove | SetAttributes)[] = []

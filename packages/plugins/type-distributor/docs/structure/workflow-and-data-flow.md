@@ -133,6 +133,11 @@ assigned.
 
 The IED deletion action itself only accepts IEDs without AccessPoints.
 
+In the IED/AccessPoint creation dialog, removing a pending host also removes
+pending ServerAt AccessPoints that reference it. If the active form entry uses
+that host, it resets to an empty AccessPoint entry. Unrelated pending entries
+remain unchanged; the SCD is not modified until the form is submitted.
+
 ## Interaction diagram
 
 ```mermaid
