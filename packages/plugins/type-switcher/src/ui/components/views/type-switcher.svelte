@@ -1,28 +1,27 @@
 <script lang="ts">
-import {
-	UCTypeTypeSwitcher,
-	SCDQueries,
-	type SCDElement,
-	type IdentifiableElement,
-	type HashedElementGroup
-} from '@oscd-plugins/core'
-import { GroupCardList } from '../group-card-list'
-import { MaterialTheme } from '@oscd-plugins/ui'
-import Snackbar, { Actions, Label } from '@smui/snackbar'
+import type { HashedElementGroup } from '@oscd-plugins/core'
+import type { IconKeys } from '@oscd-plugins/ui'
+import { IconClose, MaterialTheme } from '@oscd-plugins/ui'
 import IconButton from '@smui/icon-button'
-import { IconClose } from '@oscd-plugins/ui'
-import { CategorySelector } from '../category-selector'
-import { TypeLinker } from '../type-linker'
+import Snackbar, { Actions, Label } from '@smui/snackbar'
+import {
+	createRelinkActions,
+	flattenCategories,
+	getAffectedNodes,
+	getTypeStructure,
+	loadDuplicateCategories
+} from '@/headless/type-switcher'
+import type { ElementCategory, ElementCategoryMap } from '@/headless/types'
 import { AffectedNodes } from '../affected-nodes'
+import { CategorySelector } from '../category-selector'
+import { GroupCardList } from '../group-card-list'
+import type { Item } from '../list'
+import { Structure } from '../structure'
+import { TypeLinker } from '../type-linker'
 import type {
 	EventDetailRelink,
 	EventDetailTypeLinkerSelect
 } from '../type-linker/events'
-import { Structure } from '../structure'
-import type { Item } from '../list'
-import type { IconKeys } from '@oscd-plugins/ui'
-import { getParent } from './parent-element'
-import type { ElementCategoryMap, Replace } from '@/headless/types'
 
 interface Props {
 	// Input
@@ -32,8 +31,6 @@ interface Props {
 let { doc }: Props = $props()
 
 // Internal
-let scdQueries: SCDQueries
-let deduper: UCTypeTypeSwitcher
 let root: HTMLElement | undefined = $state()
 let snackbar: Snackbar | undefined = $state()
 
@@ -46,59 +43,24 @@ let categories: ElementCategoryMap = $state({
 
 async function init(document: Element) {
 	if (!document) return
-	scdQueries = new SCDQueries(document)
-	deduper = new UCTypeTypeSwitcher(scdQueries)
-	categories = await loadDuplicates(categories)
+	categories = await loadDuplicateCategories(document)
 }
 
 $effect(() => {
 	init(doc)
 })
 
-async function loadDuplicates(categories: ElementCategoryMap) {
-	const start = performance.now()
-	const duplicates = await Promise.all([
-		await deduper.findDuplicateLogicalNodeTypes(),
-		await deduper.findDuplicateDataObjectTypes(),
-		await deduper.findDuplicateDataAttributeTypes(),
-		await deduper.findDuplicateEnumTypes()
-	])
-
-	categories['LN Type'] = duplicates[0]
-	categories['DO Type'] = duplicates[1]
-	categories['DA Type'] = duplicates[2]
-	categories['Enum Type'] = duplicates[3]
-
-	const finish = performance.now()
-	console.info({
-		level: 'perf',
-		msg: 'typeswitcher::loadDuplicates',
-		start,
-		finish,
-		duration: finish - start
-	})
-
-	return categories
-}
-
 let selectedCategoryLabels = $state<string[]>([])
 
 let selectedFlattenCollectives = $derived.by(() => {
-	let selectedCatKeys = categoryKeys
-	if (selectedCategoryLabels.length > 0) {
-		selectedCatKeys = selectedCategoryLabels.map((label) => {
-			const idx = categoryLabelsWithCounter.indexOf(label)
-			return categoryKeys[idx]
-		})
+	if (selectedCategoryLabels.length === 0) {
+		return flattenCategories(categories, categoryKeys)
 	}
-	return selectedCatKeys.flatMap((catKey) => {
-		const categoryItems = categories[catKey]
-		if (!categoryItems) return []
-		return categoryItems.map((cat) => ({
-			type: catKey,
-			items: cat
-		}))
-	})
+
+	const selectedKeys = selectedCategoryLabels
+		.map((label) => categoryKeys[categoryLabelsWithCounter.indexOf(label)])
+		.filter((key): key is ElementCategory => key !== undefined)
+	return flattenCategories(categories, selectedKeys)
 })
 
 let selectedGroup: HashedElementGroup = $state([])
@@ -142,67 +104,34 @@ const iconMap: { [xmlTagName: string]: IconKeys } = {
 let affectedNodes: Item[] = $state([])
 
 function handleSourceSelect(detail: EventDetailTypeLinkerSelect) {
-	const elementIndex = detail.indexes
-	affectedNodes = elementIndex.flatMap((idx) => {
-		const element = selectedGroup[idx]
-		const parents = element.usages.map(getParent)
-		return parents.map((parent) => {
-			return {
-				icon: iconMap[parent.type],
-				primaryText: parent.name,
-				secondaryText: element.element.id
-			}
+	affectedNodes = getAffectedNodes(selectedGroup, detail.indexes).map(
+		({ parent, typeId }) => ({
+			icon: iconMap[parent.type],
+			primaryText: parent.name,
+			secondaryText: typeId
 		})
-	})
+	)
 }
 
-function handleRelink(eventDetail: EventDetailRelink) {
-	const { sourceIndexes, targetIndex } = eventDetail
-	const relinkSources = sourceIndexes.map((index) => selectedGroup[index])
-	const relinkTarget = selectedGroup[targetIndex]
-
-	const actions = relinkSources.flatMap((source) => {
-		return source.usages.map((doEl) => {
-			return createRelinkActions(doEl, relinkTarget.element)
-		})
-	})
-
-	const detail = {
-		action: {
-			actions
-		}
-	}
-	const event = new CustomEvent('editor-action', {
-		detail,
-		composed: true,
-		bubbles: true
-	})
-
+function handleRelink({ sourceIndexes, targetIndex }: EventDetailRelink) {
 	if (!root || !snackbar) {
 		console.error('Root or snackbar not initialized')
 		return
 	}
 
+	const actions = createRelinkActions(
+		selectedGroup,
+		sourceIndexes,
+		targetIndex
+	)
+	const event = new CustomEvent('editor-action', {
+		detail: { action: { actions } },
+		composed: true,
+		bubbles: true
+	})
+
 	root.dispatchEvent(event)
 	snackbar.open()
-}
-
-function createRelinkActions(els: SCDElement, typeEl: IdentifiableElement) {
-	const deep = true
-	const modifiedEl = els.element.cloneNode(deep) as Element
-	modifiedEl.setAttribute('type', typeEl.id)
-
-	const actions = createEventDetail(els.element, modifiedEl)
-	return actions
-}
-
-function createEventDetail(oldEl: Element, newEl: Element) {
-	const detail: Replace = {
-		old: { element: oldEl },
-		new: { element: newEl }
-	}
-
-	return detail
 }
 
 let categoryKeys = $derived(
@@ -215,18 +144,12 @@ let categoryLabelsWithCounter = $derived(
 	})
 )
 
-let structure = $derived.by(() => {
-	const firstElement = selectedGroup[0]
-	if (!firstElement) return []
-
-	const children = Array.from(firstElement.element.element.children)
-	return children.map((child) => {
-		return {
-			primaryText: child.getAttribute('name') ?? child.textContent ?? '~',
-			secondaryText: child.getAttribute('bType') ?? child.tagName ?? '~'
-		}
-	})
-})
+let structure = $derived(
+	getTypeStructure(selectedGroup[0]).map(({ name, type }) => ({
+		primaryText: name,
+		secondaryText: type
+	}))
+)
 
 let itemsWithIcons = $derived(
 	selectedFlattenCollectives.map((itemSet) => {
