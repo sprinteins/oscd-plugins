@@ -24771,7 +24771,7 @@ function nF(A, B) {
         },
         children: (j, m) => {
           mA();
-          var T = uA("Share a Server using ServerAt");
+          var T = uA("Use ServerAt for this AP");
           R(j, T);
         },
         $$slots: { default: !0 }
@@ -25553,7 +25553,7 @@ function aF(A, B) {
   }), H(a), R(A, a), BA();
 }
 q(aF, {}, [], [], !0);
-const RH = "@oscd-plugins/type-distributor", bH = "1.2.0", Ui = {
+const RH = "@oscd-plugins/type-distributor", bH = "1.2.1", Ui = {
   name: RH,
   version: bH
 };
