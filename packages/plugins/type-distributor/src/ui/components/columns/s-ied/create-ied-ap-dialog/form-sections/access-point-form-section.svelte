@@ -73,7 +73,7 @@ function handleServerAtTargetChange(event: Event) {
             checked === true ? serverAtOptions[0]?.value ?? '' : ''
         }}
       />
-      <Label.Root for={`${id}-server-at`}>Share a Server using ServerAt</Label.Root>
+      <Label.Root for={`${id}-server-at`}>Use ServerAt for this AP</Label.Root>
     </div>
     {#if serverAtOptions.length === 0}
       <p class="text-sm text-muted-foreground">
