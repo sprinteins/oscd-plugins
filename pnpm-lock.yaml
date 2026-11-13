@@ -183,7 +183,7 @@ importers:
         version: link:../standard
       tsup:
         specifier: ^8.3.5
-        version: 8.5.1(@microsoft/api-extractor@7.54.0(@types/node@22.19.3))(jiti@1.21.7)(postcss@8.5.6)(typescript@5.6.3)
+        version: 8.5.1(@microsoft/api-extractor@7.54.0(@types/node@22.19.3))(jiti@1.21.7)(postcss@8.5.6)(supports-color@8.1.1)(typescript@5.6.3)
       typescript:
         specifier: 5.6.3
         version: 5.6.3
@@ -207,16 +207,16 @@ importers:
         version: 5.46.0
       tsup:
         specifier: ^8.3.5
-        version: 8.5.1(@microsoft/api-extractor@7.54.0(@types/node@22.19.3))(jiti@1.21.7)(postcss@8.5.6)(typescript@5.6.3)
+        version: 8.5.1(@microsoft/api-extractor@7.54.0(@types/node@22.19.3))(jiti@1.21.7)(postcss@8.5.6)(supports-color@8.1.1)(typescript@5.6.3)
       typescript:
         specifier: 5.6.3
         version: 5.6.3
       vitest:
         specifier: ^0.29.7
-        version: 0.29.8(@vitest/browser@0.29.8)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jsdom@21.1.2)(playwright@1.57.0)(safaridriver@0.0.4)(sass@1.106.1)(webdriverio@8.46.0)
+        version: 0.29.8(@vitest/browser@0.29.8)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(playwright@1.57.0)(safaridriver@0.0.4)(sass@1.106.1)(supports-color@8.1.1)(webdriverio@8.46.0(supports-color@8.1.1))
       webdriverio:
         specifier: ^8.6.7
-        version: 8.46.0
+        version: 8.46.0(supports-color@8.1.1)
 
   packages/core/standard:
     devDependencies:
@@ -231,7 +231,7 @@ importers:
         version: 24.0.0
       tsup:
         specifier: ^8.3.5
-        version: 8.5.1(@microsoft/api-extractor@7.54.0(@types/node@22.19.3))(jiti@1.21.7)(postcss@8.5.6)(typescript@5.6.3)
+        version: 8.5.1(@microsoft/api-extractor@7.54.0(@types/node@22.19.3))(jiti@1.21.7)(postcss@8.5.6)(supports-color@8.1.1)(typescript@5.6.3)
       typescript:
         specifier: 5.6.3
         version: 5.6.3
@@ -240,7 +240,7 @@ importers:
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^3.2.2
-        version: 3.2.7(react@19.2.3)(storybook@8.6.14)
+        version: 3.2.7(react@19.2.3)(storybook@8.6.14(supports-color@8.1.1))
       '@internationalized/date':
         specifier: ^3.6.0
         version: 3.10.0
@@ -258,37 +258,37 @@ importers:
         version: link:../standard
       '@storybook/addon-essentials':
         specifier: ^8.4.7
-        version: 8.6.14(storybook@8.6.14)
+        version: 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       '@storybook/addon-interactions':
         specifier: ^8.4.7
-        version: 8.6.14(storybook@8.6.14)
+        version: 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       '@storybook/addon-svelte-csf':
         specifier: ^5.0.0-next.14
-        version: 5.0.10(@storybook/svelte@8.6.14(storybook@8.6.14)(svelte@5.46.0))(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(storybook@8.6.14)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 5.0.10(@storybook/svelte@8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0))(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(storybook@8.6.14(supports-color@8.1.1))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@storybook/blocks':
         specifier: ^8.4.7
-        version: 8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14)
+        version: 8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14(supports-color@8.1.1))
       '@storybook/svelte':
         specifier: ^8.4.7
-        version: 8.6.14(storybook@8.6.14)(svelte@5.46.0)
+        version: 8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)
       '@storybook/sveltekit':
         specifier: ^8.4.7
-        version: 8.6.14(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 8.6.14(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@storybook/test':
         specifier: ^8.4.7
-        version: 8.6.14(storybook@8.6.14)
+        version: 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       '@sveltejs/adapter-auto':
         specifier: ^4.0.0
-        version: 4.0.0(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))
+        version: 4.0.0(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))
       '@sveltejs/kit':
         specifier: ^2.17.1
-        version: 2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@sveltejs/package':
         specifier: ^2.3.10
         version: 2.5.7(svelte@5.46.0)(typescript@5.9.3)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
-        version: 5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@tanstack/table-core':
         specifier: ^8.20.5
         version: 8.21.3
@@ -306,7 +306,7 @@ importers:
         version: 8.6.0(svelte@5.46.0)
       formsnap:
         specifier: 2.0.0-next.1
-        version: 2.0.0-next.1(svelte@5.46.0)(sveltekit-superforms@2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3))
+        version: 2.0.0-next.1(svelte@5.46.0)(sveltekit-superforms@2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3))
       lucide-svelte:
         specifier: ^0.474.0
         version: 0.474.0(svelte@5.46.0)
@@ -321,7 +321,7 @@ importers:
         version: 1.106.1
       storybook:
         specifier: ^8.4.7
-        version: 8.6.14
+        version: 8.6.14(supports-color@8.1.1)
       svelte:
         specifier: ^5.19.8
         version: 5.46.0
@@ -333,7 +333,7 @@ importers:
         version: 0.3.28(svelte@5.46.0)
       sveltekit-superforms:
         specifier: ^2.22.1
-        version: 2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3)
+        version: 2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3)
       tailwind-merge:
         specifier: ^2.5.5
         version: 2.6.0
@@ -448,7 +448,7 @@ importers:
         version: 8.0.0-beta.3
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
-        version: 5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@tsconfig/svelte':
         specifier: ^5.0.4
         version: 5.0.6
@@ -493,10 +493,10 @@ importers:
         version: 6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
       vite-plugin-dts:
         specifier: ^4.5.0
-        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(typescript@5.6.3)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(supports-color@8.1.1)(typescript@5.6.3)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       vitest:
         specifier: ^3.0.5
-        version: 3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1)
+        version: 3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2(supports-color@8.1.1))(sass@1.106.1)(supports-color@8.1.1)
 
   packages/plugins/communication-explorer:
     dependencies:
@@ -554,7 +554,7 @@ importers:
         version: link:../../ui
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
-        version: 5.1.1(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.9.1
@@ -578,7 +578,7 @@ importers:
         version: 7.6.0
       jsdom:
         specifier: ^21.1.1
-        version: 21.1.2
+        version: 21.1.2(supports-color@8.1.1)
       postcss:
         specifier: ^8.4.49
         version: 8.5.6
@@ -605,10 +605,10 @@ importers:
         version: 6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
       vite-plugin-dts:
         specifier: ^4.4.0
-        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(typescript@5.6.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(supports-color@8.1.1)(typescript@5.6.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1)
+        version: 3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2(supports-color@8.1.1))(sass@1.106.1)(supports-color@8.1.1)
 
   packages/plugins/io-center:
     devDependencies:
@@ -626,7 +626,7 @@ importers:
         version: 1.57.0
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
-        version: 5.1.1(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.9.1
@@ -644,7 +644,7 @@ importers:
         version: 4.17.21
       '@vitest/coverage-v8':
         specifier: ^3.0.5
-        version: 3.2.4(vitest@3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1))
+        version: 3.2.4(supports-color@8.1.1)(vitest@3.2.4)
       '@vitest/ui':
         specifier: ^0.30.1
         version: 0.30.1
@@ -656,7 +656,7 @@ importers:
         version: 7.6.0
       jsdom:
         specifier: ^21.1.1
-        version: 21.1.2
+        version: 21.1.2(supports-color@8.1.1)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -692,10 +692,10 @@ importers:
         version: 6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
       vite-plugin-dts:
         specifier: ^4.4.0
-        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(typescript@5.6.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(supports-color@8.1.1)(typescript@5.6.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       vitest:
         specifier: ^3.0.5
-        version: 3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1)
+        version: 3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2(supports-color@8.1.1))(sass@1.106.1)(supports-color@8.1.1)
 
   packages/plugins/network-explorer:
     dependencies:
@@ -732,7 +732,7 @@ importers:
         version: link:../../ui
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.1.1
-        version: 5.1.1(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@tsconfig/svelte':
         specifier: ^5.0.5
         version: 5.0.6
@@ -768,7 +768,7 @@ importers:
         version: 6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
       vite-plugin-dts:
         specifier: ^4.5.4
-        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(typescript@5.6.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(supports-color@8.1.1)(typescript@5.6.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
 
   packages/plugins/type-designer:
     devDependencies:
@@ -789,7 +789,7 @@ importers:
         version: 1.57.0
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
-        version: 5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@testing-library/jest-dom':
         specifier: ^6.9.1
         version: 6.9.1
@@ -816,7 +816,7 @@ importers:
         version: 7.6.0
       jsdom:
         specifier: ^21.1.2
-        version: 21.1.2
+        version: 21.1.2(supports-color@8.1.1)
       lucide-svelte:
         specifier: ^0.469.0
         version: 0.469.0(svelte@5.46.0)
@@ -849,10 +849,10 @@ importers:
         version: 6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
       vite-plugin-dts:
         specifier: ^4.5.0
-        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(typescript@5.6.3)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(supports-color@8.1.1)(typescript@5.6.3)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       vitest:
         specifier: ^4.1.10
-        version: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
 
   packages/plugins/type-distributor:
     devDependencies:
@@ -879,7 +879,7 @@ importers:
         version: link:../../core/ui-svelte
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.1.1
-        version: 5.1.1(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@tsconfig/svelte':
         specifier: ^5.0.6
         version: 5.0.6
@@ -900,7 +900,7 @@ importers:
         version: 7.6.0
       jsdom:
         specifier: ^21.1.1
-        version: 21.1.2
+        version: 21.1.2(supports-color@8.1.1)
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
@@ -930,10 +930,10 @@ importers:
         version: 6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
       vite-plugin-dts:
         specifier: ^4.5.4
-        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(typescript@5.9.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(supports-color@8.1.1)(typescript@5.9.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       vitest:
         specifier: ^4.0.17
-        version: 4.0.17(@types/node@22.19.3)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1)
+        version: 4.0.17(@types/node@22.19.3)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2(supports-color@8.1.1))(sass@1.106.1)
       zod:
         specifier: ^4.6.6
         version: 4.6.6
@@ -970,7 +970,7 @@ importers:
         version: link:../../ui
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
-        version: 5.1.1(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@tsconfig/svelte':
         specifier: ^5.0.4
         version: 5.0.6
@@ -1006,7 +1006,7 @@ importers:
         version: 6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
       vite-plugin-dts:
         specifier: ^4.4.0
-        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(typescript@5.6.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+        version: 4.5.4(@types/node@22.19.3)(rollup@4.53.5)(supports-color@8.1.1)(typescript@5.6.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
 
   packages/ui:
     dependencies:
@@ -1046,37 +1046,37 @@ importers:
         version: 8.0.0-beta.3
       '@storybook/addon-essentials':
         specifier: ^8.3.5
-        version: 8.6.14(storybook@8.6.14)
+        version: 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       '@storybook/addon-interactions':
         specifier: ^8.3.5
-        version: 8.6.14(storybook@8.6.14)
+        version: 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       '@storybook/addon-links':
         specifier: ^8.3.5
-        version: 8.6.14(react@19.2.3)(storybook@8.6.14)
+        version: 8.6.14(react@19.2.3)(storybook@8.6.14(supports-color@8.1.1))
       '@storybook/addon-svelte-csf':
         specifier: ^4.1.7
-        version: 4.2.0(@storybook/svelte@8.6.14(storybook@8.6.14)(svelte@5.46.0))(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(storybook@8.6.14)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
+        version: 4.2.0(@storybook/svelte@8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0))(@sveltejs/vite-plugin-svelte@4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(storybook@8.6.14(supports-color@8.1.1))(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
       '@storybook/blocks':
         specifier: ^8.3.5
-        version: 8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14)
+        version: 8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14(supports-color@8.1.1))
       '@storybook/svelte':
         specifier: ^8.3.5
-        version: 8.6.14(storybook@8.6.14)(svelte@5.46.0)
+        version: 8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)
       '@storybook/svelte-vite':
         specifier: ^8.3.5
-        version: 8.6.14(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
+        version: 8.6.14(@sveltejs/vite-plugin-svelte@4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
       '@storybook/test':
         specifier: ^8.3.5
-        version: 8.6.14(storybook@8.6.14)
+        version: 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^4.0.0
-        version: 4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
+        version: 4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
       '@tsconfig/svelte':
         specifier: ^5.0.4
         version: 5.0.6
       storybook:
         specifier: ^8.3.5
-        version: 8.6.14
+        version: 8.6.14(supports-color@8.1.1)
       svelte:
         specifier: ^5.0.0
         version: 5.46.0
@@ -4216,11 +4216,6 @@ packages:
   css.escape@1.5.1:
     resolution: {integrity: sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==}
 
-  cssesc@3.0.0:
-    resolution: {integrity: sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==}
-    engines: {node: '>=4'}
-    hasBin: true
-
   cssstyle@3.0.0:
     resolution: {integrity: sha512-N4u2ABATi3Qplzf0hWbVCdjenim8F3ojEXpBDF5hBpjzW182MjNGLqfmQ0SkSPeQ+V86ZXgeH8aXj6kayd4jgg==}
     engines: {node: '>=14'}
@@ -5629,6 +5624,7 @@ packages:
   melt@0.29.3:
     resolution: {integrity: sha512-cgorPvV3hSTugEnMpjLarugz8YRhUckM48i2gAgNzmqYx2w4hwvEsxA6GRy9DWst5rj+DKSmiDCcFRrHRpg/lA==}
     peerDependencies:
+      '@floating-ui/dom': ^1.6.0
       svelte: ^5.0.0
 
   memoize-weak@1.0.2:
@@ -5998,8 +5994,8 @@ packages:
     peerDependencies:
       postcss: ^8.2.14
 
-  postcss-selector-parser@6.1.2:
-    resolution: {integrity: sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==}
+  postcss-selector-parser@6.1.6:
+    resolution: {integrity: sha512-BK87/Qgti3DIcgS2PaCVoteFIkjIFvCJBizZDIVSjdlFNg4Jv+SRqbN2JONb/qQUH4ZFqfXYF+izg15W2HVRvA==}
     engines: {node: '>=4'}
 
   postcss-value-parser@4.2.0:
@@ -7585,13 +7581,13 @@ snapshots:
       - '@chromatic-com/playwright'
       - react
 
-  '@chromatic-com/storybook@3.2.7(react@19.2.3)(storybook@8.6.14)':
+  '@chromatic-com/storybook@3.2.7(react@19.2.3)(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       chromatic: 11.29.0
       filesize: 10.1.6
       jsonfile: 6.2.0
       react-confetti: 6.4.0(react@19.2.3)
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       strip-ansi: 7.1.2
     transitivePeerDependencies:
       - '@chromatic-com/cypress'
@@ -7967,10 +7963,10 @@ snapshots:
   '@esbuild/win32-x64@0.27.1':
     optional: true
 
-  '@eslint/eslintrc@1.4.1':
+  '@eslint/eslintrc@1.4.1(supports-color@8.1.1)':
     dependencies:
       ajv: 6.12.6
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       espree: 9.6.1
       globals: 13.24.0
       ignore: 5.3.2
@@ -8003,10 +7999,10 @@ snapshots:
       '@hapi/hoek': 9.3.0
     optional: true
 
-  '@humanwhocodes/config-array@0.9.5':
+  '@humanwhocodes/config-array@0.9.5(supports-color@8.1.1)':
     dependencies:
       '@humanwhocodes/object-schema': 1.2.1
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -9121,12 +9117,12 @@ snapshots:
     dependencies:
       spacetrim: 0.11.59
 
-  '@puppeteer/browsers@1.9.1':
+  '@puppeteer/browsers@1.9.1(supports-color@8.1.1)':
     dependencies:
-      debug: 4.3.4
-      extract-zip: 2.0.1
+      debug: 4.3.4(supports-color@8.1.1)
+      extract-zip: 2.0.1(supports-color@8.1.1)
       progress: 2.0.3
-      proxy-agent: 6.3.1
+      proxy-agent: 6.3.1(supports-color@8.1.1)
       tar-fs: 3.0.4
       unbzip2-stream: 1.4.3
       yargs: 17.7.2
@@ -9666,117 +9662,117 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@storybook/addon-actions@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-actions@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/global': 5.0.0
       '@types/uuid': 9.0.8
       dequal: 2.0.3
       polished: 4.3.1
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       uuid: 9.0.1
 
-  '@storybook/addon-backgrounds@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-backgrounds@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/global': 5.0.0
       memoizerific: 1.11.3
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       ts-dedent: 2.2.0
 
-  '@storybook/addon-controls@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-controls@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/global': 5.0.0
       dequal: 2.0.3
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       ts-dedent: 2.2.0
 
-  '@storybook/addon-docs@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-docs@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@mdx-js/react': 3.1.1(react@19.2.3)
-      '@storybook/blocks': 8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14)
-      '@storybook/csf-plugin': 8.6.14(storybook@8.6.14)
-      '@storybook/react-dom-shim': 8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14)
+      '@storybook/blocks': 8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/csf-plugin': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/react-dom-shim': 8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14(supports-color@8.1.1))
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       ts-dedent: 2.2.0
     transitivePeerDependencies:
       - '@types/react'
 
-  '@storybook/addon-essentials@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-essentials@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
-      '@storybook/addon-actions': 8.6.14(storybook@8.6.14)
-      '@storybook/addon-backgrounds': 8.6.14(storybook@8.6.14)
-      '@storybook/addon-controls': 8.6.14(storybook@8.6.14)
-      '@storybook/addon-docs': 8.6.14(storybook@8.6.14)
-      '@storybook/addon-highlight': 8.6.14(storybook@8.6.14)
-      '@storybook/addon-measure': 8.6.14(storybook@8.6.14)
-      '@storybook/addon-outline': 8.6.14(storybook@8.6.14)
-      '@storybook/addon-toolbars': 8.6.14(storybook@8.6.14)
-      '@storybook/addon-viewport': 8.6.14(storybook@8.6.14)
-      storybook: 8.6.14
+      '@storybook/addon-actions': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/addon-backgrounds': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/addon-controls': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/addon-docs': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/addon-highlight': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/addon-measure': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/addon-outline': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/addon-toolbars': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/addon-viewport': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      storybook: 8.6.14(supports-color@8.1.1)
       ts-dedent: 2.2.0
     transitivePeerDependencies:
       - '@types/react'
 
-  '@storybook/addon-highlight@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-highlight@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/global': 5.0.0
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
-  '@storybook/addon-interactions@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-interactions@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/global': 5.0.0
-      '@storybook/instrumenter': 8.6.14(storybook@8.6.14)
-      '@storybook/test': 8.6.14(storybook@8.6.14)
+      '@storybook/instrumenter': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/test': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       polished: 4.3.1
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       ts-dedent: 2.2.0
 
-  '@storybook/addon-links@8.6.14(react@19.2.3)(storybook@8.6.14)':
+  '@storybook/addon-links@8.6.14(react@19.2.3)(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/global': 5.0.0
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       ts-dedent: 2.2.0
     optionalDependencies:
       react: 19.2.3
 
-  '@storybook/addon-measure@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-measure@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/global': 5.0.0
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       tiny-invariant: 1.3.3
 
-  '@storybook/addon-outline@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-outline@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/global': 5.0.0
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       ts-dedent: 2.2.0
 
-  '@storybook/addon-svelte-csf@4.2.0(@storybook/svelte@8.6.14(storybook@8.6.14)(svelte@5.46.0))(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(storybook@8.6.14)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))':
+  '@storybook/addon-svelte-csf@4.2.0(@storybook/svelte@8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0))(@sveltejs/vite-plugin-svelte@4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(storybook@8.6.14(supports-color@8.1.1))(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))':
     dependencies:
       '@babel/runtime': 7.28.4
-      '@storybook/svelte': 8.6.14(storybook@8.6.14)(svelte@5.46.0)
-      '@storybook/types': 8.6.14(storybook@8.6.14)
+      '@storybook/svelte': 8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)
+      '@storybook/types': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       dedent: 1.5.3
       magic-string: 0.30.21
       svelte: 5.46.0
     optionalDependencies:
-      '@sveltejs/vite-plugin-svelte': 4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
+      '@sveltejs/vite-plugin-svelte': 4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
       vite: 5.4.21(@types/node@22.19.3)(sass@1.106.1)
     transitivePeerDependencies:
       - babel-plugin-macros
       - storybook
 
-  '@storybook/addon-svelte-csf@5.0.10(@storybook/svelte@8.6.14(storybook@8.6.14)(svelte@5.46.0))(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(storybook@8.6.14)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
+  '@storybook/addon-svelte-csf@5.0.10(@storybook/svelte@8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0))(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(storybook@8.6.14(supports-color@8.1.1))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
     dependencies:
       '@storybook/csf': 0.1.13
-      '@storybook/svelte': 8.6.14(storybook@8.6.14)(svelte@5.46.0)
-      '@sveltejs/vite-plugin-svelte': 5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      '@storybook/svelte': 8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)
+      '@sveltejs/vite-plugin-svelte': 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       dedent: 1.5.3
       es-toolkit: 1.43.0
       esrap: 1.4.9
       magic-string: 0.30.15
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       svelte: 5.46.0
       svelte-ast-print: 0.4.2(svelte@5.46.0)
       vite: 6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
@@ -9784,51 +9780,51 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@storybook/addon-toolbars@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-toolbars@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
-  '@storybook/addon-viewport@8.6.14(storybook@8.6.14)':
+  '@storybook/addon-viewport@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       memoizerific: 1.11.3
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
-  '@storybook/blocks@8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14)':
+  '@storybook/blocks@8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/icons': 1.3.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       ts-dedent: 2.2.0
     optionalDependencies:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@storybook/builder-vite@8.6.14(storybook@8.6.14)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))':
+  '@storybook/builder-vite@8.6.14(storybook@8.6.14(supports-color@8.1.1))(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))':
     dependencies:
-      '@storybook/csf-plugin': 8.6.14(storybook@8.6.14)
+      '@storybook/csf-plugin': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       browser-assert: 1.2.1
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       ts-dedent: 2.2.0
       vite: 5.4.21(@types/node@22.19.3)(sass@1.106.1)
 
-  '@storybook/builder-vite@8.6.14(storybook@8.6.14)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
+  '@storybook/builder-vite@8.6.14(storybook@8.6.14(supports-color@8.1.1))(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
     dependencies:
-      '@storybook/csf-plugin': 8.6.14(storybook@8.6.14)
+      '@storybook/csf-plugin': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       browser-assert: 1.2.1
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       ts-dedent: 2.2.0
       vite: 6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
 
-  '@storybook/components@8.6.14(storybook@8.6.14)':
+  '@storybook/components@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
-  '@storybook/core@8.6.14(storybook@8.6.14)':
+  '@storybook/core@8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
-      '@storybook/theming': 8.6.14(storybook@8.6.14)
+      '@storybook/theming': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       better-opn: 3.0.2
       browser-assert: 1.2.1
       esbuild: 0.25.12
-      esbuild-register: 3.6.0(esbuild@0.25.12)
+      esbuild-register: 3.6.0(esbuild@0.25.12)(supports-color@8.1.1)
       jsdoc-type-pratt-parser: 4.8.0
       process: 0.11.10
       recast: 0.23.11
@@ -9841,9 +9837,9 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@storybook/csf-plugin@8.6.14(storybook@8.6.14)':
+  '@storybook/csf-plugin@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       unplugin: 1.16.1
 
   '@storybook/csf@0.1.12':
@@ -9861,39 +9857,39 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@storybook/instrumenter@8.6.14(storybook@8.6.14)':
+  '@storybook/instrumenter@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/global': 5.0.0
       '@vitest/utils': 2.1.9
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
-  '@storybook/manager-api@8.6.14(storybook@8.6.14)':
+  '@storybook/manager-api@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
-  '@storybook/preview-api@8.6.14(storybook@8.6.14)':
+  '@storybook/preview-api@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
-  '@storybook/react-dom-shim@8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14)':
+  '@storybook/react-dom-shim@8.6.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
-  '@storybook/svelte-vite@8.6.14(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))':
+  '@storybook/svelte-vite@8.6.14(@sveltejs/vite-plugin-svelte@4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))':
     dependencies:
-      '@storybook/builder-vite': 8.6.14(storybook@8.6.14)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
-      '@storybook/svelte': 8.6.14(storybook@8.6.14)(svelte@5.46.0)
-      '@sveltejs/vite-plugin-svelte': 4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
+      '@storybook/builder-vite': 8.6.14(storybook@8.6.14(supports-color@8.1.1))(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
+      '@storybook/svelte': 8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)
+      '@sveltejs/vite-plugin-svelte': 4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
       magic-string: 0.30.21
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       svelte: 5.46.0
-      svelte-preprocess: 5.1.4(postcss@8.5.6)(sass@1.106.1)(svelte@5.46.0)(typescript@5.6.3)
-      svelte2tsx: 0.7.45(svelte@5.46.0)(typescript@5.6.3)
-      sveltedoc-parser: 4.2.1
+      svelte-preprocess: 5.1.4(postcss@8.5.6)(sass@1.106.1)(svelte@5.46.0)(typescript@5.9.3)
+      svelte2tsx: 0.7.45(svelte@5.46.0)(typescript@5.9.3)
+      sveltedoc-parser: 4.2.1(supports-color@8.1.1)
       ts-dedent: 2.2.0
-      typescript: 5.6.3
+      typescript: 5.9.3
       vite: 5.4.21(@types/node@22.19.3)(sass@1.106.1)
     transitivePeerDependencies:
       - '@babel/core'
@@ -9907,19 +9903,19 @@ snapshots:
       - sugarss
       - supports-color
 
-  '@storybook/svelte-vite@8.6.14(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
+  '@storybook/svelte-vite@8.6.14(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
     dependencies:
-      '@storybook/builder-vite': 8.6.14(storybook@8.6.14)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
-      '@storybook/svelte': 8.6.14(storybook@8.6.14)(svelte@5.46.0)
-      '@sveltejs/vite-plugin-svelte': 5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      '@storybook/builder-vite': 8.6.14(storybook@8.6.14(supports-color@8.1.1))(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      '@storybook/svelte': 8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)
+      '@sveltejs/vite-plugin-svelte': 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       magic-string: 0.30.21
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
       svelte: 5.46.0
-      svelte-preprocess: 5.1.4(postcss@8.5.6)(sass@1.106.1)(svelte@5.46.0)(typescript@5.6.3)
-      svelte2tsx: 0.7.45(svelte@5.46.0)(typescript@5.6.3)
-      sveltedoc-parser: 4.2.1
+      svelte-preprocess: 5.1.4(postcss@8.5.6)(sass@1.106.1)(svelte@5.46.0)(typescript@5.9.3)
+      svelte2tsx: 0.7.45(svelte@5.46.0)(typescript@5.9.3)
+      sveltedoc-parser: 4.2.1(supports-color@8.1.1)
       ts-dedent: 2.2.0
-      typescript: 5.6.3
+      typescript: 5.9.3
       vite: 6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
     transitivePeerDependencies:
       - '@babel/core'
@@ -9933,29 +9929,29 @@ snapshots:
       - sugarss
       - supports-color
 
-  '@storybook/svelte@8.6.14(storybook@8.6.14)(svelte@5.46.0)':
+  '@storybook/svelte@8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)':
     dependencies:
-      '@storybook/components': 8.6.14(storybook@8.6.14)
+      '@storybook/components': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       '@storybook/csf': 0.1.12
       '@storybook/global': 5.0.0
-      '@storybook/manager-api': 8.6.14(storybook@8.6.14)
-      '@storybook/preview-api': 8.6.14(storybook@8.6.14)
-      '@storybook/theming': 8.6.14(storybook@8.6.14)
-      storybook: 8.6.14
+      '@storybook/manager-api': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/preview-api': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/theming': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      storybook: 8.6.14(supports-color@8.1.1)
       svelte: 5.46.0
-      sveltedoc-parser: 4.2.1
+      sveltedoc-parser: 4.2.1(supports-color@8.1.1)
       ts-dedent: 2.2.0
       type-fest: 2.19.0
     transitivePeerDependencies:
       - supports-color
 
-  '@storybook/sveltekit@8.6.14(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
+  '@storybook/sveltekit@8.6.14(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
     dependencies:
-      '@storybook/addon-actions': 8.6.14(storybook@8.6.14)
-      '@storybook/builder-vite': 8.6.14(storybook@8.6.14)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
-      '@storybook/svelte': 8.6.14(storybook@8.6.14)(svelte@5.46.0)
-      '@storybook/svelte-vite': 8.6.14(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
-      storybook: 8.6.14
+      '@storybook/addon-actions': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
+      '@storybook/builder-vite': 8.6.14(storybook@8.6.14(supports-color@8.1.1))(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      '@storybook/svelte': 8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)
+      '@storybook/svelte-vite': 8.6.14(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(postcss@8.5.6)(sass@1.106.1)(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      storybook: 8.6.14(supports-color@8.1.1)
       svelte: 5.46.0
       vite: 6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
     transitivePeerDependencies:
@@ -9971,24 +9967,24 @@ snapshots:
       - sugarss
       - supports-color
 
-  '@storybook/test@8.6.14(storybook@8.6.14)':
+  '@storybook/test@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
       '@storybook/global': 5.0.0
-      '@storybook/instrumenter': 8.6.14(storybook@8.6.14)
+      '@storybook/instrumenter': 8.6.14(storybook@8.6.14(supports-color@8.1.1))
       '@testing-library/dom': 10.4.0
       '@testing-library/jest-dom': 6.5.0
       '@testing-library/user-event': 14.5.2(@testing-library/dom@10.4.0)
       '@vitest/expect': 2.0.5
       '@vitest/spy': 2.0.5
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
-  '@storybook/theming@8.6.14(storybook@8.6.14)':
+  '@storybook/theming@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
-  '@storybook/types@8.6.14(storybook@8.6.14)':
+  '@storybook/types@8.6.14(storybook@8.6.14(supports-color@8.1.1))':
     dependencies:
-      storybook: 8.6.14
+      storybook: 8.6.14(supports-color@8.1.1)
 
   '@svelte-put/shortcut@4.1.0(svelte@5.46.0)':
     dependencies:
@@ -9998,16 +9994,16 @@ snapshots:
     dependencies:
       acorn: 8.15.0
 
-  '@sveltejs/adapter-auto@4.0.0(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))':
+  '@sveltejs/adapter-auto@4.0.0(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))':
     dependencies:
-      '@sveltejs/kit': 2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      '@sveltejs/kit': 2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       import-meta-resolve: 4.2.0
 
-  '@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
+  '@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@sveltejs/acorn-typescript': 1.0.8(acorn@8.15.0)
-      '@sveltejs/vite-plugin-svelte': 5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      '@sveltejs/vite-plugin-svelte': 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@types/cookie': 0.6.0
       acorn: 8.15.0
       cookie: 0.6.0
@@ -10033,37 +10029,37 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@sveltejs/vite-plugin-svelte-inspector@3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))':
+  '@sveltejs/vite-plugin-svelte-inspector@3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte': 4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
-      debug: 4.4.3
+      '@sveltejs/vite-plugin-svelte': 4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
+      debug: 4.4.3(supports-color@8.1.1)
       svelte: 5.46.0
       vite: 5.4.21(@types/node@22.19.3)(sass@1.106.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
+  '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte': 5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
-      debug: 4.4.3
+      '@sveltejs/vite-plugin-svelte': 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      debug: 4.4.3(supports-color@8.1.1)
       svelte: 5.46.0
       vite: 6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
+  '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte': 5.1.1(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
-      debug: 4.4.3
+      '@sveltejs/vite-plugin-svelte': 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      debug: 4.4.3(supports-color@8.1.1)
       svelte: 5.46.0
       vite: 6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))':
+  '@sveltejs/vite-plugin-svelte@4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte-inspector': 3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
-      debug: 4.4.3
+      '@sveltejs/vite-plugin-svelte-inspector': 3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1)))(supports-color@8.1.1)(svelte@5.46.0)(vite@5.4.21(@types/node@22.19.3)(sass@1.106.1))
+      debug: 4.4.3(supports-color@8.1.1)
       deepmerge: 4.3.1
       kleur: 4.1.5
       magic-string: 0.30.21
@@ -10073,10 +10069,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
+  '@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte-inspector': 4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
-      debug: 4.4.3
+      '@sveltejs/vite-plugin-svelte-inspector': 4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      debug: 4.4.3(supports-color@8.1.1)
       deepmerge: 4.3.1
       kleur: 4.1.5
       magic-string: 0.30.21
@@ -10086,10 +10082,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
+  '@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte-inspector': 4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
-      debug: 4.4.3
+      '@sveltejs/vite-plugin-svelte-inspector': 4.0.1(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(supports-color@8.1.1)(svelte@5.46.0)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      debug: 4.4.3(supports-color@8.1.1)
       deepmerge: 4.3.1
       kleur: 4.1.5
       magic-string: 0.30.21
@@ -10166,7 +10162,7 @@ snapshots:
       svelte: 5.46.0
     optionalDependencies:
       vite: 6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
-      vitest: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      vitest: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
 
   '@testing-library/user-event@14.5.2(@testing-library/dom@10.4.0)':
     dependencies:
@@ -10456,24 +10452,24 @@ snapshots:
       modern-node-polyfills: 0.1.0
       rollup-plugin-node-polyfills: 0.2.1
       sirv: 2.0.4
-      vitest: 0.29.8(@vitest/browser@0.29.8)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jsdom@21.1.2)(playwright@1.57.0)(safaridriver@0.0.4)(sass@1.106.1)(webdriverio@8.46.0)
+      vitest: 0.29.8(@vitest/browser@0.29.8)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(playwright@1.57.0)(safaridriver@0.0.4)(sass@1.106.1)(supports-color@8.1.1)(webdriverio@8.46.0(supports-color@8.1.1))
 
-  '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1))':
+  '@vitest/coverage-v8@3.2.4(supports-color@8.1.1)(vitest@3.2.4)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 1.0.2
       ast-v8-to-istanbul: 0.3.9
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       istanbul-lib-coverage: 3.2.2
       istanbul-lib-report: 3.0.1
-      istanbul-lib-source-maps: 5.0.6
+      istanbul-lib-source-maps: 5.0.6(supports-color@8.1.1)
       istanbul-reports: 3.2.0
       magic-string: 0.30.21
       magicast: 0.3.5
       std-env: 3.10.0
       test-exclude: 7.0.1
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1)
+      vitest: 3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2(supports-color@8.1.1))(sass@1.106.1)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -10489,7 +10485,7 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.17(@types/node@22.19.3)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1)
+      vitest: 4.0.17(@types/node@22.19.3)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2(supports-color@8.1.1))(sass@1.106.1)
 
   '@vitest/coverage-v8@4.1.10(vitest@4.1.10)':
     dependencies:
@@ -10503,7 +10499,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.2.0
       tinyrainbow: 3.1.1
-      vitest: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      vitest: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
 
   '@vitest/expect@0.29.8':
     dependencies:
@@ -10655,18 +10651,6 @@ snapshots:
       picocolors: 1.1.1
       sirv: 2.0.4
 
-  '@vitest/ui@4.0.17(vitest@0.29.8)':
-    dependencies:
-      '@vitest/utils': 4.0.17
-      fflate: 0.8.2
-      flatted: 3.3.3
-      pathe: 2.0.3
-      sirv: 3.0.2
-      tinyglobby: 0.2.15
-      tinyrainbow: 3.0.3
-      vitest: 0.29.8(@vitest/browser@0.29.8)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jsdom@21.1.2)(playwright@1.57.0)(safaridriver@0.0.4)(sass@1.106.1)(webdriverio@8.46.0)
-    optional: true
-
   '@vitest/ui@4.0.17(vitest@4.0.17)':
     dependencies:
       '@vitest/utils': 4.0.17
@@ -10676,7 +10660,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.17(@types/node@22.19.3)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1)
+      vitest: 4.0.17(@types/node@22.19.3)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2(supports-color@8.1.1))(sass@1.106.1)
 
   '@vitest/utils@0.29.8':
     dependencies:
@@ -10779,11 +10763,11 @@ snapshots:
 
   '@vue/shared@3.5.13': {}
 
-  '@wdio/config@8.46.0':
+  '@wdio/config@8.46.0(supports-color@8.1.1)':
     dependencies:
       '@wdio/logger': 8.38.0
       '@wdio/types': 8.41.0
-      '@wdio/utils': 8.46.0
+      '@wdio/utils': 8.46.0(supports-color@8.1.1)
       decamelize: 6.0.1
       deepmerge-ts: 5.1.0
       glob: 10.5.0
@@ -10811,21 +10795,21 @@ snapshots:
     dependencies:
       '@types/node': 22.19.3
 
-  '@wdio/utils@8.46.0':
+  '@wdio/utils@8.46.0(supports-color@8.1.1)':
     dependencies:
-      '@puppeteer/browsers': 1.9.1
+      '@puppeteer/browsers': 1.9.1(supports-color@8.1.1)
       '@wdio/logger': 8.38.0
       '@wdio/types': 8.41.0
       decamelize: 6.0.1
       deepmerge-ts: 5.1.0
       edgedriver: 5.6.1
-      geckodriver: 4.2.1
+      geckodriver: 4.2.1(supports-color@8.1.1)
       get-port: 7.1.0
       import-meta-resolve: 4.2.0
       locate-app: 2.5.0
       safaridriver: 0.1.2
       split2: 4.2.0
-      wait-port: 1.1.0
+      wait-port: 1.1.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -10877,9 +10861,9 @@ snapshots:
 
   acorn@8.15.0: {}
 
-  agent-base@6.0.2:
+  agent-base@6.0.2(supports-color@8.1.1):
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -11420,8 +11404,6 @@ snapshots:
 
   css.escape@1.5.1: {}
 
-  cssesc@3.0.0: {}
-
   cssstyle@3.0.0:
     dependencies:
       rrweb-cssom: 0.6.0
@@ -11487,17 +11469,23 @@ snapshots:
 
   de-indent@1.0.2: {}
 
-  debug@4.3.4:
+  debug@4.3.4(supports-color@8.1.1):
     dependencies:
       ms: 2.1.2
+    optionalDependencies:
+      supports-color: 8.1.1
 
-  debug@4.4.0:
+  debug@4.4.0(supports-color@8.1.1):
     dependencies:
       ms: 2.1.3
+    optionalDependencies:
+      supports-color: 8.1.1
 
-  debug@4.4.3:
+  debug@4.4.3(supports-color@8.1.1):
     dependencies:
       ms: 2.1.3
+    optionalDependencies:
+      supports-color: 8.1.1
 
   decamelize@6.0.1: {}
 
@@ -11779,9 +11767,9 @@ snapshots:
   esbuild-openbsd-64@0.14.54:
     optional: true
 
-  esbuild-register@3.6.0(esbuild@0.25.12):
+  esbuild-register@3.6.0(esbuild@0.25.12)(supports-color@8.1.1):
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       esbuild: 0.25.12
     transitivePeerDependencies:
       - supports-color
@@ -11976,28 +11964,28 @@ snapshots:
       esrecurse: 4.3.0
       estraverse: 5.3.0
 
-  eslint-utils@3.0.0(eslint@8.4.1):
+  eslint-utils@3.0.0(eslint@8.4.1(supports-color@8.1.1)):
     dependencies:
-      eslint: 8.4.1
+      eslint: 8.4.1(supports-color@8.1.1)
       eslint-visitor-keys: 2.1.0
 
   eslint-visitor-keys@2.1.0: {}
 
   eslint-visitor-keys@3.4.3: {}
 
-  eslint@8.4.1:
+  eslint@8.4.1(supports-color@8.1.1):
     dependencies:
-      '@eslint/eslintrc': 1.4.1
-      '@humanwhocodes/config-array': 0.9.5
+      '@eslint/eslintrc': 1.4.1(supports-color@8.1.1)
+      '@humanwhocodes/config-array': 0.9.5(supports-color@8.1.1)
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       doctrine: 3.0.0
       enquirer: 2.4.1
       escape-string-regexp: 4.0.0
       eslint-scope: 7.2.2
-      eslint-utils: 3.0.0(eslint@8.4.1)
+      eslint-utils: 3.0.0(eslint@8.4.1(supports-color@8.1.1))
       eslint-visitor-keys: 3.4.3
       espree: 9.2.0
       esquery: 1.6.0
@@ -12093,9 +12081,9 @@ snapshots:
 
   exsolve@1.0.8: {}
 
-  extract-zip@2.0.1:
+  extract-zip@2.0.1(supports-color@8.1.1):
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       get-stream: 5.2.0
       yauzl: 2.10.0
     optionalDependencies:
@@ -12210,11 +12198,11 @@ snapshots:
     dependencies:
       fetch-blob: 3.2.0
 
-  formsnap@2.0.0-next.1(svelte@5.46.0)(sveltekit-superforms@2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3)):
+  formsnap@2.0.0-next.1(svelte@5.46.0)(sveltekit-superforms@2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3)):
     dependencies:
       svelte: 5.46.0
       svelte-toolbelt: 0.4.6(svelte@5.46.0)
-      sveltekit-superforms: 2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3)
+      sveltekit-superforms: 2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3)
 
   fraction.js@5.3.4: {}
 
@@ -12245,12 +12233,12 @@ snapshots:
 
   functions-have-names@1.2.3: {}
 
-  geckodriver@4.2.1:
+  geckodriver@4.2.1(supports-color@8.1.1):
     dependencies:
       '@wdio/logger': 8.38.0
       decamelize: 6.0.1
-      http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6
+      http-proxy-agent: 7.0.2(supports-color@8.1.1)
+      https-proxy-agent: 7.0.6(supports-color@8.1.1)
       node-fetch: 3.3.2
       tar-fs: 3.1.1
       unzipper: 0.10.14
@@ -12293,11 +12281,11 @@ snapshots:
 
   get-stream@6.0.1: {}
 
-  get-uri@6.0.5:
+  get-uri@6.0.5(supports-color@8.1.1):
     dependencies:
       basic-ftp: 5.0.5
       data-uri-to-buffer: 6.0.2
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -12432,18 +12420,18 @@ snapshots:
 
   http-cache-semantics@4.2.0: {}
 
-  http-proxy-agent@5.0.0:
+  http-proxy-agent@5.0.0(supports-color@8.1.1):
     dependencies:
       '@tootallnate/once': 2.0.0
-      agent-base: 6.0.2
-      debug: 4.4.3
+      agent-base: 6.0.2(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  http-proxy-agent@7.0.2:
+  http-proxy-agent@7.0.2(supports-color@8.1.1):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -12452,17 +12440,17 @@ snapshots:
       quick-lru: 5.1.1
       resolve-alpn: 1.2.1
 
-  https-proxy-agent@5.0.1:
+  https-proxy-agent@5.0.1(supports-color@8.1.1):
     dependencies:
-      agent-base: 6.0.2
-      debug: 4.4.3
+      agent-base: 6.0.2(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  https-proxy-agent@7.0.6:
+  https-proxy-agent@7.0.6(supports-color@8.1.1):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -12647,10 +12635,10 @@ snapshots:
       make-dir: 4.0.0
       supports-color: 7.2.0
 
-  istanbul-lib-source-maps@5.0.6:
+  istanbul-lib-source-maps@5.0.6(supports-color@8.1.1):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       istanbul-lib-coverage: 3.2.2
     transitivePeerDependencies:
       - supports-color
@@ -12722,7 +12710,7 @@ snapshots:
 
   jsdoc-type-pratt-parser@4.8.0: {}
 
-  jsdom@21.1.2:
+  jsdom@21.1.2(supports-color@8.1.1):
     dependencies:
       abab: 2.0.6
       acorn: 8.15.0
@@ -12734,8 +12722,8 @@ snapshots:
       escodegen: 2.1.0
       form-data: 4.0.5
       html-encoding-sniffer: 3.0.0
-      http-proxy-agent: 5.0.0
-      https-proxy-agent: 5.0.1
+      http-proxy-agent: 5.0.0(supports-color@8.1.1)
+      https-proxy-agent: 5.0.1(supports-color@8.1.1)
       is-potential-custom-element-name: 1.0.1
       nwsapi: 2.2.23
       parse5: 7.3.0
@@ -13164,16 +13152,16 @@ snapshots:
     dependencies:
       yocto-queue: 1.2.2
 
-  pac-proxy-agent@7.2.0:
+  pac-proxy-agent@7.2.0(supports-color@8.1.1):
     dependencies:
       '@tootallnate/quickjs-emscripten': 0.23.0
       agent-base: 7.1.4
-      debug: 4.4.3
-      get-uri: 6.0.5
-      http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6
+      debug: 4.4.3(supports-color@8.1.1)
+      get-uri: 6.0.5(supports-color@8.1.1)
+      http-proxy-agent: 7.0.2(supports-color@8.1.1)
+      https-proxy-agent: 7.0.6(supports-color@8.1.1)
       pac-resolver: 7.0.1
-      socks-proxy-agent: 8.0.5
+      socks-proxy-agent: 8.0.5(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -13293,11 +13281,10 @@ snapshots:
   postcss-nested@6.2.0(postcss@8.5.6):
     dependencies:
       postcss: 8.5.6
-      postcss-selector-parser: 6.1.2
+      postcss-selector-parser: 6.1.6
 
-  postcss-selector-parser@6.1.2:
+  postcss-selector-parser@6.1.6:
     dependencies:
-      cssesc: 3.0.0
       util-deprecate: 1.0.2
 
   postcss-value-parser@4.2.0: {}
@@ -13434,16 +13421,16 @@ snapshots:
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.2
 
-  proxy-agent@6.3.1:
+  proxy-agent@6.3.1(supports-color@8.1.1):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
-      http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6
+      debug: 4.4.3(supports-color@8.1.1)
+      http-proxy-agent: 7.0.2(supports-color@8.1.1)
+      https-proxy-agent: 7.0.6(supports-color@8.1.1)
       lru-cache: 7.18.3
-      pac-proxy-agent: 7.2.0
+      pac-proxy-agent: 7.2.0(supports-color@8.1.1)
       proxy-from-env: 1.1.0
-      socks-proxy-agent: 8.0.5
+      socks-proxy-agent: 8.0.5(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -13468,12 +13455,12 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  puppeteer-core@21.11.0:
+  puppeteer-core@21.11.0(supports-color@8.1.1):
     dependencies:
-      '@puppeteer/browsers': 1.9.1
+      '@puppeteer/browsers': 1.9.1(supports-color@8.1.1)
       chromium-bidi: 0.5.8(devtools-protocol@0.0.1232444)
       cross-fetch: 4.0.0
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       devtools-protocol: 0.0.1232444
       ws: 8.16.0
     transitivePeerDependencies:
@@ -13822,10 +13809,10 @@ snapshots:
 
   smart-buffer@4.2.0: {}
 
-  socks-proxy-agent@8.0.5:
+  socks-proxy-agent@8.0.5(supports-color@8.1.1):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       socks: 2.8.7
     transitivePeerDependencies:
       - supports-color
@@ -13872,9 +13859,9 @@ snapshots:
       es-errors: 1.3.0
       internal-slot: 1.1.0
 
-  storybook@8.6.14:
+  storybook@8.6.14(supports-color@8.1.1):
     dependencies:
-      '@storybook/core': 8.6.14(storybook@8.6.14)
+      '@storybook/core': 8.6.14(storybook@8.6.14(supports-color@8.1.1))(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -14042,7 +14029,7 @@ snapshots:
       '@smui/top-app-bar': 8.0.3
       '@smui/touch-target': 8.0.3
 
-  svelte-preprocess@5.1.4(postcss@8.5.6)(sass@1.106.1)(svelte@5.46.0)(typescript@5.6.3):
+  svelte-preprocess@5.1.4(postcss@8.5.6)(sass@1.106.1)(svelte@5.46.0)(typescript@5.9.3):
     dependencies:
       '@types/pug': 2.0.10
       detect-indent: 6.1.0
@@ -14053,7 +14040,7 @@ snapshots:
     optionalDependencies:
       postcss: 8.5.6
       sass: 1.106.1
-      typescript: 5.6.3
+      typescript: 5.9.3
 
   svelte-sonner@0.3.28(svelte@5.46.0):
     dependencies:
@@ -14071,13 +14058,6 @@ snapshots:
       runed: 0.23.4(svelte@5.46.0)
       style-to-object: 1.0.14
       svelte: 5.46.0
-
-  svelte2tsx@0.7.45(svelte@5.46.0)(typescript@5.6.3):
-    dependencies:
-      dedent-js: 1.0.1
-      scule: 1.3.0
-      svelte: 5.46.0
-      typescript: 5.6.3
 
   svelte2tsx@0.7.45(svelte@5.46.0)(typescript@5.9.3):
     dependencies:
@@ -14104,17 +14084,17 @@ snapshots:
       magic-string: 0.30.21
       zimmerframe: 1.1.4
 
-  sveltedoc-parser@4.2.1:
+  sveltedoc-parser@4.2.1(supports-color@8.1.1):
     dependencies:
-      eslint: 8.4.1
+      eslint: 8.4.1(supports-color@8.1.1)
       espree: 9.2.0
       htmlparser2-svelte: 4.1.0
     transitivePeerDependencies:
       - supports-color
 
-  sveltekit-superforms@2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3):
+  sveltekit-superforms@2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3):
     dependencies:
-      '@sveltejs/kit': 2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      '@sveltejs/kit': 2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       devalue: 5.6.1
       memoize-weak: 1.0.2
       svelte: 5.46.0
@@ -14180,7 +14160,7 @@ snapshots:
       postcss-js: 4.1.0(postcss@8.5.6)
       postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.6)
       postcss-nested: 6.2.0(postcss@8.5.6)
-      postcss-selector-parser: 6.1.2
+      postcss-selector-parser: 6.1.6
       resolve: 1.22.11
       sucrase: 3.35.0
     transitivePeerDependencies:
@@ -14335,13 +14315,13 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.5.1(@microsoft/api-extractor@7.54.0(@types/node@22.19.3))(jiti@1.21.7)(postcss@8.5.6)(typescript@5.6.3):
+  tsup@8.5.1(@microsoft/api-extractor@7.54.0(@types/node@22.19.3))(jiti@1.21.7)(postcss@8.5.6)(supports-color@8.1.1)(typescript@5.6.3):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.1)
       cac: 6.7.14
       chokidar: 4.0.3
       consola: 3.4.2
-      debug: 4.4.0
+      debug: 4.4.0(supports-color@8.1.1)
       esbuild: 0.27.1
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
@@ -14474,10 +14454,10 @@ snapshots:
       svelte: 5.46.0
       svelte-toolbelt: 0.4.6(svelte@5.46.0)
 
-  vite-node@0.29.8(@types/node@22.19.3)(sass@1.106.1):
+  vite-node@0.29.8(@types/node@22.19.3)(sass@1.106.1)(supports-color@8.1.1):
     dependencies:
       cac: 6.7.14
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       mlly: 1.8.0
       pathe: 1.1.2
       picocolors: 1.1.1
@@ -14492,10 +14472,10 @@ snapshots:
       - supports-color
       - terser
 
-  vite-node@3.2.4(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1):
+  vite-node@3.2.4(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)(supports-color@8.1.1):
     dependencies:
       cac: 6.7.14
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       es-module-lexer: 1.7.0
       pathe: 2.0.3
       vite: 6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
@@ -14513,14 +14493,14 @@ snapshots:
       - tsx
       - yaml
 
-  vite-plugin-dts@4.5.4(@types/node@22.19.3)(rollup@4.53.5)(typescript@5.6.3)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)):
+  vite-plugin-dts@4.5.4(@types/node@22.19.3)(rollup@4.53.5)(supports-color@8.1.1)(typescript@5.6.3)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)):
     dependencies:
       '@microsoft/api-extractor': 7.54.0(@types/node@22.19.3)
       '@rollup/pluginutils': 5.1.4(rollup@4.53.5)
       '@volar/typescript': 2.4.11
       '@vue/language-core': 2.2.0(typescript@5.6.3)
       compare-versions: 6.1.1
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       kolorist: 1.8.0
       local-pkg: 1.1.2
       magic-string: 0.30.17
@@ -14532,14 +14512,14 @@ snapshots:
       - rollup
       - supports-color
 
-  vite-plugin-dts@4.5.4(@types/node@22.19.3)(rollup@4.53.5)(typescript@5.6.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)):
+  vite-plugin-dts@4.5.4(@types/node@22.19.3)(rollup@4.53.5)(supports-color@8.1.1)(typescript@5.6.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)):
     dependencies:
       '@microsoft/api-extractor': 7.54.0(@types/node@22.19.3)
       '@rollup/pluginutils': 5.1.4(rollup@4.53.5)
       '@volar/typescript': 2.4.11
       '@vue/language-core': 2.2.0(typescript@5.6.3)
       compare-versions: 6.1.1
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       kolorist: 1.8.0
       local-pkg: 1.1.2
       magic-string: 0.30.17
@@ -14551,14 +14531,14 @@ snapshots:
       - rollup
       - supports-color
 
-  vite-plugin-dts@4.5.4(@types/node@22.19.3)(rollup@4.53.5)(typescript@5.9.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)):
+  vite-plugin-dts@4.5.4(@types/node@22.19.3)(rollup@4.53.5)(supports-color@8.1.1)(typescript@5.9.3)(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)):
     dependencies:
       '@microsoft/api-extractor': 7.54.0(@types/node@22.19.3)
       '@rollup/pluginutils': 5.1.4(rollup@4.53.5)
       '@volar/typescript': 2.4.11
       '@vue/language-core': 2.2.0(typescript@5.9.3)
       compare-versions: 6.1.1
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       kolorist: 1.8.0
       local-pkg: 1.1.2
       magic-string: 0.30.17
@@ -14627,7 +14607,7 @@ snapshots:
     optionalDependencies:
       vite: 6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
 
-  vitest@0.29.8(@vitest/browser@0.29.8)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jsdom@21.1.2)(playwright@1.57.0)(safaridriver@0.0.4)(sass@1.106.1)(webdriverio@8.46.0):
+  vitest@0.29.8(@vitest/browser@0.29.8)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(playwright@1.57.0)(safaridriver@0.0.4)(sass@1.106.1)(supports-color@8.1.1)(webdriverio@8.46.0(supports-color@8.1.1)):
     dependencies:
       '@types/chai': 4.3.20
       '@types/chai-subset': 1.3.6(@types/chai@4.3.20)
@@ -14640,7 +14620,7 @@ snapshots:
       acorn-walk: 8.3.4
       cac: 6.7.14
       chai: 4.5.0
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       local-pkg: 0.4.3
       pathe: 1.1.2
       picocolors: 1.1.1
@@ -14651,16 +14631,16 @@ snapshots:
       tinypool: 0.4.0
       tinyspy: 1.1.1
       vite: 4.5.14(@types/node@22.19.3)(sass@1.106.1)
-      vite-node: 0.29.8(@types/node@22.19.3)(sass@1.106.1)
+      vite-node: 0.29.8(@types/node@22.19.3)(sass@1.106.1)(supports-color@8.1.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@vitest/browser': 0.29.8(vitest@0.29.8)
-      '@vitest/ui': 4.0.17(vitest@0.29.8)
+      '@vitest/ui': 0.30.1
       happy-dom: 8.9.0
-      jsdom: 21.1.2
+      jsdom: 21.1.2(supports-color@8.1.1)
       playwright: 1.57.0
       safaridriver: 0.0.4
-      webdriverio: 8.46.0
+      webdriverio: 8.46.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -14670,7 +14650,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1):
+  vitest@3.2.4(@types/node@22.19.3)(@vitest/ui@0.30.1)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2(supports-color@8.1.1))(sass@1.106.1)(supports-color@8.1.1):
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/expect': 3.2.4
@@ -14681,7 +14661,7 @@ snapshots:
       '@vitest/spy': 3.2.4
       '@vitest/utils': 3.2.4
       chai: 5.3.3
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       expect-type: 1.3.0
       magic-string: 0.30.21
       pathe: 2.0.3
@@ -14693,13 +14673,13 @@ snapshots:
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
       vite: 6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
-      vite-node: 3.2.4(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
+      vite-node: 3.2.4(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)(supports-color@8.1.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.19.3
       '@vitest/ui': 0.30.1
       happy-dom: 8.9.0
-      jsdom: 21.1.2
+      jsdom: 21.1.2(supports-color@8.1.1)
     transitivePeerDependencies:
       - jiti
       - less
@@ -14714,7 +14694,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.17(@types/node@22.19.3)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2)(sass@1.106.1):
+  vitest@4.0.17(@types/node@22.19.3)(@vitest/ui@4.0.17)(happy-dom@8.9.0)(jiti@1.21.7)(jsdom@21.1.2(supports-color@8.1.1))(sass@1.106.1):
     dependencies:
       '@vitest/expect': 4.0.17
       '@vitest/mocker': 4.0.17(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
@@ -14740,7 +14720,7 @@ snapshots:
       '@types/node': 22.19.3
       '@vitest/ui': 4.0.17(vitest@4.0.17)
       happy-dom: 8.9.0
-      jsdom: 21.1.2
+      jsdom: 21.1.2(supports-color@8.1.1)
     transitivePeerDependencies:
       - jiti
       - less
@@ -14754,7 +14734,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)):
+  vitest@4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
@@ -14780,7 +14760,7 @@ snapshots:
       '@types/node': 22.19.3
       '@vitest/coverage-v8': 4.1.10(vitest@4.1.10)
       happy-dom: 8.9.0
-      jsdom: 21.1.2
+      jsdom: 21.1.2(supports-color@8.1.1)
     transitivePeerDependencies:
       - msw
 
@@ -14792,25 +14772,25 @@ snapshots:
     dependencies:
       xml-name-validator: 4.0.0
 
-  wait-port@1.1.0:
+  wait-port@1.1.0(supports-color@8.1.1):
     dependencies:
       chalk: 4.1.2
       commander: 9.5.0
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
   web-streams-polyfill@3.3.3: {}
 
-  webdriver@8.46.0:
+  webdriver@8.46.0(supports-color@8.1.1):
     dependencies:
       '@types/node': 22.19.3
       '@types/ws': 8.18.1
-      '@wdio/config': 8.46.0
+      '@wdio/config': 8.46.0(supports-color@8.1.1)
       '@wdio/logger': 8.38.0
       '@wdio/protocols': 8.44.0
       '@wdio/types': 8.41.0
-      '@wdio/utils': 8.46.0
+      '@wdio/utils': 8.46.0(supports-color@8.1.1)
       deepmerge-ts: 5.1.0
       got: 12.6.1
       ky: 0.33.3
@@ -14823,15 +14803,15 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  webdriverio@8.46.0:
+  webdriverio@8.46.0(supports-color@8.1.1):
     dependencies:
       '@types/node': 22.19.3
-      '@wdio/config': 8.46.0
+      '@wdio/config': 8.46.0(supports-color@8.1.1)
       '@wdio/logger': 8.38.0
       '@wdio/protocols': 8.44.0
       '@wdio/repl': 8.40.3
       '@wdio/types': 8.41.0
-      '@wdio/utils': 8.46.0
+      '@wdio/utils': 8.46.0(supports-color@8.1.1)
       archiver: 7.0.1
       aria-query: 5.3.2
       css-shorthand-properties: 1.1.2
@@ -14844,12 +14824,12 @@ snapshots:
       lodash.clonedeep: 4.5.0
       lodash.zip: 4.2.0
       minimatch: 9.0.5
-      puppeteer-core: 21.11.0
+      puppeteer-core: 21.11.0(supports-color@8.1.1)
       query-selector-shadow-dom: 1.0.1
       resq: 1.11.0
       rgb2hex: 0.2.5
       serialize-error: 11.0.3
-      webdriver: 8.46.0
+      webdriver: 8.46.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
