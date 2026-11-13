@@ -5,3 +5,16 @@ packages:
 
 autoInstallPeers: false
 linkWorkspacePackages: true
+
+allowBuilds:
+  '@parcel/watcher@2.6.0': true
+  'core-js@3.40.0': false
+  'edgedriver@5.6.1': true
+  'esbuild@0.14.54': true
+  'esbuild@0.18.20': true
+  'esbuild@0.21.5': true
+  'esbuild@0.24.2': true
+  'esbuild@0.25.12': true
+  'esbuild@0.27.1': true
+  'geckodriver@4.2.1': true
+  'svelte-preprocess@5.1.4': false
