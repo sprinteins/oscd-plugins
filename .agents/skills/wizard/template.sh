@@ -150,32 +150,64 @@ write_env() {
   printf '  %s✓ wrote%s %s → %s\n' "$GREEN" "$RESET" "$key" "$ENV_FILE"
 }
 
-# set_secret NAME VALUE sets a GitHub Actions repo secret via gh. Falls back
-# to a warning (and records it) if gh is unavailable or unauthenticated.
-set_secret() {
-  local name="$1" value="$2"
-  if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-    if printf '%s' "$value" | gh secret set "$name" >/dev/null 2>&1; then
-      WRITTEN_SECRET+=("$name")
-      printf '  %s✓ set%s GitHub secret %s\n' "$GREEN" "$RESET" "$name"
-      return
-    fi
-  fi
-  SKIPPED+=("GitHub secret $name (set it manually: gh secret set $name)")
-  warn "skipped GitHub secret $name: gh not ready; set it later"
+# _valid_github_repository REPO accepts an explicit owner/repo target.
+_valid_github_repository() {
+  [[ "$1" =~ ^[[:alnum:]_.-]+/[[:alnum:]_.-]+$ ]]
 }
 
-# set_var NAME VALUE sets a GitHub Actions repo variable (non-secret).
-set_var() {
-  local name="$1" value="$2"
-  if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-    if gh variable set "$name" --body "$value" >/dev/null 2>&1; then
-      printf '  %s✓ set%s GitHub variable %s\n' "$GREEN" "$RESET" "$name"
-      return
-    fi
+# set_secret REPO NAME VALUE sets a GitHub Actions repo secret via gh after
+# confirming the explicit target. Falls back to a warning if gh is unavailable.
+set_secret() {
+  local repo="$1" name="$2" value="$3"
+  if ! _valid_github_repository "$repo"; then
+    SKIPPED+=("GitHub secret $name (invalid target; expected owner/repo)")
+    warn "skipped GitHub secret $name: expected an explicit owner/repo target"
+    return 0
   fi
-  SKIPPED+=("GitHub variable $name")
-  warn "skipped GitHub variable $name, gh not ready; set it later"
+  if ! command -v gh >/dev/null 2>&1 || ! gh auth status >/dev/null 2>&1; then
+    SKIPPED+=("GitHub secret $name in $repo (set manually with gh secret set $name --repo $repo)")
+    warn "skipped GitHub secret $name in $repo: gh not ready; set it later"
+    return 0
+  fi
+  if ! confirm "Set GitHub secret $name in $repo?"; then
+    SKIPPED+=("GitHub secret $name in $repo (not confirmed)")
+    warn "skipped GitHub secret $name in $repo: not confirmed"
+    return 0
+  fi
+  if printf '%s' "$value" | gh secret set "$name" --repo "$repo" >/dev/null; then
+    WRITTEN_SECRET+=("$name")
+    printf '  %s✓ set%s GitHub secret %s in %s\n' "$GREEN" "$RESET" "$name" "$repo"
+  else
+    SKIPPED+=("GitHub secret $name in $repo (write failed)")
+    warn "failed to set GitHub secret $name in $repo; see the gh error above"
+  fi
+}
+
+# set_var REPO NAME VALUE sets a GitHub Actions repo variable after confirming
+# the explicit target.
+set_var() {
+  local repo="$1" name="$2" value="$3"
+  if ! _valid_github_repository "$repo"; then
+    SKIPPED+=("GitHub variable $name (invalid target; expected owner/repo)")
+    warn "skipped GitHub variable $name: expected an explicit owner/repo target"
+    return 0
+  fi
+  if ! command -v gh >/dev/null 2>&1 || ! gh auth status >/dev/null 2>&1; then
+    SKIPPED+=("GitHub variable $name in $repo")
+    warn "skipped GitHub variable $name in $repo: gh not ready; set it later"
+    return 0
+  fi
+  if ! confirm "Set GitHub variable $name in $repo?"; then
+    SKIPPED+=("GitHub variable $name in $repo (not confirmed)")
+    warn "skipped GitHub variable $name in $repo: not confirmed"
+    return 0
+  fi
+  if gh variable set "$name" --body "$value" --repo "$repo" >/dev/null; then
+    printf '  %s✓ set%s GitHub variable %s in %s\n' "$GREEN" "$RESET" "$name" "$repo"
+  else
+    SKIPPED+=("GitHub variable $name in $repo (write failed)")
+    warn "failed to set GitHub variable $name in $repo; see the gh error above"
+  fi
 }
 
 # finish clears, then shows a closing summary of everything configured.
@@ -214,7 +246,8 @@ step "Click 'Reveal test key' on the Secret key row, then copy it."
 ask_secret STRIPE_SECRET_KEY "Paste the secret key:"
 write_env STRIPE_PUBLISHABLE_KEY "$STRIPE_PUBLISHABLE_KEY"
 write_env STRIPE_SECRET_KEY "$STRIPE_SECRET_KEY"
-set_secret STRIPE_SECRET_KEY "$STRIPE_SECRET_KEY"   # CI needs this one
+ask GITHUB_REPOSITORY "GitHub repository for CI (owner/name):"
+set_secret "$GITHUB_REPOSITORY" STRIPE_SECRET_KEY "$STRIPE_SECRET_KEY"   # CI needs this one
 # ──────────────────────────────────────────────────────────────────────────
 
 finish
