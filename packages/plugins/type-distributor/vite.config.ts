@@ -8,9 +8,10 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 export default defineConfig({
 	plugins: [
 		svelte({
-			compilerOptions: {
-				customElement: true
-			}
+			dynamicCompileOptions: ({ filename }) =>
+				filename === resolve(__dirname, 'src/plugin.svelte')
+					? { customElement: true }
+					: { customElement: false, css: 'injected' }
 		})
 	],
 	resolve: {
