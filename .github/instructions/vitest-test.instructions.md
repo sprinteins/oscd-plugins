@@ -1,5 +1,7 @@
 ---
+name: Vitest Test Routing
+description: Use when creating or editing package TypeScript specs.
 applyTo: 'packages/**/src/**/*.spec.ts'
 ---
 
-When editing or creating a package source `*.spec.ts` file, always load and follow the `vitest-test` skill from `.github/skills/vitest-test/SKILL.md` before making any changes.
+Before editing a package source `*.spec.ts`, load canonical [vitest-test](../../.agents/skills/vitest-test/SKILL.md). If the host cannot invoke skills, read it directly and report the fallback per [AGENTS.md](../../AGENTS.md).

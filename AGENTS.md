@@ -2,154 +2,64 @@
 
 <!-- @ref=oscd-plugins:agent-guidelines -->
 
-This document defines always-on baseline guidance for AI agents working in the OpenSCD plugins monorepo. Use the linked instruction files and package documentation for details that apply only to a specific task or scope.
+Shared repository guidance for Copilot VS Code, Copilot CLI, and Claude Code.
 
-## General
+## Safety, authorization, and precedence
 
-- This repository is a pnpm monorepo of Svelte plugins and shared packages for [OpenSCD](https://github.com/openscd/open-scd).
-- Before GitHub, release, or repository-management work, run `git remote -v` and confirm the intended remote.
-- "Plugin" means an OpenSCD plugin package under `packages/plugins/`. "Core package" means a package under `packages/core/`.
-- Treat `pnpm-workspace.yaml` and each package's `package.json` as the source of truth for active packages and commands. Architecture documents explain intent but may describe an older package set.
-- Before editing a package, inspect its local `package.json`, configuration, tests, and any package-level `AGENTS.md` if present.
+- Work only on the requested task and directly related tests/documentation. Preserve unrelated dirty work and existing behavior unless the requested change intentionally changes it.
+- Higher-priority system, organization, and host safety requirements remain in force. Within repository guidance, this file owns safety and authorization; scoped instructions own domain rules; skills orchestrate those rules, never override them. Apply standards during implementation **and** review.
+- Before GitHub, release, or repository-management work, run `git remote -v` and confirm the intended target. Read the configured tracker before ticket operations.
+- Stage, commit, push, or publish/update/ready a PR only with explicit user authorization for that operation. An implementation request, skill invocation, spec approval, or tool permission is not Git authorization. Leave changes uncommitted by default.
+- Preflight mutating orchestration: establish authorized scope, target, dirty-work baseline, review base, required capabilities, and allowed writes **before** branches/worktrees, merges, ticket/label/comment writes, or publication. Missing approval/capability is a blocked operation, not a successful default. Draft locally or continue read-only; report the blocker.
+- Avoid destructive resets, broad deletion, or checkout-based reverts without explicit approval. Preserve user files. Do not expose credentials, secrets, or private data to external services.
+- Disposable scratch belongs only in repository-root `.tmp/`. Remove named scratch when no longer needed. Handoffs remain available until consumed. Requested durable outputs need an explicit retained location agreed with the user; default proposals are under `doc/`. No automatic outside-root notes or parallel local scratch tracker.
+- Surface failures explicitly, using existing errors/notifications. Do not mask failures with broad catches or silent fallbacks.
 
-## Core Rules
+## Navigation
 
-- Provide objective evaluation and challenge assumptions when repository evidence does not support them.
-- Work only on the requested task and its directly related documentation or tests.
-- Preserve existing behavior unless the requested change intentionally changes it; make behavior changes explicit.
-- Prefer existing helpers, package patterns, and shared components over duplicated logic.
-- Keep business logic independent from UI code where the package already separates `headless/` and `ui/`.
-- Surface errors explicitly using the repository's existing error and notification patterns; do not hide failures behind broad catches or silent fallbacks.
-- Never stage, commit, or push changes unless the user explicitly requests it. When work is complete, leave changes ready for human review.
-- Create temporary or scratch files only under `.tmp/` at the repository root, and remove them when they are no longer needed.
-- Treat documentation as part of implementation. If a change adds or alters project knowledge, update the relevant documentation in the same task.
-- When no documentation update is needed, state why in the final handoff.
+This pnpm monorepo contains OpenSCD plugins under `packages/plugins/` and core packages under `packages/core/`. Use `pnpm-workspace.yaml` and local `package.json` files as the source of truth, not cached package lists.
 
-## Instruction Hierarchy
+Before editing a package, read its manifest, configuration, tests, and any local `AGENTS.md`. Register new package guidance here. Before a repository command, locate its owning manifest or Makefile and run from that project directory.
 
-Load the scoped instruction that matches the task. Combine all applicable instructions when a task spans multiple areas.
+Load every applicable scoped instruction:
 
-- Coding conventions: [coding-conventions.instructions.md](.github/instructions/coding-conventions.instructions.md)
-- Testing and quality: [testing-quality.instructions.md](.github/instructions/testing-quality.instructions.md)
-- Documentation routing: [documentation.instructions.md](.github/instructions/documentation.instructions.md)
-- Architecture and package boundaries: [architecture-boundaries.instructions.md](.github/instructions/architecture-boundaries.instructions.md)
-- Communication: [communication.instructions.md](.github/instructions/communication.instructions.md)
-- Terminal command safety: [terminal-command-safety.instructions.md](.github/instructions/terminal-command-safety.instructions.md)
-- Instruction registration: [instruction-registration.instructions.md](.github/instructions/instruction-registration.instructions.md)
-- PR review and creation: [pr-review-creation.instructions.md](.github/instructions/pr-review-creation.instructions.md)
-- TypeScript tests: [vitest-test.instructions.md](.github/instructions/vitest-test.instructions.md), followed by the [`vitest-test` skill](.github/skills/vitest-test/SKILL.md)
+- Source changes: [coding conventions](.github/instructions/coding-conventions.instructions.md) + [testing and quality](.github/instructions/testing-quality.instructions.md).
+- Refactoring, dependencies, shared UI, SCD, or loading: add [architecture boundaries](.github/instructions/architecture-boundaries.instructions.md).
+- Documentation, ADRs, or process: [documentation routing](.github/instructions/documentation.instructions.md).
+- Responses and handoffs: [communication](.github/instructions/communication.instructions.md).
+- Commands: [terminal safety](.github/instructions/terminal-command-safety.instructions.md).
+- Agent guidance changes: [instruction registration](.github/instructions/instruction-registration.instructions.md) + [writing-for-agents](.agents/skills/writing-for-agents/SKILL.md).
+- PR preparation/review: [PR review and creation](.github/instructions/pr-review-creation.instructions.md).
+- Package TypeScript specs: [Vitest routing](.github/instructions/vitest-test.instructions.md) + canonical [vitest-test](.agents/skills/vitest-test/SKILL.md).
 
-## Task Routing
+Additional references:
 
-- Feature or bug fix in `packages/**`: coding conventions + testing and quality; add documentation routing when behavior or project knowledge changes.
-- Test-only changes: testing and quality + the scoped Vitest instruction and skill.
-- Refactoring or dependency changes: coding conventions + architecture and package boundaries + testing and quality.
-- Documentation, ADR, or process changes: documentation routing; add architecture guidance for design decisions.
-- PR preparation or review: PR review and creation + communication.
-- Instruction file changes: instruction registration + communication.
+- Imports and structure: [barrel pattern](doc/guidelines/barrel-pattern.md), [code style](doc/guidelines/code_style.md).
+- Setup and dependency builds: [setup](doc/how-to/setup.md). Build needed shared dependencies before plugin work; install/restore only after manifest changes or a missing-dependency check failure.
+- Architecture/release: relevant [ADRs](doc/adr/) and [architecture references](doc/references/architecture/). Read [release process](doc/adr/0003-release-process.md) before publication changes. Changelog/version updates require requested release preparation.
 
-- Code structure and imports also follow [barrel-pattern.md](doc/guidelines/barrel-pattern.md) and [code_style.md](doc/guidelines/code_style.md).
-- Setup and dependencies follow [setup.md](doc/how-to/setup.md); build shared dependencies before plugin work.
-- Architecture or release decisions require reading the relevant documents in [doc/adr/](doc/adr/) and [doc/references/architecture/](doc/references/architecture/).
-- If a package-level `AGENTS.md` is added, link it from this file and apply it to that package's subtree.
+## Agent skills
 
-## Repository Structure
+Canonical skill definitions and resources live only in `.agents/skills/`. Host paths are thin adapters, not separately authored workflows. Read [host discovery and local adaptations](doc/agents/skills.md) when configuring or updating skills.
 
-The workspace dependency direction is generally:
+When a skill is relevant, use the host's supported invocation mechanism. If a Skill tool is absent or fails, read its canonical `SKILL.md` and required resources directly and explicitly report the fallback. User-invoked skills require the user's request, even when reading files directly. A file on disk is not proof of host registration.
 
-```text
-packages/plugins/*
-        |
-core-ui-svelte, core-api, core-standard, core/legacy, ui
-```
+Use subagents only when useful, permitted, and actually supported. Otherwise execute the same scoped workflow sequentially and label it self-review; never claim independent or parallel reviewers ran.
 
-- `packages/core/api/` - shared plugin API types and mocks, including `pluginV1` and `mocksV1`.
-- `packages/core/legacy/` - legacy SCD business logic, queries, actions, events, and browser-based tests.
-- `packages/core/standard/` - IEC 61850 standard types and generated definitions.
-- `packages/core/ui-svelte/` - shared Svelte 5 UI components and themes.
-- `packages/ui/` - additional UI components and the newer UI package.
-- `packages/plugins/` - standalone plugin applications such as `network-explorer`, `communication-explorer`, `auto-doc`, `io-center`, `type-designer`, `type-distributor`, and `type-switcher`.
-- `packages/create-plugin/` - plugin scaffolding and its template.
-- `doc/` - repository-wide architecture, ADRs, guidelines, references, and how-to documentation.
+### Issue tracker
 
-Each plugin normally has:
+Track issues and specs in GitHub Issues for sprinteins/oscd-plugins. Before ticket operations, read [issue tracker](doc/agents/issue-tracker.md). Local tracker templates are inactive alternatives.
 
-```text
-src/
-  plugin.ts          # exports the custom-element class; does not self-register it
-  plugin.svelte      # root Svelte custom element
-  plugin.dev.ts      # standalone development entry, when provided
-  headless/          # business logic without UI dependencies, when provided
-  ui/                # Svelte UI components, when provided
-  stores/            # Svelte stores, when provided
-```
+### Triage labels
 
-## OpenSCD Plugin Contract
+Use the five configured roles. Before triaging, read [triage labels](doc/agents/triage-labels.md).
 
-- A plugin entry point must default-export an HTML custom-element class and must not register the element itself.
-- Root plugin components use Svelte 5 `$props()` and type their reflected OpenSCD props with `Plugin.CustomComponentsProps` from `@oscd-plugins/core-api/plugin/v1`.
-- Preserve the reflected plugin props (`doc`, `docName`, `editCount`, `locale`, `pluginType`, and `isCustomInstance`) when changing a root `plugin.svelte`.
-- Root components should wire the shared initialization actions from `@oscd-plugins/core-ui-svelte` and expose package name/version through the plugin data attributes.
-- Use the existing theme, document-template, and plugin-initialization helpers rather than recreating them in individual plugins.
+### Domain docs
 
-## Code Conventions
+Use the multi-context [domain policy](doc/agents/domain.md). Follow the root `GLOSSARY-MAP.md` if present; otherwise read relevant existing package glossaries. Create domain documents lazily and preserve existing root `doc/adr/` and package `doc/adr/` or `docs/adr/`.
 
-- Use Biome for formatting, import organization, and linting. Do not use Prettier or introduce another formatter.
-- Use tabs, single quotes, no semicolons, and no trailing commas, matching `biome.json`.
-- Use `kebab-case` for files and directories. Non-index files follow the domain-qualified pattern `name-of-file.name-of-folder.ts`; type declarations use `.d.ts`.
-- Organize code by domain first and functionality second.
-- A folder containing `index.ts` is a module. Files inside a module must not import from their own `index.ts`; consumers outside the module should import from the module's public `index.ts`.
-- A module may re-export from direct submodules only, not from deeper implementation files.
-- Use the `@/` path alias where the package provides it, and preserve existing import style when it does not.
-- Keep generated files and standard definitions consistent with their generator. Change generator inputs or scripts rather than hand-editing generated output.
-- Maintain strict TypeScript types. Prefer type guards and existing interfaces over `any`, unnecessary casts, or unchecked assertions.
+## Completion and handoff
 
-## Dependencies, Builds, and Validation
+Validate the affected scope with existing package-owned commands; report exact commands/results, not assumed passes. Completion review covers committed changes since a resolved fixed point **and** relevant staged, unstaged, and new files, excluding unrelated dirty work. Report **Standards** and **Spec** separately using [code-review](.agents/skills/code-review/SKILL.md).
 
-- Install and build shared local dependencies before plugin work:
-
-  ```bash
-  pnpm dependencies:install+build
-  ```
-
-- Run commands from the owning package directory or use `pnpm --filter <package>`; do not assume a root test command exists.
-- Use the smallest relevant package command:
-
-  ```bash
-  pnpm --filter <package> check
-  pnpm --filter <package> types
-  pnpm --filter <package> test
-  ```
-
-  Confirm the script exists in that package's `package.json` before running it.
-- For repository-wide formatting and linting:
-
-  ```bash
-  pnpm biome:check
-  pnpm biome:fix
-  ```
-
-- Core legacy tests run in a Chrome/Chromium browser. Install Chromium as described in [setup.md](doc/how-to/setup.md) when that test suite requires it.
-- `make <plugin-name>` starts a plugin build/watch target; `make start-scd` starts the local OpenSCD integration when the sibling OpenSCD repository is available.
-- For `*.spec.ts` changes, follow the scoped Vitest instruction and validate the affected package tests. For user-visible flows, use the package's configured browser or Playwright tests when available.
-
-## Documentation and Release
-
-- Write documentation in English and place repository-wide documentation under `doc/`; plugin-specific documentation belongs under the relevant plugin's `doc/` or `docs/` directory.
-- Use Diataxis categories and the existing documentation style. Add an ADR when a change establishes or reverses an architectural or release decision.
-- Update package changelogs and versions only when the user explicitly requests release preparation.
-- Source code and built plugin output have separate release concerns; read [0003-release-process.md](doc/adr/0003-release-process.md) before changing release or publication workflows.
-
-## Handoff
-
-After completing the requested task, stop and hand off the result. Do not begin a follow-up task without explicit instruction. Offer these available next steps:
-
-1. **Lint + Format** - run Biome for the files or packages touched.
-2. **Run Tests** - execute the affected package tests and report results.
-3. **Run Checks** - execute package type-checking or Svelte checks.
-4. **Manual Test** - run the relevant plugin against a local OpenSCD instance.
-5. **Review Code** - list issues only; make no fixes.
-6. **Review Code + Fix** - list and fix the relevant issues.
-7. **Document Architecture** - assess whether an ADR is warranted and draft one only if necessary.
-8. **Release** - update the relevant changelog and package versions.
-9. **Create Pull Request** - prepare a PR description and ask permission before posting it.
+Summarize changed files, validation, documentation status, remaining risks, and blocked operations. Stop after the requested task. Offer relevant next steps without executing them: **Lint + Format**, **Run Tests**, **Run Checks**, **Manual Test**, **Review Code**, **Review Code + Fix**, **Document Architecture** (ADR only if warranted), **Release**, **Create Pull Request** (local draft first; publication requires permission).
