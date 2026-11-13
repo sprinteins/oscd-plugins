@@ -1,6 +1,7 @@
 export type AccessPointData = {
 	name: string
 	description: string
+	serverAtApName?: string
 }
 
 export type IedData = {

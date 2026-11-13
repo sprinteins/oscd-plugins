@@ -9,6 +9,7 @@ import type {
 } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import {
+	buildEditsForDeleteAccessPoint,
 	buildInsertsForCreateAccessPoint,
 	createMultipleLNsInAccessPoint
 } from './accesspoint-edits'
@@ -103,6 +104,51 @@ describe('createMultipleLNsInAccessPoint', () => {
 
 	afterEach(() => {
 		vi.restoreAllMocks()
+	})
+
+	it('GIVEN an AccessPoint with ServerAt WHEN adding LNodes THEN adds them to the referenced Server', () => {
+		const serverAccessPoint = mockDocument.createElement('AccessPoint')
+		serverAccessPoint.setAttribute('name', 'ServerAP')
+		const sharedServer = mockDocument.createElement('Server')
+		serverAccessPoint.appendChild(sharedServer)
+		accessPoint.parentElement?.appendChild(serverAccessPoint)
+
+		const serverAt = mockDocument.createElement('ServerAt')
+		serverAt.setAttribute('apName', 'ServerAP')
+		accessPoint.appendChild(serverAt)
+
+		const edits = createMultipleLNsInAccessPoint({
+			sourceFunction: functionTemplate,
+			lNodes: [lnodeTemplate],
+			accessPoint,
+			doc: mockDocument,
+			equipmentMatches: []
+		})
+		const lDeviceEdit = edits.find(
+			(edit) =>
+				edit.node instanceof Element &&
+				edit.node.localName === 'LDevice'
+		)
+
+		expect(lDeviceEdit?.parent).toBe(sharedServer)
+		expect(collectEditsByTag(edits, 'Server')).toHaveLength(0)
+		expect(accessPoint.querySelector('Server')).toBeNull()
+	})
+
+	it('GIVEN ServerAt references an AP without a Server WHEN adding LNodes THEN throws an explicit error', () => {
+		const serverAt = mockDocument.createElement('ServerAt')
+		serverAt.setAttribute('apName', 'MissingAP')
+		accessPoint.appendChild(serverAt)
+
+		expect(() =>
+			createMultipleLNsInAccessPoint({
+				sourceFunction: functionTemplate,
+				lNodes: [lnodeTemplate],
+				accessPoint,
+				doc: mockDocument,
+				equipmentMatches: []
+			})
+		).toThrow('references AccessPoint "MissingAP" without a Server')
 	})
 
 	it('GIVEN an empty lNodes array WHEN creating lNodes THEN returns empty array', () => {
@@ -627,6 +673,39 @@ describe('buildInsertsForCreateAccessPoint', () => {
 	})
 
 	describe('Functionality Tests', () => {
+		it('GIVEN an SSD document with no LD0 types WHEN building edits THEN keeps the access point insertion', () => {
+			const ssdDoc = new DOMParser().parseFromString(
+				'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"></SCL>',
+				'application/xml'
+			)
+
+			const edits = buildInsertsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints: [{ name: 'AP1' }],
+				lnodeTypes: [],
+				doc: mockDocument,
+				ssdDoc
+			})
+
+			expect(edits).toHaveLength(1)
+			expect((edits[0].node as Element).getAttribute('name')).toBe('AP1')
+		})
+
+		it('GIVEN an AccessPoint with a ServerAt target WHEN building edits THEN creates ServerAt instead of Server', () => {
+			const edits = buildInsertsForCreateAccessPoint({
+				iedName: 'TestIED',
+				accessPoints: [{ name: 'AP2', serverAtApName: 'AP1' }],
+				lnodeTypes: [],
+				doc: mockDocument
+			})
+
+			const accessPointElement = edits[0].node as Element
+			const serverAtElement = accessPointElement.querySelector('ServerAt')
+
+			expect(serverAtElement?.getAttribute('apName')).toBe('AP1')
+			expect(accessPointElement.querySelector('Server')).toBeNull()
+		})
+
 		it('should create an AccessPoint element with correct structure', () => {
 			const accessPoints = [{ name: 'AP1' }]
 			const edits = buildInsertsForCreateAccessPoint({
@@ -750,6 +829,25 @@ describe('buildInsertsForCreateAccessPoint', () => {
 
 			expect(authenticationElements.length).toBe(1)
 			expect(authenticationElements[0].getAttribute('none')).toBe('true')
+		})
+	})
+
+	describe('buildEditsForDeleteAccessPoint', () => {
+		let mockDocument: Document
+		let accessPoint: Element
+
+		beforeEach(() => {
+			mockDocument = buildScl()
+			accessPoint = mockDocument.createElement('AccessPoint')
+		})
+
+		it('GIVEN an AccessPoint without LNodes WHEN building deletion edits THEN returns only the AccessPoint removal', () => {
+			const edits = buildEditsForDeleteAccessPoint({
+				accessPoint,
+				iedName: 'TestIED'
+			})
+
+			expect(edits).toEqual([{ node: accessPoint }])
 		})
 	})
 

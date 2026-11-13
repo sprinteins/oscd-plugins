@@ -559,7 +559,7 @@ describe('reMatchEquipment', () => {
 				)
 			})
 
-			it('THEN new EqFunction LNodes carry iedName from the assigned IED', () => {
+			it('THEN new EqFunction LNodes carry iedName and the renamed LDevice inst', () => {
 				const eqFuncInsert = (edits as EditorEdit[]).find((e) => {
 					const ed = e as EditorEdit
 					return (
@@ -572,9 +572,24 @@ describe('reMatchEquipment', () => {
 				const lnodes = Array.from(
 					(eqFuncInsert.node as Element).querySelectorAll('LNode')
 				)
+				const renameEdit = edits.find(
+					(edit): edit is SetAttributes =>
+						typeof edit === 'object' &&
+						edit !== null &&
+						'attributes' in edit &&
+						'element' in edit &&
+						edit.element instanceof Element &&
+						edit.element.localName === 'LDevice'
+				)
+				if (!renameEdit) {
+					throw new Error('Expected LDevice rename edit')
+				}
 				expect(lnodes.length).toBeGreaterThan(0)
 				for (const ln of lnodes) {
 					expect((ln as Element).getAttribute('iedName')).toBe('IED1')
+					expect(ln.getAttribute('ldInst')).toBe(
+						renameEdit.attributes?.inst
+					)
 				}
 			})
 		})

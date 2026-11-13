@@ -130,6 +130,40 @@ describe('buildUpdatesForRenameAccessPoint', () => {
 		})
 	})
 
+	it('GIVEN a host AccessPoint with ServerAt references WHEN renamed THEN updates each reference target', () => {
+		const xmlDocument = new DOMParser().parseFromString(
+			'<IED name="IED_A"></IED>',
+			'application/xml'
+		)
+		const ied = xmlDocument.documentElement
+		const host = xmlDocument.createElement('AccessPoint')
+		host.setAttribute('name', 'AP1')
+		host.appendChild(xmlDocument.createElement('Server'))
+		const aliasOne = xmlDocument.createElement('AccessPoint')
+		const serverAtOne = xmlDocument.createElement('ServerAt')
+		serverAtOne.setAttribute('apName', 'AP1')
+		aliasOne.appendChild(serverAtOne)
+		const aliasTwo = xmlDocument.createElement('AccessPoint')
+		const serverAtTwo = xmlDocument.createElement('ServerAt')
+		serverAtTwo.setAttribute('apName', 'AP1')
+		aliasTwo.appendChild(serverAtTwo)
+		ied.append(host, aliasOne, aliasTwo)
+
+		const edits = buildUpdatesForRenameAccessPoint({
+			accessPoint: host,
+			iedName: 'IED_A',
+			oldName: 'AP1',
+			newName: 'AP_NEW',
+			newDescription: ''
+		})
+
+		expect(edits).toHaveLength(3)
+		expect(edits[1].element).toBe(serverAtOne)
+		expect(edits[1].attributes?.apName).toBe('AP_NEW')
+		expect(edits[2].element).toBe(serverAtTwo)
+		expect(edits[2].attributes?.apName).toBe('AP_NEW')
+	})
+
 	describe('GIVEN an AccessPoint with an LD0 whose inst does NOT match the old AP name', () => {
 		let accessPoint: Element
 

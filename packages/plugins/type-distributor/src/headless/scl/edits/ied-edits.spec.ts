@@ -556,6 +556,23 @@ describe('buildInsertsForCreateIedWithAccessPoints', () => {
 			expect(server).not.toBeNull()
 		})
 
+		it('GIVEN an access point with a ServerAt target WHEN building edits THEN creates a ServerAt reference without a Server', () => {
+			const edits = buildInsertsForCreateIedWithAccessPoints({
+				name: 'TestIED',
+				accessPoints: [
+					{ name: 'AP1' },
+					{ name: 'AP2', serverAtApName: 'AP1' }
+				],
+				lnodeTypes: []
+			})
+
+			const apElement = edits[2].node as Element
+			expect(
+				apElement.querySelector('ServerAt')?.getAttribute('apName')
+			).toBe('AP1')
+			expect(apElement.querySelector('Server')).toBeNull()
+		})
+
 		it('GIVEN one access point WHEN building edits THEN Server contains Authentication with none="true"', () => {
 			// WHEN
 			const edits = buildInsertsForCreateIedWithAccessPoints({
