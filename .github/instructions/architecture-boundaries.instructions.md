@@ -15,5 +15,7 @@ applyTo: 'packages/**,doc/**'
 - Avoid circular dependencies and do not import plugin implementation code into shared core packages.
 - Keep headless logic independent from Svelte and browser-only APIs whenever the package structure provides a `headless/` area.
 - Preserve the OpenSCD custom-element contract: plugins default-export an element class and do not self-register it.
+- Root Svelte 5 plugins use `$props()` typed with `Plugin.CustomComponentsProps` from `@oscd-plugins/core-api/plugin/v1`. Preserve reflected `doc`, `docName`, `editCount`, `locale`, `pluginType`, and `isCustomInstance` props.
+- Reuse shared plugin/theme/document-template initialization actions from `@oscd-plugins/core-ui-svelte`; expose package name/version through plugin data attributes.
 - Read the relevant ADR and architecture reference before irreversible package, loading, or release changes.
 - If a change introduces a new boundary or data flow, document it in `doc/` and add an ADR when the decision is durable.
