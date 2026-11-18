@@ -6,10 +6,10 @@ Map canonical triage roles to this repository's GitHub label strings.
 
 | Canonical role | Tracker label | Meaning |
 | --- | --- | --- |
-| needs-triage | needs-triage | Maintainer needs to evaluate the issue |
-| needs-info | needs-info | Waiting on reporter for more information |
-| ready-for-agent | ready-for-agent | Fully specified, ready for an autonomous agent |
-| ready-for-human | ready-for-human | Requires human implementation |
-| wontfix | wontfix | Will not be actioned |
+| needs-triage | Status: Needs Triage | Maintainer needs to evaluate the issue |
+| needs-info | Status: Clarification Needed | Waiting on more information |
+| ready-for-agent | Status: Ready | Fully specified; anyone can pick it up without further discussion |
+| ready-for-human | Status: Needs Decision | Requires judgment, external access, or manual testing first |
+| wontfix | Status: Won't Fix | Will not be actioned |
 
-When a skill mentions a triage role, use its tracker label from this table. Edit the tracker-label column to change the vocabulary.
+When a skill mentions a triage role, use its tracker label from this table. Canonical role IDs stay as upstream skill vocabulary; tracker labels describe readiness, not who implements the work. Edit the tracker-label column to change the vocabulary.
