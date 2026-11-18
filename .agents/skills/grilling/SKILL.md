@@ -23,6 +23,13 @@ Format a round like so:
 
 Word each question so "yes" accepts your recommended answer.
 
+When the host provides a structured question tool (a form such as `ask_user`), ask the round through it instead, so each question renders on its own page:
+
+- One field per question. `title`: `Q<n> — <question title>`. `description`: the full question body, its choices, and `Recommended: <answer>`.
+- `message`: one line naming the round's theme. Every question lives in its own field.
+- Field type follows the answer shape: `boolean` with `default: true` for yes/no; `enum` with the recommended option as `default` for choices; free `string` only for open answers.
+- The form is complete when every field page can be answered alone, without scrolling back to another page.
+
 Each round the user answers reshapes the tree: settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
 
 Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), dispatch a sub-agent with a fresh context window to find it; don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report; ask the rest of the frontier now. The _decisions_ are the user's: put each to them and wait.
