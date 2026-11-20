@@ -1,2 +1,2 @@
-export { default as List } from "./list.svelte"
-export * from "./item"
+export * from './item'
+export { default as List } from './list.svelte'

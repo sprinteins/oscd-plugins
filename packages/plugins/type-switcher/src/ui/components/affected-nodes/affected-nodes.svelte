@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { type Item, List } from "../list";
+import { type Item, List } from '../list'
 
-  interface Props {
-    // Input
-    items: Item[]; // Internal
-  }
+interface Props {
+	// Input
+	items: Item[] // Internal
+}
 
-  let { items }: Props = $props();
+let { items }: Props = $props()
 </script>
 
 <div class="affected-nodes">

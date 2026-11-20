@@ -13,13 +13,14 @@
 
 <script lang="ts">
 // PACKAGE
-import jsonPackage from '../package.json'
-// CORE
-import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
+
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
-import TypeSwitcher from './ui/components/views/type-switcher.svelte'
+// CORE
+import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
 import { LegacyTheme } from '@oscd-plugins/ui'
+import jsonPackage from '../package.json'
+import TypeSwitcher from './ui/components/views/type-switcher.svelte'
 
 // props
 const {

@@ -1,63 +1,67 @@
-import { render, screen } from "@testing-library/svelte"
-import { describe, it, expect } from "vitest"
-import { CategorySelector } from "."
-import userEvent from "@testing-library/user-event"
-import type { ElementCategory } from "../../../headless/types/categories"
-import { UIState } from "../../../headless/ui-state"
+import { render, screen, waitFor } from '@testing-library/svelte'
+import userEvent from '@testing-library/user-event'
+import { beforeEach, describe, expect, it } from 'vitest'
+import CategorySelector from './category-selector.svelte'
 
-describe("GroupSelector", () => {
+describe('GIVEN the available type categories', () => {
+	let user: ReturnType<typeof userEvent.setup>
 
-	userEvent.setup()
+	beforeEach(() => {
+		user = userEvent.setup()
+		render(CategorySelector, {
+			labels: ['LN Type', 'DO Type', 'DA Type', 'Enum Type'],
+			selected: [],
+			testid: 'categories'
+		})
+	})
 
-	const categories: ElementCategory[] = [
-		"LN Type",
-		"DO Type",
-		"DA Type",
-		"Enum Type",
-	]
-
-	it("rendes the labels", () => {
-
-		// Arrange
-	
-		// Act
-		render(CategorySelector, { testid: "category-selector", labels: categories } )
-
-		// Assert
-		for(const choice of categories) {
-			const testid = `category-selector_${choice}`
-			expect(screen.getByTestId(testid)).toBeTruthy()
+	it('WHEN rendered THEN it displays each category', () => {
+		for (const label of ['LN Type', 'DO Type', 'DA Type', 'Enum Type']) {
+			expect(
+				screen.getByTestId(`categories_${label}`).textContent
+			).toContain(label)
 		}
-
 	})
 
+	it('WHEN categories are selected and deselected THEN each selection is independent', async () => {
+		const lnType = screen.getByTestId('categories_LN Type')
+		const doType = screen.getByTestId('categories_DO Type')
 
-	// Cannot figure out why clicks does not work
-	it.skip("can select an item", async () => {
+		await user.click(screen.getByText('LN Type'))
+		await user.click(screen.getByText('DO Type'))
 
-		
-		// // Arrange
-		// const handleChange = vi.fn()
-		// const container = await render(CategorySelector, { testid: "category-selector" })
-		// container.component.$on("change", handleChange)
-		// // container.component.$on("change", console.log)
-		// console.log(container.container.innerHTML)
-		
-		// // Act
-		// const element = await screen.getByTestId("category-selector_LN Type")
-		// console.log({element: element.outerHTML})
-		// // console.log("clicking")
-		// await userEvent.click( screen.getByTestId("category-selector_LN Type") )
-		// // console.log("clicking done")
-		// await fireEvent.click(screen.getByTestId("category-selector_LN Type"))
-		// await fireEvent.click(screen.getByTestId("category-selector_LN Type"))
-		// await fireEvent.click(screen.getByTestId("category-selector_LN Type"))
+		await waitFor(() => {
+			expect(lnType.classList.contains('mdc-chip--selected')).toBe(true)
+			expect(doType.classList.contains('mdc-chip--selected')).toBe(true)
+		})
 
-		// // fireEvent.click(screen.getByTestId("category-selector_DO Type"))
-		// expect(handleChange).toHaveBeenCalledTimes(1)
-		// // expect(subscriber).toHaveBeenLastCalledWith("LN Type")
+		await user.click(screen.getByText('LN Type'))
 
+		await waitFor(() => {
+			expect(lnType.classList.contains('mdc-chip--selected')).toBe(false)
+			expect(doType.classList.contains('mdc-chip--selected')).toBe(true)
+		})
+	})
+})
 
+it('GIVEN a preselected category WHEN rendered THEN its chip is selected', async () => {
+	render(CategorySelector, {
+		labels: ['LN Type', 'DO Type'],
+		selected: ['DO Type']
 	})
 
+	await waitFor(() => {
+		expect(
+			screen
+				.getByText('DO Type')
+				.closest('.mdc-chip')
+				?.classList.contains('mdc-chip--selected')
+		).toBe(true)
+	})
+	expect(
+		screen
+			.getByText('LN Type')
+			.closest('.mdc-chip')
+			?.classList.contains('mdc-chip--selected')
+	).toBe(false)
 })

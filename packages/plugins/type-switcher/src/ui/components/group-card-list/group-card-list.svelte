@@ -1,15 +1,19 @@
 <script lang="ts">
-	import { GroupCard } from "../group-card";
-	import type { CardItem } from "./card-item";
+import { GroupCard } from '../group-card'
+import type { CardItem } from './card-item'
 
-	interface Props {
-		// Input
-		onclick: (index: number) => void;
-		itemSets?: CardItem[];
-		selectedIndex?: number;
-	}
+interface Props {
+	// Input
+	onclick: (index: number) => void
+	itemSets?: CardItem[]
+	selectedIndex?: number
+}
 
-	let { onclick, itemSets = [], selectedIndex = $bindable<number>() }: Props = $props();
+let {
+	onclick,
+	itemSets = [],
+	selectedIndex = $bindable<number>()
+}: Props = $props()
 </script>
 
 <div class="group-card-list">

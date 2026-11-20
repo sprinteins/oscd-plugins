@@ -1,97 +1,97 @@
 <script lang="ts">
-	import { Button } from "@oscd-plugins/ui";
-	import type {
-		EventDetailRelink,
-		EventDetailTypeLinkerSelect,
-	} from "./events";
-	import { Select, Checkbox } from "@oscd-plugins/ui";
-	import { SvelteSet } from "svelte/reactivity";
+import { Button, Checkbox, Select } from '@oscd-plugins/ui'
+import { SvelteSet } from 'svelte/reactivity'
+import type { EventDetailRelink, EventDetailTypeLinkerSelect } from './events'
 
-	interface Props {
-		// Import
-		handleSelect: (detail: EventDetailTypeLinkerSelect) => void;
-		handleRelink: (detail: EventDetailRelink) => void;
-		items?: { label: string }[];
-		testid?: string;
+interface Props {
+	// Import
+	handleSelect: (detail: EventDetailTypeLinkerSelect) => void
+	handleRelink: (detail: EventDetailRelink) => void
+	items?: { label: string }[]
+	testid?: string
+}
+
+let {
+	handleSelect: select,
+	handleRelink: relink,
+	items = [],
+	testid = 'type-linker'
+}: Props = $props()
+
+// Internal
+let selectedLinkTargetIndex = $state(-1)
+let isSelected = $state(false)
+
+let checkedIndexes: SvelteSet<number> = new SvelteSet()
+
+function handleSelectAll() {
+	if (isSelected === false) {
+		isSelected = true
+		setAllCheckboxesChecked()
+	} else {
+		isSelected = false
+		setAllCheckboxesUnChecked()
+	}
+	const detail: EventDetailTypeLinkerSelect = {
+		indexes: selected
+	}
+	select(detail)
+}
+
+function setAllCheckboxesChecked() {
+	items.forEach((_, index) => {
+		checkedIndexes.add(index)
+	})
+	selected = Array(items.length)
+		.fill(true)
+		.map((_, i) => i)
+}
+
+function setAllCheckboxesUnChecked() {
+	items.forEach((_, index) => {
+		checkedIndexes.delete(index)
+	})
+	selected = []
+}
+
+function handleTargetInputChange(index: number) {
+	selectedLinkTargetIndex = index
+}
+
+function handleRelink(): void {
+	if (!isMergePossible) return
+	const detail: EventDetailRelink = {
+		sourceIndexes: selected,
+		targetIndex: selectedLinkTargetIndex
+	}
+	relink(detail)
+}
+
+let selected: number[] = $state([])
+
+function handleSelectionChange(e: Event, ii: number) {
+	const node = e.target as HTMLInputElement
+	const valueAsNumber = ii
+	const isCheckboxChecked = node.checked
+
+	if (isCheckboxChecked) {
+		selected = [...selected, valueAsNumber]
+		checkedIndexes.add(valueAsNumber)
+	} else {
+		selected = selected.filter((n) => n !== valueAsNumber)
+		checkedIndexes.delete(valueAsNumber)
 	}
 
-	let {
-		handleSelect: select,
-		handleRelink: relink,
-		items = [],
-		testid = "type-linker",
-	}: Props = $props();
+	isSelected = Array.from(selected).length === Array.from(items).length
 
-	// Internal
-	let selectedLinkTargetIndex = $state(-1);
-	let isSelected = $state(false);
-
-	let checkedIndexes: SvelteSet<number> = new SvelteSet();
-
-	function handleSelectAll() {
-		if (isSelected === false) {
-			isSelected = true;
-			setAllCheckboxesChecked();
-		} else {
-			isSelected = false;
-			setAllCheckboxesUnChecked();
-		}
-		const detail: EventDetailTypeLinkerSelect = {
-			indexes: selected,
-		};
-		select(detail);
+	const detail: EventDetailTypeLinkerSelect = {
+		indexes: selected
 	}
-
-	function setAllCheckboxesChecked() {
-		items.forEach((_, index) => checkedIndexes.add(index));
-		selected = Array(items.length)
-			.fill(true)
-			.map((_, i) => i);
-	}
-
-	function setAllCheckboxesUnChecked() {
-		items.forEach((_, index) => checkedIndexes.delete(index));
-		selected = [];
-	}
-
-	function handleTargetInputChange(index: number) {
-		selectedLinkTargetIndex = index;
-	}
-
-	function handleRelink(): void {
-		if (!isMergePossible) return;
-		const detail: EventDetailRelink = {
-			sourceIndexes: selected,
-			targetIndex: selectedLinkTargetIndex,
-		};
-		relink(detail);
-	}
-
-	let selected: number[] = $state([]);
-
-	function handleSelectionChange(e: Event, ii: number) {
-		const node = e.target as HTMLInputElement;
-		const valueAsNumber = ii;
-		const isCheckboxChecked = node.checked;
-
-		if (isCheckboxChecked) {
-			selected = [...selected, valueAsNumber];
-			checkedIndexes.add(valueAsNumber);
-		} else {
-			selected = selected.filter((n) => n !== valueAsNumber);
-			checkedIndexes.delete(valueAsNumber);
-		}
-
-		isSelected = Array.from(selected).length === Array.from(items).length;
-
-		const detail: EventDetailTypeLinkerSelect = {
-			indexes: selected,
-		};
-		select(detail);
-	}
-	let isTargetSelected = $derived(selectedLinkTargetIndex > -1);
-	let isSomeDuplicateSelected = $derived(selected.length > 0);
-	let isMergePossible = $derived(isSomeDuplicateSelected && isTargetSelected);
+	select(detail)
+}
+let isTargetSelected = $derived(selectedLinkTargetIndex > -1)
+let isSomeDuplicateSelected = $derived(selected.length > 0)
+let isMergePossible = $derived(isSomeDuplicateSelected && isTargetSelected)
 </script>
 
 <div class="type-linker" data-testid={testid}>

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.20] - 2026-11-12
+### Fixed
+- Switching LN types now updates the `lnType` reference instead of adding a `type` attribute
+### Changed
+- Relinking derives the reference attribute from the type element and raises an error instead of rewriting usages that do not match it
+- Moved duplicate loading, relinking, affected-node, and structure logic into `src/headless/type-switcher/`
+### Added
+- Vitest setup with headless unit tests and Svelte 5 component tests
+- `biome:check` and `ci-tests` scripts
+
 ## [0.0.19] - 2026-04-13
 ### Fixed
 - Styles lost on the group card due to specificity [#639](https://github.com/sprinteins/oscd-plugins/issues/639)

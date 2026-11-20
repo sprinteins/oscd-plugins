@@ -17,3 +17,32 @@ Proposed solution:
 - Solution:
   - We'll create a plugin that shows similar/equivalent Types and provide the possibility to move all usage from Type-B to Type-A
   - All dangling Types can be cleaned up by the "Cleanup" plugin
+
+The plugin emits editor actions for cloned usages. The reference attribute is
+derived from the switched type: `LNodeType` references are updated through
+`lnType`, while `DOType`, `DAType`, and `EnumType` references are updated
+through `type`. A usage that does not reference the source type through the
+expected attribute raises an error instead of being rewritten.
+
+The duplicate loading, relink, affected-node, and structure logic lives in
+`src/headless/type-switcher/`; the Svelte components only handle state and
+presentation.
+
+## Tests
+
+From the repository root, install and build the dependencies, then run:
+
+```sh
+pnpm type-switcher:install
+pnpm --filter @oscd-plugins/type-switcher test
+pnpm --filter @oscd-plugins/type-switcher test:coverage
+```
+
+The tests run in jsdom and cover category selection, duplicate groups, and
+switching type references in an SCD document.
+
+`ci-tests` runs, in order, the Biome check, the Svelte check, the build, and the tests with coverage:
+
+```sh
+pnpm --filter @oscd-plugins/type-switcher ci-tests
+```
