@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { HashedElementGroup } from '@oscd-plugins/core'
-import { Card, Sonner, toast } from '@oscd-plugins/core-ui-svelte'
+import { Card, Toast, toast } from '@oscd-plugins/core-ui-svelte'
 import {
 	createRelinkActions,
 	flattenCategories,
@@ -194,9 +194,7 @@ let itemsWithIcons = $derived(
 			<Structure items={structure} />
 		</Card.Root>
 	</div>
-	<div data-sonner-toaster-root>
-		<Sonner.Root mode="light" />
-	</div>
+	<Toast />
 </div>
 
 <style>
@@ -245,10 +243,6 @@ let itemsWithIcons = $derived(
 		height: 100%;
 		overflow: hidden;
 		min-width: 0;
-	}
-
-	[data-sonner-toaster-root] {
-		display: contents;
 	}
 
 	.typeswitcher :global(.panel) {
