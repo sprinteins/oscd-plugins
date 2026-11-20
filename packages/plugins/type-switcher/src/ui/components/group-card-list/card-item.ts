@@ -1,6 +1,6 @@
-import type { IconKeys } from "@oscd-plugins/ui"
+import type { IconKeys } from '@oscd-plugins/ui'
 
 export type CardItem = {
-	items: string[];
+	items: string[]
 	icon?: IconKeys
 }

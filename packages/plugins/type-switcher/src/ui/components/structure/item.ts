@@ -1,4 +1,4 @@
 export type Item = {
-	label: string,
-	type: string,
+	label: string
+	type: string
 }

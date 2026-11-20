@@ -1,1 +1,1 @@
-export { default as GroupCardList } from "./group-card-list.svelte"
+export { default as GroupCardList } from './group-card-list.svelte'

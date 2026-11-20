@@ -1,8 +1,8 @@
 export type EventDetailTypeLinkerSelect = {
-	indexes: number[],
+	indexes: number[]
 }
 
 export type EventDetailRelink = {
-	sourceIndexes: number[],
-	targetIndex: number,
+	sourceIndexes: number[]
+	targetIndex: number
 }

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Icons } from "@oscd-plugins/ui";
-	import type { Item } from "./item";
+import { Icons } from '@oscd-plugins/ui'
+import type { Item } from './item'
 
-	interface Props {
-		items: Item[];
-	}
+interface Props {
+	items: Item[]
+}
 
-	let { items }: Props = $props();
+let { items }: Props = $props()
 </script>
 
 <list>

@@ -1,6 +1,5 @@
 <script lang="ts">
-import { Counter } from '@oscd-plugins/ui'
-import { Icons, type IconKeys } from '@oscd-plugins/ui'
+import { Counter, type IconKeys, Icons } from '@oscd-plugins/ui'
 
 interface Props {
 	// Input

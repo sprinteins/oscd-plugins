@@ -1,7 +1,7 @@
-import type { IconKeys } from "@oscd-plugins/ui"
+import type { IconKeys } from '@oscd-plugins/ui'
 
 export type Item = {
-	icon?: IconKeys;
-	primaryText: string;
-	secondaryText: string;
-};
+	icon?: IconKeys
+	primaryText: string
+	secondaryText: string
+}

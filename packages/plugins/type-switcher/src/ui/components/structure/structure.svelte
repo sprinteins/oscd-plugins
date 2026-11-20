@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { type Item, List } from "../list";
+import { type Item, List } from '../list'
 
-  interface Props {
-    // Input
-    items: Item[];
-  }
+interface Props {
+	// Input
+	items: Item[]
+}
 
-  let { items }: Props = $props();
+let { items }: Props = $props()
 </script>
 
 <div class="structure">

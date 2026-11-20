@@ -2,10 +2,7 @@ import { webcrypto } from 'node:crypto'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ElementCategoryMap } from '@/headless/types'
 import { duplicateTypesScd } from '@/testing/duplicate-types'
-import {
-	flattenCategories,
-	loadDuplicateCategories
-} from './duplicates'
+import { flattenCategories, loadDuplicateCategories } from './duplicates'
 
 function ids(categories: ElementCategoryMap) {
 	return Object.fromEntries(
