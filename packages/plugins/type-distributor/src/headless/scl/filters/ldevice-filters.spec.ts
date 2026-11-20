@@ -11,6 +11,7 @@ describe('filterByLDevice', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD_Circuit_Breaker',
@@ -39,6 +40,7 @@ describe('filterByLDevice', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP2',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD_Measurement',
@@ -62,6 +64,7 @@ describe('filterByLDevice', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Main',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD_Control_Unit',
@@ -96,6 +99,7 @@ describe('filterByLDevice', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Test',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: '',

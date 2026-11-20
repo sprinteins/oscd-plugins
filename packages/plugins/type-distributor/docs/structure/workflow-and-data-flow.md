@@ -102,8 +102,41 @@ These edits are committed in one transaction through the OpenSCD editor.
 - it checks whether the bay type must be applied first
 - it resolves the right function UUID for bay-level and equipment-level functions
 - it creates the required `LDevice` and `LNode` edits
-- it updates the bay-side `LNode` connections when needed
+- it updates the bay-side `LNode` connections with `iedName` and the target
+  LDevice's `inst` as `ldInst` when needed, using the same naming helper as
+  LDevice creation
 - it marks the assigned content in `assignedLNodesStore`
+
+### 7. Delete assigned content
+
+The normal assignment flow supports multiple IEDs serving one Bay. The IED
+selector hides IEDs already associated with another Bay, but deletion cleanup
+does not rely on that UI filter or the currently selected Bay.
+
+Deleting an AccessPoint, LDevice, or LN clears references to the actual logical
+nodes being removed throughout the document, including references outside Bays.
+Deleting the last LN of an LDevice also removes that LDevice and clears its LN0
+references.
+
+References with `ldInst` are matched by IED name, LDevice instance, LN class,
+instance, and prefix. Older distributor-created LNodes may omit `ldInst`; those
+are resolved through their parent Function/EqFunction UUID and the generated
+LDevice instance suffix instead.
+
+Only Bays containing cleared references are considered for template cleanup.
+If any connection to any IED remains, the Bay keeps its template assignment and
+structures. Otherwise, cleanup clears the Bay's `uuid` and `templateUuid`,
+clears mapping metadata on its direct ConductingEquipment children, and removes
+their EqFunctions plus the Bay's direct Functions and GeneralEquipment.
+Unassigned LNodes (missing/empty `iedName` or `iedName="None"`) do not keep a Bay
+assigned.
+
+The IED deletion action itself only accepts IEDs without AccessPoints.
+
+In the IED/AccessPoint creation dialog, removing a pending host also removes
+pending ServerAt AccessPoints that reference it. If the active form entry uses
+that host, it resets to an empty AccessPoint entry. Unrelated pending entries
+remain unchanged; the SCD is not modified until the form is submitted.
 
 ## Interaction diagram
 

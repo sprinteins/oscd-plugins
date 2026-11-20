@@ -33,7 +33,11 @@ export function buildEditForCreateIed(
 type buildInsertsForCreateIedWithAccessPointsParams = {
 	name: string
 	description?: string
-	accessPoints: { name: string; description?: string }[]
+	accessPoints: {
+		name: string
+		description?: string
+		serverAtApName?: string
+	}[]
 	lnodeTypes: LNodeType[]
 	ssdDoc?: XMLDocument | null
 }

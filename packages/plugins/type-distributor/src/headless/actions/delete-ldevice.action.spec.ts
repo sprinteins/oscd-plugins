@@ -1,18 +1,11 @@
 import type { XMLEditor } from '@openscd/oscd-editor'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildEditsForDeleteLDevice } from '../scl/edits'
-import { bayStore } from '../stores'
 import { getEditor } from '../utils'
 import { deleteLDevice } from './delete-ldevice.action'
 
 vi.mock('../scl/edits', () => ({
 	buildEditsForDeleteLDevice: vi.fn()
-}))
-
-vi.mock('../stores', () => ({
-	bayStore: {
-		scdBay: null as Element | null
-	}
 }))
 
 vi.mock('../utils', () => ({
@@ -27,7 +20,6 @@ describe('deleteLDevice', () => {
 
 	beforeEach(() => {
 		vi.mocked(getEditor).mockReturnValue(mockEditor)
-		bayStore.scdBay = document.createElement('Bay')
 	})
 
 	afterEach(() => {
@@ -62,8 +54,6 @@ describe('deleteLDevice', () => {
 	})
 
 	it('GIVEN valid input WHEN deleteLDevice is called THEN passes the correct params to the edit builder', () => {
-		const mockBay = document.createElement('Bay')
-		bayStore.scdBay = mockBay
 		vi.mocked(buildEditsForDeleteLDevice).mockReturnValue([
 			{ node: document.createElement('LDevice') }
 		])
@@ -77,8 +67,7 @@ describe('deleteLDevice', () => {
 		expect(buildEditsForDeleteLDevice).toHaveBeenCalledWith({
 			iedName,
 			accessPoint: mockAccessPoint,
-			ldInst,
-			selectedBay: mockBay
+			ldInst
 		})
 	})
 })

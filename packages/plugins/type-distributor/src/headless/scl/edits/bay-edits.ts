@@ -6,6 +6,7 @@ import type {
 } from '@/headless/common-types'
 import type { EquipmentMatch } from '@/headless/domain/matching'
 import { bayStore, ssdImportStore } from '@/headless/stores'
+import { resolveLDeviceInst } from '../elements'
 
 type ResolveFunctionElementUuidParams = {
 	geEquipmentUuid: string | undefined
@@ -225,13 +226,14 @@ function choosePreferredMatch(matches: Element[]): Element | null {
 	return unassigned ?? matches[0]
 }
 
-function createSetIedNameEdit(
+function createSetLNodeConnectionEdit(
 	element: Element,
-	iedName: string
+	iedName: string,
+	ldInst: string
 ): SetAttributes {
 	return {
 		element,
-		attributes: { iedName },
+		attributes: { iedName, ldInst },
 		attributesNS: {}
 	}
 }
@@ -254,6 +256,7 @@ export function buildUpdatesForBayLNode({
 	functionElementUuid
 }: BuildUpdatesForBayLNodeParams): SetAttributes[] {
 	const edits: SetAttributes[] = []
+	let resolvedLDeviceInst: string | undefined
 
 	for (const lNode of lNodes) {
 		const lnodeElement = findMatchingLNodeElement({
@@ -271,7 +274,19 @@ export function buildUpdatesForBayLNode({
 		if (currentIedName) {
 			continue
 		}
-		edits.push(createSetIedNameEdit(lnodeElement, iedName))
+		resolvedLDeviceInst ??= resolveLDeviceInst({
+			sourceFunction,
+			equipmentUuid,
+			equipmentMatches,
+			functionUuidOverride: functionElementUuid
+		})
+		edits.push(
+			createSetLNodeConnectionEdit(
+				lnodeElement,
+				iedName,
+				resolvedLDeviceInst
+			)
+		)
 	}
 
 	return edits

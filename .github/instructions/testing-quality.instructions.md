@@ -11,11 +11,9 @@ applyTo: 'packages/**/src/**/*.{ts,js,svelte}'
 ## Test scope
 
 - Put business-logic and component behavior tests in the owning package.
-- Keep tests next to the implementation and use the package's existing fixtures and mocks.
-- Test observable behavior through public interfaces. Avoid tests coupled to private helpers or implementation details.
-- Prefer realistic SCD/XML fixtures and integration-oriented tests when the runtime is practical; avoid unnecessary mocks.
+- Test agreed observable behavior through public interfaces. Canonical [vitest-test](../../.agents/skills/vitest-test/SKILL.md) owns placement, naming, fixtures/mocks, and coverage validation; [tdd](../../.agents/skills/tdd/SKILL.md) owns the source-plus-test loop.
 - `core/legacy` tests use Chrome/Chromium browser mode. Plugin and UI tests generally use the environment declared by their package configuration, commonly `jsdom`.
-- For `*.spec.ts`, follow [vitest-test.instructions.md](vitest-test.instructions.md) and load the [`vitest-test` skill](../skills/vitest-test/SKILL.md) before editing.
+- For `*.spec.ts`, follow [vitest-test.instructions.md](vitest-test.instructions.md) before editing.
 
 ## Validation workflow
 

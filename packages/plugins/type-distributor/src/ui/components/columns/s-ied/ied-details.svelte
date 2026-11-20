@@ -1,15 +1,14 @@
 <script lang="ts">
 import {
-	filterByAccessPoint,
-	filterByIED,
-	filterByLDevice,
-	filterByLN,
-	type IEDData,
-	queryLDevicesFromAccessPoint,
+	filterAccessPointGroupsByAccessPoint,
+	filterIedDataBySearch,
+	groupAccessPointsByServer,
+	queryIedDisplayData,
 	type SearchType
 } from '@/headless/scl'
 import AccessPoint from './access-point.svelte'
 import IedEmptyItem from './ied-empty-item.svelte'
+import ServerAtAccessPoint from './server-at-access-point.svelte'
 
 const {
 	iedItems,
@@ -22,52 +21,53 @@ const {
 } = $props()
 
 const sIedData = $derived.by(() => {
-	const data: IEDData[] = iedItems.map((iedItem) => {
-		const name = iedItem.getAttribute('name') ?? 'Unnamed IED'
-		const accessPoints = Array.from(
-			iedItem.querySelectorAll(':scope > AccessPoint')
-		).map((ap) => {
-			const lDevices = queryLDevicesFromAccessPoint(ap)
-			return {
-				element: ap,
-				name: ap.getAttribute('name'),
-				lDevices
-			}
-		})
-		return { name, accessPoints, element: iedItem }
+	const data = queryIedDisplayData(iedItems)
+	const filteredIeds = filterIedDataBySearch(data, searchType, searchTerm)
+	const accessPointsByIed = new Map(
+		data.map((ied) => [ied.element, ied.accessPoints])
+	)
+
+	return filteredIeds.map((ied) => {
+		const accessPointGroups = filterAccessPointGroupsByAccessPoint(
+			groupAccessPointsByServer(
+				accessPointsByIed.get(ied.element) ?? ied.accessPoints
+			),
+			ied.accessPoints
+		)
+		return { ...ied, accessPointGroups }
 	})
-
-	if (!searchTerm) return data
-
-	switch (searchType) {
-		case 'IED':
-			return filterByIED(data, searchTerm)
-		case 'AccessPoint':
-			return filterByAccessPoint(data, searchTerm)
-		case 'LDevice':
-			return filterByLDevice(data, searchTerm)
-		case 'LN/LN0':
-			return filterByLN(data, searchTerm)
-		default:
-			return data
-	}
 })
 </script>
 {#if sIedData && sIedData.length > 0}
   <div class="space-y-2 my-2">
-    {#each sIedData as { name: iedName, accessPoints, element: iedElement }}
-      {#if accessPoints.length === 0}
-        <IedEmptyItem {iedName} {iedElement} />
+    {#each sIedData as ied (ied.element)}
+      {#if ied.accessPoints.length === 0}
+        <IedEmptyItem iedName={ied.name} iedElement={ied.element} />
       {:else}
-        {#each accessPoints as { element: accessPoint, name: apName, lDevices }}
-          <AccessPoint
-            {accessPoint}
-            {apName}
-            {lDevices}
-            {iedName}
-						{iedElement}
-          />
-        {/each}
+        <section class="space-y-2">
+          <h2 class="px-1 text-sm font-semibold">{ied.name}</h2>
+          {#each ied.accessPointGroups as group (group.type === 'host' ? group.host.element : group.accessPoint.element)}
+            {#if group.type === 'host'}
+              <AccessPoint
+                accessPoint={group.host.element}
+                apName={group.host.name}
+                lDevices={group.host.lDevices}
+                serverAtAccessPoints={group.serverAtAccessPoints}
+                iedName={ied.name}
+                iedElement={ied.element}
+              />
+            {:else}
+              <ServerAtAccessPoint
+                accessPoint={group.accessPoint.element}
+                apName={group.accessPoint.name}
+                serverAtApName={group.accessPoint.serverAt?.apName ?? ''}
+                hostAvailable={false}
+                iedName={ied.name}
+                iedElement={ied.element}
+              />
+            {/if}
+          {/each}
+        </section>
       {/if}
     {/each}
   </div>

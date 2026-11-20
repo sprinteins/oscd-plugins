@@ -1,18 +1,11 @@
 import type { Insert, XMLEditor } from '@openscd/oscd-editor'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildEditsForDeleteAccessPoint } from '../scl/edits/'
-import { bayStore } from '../stores'
 import { getEditor } from '../utils'
 import { deleteAccessPointFromIed } from './delete-access-point.action'
 
 vi.mock('../scl/edits/', () => ({
 	buildEditsForDeleteAccessPoint: vi.fn()
-}))
-
-vi.mock('../stores', () => ({
-	bayStore: {
-		scdBay: null as Element | null
-	}
 }))
 
 vi.mock('../utils', () => ({
@@ -34,34 +27,24 @@ describe('deleteAccessPointFromIed', () => {
 		vi.mocked(buildEditsForDeleteAccessPoint).mockReturnValue([
 			{ node: document.createElement('AccessPoint') } as unknown as Insert
 		])
-		bayStore.scdBay = document.createElement('Bay')
 	})
 
 	afterEach(() => {
 		vi.restoreAllMocks()
 	})
 
-	it('GIVEN hasLDevices is true AND no bay is selected WHEN deleteAccessPointFromIed is called THEN returns without committing', () => {
-		bayStore.scdBay = null
+	it('GIVEN an AccessPoint WHEN deleteAccessPointFromIed is called THEN commits without requiring Bay selection', () => {
+		const accessPoint = makeAccessPoint('AP1')
 
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
-			accessPoint: makeAccessPoint('AP1'),
-			hasLDevices: true
+			accessPoint
 		})
 
-		expect(mockEditor.commit).not.toHaveBeenCalled()
-	})
-
-	it('GIVEN hasLDevices is false AND no bay is selected WHEN deleteAccessPointFromIed is called THEN proceeds to commit', () => {
-		bayStore.scdBay = null
-
-		deleteAccessPointFromIed({
-			iedName: 'IED_A',
-			accessPoint: makeAccessPoint('AP1'),
-			hasLDevices: false
+		expect(buildEditsForDeleteAccessPoint).toHaveBeenCalledWith({
+			accessPoint,
+			iedName: 'IED_A'
 		})
-
 		expect(mockEditor.commit).toHaveBeenCalled()
 	})
 
@@ -70,8 +53,7 @@ describe('deleteAccessPointFromIed', () => {
 
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
-			accessPoint: makeAccessPoint('AP1'),
-			hasLDevices: false
+			accessPoint: makeAccessPoint('AP1')
 		})
 
 		expect(mockEditor.commit).not.toHaveBeenCalled()
@@ -80,8 +62,7 @@ describe('deleteAccessPointFromIed', () => {
 	it('GIVEN a named access point WHEN deleteAccessPointFromIed is called THEN commits with the AP name in the title', () => {
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
-			accessPoint: makeAccessPoint('AP1'),
-			hasLDevices: false
+			accessPoint: makeAccessPoint('AP1')
 		})
 
 		expect(mockEditor.commit).toHaveBeenCalledWith(expect.anything(), {
@@ -92,8 +73,7 @@ describe('deleteAccessPointFromIed', () => {
 	it('GIVEN an access point without a name WHEN deleteAccessPointFromIed is called THEN commits with (unnamed) in the title', () => {
 		deleteAccessPointFromIed({
 			iedName: 'IED_A',
-			accessPoint: makeAccessPoint(),
-			hasLDevices: false
+			accessPoint: makeAccessPoint()
 		})
 
 		expect(mockEditor.commit).toHaveBeenCalledWith(expect.anything(), {

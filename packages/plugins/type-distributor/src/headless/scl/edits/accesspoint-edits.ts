@@ -14,17 +14,32 @@ import {
 	createServerElementWithAuth,
 	isLNPresentInDevice,
 	queryLDevice,
-	queryServer
+	queryOwnServer,
+	queryServerAtAccessPointsFromHost,
+	queryServerAtElement,
+	resolveServer
 } from '../elements'
-import { queryIedElement, queryLDevicesFromAccessPoint } from '../queries'
-import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
+import { queryIedElement } from '../queries'
 import { buildInsertsForLd0DataTypes } from './data-type-edits'
+import { buildUpdatesForClearingLNodeConnections } from './lnode-connections.edits'
 
 function ensureServer(
 	accessPoint: Element,
 	doc: XMLDocument
 ): { serverElement: Element; edit: Insert | undefined } {
-	const existingServer = queryServer(accessPoint)
+	const serverAt = queryServerAtElement(accessPoint)
+	if (serverAt) {
+		const serverAtApName = serverAt.getAttribute('apName')
+		const sharedServer = resolveServer(accessPoint)
+		if (!sharedServer) {
+			throw new Error(
+				`ServerAt on AccessPoint "${accessPoint.getAttribute('name') ?? ''}" references AccessPoint "${serverAtApName ?? ''}" without a Server`
+			)
+		}
+		return { serverElement: sharedServer, edit: undefined }
+	}
+
+	const existingServer = queryOwnServer(accessPoint)
 	if (existingServer) {
 		return { serverElement: existingServer, edit: undefined }
 	}
@@ -179,7 +194,11 @@ export function createMultipleLNsInAccessPoint({
 type BuildInsertsForAccessPointsParams = {
 	doc: XMLDocument
 	parent: Element
-	accessPoints: { name: string; description?: string }[]
+	accessPoints: {
+		name: string
+		description?: string
+		serverAtApName?: string
+	}[]
 	lnodeTypes: LNodeType[]
 }
 
@@ -195,6 +214,15 @@ export function buildInsertsForAccessPoints({
 			name: ap.name,
 			desc: ap.description ?? null
 		})
+		if (ap.serverAtApName) {
+			apElement.appendChild(
+				createElement(doc, 'ServerAt', {
+					apName: ap.serverAtApName
+				})
+			)
+			return { node: apElement, parent, reference: null } as Insert
+		}
+
 		const serverElement = createElement(doc, 'Server', {})
 		const authElement = createElement(doc, 'Authentication', {
 			none: 'true'
@@ -210,7 +238,11 @@ export function buildInsertsForAccessPoints({
 
 interface BuildInsertsForCreateAccessPointParams {
 	iedName: string
-	accessPoints: { name: string; description?: string }[]
+	accessPoints: {
+		name: string
+		description?: string
+		serverAtApName?: string
+	}[]
 	lnodeTypes: LNodeType[]
 	doc: XMLDocument
 	ssdDoc?: XMLDocument | null
@@ -247,40 +279,36 @@ export function buildInsertsForCreateAccessPoint({
 interface BuildEditsForDeleteAccessPointParams {
 	accessPoint: Element
 	iedName: string
-	selectedBay: Element | null
 }
 
 export function buildEditsForDeleteAccessPoint({
-	selectedBay,
 	accessPoint,
 	iedName
 }: BuildEditsForDeleteAccessPointParams): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
 
-	if (selectedBay) {
-		const bayLNodeTemplates: LNodeTemplate[] = queryLDevicesFromAccessPoint(
-			accessPoint
-		).flatMap((ld) =>
-			ld.lns.map((ln) => ({
-				lnClass: ln.lnClass,
-				lnType: ln.lnType,
-				lnInst: ln.inst,
-				iedName: ln.iedName,
-				ldInst: ln.ldInst
-			}))
+	const lnElements = Array.from(
+		accessPoint.querySelectorAll(
+			':scope > Server > LDevice > LN, :scope > Server > LDevice > LN0'
 		)
+	)
 
-		const bayEdits = buildUpdatesForClearingBayLNodeConnections({
-			selectedBay,
-			lNodeTemplates: bayLNodeTemplates,
-			iedName
-		})
-		edits.push(...bayEdits)
-	}
+	const connectionEdits = buildUpdatesForClearingLNodeConnections({
+		document: accessPoint.ownerDocument,
+		lnElements,
+		iedName
+	})
+	edits.push(...connectionEdits)
+
+	edits.push(
+		...queryServerAtAccessPointsFromHost(accessPoint).map(
+			(serverAtAccessPoint): Remove => ({ node: serverAtAccessPoint })
+		)
+	)
 
 	edits.push({
 		node: accessPoint
-	} as Remove)
+	})
 
 	return edits
 }

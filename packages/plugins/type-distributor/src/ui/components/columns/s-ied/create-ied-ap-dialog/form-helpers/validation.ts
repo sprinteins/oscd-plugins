@@ -5,10 +5,12 @@ import {
 	createFormSchema,
 	createIedSchema
 } from './schemas'
+import { validateServerAtTargets } from './server-at-validation'
 import type {
 	AccessPointContext,
 	AccessPointData,
 	FieldErrors,
+	FormErrors,
 	IedData
 } from './types'
 
@@ -42,6 +44,12 @@ export function validateSubmission({
 	xmlDocument,
 	ssdDocument
 }: ValidateSubmissionParams) {
+	const serverAtErrors = validateServerAtTargets(
+		ied,
+		accessPoints,
+		xmlDocument
+	)
+
 	const existingNames = ied.isNew
 		? []
 		: queryAccessPointsFromIed(xmlDocument, ied.name.trim())
@@ -54,7 +62,12 @@ export function validateSubmission({
 		iedName: ied.name
 	}).safeParse({ ied, ap: accessPoints })
 
-	if (result.success) return null
+	if (result.success && serverAtErrors.length === 0) return null
 
-	return z.treeifyError(result.error)
+	const errors: FormErrors = result.success
+		? {}
+		: z.treeifyError(result.error)
+	return serverAtErrors.length > 0
+		? { ...errors, errors: [...(errors.errors ?? []), ...serverAtErrors] }
+		: errors
 }

@@ -1,26 +1,20 @@
 import type { Remove, SetAttributes } from '@openscd/oscd-api'
-import type { IedLNData, LNodeTemplate } from '@/headless/common-types'
+import type { IedLNData } from '@/headless/common-types'
 import { queryLDeviceFromAccessPoint, queryLNInLDevice } from '../elements'
-import { buildUpdatesForClearingBayLNodeConnections } from './bay-connections.helper'
+import { buildUpdatesForClearingLNodeConnections } from './lnode-connections.edits'
 
 interface BuildEditsForDeleteLNFromAccessPointParams {
 	iedName: string
 	accessPoint: Element
 	ln: IedLNData
-	selectedBay: Element | null
 }
 
 export function buildEditsForDeleteLNFromAccessPoint({
 	iedName,
 	accessPoint,
-	ln,
-	selectedBay
+	ln
 }: BuildEditsForDeleteLNFromAccessPointParams): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
-
-	if (!selectedBay) {
-		throw new Error('No bay selected')
-	}
 
 	const ldInst = ln.ldInst
 	if (!ldInst) {
@@ -44,24 +38,17 @@ export function buildEditsForDeleteLNFromAccessPoint({
 		)
 	}
 
-	const lNodeTemplates: LNodeTemplate[] = [
-		{
-			lnClass: ln.lnClass,
-			lnType: ln.lnType,
-			lnInst: ln.inst,
-			ldInst
-		}
-	]
-
-	const bayEdits = buildUpdatesForClearingBayLNodeConnections({
-		selectedBay,
-		lNodeTemplates,
-		iedName
-	})
-	edits.push(...bayEdits)
-
 	const allLNs = Array.from(lDevice.querySelectorAll(':scope > LN'))
 	const isLastLN = allLNs.length === 1
+
+	const connectionEdits = buildUpdatesForClearingLNodeConnections({
+		document: accessPoint.ownerDocument,
+		lnElements: isLastLN
+			? Array.from(lDevice.querySelectorAll(':scope > LN, :scope > LN0'))
+			: [lnElement],
+		iedName
+	})
+	edits.push(...connectionEdits)
 
 	if (isLastLN) {
 		edits.push({
@@ -80,20 +67,14 @@ interface BuildEditsForDeleteLDeviceParams {
 	iedName: string
 	accessPoint: Element
 	ldInst: string
-	selectedBay: Element | null
 }
 
 export function buildEditsForDeleteLDevice({
 	iedName,
 	accessPoint,
-	ldInst,
-	selectedBay
+	ldInst
 }: BuildEditsForDeleteLDeviceParams): (Remove | SetAttributes)[] {
 	const edits: (Remove | SetAttributes)[] = []
-
-	if (!selectedBay) {
-		throw new Error('No bay selected')
-	}
 
 	const lDevice = queryLDeviceFromAccessPoint(accessPoint, ldInst)
 	if (!lDevice) {
@@ -106,19 +87,12 @@ export function buildEditsForDeleteLDevice({
 		lDevice.querySelectorAll(':scope > LN, :scope > LN0')
 	)
 
-	const lNodeTemplates: LNodeTemplate[] = lnElements.map((lnElement) => ({
-		lnClass: lnElement.getAttribute('lnClass') ?? '',
-		lnType: lnElement.getAttribute('lnType') ?? '',
-		lnInst: lnElement.getAttribute('inst') ?? '',
-		ldInst
-	}))
-
-	const bayEdits = buildUpdatesForClearingBayLNodeConnections({
-		selectedBay,
-		lNodeTemplates,
+	const connectionEdits = buildUpdatesForClearingLNodeConnections({
+		document: accessPoint.ownerDocument,
+		lnElements,
 		iedName
 	})
-	edits.push(...bayEdits)
+	edits.push(...connectionEdits)
 
 	edits.push({
 		node: lDevice

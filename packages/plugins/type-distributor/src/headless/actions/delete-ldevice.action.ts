@@ -1,5 +1,4 @@
 import { buildEditsForDeleteLDevice } from '../scl/edits'
-import { bayStore } from '../stores'
 import { getEditor } from '../utils'
 
 type DeleteLDeviceParams = {
@@ -17,8 +16,7 @@ export function deleteLDevice({
 	const edits = buildEditsForDeleteLDevice({
 		iedName,
 		accessPoint,
-		ldInst,
-		selectedBay: bayStore.scdBay
+		ldInst
 	})
 	if (!(edits.length > 0)) {
 		console.warn(

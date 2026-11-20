@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
 	queryAccessPointsFromIed,
 	queryIEDs,
-	queryIedExists
+	queryIedDisplayData,
+	queryIedExists,
+	queryServerHostApNamesFromIed
 } from './ied-queries'
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
@@ -92,6 +94,106 @@ describe('queryIEDs', () => {
 		expect(iedNames).toContain('IED4')
 		expect(iedNames).not.toContain('IED2')
 		expect(result.length).toBe(3)
+	})
+
+	describe('queryServerHostApNamesFromIed', () => {
+		it('GIVEN an IED with Server and ServerAt access points WHEN queried THEN returns only named access points with a Server', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<IED name="IED1">
+						<AccessPoint name="AP1"><Server /></AccessPoint>
+						<AccessPoint name="AP2"><ServerAt apName="AP1" /></AccessPoint>
+						<AccessPoint><Server /></AccessPoint>
+						<Other><Server /></Other>
+					</IED>
+				</SCL>`,
+				'application/xml'
+			)
+
+			expect(queryServerHostApNamesFromIed(doc, 'IED1')).toEqual(['AP1'])
+		})
+
+		it('GIVEN no document or matching IED WHEN queried THEN returns no access points', () => {
+			const doc = new DOMParser().parseFromString(
+				'<SCL xmlns="http://www.iec.ch/61850/2003/SCL"></SCL>',
+				'application/xml'
+			)
+
+			expect(queryServerHostApNamesFromIed(null, 'IED1')).toEqual([])
+			expect(queryServerHostApNamesFromIed(doc, 'IED1')).toEqual([])
+		})
+	})
+
+	describe('queryIedDisplayData', () => {
+		it('GIVEN IEDs with host, ServerAt, and unnamed access points WHEN queried THEN returns presentation data with explicit ServerAt state', () => {
+			const doc = new DOMParser().parseFromString(
+				`<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+					<IED name="IED1">
+						<AccessPoint name="Host">
+							<Server><LDevice inst="LD0"><LN0 lnClass="LLN0" lnType="LLN0" inst="" /></LDevice></Server>
+						</AccessPoint>
+						<AccessPoint name="Alias"><ServerAt apName="Host" /></AccessPoint>
+						<AccessPoint />
+					</IED>
+					<IED />
+				</SCL>`,
+				'application/xml'
+			)
+
+			expect(
+				queryIedDisplayData(Array.from(doc.querySelectorAll('IED')))
+			).toEqual([
+				{
+					name: 'IED1',
+					element: doc.querySelector('IED[name="IED1"]'),
+					accessPoints: [
+						{
+							element: doc.querySelector(
+								'AccessPoint[name="Host"]'
+							),
+							name: 'Host',
+							lDevices: [
+								{
+									ldInst: 'LD0',
+									lns: [
+										{
+											lnClass: 'LLN0',
+											lnType: 'LLN0',
+											inst: '',
+											prefix: '',
+											iedName: undefined,
+											ldInst: 'LD0'
+										}
+									]
+								}
+							],
+							serverAt: null
+						},
+						{
+							element: doc.querySelector(
+								'AccessPoint[name="Alias"]'
+							),
+							name: 'Alias',
+							lDevices: [],
+							serverAt: { apName: 'Host' }
+						},
+						{
+							element: doc.querySelector(
+								'AccessPoint:not([name])'
+							),
+							name: null,
+							lDevices: [],
+							serverAt: null
+						}
+					]
+				},
+				{
+					name: 'Unnamed IED',
+					element: doc.querySelector('IED:not([name])'),
+					accessPoints: []
+				}
+			])
+		})
 	})
 
 	describe('queryIedExists', () => {

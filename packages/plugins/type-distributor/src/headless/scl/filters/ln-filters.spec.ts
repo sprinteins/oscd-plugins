@@ -11,6 +11,7 @@ describe('filterByLN', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP1',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD0',
@@ -45,6 +46,7 @@ describe('filterByLN', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP2',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD_Meas',
@@ -68,6 +70,7 @@ describe('filterByLN', () => {
 				{
 					element: document.createElement('AccessPoint'),
 					name: 'AP_Main',
+					serverAt: null,
 					lDevices: [
 						{
 							ldInst: 'LD_Control',

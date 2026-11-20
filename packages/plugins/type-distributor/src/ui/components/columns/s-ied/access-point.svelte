@@ -7,34 +7,48 @@ import {
 } from '@oscd-plugins/core-ui-svelte'
 import { deleteAccessPointFromIed } from '@/headless/actions'
 import type { IedLDeviceData } from '@/headless/common-types'
+import {
+	type FilteredAccessPoint,
+	queryServerAtAccessPointsFromHost
+} from '@/headless/scl'
 import { dndStore } from '@/headless/stores'
+import DeleteHostAccessPointConfirmation from './delete-host-access-point-confirmation.svelte'
 import LDevice from './l-device.svelte'
-import { RenameCombinedDialogForm } from './rename-dialogs'
+import { openRenameAccessPointDialog } from './rename-access-point.dialog'
+import ServerAtAccessPoint from './server-at-access-point.svelte'
 
 interface Props {
 	accessPoint: Element
 	apName: string | null
 	lDevices: IedLDeviceData[]
+	serverAtAccessPoints: FilteredAccessPoint[]
 	iedName: string
 	iedElement: Element
 }
 
-const { accessPoint, apName, lDevices, iedName, iedElement }: Props = $props()
+const {
+	accessPoint,
+	apName,
+	lDevices,
+	serverAtAccessPoints,
+	iedName,
+	iedElement
+}: Props = $props()
 
-let isOpen = $state(false)
-let hasLDevices = $derived(lDevices.length > 0)
+let isOpen = $state(true)
+let hasContents = $derived(
+	lDevices.length > 0 || serverAtAccessPoints.length > 0
+)
 let isDropTarget = $state(false)
 let hoverExpandTimeout: NodeJS.Timeout | null = $state(null)
 
-let isInUse = $derived(lDevices.some((ld) => !ld.ldInst?.startsWith('LD0')))
-
-const apLabel = $derived(`${iedName} - Access Point ${apName}`)
+const apLabel = $derived(`Access Point ${apName}`)
 
 function handleDragOver(event: DragEvent) {
 	event.preventDefault()
 	if (!dndStore.isDragging) return
 	isDropTarget = true
-	if (!isOpen && hasLDevices && !hoverExpandTimeout) {
+	if (!isOpen && hasContents && !hoverExpandTimeout) {
 		hoverExpandTimeout = setTimeout(() => {
 			isOpen = true
 			hoverExpandTimeout = null
@@ -71,95 +85,93 @@ function handleDrop(event: DragEvent) {
 	dndStore.handleDrop(accessPoint, iedName)
 }
 
-async function handleRename() {
-	dialogStore.mountInnerComponent({
-		innerComponent: RenameCombinedDialogForm,
-		innerComponentProps: {
-			currentIedName: iedName,
-			currentIedDescription: iedElement?.getAttribute('desc') ?? '',
-			currentApName: accessPoint.getAttribute('name') ?? '',
-			currentApDescription: accessPoint.getAttribute('desc') ?? '',
-			iedElement,
-			accessPointElement: accessPoint
-		}
+async function handleDelete() {
+	const serverAtNames = queryServerAtAccessPointsFromHost(accessPoint).map(
+		(serverAtAccessPoint) =>
+			serverAtAccessPoint.getAttribute('name') ?? '(unnamed)'
+	)
+
+	if (serverAtNames.length > 0) {
+		dialogStore.mountInnerComponent({
+			innerComponent: DeleteHostAccessPointConfirmation,
+			innerComponentProps: {
+				hostName: apName ?? '(unnamed)',
+				serverAtNames
+			}
+		})
+		const result = await dialogStore.openDialog()
+		if (result !== 'delete') return
+	}
+
+	deleteAccessPointFromIed({
+		iedName,
+		accessPoint
 	})
-	await dialogStore.openDialog()
 }
+
+const handleRename = () =>
+	openRenameAccessPointDialog({ iedName, iedElement, accessPoint })
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-  class="space-y-1"
+  class="rounded-md"
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}
   ondrop={handleDrop}
 >
-  <button
-    class="w-full"
-    onclick={() => hasLDevices && (isOpen = !isOpen)}
-  >
-    <Card.Root
-      class="{isInUse
-        ? 'hover:bg-gray-50 cursor-pointer'
-        : 'border border-dashed'} 
-		{isDropTarget ? 'border-primary ring-2 ring-primary ring-offset-2' : ''} 
-		transition-all"
-    >
-      <Card.Content class="p-2 relative">
-        <div class="flex items-center justify-between gap-2 min-w-0">
-          <div class="flex items-center gap-2 min-w-0">
-            {#if hasLDevices}
-              <ChevronRight
-                class="size-4 shrink-0 transition-transform duration-200 {isOpen
-                  ? 'rotate-90'
-                  : ''}"
-              />
-            {/if}
-            <span
-              class="text-sm font-medium text-left line-clamp-2 break-all"
-              title={apLabel}
-            >
-              {apLabel}
-            </span>
-          </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <span
-              onclick={(e) => e.stopPropagation()}
-              role="button"
-              tabindex="0"
-              onkeydown={(e) => e.key === "Enter" && e.stopPropagation()}
-            >
-              <DropdownMenuWorkaround
-                size="sm"
-                actions={[
-                  {
-                    label: "Rename",
-                    disabled: false,
-                    callback: handleRename,
-                  },
-                  {
-                    label: "Delete",
-                    disabled: false,
-                    callback: () =>
-                      deleteAccessPointFromIed({
-                        iedName,
-                        accessPoint,
-                        hasLDevices,
-                      }),
-                  },
-                ]}
-              />
-            </span>
-          </div>
-        </div>
-      </Card.Content>
-    </Card.Root>
-  </button>
-  {#if isOpen && hasLDevices}
-    <div class="ml-4 space-y-1">
-      {#each lDevices as { ldInst, lns }}
-        <LDevice {ldInst} {lns} {iedName} {accessPoint} />
-      {/each}
-    </div>
-  {/if}
+	<Card.Root
+		class="border {isDropTarget
+			? 'border-primary ring-2 ring-primary ring-offset-2'
+			: 'border-gray-300'} transition-all"
+	>
+		<Card.Content class="space-y-2 p-2">
+			<div class="flex min-w-0 items-center justify-between gap-2">
+				<div class="flex min-w-0 items-center gap-2">
+					{#if hasContents}
+						<button
+							type="button"
+							class="rounded p-1 hover:bg-gray-100"
+							aria-label="{isOpen ? 'Collapse' : 'Expand'} {apLabel}"
+							onclick={() => (isOpen = !isOpen)}
+						>
+							<ChevronRight
+								class="size-4 shrink-0 transition-transform duration-200 {isOpen
+									? 'rotate-90'
+									: ''}"
+							/>
+						</button>
+					{/if}
+					<span class="truncate text-sm font-semibold" title={apLabel}>
+						{apLabel}
+					</span>
+				</div>
+				<div>
+					<DropdownMenuWorkaround
+						size="sm"
+						actions={[
+							{ label: 'Rename', disabled: false, callback: handleRename },
+							{ label: 'Delete', disabled: false, callback: handleDelete }
+						]}
+					/>
+				</div>
+			</div>
+			{#if isOpen}
+				<div class="space-y-1">
+					{#each serverAtAccessPoints as serverAtAccessPoint (serverAtAccessPoint.element)}
+						<ServerAtAccessPoint
+							accessPoint={serverAtAccessPoint.element}
+							apName={serverAtAccessPoint.name}
+							serverAtApName={apName ?? ''}
+							{iedName}
+							{iedElement}
+						/>
+					{/each}
+					{#each lDevices as { ldInst, lns } (ldInst)}
+						<LDevice {ldInst} {lns} {iedName} {accessPoint} />
+					{/each}
+				</div>
+			{/if}
+		</Card.Content>
+	</Card.Root>
 </div>

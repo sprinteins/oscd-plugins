@@ -27,7 +27,7 @@ async function handleRename() {
 }
 </script>
 
-<Card.Root class="border border-dashed text-gray-500">
+<Card.Root class="border border-gray-300 text-gray-500">
   <Card.Content class="p-2">
     <div class="flex items-center justify-between">
       <span class="text-sm text-left">{iedName} - no Access Points found</span>
