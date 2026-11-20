@@ -13,6 +13,7 @@ export default defineConfig({
 	test: {
 		environment: 'jsdom',
 		include: ['src/**/*.spec.ts'],
+		setupFiles: ['./src/testing/setup.ts'],
 		server: {
 			deps: {
 				inline: true

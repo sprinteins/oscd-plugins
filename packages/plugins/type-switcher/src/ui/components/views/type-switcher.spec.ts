@@ -40,14 +40,10 @@ describe('GIVEN an SCD with duplicate types and usages', () => {
 	})
 
 	async function selectTarget(name: string) {
-		await user.click(screen.getByRole('combobox'))
-		await user.click(await screen.findByRole('option', { name }))
-		// Let SMUI finish its close animation before the component is unmounted.
-		await waitFor(() => {
-			expect(
-				document.querySelector('.mdc-menu-surface--animating-closed')
-			).toBeNull()
-		})
+		await user.selectOptions(
+			screen.getByRole('combobox'),
+			screen.getByRole('option', { name })
+		)
 	}
 
 	it('WHEN duplicates are loaded THEN all four categories and their groups are shown', () => {

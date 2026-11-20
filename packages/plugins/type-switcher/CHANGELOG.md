@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.21] - 2026-11-20
+### Changed
+- Migrated the Type Switcher UI from SMUI and the legacy shared UI package to the shared Shadcn components
+- Restored legacy control placement and column proportions while keeping the migrated Shadcn surfaces
+- Replaced legacy icons with OpenSCD SCL icons and added clear empty states for unselected workflows
+
+### Removed
+- Removed the Type Switcher dependencies on SMUI, Material typography, and `@oscd-plugins/ui`
+
 ## [0.0.20] - 2026-11-12
 ### Fixed
 - Switching LN types now updates the `lnType` reference instead of adding a `type` attribute

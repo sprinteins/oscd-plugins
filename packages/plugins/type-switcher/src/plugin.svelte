@@ -17,8 +17,7 @@
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 // CORE
-import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
-import { LegacyTheme } from '@oscd-plugins/ui'
+import { initPlugin } from '@oscd-plugins/core-ui-svelte'
 import jsonPackage from '../package.json'
 import TypeSwitcher from './ui/components/views/type-switcher.svelte'
 
@@ -48,11 +47,9 @@ const {
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	<LegacyTheme>
-		{#if doc}
-			{#key doc}
-				<TypeSwitcher doc={doc?.documentElement} />
-			{/key}
-		{/if}
-	</LegacyTheme>
+	{#if doc}
+		{#key doc}
+			<TypeSwitcher doc={doc?.documentElement} />
+		{/key}
+	{/if}
 </main>

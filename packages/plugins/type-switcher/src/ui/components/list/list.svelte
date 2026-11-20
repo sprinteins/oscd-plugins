@@ -1,41 +1,39 @@
 <script lang="ts">
-import { Icons } from '@oscd-plugins/ui'
+import '../scl-icon'
 import type { Item } from './item'
 
 interface Props {
 	items: Item[]
+	emptyText: string
 }
 
-let { items }: Props = $props()
+let { items, emptyText }: Props = $props()
 </script>
 
-<list>
-	<ul>
-		{#each items as item}
-			<li>
-				{#if item.icon}
-					<div>
-						<!-- 
-					It is not quite optimal to use the Icon component
-					directly and we will change it, but currently 
-					it covers the use cases we need and a more 
-					dynamic approach would be more complex
-				-->
-						<Icons name={item.icon} size="rect" />
+<div>
+	{#if items.length === 0}
+		<p class="empty-state">{emptyText}</p>
+	{:else}
+		<ul>
+			{#each items as item}
+				<li>
+					{#if item.icon}
+						<oscd-icon class="type-icon">{item.icon}</oscd-icon>
+					{/if}
+					<div class="text-container">
+						<div class="primary-text">{item.primaryText}</div>
+						<div class="secondary-text" title={item.secondaryText}>
+							{item.secondaryText}
+						</div>
 					</div>
-				{/if}
-				<div class="text-container">
-					<div class="primary-text">{item.primaryText}</div>
-					<div class="secondary-text" title={item.secondaryText}>{item.secondaryText}</div>
-				</div>
-			</li>
-		{/each}
-	</ul>
-</list>
+				</li>
+			{/each}
+		</ul>
+	{/if}
+</div>
 
 <style>
 	ul {
-		/* margin-left: -2.5rem; */
 		line-height: 1.15;
 		display: flex;
 		flex-direction: column;
@@ -48,6 +46,13 @@ let { items }: Props = $props()
 		color: var(--color-grey-dark);
 		align-items: center;
 		gap: 0.5rem;
+	}
+
+	:global(.type-icon) {
+		--md-icon-size: 1.5rem;
+		flex: 0 0 auto;
+		height: 1.5rem;
+		width: 1.65rem;
 	}
 
 	.text-container {
@@ -70,5 +75,12 @@ let { items }: Props = $props()
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	.empty-state {
+		color: var(--muted-foreground);
+		font-size: 0.75rem;
+		line-height: 1.4;
+		margin: 0.75rem 0.5rem;
 	}
 </style>
