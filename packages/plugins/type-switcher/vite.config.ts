@@ -9,9 +9,10 @@ export default defineConfig({
 	base: './',
 	plugins: [
 		svelte({
-			compilerOptions: {
-				customElement: true
-			}
+			dynamicCompileOptions: ({ filename }) =>
+				filename === resolve(__dirname, 'src/plugin.svelte')
+					? { customElement: true }
+					: { customElement: false, css: 'injected' }
 		})
 	],
 	resolve: {
