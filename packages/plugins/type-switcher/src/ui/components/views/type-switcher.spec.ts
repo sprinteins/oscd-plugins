@@ -124,7 +124,7 @@ describe('GIVEN an SCD with duplicate types and usages', () => {
 		).toHaveLength(0)
 	})
 
-	it('WHEN a duplicate DO type is switched THEN it emits the replacements as an editor action', async () => {
+	it('WHEN a duplicate DO type is switched THEN it emits replacements and shows success feedback', async () => {
 		await user.click(screen.getByText('DO Type (1)'))
 		await waitFor(() => {
 			expect(screen.getAllByTestId(/^card_/)).toHaveLength(1)
@@ -139,6 +139,10 @@ describe('GIVEN an SCD with duplicate types and usages', () => {
 		await selectTarget('do-b')
 		await user.click(screen.getByRole('button', { name: 'Switch' }))
 
+		const successToast = await screen.findByText('Relink was successful')
+		expect(
+			successToast.closest('[data-sonner-toaster-root]')
+		).not.toBeNull()
 		expect(onAction).toHaveBeenCalledOnce()
 		const event = onAction.mock.calls[0][0]
 		if (!(event instanceof CustomEvent))

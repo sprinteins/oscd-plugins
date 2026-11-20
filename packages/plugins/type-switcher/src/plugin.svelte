@@ -46,6 +46,7 @@ const {
 	}}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
+	data-sonner-toaster-root
 >
 	{#if doc}
 		{#key doc}
