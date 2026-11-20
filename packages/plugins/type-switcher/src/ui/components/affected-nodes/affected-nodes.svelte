@@ -10,7 +10,10 @@ let { items }: Props = $props()
 </script>
 
 <div class="affected-nodes">
-  <List {items} />
+	<List
+		{items}
+		emptyText="Select a source type to inspect its affected nodes."
+	/>
 </div>
 
 <style>

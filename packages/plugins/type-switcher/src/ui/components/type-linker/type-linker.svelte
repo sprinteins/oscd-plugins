@@ -1,6 +1,5 @@
 <script lang="ts">
-import { Button, Checkbox, Select } from '@oscd-plugins/ui'
-import { SvelteSet } from 'svelte/reactivity'
+import { Button, Checkbox, Label } from '@oscd-plugins/core-ui-svelte'
 import type { EventDetailRelink, EventDetailTypeLinkerSelect } from './events'
 
 interface Props {
@@ -18,48 +17,28 @@ let {
 	testid = 'type-linker'
 }: Props = $props()
 
-// Internal
-let selectedLinkTargetIndex = $state(-1)
-let isSelected = $state(false)
+let selectedLinkTargetIndex = $state<number | undefined>()
+let selected: number[] = $state([])
 
-let checkedIndexes: SvelteSet<number> = new SvelteSet()
-
-function handleSelectAll() {
-	if (isSelected === false) {
-		isSelected = true
-		setAllCheckboxesChecked()
-	} else {
-		isSelected = false
-		setAllCheckboxesUnChecked()
-	}
+function notifySelection() {
 	const detail: EventDetailTypeLinkerSelect = {
 		indexes: selected
 	}
 	select(detail)
 }
 
-function setAllCheckboxesChecked() {
-	items.forEach((_, index) => {
-		checkedIndexes.add(index)
-	})
-	selected = Array(items.length)
-		.fill(true)
-		.map((_, i) => i)
+function handleTargetChange(event: Event) {
+	const value = (event.currentTarget as HTMLSelectElement).value
+	selectedLinkTargetIndex = Number(value)
 }
 
-function setAllCheckboxesUnChecked() {
-	items.forEach((_, index) => {
-		checkedIndexes.delete(index)
-	})
-	selected = []
-}
-
-function handleTargetInputChange(index: number) {
-	selectedLinkTargetIndex = index
+function handleSelectAll(checked: boolean) {
+	selected = checked ? items.map((_, index) => index) : []
+	notifySelection()
 }
 
 function handleRelink(): void {
-	if (!isMergePossible) return
+	if (!isMergePossible || selectedLinkTargetIndex === undefined) return
 	const detail: EventDetailRelink = {
 		sourceIndexes: selected,
 		targetIndex: selectedLinkTargetIndex
@@ -67,131 +46,113 @@ function handleRelink(): void {
 	relink(detail)
 }
 
-let selected: number[] = $state([])
-
-function handleSelectionChange(e: Event, ii: number) {
-	const node = e.target as HTMLInputElement
-	const valueAsNumber = ii
-	const isCheckboxChecked = node.checked
-
-	if (isCheckboxChecked) {
-		selected = [...selected, valueAsNumber]
-		checkedIndexes.add(valueAsNumber)
+function handleSelectionChange(checked: boolean, index: number) {
+	if (checked) {
+		selected = [...selected, index]
 	} else {
-		selected = selected.filter((n) => n !== valueAsNumber)
-		checkedIndexes.delete(valueAsNumber)
+		selected = selected.filter((selectedIndex) => selectedIndex !== index)
 	}
 
-	isSelected = Array.from(selected).length === Array.from(items).length
-
-	const detail: EventDetailTypeLinkerSelect = {
-		indexes: selected
-	}
-	select(detail)
+	notifySelection()
 }
-let isTargetSelected = $derived(selectedLinkTargetIndex > -1)
+
+let isAllSelected = $derived(
+	items.length > 0 && selected.length === items.length
+)
+let isPartiallySelected = $derived(
+	selected.length > 0 && selected.length < items.length
+)
+let isTargetSelected = $derived(selectedLinkTargetIndex !== undefined)
 let isSomeDuplicateSelected = $derived(selected.length > 0)
 let isMergePossible = $derived(isSomeDuplicateSelected && isTargetSelected)
 </script>
 
 <div class="type-linker" data-testid={testid}>
-	<!-- svelte-ignore a11y_label_has_associated_control -->
-	<label>
-		<span class="choose-link">Type to switch to:</span>
-		<div class="select-menu">
-			<Select
-				handleSelect={handleTargetInputChange}
-				linkTargetIndex={selectedLinkTargetIndex}
-				{items}
+	<div class="target-control">
+		<Label.Root for="type-link-target" class="mb-1 ml-2">
+			Type to switch to:
+		</Label.Root>
+		<div class="mx-2">
+			<select
+				id="type-link-target"
+				aria-describedby="type-link-target-placeholder"
+				class="border-input bg-background ring-offset-background focus:ring-ring flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+				onchange={handleTargetChange}
 			>
-				<option value={-1} disabled selected></option>
+				<option value="" selected disabled id="type-link-target-placeholder">
+					Select a type
+				</option>
 				{#each items as item, index}
 					<option value={index}>{item.label}</option>
 				{/each}
-			</Select>
+			</select>
 		</div>
-	</label>
-
-	<div class="select-all-container">
-		<Checkbox
-			label="Select All"
-			checked={isSelected}
-			onchange={handleSelectAll}
-		/>
 	</div>
 
-	<div class="select-container">
-		{#each items as item, ii}
-			<Checkbox
-				label={item.label}
-				title={item.label}
-				checked={checkedIndexes.has(ii)}
-				onchange={(e) => handleSelectionChange(e, ii)}
+	<div class="source-control">
+		<div class="ml-2 flex items-center gap-2">
+			<Checkbox.Root
+				id="select-all-types"
+				checked={isAllSelected}
+				indeterminate={isPartiallySelected}
+				disabled={items.length === 0}
+				onCheckedChange={(checked) => handleSelectAll(checked === true)}
 			/>
-		{/each}
+			<Label.Root for="select-all-types">Select All</Label.Root>
+		</div>
+
+		<div class="select-container">
+			{#each items as item, index}
+				<div class="flex items-center gap-2 py-1">
+					<Checkbox.Root
+						id={`source-type-${index}`}
+						aria-label={item.label}
+						checked={selected.includes(index)}
+						onCheckedChange={(checked) =>
+							handleSelectionChange(checked === true, index)}
+					/>
+					<Label.Root for={`source-type-${index}`}>{item.label}</Label.Root>
+				</div>
+			{/each}
+		</div>
 	</div>
 
 	<div class="action">
-		<Button
-			testid="merger_button-merge"
+		<Button.Root
+			data-testid="merger_button-merge"
 			disabled={!isMergePossible}
 			onclick={handleRelink}
 		>
 			Switch
-		</Button>
+		</Button.Root>
 	</div>
 </div>
 
-<style lang="scss">
+<style>
 	.type-linker {
-		// height: calc(100% - 1rem);
 		display: grid;
-		grid-template-rows: auto auto 1fr auto;
+		grid-template-rows: auto minmax(0, 1fr) auto;
 		gap: 1rem;
+		height: 100%;
+		min-height: 0;
 		overflow: hidden;
+		padding: 0.25rem 0;
 	}
-	.select-all-container {
-		display: flex;
-		margin-left: 1rem;
+	.source-control {
+		min-height: 0;
+		overflow: auto;
 	}
 	.select-container {
-		margin-left: 1rem;
+		margin-left: 0.5rem;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 
-	label {
-		display: flex;
-		flex-direction: column;
-		overflow: visible;
-	}
-	.type-linker :global(.type-linker__list) {
-		overflow: auto;
-		overflow-x: hidden;
-	}
-
-	:global(.label-type-linker) {
-		margin-left: -2rem;
-	}
-	.choose-link {
-		font-size: var(--font-size-small);
-		margin-bottom: 0.25rem;
-		margin-left: 1rem;
-	}
-
 	.action {
 		display: flex;
 		justify-content: flex-end;
-		margin-right: 0.5rem;
+		margin: 0 0.5rem 0.5rem;
 		line-height: 1.15;
-		letter-spacing: 0.2;
-	}
-	:global(.item-typeswitcher-selected) {
-		margin-bottom: -0.5rem;
-	}
-	.select-menu {
-		margin-right: 0.5rem;
-		margin-left: 0.5rem;
 	}
 </style>
