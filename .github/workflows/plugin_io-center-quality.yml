@@ -25,3 +25,9 @@ jobs:
     with:
       package-name: io-center
       has-coverage: true
+
+  lint:
+    name: Lint Code
+    uses: ./.github/workflows/_lint.yml
+    with:
+      package-name: io-center
