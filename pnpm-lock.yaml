@@ -4418,8 +4418,8 @@ packages:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
 
-  devalue@5.6.1:
-    resolution: {integrity: sha512-jDwizj+IlEZBunHcOuuFVBnIMPAEHvTsJj0BcIp94xYguLRVBcXO853px/MyIJvbVzWdsGvrRweIUWJw8hBP7A==}
+  devalue@5.9.4:
+    resolution: {integrity: sha512-sPAT4pztbu6586/hrhOnMKS17IJrvg12mXiSPSS3W5qDeN2RGgvZ0diZCm31dBbnevfVmujNO3IM2wrS4Y2Rhg==}
 
   devtools-protocol@0.0.1232444:
     resolution: {integrity: sha512-pM27vqEfxSxRkTMnF+XCmxSEb6duO5R+t8A9DEEJgy4Wz2RVanje2mmj99B6A3zv2r/qGfYlOvYznUhuokizmg==}
@@ -10008,7 +10008,7 @@ snapshots:
       '@types/cookie': 0.6.0
       acorn: 8.15.0
       cookie: 0.6.0
-      devalue: 5.6.1
+      devalue: 5.9.4
       esm-env: 1.2.2
       kleur: 4.1.5
       magic-string: 0.30.15
@@ -10490,7 +10490,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.2.0
       tinyrainbow: 3.1.1
-      vitest: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.12)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      vitest: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
 
   '@vitest/expect@0.29.8':
     dependencies:
@@ -10649,7 +10649,7 @@ snapshots:
       '@vitest/utils': 0.30.1
       fast-glob: 3.3.3
       fflate: 0.7.4
-      flatted: 3.3.3
+      flatted: 3.4.4
       pathe: 1.1.2
       picocolors: 1.1.1
       sirv: 2.0.4
@@ -11584,7 +11584,7 @@ snapshots:
   detect-libc@2.1.2:
     optional: true
 
-  devalue@5.6.1: {}
+  devalue@5.9.4: {}
 
   devtools-protocol@0.0.1232444: {}
 
@@ -14089,7 +14089,7 @@ snapshots:
       aria-query: 5.3.2
       axobject-query: 4.1.0
       clsx: 2.1.1
-      devalue: 5.6.1
+      devalue: 5.9.4
       esm-env: 1.2.2
       esrap: 2.2.1
       is-reference: 3.0.3
@@ -14108,7 +14108,7 @@ snapshots:
   sveltekit-superforms@2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3):
     dependencies:
       '@sveltejs/kit': 2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
-      devalue: 5.6.1
+      devalue: 5.9.4
       memoize-weak: 1.0.2
       svelte: 5.46.0
       ts-deepmerge: 7.0.3
