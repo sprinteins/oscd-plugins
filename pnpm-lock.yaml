@@ -3920,8 +3920,9 @@ packages:
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
-  baseline-browser-mapping@2.9.8:
-    resolution: {integrity: sha512-Y1fOuNDowLfgKOypdc9SPABfoWXuZHBOyCS4cD52IeZBhr4Md6CLLs6atcxVrzRmQ06E7hSlm5bHHApPKR/byA==}
+  baseline-browser-mapping@2.11.39:
+    resolution: {integrity: sha512-Q9buOYhr2ggrEZpImICecZTJHCCd8yXkRUokFlUEQ8uiD6oP82F4W4jWnhOHZYV+wlvrC51V7Wy0ULyWjil5Wg==}
+    engines: {node: '>=6.0.0'}
     hasBin: true
 
   basic-ftp@5.0.5:
@@ -10490,7 +10491,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.2.0
       tinyrainbow: 3.1.1
-      vitest: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.12)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      vitest: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
 
   '@vitest/expect@0.29.8':
     dependencies:
@@ -10649,7 +10650,7 @@ snapshots:
       '@vitest/utils': 0.30.1
       fast-glob: 3.3.3
       fflate: 0.7.4
-      flatted: 3.3.3
+      flatted: 3.4.4
       pathe: 1.1.2
       picocolors: 1.1.1
       sirv: 2.0.4
@@ -11094,7 +11095,7 @@ snapshots:
 
   base64-js@1.5.1: {}
 
-  baseline-browser-mapping@2.9.8: {}
+  baseline-browser-mapping@2.11.39: {}
 
   basic-ftp@5.0.5: {}
 
@@ -11146,7 +11147,7 @@ snapshots:
 
   browserslist@4.28.1:
     dependencies:
-      baseline-browser-mapping: 2.9.8
+      baseline-browser-mapping: 2.11.39
       caniuse-lite: 1.0.30001760
       electron-to-chromium: 1.5.267
       node-releases: 2.0.27
