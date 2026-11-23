@@ -199,7 +199,7 @@ let itemsWithIcons = $derived(
 			</div>
 		</div>
 		<span class="success">
-			<Snackbar bind:this={snackbar}>
+			<Snackbar bind:this={snackbar} class="snackbar-position-fix">
 				<Label>Relink was successful</Label>
 				<Actions>
 					<IconButton class="material-icons" title="Dismiss">
@@ -226,7 +226,7 @@ let itemsWithIcons = $derived(
 		background: var(--color-green);
 	}
 
-	.typeswitcher .success :global(.mdc-snackbar) {
+	.typeswitcher :global(.snackbar-position-fix) {
 		bottom: 70px;
 	}
 

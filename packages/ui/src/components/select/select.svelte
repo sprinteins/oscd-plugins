@@ -1,40 +1,32 @@
 <script lang="ts">
-import Select, { Option } from '@smui/select'
-import type { Component, Snippet } from 'svelte'
+	import Select, { Option } from "@smui/select";
+	import type { Snippet } from "svelte";
 
-type SelectProps = {
-	value: number
-	anchor$onclick?: (event: MouseEvent) => void
-	children?: Snippet
-}
+	interface Props {
+		children?: Snippet | undefined;
+		handleSelect: (index: number) => void;
+		items?: { label: string }[];
+		linkTargetIndex: number;
+	}
 
-const TypedSelect = Select as unknown as Component<SelectProps>
+	let {
+		handleSelect,
+		items = [],
+		linkTargetIndex = $bindable(),
+	}: Props = $props();
 
-interface Props {
-	children?: Snippet | undefined
-	handleSelect: (index: number) => void
-	items?: { label: string }[]
-	linkTargetIndex: number
-}
-
-let {
-	handleSelect,
-	items = [],
-	linkTargetIndex = $bindable()
-}: Props = $props()
-
-let isFocused = $state(false)
-function handleFocus() {
-	isFocused = !isFocused
-}
-$effect(() => {
-	handleSelect(linkTargetIndex)
-})
+	let isFocused = $state(false);
+	function handleFocus() {
+		isFocused = !isFocused;
+	}
+	$effect(() => {
+		handleSelect(linkTargetIndex);
+	});
 </script>
 
 <div>
 	<div class="select" class:isFocused>
-		<TypedSelect bind:value={linkTargetIndex} anchor$onclick={handleFocus}>
+		<Select bind:value={linkTargetIndex} onclick={handleFocus}>
 			{#each items as item, index (`${index}_${item.label}`)}
 				<Option value={index}>
 					<span class="select-option">
@@ -42,7 +34,7 @@ $effect(() => {
 					</span>
 				</Option>
 			{/each}
-		</TypedSelect>
+		</Select>
 	</div>
 </div>
 

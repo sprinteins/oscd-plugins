@@ -9,9 +9,9 @@
 		<Section align="end" toolbar>
 			{#if pluginType && pluginType === 'editor'}
 				<div class="editor-buttons">
-					<CustomIconButton icon="upload_file" color="white" onclick={handleUpload}/>
+					<CustomIconButton icon="upload_file" color="white" on:click={handleUpload}/>
 					<input type="file" bind:this={fileInput} style="display: none" onchange={handleFileChange} accept=".scd" name="xmlDocument" />
-					<CustomIconButton icon="download" color="white" onclick={handleDownload}/>
+					<CustomIconButton icon="download" color="white" on:click={handleDownload}/>
 				</div>
 			{/if}
 		</Section>
@@ -20,31 +20,31 @@
 
 <script lang='ts'>
 // CORE
-
-// TYPES
-import type { PluginType } from '@oscd-plugins/core'
 import { newOpenDocEvent } from '@oscd-plugins/core'
 // MUI COMPONENTS
 import TopAppBar, { Row, Section, Title } from '@smui/top-app-bar'
 // COMPONENTS
 import { CustomIconButton } from '..'
+// TYPES
+import type { PluginType } from '@oscd-plugins/core'
 
 //====== INITIALIZATION ======//
 
-interface Props {
-	// props
-	pluginType?: PluginType | undefined
-}
 
-let { pluginType = undefined }: Props = $props()
+	interface Props {
+		// props
+		pluginType?: PluginType | undefined;
+	}
+
+	let { pluginType = undefined }: Props = $props();
 
 // local variables
-let fileInput = $state<HTMLInputElement>()
+let fileInput: HTMLInputElement = $state()
 
 //====== FUNCTIONS ======//
 
 function handleUpload() {
-	fileInput?.click()
+	fileInput.click()
 }
 
 async function handleFileChange(event: Event) {
