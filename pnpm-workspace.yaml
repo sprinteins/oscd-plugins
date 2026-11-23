@@ -8,7 +8,7 @@ linkWorkspacePackages: true
 
 allowBuilds:
   '@parcel/watcher@2.6.0': true
-  core-js: true
+  core-js: false
   'edgedriver@5.6.1': true
   esbuild: true
   'geckodriver@4.2.1': true
