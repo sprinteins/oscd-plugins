@@ -1,8 +1,8 @@
-import { typeElementsStore } from '@/headless/stores'
 // CONSTANTS
 import { REF_FAMILY, TYPE_FAMILY } from '@/headless/constants'
 // TYPES
-import type { AvailableTypeFamily, AvailableRefFamily } from '@/headless/stores'
+import type { AvailableRefFamily, AvailableTypeFamily } from '@/headless/stores'
+import { typeElementsStore } from '@/headless/stores'
 
 //====== STATES ======//
 
@@ -13,12 +13,10 @@ class UseDnDStore {
 	currentSourceRefFamily = $state<AvailableRefFamily>()
 
 	handleDragStart({
-		event,
 		sourceTypeId,
 		sourceTypeFamily,
 		sourceRefFamily
 	}: {
-		event: DragEvent
 		sourceTypeId: string
 		sourceTypeFamily: AvailableTypeFamily
 		sourceRefFamily?: AvailableRefFamily

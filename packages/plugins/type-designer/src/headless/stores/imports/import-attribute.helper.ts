@@ -1,10 +1,10 @@
-import { v4 as uuidv4 } from 'uuid'
 // CORE
 import { ssdStore } from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { pluginLocalStore } from '@/headless/stores'
+import { v4 as uuidv4 } from 'uuid'
 // TYPES
 import type { EditEvent, RemoveEvent } from '@/headless/stores'
+// STORES
+import { pluginLocalStore } from '@/headless/stores'
 
 /**
  * BUSINESS RULES: ~ refers to revision 90-30 page 182

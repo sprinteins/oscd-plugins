@@ -1,7 +1,6 @@
 import type { pluginLocalStore } from '@/headless/stores'
 import type { TYPE_FAMILY, REF_FAMILY, COLUMNS } from '@/headless/constants'
-import type { Xml, Utils } from '@oscd-plugins/core-api/plugin/v1'
-import type { IEC61850 } from '@oscd-plugins/core-standard'
+import type { Xml } from '@oscd-plugins/core-api/plugin/v1'
 
 export type AvailableColumn = keyof COLUMNS
 export type AvailableTypeFamily = keyof typeof TYPE_FAMILY
@@ -93,7 +92,7 @@ export type RefElement<GenericRefFamily extends AvailableRefFamily> = {
 }
 
 export type SortedImportedTypeElements<
-	GenericImportedTypeFamily extends AvailableTypeFamily
+	_GenericImportedTypeFamily extends AvailableTypeFamily
 > = {
 	all: TypeElementByIds<AvailableTypeFamily>
 	toUpdate: TypeElementByIds<AvailableTypeFamily>

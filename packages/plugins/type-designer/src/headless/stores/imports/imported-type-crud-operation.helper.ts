@@ -1,30 +1,30 @@
 // CORE
 import {
-	typeGuard,
-	findAllStandardElementsBySelector,
 	areElementsIdentical,
-	createAndDispatchEditEvent
+	createAndDispatchEditEvent,
+	findAllStandardElementsBySelector,
+	typeGuard
 } from '@oscd-plugins/core-api/plugin/v1'
 import { dialogStore, pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
-import { TYPE_FAMILY, ALLOWED_USER_DECISIONS } from '@/headless/constants'
-// HELPERS
-import { getAndMapTypeElements } from '../type-elements/consolidate-types.helper'
-import { handleImportOfAnyElement } from './imported-tree-handler.helper'
-import { getCurrentImportedActionsWithUpdatedTemplateUuids } from './import-attribute.helper'
+import { ALLOWED_USER_DECISIONS, TYPE_FAMILY } from '@/headless/constants'
+// TYPES
+import type {
+	AvailableTypeFamily,
+	EditEvent,
+	ImportScope,
+	RemoveEvent,
+	TypeElementByIds,
+	UserDecision
+} from '@/headless/stores'
 // STORES
 import { importsStore, typeElementsStore } from '@/headless/stores'
 // COMPONENTS
 import UpdateConfirmationDialog from '@/ui/components/import/update-confirmation-dialog.svelte'
-// TYPES
-import type {
-	TypeElementByIds,
-	UserDecision,
-	EditEvent,
-	RemoveEvent,
-	AvailableTypeFamily,
-	ImportScope
-} from '@/headless/stores'
+// HELPERS
+import { getAndMapTypeElements } from '../type-elements/consolidate-types.helper'
+import { getCurrentImportedActionsWithUpdatedTemplateUuids } from './import-attribute.helper'
+import { handleImportOfAnyElement } from './imported-tree-handler.helper'
 
 //====== READ ======//
 

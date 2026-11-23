@@ -1,14 +1,15 @@
 <script lang="ts">
 // COMPONENTS
-import SingleColumn from '@/ui/components/column/single-column.svelte'
-// STORES
-import { typeElementsStore } from '@/headless/stores'
+
 // TYPES
 import type {
+	AvailableTypeFamily,
 	Columns,
-	Column as ColumnType,
-	AvailableTypeFamily
+	Column as ColumnType
 } from '@/headless/stores'
+// STORES
+import { typeElementsStore } from '@/headless/stores'
+import SingleColumn from '@/ui/components/column/single-column.svelte'
 
 const columnsEntries = $derived(Object.entries(typeElementsStore.columns)) as [
 	keyof Columns,

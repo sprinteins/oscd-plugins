@@ -1,10 +1,10 @@
 <script lang="ts">
 // CORE
-import { dialogStore, Button } from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { importsStore } from '@/headless/stores'
+import { Button, dialogStore } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type { UserDecision } from '@/headless/stores'
+// STORES
+import { importsStore } from '@/headless/stores'
 
 //====== FUNCTIONS ======//
 

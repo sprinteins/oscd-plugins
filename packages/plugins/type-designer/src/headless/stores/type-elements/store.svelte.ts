@@ -1,25 +1,26 @@
 // STORES
-import { importsStore, pluginLocalStore } from '@/headless/stores'
+
 // CONSTANTS
 import {
-	REF_FAMILY,
-	TYPE_FAMILY,
 	COLUMNS,
-	EQUIPMENTS
+	EQUIPMENTS,
+	REF_FAMILY,
+	TYPE_FAMILY
 } from '@/headless/constants'
+// TYPES
+import type { Columns, TypeElementsByFamily } from '@/headless/stores'
+import { importsStore, pluginLocalStore } from '@/headless/stores'
+import { duplicateElement } from '@/headless/stores/type-elements/common-crud-operation.helper'
 // HELPERS
 import { getAndMapTypeElements } from './consolidate-types.helper'
-import { createNewType, deleteTypeAndRefs } from './type-crud-operation.helper'
-import { createNewRef, deleteRef } from './ref-crud-operation.helper'
-import {
-	getTypeNextOccurrence,
-	getElementsWithSameNameBase,
-	computeNameWithOptionalSuffix
-} from './type-naming.helper'
 import { getFilteredTypeElementByIds } from './filter.helper'
-import { duplicateElement } from '@/headless/stores/type-elements/common-crud-operation.helper'
-// TYPES
-import type { TypeElementsByFamily, Columns } from '@/headless/stores'
+import { createNewRef, deleteRef } from './ref-crud-operation.helper'
+import { createNewType, deleteTypeAndRefs } from './type-crud-operation.helper'
+import {
+	computeNameWithOptionalSuffix,
+	getElementsWithSameNameBase,
+	getTypeNextOccurrence
+} from './type-naming.helper'
 
 class UseTypeElementsStore {
 	//====== INITIALIZATION ======//

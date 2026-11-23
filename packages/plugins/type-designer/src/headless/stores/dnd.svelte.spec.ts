@@ -8,19 +8,19 @@ const { mockCreateNewRef, mockConstants } = vi.hoisted(() => ({
 			generalEquipment: 'generalEquipment',
 			conductingEquipment: 'conductingEquipment',
 			function: 'function',
-			lNodeType: 'lNodeType',
+			lNodeType: 'lNodeType'
 		},
 		REF_FAMILY: {
 			function: 'function',
-			eqFunction: 'eqFunction',
-		},
-	},
+			eqFunction: 'eqFunction'
+		}
+	}
 }))
 
 vi.mock('@/headless/stores', () => ({
 	typeElementsStore: {
-		createNewRef: mockCreateNewRef,
-	},
+		createNewRef: mockCreateNewRef
+	}
 }))
 
 vi.mock('@/headless/constants', () => mockConstants)
@@ -34,17 +34,16 @@ function createParentWrapper(): Element {
 function startDrag({
 	sourceTypeId = 'source-id',
 	sourceTypeFamily = 'bay',
-	sourceRefFamily,
+	sourceRefFamily
 }: {
 	sourceTypeId?: string
 	sourceTypeFamily?: string
 	sourceRefFamily?: string
 } = {}): void {
 	dndStore.handleDragStart({
-		event: {} as DragEvent,
 		sourceTypeId,
 		sourceTypeFamily: sourceTypeFamily as never,
-		sourceRefFamily: sourceRefFamily as never,
+		sourceRefFamily: sourceRefFamily as never
 	})
 }
 
@@ -58,7 +57,7 @@ describe('dndStore.handleDragStart', () => {
 		startDrag({
 			sourceTypeId: 'function-id',
 			sourceTypeFamily: 'function',
-			sourceRefFamily: 'eqFunction',
+			sourceRefFamily: 'eqFunction'
 		})
 
 		expect(dndStore.isDragging).toBe(true)
@@ -73,7 +72,7 @@ describe('dndStore.handleDragEnd', () => {
 		startDrag({
 			sourceTypeId: 'function-id',
 			sourceTypeFamily: 'function',
-			sourceRefFamily: 'eqFunction',
+			sourceRefFamily: 'eqFunction'
 		})
 
 		dndStore.handleDragEnd()
@@ -92,70 +91,70 @@ describe('dndStore.handleDrop', () => {
 		startDrag({
 			sourceTypeId: 'lNodeType-id',
 			sourceTypeFamily: 'lNodeType',
-			sourceRefFamily: 'function',
+			sourceRefFamily: 'function'
 		})
 
 		dndStore.handleDrop({
 			parentTypeWrapper,
-			parentTypeFamily: 'bay' as never,
+			parentTypeFamily: 'bay' as never
 		})
 
 		expect(mockCreateNewRef).toHaveBeenCalledWith({
 			family: 'function',
 			sourceTypeIdOrUuid: 'lNodeType-id',
-			parentTypeWrapper,
+			parentTypeWrapper
 		})
 	})
 
 	it.each([
 		{
 			parentTypeFamily: 'generalEquipment',
-			expectedRefFamily: 'eqFunction',
+			expectedRefFamily: 'eqFunction'
 		},
 		{
 			parentTypeFamily: 'conductingEquipment',
-			expectedRefFamily: 'eqFunction',
+			expectedRefFamily: 'eqFunction'
 		},
 		{
 			parentTypeFamily: 'bay',
-			expectedRefFamily: 'function',
+			expectedRefFamily: 'function'
 		},
 		{
 			parentTypeFamily: 'lNodeType',
-			expectedRefFamily: 'function',
-		},
-	])(
-		'GIVEN a Function source dropped on "$parentTypeFamily" WHEN no reference family is supplied THEN "$expectedRefFamily" is derived',
-		({ parentTypeFamily, expectedRefFamily }) => {
-			const parentTypeWrapper = createParentWrapper()
+			expectedRefFamily: 'function'
+		}
+	])('GIVEN a Function source dropped on "$parentTypeFamily" WHEN no reference family is supplied THEN "$expectedRefFamily" is derived', ({
+		parentTypeFamily,
+		expectedRefFamily
+	}) => {
+		const parentTypeWrapper = createParentWrapper()
 
-			startDrag({
-				sourceTypeId: 'function-id',
-				sourceTypeFamily: 'function',
-			})
+		startDrag({
+			sourceTypeId: 'function-id',
+			sourceTypeFamily: 'function'
+		})
 
-			dndStore.handleDrop({
-				parentTypeWrapper,
-				parentTypeFamily: parentTypeFamily as never,
-			})
+		dndStore.handleDrop({
+			parentTypeWrapper,
+			parentTypeFamily: parentTypeFamily as never
+		})
 
-			expect(mockCreateNewRef).toHaveBeenCalledWith({
-				family: expectedRefFamily,
-				sourceTypeIdOrUuid: 'function-id',
-				parentTypeWrapper,
-			})
-		},
-	)
+		expect(mockCreateNewRef).toHaveBeenCalledWith({
+			family: expectedRefFamily,
+			sourceTypeIdOrUuid: 'function-id',
+			parentTypeWrapper
+		})
+	})
 
 	it('GIVEN an active drag state WHEN a valid drop succeeds THEN the drag state is reset', () => {
 		startDrag({
 			sourceTypeId: 'function-id',
-			sourceTypeFamily: 'function',
+			sourceTypeFamily: 'function'
 		})
 
 		dndStore.handleDrop({
 			parentTypeWrapper: createParentWrapper(),
-			parentTypeFamily: 'bay' as never,
+			parentTypeFamily: 'bay' as never
 		})
 
 		expect(dndStore.isDragging).toBe(false)
@@ -167,14 +166,14 @@ describe('dndStore.handleDrop', () => {
 	it('GIVEN a drop combination without a valid reference family WHEN the source is dropped THEN an error is thrown', () => {
 		startDrag({
 			sourceTypeId: 'bay-id',
-			sourceTypeFamily: 'bay',
+			sourceTypeFamily: 'bay'
 		})
 
 		expect(() =>
 			dndStore.handleDrop({
 				parentTypeWrapper: createParentWrapper(),
-				parentTypeFamily: 'function' as never,
-			}),
+				parentTypeFamily: 'function' as never
+			})
 		).toThrow('No ref family')
 
 		expect(mockCreateNewRef).not.toHaveBeenCalled()

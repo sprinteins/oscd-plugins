@@ -1,27 +1,28 @@
 <script lang="ts">
 // SVELTE
-import { slide } from 'svelte/transition'
+
 // COMPONENTS
 import { Card, Input } from '@oscd-plugins/core-ui-svelte'
-import AddElement from './add-element.svelte'
-import CardCollapsibleWrapper from '../element-card/card-collapsible-wrapper.svelte'
-import ImportContainer from '@/ui/components/import/import-container.svelte'
-// STORES
-import { typeElementsStore, importsStore, dndStore } from '@/headless/stores'
+import { slide } from 'svelte/transition'
+import {
+	ALLOWED_TARGETS_BY_REF_FAMILY,
+	ALLOWED_TARGETS_BY_TYPE_FAMILY,
+	COLUMN_KEY_TO_TYPE_FAMILY,
+	TYPE_FAMILY
+} from '@/headless/constants'
 // TYPES
 import type {
 	AvailableTypeFamily,
-	SortedImportedTypeElements,
-	Columns,
 	Column,
+	Columns,
+	SortedImportedTypeElements,
 	TypeElementByIds
 } from '@/headless/stores'
-import {
-	ALLOWED_TARGETS_BY_REF_FAMILY,
-	COLUMN_KEY_TO_TYPE_FAMILY,
-	ALLOWED_TARGETS_BY_TYPE_FAMILY,
-	TYPE_FAMILY
-} from '@/headless/constants'
+// STORES
+import { dndStore, importsStore, typeElementsStore } from '@/headless/stores'
+import ImportContainer from '@/ui/components/import/import-container.svelte'
+import CardCollapsibleWrapper from '../element-card/card-collapsible-wrapper.svelte'
+import AddElement from './add-element.svelte'
 
 //======= INITIALIZATION =======//
 

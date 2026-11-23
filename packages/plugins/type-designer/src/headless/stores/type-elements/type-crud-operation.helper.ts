@@ -1,22 +1,22 @@
-import { v4 as uuidv4 } from 'uuid'
 // CORE
 import {
-	typeGuard,
-	createStandardElement,
 	createAndDispatchEditEvent,
-	findAllStandardElementsBySelector
+	createStandardElement,
+	findAllStandardElementsBySelector,
+	typeGuard
 } from '@oscd-plugins/core-api/plugin/v1'
 import { pluginGlobalStore, ssdStore } from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
+import { v4 as uuidv4 } from 'uuid'
 // CONSTANTS
 import {
 	CONDUCTING_EQUIPMENTS,
-	TYPE_FAMILY,
-	EQUIPMENTS
+	EQUIPMENTS,
+	TYPE_FAMILY
 } from '@/headless/constants'
 // TYPES
 import type { AvailableTypeFamily } from '@/headless/stores'
+// STORES
+import { pluginLocalStore, typeElementsStore } from '@/headless/stores'
 
 //====== LOCAL HELPERS ======//
 

@@ -1,8 +1,8 @@
 import { tick } from 'svelte'
+// TYPES
+import type { AvailableTypeFamily, TypeElement } from '@/headless/stores'
 // STORES
 import { typeElementsStore } from '@/headless/stores'
-// TYPES
-import type { TypeElement, AvailableTypeFamily } from '@/headless/stores'
 
 class UseSidebarStore {
 	//====== STATES ======//

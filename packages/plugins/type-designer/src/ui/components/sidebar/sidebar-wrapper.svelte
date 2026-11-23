@@ -2,19 +2,19 @@
 <script lang="ts">
 // COMPONENTS
 import {
-	Sidebar,
 	Input,
 	Label,
-	pluginGlobalStore
+	pluginGlobalStore,
+	Sidebar
 } from '@oscd-plugins/core-ui-svelte'
-// SPECIAL ATTRIBUTES
-import VirtualAttribute from '@/ui/components/sidebar/special-attributes/virtual-attribute.svelte'
+// CONSTANTS
+import { READONLY_ATTRIBUTES, TYPE_FAMILY } from '@/headless/constants'
+// STORES
+import { pluginLocalStore, sidebarStore } from '@/headless/stores'
 // CHILDREN OPTIONS
 import ConductingEquipmentChildrenOptions from '@/ui/components/sidebar/children-options/conducting-equipment.svelte'
-// CONSTANTS
-import { TYPE_FAMILY, READONLY_ATTRIBUTES } from '@/headless/constants'
-// STORES
-import { sidebarStore, pluginLocalStore } from '@/headless/stores'
+// SPECIAL ATTRIBUTES
+import VirtualAttribute from '@/ui/components/sidebar/special-attributes/virtual-attribute.svelte'
 
 //====== CONSTANTS ======//
 
@@ -28,7 +28,7 @@ const hasChildrenOptions = $derived(
 			sidebarStore.currentElementType.parameters.childrenOptions
 		).some((option) => option)
 )
-  
+
 const editLabel = $derived(
 	sidebarStore.currentElementType?.attributes?.name ||
 		sidebarStore.currentElementType?.attributes?.id

@@ -1,39 +1,36 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const {
-	mockUuid,
-	mockStores,
-} = vi.hoisted(() => ({
+const { mockUuid, mockStores } = vi.hoisted(() => ({
 	mockUuid: vi.fn(),
 	mockStores: {
 		pluginLocalStore: {
 			namespaces: {
 				currentUnstableRevision: {
-					uri: 'urn:type-designer:test',
-				},
-			},
+					uri: 'urn:type-designer:test'
+				}
+			}
 		},
 		ssdStore: {
-			bayTemplateElement: null as Element | null,
-		},
-	},
+			bayTemplateElement: null as Element | null
+		}
+	}
 }))
 
 vi.mock('uuid', () => ({
-	v4: mockUuid,
+	v4: mockUuid
 }))
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
-	ssdStore: mockStores.ssdStore,
+	ssdStore: mockStores.ssdStore
 }))
 
 vi.mock('@/headless/stores', () => ({
-	pluginLocalStore: mockStores.pluginLocalStore,
+	pluginLocalStore: mockStores.pluginLocalStore
 }))
 
 import {
 	getCurrentImportedActionsWithUpdatedTemplateUuids,
-	setUuidAttributesRecursively,
+	setUuidAttributesRecursively
 } from './import-attribute.helper'
 
 const originUuidNamespace = 'urn:type-designer:test'
@@ -42,19 +39,12 @@ function createXmlDocument(): XMLDocument {
 	return document.implementation.createDocument(null, 'SCL', null)
 }
 
-function createXmlElement(
-	xmlDocument: XMLDocument,
-	tagName: string,
-): Element {
+function createXmlElement(xmlDocument: XMLDocument, tagName: string): Element {
 	return xmlDocument.createElement(tagName)
 }
 
 function setOriginUuid(element: Element, originUuid: string): void {
-	element.setAttributeNS(
-		originUuidNamespace,
-		'originUuid',
-		originUuid,
-	)
+	element.setAttributeNS(originUuidNamespace, 'originUuid', originUuid)
 }
 
 function getOriginUuid(element: Element): string | null {
@@ -145,34 +135,26 @@ describe('getCurrentImportedActionsWithUpdatedTemplateUuids', () => {
 		importedType.setAttribute('uuid', 'new-function-uuid')
 		setOriginUuid(importedType, 'old-function-uuid')
 
-		const importedReference = createXmlElement(
-			xmlDocument,
-			'FunctionRef',
-		)
-		importedReference.setAttribute(
-			'templateUuid',
-			'old-function-uuid',
-		)
+		const importedReference = createXmlElement(xmlDocument, 'FunctionRef')
+		importedReference.setAttribute('templateUuid', 'old-function-uuid')
 
 		importedType.append(importedReference)
 
 		const importActions = [
 			[
 				{
-					node: importedType,
+					node: importedType
 				},
-				undefined,
-			],
+				undefined
+			]
 		] as never
 
 		const result =
-			getCurrentImportedActionsWithUpdatedTemplateUuids(
-				importActions,
-			)
+			getCurrentImportedActionsWithUpdatedTemplateUuids(importActions)
 
 		expect(result).toBe(importActions)
 		expect(importedReference.getAttribute('templateUuid')).toBe(
-			'new-function-uuid',
+			'new-function-uuid'
 		)
 	})
 
@@ -188,56 +170,44 @@ describe('getCurrentImportedActionsWithUpdatedTemplateUuids', () => {
 		bayTemplate.append(existingType)
 		mockStores.ssdStore.bayTemplateElement = bayTemplate
 
-		const importedReference = createXmlElement(
-			xmlDocument,
-			'FunctionRef',
-		)
-		importedReference.setAttribute(
-			'templateUuid',
-			'original-function-uuid',
-		)
+		const importedReference = createXmlElement(xmlDocument, 'FunctionRef')
+		importedReference.setAttribute('templateUuid', 'original-function-uuid')
 
 		const importActions = [
 			[
 				{
-					node: importedReference,
+					node: importedReference
 				},
-				undefined,
-			],
+				undefined
+			]
 		] as never
 
 		getCurrentImportedActionsWithUpdatedTemplateUuids(importActions)
 
 		expect(importedReference.getAttribute('templateUuid')).toBe(
-			'current-function-uuid',
+			'current-function-uuid'
 		)
 	})
 
 	it('GIVEN a templateUuid without a matching imported or SSD element WHEN templateUuid references are updated THEN the unknown UUID remains unchanged', () => {
 		const xmlDocument = createXmlDocument()
 
-		const importedReference = createXmlElement(
-			xmlDocument,
-			'FunctionRef',
-		)
-		importedReference.setAttribute(
-			'templateUuid',
-			'unknown-uuid',
-		)
+		const importedReference = createXmlElement(xmlDocument, 'FunctionRef')
+		importedReference.setAttribute('templateUuid', 'unknown-uuid')
 
 		const importActions = [
 			[
 				{
-					node: importedReference,
+					node: importedReference
 				},
-				undefined,
-			],
+				undefined
+			]
 		] as never
 
 		getCurrentImportedActionsWithUpdatedTemplateUuids(importActions)
 
 		expect(importedReference.getAttribute('templateUuid')).toBe(
-			'unknown-uuid',
+			'unknown-uuid'
 		)
 	})
 })

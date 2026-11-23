@@ -6,19 +6,19 @@ import {
 	Tabs,
 	TooltipWorkaround
 } from '@oscd-plugins/core-ui-svelte'
-// COMPONENTS
-import CardCollapsibleWrapper from '../element-card/card-collapsible-wrapper.svelte'
 // CONSTANTS
 import { COLUMN_KEY_TO_TYPE_FAMILY } from '@/headless/constants'
-// STORES
-import { importsStore, dndStore } from '@/headless/stores'
 // TYPES
 import type {
 	AvailableTypeFamily,
-	SortedImportedTypeElements,
 	Columns,
-	ImportScope
+	ImportScope,
+	SortedImportedTypeElements
 } from '@/headless/stores'
+// STORES
+import { dndStore, importsStore } from '@/headless/stores'
+// COMPONENTS
+import CardCollapsibleWrapper from '../element-card/card-collapsible-wrapper.svelte'
 
 //======= INITIALIZATION =======//
 

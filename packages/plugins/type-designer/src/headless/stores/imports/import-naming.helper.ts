@@ -1,7 +1,7 @@
 // HELPERS
 import {
-	getNewNameWithOccurrence,
-	getElementsWithSameNameBase
+	getElementsWithSameNameBase,
+	getNewNameWithOccurrence
 } from '@/headless/stores/type-elements/type-naming.helper'
 
 export function setNameAttribute(currentImportedElement: Element) {
