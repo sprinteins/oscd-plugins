@@ -1,6 +1,6 @@
-import { writable } from 'svelte/store'
 // CONSTANTS
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
+import { writable } from 'svelte/store'
 // TYPES
 import type {
 	IEDConnectionWithCustomValues,

@@ -1,1 +1,1 @@
-export { queryIEDsByPattern, createNamespaceResolver } from './xml-query'
+export { createNamespaceResolver, queryIEDsByPattern } from './xml-query'

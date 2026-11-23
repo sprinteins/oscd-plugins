@@ -1,29 +1,35 @@
 <script lang="ts">
+import type { IED } from '@oscd-plugins/core'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import { calculateLayout } from '../../../headless/services/_func-layout-calculation'
+import type { Config } from '../../../headless/services/_func-layout-calculation/config'
 import {
 	applyConnectionFilters,
 	filterIEDsByBays
 } from '../../../headless/services/auto-doc-filtering'
-import { getIEDCommunicationInfos, getBays } from '../../../headless/services/ied/ied'
+import {
+	getBays,
+	getIEDCommunicationInfos
+} from '../../../headless/services/ied/ied'
 import type { ConnectionFilter } from '../../../headless/types'
-import { type Preferences, preferences$ } from '../../../stores/_store-preferences'
 import {
-	type SelectedFilter,
+	type Preferences,
+	preferences$
+} from '../../../stores/_store-preferences'
+import {
 	clearIEDSelection,
-	toggleMultiSelectionOfIED,
-	selectConnection,
 	filterState,
-	selectIEDElkNode
+	type SelectedFilter,
+	selectConnection,
+	selectIEDElkNode,
+	toggleMultiSelectionOfIED
 } from '../../../stores/_store-view-filter'
-import type { IED } from '@oscd-plugins/core'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 import {
-	type RootNode,
+	Diagram,
 	type IEDConnection,
 	type IEDConnectionWithCustomValues,
-	Diagram
+	type RootNode
 } from '../diagram'
-import type { Config } from '../../../headless/services/_func-layout-calculation/config'
 import { Sidebar } from '../sidebar'
 
 interface Props {
@@ -49,7 +55,7 @@ let {
 }: Props = $props()
 
 let rootNode: RootNode | undefined = $state(undefined)
-let lastUsedRoot: Element | undefined = undefined
+let lastUsedRoot: Element | undefined
 let lastExtractedInfos: IED.CommunicationInfo[] = []
 let lastExtractedBays: Set<string> = $state(new Set())
 
@@ -123,7 +129,7 @@ async function initInfos(
 		preferencesWithOverrides
 	)
 
-	if (rootNode && onDiagramSizeCalculated) {
+	if (rootNode && typeof onDiagramSizeCalculated === 'function') {
 		onDiagramSizeCalculated(rootNode.width || 0, rootNode.height || 0)
 	}
 }
@@ -175,12 +181,26 @@ function handleConnectionClick(connection: IEDConnection) {
 
 <style>
 	.root {
-		--header-height: 128px;
+		--sidebar-width: 400px;
+		--color-white: #f9f7f1;
+		--color-black: #000000;
+		--color-grey-3: #bdbdbd;
+		--color-cyan: #2aa198;
+		--color-accent: var(--color-cyan);
+		--color-canvas-background: #f3ecda;
+		--color-sidebar-background: #fdf6e3;
+		--color-message-goose: #288409;
+		--color-message-highlight-goose: #9bff00;
+		--color-message-mms: #3253a8;
+		--color-message-highlight-mms: #00c0f9;
+		--color-message-sampledvalues: #c73c61;
+		--color-message-highlight-sampledvalues: #ff40a7;
+		--color-message-unknown: var(--color-black);
 		display: grid;
 		grid-template-columns: auto 0;
 		width: 100%;
 		overflow-x: hidden;
-		height: calc(100vh - var(--header-height));
+		height: 100%;
 	}
 
 	.root.showSidebar {

@@ -1,15 +1,11 @@
-import type {
-	IEDInfo,
-	ConnectionFilter,
-	ResolvedFilter
-} from '@/headless/types'
+import type { ConnectionFilter, IEDInfo, ResolvedFilter } from '../../types'
 import {
-	resolveConnectionFilter,
-	filterPublishedConnections,
-	filterReceivedConnections,
 	determineVisibleIEDs,
 	ensureReferencedIEDsIncluded,
-	removeDetachedIEDs
+	filterPublishedConnections,
+	filterReceivedConnections,
+	removeDetachedIEDs,
+	resolveConnectionFilter
 } from './filters'
 import { shouldRemoveDetachedIEDs } from './should-remove-detached-ieds'
 

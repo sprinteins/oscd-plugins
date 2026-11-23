@@ -1,14 +1,6 @@
-import type { IEDElkNode } from '../../diagram/nodes'
+import type { ServiceItem } from '../../../../headless/services/ied-detail-view'
 import type { MessageType } from '../../../../headless/types'
+import type { IEDElkNode } from '../../diagram/nodes'
 
-export enum ConnectionTypeDirection {
-	INCOMING = 'INCOMING',
-	OUTGOING = 'OUTGOING'
-}
-
-export type ServiceObject = {
-	node: IEDElkNode
-	serviceType: MessageType
-	serviceTypeLabel?: string
-	connectionDirection: ConnectionTypeDirection
-}
+export { ConnectionTypeDirection } from '../../../../headless/services/ied-detail-view'
+export type ServiceObject = ServiceItem<IEDElkNode, MessageType>

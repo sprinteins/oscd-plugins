@@ -33,7 +33,7 @@ export function getConnectedIEDsByLabel(
 	// find ied in nodes
 	// enforces that IED labels are unique!
 	const selectedNode = nodes.children.find(
-		(node: IEDElkNode | BayElkNode) => node.label == label
+		(node: IEDElkNode | BayElkNode) => node.label === label
 	)
 	if (!selectedNode) {
 		return connectedIEDs

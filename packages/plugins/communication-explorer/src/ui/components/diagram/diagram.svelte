@@ -1,18 +1,18 @@
 <script lang="ts">
-import type {
-	IEDConnectionWithCustomValues,
-	IEDElkNode,
-	RootNode
-} from './nodes'
-import { isBayNode } from './nodes'
-import { IEDElement } from './ied-element'
-import Message from './message.svelte'
 import type { ElkExtendedEdge } from 'elkjs'
 import {
 	isConnectionSelected,
 	isIEDSelected
 } from '../../../stores/_store-view-filter'
 import BayContainer from './bay-container/bay-container.svelte'
+import { IEDElement } from './ied-element'
+import Message from './message.svelte'
+import type {
+	IEDConnectionWithCustomValues,
+	IEDElkNode,
+	RootNode
+} from './nodes'
+import { isBayNode } from './nodes'
 
 interface Props {
 	rootNode: RootNode
@@ -303,6 +303,7 @@ async function handleMouseWheel(e: WheelEvent) {
 		width: 100%;
 		height: 100%;
 		overflow: auto;
+		background-color: var(--color-canvas-background);
 	}
 
 	diagram.draggingEnabled {

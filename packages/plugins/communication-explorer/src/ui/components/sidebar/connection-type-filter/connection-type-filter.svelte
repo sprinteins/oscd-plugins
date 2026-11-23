@@ -1,52 +1,49 @@
 <script lang="ts">
-	import FilterChip from "@oscd-plugins/ui/src/components/filter-chip/filter-chip.svelte" //TODO: move filter-chip into library
-	import { changeMessageConnectionFilterDirection } from "../../../../stores/_store-view-filter"
-	interface Props {
-		disabled?: boolean;
-		isFilterIncomingActive?: boolean;
-		isFilterOutgoingActive?: boolean;
-	}
+import { Button } from '@oscd-plugins/core-ui-svelte'
+import { changeMessageConnectionFilterDirection } from '../../../../stores/_store-view-filter'
 
-	let { disabled = false, isFilterIncomingActive = false, isFilterOutgoingActive = false }: Props = $props();
+interface Props {
+	disabled?: boolean
+	isFilterIncomingActive?: boolean
+	isFilterOutgoingActive?: boolean
+}
 
-	function handleClickOnPublisher() {
-		changeMessageConnectionFilterDirection(
-			!isFilterIncomingActive,
-			isFilterOutgoingActive
-		)
-	}
+let {
+	disabled = false,
+	isFilterIncomingActive = false,
+	isFilterOutgoingActive = false
+}: Props = $props()
 
-	function handleClickOnSubscriber() {
-		changeMessageConnectionFilterDirection(
-			isFilterIncomingActive,
-			!isFilterOutgoingActive
-		)
-	}
+function handleClickOnPublisher() {
+	changeMessageConnectionFilterDirection(
+		!isFilterIncomingActive,
+		isFilterOutgoingActive
+	)
+}
+
+function handleClickOnSubscriber() {
+	changeMessageConnectionFilterDirection(
+		isFilterIncomingActive,
+		!isFilterOutgoingActive
+	)
+}
 </script>
 
-<div class="ButtonGroup">
-	<FilterChip
-		label={"Published"}
+<div class="flex flex-wrap gap-2">
+	<Button.Root
+		variant={isFilterIncomingActive ? 'secondary' : 'outline'}
 		{disabled}
-		isSelected={isFilterIncomingActive}
+		aria-pressed={isFilterIncomingActive}
 		onclick={handleClickOnPublisher}
-	/>
-	<FilterChip
-		label={"Subscribed"}
+	>
+		Published
+	</Button.Root>
+	<Button.Root
+		variant={isFilterOutgoingActive ? 'secondary' : 'outline'}
 		{disabled}
-		isSelected={isFilterOutgoingActive}
+		aria-pressed={isFilterOutgoingActive}
 		onclick={handleClickOnSubscriber}
-	/>
+	>
+		Subscribed
+	</Button.Root>
 </div>
-
-<style>
-	:global(.ButtonGroup) {
-		border-radius: 1rem;
-	}
-	:global(.ButtonGroup .chip:first-of-type button) {
-		margin-left: 0;
-	}
-	:global(.ButtonGroup .chip:last-of-type button) {
-		margin-right: 0;
-	}
-</style>

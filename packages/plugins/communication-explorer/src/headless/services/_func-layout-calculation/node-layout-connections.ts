@@ -1,8 +1,11 @@
-import { MESSAGE_TYPE } from '@oscd-plugins/core'
-import { hasActiveIEDSelection, isIEDSelected } from '../../../stores/_store-view-filter'
 // TYPES
 import type { IED, Utils } from '@oscd-plugins/core'
+import { MESSAGE_TYPE } from '@oscd-plugins/core'
 import type { SelectedFilter } from '../../../stores/_store-view-filter'
+import {
+	hasActiveIEDSelection,
+	isIEDSelected
+} from '../../../stores/_store-view-filter'
 import type { IEDConnectionWithCustomValues } from '../../../ui/components/diagram'
 
 export const messageTypeMap: {
@@ -21,8 +24,8 @@ export function generateConnectionLayout(
 ): IEDConnectionWithCustomValues[] {
 	const hasSelection = hasActiveIEDSelection()
 
-	const incomingEdges: IEDConnectionWithCustomValues[] = ieds
-		.flatMap((targetIED, index) => {
+	const incomingEdges: IEDConnectionWithCustomValues[] = ieds.flatMap(
+		(targetIED, index) => {
 			const receivedConnections = convertReceivedMessagesToConnections(
 				targetIED,
 				ieds,
@@ -32,10 +35,11 @@ export function generateConnectionLayout(
 			)
 
 			return receivedConnections
-		})
+		}
+	)
 
-	const outgoingEdges: IEDConnectionWithCustomValues[] = ieds
-		.flatMap((sourceIED, iedIndex) => {
+	const outgoingEdges: IEDConnectionWithCustomValues[] = ieds.flatMap(
+		(sourceIED, iedIndex) => {
 			const publishedConnections = convertPublishedMessagesToConnections(
 				sourceIED,
 				ieds,
@@ -45,7 +49,8 @@ export function generateConnectionLayout(
 			)
 
 			return publishedConnections
-		})
+		}
+	)
 
 	return [...incomingEdges, ...outgoingEdges]
 }

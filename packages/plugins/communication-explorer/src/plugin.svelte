@@ -28,39 +28,43 @@ use:initPlugin={{
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	<LegacyTheme>
-		<communication-explorer>
-			{#if doc}
-				<TelemetryView root={doc.documentElement} />
-			{/if}
-		</communication-explorer>
-	</LegacyTheme>
+	<communication-explorer>
+		{#if doc}
+			<TelemetryView root={doc.documentElement} />
+		{/if}
+	</communication-explorer>
 </main>
 
 
 <script lang="ts">
 // TYPES
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
-import type { XMLEditor } from '@openscd/oscd-editor';
 
-import { clearSelection } from "../src/stores/_store-view-filter"
+import type { XMLEditor } from '@openscd/oscd-editor'
+import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 // CORE
 import { initPlugin } from '@oscd-plugins/core-ui-svelte'
-import { LegacyTheme } from '@oscd-plugins/ui'
-
 // PACKAGE
 import jsonPackage from '../package.json'
-import TelemetryView from "./ui/components/telemetry-view/telemetry-view.svelte"
+import { clearSelection } from '../src/stores/_store-view-filter'
+import TelemetryView from './ui/components/telemetry-view/telemetry-view.svelte'
 
 // Svelte 5 props syntax
-const { doc, docName, editCount, editor, locale, pluginType, isCustomInstance }: { 
-	doc: XMLDocument;
-	docName: string;
-	editCount: number;
-	editor: XMLEditor;
-	locale: string;
-	pluginType: string;
-	isCustomInstance: boolean;
+const {
+	doc,
+	docName,
+	editCount,
+	editor,
+	locale,
+	pluginType,
+	isCustomInstance
+}: {
+	doc: XMLDocument
+	docName: string
+	editCount: number
+	editor: XMLEditor
+	locale: string
+	pluginType: string
+	isCustomInstance: boolean
 } = $props()
 
 // Svelte 5 effect instead of reactive statement
@@ -69,8 +73,6 @@ $effect(() => {
 		clearSelection()
 	}
 })
-
-
 </script>
 
 
@@ -79,11 +81,6 @@ $effect(() => {
 		display: block;
 		position: relative;
 		font-size: 12px;
-		min-height: 80vh;
-	}
-
-	:global(input[type="checkbox"]) {
-		accent-color: var(--color-accent);
-		/* margin: 0; */
+		height: 100%;
 	}
 </style>

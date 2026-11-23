@@ -2,7 +2,7 @@ import type {
 	PublishedConnection,
 	ReceivedConnection,
 	ResolvedFilter
-} from '@/headless/types'
+} from '../../../types'
 
 export function filterPublishedConnections(
 	iedName: string,
@@ -33,7 +33,8 @@ function isPublishedConnectionAllowed(
 		const sourceMatch =
 			filter.sourceMatchAll || filter.sourceIEDs.includes(iedName)
 		const targetMatch =
-			filter.targetMatchAll || filter.targetIEDs.includes(connection.targetIEDName)
+			filter.targetMatchAll ||
+			filter.targetIEDs.includes(connection.targetIEDName)
 		const typeMatch = connection.serviceType === filter.messageType
 
 		return sourceMatch && targetMatch && typeMatch
@@ -47,7 +48,8 @@ function isReceivedConnectionAllowed(
 ): boolean {
 	return resolvedFilters.some((filter) => {
 		const sourceMatch =
-			filter.sourceMatchAll || filter.sourceIEDs.includes(connection.iedName)
+			filter.sourceMatchAll ||
+			filter.sourceIEDs.includes(connection.iedName)
 		const targetMatch =
 			filter.targetMatchAll || filter.targetIEDs.includes(iedName)
 		const typeMatch = connection.serviceType === filter.messageType

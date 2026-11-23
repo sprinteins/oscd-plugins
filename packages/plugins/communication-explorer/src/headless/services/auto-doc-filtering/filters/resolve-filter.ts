@@ -1,4 +1,4 @@
-import type { ConnectionFilter, ResolvedFilter } from '@/headless/types'
+import type { ConnectionFilter, ResolvedFilter } from '../../../types'
 import { MESSAGE_TYPE_TO_SCL_MAP } from '../message-type-to-scl-map'
 import { queryIEDsByPattern } from '../utils/xml-query'
 

@@ -1,60 +1,83 @@
-import { render, screen, fireEvent, act } from "@testing-library/svelte"
-import {describe, it, expect } from "vitest"
+// @vitest-environment jsdom
 
-import Message  from "./message.svelte"
-import type { IEDConnection } from "./nodes"
+import { cleanup, render, screen } from '@testing-library/svelte'
+import { afterEach, describe, expect, it } from 'vitest'
+import Message from './message.svelte'
+import type { IEDConnection } from './nodes'
 
-
-
-describe("Messages", () => {
-
-	type TestCase = {
-		desc: string,
-		isSelected: boolean,
-		isSelectedClassExpected: boolean,
-	}
-
-	const featureTests: TestCase[] = [
+const connection: IEDConnection = {
+	id: 'relevant-connection',
+	sources: [],
+	targets: [],
+	isRelevant: true,
+	sections: [
 		{
-			desc:                    "has selected class if isSelected is true",
-			isSelected:              true,
-			isSelectedClassExpected: true,
-		},
-		{
-			desc:                    "does not have selected class if isSelected is false",
-			isSelected:              false,
-			isSelectedClassExpected: false,
-		},
+			id: 'connection',
+			startPoint: { x: 0, y: 0 },
+			endPoint: { x: 0, y: 200 },
+			bendPoints: []
+		}
 	]
+}
 
-	featureTests.forEach(testIsSelectedAttribute)
+afterEach(() => {
+	cleanup()
+})
 
-	function testIsSelectedAttribute(tc: TestCase) {
-		it(tc.desc, () => {
-	
-			const connection: IEDConnection = {
-				id:       "not_relevant",
-				sources:  [],
-				targets:  [],
-				sections: [
-					{
-						id:         "connection",
-						startPoint: {x: 0, y: 0},
-						endPoint:   {x: 0, y: 200},
-						bendPoints: [],
-					},
-				],
-			}
-	
-			render(Message, { edge: connection, isSelected: tc.isSelected, testid: "connection" })
-			const element = screen.getByTestId("connection")
-			expect(element).toBeDefined
-			if(tc.isSelectedClassExpected) {
-				expect(Array.from(element.classList)).toContain("selected")
-			} else {
-				expect(Array.from(element.classList)).not.toContain("selected")
-			}
+describe('GIVEN a connection', () => {
+	it('WHEN selected THEN it exposes the selected class', () => {
+		render(Message, {
+			edge: connection,
+			isSelected: true,
+			testid: 'connection'
 		})
-	}
 
+		expect(screen.getByTestId('connection').classList).toContain('selected')
+	})
+
+	it('WHEN not selected THEN it does not expose the selected class', () => {
+		render(Message, {
+			edge: connection,
+			isSelected: false,
+			testid: 'connection'
+		})
+
+		expect(screen.getByTestId('connection').classList).not.toContain(
+			'selected'
+		)
+	})
+
+	it('WHEN animation is enabled without a selection THEN animation layers do not render', () => {
+		const { container } = render(Message, {
+			edge: connection,
+			playAnimation: true,
+			testid: 'connection'
+		})
+
+		expect(container.querySelector('.path-animation')).toBeNull()
+		expect(container.querySelector('.path-animation-border')).toBeNull()
+	})
+
+	it('WHEN animation is enabled for a selected connection THEN animation layers render', () => {
+		const { container } = render(Message, {
+			edge: connection,
+			isSelected: true,
+			playAnimation: true,
+			testid: 'connection'
+		})
+
+		expect(container.querySelector('.path-animation')).toBeTruthy()
+		expect(container.querySelector('.path-animation-border')).toBeTruthy()
+	})
+
+	it('WHEN animation is disabled THEN animation layers do not render', () => {
+		const { container } = render(Message, {
+			edge: connection,
+			playAnimation: false,
+			testid: 'connection'
+		})
+
+		expect(container.querySelector('.path-animation')).toBeNull()
+		expect(container.querySelector('.path-animation-border')).toBeNull()
+	})
 })

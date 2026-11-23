@@ -1,15 +1,14 @@
 <script lang="ts">
-	import { IEDElement } from "../ied-element"
-	import type { BayNode } from "../nodes"
+import { IEDElement } from '../ied-element'
+import type { BayNode } from '../nodes'
 
-	
-	interface Props {
-		// Input
-		node: BayNode;
-		testid?: string;
-	}
+interface Props {
+	// Input
+	node: BayNode
+	testid?: string
+}
 
-	let { node, testid = "" }: Props = $props();
+let { node, testid = '' }: Props = $props()
 </script>
 
 {#if node}
