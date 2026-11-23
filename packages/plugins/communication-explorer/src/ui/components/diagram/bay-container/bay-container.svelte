@@ -1,10 +1,10 @@
 <script lang="ts">
 import { IEDElement } from '../ied-element'
-import type { BayNode } from '../nodes'
+import type { BayElkNode } from '../nodes'
 
 interface Props {
 	// Input
-	node: BayNode
+	node: BayElkNode
 	testid?: string
 }
 
@@ -19,7 +19,6 @@ let { node, testid = '' }: Props = $props()
 		{#each node.children as child}
 			<IEDElement
 				node={child}
-				isSelected={false}
 				testid={`ied-${node.label}`}
 			/>
 		{/each}

@@ -1,3 +1,4 @@
+import { XMLEditor } from '@openscd/oscd-editor'
 import { sclMockA, sclMockB, sclMockC } from '@oscd-plugins/core-api/mocks/v1'
 import { mount } from 'svelte'
 import Plugin from './plugin.svelte'
@@ -11,6 +12,9 @@ mount(Plugin, {
 		doc: new DOMParser().parseFromString(MOCKS[activeMock], 'text/xml'),
 		docName: activeMock,
 		editCount: 0,
-		locale: 'en'
+		editor: new XMLEditor(),
+		locale: 'en',
+		pluginType: 'communication-explorer',
+		isCustomInstance: false
 	}
 })

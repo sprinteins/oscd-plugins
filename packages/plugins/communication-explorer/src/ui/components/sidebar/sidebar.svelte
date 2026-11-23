@@ -85,9 +85,13 @@ function handleSearchKeydown(event: KeyboardEvent) {
 	if (event.key === 'ArrowUp') {
 		event.preventDefault()
 		filterTextFieldFocused = true
+		if (activeSearchIndex < 0) {
+			activeSearchIndex = searchOptions.length - 1
+			return
+		}
 		activeSearchIndex =
 			(activeSearchIndex - 1 + searchOptions.length) %
-			Math.max(searchOptions.length, 1)
+			searchOptions.length
 		return
 	}
 

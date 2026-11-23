@@ -27,28 +27,64 @@ export async function generateMockRootNode(): Promise<RootNode> {
 			width: config.width,
 			height: config.height,
 			label: Label(),
-			children: []
+			children: [],
+			details: {
+				logicalNodes: [],
+				dataObjects: [],
+				dataAttributes: []
+			},
+			bays: new Set(),
+			bayLabelHeight: 15,
+			bayLabelGap: 2,
+			iedHeight: config.height
 		},
 		{
 			id: ID(),
 			width: config.width,
 			height: config.height,
 			label: Label(),
-			children: []
+			children: [],
+			details: {
+				logicalNodes: [],
+				dataObjects: [],
+				dataAttributes: []
+			},
+			bays: new Set(),
+			bayLabelHeight: 15,
+			bayLabelGap: 2,
+			iedHeight: config.height
 		},
 		{
 			id: ID(),
 			width: config.width,
 			height: config.height,
 			label: Label(),
-			children: []
+			children: [],
+			details: {
+				logicalNodes: [],
+				dataObjects: [],
+				dataAttributes: []
+			},
+			bays: new Set(),
+			bayLabelHeight: 15,
+			bayLabelGap: 2,
+			iedHeight: config.height
 		},
 		{
 			id: ID(),
 			width: config.width,
 			height: config.height,
 			label: Label(),
-			children: []
+			children: [],
+			details: {
+				logicalNodes: [],
+				dataObjects: [],
+				dataAttributes: []
+			},
+			bays: new Set(),
+			bayLabelHeight: 15,
+			bayLabelGap: 2,
+			iedHeight: config.height
 		}
 	]
 
@@ -64,11 +100,15 @@ export async function generateMockRootNode(): Promise<RootNode> {
 			targets: [children[1].id],
 			sourceIED: {
 				iedName: children[0].label,
+				iedDetails: children[0].details,
+				bays: children[0].bays,
 				published: [],
 				received: []
 			},
 			targetIED: {
 				iedName: children[1].label,
+				iedDetails: children[1].details,
+				bays: children[1].bays,
 				published: [],
 				received: []
 			}
@@ -77,11 +117,15 @@ export async function generateMockRootNode(): Promise<RootNode> {
 			id: EdgeID(),
 			sourceIED: {
 				iedName: children[1].label,
+				iedDetails: children[1].details,
+				bays: children[1].bays,
 				published: [],
 				received: []
 			},
 			targetIED: {
 				iedName: children[2].label,
+				iedDetails: children[2].details,
+				bays: children[2].bays,
 				published: [],
 				received: []
 			},

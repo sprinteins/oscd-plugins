@@ -64,7 +64,7 @@ export function getConnectedIEDsByLabel(
 				if (targetNode) {
 					connectedIEDs.publishedTo.push({
 						node: targetNode,
-						serviceType: messageType,
+						serviceType: messageType ?? 'Unknown',
 						serviceTypeLabel: messageTypeLabel
 					})
 				}
@@ -82,7 +82,7 @@ export function getConnectedIEDsByLabel(
 				if (sourceNode) {
 					connectedIEDs.subscribedFrom.push({
 						node: sourceNode,
-						serviceType: messageType,
+						serviceType: messageType ?? 'Unknown',
 						serviceTypeLabel: messageTypeLabel
 					})
 				}

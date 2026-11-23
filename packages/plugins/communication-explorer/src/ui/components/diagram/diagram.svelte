@@ -46,8 +46,8 @@ let {
 // Setup
 //
 
-let svgRoot: SVGElement = $state()
-let root: HTMLElement = $state()
+let svgRoot = $state<SVGElement>()
+let root = $state<HTMLElement>()
 
 function handleIEDClick(e: MouseEvent, node: IEDElkNode) {
 	if (draggingEnabled) {
@@ -62,7 +62,7 @@ function handleIEDClick(e: MouseEvent, node: IEDElkNode) {
 	const isAdditiveSelect = e.metaKey || e.ctrlKey || e.shiftKey
 
 	if (element.classList.contains('bayLabel')) {
-		handleBaySelect(element.textContent)
+		handleBaySelect(element.textContent ?? '')
 		return
 	}
 
@@ -113,7 +113,7 @@ function handleKeyDown(e: KeyboardEvent) {
 }
 
 function handleMouseDown(e: MouseEvent) {
-	if (!draggingEnabled) {
+	if (!draggingEnabled || !root) {
 		return
 	}
 
@@ -132,7 +132,7 @@ function handleMouseDown(e: MouseEvent) {
 	e.preventDefault()
 }
 function handleMouseMove(e: MouseEvent) {
-	if (!isDragging) {
+	if (!isDragging || !root) {
 		return
 	}
 

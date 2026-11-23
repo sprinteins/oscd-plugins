@@ -56,6 +56,25 @@ describe('GIVEN the Communication Explorer sidebar', () => {
 		expect(screen.queryByRole('listbox')).toBeNull()
 	})
 
+	it('WHEN ArrowUp is pressed before any option is active THEN the last option is selected', async () => {
+		const user = userEvent.setup()
+		const node = createNode('IED_1', ['Bay A'])
+		const rootNode: RootNode = {
+			id: 'root',
+			children: [node]
+		}
+		render(Sidebar, { rootNode, bays: ['Bay A'] })
+
+		const search = screen.getByRole('combobox', {
+			name: 'Filter IED or bay'
+		})
+		await user.click(search)
+		await user.keyboard('{ArrowUp}{Enter}')
+
+		expect(get(filterState).selectedIEDs).toEqual([node])
+		expect((search as HTMLInputElement).value).toBe('Bay A')
+	})
+
 	it('WHEN Clear all is activated THEN IED search and selection state are cleared', async () => {
 		const user = userEvent.setup()
 		const node = createNode('IED_1', [])

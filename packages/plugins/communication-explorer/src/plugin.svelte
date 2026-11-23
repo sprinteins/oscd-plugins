@@ -39,8 +39,7 @@ use:initPlugin={{
 <script lang="ts">
 // TYPES
 
-import type { XMLEditor } from '@openscd/oscd-editor'
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
+import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 // CORE
 import { initPlugin } from '@oscd-plugins/core-ui-svelte'
 // PACKAGE
@@ -57,14 +56,8 @@ const {
 	locale,
 	pluginType,
 	isCustomInstance
-}: {
-	doc: XMLDocument
-	docName: string
-	editCount: number
-	editor: XMLEditor
-	locale: string
+}: Plugin.CustomComponentsProps & {
 	pluginType: string
-	isCustomInstance: boolean
 } = $props()
 
 // Svelte 5 effect instead of reactive statement

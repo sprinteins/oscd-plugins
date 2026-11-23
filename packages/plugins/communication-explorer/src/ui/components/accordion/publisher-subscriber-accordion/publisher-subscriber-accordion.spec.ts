@@ -26,9 +26,19 @@ it('GIVEN a publisher accordion WHEN opened and closed THEN its content visibili
 
 	await user.click(trigger)
 	expect(trigger.getAttribute('aria-expanded')).toBe('true')
-	expect(screen.getByText('No items found')).toBeVisible()
+	expect(
+		screen
+			.getByText('No items found')
+			.closest('[data-state]')
+			?.getAttribute('data-state')
+	).toBe('open')
 
 	await user.click(trigger)
 	expect(trigger.getAttribute('aria-expanded')).toBe('false')
-	expect(screen.getByText('No items found')).not.toBeVisible()
+	expect(
+		screen
+			.getByText('No items found')
+			.closest('[data-state]')
+			?.getAttribute('data-state')
+	).toBe('closed')
 })

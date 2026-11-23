@@ -164,15 +164,19 @@ function generateBayLayout(ieds: IEDElkNode[], config: Config): IEDElkNode[] {
 			continue
 		}
 		const bayLabel = ied.bays.values().next().value
-		let bayNode: IEDElkNode = children.find(
+		if (bayLabel === undefined) {
+			continue
+		}
+		let bayNode: IEDElkNode | undefined = children.find(
 			(b) => b.label === bayLabel && b.isBayNode
 		)
 		if (bayNode) {
 			bayNode.children.push(ied)
-			bayNode.isRelevant |= ied.isRelevant
+			bayNode.isRelevant =
+				Boolean(bayNode.isRelevant) || Boolean(ied.isRelevant)
 		} else {
 			const spacing = config.spacingBase ?? 20
-			bayNode = {
+			const newBayNode: IEDElkNode = {
 				id: `bay-${id++}`, //placeholder
 				width: config.iedWidth,
 				height: config.iedHeight,
@@ -182,10 +186,16 @@ function generateBayLayout(ieds: IEDElkNode[], config: Config): IEDElkNode[] {
 				children: [ied], //IEDs must be children of their bays, otherwise ELK won't calculate proper layouts!
 				layoutOptions: {
 					'elk.padding': `[top=${spacing * 2},left=${spacing},right=${spacing},bottom=${spacing}]` //double top spacing to account for baycontainer label!
-				}
+				},
+				details: ied.details,
+				bays: new Set([bayLabel]),
+				bayLabelHeight: config.bayLabelHeight,
+				bayLabelGap: config.bayLabelGap,
+				iedHeight: config.iedHeight
 			}
-			children.push(bayNode)
-			bays.push(bayNode)
+			children.push(newBayNode)
+			bays.push(newBayNode)
+			bayNode = newBayNode
 		}
 	}
 
