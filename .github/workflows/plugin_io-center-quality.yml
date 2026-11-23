@@ -18,3 +18,10 @@ jobs:
     uses: ./.github/workflows/_check.yml
     with:
       package-name: io-center
+
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/_test.yml
+    with:
+      package-name: io-center
+      has-coverage: true
