@@ -1,24 +1,23 @@
-import { untrack } from 'svelte'
 // CORE
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { untrack } from 'svelte'
 // CONSTANTS
 import { TREE_LEVEL } from '@/headless/constants'
-// STORES
-import { pluginLocalStore, logicalStore, canvasStore } from '@/headless/stores'
-// HELPERS
-import { iedElementToIedList } from './crud-operation.helper'
-import { mapCurrentAccessPoint } from './tree-consolidation.helpers'
-import { isDataObject } from './guards.helper'
-import { createIedRequiredElements } from './required-element.helper'
-import { filterTree, hasSelectedChild, getDataObjects } from './tree.helper'
-
 // TYPES
 import type {
-	IED,
-	TreeItem,
 	DataObject,
-	DataObjectParentTree
+	DataObjectParentTree,
+	IED,
+	TreeItem
 } from '@/headless/stores'
+// STORES
+import { canvasStore, pluginLocalStore } from '@/headless/stores'
+// HELPERS
+import { iedElementToIedList } from './crud-operation.helper'
+import { isDataObject } from './guards.helper'
+import { createIedRequiredElements } from './required-element.helper'
+import { filterTree, getDataObjects, hasSelectedChild } from './tree.helper'
+import { mapCurrentAccessPoint } from './tree-consolidation.helpers'
 
 export class IedStore {
 	//====== INITIALIZATION ======//

@@ -1,34 +1,34 @@
 // CORE
 import {
-	typeGuard,
-	createAndDispatchEditEvent
+	createAndDispatchEditEvent,
+	typeGuard
 } from '@oscd-plugins/core-api/plugin/v1'
+import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
 import {
-	LOGICAL_CONDITIONER_CLASS,
 	ALLOWED_LOGICAL_CONDITIONER_CLASS_BY_CDC,
+	CONNECTION_ELEMENT_TAG_NAME,
+	LOGICAL_CONDITIONER_CLASS,
+	LOGICAL_PHYSICAL_CLASS,
 	PORT_KIND,
 	PORT_KIND_TO_ELEMENT_TAG_NAME,
-	CONNECTION_ELEMENT_TAG_NAME,
-	LOGICAL_PHYSICAL_CLASS,
 	PORT_SIDE
 } from '@/headless/constants'
+// TYPES
+import type {
+	ConnectionId,
+	LogicalConditionerClass,
+	PortConfig
+} from '@/headless/stores'
 // STORES
 import {
-	iedStore,
 	canvasStore,
-	pluginLocalStore,
-	logicalStore
+	iedStore,
+	logicalStore,
+	pluginLocalStore
 } from '@/headless/stores'
 // UTILS
 import { pushInStringArrayIfNotPresent } from '@/headless/utils'
-// TYPES
-import type {
-	PortConfig,
-	LogicalConditionerClass,
-	ConnectionId
-} from '@/headless/stores'
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 
 //====== READ ======//
 
@@ -206,10 +206,7 @@ function createDOI(port: PortConfig) {
 
 //====== DELETE ======//
 
-export function deleteConnection(params: {
-	source: string
-	target: string
-}) {
+export function deleteConnection(params: { source: string; target: string }) {
 	if (!pluginGlobalStore.host) throw new Error('No host found')
 
 	const dOIElement = iedStore.selectedIED?.element?.querySelector(

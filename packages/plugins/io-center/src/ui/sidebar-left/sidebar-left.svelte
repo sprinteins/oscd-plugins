@@ -1,10 +1,11 @@
 <script lang="ts">
 // STORES
-import { canvasStore, iedStore, logicalStore } from '@/headless/stores'
+
 // COMPONENTS
 import { SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
-import IedTree from '@/ui/sidebar-left/ied-tree.svelte'
+import { canvasStore, iedStore, logicalStore } from '@/headless/stores'
 import SearchBar from '@/ui/common/search-bar.svelte'
+import IedTree from '@/ui/sidebar-left/ied-tree.svelte'
 
 //====== DERIVED ======//
 

@@ -1,5 +1,6 @@
 <script lang="ts">
 import { Card } from '@oscd-plugins/core-ui-svelte'
+
 const { title, children } = $props()
 </script>
 

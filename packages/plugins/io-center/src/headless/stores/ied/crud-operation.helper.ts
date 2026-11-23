@@ -1,6 +1,3 @@
-import { untrack } from 'svelte'
-// STORES
-import { pluginLocalStore, logicalStore, canvasStore } from '@/headless/stores'
 // TYPES
 import type { IED } from '@/headless/stores'
 

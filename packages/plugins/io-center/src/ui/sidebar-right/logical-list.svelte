@@ -1,22 +1,22 @@
 <script lang="ts">
 // CORE
 import {
-	ToggleGroup,
 	Button,
 	Separator,
+	ToggleGroup,
 	TooltipWorkaround
 } from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { canvasStore, logicalStore } from '@/headless/stores'
 // COMPONENTS
-import { Edit, Square, SquareCheck, Trash2, X, Check } from 'lucide-svelte'
+import { Check, Edit, Square, SquareCheck, Trash2, X } from 'lucide-svelte'
 // TYPES
 import type {
-	LogicalKind,
-	RawLogical,
 	LogicalConditionerClass,
-	LogicalPhysicalClass
+	LogicalKind,
+	LogicalPhysicalClass,
+	RawLogical
 } from '@/headless/stores'
+// STORES
+import { canvasStore, logicalStore } from '@/headless/stores'
 
 //====== INITIALIZATION ======//
 

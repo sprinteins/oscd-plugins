@@ -2,13 +2,15 @@
 // CORE
 import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 import {
-	dialogStore,
+	Alert,
 	Button,
-	SelectWorkaround,
+	dialogStore,
 	Input,
 	Label,
-	Alert
+	SelectWorkaround
 } from '@oscd-plugins/core-ui-svelte'
+// COMPONENTS
+import { TriangleAlert } from 'lucide-svelte'
 // CONSTANTS
 import {
 	ALLOWED_LOGICAL_CONDITIONER_CLASS_BY_CDC,
@@ -16,20 +18,18 @@ import {
 	LOGICAL_CONDITIONER_CLASS,
 	LOGICAL_PHYSICAL_CLASS
 } from '@/headless/constants'
-// STORES
-import { iedStore, logicalStore } from '@/headless/stores'
-// COMPONENTS
-import { TriangleAlert } from 'lucide-svelte'
-// UTILS
-import { pushInStringArrayIfNotPresent } from '@/headless/utils'
 // TYPES
 import type {
-	LogicalKind,
-	LogicalConditionerClass,
-	LogicalPhysicalClass,
 	DataObject,
+	LogicalConditionerClass,
+	LogicalKind,
+	LogicalPhysicalClass,
 	RawLogical
 } from '@/headless/stores'
+// STORES
+import { iedStore, logicalStore } from '@/headless/stores'
+// UTILS
+import { pushInStringArrayIfNotPresent } from '@/headless/utils'
 
 //====== INITIALIZATION ======//
 

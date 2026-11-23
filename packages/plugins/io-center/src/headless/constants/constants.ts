@@ -1,7 +1,7 @@
 import type {
-	PortConfig,
 	LogicalConditionerClass,
-	LogicalPhysicalClass
+	LogicalPhysicalClass,
+	PortConfig
 } from '@/headless/stores'
 
 export const TREE_LEVEL = {
