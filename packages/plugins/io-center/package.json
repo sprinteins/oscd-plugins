@@ -19,7 +19,8 @@
 		"//====== SVELTE ======//": "",
 		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
 		"//====== QUALITY ======//": "",
-		"biome:check": "biome check src"
+		"biome:check": "biome check src",
+		"ci-tests": "pnpm run biome:check && pnpm run check && pnpm run build && pnpm run test:coverage"
 	},
 	"files": [
 		"dist"
