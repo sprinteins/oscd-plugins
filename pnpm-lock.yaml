@@ -5503,8 +5503,8 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
-  linkify-it@5.0.0:
-    resolution: {integrity: sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ==}
+  linkify-it@5.0.2:
+    resolution: {integrity: sha512-ONTm2jCMAVZjgQa/Fy1kScXsuOoF5NPTsoFBdE1KVIZ2vAh/r9+Bqo+0jINCBYnavTPQZz38QzFTme79ENoN3Q==}
 
   listenercount@1.0.1:
     resolution: {integrity: sha512-3mk/Zag0+IJxeDrxSgaDPy4zZ3w05PRZeJNnlWhzFz5OkX49J4krc+A8X2d2M69vGMBEX0uyl8M+W+8gH+kBqQ==}
@@ -5624,8 +5624,8 @@ packages:
   map-or-similar@1.5.0:
     resolution: {integrity: sha512-0aF7ZmVon1igznGI4VS30yugpduQW3y3GkcgGJOp7d8x8QrizhigUxjI/m2UojsXXto+jLAH3KSz+xOJTiORjg==}
 
-  markdown-it@14.1.0:
-    resolution: {integrity: sha512-a54IwgWPaeBCAAsv13YgmALOF1elABB08FxO9i+r4VFk5Vl4pKokRPeX8u5TCgSsPi6ec1otfLjdOpVcgbpshg==}
+  markdown-it@14.3.3:
+    resolution: {integrity: sha512-L//tDAkjTjJCU6pBUSBTgs3Kg4InVaZuUZog/b6V12UKhcDQ7S78877ibbCanRExwPuYP1CZD7Gd2dxSy1GXRg==}
     hasBin: true
 
   math-intrinsics@1.1.0:
@@ -10490,7 +10490,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.2.0
       tinyrainbow: 3.1.1
-      vitest: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.12)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(vite@6.4.1(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      vitest: 4.1.10(@types/node@22.19.3)(@vitest/coverage-v8@4.1.10)(happy-dom@8.9.0)(jsdom@21.1.2(supports-color@8.1.1))(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
 
   '@vitest/expect@0.29.8':
     dependencies:
@@ -10649,7 +10649,7 @@ snapshots:
       '@vitest/utils': 0.30.1
       fast-glob: 3.3.3
       fflate: 0.7.4
-      flatted: 3.3.3
+      flatted: 3.4.4
       pathe: 1.1.2
       picocolors: 1.1.1
       sirv: 2.0.4
@@ -12836,7 +12836,7 @@ snapshots:
 
   lines-and-columns@1.2.4: {}
 
-  linkify-it@5.0.0:
+  linkify-it@5.0.2:
     dependencies:
       uc.micro: 2.1.0
 
@@ -12952,11 +12952,11 @@ snapshots:
 
   map-or-similar@1.5.0: {}
 
-  markdown-it@14.1.0:
+  markdown-it@14.3.3:
     dependencies:
       argparse: 2.0.1
       entities: 4.5.0
-      linkify-it: 5.0.0
+      linkify-it: 5.0.2
       mdurl: 2.0.0
       punycode.js: 2.3.1
       uc.micro: 2.1.0
@@ -13378,7 +13378,7 @@ snapshots:
   prosemirror-markdown@1.13.1:
     dependencies:
       '@types/markdown-it': 14.1.2
-      markdown-it: 14.1.0
+      markdown-it: 14.3.3
       prosemirror-model: 1.24.1
 
   prosemirror-menu@1.2.4:
