@@ -1,22 +1,21 @@
 <script lang="ts">
 // CORE
 import { Button } from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { logicalStore } from '@/headless/stores'
 // COMPONENTS
 import { CirclePlus } from 'lucide-svelte'
+// TYPES
+import type {
+	LogicalConditionerClass,
+	LogicalFilterValues,
+	LogicalKind,
+	LogicalPhysicalClass,
+	RawLogical
+} from '@/headless/stores'
+// STORES
+import { logicalStore } from '@/headless/stores'
 import SearchBar from '@/ui/common/search-bar.svelte'
 import LogicalFilter from './logical-filter.svelte'
 import LogicalList from './logical-list.svelte'
-
-// TYPES
-import type {
-	LogicalKind,
-	RawLogical,
-	LogicalConditionerClass,
-	LogicalPhysicalClass,
-	LogicalFilterValues
-} from '@/headless/stores'
 
 //====== INITIALIZATION ======//
 

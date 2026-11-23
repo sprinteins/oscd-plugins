@@ -1,9 +1,9 @@
 // CONSTANTS
 import { TREE_LEVEL } from '@/headless/constants'
+// TYPES
+import type { DataObject, TreeItem } from '@/headless/stores'
 // STORES
 import { iedStore } from '@/headless/stores'
-// TYPES
-import type { TreeItem, DataObject } from '@/headless/stores'
 
 export function filterTree(
 	nodes: TreeItem[],
@@ -18,15 +18,17 @@ export function filterTree(
 			)
 				return node
 
-			if (!node.children) return
+			if (!node.children) return undefined
 
-			if (node.children?.length === 0) return
+			if (node.children?.length === 0) return undefined
 
 			const filteredChildren = filterTree(node.children, searchInputValue)
 
 			if (filteredChildren.length !== 0) {
 				return { ...node, children: filteredChildren }
 			}
+
+			return undefined
 		})
 		.filter(Boolean) as TreeItem[]
 }
@@ -38,6 +40,8 @@ export function getDataObjects(children: TreeItem[]): DataObject[] {
 
 			if (child.children && child.children.length > 0)
 				return getDataObjects(child.children)
+
+			return undefined
 		})
 		.filter(Boolean)
 		.flat() as DataObject[]

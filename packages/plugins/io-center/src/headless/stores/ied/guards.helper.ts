@@ -2,11 +2,11 @@
 import { TREE_LEVEL } from '@/headless/constants'
 // TYPES
 import type {
-	TreeItem,
 	DataObject,
-	RawLogical,
 	LogicalConditionerClass,
-	LogicalPhysicalClass
+	LogicalPhysicalClass,
+	RawLogical,
+	TreeItem
 } from '@/headless/stores'
 
 export function isDataObject(

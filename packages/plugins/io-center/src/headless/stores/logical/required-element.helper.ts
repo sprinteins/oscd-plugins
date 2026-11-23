@@ -1,16 +1,16 @@
-import { tick } from 'svelte'
 // CORE
 import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { tick } from 'svelte'
 // CONSTANTS
 import { L_NODE_TYPE_CONTENT } from '@/headless/constants'
-// STORES
-import { pluginLocalStore, logicalStore } from '@/headless/stores'
 // TYPES
 import type {
 	LogicalConditionerClass,
 	LogicalPhysicalClass
 } from '@/headless/stores'
+// STORES
+import { logicalStore, pluginLocalStore } from '@/headless/stores'
 
 async function createDataTypeTemplates() {
 	if (!pluginGlobalStore.xmlDocument) throw new Error('no xml document found')

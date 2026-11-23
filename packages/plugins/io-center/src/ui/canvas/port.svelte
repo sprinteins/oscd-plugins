@@ -1,10 +1,10 @@
 <script lang="ts">
 // CONSTANTS
 import { PORT_KIND } from '@/headless/constants'
-// STORES
-import { canvasStore } from '@/headless/stores'
 // TYPES
 import type { PortConfig } from '@/headless/stores'
+// STORES
+import { canvasStore } from '@/headless/stores'
 
 //====== INITIALIZATION ======//
 

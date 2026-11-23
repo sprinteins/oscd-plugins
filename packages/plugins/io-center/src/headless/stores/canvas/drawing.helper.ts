@@ -1,9 +1,10 @@
 // STORES
+
+// TYPES
+import type { ConnectionId, PortConfig } from '@/headless/stores'
 import { canvasStore } from '@/headless/stores'
 // HELPERS
 import { createConnection } from './connection-crud.helper'
-// TYPES
-import type { PortConfig, ConnectionId } from '@/headless/stores'
 
 export function startDrawing(params: {
 	event: MouseEvent
@@ -47,17 +48,17 @@ export function getSVGCoordinates(x: number, y: number) {
 export function getConnectionsCoordinates(
 	connectionUuids: ConnectionId[],
 	portHTMLElementByUuids: Record<string, Element>,
-	windowSizeWidthTrigger: number,
-	windowSizeHeightTrigger: number
+	_windowSizeWidthTrigger: number,
+	_windowSizeHeightTrigger: number
 ) {
 	return connectionUuids
 		.map((connectionUuid) => {
 			const sourceElement =
 				portHTMLElementByUuids[connectionUuid.dOISource]
-			if (!sourceElement) return
+			if (!sourceElement) return undefined
 			const targetElement =
 				portHTMLElementByUuids[connectionUuid.lNRefTarget]
-			if (!targetElement) return
+			if (!targetElement) return undefined
 
 			const { x: sourceX, y: sourceY } = getPortCoordinates(sourceElement)
 			const { x: targetX, y: targetY } = getPortCoordinates(targetElement)

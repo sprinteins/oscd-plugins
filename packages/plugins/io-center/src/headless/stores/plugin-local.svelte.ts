@@ -5,11 +5,11 @@ import {
 	getAttributesNS,
 	typeGuard
 } from '@oscd-plugins/core-api/plugin/v1'
+// TYPES
+import type { IEC61850 } from '@oscd-plugins/core-standard'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
 import { ELEMENT_WITH_REQUIRED_UUID_ATTRIBUTES } from '@/headless/constants'
-// TYPES
-import type { IEC61850 } from '@oscd-plugins/core-standard'
 
 class UsePluginLocalStore {
 	//====== CONSTANTS ======//
