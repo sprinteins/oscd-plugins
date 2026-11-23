@@ -1,7 +1,7 @@
-import { tick } from 'svelte'
 // CORE
 import { createAndDispatchEditEvent } from '@oscd-plugins/core-api/plugin/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { tick } from 'svelte'
 // STORES
 import { iedStore } from '@/headless/stores'
 

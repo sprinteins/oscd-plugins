@@ -1,21 +1,21 @@
 <script lang="ts">
 // CORE
-import { Card, Button } from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { canvasStore, iedStore, logicalStore } from '@/headless/stores'
-// COMPONENTS
-import Port from './port.svelte'
+import { Button, Card } from '@oscd-plugins/core-ui-svelte'
 import { X } from 'lucide-svelte'
 // TYPES
 import type {
 	DataObject,
-	RawLogical,
 	LogicalConditionerClass,
+	LogicalKind,
 	LogicalPhysicalClass,
 	PortConfig,
 	PortSide,
-	LogicalKind
+	RawLogical
 } from '@/headless/stores'
+// STORES
+import { canvasStore, iedStore, logicalStore } from '@/headless/stores'
+// COMPONENTS
+import Port from './port.svelte'
 
 const {
 	title,

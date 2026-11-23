@@ -1,31 +1,31 @@
 // CORE
 import { dialogStore } from '@oscd-plugins/core-ui-svelte'
-// HELPERS
-import { filterLogical } from './filter.helper'
-import { createRequiredLNodeType } from './required-element.helper'
-import {
-	createLogicals,
-	getLogical,
-	updateLogical,
-	removeLogical
-} from './common-crud-operation.helper'
 // CONSTANTS
 import {
 	LOGICAL_CONDITIONER_CLASS,
 	LOGICAL_PHYSICAL_CLASS
 } from '@/headless/constants'
-// STORES
-import { pluginLocalStore, iedStore, canvasStore } from '@/headless/stores'
-// COMPONENTS
-import LogicalDialog from '@/ui/sidebar-right/logical-dialog.svelte'
 // TYPES
 import type {
-	LogicalKind,
 	LogicalConditionerClass,
-	LogicalPhysicalClass,
 	LogicalFilterValues,
+	LogicalKind,
+	LogicalPhysicalClass,
 	RawLogical
 } from '@/headless/stores'
+// STORES
+import { canvasStore, iedStore, pluginLocalStore } from '@/headless/stores'
+// COMPONENTS
+import LogicalDialog from '@/ui/sidebar-right/logical-dialog.svelte'
+import {
+	createLogicals,
+	getLogical,
+	removeLogical,
+	updateLogical
+} from './common-crud-operation.helper'
+// HELPERS
+import { filterLogical } from './filter.helper'
+import { createRequiredLNodeType } from './required-element.helper'
 
 export class LogicalStore {
 	//====== INITIALIZATION ======//
