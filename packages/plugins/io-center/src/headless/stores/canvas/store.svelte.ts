@@ -1,24 +1,23 @@
-import { untrack } from 'svelte'
 // CORE
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
-// HELPERS
-import {
-	isConnectionAllowed,
-	getConnectionsUuids,
-	getCurrentConnectedUuidsAndAddLogicalToSelection,
-	isPortConnected,
-	isAtLeastOnePortConnected,
-	isPortDisabled,
-	deleteConnection
-} from './connection-crud.helper'
-import {
-	startDrawing,
-	stopDrawing,
-	getSVGCoordinates,
-	getConnectionsCoordinates
-} from './drawing.helper'
 // TYPES
 import type { ConnectionId, PortConfig } from '@/headless/stores'
+// HELPERS
+import {
+	deleteConnection,
+	getConnectionsUuids,
+	getCurrentConnectedUuidsAndAddLogicalToSelection,
+	isAtLeastOnePortConnected,
+	isConnectionAllowed,
+	isPortConnected,
+	isPortDisabled
+} from './connection-crud.helper'
+import {
+	getConnectionsCoordinates,
+	getSVGCoordinates,
+	startDrawing,
+	stopDrawing
+} from './drawing.helper'
 
 export class CanvasStore {
 	//====== INITIALIZATION ======//
@@ -57,7 +56,7 @@ export class CanvasStore {
 		if (Object.keys(this.portHTMLElementByUuids).length)
 			return Object.fromEntries(
 				Object.entries(this.portHTMLElementByUuids).filter(
-					([key, element]) => element
+					([_key, element]) => element
 				)
 			)
 		return {}

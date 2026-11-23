@@ -17,7 +17,9 @@
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
 		"//====== SVELTE ======//": "",
-		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
+		"check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
+		"//====== QUALITY ======//": "",
+		"biome:check": "biome check src"
 	},
 	"files": [
 		"dist"

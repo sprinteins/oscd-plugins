@@ -1,16 +1,17 @@
 <script lang="ts">
 // STORES
-import { iedStore } from '@/headless/stores'
-// COMPONENTS
-import { Tree } from 'melt/builders'
+
 import {
-	ChevronRight,
 	ChevronDown,
+	ChevronRight,
 	Square,
 	SquareCheck,
 	SquareMinus
 } from 'lucide-svelte'
+// COMPONENTS
+import { Tree } from 'melt/builders'
 import { TREE_LEVEL } from '@/headless/constants'
+import { iedStore } from '@/headless/stores'
 
 //====== DERIVED ======//
 
