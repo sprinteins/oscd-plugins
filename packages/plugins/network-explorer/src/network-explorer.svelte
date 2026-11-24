@@ -1,14 +1,14 @@
 <script lang="ts">
-import { SvelteFlowProvider } from '@xyflow/svelte'
 import type { Networking } from '@oscd-plugins/core'
+import { SvelteFlowProvider } from '@xyflow/svelte'
 import { DiagramContainer } from './diagram'
-import { DiagramStore } from './store'
-import { Sidebar } from './sidebar'
+import { EditorEventHandler } from './editor-events/editor-event-handler'
 import type {
 	CreateCableEvent,
 	UpdateCableEvent
 } from './editor-events/network-events'
-import { EditorEventHandler } from './editor-events/editor-event-handler'
+import { Sidebar } from './sidebar'
+import { DiagramStore } from './store'
 
 interface BaseProps {
 	doc: XMLDocument
@@ -81,9 +81,12 @@ function onDelete(networkings: Networking[]): void {
 
 <style>
 	network-explorer {
-		height: calc(100vh - var(--header-height));
+		width: 100%;
+		height: 100%;
+		min-height: 0;
 		display: flex;
 		align-items: stretch;
 		position: relative;
+		overflow: hidden;
 	}
 </style>

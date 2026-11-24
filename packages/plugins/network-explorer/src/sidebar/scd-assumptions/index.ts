@@ -1,1 +1,1 @@
-export {default as ScdAssumptions} from "./scd-assumptions.svelte"
+export { default as ScdAssumptions } from './scd-assumptions.svelte'

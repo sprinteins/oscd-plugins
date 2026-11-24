@@ -1,86 +1,47 @@
 <script lang="ts">
-	import type { IED } from "../../diagram/networking"
-	import { IED as IEDComponent } from "@oscd-plugins/ui"
-	import { Select } from "@oscd-plugins/ui"
-	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
+import { Label, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
+import { getNetworkingWithOpenPort } from '../../diagram/ied-helper'
+import type { IED } from '../../diagram/networking'
 
-	interface PortOption {
-		label: string;
-		port: string;
-		cable: string;
-	}
+interface Props {
+	ied: IED
+	existingCableName?: string | null
+	selectedPort: string
+}
 
-	// 
-	// INPUT
-	
-	interface Props {
-		// 
-		ied: IED;
-		existingCableName?: string | null;
-		select: (port: string) => void;
-	}
+let {
+	ied,
+	existingCableName = null,
+	selectedPort = $bindable()
+}: Props = $props()
 
-	let { ied, existingCableName = null, select }: Props = $props();
-
-	//
-	// Internal
-	//
-	let openPorts: PortOption[] = $derived(getOpenPorts(ied))
-	let selectedIndex: number = $derived(getSelectedIndex())
-
-	function getSelectedIndex(): number {
-		if (!existingCableName) {
-			return 0
-		}
-
-		const portIndex = openPorts.findIndex(p => p.cable === existingCableName)
-
-		return portIndex
-	}
-
-	function getOpenPorts(ied: IED): PortOption[] {
-		return getNetworkingWithOpenPort(ied, existingCableName)
-			.map(n => (
-				{
-					label: `Port ${n.port}, ${n.cable}`,
-					port: n.port,
-					cable: n.cable
-				}
-			))
-	}
-
-	function handleSelectionChange(index: number): void {
-		const selectedPort = openPorts[index]
-		if(!selectedPort){ return }
-
-		select(selectedPort.port);
-	}
+const options = $derived(
+	getNetworkingWithOpenPort(ied, existingCableName).map((networking) => ({
+		label: `Port ${networking.port}, ${networking.cable}`,
+		value: networking.port
+	}))
+)
 </script>
 
-
-<div class="container">
-	<IEDComponent label={ied.name} isSelected={true} isSelectable={false} />
-
-	<div class="select-container">
-		<Select
-			handleSelect={handleSelectionChange}
-			linkTargetIndex={selectedIndex}
-			items={openPorts}
-		>
-		</Select>
-	</div>
+<div class="port-selector">
+	<p class="ied-name">{ied.name}</p>
+	<Label.Root for={`port-${ied.name}`}>Port</Label.Root>
+	<SelectWorkaround
+		id={`port-${ied.name}`}
+		bind:value={selectedPort}
+		options={options}
+	/>
 </div>
 
 <style>
-	.container {
+	.port-selector {
 		display: flex;
-		align-items: flex-start;
 		flex-direction: column;
 		gap: 8px;
 	}
 
-	.select-container {
-		width: 100%;
-        padding: 0.5rem 0rem;
+	.ied-name {
+		margin: 0;
+		font-weight: 500;
 	}
 </style>

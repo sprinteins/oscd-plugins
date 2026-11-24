@@ -2,23 +2,24 @@
 /**
  * This component is responsible to configure SvelteFlow
  */
+
+import type { Networking } from '@oscd-plugins/core'
 import {
-	type Node,
-	type Edge,
-	SvelteFlow,
 	Background,
 	BackgroundVariant,
+	type Connection,
 	Controls,
-	type Connection
+	type Edge,
+	type Node,
+	SvelteFlow,
+	useSvelteFlow
 } from '@xyflow/svelte'
-import { useSvelteFlow } from '@xyflow/svelte'
 import xyflowStyles from '@xyflow/svelte/dist/style.css?inline'
-import { injectStyles } from '@oscd-plugins/ui'
-import type { Networking } from '@oscd-plugins/core'
-import IEDNode from './ied-node.svelte'
-import BayNode from './bay-node.svelte'
 import type { Writable } from 'svelte/store'
+import BayNode from './bay-node.svelte'
 import { getPhysConnectionsFromEdge } from './edge-helper'
+import IEDNode from './ied-node.svelte'
+import { injectDiagramStyles } from './inject-styles.diagram'
 import type { IED } from './networking'
 
 interface Props {
@@ -45,16 +46,18 @@ const nodeTypes = {
 }
 
 const { fitView } = useSvelteFlow()
+let diagramRoot: HTMLElement | null = $state(null)
 
 $effect(() => {
-	if (!isOutsidePluginContext) return
+	if (!diagramRoot) return
 
-	function handleResize() {
-		fitView()
-	}
-	window.addEventListener('resize', handleResize)
+	const observer = new ResizeObserver(() => {
+		void fitView({ padding: 0.08, maxZoom: 1.5 })
+	})
+	observer.observe(diagramRoot)
+
 	return () => {
-		window.removeEventListener('resize', handleResize)
+		observer.disconnect()
 	}
 })
 
@@ -68,7 +71,10 @@ function ondelete(deleteEvent: { nodes: Node[]; edges: Edge[] }): void {
 }
 </script>
 
-<network-diagram use:injectStyles={xyflowStyles}>
+<network-diagram
+	bind:this={diagramRoot}
+	use:injectDiagramStyles={xyflowStyles}
+>
 	<SvelteFlow 
 		bind:nodes
 		bind:edges
@@ -92,7 +98,10 @@ function ondelete(deleteEvent: { nodes: Node[]; edges: Edge[] }): void {
 <style>
 	network-diagram {
 		display: block;
-		/* height: 100vh; */
+		width: 100%;
+		height: 100%;
+		min-width: 0;
+		min-height: 0;
 	}
 
 	:global(.svelte-flow__pane) {
