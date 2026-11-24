@@ -12,9 +12,9 @@ import type { IEDConnection } from './nodes'
 
 //
 // Input
+//
 
 interface Props {
-	//
 	edge: IEDConnection
 	isSelected?: boolean
 	isIEDSelected?: boolean
