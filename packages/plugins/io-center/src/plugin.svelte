@@ -12,26 +12,26 @@
 />
 
 <script lang="ts">
-import jsonPackage from '../package.json'
+// TYPES
+import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 // CORE
 import {
+	DialogWorkaround,
 	initPlugin,
-	WrongFileLoaded,
-	DialogWorkaround
+	WrongFileLoaded
 } from '@oscd-plugins/core-ui-svelte'
-import {
-	canvasStore,
-	iedStore,
-	pluginLocalStore,
-	logicalStore
-} from './headless/stores'
+import CanvasArea from '@/ui/canvas/canvas-area.svelte'
 // COMPONENTS
 import Layout from '@/ui/layout.svelte'
 import SidebarLeft from '@/ui/sidebar-left/sidebar-left.svelte'
-import CanvasArea from '@/ui/canvas/canvas-area.svelte'
 import SidebarRight from '@/ui/sidebar-right/sidebar-right.svelte'
-// TYPES
-import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
+import jsonPackage from '../package.json'
+import {
+	canvasStore,
+	iedStore,
+	logicalStore,
+	pluginLocalStore
+} from './headless/stores'
 
 // props
 const {

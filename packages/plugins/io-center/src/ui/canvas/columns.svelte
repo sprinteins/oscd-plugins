@@ -1,10 +1,11 @@
 <script lang="ts">
 // CONSTANTS
+
+// ACTIONS
+import { calculateCoordinates } from '@/headless/actions'
 import { LOGICAL_KIND } from '@/headless/constants'
 // STORES
 import { iedStore, logicalStore } from '@/headless/stores'
-// ACTIONS
-import { calculateCoordinates } from '@/headless/actions'
 // COMPONENTS
 import Container from './container.svelte'
 import NodeCard from './node-card.svelte'

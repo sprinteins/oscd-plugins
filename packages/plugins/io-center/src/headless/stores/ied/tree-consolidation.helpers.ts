@@ -2,19 +2,19 @@
 import { typeGuard } from '@oscd-plugins/core-api/plugin/v1'
 // CONSTANTS
 import {
-	TREE_LEVEL,
-	TARGET_CDC_TYPES,
+	PORT_KIND,
 	PORT_SIDE,
-	PORT_KIND
+	TARGET_CDC_TYPES,
+	TREE_LEVEL
 } from '@/headless/constants'
-import { pluginLocalStore, iedStore } from '@/headless/stores'
 // TYPES
 import type {
-	TreeItem,
 	DataObject,
 	LogicalConditionerClass,
-	LogicalPhysicalClass
+	LogicalPhysicalClass,
+	TreeItem
 } from '@/headless/stores'
+import { iedStore, pluginLocalStore } from '@/headless/stores'
 
 //====== MAIN FUNCTION ======//
 
@@ -126,7 +126,7 @@ export function mapCurrentDataObject(params: {
 	return dOElements
 		.map((dOElement) => {
 			const [isAllowedCDC, commonDataClass] = hasCDC(dOElement)
-			if (!isAllowedCDC) return
+			if (!isAllowedCDC) return undefined
 			if (!iedStore.selectedIED) throw new Error('No IED selected')
 
 			const dOElementName = dOElement.getAttribute('name')

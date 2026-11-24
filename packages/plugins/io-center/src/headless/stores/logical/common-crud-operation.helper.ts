@@ -6,19 +6,19 @@ import {
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
 // CONSTANTS
 import { LOGICAL_KIND, PORTS_CONFIG_PER_CLASS } from '@/headless/constants'
-// HELPERS
-import { createRequiredLNodeType } from './required-element.helper'
-// STORES
-import { iedStore, pluginLocalStore } from '@/headless/stores'
 // TYPES
 import type {
-	LogicalKind,
-	RawLogical,
 	LogicalConditionerClass,
+	LogicalKind,
 	LogicalPhysicalClass,
 	PortConfig,
-	PortSide
+	PortSide,
+	RawLogical
 } from '@/headless/stores'
+// STORES
+import { iedStore, pluginLocalStore } from '@/headless/stores'
+// HELPERS
+import { createRequiredLNodeType } from './required-element.helper'
 
 //====== CREATE ======//
 

@@ -1,15 +1,15 @@
 <script lang="ts">
 // CORE
 import {
-	Separator,
-	ToggleGroup,
+	Label,
 	RadioGroup,
-	Label
+	Separator,
+	ToggleGroup
 } from '@oscd-plugins/core-ui-svelte'
 // TYPES
 import type {
-	LogicalKind,
 	LogicalConditionerClass,
+	LogicalKind,
 	LogicalPhysicalClass
 } from '@/headless/stores'
 

@@ -1,5 +1,4 @@
 import type { TREE_LEVEL } from '@/headless/constants'
-import type { PortConfig } from '@/headless//stores'
 
 export type IED = {
 	element: Element | null

@@ -2,9 +2,9 @@
 import { canvasStore } from '@/headless/stores'
 // TYPES
 import type {
-	RawLogical,
 	LogicalConditionerClass,
-	LogicalPhysicalClass
+	LogicalPhysicalClass,
+	RawLogical
 } from './types'
 
 export function filterLogical<
