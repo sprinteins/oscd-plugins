@@ -1,16 +1,16 @@
 import type { Edge, Node as FlowNodes } from '@xyflow/svelte'
-import { writable, get } from 'svelte/store'
-import { extractIEDs, findAllIEDBays, type IED } from '../diagram/networking'
+import { get, writable } from 'svelte/store'
+import { filterNodesAndEdgesForBays } from '../diagram/bay-filter-helper'
+import { extractCableNameFromId } from '../diagram/edge-helper'
 import {
 	type Config,
 	generateElkJSLayout
 } from '../diagram/elkjs-layout-generator'
 import { convertElKJSRootNodeToSvelteFlowObjects } from '../diagram/elkjs-svelteflow-converter'
 import { getIedNameFromId, hasOpenPort } from '../diagram/ied-helper'
-import { isBayNode } from '../external/diagram'
+import { extractIEDs, findAllIEDBays, type IED } from '../diagram/networking'
 import type { BayElkNode, IEDElkNode } from '../external/diagram'
-import { extractCableNameFromId } from '../diagram/edge-helper'
-import { filterNodesAndEdgesForBays } from '../diagram/bay-filter-helper'
+import { isBayNode } from '../external/diagram'
 
 export class DiagramStore {
 	public nodes: FlowNodes[] = $state.raw([])
@@ -42,7 +42,11 @@ export class DiagramStore {
 
 		const resp = convertElKJSRootNodeToSvelteFlowObjects(rootNode)
 
-		if (this.isOutsidePluginContext && this.selectedBays && this.selectedBays.size > 0) {
+		if (
+			this.isOutsidePluginContext &&
+			this.selectedBays &&
+			this.selectedBays.size > 0
+		) {
 			const filtered = filterNodesAndEdgesForBays(
 				this.selectedBays,
 				resp.nodes,

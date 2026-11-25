@@ -18,3 +18,16 @@ jobs:
     uses: ./.github/workflows/_check.yml
     with:
       package-name: network-explorer
+
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/_test.yml
+    with:
+      package-name: network-explorer
+      has-coverage: true
+
+  lint:
+    name: Lint Code
+    uses: ./.github/workflows/_lint.yml
+    with:
+      package-name: network-explorer

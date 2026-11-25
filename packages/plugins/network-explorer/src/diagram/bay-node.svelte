@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
-  
-	type $$Props = NodeProps;
-	
-	interface Props {
-		data: $$Props['data'];
-	}
+import { Handle, type NodeProps, Position } from '@xyflow/svelte'
 
-	let { data }: Props = $props();
-  
-	const { label } = data;
-	// $: console.log({level:"dev", data, props: $$props })
-  </script>
+type $$Props = NodeProps
+
+interface Props {
+	data: $$Props['data']
+}
+
+let { data }: Props = $props()
+
+const { label } = data
+// $: console.log({level:"dev", data, props: $$props })
+</script>
   
 <div class="bay">
 	{label}

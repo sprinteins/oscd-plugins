@@ -1,23 +1,23 @@
 <script lang="ts">
-  import {
-    Handle,
-    Position,
-    type NodeProps,
-    type HandleProps,
-  } from "@xyflow/svelte";
+import {
+	Handle,
+	type HandleProps,
+	type NodeProps,
+	Position
+} from '@xyflow/svelte'
 
-  type $$Props = NodeProps;
-  type $$HandleProps = HandleProps;
+type $$Props = NodeProps
+type $$HandleProps = HandleProps
 
-  interface Props {
-    data: $$Props["data"];
-    isConnectable: $$Props["isConnectable"];
-    selected: $$Props["selected"];
-    onconnect: $$HandleProps["onconnect"];
-  }
+interface Props {
+	data: $$Props['data']
+	isConnectable: $$Props['isConnectable']
+	selected: $$Props['selected']
+	onconnect?: $$HandleProps['onconnect']
+}
 
-  let { data, isConnectable, selected, onconnect }: Props = $props();
-  const { label } = data;
+let { data, isConnectable, selected, onconnect }: Props = $props()
+const { label } = data
 </script>
 
 <Handle type="target" position={Position.Left} {isConnectable} {onconnect} />

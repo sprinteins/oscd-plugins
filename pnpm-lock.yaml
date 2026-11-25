@@ -712,6 +712,9 @@ importers:
         specifier: ^0.8.2
         version: 0.8.2
     devDependencies:
+      '@openscd/oscd-editor':
+        specifier: ^1.8.0
+        version: 1.8.0
       '@oscd-plugins/core':
         specifier: workspace:^
         version: link:../../core/legacy

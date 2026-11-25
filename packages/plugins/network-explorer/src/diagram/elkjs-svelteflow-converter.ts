@@ -1,10 +1,6 @@
 import type { Edge, Node } from '@xyflow/svelte'
 import { Position } from '@xyflow/svelte'
-import type {
-	IEDConnectionWithCustomValues,
-	NetworkNode,
-	RootNode
-} from '../../../components/diagram'
+import type { IEDConnection, NetworkNode, RootNode } from './elkjs.types'
 
 /**
  * Converts an ELKJS RootNode to SvelteFlow Nodes and Edges
@@ -33,11 +29,11 @@ export function convertElKJSRootNodeToSvelteFlowObjects(
 	// Convert Nodes
 	const parentNodes: Node[] = rootNode.children.map(convertNetworkNode)
 
-	const childrenNodes = parentNodes.flatMap((node: Node) =>
-		node.children.map((childNode: Node) => {
+	const childrenNodes = rootNode.children.flatMap((parentNode) =>
+		parentNode.children.map((childNode) => {
 			return {
 				...convertNetworkNode(childNode),
-				parentId: node.id
+				parentId: parentNode.id
 			}
 		})
 	)
@@ -75,7 +71,7 @@ function convertNetworkNode(node: NetworkNode): Node {
 	} satisfies Node
 }
 
-function convertEdge(edge: IEDConnectionWithCustomValues): Edge {
+function convertEdge(edge: IEDConnection): Edge {
 	return {
 		id: edge.id,
 		source: edge.sources[0],
