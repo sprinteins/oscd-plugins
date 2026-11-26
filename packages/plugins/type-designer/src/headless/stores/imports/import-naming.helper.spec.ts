@@ -1,20 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const {
-	mockGetElementsWithSameNameBase,
-	mockGetNewNameWithOccurrence,
-} = vi.hoisted(() => ({
-	mockGetElementsWithSameNameBase: vi.fn(),
-	mockGetNewNameWithOccurrence: vi.fn(),
-}))
+const { mockGetElementsWithSameNameBase, mockGetNewNameWithOccurrence } =
+	vi.hoisted(() => ({
+		mockGetElementsWithSameNameBase: vi.fn(),
+		mockGetNewNameWithOccurrence: vi.fn()
+	}))
 
-vi.mock(
-	'@/headless/stores/type-elements/type-naming.helper',
-	() => ({
-		getElementsWithSameNameBase: mockGetElementsWithSameNameBase,
-		getNewNameWithOccurrence: mockGetNewNameWithOccurrence,
-	}),
-)
+vi.mock('@/headless/stores/type-elements/type-naming.helper', () => ({
+	getElementsWithSameNameBase: mockGetElementsWithSameNameBase,
+	getNewNameWithOccurrence: mockGetNewNameWithOccurrence
+}))
 
 import { setNameAttribute } from './import-naming.helper'
 
@@ -22,7 +17,7 @@ function createImportedElement(name?: string): Element {
 	const xmlDocument = document.implementation.createDocument(
 		null,
 		'SCL',
-		null,
+		null
 	)
 
 	const element = xmlDocument.createElement('Bay')
@@ -60,7 +55,7 @@ describe('setNameAttribute', () => {
 		expect(result).toBeUndefined()
 		expect(mockGetElementsWithSameNameBase).toHaveBeenCalledWith({
 			valueToTest: 'BayType',
-			removeOccurrencePartToTestedValue: false,
+			removeOccurrencePartToTestedValue: false
 		})
 		expect(mockGetNewNameWithOccurrence).not.toHaveBeenCalled()
 		expect(element.getAttribute('name')).toBe('BayType')
@@ -72,14 +67,12 @@ describe('setNameAttribute', () => {
 		mockGetElementsWithSameNameBase.mockReturnValue([
 			{
 				attributes: {
-					name: 'BayType',
-				},
-			},
+					name: 'BayType'
+				}
+			}
 		])
 
-		mockGetNewNameWithOccurrence.mockReturnValue(
-			'BayType_Imported',
-		)
+		mockGetNewNameWithOccurrence.mockReturnValue('BayType_Imported')
 
 		const result = setNameAttribute(element)
 
@@ -88,7 +81,7 @@ describe('setNameAttribute', () => {
 		expect(mockGetNewNameWithOccurrence).toHaveBeenCalledWith({
 			element,
 			suffix: 'Imported',
-			skipFirstOccurrence: true,
+			skipFirstOccurrence: true
 		})
 
 		expect(element.getAttribute('name')).toBe('BayType_Imported')
@@ -100,24 +93,20 @@ describe('setNameAttribute', () => {
 		mockGetElementsWithSameNameBase.mockReturnValue([
 			{
 				attributes: {
-					name: 'BayType',
-				},
+					name: 'BayType'
+				}
 			},
 			{
 				attributes: {
-					name: 'BayType_Imported',
-				},
-			},
+					name: 'BayType_Imported'
+				}
+			}
 		])
 
-		mockGetNewNameWithOccurrence.mockReturnValue(
-			'BayType_Imported_2',
-		)
+		mockGetNewNameWithOccurrence.mockReturnValue('BayType_Imported_2')
 
 		setNameAttribute(element)
 
-		expect(element.getAttribute('name')).toBe(
-			'BayType_Imported_2',
-		)
+		expect(element.getAttribute('name')).toBe('BayType_Imported_2')
 	})
 })

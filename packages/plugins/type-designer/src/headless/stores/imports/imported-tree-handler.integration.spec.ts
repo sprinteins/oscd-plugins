@@ -4,7 +4,7 @@ const {
 	mockAreElementsIdentical,
 	mockCreateTemplateWrapper,
 	mockStores,
-	mockUuid,
+	mockUuid
 } = vi.hoisted(() => ({
 	mockAreElementsIdentical: vi.fn(),
 	mockCreateTemplateWrapper: vi.fn(),
@@ -14,7 +14,7 @@ const {
 			currentImportActionsByElementIds: [] as Array<
 				Record<string, unknown>
 			>,
-			loadedXmlDocument: null as XMLDocument | null,
+			loadedXmlDocument: null as XMLDocument | null
 		},
 		pluginLocalStore: {
 			rootElement: null as Element | null,
@@ -22,38 +22,38 @@ const {
 			addUnstableNamespaceToRootElement: vi.fn(),
 			namespaces: {
 				currentUnstableRevision: {
-					uri: 'urn:type-designer:test',
-				},
-			},
+					uri: 'urn:type-designer:test'
+				}
+			}
 		},
 		ssdStore: {
 			hasTemplateWrapper: true,
-			createTemplateWrapper: vi.fn(),
+			createTemplateWrapper: vi.fn()
 		},
 		typeElementsStore: {
-			typeElementsPerFamily: {},
-		},
-	},
+			typeElementsPerFamily: {}
+		}
+	}
 }))
 
 mockStores.ssdStore.createTemplateWrapper = mockCreateTemplateWrapper
 
 vi.mock('uuid', () => ({
-	v4: mockUuid,
+	v4: mockUuid
 }))
 
 vi.mock('@oscd-plugins/core-api/plugin/v1', () => ({
-	areElementsIdentical: mockAreElementsIdentical,
+	areElementsIdentical: mockAreElementsIdentical
 }))
 
 vi.mock('@oscd-plugins/core-ui-svelte', () => ({
-	ssdStore: mockStores.ssdStore,
+	ssdStore: mockStores.ssdStore
 }))
 
 vi.mock('@/headless/stores', () => ({
 	importsStore: mockStores.importsStore,
 	pluginLocalStore: mockStores.pluginLocalStore,
-	typeElementsStore: mockStores.typeElementsStore,
+	typeElementsStore: mockStores.typeElementsStore
 }))
 
 import { handleImportOfAnyElement } from './imported-tree-handler.helper'
@@ -72,22 +72,16 @@ function createXmlDocument(): XMLDocument {
 	return document.implementation.createDocument(null, 'SCL', null)
 }
 
-function createElement(
-	xmlDocument: XMLDocument,
-	tagName: string,
-): Element {
+function createElement(xmlDocument: XMLDocument, tagName: string): Element {
 	return xmlDocument.createElement(tagName)
 }
 
-function getImportAction(
-	idOrUuid: string,
-): ImportActionEntry {
-	const actionByElementId =
-		mockStores.importsStore
-			.currentImportActionsByElementIds[0] as Record<
-			string,
-			ImportActionEntry
-		>
+function getImportAction(idOrUuid: string): ImportActionEntry {
+	const actionByElementId = mockStores.importsStore
+		.currentImportActionsByElementIds[0] as Record<
+		string,
+		ImportActionEntry
+	>
 
 	return actionByElementId[idOrUuid]
 }
@@ -118,16 +112,10 @@ describe('Integration: imported-tree handler workflow', () => {
 		mockStores.pluginLocalStore.rootElement = localRoot
 
 		const importedDocument = createXmlDocument()
-		const importedTemplateBay = createElement(
-			importedDocument,
-			'Bay',
-		)
+		const importedTemplateBay = createElement(importedDocument, 'Bay')
 		importedTemplateBay.setAttribute('name', 'TEMPLATE')
 
-		const importedFunction = createElement(
-			importedDocument,
-			'Function',
-		)
+		const importedFunction = createElement(importedDocument, 'Function')
 		importedFunction.setAttribute('uuid', 'imported-function-uuid')
 		importedFunction.setAttribute('name', 'ImportedFunction')
 
@@ -136,28 +124,21 @@ describe('Integration: imported-tree handler workflow', () => {
 		await handleImportOfAnyElement(importedFunction)
 
 		expect(
-			mockStores.importsStore.currentImportActionsByElementIds,
+			mockStores.importsStore.currentImportActionsByElementIds
 		).toHaveLength(1)
 
 		const [createAction, removeAction] = getImportAction(
-			'imported-function-uuid',
+			'imported-function-uuid'
 		)
 
 		expect(createAction.parent).toBe(localTemplateBay)
 		expect(createAction.reference).toBeNull()
 		expect(removeAction).toBeUndefined()
 
-		expect(createAction.node.getAttribute('name')).toBe(
-			'ImportedFunction',
-		)
-		expect(createAction.node.getAttribute('uuid')).toBe(
-			'new-import-uuid',
-		)
+		expect(createAction.node.getAttribute('name')).toBe('ImportedFunction')
+		expect(createAction.node.getAttribute('uuid')).toBe('new-import-uuid')
 		expect(
-			createAction.node.getAttributeNS(
-				originUuidNamespace,
-				'originUuid',
-			),
+			createAction.node.getAttributeNS(originUuidNamespace, 'originUuid')
 		).toBe('imported-function-uuid')
 
 		expect(mockUuid).toHaveBeenCalledOnce()
@@ -174,16 +155,10 @@ describe('Integration: imported-tree handler workflow', () => {
 		mockStores.pluginLocalStore.rootElement = localRoot
 
 		const importedDocument = createXmlDocument()
-		const importedTemplateBay = createElement(
-			importedDocument,
-			'Bay',
-		)
+		const importedTemplateBay = createElement(importedDocument, 'Bay')
 		importedTemplateBay.setAttribute('name', 'TEMPLATE')
 
-		const importedFunction = createElement(
-			importedDocument,
-			'Function',
-		)
+		const importedFunction = createElement(importedDocument, 'Function')
 		importedFunction.setAttribute('uuid', 'imported-function-uuid')
 		importedFunction.setAttribute('name', 'ImportedFunction')
 
@@ -193,7 +168,7 @@ describe('Integration: imported-tree handler workflow', () => {
 		await handleImportOfAnyElement(importedFunction)
 
 		expect(
-			mockStores.importsStore.currentImportActionsByElementIds,
+			mockStores.importsStore.currentImportActionsByElementIds
 		).toHaveLength(1)
 		expect(mockUuid).toHaveBeenCalledOnce()
 	})
@@ -217,16 +192,10 @@ describe('Integration: imported-tree handler workflow', () => {
 		mockAreElementsIdentical.mockReturnValue(false)
 
 		const importedDocument = createXmlDocument()
-		const importedTemplateBay = createElement(
-			importedDocument,
-			'Bay',
-		)
+		const importedTemplateBay = createElement(importedDocument, 'Bay')
 		importedTemplateBay.setAttribute('name', 'TEMPLATE')
 
-		const importedFunction = createElement(
-			importedDocument,
-			'Function',
-		)
+		const importedFunction = createElement(importedDocument, 'Function')
 		importedFunction.setAttribute('uuid', 'function-uuid')
 		importedFunction.setAttribute('name', 'ImportedFunction')
 		importedFunction.setAttribute('description', 'new-description')
@@ -235,19 +204,16 @@ describe('Integration: imported-tree handler workflow', () => {
 
 		await handleImportOfAnyElement(importedFunction)
 
-		const [createAction, removeAction] =
-			getImportAction('function-uuid')
+		const [createAction, removeAction] = getImportAction('function-uuid')
 
 		expect(createAction.parent).toBe(localTemplateBay)
-		expect(createAction.node.getAttribute('uuid')).toBe(
-			'new-import-uuid',
+		expect(createAction.node.getAttribute('uuid')).toBe('new-import-uuid')
+		expect(createAction.node.getAttribute('description')).toBe(
+			'new-description'
 		)
-		expect(
-			createAction.node.getAttribute('description'),
-		).toBe('new-description')
 
 		expect(removeAction).toEqual({
-			node: localFunction,
+			node: localFunction
 		})
 	})
 
@@ -269,16 +235,10 @@ describe('Integration: imported-tree handler workflow', () => {
 		mockAreElementsIdentical.mockReturnValue(true)
 
 		const importedDocument = createXmlDocument()
-		const importedTemplateBay = createElement(
-			importedDocument,
-			'Bay',
-		)
+		const importedTemplateBay = createElement(importedDocument, 'Bay')
 		importedTemplateBay.setAttribute('name', 'TEMPLATE')
 
-		const importedFunction = createElement(
-			importedDocument,
-			'Function',
-		)
+		const importedFunction = createElement(importedDocument, 'Function')
 		importedFunction.setAttribute('uuid', 'function-uuid')
 		importedFunction.setAttribute('name', 'ImportedFunction')
 
@@ -287,7 +247,7 @@ describe('Integration: imported-tree handler workflow', () => {
 		await handleImportOfAnyElement(importedFunction)
 
 		expect(
-			mockStores.importsStore.currentImportActionsByElementIds,
+			mockStores.importsStore.currentImportActionsByElementIds
 		).toHaveLength(0)
 		expect(mockUuid).not.toHaveBeenCalled()
 	})

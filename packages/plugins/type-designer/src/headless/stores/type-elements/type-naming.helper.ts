@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
-// STORES
-import { typeElementsStore } from '@/headless/stores'
 // TYPES
 import type { AvailableTypeFamily, TypeElement } from '@/headless/stores'
+// STORES
+import { typeElementsStore } from '@/headless/stores'
 
 /**
  * Generates a new name for a cloned element with an occurrence number appended.

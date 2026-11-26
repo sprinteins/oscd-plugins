@@ -4,9 +4,9 @@ import { ssdStore } from '@oscd-plugins/core-ui-svelte'
 
 // STORES
 import { importsStore, pluginLocalStore } from '@/headless/stores'
+import { setUuidAttributesRecursively } from './import-attribute.helper'
 // HELPERS
 import { setNameAttribute } from './import-naming.helper'
-import { setUuidAttributesRecursively } from './import-attribute.helper'
 
 //====== MAIN ======//
 

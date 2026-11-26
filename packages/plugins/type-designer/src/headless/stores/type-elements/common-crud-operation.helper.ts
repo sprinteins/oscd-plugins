@@ -1,15 +1,15 @@
-import { v4 as uuidv4 } from 'uuid'
 // CORE
 import {
 	createAndDispatchEditEvent,
 	typeGuard
 } from '@oscd-plugins/core-api/plugin/v1'
 import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+import { v4 as uuidv4 } from 'uuid'
+import { REF_FAMILY, TYPE_FAMILY } from '@/headless/constants'
+// TYPES
+import type { AvailableRefFamily, AvailableTypeFamily } from '@/headless/stores'
 // HELPERS
 import { getNewNameWithOccurrence } from '@/headless/stores/type-elements/type-naming.helper'
-// TYPES
-import type { AvailableTypeFamily, AvailableRefFamily } from '@/headless/stores'
-import { REF_FAMILY, TYPE_FAMILY } from '@/headless/constants'
 
 //====== LOCAL HELPERS ======//
 

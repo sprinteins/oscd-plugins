@@ -1,16 +1,16 @@
 <script lang="ts">
 // CORE
 import {
-	compasStore,
 	Button,
+	compasStore,
 	Separator,
-	TooltipWorkaround,
-	Sidebar
+	Sidebar,
+	TooltipWorkaround
 } from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { importsStore, sidebarStore } from '@/headless/stores'
 // COMPONENTS
 import { X } from 'lucide-svelte'
+// STORES
+import { importsStore, sidebarStore } from '@/headless/stores'
 
 //====== INITIALIZATION ======//
 

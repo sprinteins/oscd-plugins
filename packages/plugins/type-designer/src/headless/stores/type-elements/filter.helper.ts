@@ -1,5 +1,5 @@
 // TYPES
-import type { TypeElementByIds, AvailableTypeFamily } from '@/headless/stores'
+import type { AvailableTypeFamily, TypeElementByIds } from '@/headless/stores'
 
 export function getFilteredTypeElementByIds<
 	GenericTypeFamily extends AvailableTypeFamily

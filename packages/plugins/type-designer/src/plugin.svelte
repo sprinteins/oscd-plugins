@@ -13,23 +13,24 @@
 
 <script lang="ts">
 // PACKAGE
-import jsonPackage from '../package.json'
+
+// TYPES
+import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
 // CORE
 import {
-	Sidebar,
+	DialogWorkaround,
 	initPlugin,
 	initSsdTemplate,
 	removeInstanceWarningAndIssueToast,
-	DialogWorkaround
+	Sidebar
 } from '@oscd-plugins/core-ui-svelte'
 // STORES
 import { pluginLocalStore } from '@/headless/stores'
 // COMPONENTS
 import ImportToolbar from '@/ui/components/import/import-toolbar.svelte'
-import ColumnsContainer from '@/ui/views/columns-container.svelte'
 import SidebarWrapper from '@/ui/components/sidebar/sidebar-wrapper.svelte'
-// TYPES
-import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
+import ColumnsContainer from '@/ui/views/columns-container.svelte'
+import jsonPackage from '../package.json'
 
 // props
 const {

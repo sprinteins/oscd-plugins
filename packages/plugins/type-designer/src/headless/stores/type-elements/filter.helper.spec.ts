@@ -4,24 +4,24 @@ import { getFilteredTypeElementByIds } from './filter.helper'
 const typeElements = {
 	transformer1: {
 		parameters: {
-			label: 'Power Transformer',
-		},
+			label: 'Power Transformer'
+		}
 	},
 	breaker1: {
 		parameters: {
-			label: 'Circuit Breaker',
-		},
+			label: 'Circuit Breaker'
+		}
 	},
 	disconnector1: {
 		parameters: {
-			label: 'Disconnector',
-		},
+			label: 'Disconnector'
+		}
 	},
 	transformer2: {
 		parameters: {
-			label: 'Voltage Transformer',
-		},
-	},
+			label: 'Voltage Transformer'
+		}
+	}
 } as unknown as Parameters<typeof getFilteredTypeElementByIds>[1]
 
 describe('getFilteredTypeElementByIds', () => {
@@ -33,32 +33,32 @@ describe('getFilteredTypeElementByIds', () => {
 				'transformer1',
 				'breaker1',
 				'disconnector1',
-				'transformer2',
-			],
+				'transformer2'
+			]
 		},
 		{
 			description: 'an exact filter',
 			filter: 'Circuit Breaker',
-			expectedKeys: ['breaker1'],
+			expectedKeys: ['breaker1']
 		},
 		{
 			description: 'a partial filter',
 			filter: 'transformer',
-			expectedKeys: ['transformer1', 'transformer2'],
+			expectedKeys: ['transformer1', 'transformer2']
 		},
 		{
 			description: 'a case-insensitive filter',
 			filter: 'pOwEr',
-			expectedKeys: ['transformer1'],
+			expectedKeys: ['transformer1']
 		},
 		{
 			description: 'a filter without a matching element',
 			filter: 'battery',
-			expectedKeys: [],
-		},
+			expectedKeys: []
+		}
 	])('GIVEN $description WHEN type elements are filtered THEN the matching type elements are returned', ({
 		filter,
-		expectedKeys,
+		expectedKeys
 	}) => {
 		const result = getFilteredTypeElementByIds(filter, typeElements)
 
@@ -72,7 +72,7 @@ describe('getFilteredTypeElementByIds', () => {
 			'transformer1',
 			'breaker1',
 			'disconnector1',
-			'transformer2',
+			'transformer2'
 		])
 	})
 })

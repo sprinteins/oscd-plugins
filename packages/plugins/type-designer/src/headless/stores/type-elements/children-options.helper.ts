@@ -1,5 +1,5 @@
 // CONSTANTS
-import { TYPE_FAMILY, CONDUCTING_EQUIPMENTS } from '@/headless/constants'
+import { CONDUCTING_EQUIPMENTS, TYPE_FAMILY } from '@/headless/constants'
 // TYPES
 import type { AvailableTypeFamily } from '@/headless/stores'
 

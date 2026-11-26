@@ -1,12 +1,15 @@
 <script lang="ts">
 // CORE
-import { pluginGlobalStore } from '@oscd-plugins/core-ui-svelte'
+// COMPONENTS
+import {
+	DropdownMenuWorkaround,
+	pluginGlobalStore,
+	Sidebar
+} from '@oscd-plugins/core-ui-svelte'
+// TYPES
+import type { AvailableRefFamily, AvailableTypeFamily } from '@/headless/stores'
 // STORE
 import { sidebarStore, typeElementsStore } from '@/headless/stores'
-// COMPONENTS
-import { DropdownMenuWorkaround, Sidebar } from '@oscd-plugins/core-ui-svelte'
-// TYPES
-import type { AvailableTypeFamily, AvailableRefFamily } from '@/headless/stores'
 
 //props
 let {

@@ -1,15 +1,15 @@
 // CONSTANTS
 import { TYPE_FAMILY } from '@/headless/constants'
+// TYPES
+import type { EditEvent, RemoveEvent } from '@/headless/stores'
 // HELPERS
 import {
 	findAndSortLoadedElements,
-	removeLoadedElements,
+	handleAllImportsAndFireDialogDecision,
 	handleImportsAndFireDialogDecision,
-	handleAllImportsAndFireDialogDecision
+	removeLoadedElements
 } from './imported-type-crud-operation.helper'
 import { loadFromCompas, loadFromLocal } from './load-file.helper'
-// TYPES
-import type { EditEvent, RemoveEvent } from '@/headless/stores'
 
 class UseImportsStore {
 	//====== STATES ======//

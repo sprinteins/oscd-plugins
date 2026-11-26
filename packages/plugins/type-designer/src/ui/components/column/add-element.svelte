@@ -1,19 +1,19 @@
 <script lang="ts">
-import { onMount } from 'svelte'
+// TYPES
+import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 // CORE
 import { Button, Input, SelectWorkaround } from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { typeElementsStore } from '@/headless/stores'
+import { onMount } from 'svelte'
 // CONSTANTS
 import {
 	COLUMN_KEY_TO_TYPE_FAMILY,
-	TYPE_FAMILY,
+	CONDUCTING_EQUIPMENTS,
 	GENERAL_EQUIPMENTS,
-	CONDUCTING_EQUIPMENTS
+	TYPE_FAMILY
 } from '@/headless/constants'
-// TYPES
-import type { Utils } from '@oscd-plugins/core-api/plugin/v1'
 import type { AvailableTypeFamily, Columns } from '@/headless/stores'
+// STORES
+import { typeElementsStore } from '@/headless/stores'
 
 //====== INITIALIZATION ======//
 

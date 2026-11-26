@@ -1,20 +1,21 @@
 <script lang="ts">
 // SVELTE
-import { fly } from 'svelte/transition'
-import { cubicOut } from 'svelte/easing'
-// CORE
-import {
-	dialogStore,
-	compasStore,
-	Button,
-	Separator
-} from '@oscd-plugins/core-ui-svelte'
-// STORES
-import { importsStore } from '@/headless/stores'
-// COMPONENTS
-import { MoveLeft, LoaderCircle, Folder, File, FolderOpen } from 'lucide-svelte'
+
 // TYPES
 import type { Compas } from '@oscd-plugins/core-ui-svelte'
+// CORE
+import {
+	Button,
+	compasStore,
+	dialogStore,
+	Separator
+} from '@oscd-plugins/core-ui-svelte'
+// COMPONENTS
+import { File, Folder, FolderOpen, LoaderCircle, MoveLeft } from 'lucide-svelte'
+import { cubicOut } from 'svelte/easing'
+import { fly } from 'svelte/transition'
+// STORES
+import { importsStore } from '@/headless/stores'
 
 //====== INITIALIZATION ======//
 

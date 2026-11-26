@@ -115,8 +115,7 @@ function getBadgeLabel(refFamily: string | undefined) {
 	aria-disabled={isCorrupted}
 	onclick={isCorrupted ? undefined : handleCardClick}
 	draggable={isDraggable}
-	ondragstart={isDraggable ? (event) => dndStore.handleDragStart({
-		event,
+	ondragstart={isDraggable ? () => dndStore.handleDragStart({
 		sourceTypeId: typeElementKey,
 		sourceTypeFamily: typeElementFamily,
 		sourceRefFamily: typeElement.parameters.refFamily
