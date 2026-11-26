@@ -1,59 +1,60 @@
-/* eslint-disable no-mixed-spaces-and-tabs */
-import { describe, expect, it } from "vitest"
-import { FilterChip } from "../../../../components/filter-chip"
-import { render, screen } from "@testing-library/svelte"
+// @vitest-environment jsdom
 
-describe("Connection Type Filter", () => {
-	describe("Incoming Publisher", () => {
+import '@testing-library/jest-dom/vitest'
+import { cleanup, render, screen } from '@testing-library/svelte'
+import userEvent from '@testing-library/user-event'
+import { get } from 'svelte/store'
+import { afterEach, describe, expect, it } from 'vitest'
+import {
+	filterState,
+	type SelectedFilter
+} from '../../../../stores/_store-view-filter'
+import ConnectionTypeFilter from './connection-type-filter.svelte'
 
-        type TestCase = {
-            desc: string
-            label: string
-			expectedLabel: string
-			isSelected: boolean
-			expectedClasses?: string[]
-        }
-
-        const featureTests: TestCase[] = [
-        	{
-        		desc:          "incoming chip has incoming === true",
-        		label:         "Publisher",
-        		expectedLabel: "Publisher",
-        		isSelected:    true,
-        	},
-        ]
-
-        featureTests.forEach(testFeature)
-
-        function testFeature(tc: TestCase) {
-        	it(tc.desc, () => {
-        		//
-        		// Arrange
-        		//
-        		const props = {
-        			label:      tc.label,
-        			testid:     "incoming-chip",
-        			isSelected: true,
-        		}
-
-        		//
-        		// Act
-        		//
-        		
-        		render(FilterChip, props)
-
-        		//
-        		// Assert
-        		//
-        		const chip = screen.getByTestId("incoming-chip")
-        		const incomingProp = chip.querySelector(".button-label")
-        		expect(incomingProp?.innerHTML, incomingProp?.outerHTML).toEqual(tc.expectedLabel)
-        		tc.expectedClasses?.forEach( cssClass => expect(Array.from(chip.classList)).toContain(cssClass) )
-
-
-        	})
-        }
-
-	})
+afterEach(() => {
+	cleanup()
 })
 
+describe('GIVEN connection direction filters', () => {
+	it('WHEN filters are rendered THEN each button exposes its pressed state', () => {
+		render(ConnectionTypeFilter, {
+			isFilterIncomingActive: true,
+			isFilterOutgoingActive: false
+		})
+
+		expect(
+			screen
+				.getByRole('button', { name: 'Published' })
+				.getAttribute('aria-pressed')
+		).toBe('true')
+		expect(
+			screen
+				.getByRole('button', { name: 'Subscribed' })
+				.getAttribute('aria-pressed')
+		).toBe('false')
+	})
+
+	it('WHEN the subscribed filter is activated THEN the store keeps outgoing connections only', async () => {
+		const user = userEvent.setup()
+		filterState.set({
+			...get(filterState),
+			incomingConnections: true,
+			outgoingConnections: true,
+			incomingMessageFilterActive: false,
+			outgoingMessageFilterActive: false
+		} satisfies SelectedFilter)
+		render(ConnectionTypeFilter, {
+			isFilterIncomingActive: false,
+			isFilterOutgoingActive: false
+		})
+
+		await user.click(screen.getByRole('button', { name: 'Subscribed' }))
+
+		expect(get(filterState)).toMatchObject({
+			incomingConnections: false,
+			outgoingConnections: true,
+			incomingMessageFilterActive: false,
+			outgoingMessageFilterActive: true
+		})
+	})
+})

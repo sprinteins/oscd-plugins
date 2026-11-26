@@ -33,7 +33,7 @@ export function getConnectedIEDsByLabel(
 	// find ied in nodes
 	// enforces that IED labels are unique!
 	const selectedNode = nodes.children.find(
-		(node: IEDElkNode | BayElkNode) => node.label == label
+		(node: IEDElkNode | BayElkNode) => node.label === label
 	)
 	if (!selectedNode) {
 		return connectedIEDs
@@ -64,7 +64,7 @@ export function getConnectedIEDsByLabel(
 				if (targetNode) {
 					connectedIEDs.publishedTo.push({
 						node: targetNode,
-						serviceType: messageType,
+						serviceType: messageType ?? 'Unknown',
 						serviceTypeLabel: messageTypeLabel
 					})
 				}
@@ -82,7 +82,7 @@ export function getConnectedIEDsByLabel(
 				if (sourceNode) {
 					connectedIEDs.subscribedFrom.push({
 						node: sourceNode,
-						serviceType: messageType,
+						serviceType: messageType ?? 'Unknown',
 						serviceTypeLabel: messageTypeLabel
 					})
 				}

@@ -5,6 +5,20 @@ All notable changes to the communication explorer plugin will be documented here
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-11-23
+
+### Changed
+- Migrate the plugin UI from SMUI and the legacy shared UI package to the shared Shadcn components.
+- Preserve the `TelemetryView` embedding API used by Auto Doc.
+- Extract sidebar selection and IED-detail behavior into tested UI-free modules.
+
+### Added
+- Add keyboard-accessible IED and bay search behavior.
+- Add automated coverage for diagram rendering and selection, filters, accordions, layout tokens, and data-flow animation.
+
+### Fixed
+- Preserve the original sidebar layout, full-height content, communication colors, accordion expansion, and selected-connection animation behavior inside plugin shadow roots.
+
 ## [0.1.0] - 2026-09-22
 
 ### Changed

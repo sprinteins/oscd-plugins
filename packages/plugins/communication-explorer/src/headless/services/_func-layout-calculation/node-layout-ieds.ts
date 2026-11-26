@@ -1,19 +1,19 @@
+// TYPES
+import type { IED } from '@oscd-plugins/core'
+import {
+	hasActiveIEDSelection,
+	isIEDSelected
+} from '../../../stores/_store-view-filter'
 import type {
 	IEDConnectionWithCustomValues,
 	IEDElkNode
 } from '../../../ui/components/diagram'
-import { hasActiveIEDSelection, isIEDSelected } from '../../../stores/_store-view-filter'
-import type { Preferences } from '../../../stores/_store-preferences'
 import type { Config } from './config'
-
-// TYPES
-import type { IED } from '@oscd-plugins/core'
 
 export function generateIEDLayout(
 	ieds: IED.CommunicationInfo[],
 	edges: IEDConnectionWithCustomValues[],
-	config: Config,
-	preferences: Preferences
+	config: Config
 ): IEDElkNode[] {
 	const hasSelection = hasActiveIEDSelection()
 

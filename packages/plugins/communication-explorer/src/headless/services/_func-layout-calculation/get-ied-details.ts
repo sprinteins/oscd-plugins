@@ -1,5 +1,9 @@
-import type { BayElkNode, IEDElkNode, RootNode } from '../../../ui/components/diagram'
 import type { IED } from '@oscd-plugins/core'
+import type {
+	BayElkNode,
+	IEDElkNode,
+	RootNode
+} from '../../../ui/components/diagram'
 
 export function getIEDDetails(
 	nodes: RootNode,
@@ -12,7 +16,7 @@ export function getIEDDetails(
 	// find ied in nodes
 	// enforces that IED labels are unique!
 	const selectedNode = nodes.children.find(
-		(node: IEDElkNode | BayElkNode) => node.label == label
+		(node: IEDElkNode | BayElkNode) => node.label === label
 	)
 	if (!selectedNode) {
 		return null

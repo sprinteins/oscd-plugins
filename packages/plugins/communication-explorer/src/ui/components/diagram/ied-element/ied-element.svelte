@@ -4,24 +4,24 @@ import type { IEDElkNode } from '../nodes'
 //
 // INPUT
 
-	interface Props {
-		//
-		node: IEDElkNode;
-		isBaySelected?: boolean;
-		isIEDSelected?: boolean;
-		showBayLabels?: boolean;
-		disabled?: boolean;
-		testid?: string;
-	}
+interface Props {
+	//
+	node: IEDElkNode
+	isBaySelected?: boolean
+	isIEDSelected?: boolean
+	showBayLabels?: boolean
+	disabled?: boolean
+	testid?: string
+}
 
-	let {
-		node,
-		isBaySelected = false,
-		isIEDSelected = false,
-		showBayLabels = false,
-		disabled = false,
-		testid = ''
-	}: Props = $props();
+let {
+	node,
+	isBaySelected = false,
+	isIEDSelected = false,
+	showBayLabels = false,
+	disabled = false,
+	testid = ''
+}: Props = $props()
 
 let bays = $derived(Array.from(node.bays ?? []).join(', '))
 </script>

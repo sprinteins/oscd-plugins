@@ -1,11 +1,11 @@
 export { filterIEDsByBays } from './bay-filters'
-export { resolveConnectionFilter } from './resolve-filter'
 export {
-	filterReceivedConnections,
-	filterPublishedConnections
+	filterPublishedConnections,
+	filterReceivedConnections
 } from './connection-filters'
 export {
 	determineVisibleIEDs,
-	removeDetachedIEDs,
-	ensureReferencedIEDsIncluded
+	ensureReferencedIEDsIncluded,
+	removeDetachedIEDs
 } from './ied-filters'
+export { resolveConnectionFilter } from './resolve-filter'

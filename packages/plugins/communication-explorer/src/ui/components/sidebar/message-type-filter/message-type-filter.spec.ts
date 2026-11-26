@@ -1,48 +1,55 @@
-import { render, screen} from "@testing-library/svelte"
-import {describe, it, expect } from "vitest"
+// @vitest-environment jsdom
 
-import MessageTypeFilter  from "./message-type-filter.svelte"
+import '@testing-library/jest-dom/vitest'
+import { cleanup, render, screen } from '@testing-library/svelte'
+import { get } from 'svelte/store'
+import { afterEach, describe, expect, it } from 'vitest'
+import { filterState } from '../../../../stores/_store-view-filter'
+import { setTargetMessageType } from './message-type-filter'
+import MessageTypeFilter from './message-type-filter.svelte'
 
+afterEach(() => {
+	cleanup()
+})
 
-
-describe("Sidebar Message Type Filter", () => {
-
-	type TestCase = {
-		desc: string,
-		isFilterDisabledExpected: boolean,
-	}
-
-	const featureTests: TestCase[] = [
-		{
-			desc:                     "filter disable variable is truthy",
-			isFilterDisabledExpected: false,
-		},
-		{
-			desc:                     "filter disable variable is falsy",
-			isFilterDisabledExpected: true,
-		},
-	]
-
-	featureTests.forEach(testShouldFiltersBeDisabled)
-
-	function testShouldFiltersBeDisabled(tc: TestCase) {
-		it(tc.desc, () => {
-	
-			render(MessageTypeFilter, {   
-				filterDisabled:       tc.isFilterDisabledExpected,
-				selectedMessageTypes: [],
-			})
-
-			const element = screen.getByTestId("exampleFilterToBeChecked") as HTMLInputElement
-			expect(element).toBeDefined
-
-			if(tc.isFilterDisabledExpected) {
-				expect(element.disabled).toBeTruthy()
-			} else {
-				expect(element.disabled).toBeFalsy()
-			}
-            
+describe('GIVEN a message type filter', () => {
+	it('WHEN a filter is disabled THEN its accessible checkbox is disabled', () => {
+		render(MessageTypeFilter, {
+			filterDisabled: true,
+			selectedMessageTypes: []
 		})
-	}
 
+		expect(screen.getByRole('checkbox', { name: 'MMS' })).toHaveProperty(
+			'disabled',
+			true
+		)
+	})
+
+	it('WHEN a filter is enabled THEN its accessible checkbox is enabled', () => {
+		render(MessageTypeFilter, {
+			filterDisabled: false,
+			selectedMessageTypes: ['MMS']
+		})
+
+		expect(screen.getByRole('checkbox', { name: 'MMS' })).toHaveProperty(
+			'disabled',
+			false
+		)
+		expect(
+			screen
+				.getByRole('checkbox', { name: 'MMS' })
+				.getAttribute('data-state')
+		).toBe('checked')
+	})
+
+	it('WHEN a checked message type is cleared THEN the filter store removes that type', () => {
+		filterState.update((state) => ({
+			...state,
+			selectedMessageTypes: ['MMS', 'GOOSE']
+		}))
+
+		setTargetMessageType('MMS', false)
+
+		expect(get(filterState).selectedMessageTypes).toEqual(['GOOSE'])
+	})
 })

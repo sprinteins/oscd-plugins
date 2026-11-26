@@ -1,13 +1,13 @@
-import { filterState } from './selected-filter-store'
-import { get } from 'svelte/store'
 // CONSTANTS
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
+import { get } from 'svelte/store'
+import type { MessageType } from '../../headless/types'
 // TYPES
 import type {
 	IEDConnectionWithCustomValues,
 	IEDElkNode
 } from '../../ui/components/diagram'
-import type { MessageType } from '../../headless/types'
+import { filterState } from './selected-filter-store'
 
 export function selectIEDElkNode(node: IEDElkNode) {
 	filterState.update((selectedFilter) => {
@@ -21,7 +21,6 @@ export function selectIEDElkNode(node: IEDElkNode) {
 
 export function toggleMultiSelectionOfIED(node: IEDElkNode) {
 	filterState.update((selectedFilter) => {
-
 		const selectedIEDs = selectedFilter.selectedIEDs
 		const isAlreadySelected = _isIEDSelected(node, selectedIEDs)
 

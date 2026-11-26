@@ -1,4 +1,4 @@
-import type { ConnectionFilter, ResolvedFilter } from '@/headless/types'
+import type { ConnectionFilter, ResolvedFilter } from '../../types'
 import { MESSAGE_TYPE_TO_SCL_MAP } from './message-type-to-scl-map'
 
 export function shouldRemoveDetachedIEDs(
@@ -12,7 +12,9 @@ export function shouldRemoveDetachedIEDs(
 	return !areAllMessageTypesSelected(resolvedFilters)
 }
 
-function areAllMessageTypesSelected(resolvedFilters: ResolvedFilter[]): boolean {
+function areAllMessageTypesSelected(
+	resolvedFilters: ResolvedFilter[]
+): boolean {
 	const allMessageTypes = new Set(Object.values(MESSAGE_TYPE_TO_SCL_MAP))
 	const selectedMessageTypes = new Set(
 		resolvedFilters.map((filter) => filter.messageType)

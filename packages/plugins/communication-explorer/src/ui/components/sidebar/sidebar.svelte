@@ -1,366 +1,307 @@
 <script lang="ts">
+import { Button, Checkbox, Input, Label } from '@oscd-plugins/core-ui-svelte'
 import {
-	filterState,
-	type SelectedFilter
-} from '../../../stores/_store-view-filter/selected-filter-store'
-import {
-	selectIEDElkNode,
-	clearSelection,
-	setNameFilter,
-	clearIEDSelection,
-	toggleMultiSelectionOfIED
-} from '../../../stores/_store-view-filter/selected-filter-store-functions'
-import ConnectionSelector from './assets/connection-selector.svg'
-import type { RootNode } from '../diagram'
-import { ConnectionTypeFilter } from './connection-type-filter'
-import { MessageTypeFilter } from './message-type-filter'
-import ConnectionInformation from './connection-information/connection-information.svelte'
-import IEDAccordion from './ied-accordion/ied-accordion.svelte'
+	filterSidebarSearchOptions,
+	findSidebarIEDsByBay,
+	isConnectionDirectionDisabled,
+	resolveSidebarSearchOption
+} from '../../../headless/services/sidebar-filtering'
+import type { Preferences } from '../../../stores/_store-preferences'
 import { preferences$ } from '../../../stores/_store-preferences/preferences-store'
+import {
+	clearIEDSelection,
+	clearSelection,
+	filterState,
+	selectIEDElkNode,
+	setNameFilter,
+	toggleMultiSelectionOfIED
+} from '../../../stores/_store-view-filter'
+import type { RootNode } from '../diagram'
+import ConnectionSelector from './assets/connection-selector.svg'
+import ConnectionInformation from './connection-information/connection-information.svelte'
+import { ConnectionTypeFilter } from './connection-type-filter'
+import IEDAccordion from './ied-accordion/ied-accordion.svelte'
+import { MessageTypeFilter } from './message-type-filter'
 
-	interface Props {
-		rootNode: RootNode;
-		bays: string[];
-	}
+interface Props {
+	rootNode: RootNode
+	bays: string[]
+}
 
-	let { rootNode, bays }: Props = $props();
-let IEDs = $derived(rootNode?.children || [])
+let { rootNode, bays }: Props = $props()
+const ieds = $derived(rootNode?.children || [])
+
 let searchQuery = $state('')
 let filterTextFieldFocused = $state(false)
+let activeSearchIndex = $state(-1)
 
-
-function handleConnectionDirectionDisabled(
-	filter: SelectedFilter,
-	iedFilterDisabled: boolean
-): boolean {
-	if (iedFilterDisabled) return true
-
-	const selectedIEDs = filter?.selectedIEDs
-	const selectedCon = filter?.selectedConnection?.id
-
-	return Boolean(selectedIEDs.length === 0 && selectedCon === undefined)
+function updatePreference<K extends keyof Preferences>(
+	key: K,
+	value: Preferences[K]
+) {
+	preferences$.update((preferences) => ({ ...preferences, [key]: value }))
 }
 
-function handleNameFilterChange(e: Event) {
-	const target = e.target as HTMLInputElement
-	setNameFilter(target.value)
-}
+function selectSearchOption(label: string) {
+	searchQuery = label
+	const option = resolveSidebarSearchOption(ieds, bays, label)
+	if (!option) return
 
-function handleDropdownSelect(e: Event) {
-	const target = e.target as HTMLElement
-	searchQuery = target.innerText || ''
-	if (bays.includes(searchQuery)) {
-		clearIEDSelection()
-		for (const node of rootNode.children) {
-			if (node.bays?.has(searchQuery)) {
-				toggleMultiSelectionOfIED(node)
-			}
+	clearIEDSelection()
+	if (option.kind === 'bay') {
+		for (const node of findSidebarIEDsByBay(
+			rootNode.children,
+			option.value
+		)) {
+			toggleMultiSelectionOfIED(node)
 		}
 	} else {
-		let selectedNode = rootNode.children.find(
-			(node) => node.label === searchQuery
-		)
-		if (selectedNode) {
-			selectIEDElkNode(selectedNode)
-		}
+		selectIEDElkNode(option.value)
 	}
+	filterTextFieldFocused = false
+	activeSearchIndex = -1
 }
 
 function clearAll() {
 	searchQuery = ''
 	clearSelection()
 }
-let IEDSelections = $derived($filterState?.selectedIEDs)
-let ConnectionSelection = $derived($filterState.selectedConnection)
-let selectedMessageTypes = $derived($filterState.selectedMessageTypes)
-let isIedFiltersDisabled = $derived($filterState?.selectedConnection !== undefined)
-let isConnectionDirectionDisabled = $derived(handleConnectionDirectionDisabled(
-	$filterState,
-	isIedFiltersDisabled
-))
-let filteredIEDs =
-	$derived((searchQuery &&
-		IEDs?.filter((ied) =>
-			ied.label.toLowerCase().includes(searchQuery.toLowerCase())
-		)) ||
-	IEDs)
-let filteredBays =
-	$derived((searchQuery &&
-		bays?.filter((bay) =>
-			bay.toLowerCase().includes(searchQuery.toLowerCase())
-		)) ||
-	bays)
+
+function handleSearchKeydown(event: KeyboardEvent) {
+	if (event.key === 'Escape') {
+		filterTextFieldFocused = false
+		activeSearchIndex = -1
+		return
+	}
+
+	if (event.key === 'ArrowDown') {
+		event.preventDefault()
+		filterTextFieldFocused = true
+		activeSearchIndex =
+			(activeSearchIndex + 1) % Math.max(searchOptions.length, 1)
+		return
+	}
+
+	if (event.key === 'ArrowUp') {
+		event.preventDefault()
+		filterTextFieldFocused = true
+		if (activeSearchIndex < 0) {
+			activeSearchIndex = searchOptions.length - 1
+			return
+		}
+		activeSearchIndex =
+			(activeSearchIndex - 1 + searchOptions.length) %
+			searchOptions.length
+		return
+	}
+
+	if (event.key === 'Enter' && activeSearchIndex >= 0) {
+		event.preventDefault()
+		selectSearchOption(searchOptions[activeSearchIndex].label)
+	}
+}
+
+const iedSelections = $derived($filterState.selectedIEDs)
+const connectionSelection = $derived($filterState.selectedConnection)
+const selectedMessageTypes = $derived($filterState.selectedMessageTypes)
+const isIEDFiltersDisabled = $derived(
+	$filterState.selectedConnection !== undefined
+)
+const connectionDirectionDisabled = $derived(
+	isConnectionDirectionDisabled($filterState, isIEDFiltersDisabled)
+)
+const filteredSearchOptions = $derived(
+	filterSidebarSearchOptions(ieds, bays, searchQuery)
+)
+const searchOptions = $derived([
+	...filteredSearchOptions.ieds.map((ied) => ({
+		kind: 'IED',
+		label: ied.label
+	})),
+	...filteredSearchOptions.bays.map((bay) => ({
+		kind: 'Bay',
+		label: bay
+	}))
+])
 </script>
 
-<div class="sidebar sidebar-right">
-	<div class="sidebar-content">
-			<!-- svelte-ignore a11y_missing_attribute -->
-			<div class="actions">
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<!-- svelte-ignore a11y_click_events_have_key_events -->
-					<a class="clear-all" onclick={clearAll}>
-							Clear all
-					</a>
-			</div>
-
-			<div class="search_filter">
-					<img src={ConnectionSelector} alt="connection selector" />
-					<div class="search_container">
-							<input
-									type="text"
-									placeholder="Filter IED or bay"
-									bind:value={searchQuery}
-									onfocus={()=> filterTextFieldFocused = true}
-									onblur={()=> filterTextFieldFocused = false}
-							/>
-							{#if filterTextFieldFocused}
-									<div class="dropdown">
-											{#if filteredIEDs.length > 0}
-													<div class="dropdown_label">
-															IEDs ({filteredIEDs.length})
-													</div>
-													{#each filteredIEDs as ied}
-															<div class="dropdown_content" role="button" tabindex="0" onmousedown={handleDropdownSelect}>
-																	{ied.label}
-															</div>
-													{/each}
-													{#if filteredBays.length > 0}
-															<hr>
-													{/if}
-											{/if}
-											{#if filteredBays.length > 0}
-													<div class="dropdown_label">
-															bays ({filteredBays.length})
-													</div>
-													{#each filteredBays as bay}
-															<div class="dropdown_content" role="button" tabindex="0" onmousedown={handleDropdownSelect}>
-																	{bay}
-															</div>
-													{/each}
-											{/if}
-									</div>  
-							{/if} 
-					</div>
-			</div>
-
-			<div class="centered">
-					<ConnectionTypeFilter 
-							disabled={isConnectionDirectionDisabled} 
-							isFilterIncomingActive={$filterState.incomingMessageFilterActive}
-							isFilterOutgoingActive={$filterState.outgoingMessageFilterActive}
-					/>
-			</div>
-
-			<hr class="dashed-line" />
-			<MessageTypeFilter
-					{selectedMessageTypes}
-					filterDisabled={isIedFiltersDisabled}
-			/>
-
-			{#if IEDSelections.length > 0}
-					<hr class="seperation-line" />
-					<ul class="ied-detail-list">
-							{#each IEDSelections as IEDSelection}
-									<li>
-											<IEDAccordion {IEDSelection} {rootNode} />
-									</li>
-							{/each}
-					</ul>
-			{/if}
-
-			{#if ConnectionSelection !== undefined}
-					<hr class="seperation-line" />
-					<ConnectionInformation {ConnectionSelection} />
-			{/if}
-
-			<hr class="seperation-line" />
-
-			<h2>Focus Mode</h2>
-
-			<label class="ied-search">
-					<span class="ied-search-headline">Filter IEDs by name:</span>
-					<input
-							class="input"
-							type="text"
-							placeholder="e.g.: XAT"
-							value={$filterState.nameFilter}
-							oninput={handleNameFilterChange}
-					/>
-			</label>
-
-			<div class="checkbox-group">
-					<label>
-							<input
-									type="checkbox"
-									bind:checked={$preferences$.isFocusModeOn}
-							/>
-							<span>Focus on selected IEDs</span>
-					</label>
-			</div>
-
-			<h2>Preferences</h2>
-
-			<div class="arrows-visible">
-				<label>
-					<input
-						type="checkbox"
-						bind:checked={$preferences$.showConnectionArrows}
-					/>
-					<span>Show arrows on connections</span>
-				</label>
-			</div>
-
-		<div class="checkbox-group">
-			<label>
-				<input
-					type="checkbox"
-					bind:checked={$preferences$.playConnectionAnimation}
-				/>
-				<span>Play data flow animation</span>
-			</label>
+<aside class="sidebar h-full overflow-hidden" aria-label="Communication filters">
+	<div class="sidebar-content h-full overflow-auto p-4">
+		<div class="mb-4 flex flex-row-reverse">
+			<Button.Root variant="ghost" size="sm" onclick={clearAll}>
+				Clear all
+			</Button.Root>
 		</div>
 
-		<div class="checkbox-group">
-			<label>
-				<input
-					type="checkbox"
-					bind:checked={$preferences$.groupByBay}
+		<div class="relative mb-8 flex items-center gap-4">
+			<img
+				class="size-[1.3rem] shrink-0"
+				src={ConnectionSelector}
+				alt=""
+				aria-hidden="true"
+			/>
+			<div class="relative w-full">
+				<Input.Root
+					type="text"
+					placeholder="Filter IED or bay"
+					aria-label="Filter IED or bay"
+					role="combobox"
+					aria-expanded={filterTextFieldFocused}
+					aria-controls="sidebar-search-options"
+					aria-autocomplete="list"
+					aria-activedescendant={activeSearchIndex >= 0
+						? `sidebar-search-option-${activeSearchIndex}`
+						: undefined}
+					bind:value={searchQuery}
+					onfocus={() => (filterTextFieldFocused = true)}
+					onblur={() => (filterTextFieldFocused = false)}
+					oninput={() => (activeSearchIndex = -1)}
+					onkeydown={handleSearchKeydown}
 				/>
-				<span>Group IEDs by bay</span>
-			</label>
+				{#if filterTextFieldFocused && searchOptions.length > 0}
+					<div
+						id="sidebar-search-options"
+						role="listbox"
+						aria-label="IED and bay suggestions"
+						class="absolute z-10 mt-1 w-full rounded-md border bg-popover py-1 text-popover-foreground shadow-md"
+					>
+						{#each searchOptions as option, index}
+							<button
+								id={`sidebar-search-option-${index}`}
+								type="button"
+								role="option"
+								aria-selected={activeSearchIndex === index}
+								class:active={activeSearchIndex === index}
+								class="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-accent focus:bg-accent focus:outline-none"
+								onmousedown={(event) => {
+									event.preventDefault()
+									selectSearchOption(option.label)
+								}}
+							>
+								<span>{option.label}</span>
+								<span class="text-xs text-muted-foreground">{option.kind}</span>
+							</button>
+						{/each}
+					</div>
+				{/if}
+			</div>
+		</div>
+
+		<ConnectionTypeFilter
+			disabled={connectionDirectionDisabled}
+			isFilterIncomingActive={$filterState.incomingMessageFilterActive}
+			isFilterOutgoingActive={$filterState.outgoingMessageFilterActive}
+		/>
+
+		<hr class="my-8 border-dashed" />
+		<MessageTypeFilter
+			{selectedMessageTypes}
+			filterDisabled={isIEDFiltersDisabled}
+		/>
+
+		{#if iedSelections.length > 0}
+			<hr class="my-8" />
+			<ul class="flex flex-col gap-8">
+				{#each iedSelections as IEDSelection}
+					<li>
+						<IEDAccordion {IEDSelection} {rootNode} />
+					</li>
+				{/each}
+			</ul>
+		{/if}
+
+		{#if connectionSelection !== undefined}
+			<hr class="my-8" />
+			<ConnectionInformation ConnectionSelection={connectionSelection} />
+		{/if}
+
+		<hr class="my-8" />
+
+		<h2>Focus Mode</h2>
+
+		<div class="mt-3 space-y-3">
+			<div class="space-y-2">
+				<Label.Root for="filter-ieds-by-name">Filter IEDs by name:</Label.Root>
+				<Input.Root
+					id="filter-ieds-by-name"
+					type="text"
+					placeholder="e.g.: XAT"
+					value={$filterState.nameFilter}
+					oninput={(event) =>
+						setNameFilter((event.currentTarget as HTMLInputElement).value)}
+				/>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<Checkbox.Root
+					id="focus-on-selected-ieds"
+					checked={$preferences$.isFocusModeOn}
+					onCheckedChange={(checked) =>
+						updatePreference('isFocusModeOn', checked === true)}
+				/>
+				<Label.Root for="focus-on-selected-ieds">
+					Focus on selected IEDs
+				</Label.Root>
+			</div>
+		</div>
+
+		<h2 class="mt-8">Preferences</h2>
+
+		<div class="mt-3 space-y-3">
+			<div class="flex items-center gap-2">
+				<Checkbox.Root
+					id="show-connection-arrows"
+					checked={$preferences$.showConnectionArrows}
+					onCheckedChange={(checked) =>
+						updatePreference('showConnectionArrows', checked === true)}
+				/>
+				<Label.Root for="show-connection-arrows">
+					Show arrows on connections
+				</Label.Root>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<Checkbox.Root
+					id="play-data-flow-animation"
+					checked={$preferences$.playConnectionAnimation}
+					onCheckedChange={(checked) =>
+						updatePreference('playConnectionAnimation', checked === true)}
+				/>
+				<Label.Root for="play-data-flow-animation">
+					Play data flow animation
+				</Label.Root>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<Checkbox.Root
+					id="group-ieds-by-bay"
+					checked={$preferences$.groupByBay}
+					onCheckedChange={(checked) =>
+						updatePreference('groupByBay', checked === true)}
+				/>
+				<Label.Root for="group-ieds-by-bay">Group IEDs by bay</Label.Root>
+			</div>
 		</div>
 	</div>
-</div>
+</aside>
 
 <style>
-	hr {
-			margin: 2rem 0;
-	}
-
 	.sidebar {
-			height: 100%;
-			width: var(--sidebar-width);
-			overflow: hidden;
-	}
-    .sidebar :global(h2) {
-        font-size: revert;
-        font-weight: revert;
-    }
-
-	.sidebar .sidebar-content {
-			padding: 1rem;
-			background-color: var(--mdc-theme-background);
-			height: calc(100% - 2rem);
-			overflow: auto;
-			min-width: 330px;
-			color: var(--mdc-theme-on-background);
-			box-sizing: content-box;
-	}
- 
-	.search_filter {
-			display: flex;
-			align-items: center;
-			gap: 1rem;
-			margin-bottom: 2rem;
+		width: var(--sidebar-width);
+		background-color: var(--color-sidebar-background);
 	}
 
-	.search_filter img {
-			height: 1.3rem;
-			width: 1.3rem;
+	.sidebar-content {
+		min-width: 330px;
+		background-color: var(--color-sidebar-background);
 	}
 
-	.search_container {
-			position: relative;
-			width: 100%;
+	h2 {
+		font-size: revert;
+		font-weight: revert;
 	}
 
-	.search_container input {
-			padding: 14px 20px 12px 15px;
-			border: none;
-			border-bottom: 1px solid #ddd;
-			width: 100%;
-			box-sizing: border-box;
-	}
-	
-	.dropdown {
-			position: absolute;
-			width: 100%;
-		background-color: #f6f6f6;
-			border: 1px solid #ddd;
-			z-index: 1;
-	}
-
-	.dropdown_label {
-		color: gray;
-		padding: 8px;
-		font-size: 1em;
-			box-sizing: border-box;
-	}
-
-	.dropdown_content {
-		color: black;
-			padding: 4px 16px;
-			text-decoration: none;
-			box-sizing: border-box;
-	}
-	.dropdown_content:hover {
-		 background-color: #ddd;
-	}
-
-	.dropdown hr {
-		border: none;
-		background-color: gray;
-		height: 1px;
-			margin: 0.5em;
-			box-sizing: border-box;
-	}
-	
-	.actions {
-			display: flex;
-			flex-direction: row-reverse;
-			margin-bottom: 1rem;
-	}
-
-	.actions .clear-all {
-			cursor: pointer;
-			border: 1px solid rgba(0, 0, 0, 0);
-			border-radius: 5px;
-			padding: 6px 8px;
-			transition: border-color 200ms ease-in-out;
-	}
-
-	.actions .clear-all:hover {
-			border-color: var(--color-text-disabled-1);
-	}
-
-	.centered {
-			display: flex;
-			justify-content: flex-start;
-	}
-
-	.ied-detail-list {
-			list-style: none;
-			margin: 0;
-			padding: 0;
-			display: flex;
-			flex-direction: column;
-			gap: 2rem;
-	}
-	.ied-search {
-			display: inline-grid;
-	}
-
-	.ied-search-headline {
-			margin-bottom: 0.5rem;
-	}
-	.input {
-			margin-bottom: 1rem;
-	}
-	.dashed-line {
-			border: 0.1rem dashed var(--color-cyan-30-pc-opacity);
-	}
-	.seperation-line {
-			border: none;
-			border-top: 0.1rem solid var(--color-accent);
+	.active {
+		background-color: var(--accent);
 	}
 </style>

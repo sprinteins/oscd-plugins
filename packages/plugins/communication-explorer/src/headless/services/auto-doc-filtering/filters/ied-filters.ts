@@ -1,4 +1,4 @@
-import type { IEDInfo, ResolvedFilter } from '@/headless/types'
+import type { IEDInfo, ResolvedFilter } from '../../../types'
 import {
 	filterPublishedConnections,
 	filterReceivedConnections

@@ -50,14 +50,14 @@ function buildXPathExpression(pattern: string): string {
 	if (pattern.startsWith('//')) {
 		return pattern
 	}
-	
+
 	if (pattern.includes('*')) {
 		const cleanPattern = pattern.replace(/\*/g, '')
 		return cleanPattern
 			? `//default:IED[contains(@name,'${cleanPattern}')]`
 			: '//default:IED'
 	}
-	
+
 	return `//default:IED[@name='${pattern}']`
 }
 

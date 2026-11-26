@@ -1,2 +1,2 @@
-export { default as Diagram } from "./diagram.svelte"
-export * from "./nodes"
+export { default as Diagram } from './diagram.svelte'
+export * from './nodes'

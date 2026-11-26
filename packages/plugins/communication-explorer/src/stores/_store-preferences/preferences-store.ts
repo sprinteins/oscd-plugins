@@ -1,22 +1,21 @@
-import { writable } from "svelte/store"
-import { initPreferences } from "./local-storage-adapter"
+import { writable } from 'svelte/store'
+import { initPreferences } from './local-storage-adapter'
 
 export type Preferences = {
-	playConnectionAnimation: boolean;
-	showConnectionArrows: boolean;
-	isFocusModeOn: boolean;
-	groupByBay: boolean;
+	playConnectionAnimation: boolean
+	showConnectionArrows: boolean
+	isFocusModeOn: boolean
+	groupByBay: boolean
 }
 
 export const defaultPreferences: Preferences = {
 	playConnectionAnimation: false,
-	showConnectionArrows:    true,
-	isFocusModeOn:           false,
-	groupByBay:				 true
+	showConnectionArrows: true,
+	isFocusModeOn: false,
+	groupByBay: true
 }
 
-
-export const preferences$ = writable<Preferences>(defaultPreferences) 
+export const preferences$ = writable<Preferences>(defaultPreferences)
 
 // whoever first imports this file will initialize the preferences store
-initPreferences()
+initPreferences(preferences$, defaultPreferences)

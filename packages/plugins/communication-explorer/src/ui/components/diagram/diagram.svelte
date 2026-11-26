@@ -1,18 +1,18 @@
 <script lang="ts">
-import type {
-	IEDConnectionWithCustomValues,
-	IEDElkNode,
-	RootNode
-} from './nodes'
-import { isBayNode } from './nodes'
-import { IEDElement } from './ied-element'
-import Message from './message.svelte'
 import type { ElkExtendedEdge } from 'elkjs'
 import {
 	isConnectionSelected,
 	isIEDSelected
 } from '../../../stores/_store-view-filter'
 import BayContainer from './bay-container/bay-container.svelte'
+import { IEDElement } from './ied-element'
+import Message from './message.svelte'
+import type {
+	IEDConnectionWithCustomValues,
+	IEDElkNode,
+	RootNode
+} from './nodes'
+import { isBayNode } from './nodes'
 
 interface Props {
 	rootNode: RootNode
@@ -46,8 +46,8 @@ let {
 // Setup
 //
 
-let svgRoot: SVGElement = $state()
-let root: HTMLElement = $state()
+let svgRoot = $state<SVGElement>()
+let root = $state<HTMLElement>()
 
 function handleIEDClick(e: MouseEvent, node: IEDElkNode) {
 	if (draggingEnabled) {
@@ -62,7 +62,7 @@ function handleIEDClick(e: MouseEvent, node: IEDElkNode) {
 	const isAdditiveSelect = e.metaKey || e.ctrlKey || e.shiftKey
 
 	if (element.classList.contains('bayLabel')) {
-		handleBaySelect(element.textContent)
+		handleBaySelect(element.textContent ?? '')
 		return
 	}
 
@@ -113,7 +113,7 @@ function handleKeyDown(e: KeyboardEvent) {
 }
 
 function handleMouseDown(e: MouseEvent) {
-	if (!draggingEnabled) {
+	if (!draggingEnabled || !root) {
 		return
 	}
 
@@ -132,7 +132,7 @@ function handleMouseDown(e: MouseEvent) {
 	e.preventDefault()
 }
 function handleMouseMove(e: MouseEvent) {
-	if (!isDragging) {
+	if (!isDragging || !root) {
 		return
 	}
 
@@ -303,6 +303,7 @@ async function handleMouseWheel(e: WheelEvent) {
 		width: 100%;
 		height: 100%;
 		overflow: auto;
+		background-color: var(--color-canvas-background);
 	}
 
 	diagram.draggingEnabled {

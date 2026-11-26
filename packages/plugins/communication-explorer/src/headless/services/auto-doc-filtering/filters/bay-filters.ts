@@ -1,4 +1,4 @@
-import type { IEDInfoWithBays } from '@/headless/types'
+import type { IEDInfoWithBays } from '../../../types'
 
 export function filterIEDsByBays<T extends IEDInfoWithBays>(
 	iedInfos: T[],
@@ -14,6 +14,6 @@ function isIEDInSelectedBays(
 	selectedBays: Set<string>
 ): boolean {
 	if (!ied.bays || ied.bays.size === 0) return false
-	
+
 	return Array.from(ied.bays).some((bay: string) => selectedBays.has(bay))
 }

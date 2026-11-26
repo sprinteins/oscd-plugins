@@ -1,14 +1,13 @@
-import ELK from 'elkjs/lib/elk.bundled'
-import { generateConnectionLayout } from '.'
-import { generateIEDLayout } from './node-layout-ieds'
-
 // TYPES
 import type { IED } from '@oscd-plugins/core'
-import type { Config } from './config'
-import type { Preferences } from '../../../stores/_store-preferences'
-import type { IEDConnectionWithCustomValues, IEDElkNode, RootNode } from '../../../ui/components/diagram'
-import type { SelectedFilter } from '../../../stores/_store-view-filter'
 import type { ElkNode } from 'elkjs/lib/elk.bundled'
+import ELK from 'elkjs/lib/elk.bundled'
+import type { Preferences } from '../../../stores/_store-preferences'
+import type { SelectedFilter } from '../../../stores/_store-view-filter'
+import type { IEDElkNode, RootNode } from '../../../ui/components/diagram'
+import { generateConnectionLayout } from '.'
+import type { Config } from './config'
+import { generateIEDLayout } from './node-layout-ieds'
 
 const defaultConfigs: Partial<Config> = {
 	spacingBase: 20,
@@ -21,7 +20,6 @@ export async function calculateLayout(
 	selectionFilter: SelectedFilter,
 	preferences: Preferences
 ): Promise<RootNode> {
-
 	config = {
 		...defaultConfigs,
 		...config
@@ -36,19 +34,21 @@ export async function calculateLayout(
 	}
 
 	let edges = generateConnectionLayout(ieds, selectionFilter)
-	let children: IEDElkNode[] = generateIEDLayout(ieds, edges, config, preferences)
+	let children: IEDElkNode[] = generateIEDLayout(ieds, edges, config)
 	if (preferences.groupByBay) {
-		children = generateBayLayout(children, edges, config)
+		children = generateBayLayout(children, config)
 	}
 
 	if (preferences.isFocusModeOn) {
-		children = children.filter(child => child.isRelevant)
+		children = children.filter((child) => child.isRelevant)
 		if (preferences.groupByBay) {
 			for (const bayNode of children) {
-				bayNode.children = bayNode.children?.filter(child => child.isRelevant)
+				bayNode.children = bayNode.children?.filter(
+					(child) => child.isRelevant
+				)
 			}
 		}
-		edges = edges.filter(edge => edge.isRelevant)
+		edges = edges.filter((edge) => edge.isRelevant)
 	}
 
 	const elk = new ELK()
@@ -59,7 +59,7 @@ export async function calculateLayout(
 	const graph: ElkNode = {
 		id: 'graph-root',
 		layoutOptions: {
-			'elk.algorithm': 'org.eclipse.elk.layered',			
+			'elk.algorithm': 'org.eclipse.elk.layered',
 			'org.eclipse.elk.layered.unnecessaryBendpoints': 'true',
 			'org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment':
 				'RIGHTUP',
@@ -92,23 +92,31 @@ export async function calculateLayout(
 	const root = (await elk.layout(graph)) as RootNode
 
 	if (!preferences.groupByBay) {
-		return root;
+		return root
 	}
 
 	// this is not ideal, ELK will calculate positions of IEDs and connections in local space of the parent bay (I didn't find a way to change that...)
 	// we are not expecting local positions but absolute positions so we have to add the position of the bay to each affected Connection
-	// TODO: make our Svelte rendering more flexible so that it expects the data as it is returned by ELK 
+	// TODO: make our Svelte rendering more flexible so that it expects the data as it is returned by ELK
 	for (const node of root.children) {
 		if (node.isBayNode) {
-
 			//find all connections that have both source and target IED within the same bay
 			if (root.edges) {
 				for (const edge of root.edges) {
-					if (node.children.some(ied => ied.label === edge.sourceIED.iedName) &&
-						node.children.some(ied => ied.label === edge.targetIED.iedName)) {
+					if (
+						node.children.some(
+							(ied) => ied.label === edge.sourceIED.iedName
+						) &&
+						node.children.some(
+							(ied) => ied.label === edge.targetIED.iedName
+						)
+					) {
 						if (edge.sections) {
 							for (const section of edge.sections) {
-								if (node.x !== undefined && node.y !== undefined) {
+								if (
+									node.x !== undefined &&
+									node.y !== undefined
+								) {
 									section.startPoint.x += node.x
 									section.startPoint.y += node.y
 									section.endPoint.x += node.x
@@ -120,14 +128,13 @@ export async function calculateLayout(
 										}
 									}
 								}
-							}						
+							}
 						}
 					}
 				}
 			}
 
 			for (const child of node.children) {
-				
 				//ELK only gives us local positions for child IEDs (I couldn't find a way to change that...)
 				//as a workaround we add the bay's position to all it's child IEDs
 				if (node.x !== undefined && node.y !== undefined) {
@@ -136,7 +143,7 @@ export async function calculateLayout(
 				}
 
 				//moving all bay node children to the root node
-				//ELK only works properly if bays have all their IEDs as children, 
+				//ELK only works properly if bays have all their IEDs as children,
 				//but we expect all IEDs to be children of the root node so this is necessary
 				root.children.push(child)
 			}
@@ -147,38 +154,48 @@ export async function calculateLayout(
 	return root
 }
 
-function generateBayLayout(ieds: IEDElkNode[], edges: IEDConnectionWithCustomValues[], config: Config): IEDElkNode[] {
-
+function generateBayLayout(ieds: IEDElkNode[], config: Config): IEDElkNode[] {
 	const children: IEDElkNode[] = []
 	const bays: IEDElkNode[] = []
 	let id = 0
 	for (const ied of ieds) {
 		if (!ied.bays || ied.bays.size === 0) {
-			children.push(ied);
-			continue;
+			children.push(ied)
+			continue
 		}
-		const bayLabel = ied.bays.values().next().value;
-		let bayNode: IEDElkNode = (children.find(b => b.label === bayLabel && b.isBayNode))
+		const bayLabel = ied.bays.values().next().value
+		if (bayLabel === undefined) {
+			continue
+		}
+		let bayNode: IEDElkNode | undefined = children.find(
+			(b) => b.label === bayLabel && b.isBayNode
+		)
 		if (bayNode) {
-			bayNode.children.push(ied);
-			bayNode.isRelevant |= ied.isRelevant
-		}
-		else {
+			bayNode.children.push(ied)
+			bayNode.isRelevant =
+				Boolean(bayNode.isRelevant) || Boolean(ied.isRelevant)
+		} else {
 			const spacing = config.spacingBase ?? 20
-			bayNode = {
-				id:         	`bay-${id++}`, //placeholder
-				width:      	config.iedWidth,
-				height:     	config.iedHeight,
-				label:      	bayLabel,
-				isRelevant: 	ied.isRelevant,
-				isBayNode:		true,
-				children:   	[ied], //IEDs must be children of their bays, otherwise ELK won't calculate proper layouts!
+			const newBayNode: IEDElkNode = {
+				id: `bay-${id++}`, //placeholder
+				width: config.iedWidth,
+				height: config.iedHeight,
+				label: bayLabel,
+				isRelevant: ied.isRelevant,
+				isBayNode: true,
+				children: [ied], //IEDs must be children of their bays, otherwise ELK won't calculate proper layouts!
 				layoutOptions: {
 					'elk.padding': `[top=${spacing * 2},left=${spacing},right=${spacing},bottom=${spacing}]` //double top spacing to account for baycontainer label!
 				},
+				details: ied.details,
+				bays: new Set([bayLabel]),
+				bayLabelHeight: config.bayLabelHeight,
+				bayLabelGap: config.bayLabelGap,
+				iedHeight: config.iedHeight
 			}
-			children.push(bayNode)
-			bays.push(bayNode)
+			children.push(newBayNode)
+			bays.push(newBayNode)
+			bayNode = newBayNode
 		}
 	}
 

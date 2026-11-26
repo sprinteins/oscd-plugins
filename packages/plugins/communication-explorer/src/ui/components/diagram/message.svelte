@@ -1,37 +1,38 @@
 <script lang="ts">
-	import { createBubbler } from 'svelte/legacy';
+import { createBubbler } from 'svelte/legacy'
 
-	const bubble = createBubbler();
-import { path as d3Path } from 'd3-path'
+const bubble = createBubbler()
+
 // CONSTANTS
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
+import { path as d3Path } from 'd3-path'
 // TYPES
 import type { ElkEdgeSection } from 'elkjs'
 import type { IEDConnection } from './nodes'
 
 //
 // Input
+//
 
-	interface Props {
-		//
-		edge: IEDConnection;
-		isSelected?: boolean;
-		isIEDSelected?: boolean;
-		testid?: string;
-		playAnimation?: boolean;
-		showConnectionArrows?: boolean;
-		onclick?: (e: MouseEvent) => void;
-	}
+interface Props {
+	edge: IEDConnection
+	isSelected?: boolean
+	isIEDSelected?: boolean
+	testid?: string
+	playAnimation?: boolean
+	showConnectionArrows?: boolean
+	onclick?: (e: MouseEvent) => void
+}
 
-	let {
-		edge,
-		isSelected = false,
-		isIEDSelected = false,
-		testid = '',
-		playAnimation = true,
-		showConnectionArrows = true,
-		onclick
-	}: Props = $props();
+let {
+	edge,
+	isSelected = false,
+	isIEDSelected = false,
+	testid = '',
+	playAnimation = true,
+	showConnectionArrows = true,
+	onclick
+}: Props = $props()
 
 //
 // Internal - Synchronized path and arrow calculation
@@ -51,7 +52,7 @@ interface PathAndArrows {
 const pathAndArrows = $derived.by((): PathAndArrows => {
 	const arrowSize = 7
 	const sections = edge?.sections ?? []
-	
+
 	// Default return for invalid data
 	const defaultArrowData = {
 		arrowRightHeight: 0,
@@ -101,18 +102,18 @@ const pathAndArrows = $derived.by((): PathAndArrows => {
 			arrowRightWidth: section.endPoint.x,
 			arrowTopHeight: section.endPoint.y + arrowSize / 2,
 			arrowBottomHeight: section.endPoint.y - arrowSize / 2,
-			arrowTopWidth: reverseDirection 
-				? section.endPoint.x + arrowSize 
+			arrowTopWidth: reverseDirection
+				? section.endPoint.x + arrowSize
 				: section.endPoint.x - arrowSize,
-			arrowBottomWidth: reverseDirection 
-				? section.endPoint.x + arrowSize 
+			arrowBottomWidth: reverseDirection
+				? section.endPoint.x + arrowSize
 				: section.endPoint.x - arrowSize
 		}
 	}
 
-	return { 
-		path: path.toString(), 
-		arrowData 
+	return {
+		path: path.toString(),
+		arrowData
 	}
 })
 
@@ -186,7 +187,9 @@ function calcDashArray(edge?: IEDConnection): string {
 // Derived values from synchronized calculation
 const path = $derived(pathAndArrows.path)
 const arrowData = $derived(pathAndArrows.arrowData)
-const shouldPlayAnimation = $derived(playAnimation && edge.isRelevant && (isSelected || isIEDSelected))
+const shouldPlayAnimation = $derived(
+	playAnimation && edge.isRelevant && (isSelected || isIEDSelected)
+)
 const pathColor = $derived(calcPathColor(edge))
 const pathHighlightColor = $derived(calcPathHighlightColor(edge))
 const dashArray = $derived(calcDashArray(edge))
