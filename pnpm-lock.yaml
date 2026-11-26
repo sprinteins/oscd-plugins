@@ -4498,8 +4498,8 @@ packages:
     resolution: {integrity: sha512-3Ve9cd5ziLByUdigw6zovVeWJjVs8QHVmqOB0sJ0WNeVPcwf4p18GnxMmVvlFmYRloUwf5suNuorea4QzwBIOA==}
     hasBin: true
 
-  effect@3.19.12:
-    resolution: {integrity: sha512-7F9RGTrCTC3D7nh9Zw+3VlJWwZgo5k33KA+476BAaD0rKIXKZsY/jQ+ipyhR/Avo239Fi6GqAVFs1mqM1IJ7yg==}
+  effect@3.22.5:
+    resolution: {integrity: sha512-AdIU4llI19BzhJ4xUBZix7kS8oiYSlCsJ61j3UM3UyJw9ecDrsrrweDFm/Ku1nHbJWMLoynK+1Me4it3Zkmjpw==}
 
   electron-to-chromium@1.5.267:
     resolution: {integrity: sha512-0Drusm6MVRXSOJpGbaSVgcQsuB4hEkMpHXaVstcPmhu5LIedxs1xNK/nIxmQIU/RPC0+1/o0AVZfBTkTNJOdUw==}
@@ -10649,7 +10649,7 @@ snapshots:
       '@vitest/utils': 0.30.1
       fast-glob: 3.3.3
       fflate: 0.7.4
-      flatted: 3.3.3
+      flatted: 3.4.4
       pathe: 1.1.2
       picocolors: 1.1.1
       sirv: 2.0.4
@@ -11664,7 +11664,7 @@ snapshots:
       node-fetch: 3.3.2
       which: 4.0.0
 
-  effect@3.19.12:
+  effect@3.22.5:
     dependencies:
       '@standard-schema/spec': 1.1.0
       fast-check: 3.23.2
@@ -14119,7 +14119,7 @@ snapshots:
       '@vinejs/vine': 3.0.1
       arktype: 2.1.29
       class-validator: 0.14.3
-      effect: 3.19.12
+      effect: 3.22.5
       joi: 17.13.3
       json-schema-to-ts: 3.1.1
       superstruct: 2.0.2
