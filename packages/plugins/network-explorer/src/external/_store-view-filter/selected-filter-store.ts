@@ -1,11 +1,8 @@
-import { writable } from 'svelte/store'
 // CONSTANTS
 import { MESSAGE_TYPE } from '@oscd-plugins/core'
+import { writable } from 'svelte/store'
 // TYPES
-import type {
-	IEDConnectionWithCustomValues,
-	IEDElkNode
-} from '../diagram'
+import type { IEDConnectionWithCustomValues, IEDElkNode } from '../diagram'
 
 // TODO: we need API that returns if there is an active selection
 // and another one to check if a given IED is selected

@@ -1,43 +1,50 @@
 <script lang="ts">
-	import type { DiagramStore, ConnectionBetweenNodes } from "../store"
-	import type { CreateCableEvent, UpdateCableEvent } from "../editor-events/network-events"
-	import { IEDAccordion } from "./ied-accordion";
-	import { ScdAssumptions } from "./scd-assumptions"
-	import { writable, derived } from "svelte/store";
-	import NewConnection from "./new-connection/new-connection.svelte";
-	import { SidebarMode } from "./types"
-	
-	// 
-	// INPUT
-	
-	interface Props {
-		// 
-		store: DiagramStore;
-		createCable: (event: CreateCableEvent) => void;
-		updateCable: (event: UpdateCableEvent) => void;
-	}
+import { derived } from 'svelte/store'
+import type {
+	CreateCableEvent,
+	UpdateCableEvent
+} from '../editor-events/network-events'
+import type { DiagramStore } from '../store'
+import { IEDAccordion } from './ied-accordion'
+import NewConnection from './new-connection/new-connection.svelte'
+import { ScdAssumptions } from './scd-assumptions'
+import { SidebarMode } from './types'
 
-	let { store, createCable, updateCable }: Props = $props();
-	
-	//
-	// INTERNAL
-	//
-	let selectedNodes$ = store.selectedNodes
-	let connectionBetweenNodes$ = store.connectionBetweenNodes
-	const sidebarMode$ = derived([selectedNodes$, connectionBetweenNodes$], ([$selectedNodes$, $connectionBetweenNodes$]) => {
+//
+// INPUT
+
+interface Props {
+	store: DiagramStore
+	createCable: (event: CreateCableEvent) => void
+	updateCable: (event: UpdateCableEvent) => void
+}
+
+let { store, createCable, updateCable }: Props = $props()
+
+//
+// INTERNAL
+//
+let selectedNodes$ = store.selectedNodes
+let connectionBetweenNodes$ = store.connectionBetweenNodes
+const sidebarMode$ = derived(
+	[selectedNodes$, connectionBetweenNodes$],
+	([$selectedNodes$, $connectionBetweenNodes$]) => {
 		if ($connectionBetweenNodes$) {
 			return SidebarMode.ConnectionBetweenNodes
-		} else if ($selectedNodes$.length > 0) {
-			return SidebarMode.SelectedNodes
-		} else {
-			return SidebarMode.ScdAssumptions
 		}
-	})
-	const cableNames$ = derived(store.ieds, $ieds$ => $ieds$.map(ied => ied.networking.map(n => n.cable)).flat())
-	
-	function onCancelConnection(): void {
-		store.resetNewConnection()
+		if ($selectedNodes$.length > 0) {
+			return SidebarMode.SelectedNodes
+		}
+		return SidebarMode.ScdAssumptions
 	}
+)
+const cableNames$ = derived(store.ieds, ($ieds) =>
+	$ieds.flatMap((ied) => ied.networking.map((networking) => networking.cable))
+)
+
+function onCancelConnection(): void {
+	store.resetNewConnection()
+}
 </script>
 
 <div class="sidebar sidebar-right">
@@ -49,13 +56,15 @@
 				/>
 			{/each}
 		{:else if $sidebarMode$ === SidebarMode.ConnectionBetweenNodes}
-			<NewConnection
-				connectionBetweenNodes={$connectionBetweenNodes$}
-				cableNames={$cableNames$}
-				{ createCable }
-				{ updateCable }
-				cancel={onCancelConnection}
-			/>
+			{#if $connectionBetweenNodes$}
+				<NewConnection
+					connectionBetweenNodes={$connectionBetweenNodes$}
+					cableNames={$cableNames$}
+					{createCable}
+					{updateCable}
+					cancel={onCancelConnection}
+				/>
+			{/if}
 		{:else}
 			<ScdAssumptions />
 		{/if}
@@ -63,25 +72,23 @@
 </div>
 
 <style>
-	hr {
-		margin: 2rem 0;
-	}
-	
 	.sidebar {
+		flex: 0 0 var(--sidebar-width);
 		width: var(--sidebar-width);
-		overflow: auto;
-		max-height: 100%;
-	}
-	
-	.sidebar .sidebar-content {
-		padding: 1rem;
-		background-color: #fcf6e5;
+		min-width: 0;
 		height: 100%;
-		overflow: auto;
-		
+		overflow: hidden;
+		border-left: 1px solid hsl(var(--border));
+	}
+
+	.sidebar-content {
+		box-sizing: border-box;
+		padding: 1rem;
+		height: 100%;
+		overflow-y: auto;
+		background-color: #fcf6e5;
 		display: flex;
 		flex-direction: column;
-		gap:2rem;
+		gap: 1rem;
 	}
-	
 </style>

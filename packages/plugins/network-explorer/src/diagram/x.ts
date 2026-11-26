@@ -1,11 +1,23 @@
-import { Position, MarkerType, type Node, type XYPosition } from "@xyflow/svelte"
+import {
+	type InternalNode,
+	MarkerType,
+	Position,
+	type XYPosition
+} from '@xyflow/svelte'
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
-function getNodeIntersection(intersectionNode: Node, targetNode: Node) {
+function getNodeIntersection(
+	intersectionNode: InternalNode,
+	targetNode: InternalNode
+) {
 	// https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
-	const intersectionNodePosition = intersectionNode.positionAbsolute || { x: 0, y: 0 }
-	const targetPosition = targetNode.positionAbsolute || { x: 0, y: 0 }
+	const intersectionNodePosition = intersectionNode.internals
+		.positionAbsolute || { x: 0, y: 0 }
+	const targetPosition = targetNode.internals.positionAbsolute || {
+		x: 0,
+		y: 0
+	}
 
 	const w = (intersectionNode.width ?? 0) / 2
 	const h = (intersectionNode.height ?? 0) / 2
@@ -27,12 +39,12 @@ function getNodeIntersection(intersectionNode: Node, targetNode: Node) {
 }
 
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
-function getEdgePosition(node: Node, intersectionPoint: XYPosition) {
+function getEdgePosition(node: InternalNode, intersectionPoint: XYPosition) {
 	if (!node.width || !node.height) {
 		return null
 	}
-	const nx = Math.round(node.positionAbsolute?.x || 0)
-	const ny = Math.round(node.positionAbsolute?.y || 0)
+	const nx = Math.round(node.internals.positionAbsolute?.x || 0)
+	const ny = Math.round(node.internals.positionAbsolute?.y || 0)
 	const px = Math.round(intersectionPoint.x)
 	const py = Math.round(intersectionPoint.y)
 
@@ -53,7 +65,7 @@ function getEdgePosition(node: Node, intersectionPoint: XYPosition) {
 }
 
 // returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
-export function getEdgeParams(source: Node, target: Node) {
+export function getEdgeParams(source: InternalNode, target: InternalNode) {
 	const sourceIntersectionPoint = getNodeIntersection(source, target)
 	const targetIntersectionPoint = getNodeIntersection(target, source)
 
@@ -66,7 +78,7 @@ export function getEdgeParams(source: Node, target: Node) {
 		tx: targetIntersectionPoint.x,
 		ty: targetIntersectionPoint.y,
 		sourcePos,
-		targetPos,
+		targetPos
 	}
 }
 
@@ -75,7 +87,7 @@ export function createNodesAndEdges() {
 	const edges = []
 	const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
 
-	nodes.push({ id: "target", data: { label: "Target" }, position: center })
+	nodes.push({ id: 'target', data: { label: 'Target' }, position: center })
 
 	for (let i = 0; i < 8; i++) {
 		const degrees = i * (360 / 8)
@@ -83,16 +95,20 @@ export function createNodesAndEdges() {
 		const x = 250 * Math.cos(radians) + center.x
 		const y = 250 * Math.sin(radians) + center.y
 
-		nodes.push({ id: `${i}`, data: { label: "Source" }, position: { x, y } })
+		nodes.push({
+			id: `${i}`,
+			data: { label: 'Source' },
+			position: { x, y }
+		})
 
 		edges.push({
-			id:        `edge-${i}`,
-			target:    "target",
-			source:    `${i}`,
-			type:      "floating",
+			id: `edge-${i}`,
+			target: 'target',
+			source: `${i}`,
+			type: 'floating',
 			markerEnd: {
-				type: MarkerType.Arrow,
-			},
+				type: MarkerType.Arrow
+			}
 		})
 	}
 

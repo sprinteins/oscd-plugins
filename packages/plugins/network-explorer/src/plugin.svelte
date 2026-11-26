@@ -24,24 +24,25 @@
 			edition: 'ed2Rev1',
 		}
 	}}
+	use:injectDiagramStyles={componentStyles}
 	data-plugin-name={jsonPackage.name}
 	data-plugin-version={jsonPackage.version}
 >
-	<LegacyTheme>
-		<NetworkExplorer doc={doc} editCount={editCount} />
-	</LegacyTheme>
+	<NetworkExplorer doc={doc} editCount={editCount} />
 </main>
 
 
 <script lang="ts">
 // PACKAGE
-import jsonPackage from '../package.json'
-// CORE
-import { initPlugin, initSsdTemplate } from '@oscd-plugins/core-ui-svelte'
-import { LegacyTheme } from '@oscd-plugins/ui'
+
 // TYPES
 import type { Plugin } from '@oscd-plugins/core-api/plugin/v1'
-import NetworkExplorer from './network-explorer.svelte';
+// CORE
+import { initPlugin } from '@oscd-plugins/core-ui-svelte'
+import jsonPackage from '../package.json'
+import { injectDiagramStyles } from './diagram/inject-styles.diagram'
+import NetworkExplorer from './network-explorer.svelte'
+import componentStyles from './styles.css?inline'
 
 // props
 const {
@@ -52,3 +53,12 @@ const {
 	isCustomInstance
 }: Plugin.CustomComponentsProps = $props()
 </script>
+
+<style>
+	main {
+		--sidebar-width: 400px;
+		--color-white: #f9f7f1;
+		--color-cyan: #2aa198;
+		--color-red: #b00020;
+	}
+</style>

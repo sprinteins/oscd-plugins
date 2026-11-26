@@ -1,5 +1,5 @@
-export 	enum SidebarMode {
-    SelectedNodes,
-    ConnectionBetweenNodes,
-    ScdAssumptions
+export enum SidebarMode {
+	SelectedNodes,
+	ConnectionBetweenNodes,
+	ScdAssumptions
 }

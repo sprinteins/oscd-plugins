@@ -1,200 +1,158 @@
 <script lang="ts">
-	import { getNetworkingWithOpenPort } from "../../diagram/ied-helper"
-	import { Button } from "@oscd-plugins/ui"
-	import Textfield from "@smui/textfield"
-	import type { CreateCableEvent, UpdateCableEvent } from "../../editor-events/network-events"
-	import type { IED } from "../../diagram/networking"
-	import type { ConnectionBetweenNodes } from "../../store/index"
-	import IedPortSelect from "./ied-port-select.svelte"
-	import HelperText from '@smui/textfield/helper-text'
-	
-	// 
-	// INPUT
-	
-	interface Props {
-		// 
-		connectionBetweenNodes: ConnectionBetweenNodes;
-		cableNames: string[];
-		cancel: () => void;
-		updateCable: (event: UpdateCableEvent) => void;
-		createCable: (event: CreateCableEvent) => void;
+import { Button, Input, Label } from '@oscd-plugins/core-ui-svelte'
+import type {
+	CreateCableEvent,
+	UpdateCableEvent
+} from '../../editor-events/network-events'
+import type { ConnectionBetweenNodes } from '../../store'
+import {
+	buildCreateCableEvent,
+	buildUpdateCableEvent,
+	getCableNameErrors,
+	getInitialPort
+} from './cable-form.new-connection'
+import IedPortSelect from './ied-port-select.svelte'
+
+interface Props {
+	connectionBetweenNodes: ConnectionBetweenNodes
+	cableNames: string[]
+	cancel: () => void
+	updateCable: (event: UpdateCableEvent) => void
+	createCable: (event: CreateCableEvent) => void
+}
+
+let {
+	connectionBetweenNodes,
+	cableNames,
+	updateCable,
+	cancel,
+	createCable
+}: Props = $props()
+
+let sourceSelectedPort = $state('')
+let targetSelectedPort = $state('')
+
+let cableName = $state('')
+
+$effect(() => {
+	cableName =
+		connectionBetweenNodes.cableName ?? crypto.randomUUID().substring(0, 6)
+	sourceSelectedPort = getInitialPort(
+		connectionBetweenNodes.source,
+		connectionBetweenNodes.cableName ?? null
+	)
+	targetSelectedPort = getInitialPort(
+		connectionBetweenNodes.target,
+		connectionBetweenNodes.cableName ?? null
+	)
+})
+
+const { isNew, existingCableName, sourceIed, targetIed } = $derived.by(() => ({
+	isNew: connectionBetweenNodes.isNew,
+	existingCableName: connectionBetweenNodes.isNew
+		? null
+		: (connectionBetweenNodes.cableName ?? null),
+	sourceIed: connectionBetweenNodes.source,
+	targetIed: connectionBetweenNodes.target
+}))
+
+const errors = $derived(
+	getCableNameErrors(cableName, cableNames, existingCableName)
+)
+
+function confirm(): void {
+	if (isNew) {
+		createCable(
+			buildCreateCableEvent(
+				connectionBetweenNodes,
+				cableName,
+				sourceSelectedPort,
+				targetSelectedPort
+			)
+		)
+	} else {
+		updateCable(
+			buildUpdateCableEvent(
+				connectionBetweenNodes,
+				cableName,
+				sourceSelectedPort,
+				targetSelectedPort
+			)
+		)
 	}
-
-	let { connectionBetweenNodes, cableNames, updateCable, cancel, createCable }: Props = $props();
-	
-	//
-	// Internal
-	//
-	let sourceSelectedPort: string
-	let targetSelectedPort: string
-
-	const errors: { required: boolean, cableNameInUse: boolean } = $derived.by(() => {
-		const required = !cableName
-		const cableNameInUse = !required && cableNameSet.has(cableName)
-
-		return { required, cableNameInUse }
-	})
-
-	let cableName: string = $state('')
-
-	$effect(() => {
-		cableName = connectionBetweenNodes.cableName ?? generateCableName()
-	})
-
-	const {
-		isNew,
-		existingCableName,
-		sourceIed,
-		targetIed
-	} = $derived.by(() => {
-		const isNew = connectionBetweenNodes.isNew
-		const existingCableName = isNew ? null : connectionBetweenNodes.cableName
-		const sourceIed = connectionBetweenNodes.source
-		const targetIed = connectionBetweenNodes.target
-
-		return {
-			isNew,
-			existingCableName,
-			sourceIed,
-			targetIed
-		}
-	})
-
-	const cableNameSet: Set<string> = $derived.by(() => {
-		const set = new Set(cableNames)
-
-		if (existingCableName) {
-			set.delete(existingCableName)
-		}
-
-		return set
-	})
-	
-	function generateCableName(): string {
-		return crypto.randomUUID().substring(0, 6)
-	}
-	
-	function onSourceSelect(port: string) {
-		sourceSelectedPort = port
-	}
-	
-	function onTargetSelect(port: string) {
-		targetSelectedPort = port
-	}
-
-	function confirm(): void {
-		if (isNew) {
-			doCreateCable()
-		} else {
-			doUpdateCable()
-		}
-	}
-
-	function doUpdateCable(): void {
-		if (!existingCableName) {
-			throw new Error(`Existing cable not found during update`)
-		}
-
-		const oldSourcePort = getOldPort(sourceIed, existingCableName)
-		const oldTargetPort = getOldPort(targetIed, existingCableName)
-		const newSourcePort = sourceSelectedPort || oldSourcePort
-		const newTargetPort = targetSelectedPort || oldTargetPort
-
-		const updateCableEvent: UpdateCableEvent = {
-			cable: cableName,
-			source: {
-				ied: sourceIed,
-				oldPort: oldSourcePort,
-				newPort: newSourcePort
-			},
-			target: {
-				ied: targetIed,
-				oldPort: oldTargetPort,
-				newPort: newTargetPort
-			}
-		}
-
-		updateCable(updateCableEvent)
-	}
-	
-	function doCreateCable(): void {
-		const sourcePort = sourceSelectedPort || getDefaultPort(sourceIed)
-		const targetPort = targetSelectedPort || getDefaultPort(targetIed)
-		
-		const createCableEvent: CreateCableEvent = {
-			cable: cableName,
-			source: {
-				ied: sourceIed,
-				port: sourcePort,
-			},
-			target: {
-				ied: targetIed,
-				port: targetPort,
-			},
-		}
-		
-		createCable(createCableEvent)
-	}
-	
-	function getDefaultPort(ied: IED): string {
-		return getNetworkingWithOpenPort(ied)[0].port
-	}
-
-	function getOldPort(ied: IED, cable: string): string {
-		const port = ied.networking.find(net => net.cable === cable)?.port
-
-		if (!port) {
-			throw new Error(`Port for cable ${cable} in IED ${ied.name} not found`)
-		}
-
-		return port
-	}
+}
 </script>
 
-<div class="container">
-	<h3>Cable {cableName}</h3>
-	<div class="new-connection-textfield-container">
-		<Textfield
-			bind:value={cableName}
-			invalid={errors.required || errors.cableNameInUse}
-			label="Cable"
-			variant="outlined">
-			{#snippet helper()}
-				<HelperText persistent >
-					{ errors.required ? "Cablename required" : errors.cableNameInUse ? "Cablename allready in use" : "" }
-				</HelperText>
-			{/snippet}
-		</Textfield>
-	</div>
-	
-	<IedPortSelect ied={sourceIed} { existingCableName } select={onSourceSelect}/>
-	<IedPortSelect ied={targetIed} { existingCableName } select={onTargetSelect}/>
-	
-	<div class="actions">
-		<Button onclick={confirm} testid="create-cable" disabled={errors.required || errors.cableNameInUse}>
-			{ isNew ? "Create" : "Update" }
-		</Button>
-		<Button onclick={cancel} type="secondary" testid="cancel-create-cable">Cancel</Button>
-	</div>
+<div class="cable-form">
+			<h3>Cable {cableName}</h3>
+			<div class="cable-name">
+				<Label.Root for="cable-name">Cable</Label.Root>
+				<Input.Root
+					id="cable-name"
+					bind:value={cableName}
+					aria-invalid={errors.required || errors.cableNameInUse}
+					aria-describedby="cable-name-error"
+				/>
+				<p id="cable-name-error" aria-live="polite">
+					{errors.required
+						? 'Cablename required'
+						: errors.cableNameInUse
+							? 'Cablename allready in use'
+							: ''}
+				</p>
+			</div>
+
+			<IedPortSelect
+				ied={sourceIed}
+				existingCableName={existingCableName}
+				bind:selectedPort={sourceSelectedPort}
+			/>
+			<IedPortSelect
+				ied={targetIed}
+				existingCableName={existingCableName}
+				bind:selectedPort={targetSelectedPort}
+			/>
+
+			<div class="actions">
+				<Button.Root
+					onclick={confirm}
+					data-testid="create-cable"
+					disabled={errors.required || errors.cableNameInUse}
+				>
+					{isNew ? 'Create' : 'Update'}
+				</Button.Root>
+				<Button.Root
+					onclick={cancel}
+					variant="secondary"
+					data-testid="cancel-create-cable"
+				>
+					Cancel
+				</Button.Root>
+			</div>
 </div>
 
 <style>
-	.container {
+	.cable-form {
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
 	}
 
-	.new-connection-textfield-container {
+	.cable-name {
 		display: flex;
 		flex-direction: column;
+		gap: 0.5rem;
 	}
 
-	.new-connection-textfield-container :global(.mdc-text-field-helper-text) {
-		color: var(--color-red) !important
+	.cable-name p {
+		min-height: 1.25rem;
+		margin: 0;
+		color: var(--color-red, #b00020);
 	}
 
 	.actions {
+		display: flex;
+		gap: 0.5rem;
 		margin-top: 16px;
 	}
 </style>

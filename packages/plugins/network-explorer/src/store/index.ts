@@ -1,1 +1,1 @@
-export * from "./store.svelte"
+export * from './store.svelte'

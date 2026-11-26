@@ -9,15 +9,14 @@
  * > a graphical representation
  */
 
-import type { DiagramStore } from '../store'
-import { get } from 'svelte/store'
-import Diagram from './diagram.svelte'
-import { useNodes, useEdges } from '@xyflow/svelte'
-
+import type { Networking } from '@oscd-plugins/core'
 import type { Connection } from '@xyflow/svelte'
+import { useEdges, useNodes } from '@xyflow/svelte'
+import { get } from 'svelte/store'
+import type { DiagramStore } from '../store'
+import Diagram from './diagram.svelte'
 import { getIedNameFromId } from './ied-helper'
 import type { IED } from './networking'
-import type { Networking } from '@oscd-plugins/core'
 
 interface Props {
 	doc: Element
@@ -28,7 +27,14 @@ interface Props {
 	selectedBays?: Set<string>
 }
 
-let { doc, editCount, store, isOutsidePluginContext = false, onDelete, selectedBays = undefined }: Props = $props()
+let {
+	doc,
+	editCount,
+	store,
+	isOutsidePluginContext = false,
+	onDelete,
+	selectedBays = undefined
+}: Props = $props()
 let root: HTMLElement | null = $state(null)
 let _editCount: number
 let _doc: Element
@@ -99,7 +105,7 @@ $effect(() => {
 $effect(() => {
 	const storeBays = store.selectedBays ?? new Set<string>()
 	const currentBays = selectedBays ?? new Set<string>()
-	
+
 	if (storeBays.symmetricDifference(currentBays).size > 0) {
 		store.setSelectedBays(selectedBays)
 		store.updateNodesAndEdges(doc)
@@ -122,12 +128,11 @@ $effect(() => {
 
 <style>
 	.root {
-		/* --header-height: 128px; */
-		display: grid;
-		grid-template-columns: auto 0;
-		height: calc(100vh - var(--header-height));
-		width: 100%;
-		overflow-x: hidden;
-		flex-grow: 1;
+		flex: 1 1 auto;
+		align-self: stretch;
+		width: 0;
+		min-width: 0;
+		height: 100%;
+		overflow: hidden;
 	}
 </style>

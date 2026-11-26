@@ -1,0 +1,2 @@
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind processes this directive. */
+@tailwind utilities;

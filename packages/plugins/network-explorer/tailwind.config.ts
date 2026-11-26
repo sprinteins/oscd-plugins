@@ -3,5 +3,8 @@ import TailwindPreset from '@oscd-plugins/core-ui-svelte/preset'
 import type { Config } from 'tailwindcss'
 
 export default {
-	presets: [TailwindPreset]
+	presets: [TailwindPreset],
+	corePlugins: {
+		container: false
+	}
 } satisfies Omit<Config, 'content'>
