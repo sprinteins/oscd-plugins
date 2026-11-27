@@ -53,21 +53,23 @@ const affectedPublisherIEDs = $derived(
 		class="rounded-md border-2 border-[var(--color-accent)] bg-[#ede8d7]"
 		style={`border-color: var(${color})`}
 	>
-		<Accordion.Trigger class="px-3 py-2 hover:no-underline">
+		<Accordion.Trigger class="px-3 py-[0.4rem] text-xs leading-normal hover:no-underline">
 			<span class="flex min-w-0 items-center gap-2">
 				<MessageTypeIcon type={serviceType} direction={connectionDirection} />
 				<span class="truncate">{serviceType} - {serviceLabel}</span>
 			</span>
 		</Accordion.Trigger>
 		<Accordion.Content
-			class="px-3 data-[state=closed]:hidden data-[state=open]:block"
+			class="px-3 text-xs leading-normal data-[state=closed]:hidden data-[state=open]:block"
 		>
-			<div class="flex flex-col gap-1 pt-3">
+			<hr class="dashed-separator" />
+			<div class="ml-4 flex flex-col">
 				<div>Label: {serviceLabel}</div>
 				<div>MessageType: {serviceType}</div>
 			</div>
 
-			<div class="mt-3 pt-3">
+			<hr class="solid-separator" />
+			<div>
 				{#if affectedSubscriberIEDs.length + affectedPublisherIEDs.length === 0}
 					<p class="px-2">No items found</p>
 				{:else}
@@ -95,6 +97,26 @@ const affectedPublisherIEDs = $derived(
 </Accordion.Root>
 
 <style>
+	.dashed-separator,
+	.solid-separator {
+		width: 95%;
+		border: 0;
+		border-top: 0.1rem solid var(--color-accent);
+		margin-right: auto;
+		margin-left: auto;
+	}
+
+	.dashed-separator {
+		border-top-style: dashed;
+		margin-top: 0;
+		margin-bottom: 0.5rem;
+	}
+
+	.solid-separator {
+		margin-top: 0.4rem;
+		margin-bottom: 0.6rem;
+	}
+
 	:global(.ied-item) {
 		border: 1px solid #4d5d63;
 		border-radius: 0.375rem;

@@ -9,27 +9,37 @@ interface Props {
 let { ConnectionSelection }: Props = $props()
 </script>
 
-<Table.Root>
+<Table.Root class="text-xs leading-normal">
 	<Table.Body>
-		<Table.Row>
-			<Table.Cell>ID:</Table.Cell>
-			<Table.Cell>{ConnectionSelection.id}</Table.Cell>
+		<Table.Row class="border-0">
+			<Table.Cell class="py-0 pl-0 pr-4 align-top">ID:</Table.Cell>
+			<Table.Cell class="p-0 align-top">{ConnectionSelection.id}</Table.Cell>
 		</Table.Row>
-		<Table.Row>
-			<Table.Cell>Sources:</Table.Cell>
-			<Table.Cell>{ConnectionSelection.sourceIED?.iedName}</Table.Cell>
+		<Table.Row class="border-0">
+			<Table.Cell class="py-0 pl-0 pr-4 align-top">Sources:</Table.Cell>
+			<Table.Cell class="p-0 align-top"
+				>{ConnectionSelection.sourceIED?.iedName}</Table.Cell
+			>
 		</Table.Row>
-		<Table.Row>
-			<Table.Cell>Targets:</Table.Cell>
-			<Table.Cell>{ConnectionSelection.targetIED?.iedName}</Table.Cell>
+		<Table.Row class="border-0">
+			<Table.Cell class="py-0 pl-0 pr-4 align-top">Targets:</Table.Cell>
+			<Table.Cell class="p-0 align-top"
+				>{ConnectionSelection.targetIED?.iedName}</Table.Cell
+			>
 		</Table.Row>
-		<Table.Row>
-			<Table.Cell>ServiceType:</Table.Cell>
-			<Table.Cell>{ConnectionSelection.messageType}</Table.Cell>
+		<Table.Row class="border-0">
+			<Table.Cell class="py-0 pl-0 pr-4 align-top">ServiceType:</Table.Cell>
+			<Table.Cell class="p-0 align-top"
+				>{ConnectionSelection.messageType}</Table.Cell
+			>
 		</Table.Row>
-		<Table.Row>
-			<Table.Cell>ServiceType Label:</Table.Cell>
-			<Table.Cell>{ConnectionSelection.messageTypeLabel}</Table.Cell>
+		<Table.Row class="border-0">
+			<Table.Cell class="py-0 pl-0 pr-4 align-top"
+				>ServiceType Label:</Table.Cell
+			>
+			<Table.Cell class="p-0 align-top"
+				>{ConnectionSelection.messageTypeLabel}</Table.Cell
+			>
 		</Table.Row>
 	</Table.Body>
 </Table.Root>
