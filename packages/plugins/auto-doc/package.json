@@ -62,7 +62,7 @@
 		"@types/uuid": "^10.0.0",
 		"autoprefixer": "^10.4.20",
 		"concurrently": "^7.6.0",
-		"html-to-image": "1.11.11",
+		"html-to-image": "1.11.13",
 		"playwright": "^1.48.1",
 		"postcss": "^8.4.49",
 		"svelte": "^5.19.8",
