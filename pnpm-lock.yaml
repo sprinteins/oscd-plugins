@@ -237,6 +237,61 @@ importers:
         version: 5.6.3
 
   packages/core/ui-svelte:
+    dependencies:
+      '@openscd/oscd-editor':
+        specifier: ^1.8.0
+        version: 1.8.0
+      '@oscd-plugins/core-api':
+        specifier: workspace:^
+        version: link:../api
+      '@oscd-plugins/core-standard':
+        specifier: workspace:^
+        version: link:../standard
+      '@sveltejs/kit':
+        specifier: ^2.17.1
+        version: 2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
+      '@tanstack/table-core':
+        specifier: ^8.20.5
+        version: 8.21.3
+      bits-ui:
+        specifier: 1.3.5
+        version: 1.3.5(svelte@5.46.0)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      embla-carousel-svelte:
+        specifier: ^8.5.1
+        version: 8.6.0(svelte@5.46.0)
+      formsnap:
+        specifier: 2.0.0-next.1
+        version: 2.0.0-next.1(svelte@5.46.0)(sveltekit-superforms@2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3))
+      lucide-svelte:
+        specifier: ^0.474.0
+        version: 0.474.0(svelte@5.46.0)
+      paneforge:
+        specifier: 1.0.0-next.1
+        version: 1.0.0-next.1(svelte@5.46.0)
+      svelte-sonner:
+        specifier: ^0.3.28
+        version: 0.3.28(svelte@5.46.0)
+      sveltekit-superforms:
+        specifier: ^2.22.1
+        version: 2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3)
+      tailwind-merge:
+        specifier: ^2.5.5
+        version: 2.6.0
+      tailwind-variants:
+        specifier: ^0.3.0
+        version: 0.3.1(tailwindcss@3.4.19)
+      tailwindcss:
+        specifier: ^3.4.9
+        version: 3.4.19
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.19)
+      vaul-svelte:
+        specifier: 1.0.0-next.3
+        version: 1.0.0-next.3(svelte@5.46.0)
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^3.2.2
@@ -244,18 +299,9 @@ importers:
       '@internationalized/date':
         specifier: ^3.6.0
         version: 3.10.0
-      '@openscd/oscd-editor':
-        specifier: ^1.8.0
-        version: 1.8.0
       '@oscd-plugins/core':
         specifier: workspace:^
         version: link:../legacy
-      '@oscd-plugins/core-api':
-        specifier: workspace:^
-        version: link:../api
-      '@oscd-plugins/core-standard':
-        specifier: workspace:^
-        version: link:../standard
       '@storybook/addon-essentials':
         specifier: ^8.4.7
         version: 8.6.14(storybook@8.6.14(supports-color@8.1.1))
@@ -280,39 +326,15 @@ importers:
       '@sveltejs/adapter-auto':
         specifier: ^4.0.0
         version: 4.0.0(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))
-      '@sveltejs/kit':
-        specifier: ^2.17.1
-        version: 2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
       '@sveltejs/package':
         specifier: ^2.3.10
         version: 2.5.7(svelte@5.46.0)(typescript@5.9.3)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
         version: 5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1))
-      '@tanstack/table-core':
-        specifier: ^8.20.5
-        version: 8.21.3
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.23(postcss@8.5.6)
-      bits-ui:
-        specifier: 1.3.5
-        version: 1.3.5(svelte@5.46.0)
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      embla-carousel-svelte:
-        specifier: ^8.5.1
-        version: 8.6.0(svelte@5.46.0)
-      formsnap:
-        specifier: 2.0.0-next.1
-        version: 2.0.0-next.1(svelte@5.46.0)(sveltekit-superforms@2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3))
-      lucide-svelte:
-        specifier: ^0.474.0
-        version: 0.474.0(svelte@5.46.0)
-      paneforge:
-        specifier: 1.0.0-next.1
-        version: 1.0.0-next.1(svelte@5.46.0)
       publint:
         specifier: ^0.2.0
         version: 0.2.12
@@ -328,30 +350,9 @@ importers:
       svelte-check:
         specifier: ^4.1.4
         version: 4.3.4(picomatch@4.0.7)(svelte@5.46.0)(typescript@5.9.3)
-      svelte-sonner:
-        specifier: ^0.3.28
-        version: 0.3.28(svelte@5.46.0)
-      sveltekit-superforms:
-        specifier: ^2.22.1
-        version: 2.29.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@5.1.1(supports-color@8.1.1)(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(svelte@5.46.0)(vite@6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)))(@types/json-schema@7.0.15)(svelte@5.46.0)(typescript@5.9.3)
-      tailwind-merge:
-        specifier: ^2.5.5
-        version: 2.6.0
-      tailwind-variants:
-        specifier: ^0.3.0
-        version: 0.3.1(tailwindcss@3.4.19)
-      tailwindcss:
-        specifier: ^3.4.9
-        version: 3.4.19
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.19)
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
-      vaul-svelte:
-        specifier: 1.0.0-next.3
-        version: 1.0.0-next.3(svelte@5.46.0)
       vite:
         specifier: 6.1.0
         version: 6.1.0(@types/node@22.19.3)(jiti@1.21.7)(sass@1.106.1)
