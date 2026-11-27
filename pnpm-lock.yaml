@@ -531,8 +531,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.1
       elkjs:
-        specifier: ^0.8.2
-        version: 0.8.2
+        specifier: ^0.12.1
+        version: 0.12.1
     devDependencies:
       '@openscd/oscd-editor':
         specifier: ^1.8.0
@@ -715,8 +715,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.1
       elkjs:
-        specifier: ^0.8.2
-        version: 0.8.2
+        specifier: ^0.12.1
+        version: 0.12.1
     devDependencies:
       '@oscd-plugins/core':
         specifier: workspace:^
@@ -4495,8 +4495,8 @@ packages:
   electron-to-chromium@1.5.492:
     resolution: {integrity: sha512-4uMs7omhajKiud0GqALLTazS/zyvHLTLmDWVTR+e6BnyJo5bSNrph/JoRWEFJJmY75ct9hCiSGsbFF9fLe5gDw==}
 
-  elkjs@0.8.2:
-    resolution: {integrity: sha512-L6uRgvZTH+4OF5NE/MBbzQx/WYpru1xCBE9respNj6qznEewGUIfhzmm7horWWxbNO2M0WckQypGctR8lH79xQ==}
+  elkjs@0.12.1:
+    resolution: {integrity: sha512-IhMYKHE4S2vtx0QrhBP3lYOIKDeIiJXBrdq9MGYkuB8ZHqhrBnHNfSUndjXFewrX1CPK8chwq+2NA0K0hliYuw==}
 
   embla-carousel-reactive-utils@8.6.0:
     resolution: {integrity: sha512-fMVUDUEx0/uIEDM0Mz3dHznDhfX+znCCDCeIophYb1QGVM7YThSWX+wz11zlYwWFOr74b4QLGg0hrGPJeG2s4A==}
@@ -11779,7 +11779,7 @@ snapshots:
 
   electron-to-chromium@1.5.492: {}
 
-  elkjs@0.8.2: {}
+  elkjs@0.12.1: {}
 
   embla-carousel-reactive-utils@8.6.0(embla-carousel@8.6.0):
     dependencies:
