@@ -56,7 +56,7 @@ const {
 
 <style>
 	main {
-		--sidebar-width: 400px;
+		--sidebar-width: 20rem;
 		--color-white: #f9f7f1;
 		--color-cyan: #2aa198;
 		--color-red: #b00020;
