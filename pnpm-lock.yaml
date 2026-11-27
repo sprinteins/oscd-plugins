@@ -416,8 +416,8 @@ importers:
         specifier: ^3.8.4
         version: 3.8.4(jspdf@2.5.2)
       uuid:
-        specifier: ^10.0.0
-        version: 10.0.0
+        specifier: ^14.0.0
+        version: 14.0.3
       zipcelx:
         specifier: ^1.6.2
         version: 1.6.2
@@ -845,8 +845,8 @@ importers:
         specifier: ~5.6.2
         version: 5.6.3
       uuid:
-        specifier: ^10.0.0
-        version: 10.0.0
+        specifier: ^14.0.0
+        version: 14.0.3
       vite:
         specifier: 6.1.0
         version: 6.1.0(@types/node@26.6.6)(jiti@1.21.7)(sass@1.108.2)
@@ -926,8 +926,8 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
       uuid:
-        specifier: ^10.0.0
-        version: 10.0.0
+        specifier: ^14.0.0
+        version: 14.0.3
       vite:
         specifier: ^6.4.1
         version: 6.4.6(@types/node@26.6.6)(jiti@1.21.7)(sass@1.108.2)
@@ -7018,9 +7018,8 @@ packages:
   utrie@1.0.2:
     resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
 
-  uuid@10.0.0:
-    resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+  uuid@14.0.3:
+    resolution: {integrity: sha512-Sc5u1VVln93y1Xnz4R+CunOZc7R9LUcTmhj7Rc7Eg3HVcf7rVn2FOoa812fe0W8p3jD7xeoGSYbfqCGGH2B6xw==}
     hasBin: true
 
   uuid@9.0.1:
@@ -14778,7 +14777,7 @@ snapshots:
       base64-arraybuffer: 1.0.2
     optional: true
 
-  uuid@10.0.0: {}
+  uuid@14.0.3: {}
 
   uuid@9.0.1: {}
 
