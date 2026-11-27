@@ -1,9 +1,6 @@
 <script lang="ts">
 import type { HashedElementGroup } from '@oscd-plugins/core'
-import type { IconKeys } from '@oscd-plugins/ui'
-import { IconClose, MaterialTheme } from '@oscd-plugins/ui'
-import IconButton from '@smui/icon-button'
-import Snackbar, { Actions, Label } from '@smui/snackbar'
+import { Card, Toast, toast } from '@oscd-plugins/core-ui-svelte'
 import {
 	createRelinkActions,
 	flattenCategories,
@@ -32,7 +29,6 @@ let { doc }: Props = $props()
 
 // Internal
 let root: HTMLElement | undefined = $state()
-let snackbar: Snackbar | undefined = $state()
 
 let categories: ElementCategoryMap = $state({
 	'LN Type': [],
@@ -93,7 +89,7 @@ function handleGroupSelect(index: number) {
 	affectedNodes = []
 }
 
-const iconMap: { [xmlTagName: string]: IconKeys } = {
+const iconMap: Record<string, string> = {
 	DAType: 'dAIcon',
 	DOType: 'dOIcon',
 	DO: 'dOIcon',
@@ -114,8 +110,8 @@ function handleSourceSelect(detail: EventDetailTypeLinkerSelect) {
 }
 
 function handleRelink({ sourceIndexes, targetIndex }: EventDetailRelink) {
-	if (!root || !snackbar) {
-		console.error('Root or snackbar not initialized')
+	if (!root) {
+		console.error('Root not initialized')
 		return
 	}
 
@@ -131,7 +127,7 @@ function handleRelink({ sourceIndexes, targetIndex }: EventDetailRelink) {
 	})
 
 	root.dispatchEvent(event)
-	snackbar.open()
+	toast.success('Relink was successful')
 }
 
 let categoryKeys = $derived(
@@ -162,58 +158,48 @@ let itemsWithIcons = $derived(
 )
 </script>
 
-<MaterialTheme pluginType="editor">
-	<div class="typeswitcher" bind:this={root}>
-		<div class="columns">
-			<div class="collective">
-				<h5 class="mdc-typography--headline5">Duplicates</h5>
-				<CategorySelector
-					labels={categoryLabelsWithCounter}
-					bind:selected={selectedCategoryLabels}
-				/>
-				<GroupCardList
-					itemSets={itemsWithIcons}
-					onclick={handleGroupSelect}
-					bind:selectedIndex
-				/>
-			</div>
-			<div class="panel">
-				<h5 class="mdc-typography--headline5">Duplicates Types</h5>
-				{#key selectedGroup}
-					<TypeLinker
-						items={selectedGroup.map((item) => ({
-							label: item.element.id,
-						}))}
-						handleSelect={handleSourceSelect}
-						{handleRelink}
-					/>
-				{/key}
-			</div>
-			<div class="panel">
-				<h5 class="mdc-typography--headline5">Affected Nodes</h5>
-				<AffectedNodes items={affectedNodes} />
-			</div>
-			<div class="panel">
-				<h5 class="mdc-typography--headline5">Structure</h5>
-				<Structure items={structure} />
-			</div>
+<div class="typeswitcher" bind:this={root}>
+	<div class="columns">
+		<div class="collective">
+			<h5>Duplicates</h5>
+			<CategorySelector
+				labels={categoryLabelsWithCounter}
+				testid="categories"
+				bind:selected={selectedCategoryLabels}
+			/>
+			<GroupCardList
+				itemSets={itemsWithIcons}
+				onclick={handleGroupSelect}
+				bind:selectedIndex
+			/>
 		</div>
-		<span class="success">
-			<Snackbar bind:this={snackbar} class="snackbar-position-fix">
-				<Label>Relink was successful</Label>
-				<Actions>
-					<IconButton class="material-icons" title="Dismiss">
-						<IconClose />
-					</IconButton>
-				</Actions>
-			</Snackbar>
-		</span>
+		<Card.Root class="panel">
+			<Card.Title level={5} class="panel-title">Duplicates Types</Card.Title>
+			{#key selectedGroup}
+				<TypeLinker
+					items={selectedGroup.map((item) => ({
+						label: item.element.id
+					}))}
+					handleSelect={handleSourceSelect}
+					{handleRelink}
+				/>
+			{/key}
+		</Card.Root>
+		<Card.Root class="panel">
+			<Card.Title level={5} class="panel-title">Affected Nodes</Card.Title>
+			<AffectedNodes items={affectedNodes} />
+		</Card.Root>
+		<Card.Root class="panel">
+			<Card.Title level={5} class="panel-title">Structure</Card.Title>
+			<Structure items={structure} />
+		</Card.Root>
 	</div>
-</MaterialTheme>
+	<Toast />
+</div>
 
 <style>
 	.typeswitcher {
-		background-color: #eee8d5;
+		background: var(--background);
 		--header-hight: 112px;
 		height: calc(100vh - var(--header-hight));
 		display: block;
@@ -222,26 +208,20 @@ let itemsWithIcons = $derived(
 		color: var(--font-color);
 	}
 
-	.success :global(.mdc-snackbar__surface) {
-		background: var(--color-green);
-	}
-
-	.typeswitcher :global(.snackbar-position-fix) {
-		bottom: 70px;
-	}
-
 	.collective {
 		display: grid;
 		grid-template-rows: auto auto 1fr;
-		padding-bottom: 0 !important;
+		padding: 0.5rem 0 0;
+		min-width: 0;
 	}
 
-	h5.mdc-typography--headline5 {
+	h5,
+	.typeswitcher :global(.panel-title) {
 		margin: 16px 0;
 		font-size: 14px;
-		margin-top: 0.5rem;
-		padding-bottom: 1rem;
-		margin-left: 1rem;
+		margin-top: 0;
+		padding-bottom: 0.75rem;
+		margin-left: 0.5rem;
 		font-weight: 400;
 		letter-spacing: normal;
 		line-height: 2rem;
@@ -250,24 +230,26 @@ let itemsWithIcons = $derived(
 	}
 
 	.columns {
-		--magic-number: 510px;
 		height: 100%;
 		overflow: hidden;
 		display: grid;
-		grid-template-columns: 2.75fr 1.75fr 2fr 1.5fr;
+		grid-template-columns:
+			minmax(20rem, 2.75fr) minmax(14rem, 1.75fr)
+			minmax(16rem, 2fr) minmax(12rem, 1.5fr);
 		gap: 1rem;
 	}
 	.columns > div {
 		padding: 0.5rem;
 		height: 100%;
 		overflow: hidden;
+		min-width: 0;
 	}
 
-	.panel {
+	.typeswitcher :global(.panel) {
 		height: 100%;
-		background: var(--mdc-theme-surface);
 		display: grid;
-		grid-template-rows: auto 1fr;
+		grid-template-rows: auto minmax(0, 1fr);
 		overflow: hidden;
+		padding: 0.5rem;
 	}
 </style>

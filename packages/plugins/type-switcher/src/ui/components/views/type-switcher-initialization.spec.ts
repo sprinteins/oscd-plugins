@@ -27,6 +27,6 @@ it('GIVEN the view is not initialized WHEN a relink is requested THEN it logs an
 
 	render(TypeSwitcher, { doc: doc.documentElement })
 
-	expect(onError).toHaveBeenCalledWith('Root or snackbar not initialized')
+	expect(onError).toHaveBeenCalledWith('Root not initialized')
 	expect(onAction).not.toHaveBeenCalled()
 })

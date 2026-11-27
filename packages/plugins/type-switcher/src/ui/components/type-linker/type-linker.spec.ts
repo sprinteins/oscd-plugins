@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
+import { fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { EventDetailRelink, EventDetailTypeLinkerSelect } from './events'
@@ -49,9 +49,10 @@ describe('GIVEN a group of duplicate types', () => {
 		expect(onSelect).toHaveBeenLastCalledWith({ indexes: [0, 1, 2] })
 		for (const label of ['Type A', 'Type B', 'Type C']) {
 			expect(
-				screen.getByRole<HTMLInputElement>('checkbox', { name: label })
-					.checked
-			).toBe(true)
+				screen
+					.getByRole('checkbox', { name: label })
+					.getAttribute('aria-checked')
+			).toBe('true')
 		}
 
 		await user.click(selectAll)
@@ -59,9 +60,10 @@ describe('GIVEN a group of duplicate types', () => {
 		expect(onSelect).toHaveBeenLastCalledWith({ indexes: [] })
 		for (const label of ['Type A', 'Type B', 'Type C']) {
 			expect(
-				screen.getByRole<HTMLInputElement>('checkbox', { name: label })
-					.checked
-			).toBe(false)
+				screen
+					.getByRole('checkbox', { name: label })
+					.getAttribute('aria-checked')
+			).toBe('false')
 		}
 	})
 
@@ -83,14 +85,7 @@ describe('GIVEN a group of duplicate types', () => {
 		})
 		expect(switchButton.disabled).toBe(true)
 
-		await user.click(screen.getByRole('combobox'))
-		await user.click(await screen.findByRole('option', { name: 'Type C' }))
-		// Let SMUI finish its close animation before the component is unmounted.
-		await waitFor(() => {
-			expect(
-				document.querySelector('.mdc-menu-surface--animating-closed')
-			).toBeNull()
-		})
+		await user.selectOptions(screen.getByRole('combobox'), '2')
 		expect(switchButton.disabled).toBe(true)
 
 		await user.click(screen.getByRole('checkbox', { name: 'Type A' }))
@@ -115,10 +110,10 @@ describe('GIVEN a group of duplicate types', () => {
 		}
 
 		expect(
-			screen.getByRole<HTMLInputElement>('checkbox', {
-				name: 'Select All'
-			}).checked
-		).toBe(true)
+			screen
+				.getByRole('checkbox', { name: 'Select All' })
+				.getAttribute('aria-checked')
+		).toBe('true')
 	})
 })
 

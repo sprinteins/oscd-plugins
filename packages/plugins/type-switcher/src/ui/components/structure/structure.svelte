@@ -10,7 +10,10 @@ let { items }: Props = $props()
 </script>
 
 <div class="structure">
-  <List {items} />
+	<List
+		{items}
+		emptyText="Select a duplicate group to inspect its structure."
+	/>
 </div>
 
 <style lang="scss">

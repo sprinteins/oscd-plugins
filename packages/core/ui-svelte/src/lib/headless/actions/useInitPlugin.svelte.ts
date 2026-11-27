@@ -268,17 +268,21 @@ export function initPlugin(
 	})
 
 	// add toaster sonner component
-	// biome-ignore lint/suspicious/noExplicitAny: generic type of mounted component
-	let toaster: Record<string, any>
 	$effect(() => {
-		if (!toaster && host?.shadowRoot)
-			toaster = mount(Toaster, {
-				target: node,
-				props: { mode: 'light' }
-			})
+		if (
+			node.hasAttribute('data-sonner-toaster-root') ||
+			node.querySelector('[data-sonner-toaster-root]')
+		) {
+			return
+		}
+
+		const toaster = mount(Toaster, {
+			target: node,
+			props: { mode: 'light' }
+		})
 
 		return () => {
-			if (toaster) unmount(toaster, { outro: true })
+			unmount(toaster, { outro: true })
 		}
 	})
 

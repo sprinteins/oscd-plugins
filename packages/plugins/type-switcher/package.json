@@ -1,7 +1,7 @@
 {
 	"name": "@oscd-plugins/type-switcher",
 	"private": true,
-	"version": "0.0.20",
+	"version": "0.0.21",
 	"type": "module",
 	"scripts": {
 		"//====== DEV ======//": "",
@@ -37,7 +37,6 @@
 		"@oscd-plugins/core-api": "workspace:^",
 		"@oscd-plugins/core-standard": "workspace:^",
 		"@oscd-plugins/core-ui-svelte": "workspace:^",
-		"@oscd-plugins/ui": "workspace:^",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@testing-library/dom": "^10.4.0",
 		"@testing-library/svelte": "^5.4.2",
@@ -61,9 +60,6 @@
 		"vitest": "^4.1.10"
 	},
 	"dependencies": {
-		"@material/typography": "^14.0.0",
-		"@smui/chips": "8.0.0-beta.3",
-		"@smui/icon-button": "^8.0.3",
-		"@smui/snackbar": "8.0.0-beta.3"
+		"@omicronenergy/oscd-ui": "^0.1.3"
 	}
 }
